@@ -13,6 +13,17 @@
 #import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 
+namespace {
+
+// Returns whether a page placeholder should be installed on `web_state`
+// when it is realized.
+bool ShouldInstallPagePlaceholder(web::WebState* web_state) {
+  const GURL& visible_url = web_state->GetVisibleURL();
+  return visible_url.is_valid() && visible_url != kChromeUINewTabURL;
+}
+
+}  // namespace
+
 PagePlaceholderBrowserAgent::PagePlaceholderBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
   // All the BrowserAgent are attached to the Browser during the creation,
@@ -25,6 +36,18 @@ PagePlaceholderBrowserAgent::PagePlaceholderBrowserAgent(Browser* browser)
 }
 
 PagePlaceholderBrowserAgent::~PagePlaceholderBrowserAgent() = default;
+
+bool PagePlaceholderBrowserAgent::IsPagePlaceholderPlannedForWebState(
+    web::WebState* web_state) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      return ShouldInstallPagePlaceholder(web_state);
+    }
+  }
+
+  return PagePlaceholderTabHelper::FromWebState(web_state)
+      ->will_add_placeholder_for_next_navigation();
+}
 
 void PagePlaceholderBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
@@ -114,8 +137,7 @@ void PagePlaceholderBrowserAgent::WebStateRemoved(web::WebState* web_state) {
 
 void PagePlaceholderBrowserAgent::AddPlaceholderToWebState(
     web::WebState* web_state) {
-  const GURL& visible_url = web_state->GetVisibleURL();
-  if (visible_url.is_valid() && visible_url != kChromeUINewTabURL) {
+  if (ShouldInstallPagePlaceholder(web_state)) {
     PagePlaceholderTabHelper::FromWebState(web_state)
         ->AddPlaceholderForNextNavigation();
   }

@@ -36,6 +36,7 @@ class FullscreenController;
 @class PopupMenuCoordinator;
 @class SafeAreaProvider;
 @class SideSwipeCoordinator;
+class SnapshotBrowserAgent;
 @class TabStripCoordinator;
 class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
@@ -66,6 +67,7 @@ typedef struct {
   raw_ptr<UrlLoadingBrowserAgent> urlLoadingBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
   raw_ptr<TabUsageRecorderBrowserAgent> tabUsageRecorderBrowserAgent;
+  raw_ptr<SnapshotBrowserAgent> snapshotBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   SafeAreaProvider* safeAreaProvider;
 } BrowserViewControllerDependencies;
