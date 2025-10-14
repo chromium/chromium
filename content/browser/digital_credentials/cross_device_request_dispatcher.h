@@ -27,7 +27,8 @@ namespace content::digital_credentials::cross_device {
 
 // A RequestDispatcher fetches an identity document from a mobile
 // device.
-class CONTENT_EXPORT RequestDispatcher : device::FidoDiscoveryBase::Observer {
+class CONTENT_EXPORT RequestDispatcher
+    : public device::FidoDiscoveryBase::Observer {
  public:
   using Error = std::variant<ProtocolError, RemoteError>;
   using CompletionCallback =

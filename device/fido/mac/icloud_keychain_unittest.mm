@@ -144,7 +144,8 @@ static const uint8_t kCredentialID[] = {
     0x69, 0x71, 0xB3, 0x4E, 0xD3, 0x27, 0xFE, 0x7A, 0x4C,
 };
 
-class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
+class iCloudKeychainTest : public testing::Test,
+                           public FidoDiscoveryBase::Observer {
  public:
   void SetUp() override {
     if (@available(macOS 13.5, *)) {
