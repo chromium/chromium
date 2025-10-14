@@ -169,7 +169,6 @@ BASE_EXPORT void UmaHistogramCustomTimes(std::string_view name,
 BASE_EXPORT void UmaHistogramTimes(std::string_view name, TimeDelta sample);
 
 // For medium timings up to 3 minutes (50 buckets).
-// TODO(crbug.com/353712922): rename and disambiguate this function/macro
 BASE_EXPORT void UmaHistogramMediumTimes(std::string_view name,
                                          TimeDelta sample);
 // For time intervals up to 1 hr (50 buckets).
