@@ -165,10 +165,12 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       flow_(perfetto::Flow::ProcessScoped(
           base::trace_event::GetNextGlobalTraceId())),
       created_time_(base::TimeTicks::Now()),
+      is_using_tls_(
+          GURL::SchemeIsCryptographic(stream_key().destination().scheme())),
       // This must be before the GetTcpBasedAttemptDelay() call, since it needs
       // to know that QUIC is not allowed, or it will try to create an invalid
       // QUIC destination and trigger a CHECK.
-      allowed_alpns_(UsingTls() ? kAllProtocols : kTcpBasedProtocols),
+      allowed_alpns_(is_using_tls_ ? kAllProtocols : kTcpBasedProtocols),
       request_jobs_(NUM_PRIORITIES),
       tcp_based_attempt_delay_(GetTcpBasedAttemptDelay()),
       should_block_tcp_based_attempt_(!tcp_based_attempt_delay_.is_zero()) {
@@ -200,7 +202,7 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
   base::UmaHistogramTimes("Net.HttpStreamPool.TcpBasedAttemptDelay",
                           tcp_based_attempt_delay_);
 
-  if (UsingTls()) {
+  if (is_using_tls_) {
     SSLConfig ssl_config;
     ssl_config.privacy_mode = stream_key().privacy_mode();
     ssl_config.disable_cert_verification_network_fetches =
@@ -362,7 +364,7 @@ bool HttpStreamPool::AttemptManager::IsSvcbOptional() {
   CHECK(pool()->stream_attempt_params()->ssl_client_context);
 
   // Optional when the destination is not a SVCB-capable or ECH is disabled.
-  if (!UsingTls() || !IsEchEnabled()) {
+  if (!is_using_tls_ || !IsEchEnabled()) {
     return true;
   }
 
@@ -454,7 +456,7 @@ void HttpStreamPool::AttemptManager::SetInitialAttemptState() {
 }
 
 SSLConfig HttpStreamPool::AttemptManager::GetBaseSSLConfig() {
-  CHECK(UsingTls());
+  CHECK(is_using_tls_);
   SSLConfig config = *base_ssl_config_;
   // `enable_early_data` may change over the course of the HttpNetworkSession's
   // lifetime, so we sample it for each TlsStreamAttempt.
@@ -626,10 +628,6 @@ int HttpStreamPool::AttemptManager::final_error_to_notify_jobs() const {
 
 const NetLogWithSource& HttpStreamPool::AttemptManager::net_log() {
   return net_log_;
-}
-
-bool HttpStreamPool::AttemptManager::UsingTls() const {
-  return GURL::SchemeIsCryptographic(stream_key().destination().scheme());
 }
 
 LoadState HttpStreamPool::AttemptManager::GetLoadState() const {
@@ -1111,7 +1109,7 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
   // For plain HTTP request, we need to wait for HTTPS RR because we could
   // trigger HTTP -> HTTPS upgrade when HTTPS RR is received during the endpoint
   // resolution.
-  if (!UsingTls() && !service_endpoint_request_->EndpointsCryptoReady() &&
+  if (!is_using_tls_ && !service_endpoint_request_->EndpointsCryptoReady() &&
       !service_endpoint_request_finished_) {
     return;
   }
@@ -1200,7 +1198,7 @@ QuicChromiumClientSession* HttpStreamPool::AttemptManager::
 
 base::WeakPtr<SpdySession> HttpStreamPool::AttemptManager::
     CanUseExistingSpdySessionAfterEndpointChanges() {
-  if (!IsIpBasedPoolingEnabledForH2() || !UsingTls() ||
+  if (!IsIpBasedPoolingEnabledForH2() || !is_using_tls_ ||
       !CanUseTcpBasedProtocols()) {
     return nullptr;
   }
@@ -1299,7 +1297,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
 
   // There might be multiple pending jobs. Make attempts as much as needed
   // and allowed.
-  const bool using_tls = UsingTls();
+  const bool using_tls = is_using_tls_;
   while (IsTcpBasedAttemptReady()) {
     // TODO(crbug.com/346835898): Change to DCHECK once we stabilize the
     // implementation.
@@ -1515,7 +1513,7 @@ bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() const {
     return false;
   }
 
-  CHECK(UsingTls());
+  CHECK(is_using_tls_);
 
   // If there are no non-slow attempts, don't throttle new attempts.
   if (NonSlowTcpBasedAttemptCount() == 0) {
@@ -2019,7 +2017,7 @@ void HttpStreamPool::AttemptManager::HandleTcpBasedAttemptFailure(
   }
 
   if (rv == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
-    CHECK(UsingTls());
+    CHECK(is_using_tls_);
     client_auth_cert_info_ = tcp_based_attempt->attempt()->GetCertRequestInfo();
     tcp_based_attempt.reset();
     HandleFinalError(rv);
@@ -2029,7 +2027,7 @@ void HttpStreamPool::AttemptManager::HandleTcpBasedAttemptFailure(
   if (IsCertificateError(rv)) {
     // When a certificate error happened for an attempt, notifies all jobs of
     // the error.
-    CHECK(UsingTls());
+    CHECK(is_using_tls_);
     CHECK(tcp_based_attempt->attempt()->stream_socket());
     SSLInfo ssl_info;
     bool has_ssl_info =

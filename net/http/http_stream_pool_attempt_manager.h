@@ -308,8 +308,6 @@ class HttpStreamPool::AttemptManager
   void SetInitialAttemptState();
   InitialAttemptState CalculateInitialAttemptState();
 
-  bool UsingTls() const;
-
   void StartInternal(Job* job);
 
   void ResolveServiceEndpoint(RequestPriority initial_priority);
@@ -542,6 +540,9 @@ class HttpStreamPool::AttemptManager
   const perfetto::Flow flow_;
 
   const base::TimeTicks created_time_;
+
+  // Whether the destination is using TLS or not.
+  const bool is_using_tls_;
 
   // Keeps the initial attempt state. Set when `this` attempts a TCP based
   // attempt for the first time.
