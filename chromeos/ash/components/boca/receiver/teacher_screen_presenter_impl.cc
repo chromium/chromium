@@ -105,6 +105,10 @@ void TeacherScreenPresenterImpl::Stop(
     std::move(success_cb).Run(false);
     return;
   }
+  if (!IsPresenting()) {
+    std::move(success_cb).Run(true);
+    return;
+  }
   // No need to update server, receiver will do automatically on CRD session
   // termination.
   shared_crd_session_->TerminateSession();

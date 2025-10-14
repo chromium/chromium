@@ -3349,7 +3349,7 @@ TEST_F(BocaAppPageHandlerProducerTest, StopPresentingStudentScreenWhenNull) {
       .WillByDefault(Return(nullptr));
   base::test::TestFuture<bool> success_future;
   boca_app_handler()->StopPresentingStudentScreen(success_future.GetCallback());
-  EXPECT_FALSE(success_future.Get());
+  EXPECT_TRUE(success_future.Get());
 }
 
 TEST_F(BocaAppPageHandlerProducerTest,
@@ -3459,7 +3459,7 @@ TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenWhenNull) {
       .WillByDefault(Return(nullptr));
   base::test::TestFuture<bool> success_future;
   boca_app_handler()->StopPresentingOwnScreen(success_future.GetCallback());
-  EXPECT_FALSE(success_future.Get());
+  EXPECT_TRUE(success_future.Get());
 }
 
 class BocaAppPageHandlerProducerMarkerModeTest : public AshTestBase {

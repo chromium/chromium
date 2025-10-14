@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -71,6 +72,8 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
 
   void Reset();
 
+  void NotifyStopSuccess(bool success);
+
   const std::string session_id_;
   const ::boca::UserIdentity teacher_identity_;
   const std::string teacher_device_id_;
@@ -83,7 +86,7 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
   std::unique_ptr<google_apis::RequestSender> get_receiver_request_sender_;
   std::unique_ptr<google_apis::RequestSender> update_connection_request_sender_;
   bool stop_request_in_progress_ = false;
-  base::OnceCallback<void(bool)> stop_success_cb_;
+  base::queue<base::OnceCallback<void(bool)>> stop_success_callbacks_;
   base::OneShotTimer stopped_check_timer_;
 
   base::WeakPtrFactory<StudentScreenPresenterImpl> weak_ptr_factory_{this};

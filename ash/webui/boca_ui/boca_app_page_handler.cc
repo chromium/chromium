@@ -786,8 +786,7 @@ void BocaAppHandler::PresentStudentScreen(
 void BocaAppHandler::StopPresentingStudentScreen(
     StopPresentingStudentScreenCallback callback) {
   if (!student_screen_presenter()) {
-    LOG(ERROR) << "[Boca] unexpected call to stop presenting student screen";
-    std::move(callback).Run(false);
+    std::move(callback).Run(true);
     return;
   }
   student_screen_presenter()->Stop(std::move(callback));
@@ -816,9 +815,7 @@ void BocaAppHandler::PresentOwnScreen(const std::string& receiver_id,
 void BocaAppHandler::StopPresentingOwnScreen(
     StopPresentingOwnScreenCallback callback) {
   if (!teacher_screen_presenter()) {
-    LOG(ERROR)
-        << "[Boca] unexpected call to stop presenting teacher's own screen";
-    std::move(callback).Run(false);
+    std::move(callback).Run(true);
     return;
   }
   teacher_screen_presenter()->Stop(std::move(callback));

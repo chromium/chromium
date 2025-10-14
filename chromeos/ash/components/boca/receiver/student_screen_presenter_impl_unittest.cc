@@ -291,6 +291,7 @@ TEST_F(StudentScreenPresenterImplTest, StopSuccess) {
   base::test::TestFuture<bool> start_future1;
   base::test::TestFuture<bool> start_future2;
   base::test::TestFuture<bool> stop_future;
+  base::test::TestFuture<bool> overlap_stop_future;
   base::test::TestFuture<void> disconnected_future;
   StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
                                        kTeacherDeviceId,
@@ -304,12 +305,14 @@ TEST_F(StudentScreenPresenterImplTest, StopSuccess) {
   EXPECT_TRUE(start_future1.Get());
 
   presenter.Stop(stop_future.GetCallback());
+  presenter.Stop(overlap_stop_future.GetCallback());
   std::optional<base::Value::Dict> update_request =
       GetRequestBodyAndRespond(GetUpdateReceiverUrl(kReceiverId, kConnectionId),
                                UpdateConnectionStateJson(kDisconnectedState));
   ASSERT_TRUE(update_request.has_value());
   EXPECT_EQ(*update_request->FindString("state"), kStopRequestedState);
   EXPECT_TRUE(stop_future.Get());
+  EXPECT_TRUE(overlap_stop_future.Get());
   EXPECT_FALSE(disconnected_future.IsReady());
 
   // Verify that a new request will be accepted.
@@ -539,6 +542,19 @@ TEST_F(StudentScreenPresenterImplTest, StopWithoutStart) {
                                        kTeacherDeviceId,
                                        url_loader_factory_.GetSafeWeakWrapper(),
                                        identity_test_env_.identity_manager());
+  presenter.Stop(stop_future.GetCallback());
+  EXPECT_TRUE(stop_future.Get());
+}
+
+TEST_F(StudentScreenPresenterImplTest, StopBeforeStartReceiverResponse) {
+  base::test::TestFuture<bool> stop_future;
+  StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
+                                       kTeacherDeviceId,
+                                       url_loader_factory_.GetSafeWeakWrapper(),
+                                       identity_test_env_.identity_manager());
+  presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
+                  base::DoNothing(), base::DoNothing());
+
   presenter.Stop(stop_future.GetCallback());
   EXPECT_FALSE(stop_future.Get());
 }
