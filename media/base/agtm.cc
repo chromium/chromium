@@ -12,20 +12,20 @@ namespace media {
 std::optional<gfx::HdrMetadataAgtm> GetHdrMetadataAgtmFromItutT35(
     uint8_t t35_country_code,
     base::span<const uint8_t> t35_payload) {
-  // itu_t_t35_terminal_provider_code (2 bytes)
-  // + itu_t_t35_terminal_provider_oriented_code (2 bytes)
-  // + application_identifier (1 byte) + application_version (1 byte)
+  // The minimum header size needed for valid Agtm metadata.
   static constexpr size_t kItuT35HeaderSize = 6;
+  static constexpr uint8_t kItuT35USCountryCode = 0xB5;
 
-  const bool isAgtm = t35_country_code == 0xB5 /* United States */ &&
-                      t35_payload.size() >= kItuT35HeaderSize &&
-                      t35_payload[0] == 0x58 /* placeholder (AOM) */ &&
-                      t35_payload[1] == 0x90 /* placeholder (AOM) */ &&
-                      t35_payload[2] == 0x69 /* placeholder (AGTM) */ &&
-                      t35_payload[3] == 0x42 /* placeholder (AGTM) */ &&
-                      t35_payload[4] == 0x05 /* app identifier */ &&
-                      t35_payload[5] == 0x00 /* app version */;
-  if (!isAgtm) {
+  // Defined in SMPTE ST 2094-50: Annex D and Annex C (C.2.1).
+  const bool is_agtm = t35_country_code == kItuT35USCountryCode &&
+                       t35_payload.size() >= kItuT35HeaderSize &&
+                       // itu_t_t35_us_terminal_provider_code u(16)
+                       t35_payload[0] == 0x00 && t35_payload[1] == 0x90 &&
+                       // itu_t_t35_smpte_terminal_provider_oriented_code u(16)
+                       t35_payload[2] == 0x00 && t35_payload[3] == 0x01 &&
+                       // application_version u(8)
+                       t35_payload[4] == 0x01;
+  if (!is_agtm) {
     return std::nullopt;
   }
   const auto agtm_payload_span = t35_payload.subspan(kItuT35HeaderSize);

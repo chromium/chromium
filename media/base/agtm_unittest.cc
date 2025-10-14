@@ -11,7 +11,7 @@ namespace media {
 
 TEST(GetHdrMetadataAgtmFromItutT35, HasMetadata) {
   const uint8_t t35_country_code = 0xB5;
-  const std::vector<uint8_t> data = {0x58, 0x90, 0x69, 0x42, 0x05,
+  const std::vector<uint8_t> data = {0x00, 0x90, 0x00, 0x01, 0x01,
                                      0x00, 0x01, 0x02, 0x03};
   const std::optional<gfx::HdrMetadataAgtm> agtm =
       GetHdrMetadataAgtmFromItutT35(t35_country_code, data);
@@ -25,7 +25,7 @@ TEST(GetHdrMetadataAgtmFromItutT35, HasMetadata) {
 TEST(GetHdrMetadataAgtmFromItutT35, WrongType) {
   const uint8_t t35_country_code = 0xB5;
   const std::vector<uint8_t> data = {
-      0x58, 0x90, 0x69, 0xff /* wrong value*/, 0x05, 0x00, 0x01, 0x02, 0x03};
+      0x00, 0x90, 0x00, 0xff /* wrong value*/, 0x01, 0x00, 0x01, 0x02, 0x03};
   const std::optional<gfx::HdrMetadataAgtm> agtm =
       GetHdrMetadataAgtmFromItutT35(t35_country_code, data);
   ASSERT_FALSE(agtm.has_value());
