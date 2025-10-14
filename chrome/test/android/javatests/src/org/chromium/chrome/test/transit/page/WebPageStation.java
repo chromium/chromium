@@ -67,7 +67,10 @@ public class WebPageStation extends CtaPageStation {
             String url = mLoadedTabSupplier.get().getUrl().getSpec();
             for (String prohibitedUrl : mProhibitedUrls) {
                 if (url.contains(prohibitedUrl)) {
-                    return notFulfilled("URL: \"%s\"", url);
+                    return notFulfilled(
+                            "URL is \"%s\", which is prohibited. Use the appropriate Station"
+                                    + " subclass instead of WebPageStation.",
+                            url);
                 }
             }
             return fulfilled("URL: \"%s\"", url);
