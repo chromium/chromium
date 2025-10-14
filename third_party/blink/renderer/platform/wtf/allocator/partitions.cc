@@ -123,24 +123,12 @@ bool Partitions::InitializeOnce() {
   partition_alloc::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
   auto options = PartitionOptionsFromFeatures();
-
-  const auto actual_brp_setting = options.backup_ref_ptr;
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocDisableBRPInBufferPartition)) {
-    options.backup_ref_ptr = PartitionOptions::kDisabled;
-  }
-
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       buffer_allocator(options);
   buffer_root_ = buffer_allocator->root();
   if (base::FeatureList::IsEnabled(
           kBlinkUseLargeEmptySlotSpanRingForBufferRoot)) {
     buffer_root_->EnableLargeEmptySlotSpanRing();
-  }
-
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocDisableBRPInBufferPartition)) {
-    options.backup_ref_ptr = actual_brp_setting;
   }
 
   // FastMalloc doesn't provide isolation, only a (hopefully fast) malloc().

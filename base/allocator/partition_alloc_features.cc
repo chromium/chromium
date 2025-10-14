@@ -374,17 +374,6 @@ constexpr TimeDelta FromPartitionAllocTimeDelta(
   return Microseconds(time_delta.InMicroseconds());
 }
 
-// An apparent quarantine leak in the buffer partition unacceptably
-// bloats memory when MiraclePtr is enabled in the renderer process.
-// We believe we have found and patched the leak, but out of an
-// abundance of caution, we provide this toggle that allows us to
-// wholly disable MiraclePtr in the buffer partition, if necessary.
-//
-// TODO(crbug.com/40064499): this is unneeded once
-// MiraclePtr-for-Renderer launches.
-BASE_FEATURE(kPartitionAllocDisableBRPInBufferPartition,
-             FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              FEATURE_ENABLED_BY_DEFAULT);

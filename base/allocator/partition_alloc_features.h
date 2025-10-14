@@ -198,8 +198,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kPartialLowEndModeExcludePartitionAllocSupport);
 #endif
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
-
 // When set, partitions use a larger ring buffer and free memory less
 // aggressively when in the foreground.
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground);
