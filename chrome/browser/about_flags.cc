@@ -1684,15 +1684,12 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
 
 const FeatureEntry::FeatureParam kShowNextRealboxTallBottomContext[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallBottomContext},
-    {"CyclingPlaceholders", "true"},
 };
 const FeatureEntry::FeatureParam kShowNextRealboxTallTopContext[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallTopContext},
-    {"CyclingPlaceholders", "true"},
 };
 const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
-    {"CyclingPlaceholders", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
