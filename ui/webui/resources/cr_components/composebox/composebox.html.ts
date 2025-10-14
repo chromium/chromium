@@ -52,7 +52,7 @@ export function getHtml(this: ComposeboxElement) {
           `: ''}
         </div>
       </div>
-      <contextual-entrypoint-and-carousel id="context"
+      <contextual-entrypoint-and-carousel id="context" part="context-entrypoint"
           @add-tab-context="${this.addTabContext_}"
           @add-file-context="${this.addFileContext_}"
           @delete-context="${this.deleteContext_}"
