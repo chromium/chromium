@@ -79,7 +79,8 @@ TEST_F(HomeCustomizationMediatorUnitTest, TestMainPageData) {
   mediator_.mainPageConsumer = fake_consumer;
 
   // Set the values.
-  pref_service_->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled, NO);
+  pref_service_->SetBoolean(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
+                            NO);
   pref_service_->SetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
                             YES);
   discover_feed_visibility_browser_agent_->SetEnabled(NO);

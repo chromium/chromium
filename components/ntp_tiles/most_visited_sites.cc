@@ -528,6 +528,7 @@ double MostVisitedSites::GetSuggestionScore(const GURL& url) const {
 void MostVisitedSites::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kNumPersonalTiles, 0);
+  registry->RegisterBooleanPref(prefs::kMostVisitedHomeModuleEnabled, true);
 }
 
 // static

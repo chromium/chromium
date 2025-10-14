@@ -73,6 +73,10 @@ inline constexpr char kTipsHomeModuleEnabled[] = "home.module.tips.enabled";
 inline constexpr char kMagicStackHomeModuleEnabled[] =
     "home.module.magic_stack.enabled";
 
+// The pref that stores if the Most Visited Tiles Home Module is enabled.
+inline constexpr char kMostVisitedHomeModuleEnabled[] =
+    "home.module.most_visited.enabled";
+
 }  // namespace ntp_tiles::prefs
 
 #endif  // COMPONENTS_NTP_TILES_PREF_NAMES_H_

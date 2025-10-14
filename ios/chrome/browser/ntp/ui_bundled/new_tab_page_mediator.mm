@@ -531,8 +531,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  // Handle customization prefs
-  if (preferenceName == prefs::kHomeCustomizationMostVisitedEnabled ||
+  // Handle customization prefs.
+  if (preferenceName == ntp_tiles::prefs::kMostVisitedHomeModuleEnabled ||
       preferenceName == ntp_tiles::prefs::kMagicStackHomeModuleEnabled) {
     [self updateModuleVisibilityForConsumer];
     [self.NTPContentDelegate updateModuleVisibility];
@@ -587,7 +587,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Updates the consumer with the current visibility of the NTP modules.
 - (void)updateModuleVisibilityForConsumer {
   self.consumer.mostVisitedVisible =
-      _prefService->GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled);
+      _prefService->GetBoolean(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled);
   self.consumer.magicStackVisible =
       _prefService->GetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled);
 }
@@ -600,7 +600,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
   // Observe customization prefs.
   _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kHomeCustomizationMostVisitedEnabled, _prefChangeRegistrar.get());
+      ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
+      _prefChangeRegistrar.get());
   _prefObserverBridge->ObserveChangesForPreference(
       ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
       _prefChangeRegistrar.get());

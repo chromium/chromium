@@ -1704,7 +1704,7 @@
 - (IOSNTPImpressionCustomizationState)currentCustomizationState {
   PrefService* prefService = self.prefService;
   BOOL MVTEnabled =
-      prefService->GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled);
+      prefService->GetBoolean(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled);
   BOOL magicStackEnabled =
       prefService->GetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled);
   BOOL feedEnabled = [self.NTPMediator isFeedHeaderVisible];

@@ -950,8 +950,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kContentNotificationsEnrollmentEligibility);
 
   // Registers the Home customization visibility prefs.
-  registry->RegisterBooleanPref(prefs::kHomeCustomizationMostVisitedEnabled,
-                                true);
   registry->RegisterBooleanPref(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
                                 true);
 
@@ -1132,6 +1130,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // instead.
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, true);
+
+  // Deprecated 10/2025. Use `ntp_tiles::prefs::kMostVisitedHomeModuleEnabled`
+  // instead.
+  registry->RegisterBooleanPref(prefs::kHomeCustomizationMostVisitedEnabled,
+                                true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1304,7 +1307,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kGaiaCookieLastListAccountsData);
   prefs->ClearPref(kFRESourceTrial);
 
-  // Added 10/2025
+  // Added 10/2025.
   prefs->ClearPref(kTipsInMagicStackDisabledPref);
   prefs->ClearPref(kHomeCustomizationMagicStackSetUpListEnabled);
   prefs->ClearPref(kNTPFollowingFeedSortType);
@@ -1323,6 +1326,8 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   RenameBooleanPref(
       commerce::kPriceTrackingHomeModuleEnabled,
       prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, prefs);
+  RenameBooleanPref(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
+                    prefs::kHomeCustomizationMostVisitedEnabled, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

@@ -95,6 +95,10 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   pref_service_.SetBoolean(
       prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, false);
 
+  // Set the old Most Visited Tiles module pref value to test its migration to
+  // the new name.
+  pref_service_.SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled, false);
+
   // Bottom omnibox position
   local_state()->SetBoolean(prefs::kBottomOmnibox, true);
 
@@ -186,6 +190,13 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
       prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled));
   EXPECT_TRUE(
       pref_service_.FindPreference(commerce::kPriceTrackingHomeModuleEnabled)
+          ->IsDefaultValue());
+
+  EXPECT_FALSE(
+      pref_service_.GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled));
+  EXPECT_TRUE(
+      pref_service_
+          .FindPreference(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled)
           ->IsDefaultValue());
 
   // Check bottom omnibox position.
@@ -299,6 +310,14 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   // now be false (the migrated value).
   EXPECT_FALSE(
       pref_service_.GetBoolean(commerce::kPriceTrackingHomeModuleEnabled));
+
+  EXPECT_TRUE(
+      pref_service_.FindPreference(prefs::kHomeCustomizationMostVisitedEnabled)
+          ->IsDefaultValue());
+  // The new pref `ntp_tiles::prefs::kMostVisitedHomeModuleEnabled` should
+  // now be false (the migrated value).
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      ntp_tiles::prefs::kMostVisitedHomeModuleEnabled));
 
   // Check bottom omnibox position.
   EXPECT_TRUE(

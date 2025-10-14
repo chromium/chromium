@@ -105,7 +105,7 @@
   switch (type) {
     case CustomizationToggleType::kMostVisited:
       return _prefService->GetBoolean(
-          prefs::kHomeCustomizationMostVisitedEnabled);
+          ntp_tiles::prefs::kMostVisitedHomeModuleEnabled);
     case CustomizationToggleType::kMagicStack:
       return _prefService->GetBoolean(
           ntp_tiles::prefs::kMagicStackHomeModuleEnabled);
@@ -145,7 +145,7 @@
   switch (type) {
     // Main page toggles.
     case CustomizationToggleType::kMostVisited:
-      _prefService->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled,
+      _prefService->SetBoolean(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
                                enabled);
       break;
     case CustomizationToggleType::kMagicStack:

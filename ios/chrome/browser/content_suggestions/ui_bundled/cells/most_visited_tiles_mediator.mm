@@ -14,6 +14,7 @@
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/ntp_tile.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
@@ -131,7 +132,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 }
 
 - (void)disableModule {
-  _prefService->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled, false);
+  _prefService->SetBoolean(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
+                           false);
 }
 
 - (MostVisitedTilesConfig*)mostVisitedTilesConfig {

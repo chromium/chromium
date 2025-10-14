@@ -81,6 +81,7 @@ source_set("most_visited_tiles") {
     ":constants",
     "//components/favicon/core",
     "//components/ntp_tiles",
+    "//components/ntp_tiles:pref_names",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",

@@ -1580,7 +1580,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Resets the preferences related to Home customization.
 - (void)resetCustomizationPrefs {
   [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kHomeCustomizationMostVisitedEnabled];
+                   forUserPref:ntp_tiles::prefs::kMostVisitedHomeModuleEnabled];
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:ntp_tiles::prefs::kMagicStackHomeModuleEnabled];
 }
