@@ -219,7 +219,9 @@
       <message name="IDS_SUBMENU_HEADER_BACK" desc="Accessibility label for a menu header which displays a back arrow and brings the user out of a submenu (to the parent folder level)">
         Back
       </message>
-      <message name="IDS_LISTMENU_A11Y_DEFAULT_PANE_TITLE" desc="Accessibility pane title used to tell users about navigation in a list menu (between layers of submenus). This string is only used when we cannot determine the header title.">
+
+      <!-- Hierarchical menu-->
+      <message name="IDS_HIERARCHICALMENU_A11Y_DEFAULT_PANE_TITLE" desc="Accessibility pane title used to tell users about navigation in a list menu (between layers of submenus). This string is only used when we cannot determine the header title.">
         List menu
       </message>
     </messages>

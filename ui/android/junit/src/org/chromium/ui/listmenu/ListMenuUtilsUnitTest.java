@@ -41,7 +41,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
-import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -341,14 +341,17 @@ public class ListMenuUtilsUnitTest {
     @Test
     public void submenuNavigation_a11y_withHeader() {
         AccessibilityListObserver observer =
-                new AccessibilityListObserver(
+                mController
+                .new AccessibilityListObserver(
                         mParentView, mHeaderListView, mListView, mHeaderModelList, mModelList);
         mController.setupCallbacksRecursively(
                 mHeaderModelList, mModelList, mDismissDialog, /* drillDownOverrideValue= */ true);
         mHeaderModelList.addObserver(observer);
         mModelList.addObserver(observer);
+
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
+
         // Assert correct a11y behavior
         verify(mParentView).setAccessibilityPaneTitle(SUBMENU_LEVEL_0);
         InOrder inOrder = inOrder(mParentView, mHeaderListView, mListView);
@@ -360,7 +363,8 @@ public class ListMenuUtilsUnitTest {
     @Test
     public void submenuNavigation_a11y_noHeader() {
         AccessibilityListObserver observer =
-                new AccessibilityListObserver(
+                mController
+                .new AccessibilityListObserver(
                         mParentView,
                         /* headerView= */ null,
                         mListView,
@@ -372,8 +376,10 @@ public class ListMenuUtilsUnitTest {
                 mDismissDialog,
                 /* drillDownOverrideValue= */ true);
         mModelList.addObserver(observer);
+
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
+
         // Assert correct a11y behavior
         verify(mParentView).setAccessibilityPaneTitle(SUBMENU_LEVEL_0);
         InOrder inOrder = inOrder(mParentView, mListView);

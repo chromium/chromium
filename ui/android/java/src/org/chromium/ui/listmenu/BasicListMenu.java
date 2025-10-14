@@ -31,7 +31,7 @@ import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
-import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -181,16 +181,6 @@ public class BasicListMenu implements ListMenu {
             hairline.setBackgroundColor(bottomHairlineColor);
         }
 
-        AccessibilityListObserver observer =
-                new AccessibilityListObserver(
-                        mListMenuLayout,
-                        mHeaderListView,
-                        mContentListView,
-                        mHeaderModelList,
-                        mContentModelList);
-        mHeaderModelList.addObserver(observer);
-        mContentModelList.addObserver(observer);
-
         mScrollChangeListener =
                 new ContentListOnScrollChangeListener(hairline, () -> !mHeaderModelList.isEmpty());
         mContentListView.setOnScrollChangeListener(mScrollChangeListener);
@@ -260,6 +250,18 @@ public class BasicListMenu implements ListMenu {
         HierarchicalMenuController hierarchicalMenuController =
                 new HierarchicalMenuController(
                         new ListMenuUtils.ListMenuKeyProvider(), flyoutHandler);
+
+        AccessibilityListObserver observer =
+                hierarchicalMenuController
+                .new AccessibilityListObserver(
+                        mListMenuLayout,
+                        mHeaderListView,
+                        mContentListView,
+                        mHeaderModelList,
+                        mContentModelList);
+        mHeaderModelList.addObserver(observer);
+        mContentModelList.addObserver(observer);
+
         hierarchicalMenuController.setupCallbacksRecursively(
                 mHeaderModelList, mContentModelList, dismissDialog, drillDownOverrideValue);
     }

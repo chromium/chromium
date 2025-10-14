@@ -6,17 +6,28 @@ package org.chromium.ui.hierarchicalmenu;
 
 import static org.chromium.ui.base.KeyNavigationUtil.isGoBackward;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+
+import androidx.annotation.StringRes;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.R;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
+import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -325,6 +336,76 @@ public class HierarchicalMenuController<T> {
         } else {
             contentView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             contentView.clearFocus();
+        }
+    }
+
+    /** Watches a ModelList and updates the accessibility pane title of the View accordingly. */
+    public class AccessibilityListObserver implements ListObserver<Void> {
+
+        private final View mView;
+        private final @Nullable ListView mHeaderView;
+        private final ListView mContentView;
+        private final Context mContext;
+        private final @Nullable ModelList mHeaderModelList;
+        private final ModelList mContentModelList;
+
+        /**
+         * Returns a {@link AccessibilityListObserver} that reacts to changes in {@param
+         * headerModelList and {@param contentModelList}, the are backing models for {@param view}.
+         */
+        public AccessibilityListObserver(
+                View parentView,
+                @Nullable ListView headerView,
+                ListView contentView,
+                @Nullable ModelList headerModelList,
+                ModelList contentModelList) {
+            mView = parentView;
+            mHeaderView = headerView;
+            mContentView = contentView;
+            mContext = parentView.getContext();
+            mHeaderModelList = headerModelList;
+            mContentModelList = contentModelList;
+        }
+
+        // Note: because HierarchicalMenuController methods use ModelList#set, they trigger
+        // onItemRangeChanged.
+        @Override
+        public void onItemRangeChanged(
+                ListObservable<Void> source, int index, int count, @Nullable Void payload) {
+            if (index != 0) return; // If the 1st element wasn't changed, the "header" is the same.
+            String accessibilityPaneTitle =
+                    mContext.getString(R.string.hierarchicalmenu_a11y_default_pane_title);
+            Object firstItem = null;
+            if (mHeaderModelList != null && !mHeaderModelList.isEmpty()) {
+                firstItem = mHeaderModelList.get(0);
+            } else if (!mContentModelList.isEmpty()) {
+                firstItem = mContentModelList.get(0);
+            }
+            if (firstItem instanceof ListItem firstListItem && firstListItem.model != null) {
+                WritableObjectPropertyKey<CharSequence> titleKey = mKeyProvider.getTitleKey();
+                WritableIntPropertyKey titleIdKey = mKeyProvider.getTitleIdKey();
+
+                if (firstListItem.model.containsKey(titleKey)
+                        && firstListItem.model.get(titleKey) != null) {
+                    CharSequence title = firstListItem.model.get(titleKey);
+                    if (title.length() != 0) {
+                        accessibilityPaneTitle = String.valueOf(title);
+                    }
+                } else if (firstListItem.model.containsKey(titleIdKey)) {
+                    @StringRes int titleId = firstListItem.model.get(titleIdKey);
+                    if (titleId != Resources.ID_NULL) {
+                        accessibilityPaneTitle =
+                                mContext.getString(firstListItem.model.get(titleIdKey));
+                    }
+                }
+            }
+            ViewCompat.setAccessibilityPaneTitle(mView, accessibilityPaneTitle);
+            // The method calls below ensure that when we transition to a different submenu, the
+            // keyboard focus goes to the topmost element.
+            mContentView.setSelection(0);
+            if (mHeaderView != null && mHeaderModelList != null && !mHeaderModelList.isEmpty())
+                mHeaderView.setSelection(0);
+            mView.requestFocus();
         }
     }
 }

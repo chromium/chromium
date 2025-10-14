@@ -59,11 +59,11 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;
-import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -250,12 +250,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
     protected final @Nullable MultiInstanceManager mMultiInstanceManager;
     protected @Nullable TabGroupSyncService mTabGroupSyncService;
 
-    private final HierarchicalMenuController mHierarchicalMenuController;
-
     private final @LayoutRes int mMenuLayout;
     private final Context mContext;
     private final OnItemClickedCallback<T> mOnItemClickedCallback;
     private @Nullable OverflowMenuHolder<T> mMenuHolder;
+    private final HierarchicalMenuController mHierarchicalMenuController;
 
     /**
      * @param menuLayout The menu layout to use.
@@ -456,13 +455,16 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         activity);
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
         afterCreate();
+
         modelList.addObserver(
-                new AccessibilityListObserver(
+                mHierarchicalMenuController
+                .new AccessibilityListObserver(
                         mMenuHolder.getContentView(),
                         /* headerView= */ null,
                         mMenuHolder.getContentView().findViewById(R.id.tab_group_action_menu_list),
                         /* headerModelList= */ null,
                         modelList));
+
         mMenuHolder.show();
     }
 

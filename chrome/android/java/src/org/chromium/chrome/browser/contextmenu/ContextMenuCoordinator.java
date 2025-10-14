@@ -45,8 +45,8 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.listmenu.ListMenuUtils;
-import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -362,12 +362,14 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mListViews.add(listView);
 
         listItems.addObserver(
-                new AccessibilityListObserver(
+                mHierarchicalMenuController
+                .new AccessibilityListObserver(
                         listView,
                         /* headerView= */ null,
                         listView,
                         /* headerModelList= */ null,
                         listItems));
+
         mWebContentsObserver =
                 new WebContentsObserver(mWebContents) {
                     @Override
