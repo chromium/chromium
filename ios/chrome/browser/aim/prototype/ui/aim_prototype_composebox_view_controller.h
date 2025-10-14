@@ -15,7 +15,7 @@
 @class AIMPrototypeComposeboxViewController;
 @protocol TextFieldViewContaining;
 
-// Delegate for the AIM prototype composebox view controller.
+/// Delegate for the AIM prototype composebox view controller.
 @protocol AIMPrototypeComposeboxViewControllerDelegate
 - (void)aimPrototypeViewControllerDidTapGalleryButton:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
@@ -32,7 +32,7 @@
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
 @end
 
-// View controller for the AIM prototype composebox.
+/// View controller for the AIM prototype composebox.
 @interface AIMPrototypeComposeboxViewController
     : UIViewController <AIMPrototypeAnimationContextProvider,
                         AIMPrototypeComposeboxConsumer>
@@ -40,6 +40,9 @@
 @property(nonatomic, weak) id<AIMPrototypeComposeboxViewControllerDelegate>
     delegate;
 @property(nonatomic, weak) id<AIMPrototypeComposeboxMutator> mutator;
+
+/// Height of the input view.
+@property(nonatomic, readonly) CGFloat inputHeight;
 
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;

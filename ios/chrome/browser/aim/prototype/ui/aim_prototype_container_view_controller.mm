@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_container_view_controller.h"
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_view_controller.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -29,6 +30,11 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   UIView* _omniboxPopupContainer;
   // WebView for the SRP, when AI Mode Immersive SRP is enabled.
   UIView* _webView;
+
+  // The presenter for the omnibox popup.
+  __weak OmniboxPopupPresenter* _presenter;
+  // View controller for the AIM prototype composebox.
+  __weak AIMPrototypeComposeboxViewController* _inputView;
 }
 
 - (void)viewDidLoad {
@@ -106,7 +112,13 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   ]];
 }
 
-- (void)addInputViewController:(UIViewController*)inputViewController {
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [_presenter setKeyboardAttachedBottomOmniboxHeight:_inputView.inputHeight];
+}
+
+- (void)addInputViewController:
+    (AIMPrototypeComposeboxViewController*)inputViewController {
   [self loadViewIfNeeded];
 
   // Make sure we didn't already add an input.
@@ -117,6 +129,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   inputViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(_inputContainer, inputViewController.view);
   [inputViewController didMoveToParentViewController:self];
+  _inputView = inputViewController;
 }
 
 #pragma mark - AIMPrototypeNavigationConsumer
@@ -157,6 +170,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 }
 
 - (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter {
+  _presenter = presenter;
   return [UIColor colorNamed:kPrimaryBackgroundColor];
 }
 

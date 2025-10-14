@@ -409,6 +409,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 #pragma mark - Public
 
+- (CGFloat)inputHeight {
+  return _inputPlateContainerView.frame.size.height;
+}
+
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   _editView = editView;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;

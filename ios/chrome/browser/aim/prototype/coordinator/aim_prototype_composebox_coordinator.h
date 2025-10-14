@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol AIMPrototypeAnimationContextProvider;
+@class AIMPrototypeComposeboxViewController;
 enum class AIMPrototypeEntrypoint;
 @protocol AIMPrototypeURLLoader;
 class Browser;
@@ -25,7 +26,8 @@ class Browser;
     contextProvider;
 
 // The view controller managed by this coordinator.
-@property(nonatomic, readonly) UIViewController* inputViewController;
+@property(nonatomic, readonly)
+    AIMPrototypeComposeboxViewController* inputViewController;
 
 // Delegate for positioning the omnibox popup.
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>

@@ -40,8 +40,7 @@ enum class OmniboxPresentationContext;
 /// Object implementing OmniboxKeyboardDelegate in OmniboxPopupCoordinator.
 @property(nonatomic, weak, readonly) id<OmniboxKeyboardDelegate>
     KeyboardDelegate;
-
-// Returns the toolbar omnibox consumer.
+/// Returns the toolbar omnibox consumer.
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer;
 
 /// Toggle visibility of the omnibox debugger view.

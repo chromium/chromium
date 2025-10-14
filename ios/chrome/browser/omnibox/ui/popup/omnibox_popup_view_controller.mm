@@ -407,6 +407,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
 - (void)setKeyboardAttachedBottomOmniboxHeight:
     (CGFloat)keyboardAttachedBottomOmniboxHeight {
   _keyboardAttachedBottomOmniboxHeight = keyboardAttachedBottomOmniboxHeight;
+  self.shouldUpdateVisibleSuggestionCount = YES;
 }
 
 #pragma mark - OmniboxKeyboardDelegate

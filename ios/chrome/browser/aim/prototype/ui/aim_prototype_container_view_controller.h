@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_navigation_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 
+@class AIMPrototypeComposeboxViewController;
 @class AIMPrototypeContainerViewController;
 
 // Delegate for the container view controller.
@@ -28,7 +29,8 @@
     delegate;
 
 // Adds the input view controller to this ViewController.
-- (void)addInputViewController:(UIViewController*)inputViewController;
+- (void)addInputViewController:
+    (AIMPrototypeComposeboxViewController*)inputViewController;
 
 @end
 
