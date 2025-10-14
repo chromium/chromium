@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -76,11 +77,7 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
   }
 
   auto ClearOmniboxFocus() {
-    return Do([this]() {
-      auto* const omnibox_view =
-          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-              kOmniboxElementId, GetContext());
-      ASSERT_TRUE(omnibox_view);
+    return WithView(kOmniboxElementId, [](OmniboxViewViews* omnibox_view) {
       omnibox_view->GetFocusManager()->ClearFocus();
     });
   }

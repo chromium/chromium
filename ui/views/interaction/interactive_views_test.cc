@@ -315,18 +315,16 @@ View* InteractiveViewsTestApi::FindMatchingView(const View* from,
 void InteractiveViewsTestApi::SetContextWidget(Widget* widget) {
   context_widget_ = widget ? widget->GetWeakPtr() : nullptr;
   if (widget) {
+    test_impl().set_default_context(
+        ElementTrackerViews::GetContextForWidget(widget));
     CHECK(!test_impl().mouse_util_)
         << "Changing the context widget during a test is not supported.";
     test_impl().mouse_util_ =
         std::make_unique<InteractionTestUtilMouse>(widget);
   } else {
+    test_impl().set_default_context(ui::ElementContext());
     test_impl().mouse_util_.reset();
   }
-}
-
-ui::ElementContext InteractiveViewsTestApi::GetContext() const {
-  CHECK(context_widget_) << "GetContext() called after widget closed.";
-  return ElementTrackerViews::GetContextForWidget(context_widget_.get());
 }
 
 // static

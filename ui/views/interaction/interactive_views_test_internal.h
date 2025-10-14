@@ -105,7 +105,7 @@ class InteractiveViewsTestPrivate
   }
 
   // Gets a debug description of a widget.
-  virtual std::string DebugDumpWidget(const Widget& widget) const;
+  std::string DebugDumpWidget(const Widget& widget) const;
 
   // InteractiveTestPrivate:
   DebugTreeNode DebugDumpElement(const ui::TrackedElement* el) const override;

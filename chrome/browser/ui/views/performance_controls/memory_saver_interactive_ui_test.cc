@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
@@ -144,7 +145,7 @@ class MemorySaverDiscardPolicyInteractiveTest
     if (recently_audible) {
       ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
           ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-              contents_id, GetContext()),
+              contents_id, BrowserElements::From(browser())->GetContext()),
           kAudioIsAudible);
     }
   }

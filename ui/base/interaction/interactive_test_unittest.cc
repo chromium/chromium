@@ -195,7 +195,7 @@ struct EmptyCallableObject {
 
 }  // namespace
 
-class InteractiveTestTest : public InteractiveTest {
+class InteractiveTestTest : public InteractiveTestMixin<testing::Test> {
  public:
   InteractiveTestTest() {
     auto simulator = std::make_unique<TestSimulator>();

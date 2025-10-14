@@ -215,6 +215,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                        ShowFloatingHelpBubble) {
   const DeepQuery kPathToAddCurrentTabElement{"reading-list-app",
                                               "#currentPageActionButton"};
+  gfx::Rect bubble_rect;
   RunTestSequence(
       OpenReadingListSidePanel(),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
@@ -235,19 +236,15 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
 
       // Expect the bubble to overlap the side panel slightly, as the anchor
       // element is not flush with the edge of the side panel.
-      CheckView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
-                base::BindOnce(
-                    [](ui::ElementContext context, views::View* bubble) {
-                      const gfx::Rect bubble_rect =
-                          bubble->GetWidget()->GetWindowBoundsInScreen();
-                      const gfx::Rect side_panel_rect =
-                          views::ElementTrackerViews::GetInstance()
-                              ->GetFirstMatchingView(kSidePanelElementId,
-                                                     context)
-                              ->GetBoundsInScreen();
-                      return bubble_rect.Intersects(side_panel_rect);
-                    },
-                    GetContext())),
+      WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+               [&bubble_rect](views::View* bubble) {
+                 bubble_rect = bubble->GetWidget()->GetWindowBoundsInScreen();
+               }),
+      CheckElement(kSidePanelElementId,
+                   [&bubble_rect](ui::TrackedElement* side_panel) {
+                     return bubble_rect.Intersects(
+                         side_panel->GetScreenBounds());
+                   }),
 
       CloseHelpBubble(),
 

@@ -1109,16 +1109,18 @@ TEST_F(TutorialTest, CleanupTemporaryStateOnAbort) {
 
 // Test where the parameter is a bitfield describing choices the test will make
 // at each branch.
-class ConditionalTutorialTest : public ui::test::InteractiveTestT<TutorialTest>,
-                                public testing::WithParamInterface<int> {
+class ConditionalTutorialTest
+    : public ui::test::InteractiveTestMixin<TutorialTest>,
+      public testing::WithParamInterface<int> {
  public:
   ConditionalTutorialTest() = default;
   ~ConditionalTutorialTest() override = default;
 
   void SetUp() override {
-    InteractiveTestT<TutorialTest>::SetUp();
+    InteractiveTestMixin<TutorialTest>::SetUp();
     EXPECT_CALL(completed_, Run).Times(1);
     first_anchor_.Show();
+    private_test_impl().set_default_context(first_anchor_.context());
   }
 
  protected:
@@ -1218,8 +1220,7 @@ INSTANTIATE_TEST_SUITE_P(, ConditionalTutorialTest1, testing::Range(0, 2));
 TEST_P(ConditionalTutorialTest1, ConditionalAtStartOfTutorial) {
   ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
 
-  RunTestSequenceInContext(
-      first_anchor_.context(),
+  RunTestSequence(
       StartTutorial(
           IfStep(kTestIdentifier1, Branch(0))
               .Then(BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_OK))
@@ -1236,8 +1237,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalInMiddleOfTutorial) {
   ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
   ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
 
-  RunTestSequenceInContext(
-      first_anchor_.context(),
+  RunTestSequence(
       StartTutorial(
           BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
           IfStep(kTestIdentifier2, Branch(0))
@@ -1258,8 +1258,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalInMiddleOfTutorial) {
 TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorial) {
   ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
 
-  RunTestSequenceInContext(
-      first_anchor_.context(),
+  RunTestSequence(
       StartTutorial(
           BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
           IfStep(kTestIdentifier2, Branch(0))
@@ -1278,8 +1277,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorialUnevenSteps) {
   ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
   ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
 
-  RunTestSequenceInContext(
-      first_anchor_.context(),
+  RunTestSequence(
       StartTutorial(
           BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
           IfStep(kTestIdentifier2, Branch(0))
@@ -1304,8 +1302,7 @@ TEST_P(ConditionalTutorialTest1, OptionalStep) {
   ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
   ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
 
-  RunTestSequenceInContext(
-      first_anchor_.context(),
+  RunTestSequence(
       StartTutorial(
           BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
           IfStep(kTestIdentifier2, Branch(0))
@@ -1328,8 +1325,7 @@ TEST_P(ConditionalTutorialTest1, WaitForAnyOf) {
   ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
   ui::test::TestElement el4(kTestIdentifier4, kTestContext1);
 
-  RunTestSequenceInContext(
-      first_anchor_.context(),
+  RunTestSequence(
       StartTutorial(
           BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
           TutorialDescription::WaitForAnyOf(kTestIdentifier2)
@@ -1361,8 +1357,7 @@ TEST_P(ConditionalTutorialTest2, NestedConditionals) {
   ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
   ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
 
-  RunTestSequenceInContext(
-      first_anchor_.context(),
+  RunTestSequence(
       StartTutorial(
           IfStep(kTestIdentifier1, Branch(0))
               .Then(BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_OK),

@@ -173,6 +173,11 @@ class InteractiveTestPrivate {
 
   base::WeakPtr<InteractiveTestPrivate> GetAsWeakPtr();
 
+  void set_default_context(ElementContext default_context) {
+    default_context_ = default_context;
+  }
+  ElementContext default_context() const { return default_context_; }
+
   // Possibly fails or skips a sequence based on the result of an action
   // simulation.
   void HandleActionResult(InteractionSequence* seq,
@@ -302,6 +307,9 @@ class InteractiveTestPrivate {
 
   // Used to simulate input to UI elements.
   std::unique_ptr<InteractionTestUtil> test_util_;
+
+  // The default context for running test sequences.
+  ElementContext default_context_;
 
   // Used to keep track of valid contexts.
   base::CallbackListSubscription context_subscription_;

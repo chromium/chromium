@@ -1295,5 +1295,5 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestDialogBrowsertest,
           CheckElement(
               InteractiveBrowserTestDialog::kElementId,
               [](ui::TrackedElement* el) { return el->context(); },
-              GetContext())));
+              private_test_impl().default_context())));
 }

@@ -124,7 +124,8 @@ class BrowserFeaturePromoController2xUiTestBase
   void OnCustomUiCustomAction(
       const user_education::UserEducationContextPtr& context,
       user_education::FeaturePromoHandle promo_handle) {
-    EXPECT_EQ(GetContext(), context->GetElementContext());
+    EXPECT_EQ(private_test_impl().default_context(),
+              context->GetElementContext());
     continued_promo_handle_ = std::move(promo_handle);
   }
 

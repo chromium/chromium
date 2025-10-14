@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
@@ -321,7 +322,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
   auto* widget =
       static_cast<PriceTrackingBubbleDialogView*>(
           views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-              kPriceTrackingBubbleDialogId, GetContext()))
+              kPriceTrackingBubbleDialogId,
+              BrowserElements::From(browser())->GetContext()))
           ->GetWidget();
   views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
   widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
@@ -739,7 +741,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
 
   static_cast<PriceTrackingBubbleDialogView*>(
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kPriceTrackingBubbleDialogId, GetContext()))
+          kPriceTrackingBubbleDialogId,
+          BrowserElements::From(browser())->GetContext()))
       ->Cancel();
 
   EXPECT_EQ(user_action_tester_.GetActionCount(
@@ -770,7 +773,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
 
   static_cast<PriceTrackingBubbleDialogView*>(
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kPriceTrackingBubbleDialogId, GetContext()))
+          kPriceTrackingBubbleDialogId,
+          BrowserElements::From(browser())->GetContext()))
       ->GetBodyLabelForTesting()
       ->ClickFirstLinkForTesting();
 

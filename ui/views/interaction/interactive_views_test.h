@@ -69,15 +69,6 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   template <typename T = View>
   static const T* AsView(const ui::TrackedElement* el);
 
-  // Runs a test InteractionSequence from a series of Steps or StepBuilders with
-  // RunSynchronouslyForTesting(). Hooks both the completed and aborted
-  // callbacks to ensure completion, and prints an error on failure. The context
-  // will be pulled from `context_widget()`.
-  template <typename... Args>
-    requires(sizeof...(Args) > 0 &&
-             (ui::test::internal::IsValueOrRvalue<Args> && ...))
-  bool RunTestSequence(Args&&... steps);
-
   // Naming views:
   //
   // The following methods name a view (to be referred to later in the test
@@ -442,7 +433,6 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // the mouse functions.
   void SetContextWidget(Widget* context_widget);
   Widget* context_widget() { return context_widget_.get(); }
-  ui::ElementContext GetContext() const;
 
  protected:
   explicit InteractiveViewsTestApi(
@@ -535,13 +525,6 @@ const T* InteractiveViewsTestApi::AsView(const ui::TrackedElement* el) {
   const T* const view = AsViewClass<T>(views_el->view());
   CHECK(view);
   return view;
-}
-
-template <typename... Args>
-  requires(sizeof...(Args) > 0 &&
-           (ui::test::internal::IsValueOrRvalue<Args> && ...))
-bool InteractiveViewsTestApi::RunTestSequence(Args&&... steps) {
-  return RunTestSequenceInContext(GetContext(), std::forward<Args>(steps)...);
 }
 
 // static
