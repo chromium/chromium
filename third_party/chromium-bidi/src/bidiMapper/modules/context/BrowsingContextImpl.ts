@@ -1961,6 +1961,16 @@ export class BrowsingContextImpl {
       ),
     );
   }
+
+  async setExtraHeaders(
+    cdpExtraHeaders: Protocol.Network.Headers,
+  ): Promise<Promise<any>> {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) => await cdpTarget.setExtraHeaders(cdpExtraHeaders),
+      ),
+    );
+  }
 }
 
 export function serializeOrigin(origin: string) {

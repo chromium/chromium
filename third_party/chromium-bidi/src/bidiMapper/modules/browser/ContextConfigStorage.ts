@@ -80,6 +80,26 @@ export class ContextConfigStorage {
   }
 
   /**
+   * Extra headers is a special case. The headers from the different levels have to be
+   * merged instead of being overridden.
+   */
+  #getExtraHeaders(
+    topLevelBrowsingContextId: string | undefined,
+    userContext: string,
+  ) {
+    const globalHeaders = this.#global.extraHeaders ?? {};
+    const userContextHeaders =
+      this.#userContextConfigs.get(userContext)?.extraHeaders ?? {};
+    const browsingContextHeaders =
+      topLevelBrowsingContextId === undefined
+        ? {}
+        : (this.#browsingContextConfigs.get(topLevelBrowsingContextId)
+            ?.extraHeaders ?? {});
+
+    return {...globalHeaders, ...userContextHeaders, ...browsingContextHeaders};
+  }
+
+  /**
    * Calculates the active configuration by merging global, user context, and
    * browsing context settings.
    */
@@ -87,14 +107,25 @@ export class ContextConfigStorage {
     topLevelBrowsingContextId: string | undefined,
     userContext: string,
   ) {
-    const userContextConfig = ContextConfig.merge(
+    let result = ContextConfig.merge(
       this.#global,
       this.#userContextConfigs.get(userContext),
     );
-    if (topLevelBrowsingContextId === undefined) return userContextConfig;
-    return ContextConfig.merge(
-      userContextConfig,
-      this.#browsingContextConfigs.get(topLevelBrowsingContextId),
+    if (topLevelBrowsingContextId !== undefined) {
+      result = ContextConfig.merge(
+        result,
+        this.#browsingContextConfigs.get(topLevelBrowsingContextId),
+      );
+    }
+
+    // Extra headers is a special case which have to be treated in a special way.
+    const extraHeaders = this.#getExtraHeaders(
+      topLevelBrowsingContextId,
+      userContext,
     );
+    result.extraHeaders =
+      Object.keys(extraHeaders).length > 0 ? extraHeaders : undefined;
+
+    return result;
   }
 }

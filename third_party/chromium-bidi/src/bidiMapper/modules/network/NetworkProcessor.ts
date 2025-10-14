@@ -26,7 +26,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
-import type {CdpTarget} from '../cdp/CdpTarget.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
@@ -543,63 +543,107 @@ export class NetworkProcessor {
     return {};
   }
 
-  async setExtraHeaders(
-    params: Network.SetExtraHeadersParameters,
-  ): Promise<EmptyResult> {
-    if (params.userContexts !== undefined && params.contexts !== undefined) {
+  async #getRelatedTopLevelBrowsingContexts(
+    browsingContextIds?: string[],
+    userContextIds?: string[],
+  ): Promise<BrowsingContextImpl[]> {
+    // Duplicated with EmulationProcessor logic. Consider moving to ConfigStorage.
+    if (browsingContextIds === undefined && userContextIds === undefined) {
+      return this.#browsingContextStorage.getTopLevelContexts();
+    }
+
+    if (browsingContextIds !== undefined && userContextIds !== undefined) {
       throw new InvalidArgumentException(
-        'contexts and userContexts are mutually exclusive',
+        'User contexts and browsing contexts are mutually exclusive',
       );
     }
 
+    const result = [];
+    if (userContextIds !== undefined) {
+      if (userContextIds.length === 0) {
+        throw new InvalidArgumentException('user context should be provided');
+      }
+
+      // Verify that all user contexts exist.
+      await this.#userContextStorage.verifyUserContextIdList(userContextIds!);
+
+      for (const userContextId of userContextIds!) {
+        const topLevelBrowsingContexts = this.#browsingContextStorage
+          .getTopLevelContexts()
+          .filter(
+            (browsingContext) => browsingContext.userContext === userContextId,
+          );
+        result.push(...topLevelBrowsingContexts);
+      }
+    }
+    if (browsingContextIds !== undefined) {
+      if (browsingContextIds.length === 0) {
+        throw new InvalidArgumentException(
+          'browsing context should be provided',
+        );
+      }
+
+      for (const browsingContextId of browsingContextIds) {
+        const browsingContext =
+          this.#browsingContextStorage.getContext(browsingContextId);
+        if (!browsingContext.isTopLevelContext()) {
+          throw new InvalidArgumentException(
+            'The command is only supported on the top-level context',
+          );
+        }
+        result.push(browsingContext);
+      }
+    }
+    // Remove duplicates. Compare `BrowsingContextImpl` by reference is correct here, as
+    // `browsingContextStorage` returns the same instance for the same id.
+    return [...new Set(result).values()];
+  }
+
+  async setExtraHeaders(
+    params: Network.SetExtraHeadersParameters,
+  ): Promise<EmptyResult> {
+    const affectedBrowsingContexts =
+      await this.#getRelatedTopLevelBrowsingContexts(
+        params.contexts,
+        params.userContexts,
+      );
+
     const cdpExtraHeaders = parseBiDiHeaders(params.headers);
-    const affectedCdpTargets = new Set<CdpTarget>();
 
     if (params.userContexts === undefined && params.contexts === undefined) {
       this.#contextConfigStorage.updateGlobalConfig({
         extraHeaders: cdpExtraHeaders,
       });
-      this.#browsingContextStorage
-        .getAllContexts()
-        .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
     }
 
     if (params.userContexts !== undefined) {
-      // Assert the user contexts exist.
-      await this.#userContextStorage.verifyUserContextIdList(
-        params.userContexts,
-      );
       params.userContexts.forEach((userContext) => {
         this.#contextConfigStorage.updateUserContextConfig(userContext, {
           extraHeaders: cdpExtraHeaders,
         });
-        this.#browsingContextStorage
-          .getAllContexts()
-          .filter((c) => c.userContext === userContext)
-          .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
       });
     }
     if (params.contexts !== undefined) {
-      this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
       params.contexts.forEach((browsingContextId) => {
         this.#contextConfigStorage.updateBrowsingContextConfig(
           browsingContextId,
           {extraHeaders: cdpExtraHeaders},
         );
-
-        affectedCdpTargets.add(
-          this.#browsingContextStorage.getContext(browsingContextId).cdpTarget,
-        );
-        this.#browsingContextStorage
-          .getContext(browsingContextId)
-          .allChildren.forEach((c) => affectedCdpTargets.add(c.cdpTarget));
       });
     }
 
     await Promise.all(
-      Array.from(affectedCdpTargets).map((cdpTarget) =>
-        cdpTarget.setExtraHeaders(cdpExtraHeaders),
-      ),
+      affectedBrowsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing setting.
+        const extraHeaders =
+          this.#contextConfigStorage.getActiveConfig(
+            context.id,
+            context.userContext,
+          ).extraHeaders ?? {};
+
+        await context.setExtraHeaders(extraHeaders);
+      }),
     );
 
     return {};
