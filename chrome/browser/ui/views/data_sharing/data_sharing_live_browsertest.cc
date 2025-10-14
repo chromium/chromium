@@ -215,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ShareUnsharedTabGroup) {
 }
 
 // Open the manage dialog of a shared tab group.
-IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ManageSharedTabGroup) {
+// TODO(crbug.com/451733093): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, DISABLED_ManageSharedTabGroup) {
   SignInAndTurnOnSync();
 
   const std::u16string shared_group_title = u"TEST SHARED GROUP";
