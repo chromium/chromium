@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
+import("//components/compose/features.gni")
 import("//components/signin/features.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
@@ -232,6 +233,10 @@ source_set("impl") {
 
   if (is_mac) {
     sources += [ "autofill_popup_controller_impl_mac.mm" ]
+  }
+
+  if (enable_compose) {
+    deps += [ "//chrome/browser/compose" ]
   }
 }
 

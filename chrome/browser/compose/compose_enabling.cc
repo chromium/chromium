@@ -22,7 +22,6 @@
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/compose/buildflags.h"

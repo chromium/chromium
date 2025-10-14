@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/compose/chrome_compose_client.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_session.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"

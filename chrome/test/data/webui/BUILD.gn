@@ -95,6 +95,10 @@ source_set("browser_tests") {
     if (is_chrome_branded) {
       sources += [ "media_router/cast_feedback_ui_browsertest.cc" ]
     }
+
+    if (enable_compose) {
+      deps += [ "//chrome/browser/compose" ]
+    }
   }
 
   if (enable_dice_support) {
@@ -354,7 +358,10 @@ source_set("interactive_ui_tests") {
 
   if (enable_compose) {
     sources += [ "compose/compose_focus_test.cc" ]
-    deps += [ "//components/compose/core/browser:features" ]
+    deps += [
+      "//chrome/browser/compose",
+      "//components/compose/core/browser:features",
+    ]
   }
 }
 

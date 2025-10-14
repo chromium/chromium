@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "chrome/browser/compose/compose_enabling.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"

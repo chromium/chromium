@@ -699,6 +699,10 @@ static_library("ui") {
     deps += [ "//chrome/browser/captive_portal" ]
   }
 
+  if (enable_compose) {
+    deps += [ "//chrome/browser/compose" ]
+  }
+
   # TODO(crbug.com/41437292): Remove this circular dependency.
   # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
   # These are all-platform circular includes.

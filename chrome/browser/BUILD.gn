@@ -8381,31 +8381,9 @@ static_library("browser") {
   }
 
   if (enable_compose) {
-    sources += [
-      "compose/chrome_compose_client.cc",
-      "compose/chrome_compose_client.h",
-      "compose/compose_enabling.cc",
-      "compose/compose_enabling.h",
-      "compose/compose_session.cc",
-      "compose/compose_session.h",
-      "compose/compose_text_usage_logger.cc",
-      "compose/compose_text_usage_logger.h",
-      "compose/proactive_nudge_tracker.cc",
-      "compose/proactive_nudge_tracker.h",
-    ]
-
     deps += [
-      ":compose_optimization_guide_proto",
-      "//chrome/common/compose",
-      "//chrome/common/compose:mojo_bindings",
-      "//components/autofill/content/browser",
-      "//components/autofill/core/browser",
-      "//components/autofill/core/common",
-      "//components/compose/core/browser",
-      "//components/optimization_guide/core",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//services/metrics/public/cpp:metrics_cpp",
-      "//services/metrics/public/cpp:ukm_builders",
+      "//chrome/browser/compose",
+      "//chrome/browser/compose:impl",
     ]
   }
 

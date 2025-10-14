@@ -13,7 +13,6 @@
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"

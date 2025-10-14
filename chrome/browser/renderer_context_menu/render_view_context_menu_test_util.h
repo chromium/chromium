@@ -16,12 +16,12 @@
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/compose/chrome_compose_client.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/context_menu_matcher.h"
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+class ChromeComposeClient;
 #endif
 
 namespace content {

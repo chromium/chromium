@@ -841,6 +841,10 @@ static_library("test_support") {
       deps += [ "//chrome/browser/ui/webui/signin:profile" ]
     }
 
+    if (enable_compose) {
+      deps += [ "//chrome/browser/compose" ]
+    }
+
     sources += [
       "../browser/download/download_browsertest_utils.cc",
       "../browser/download/download_browsertest_utils.h",
@@ -1194,10 +1198,7 @@ static_library("test_support") {
   }
 
   if (enable_compose) {
-    sources += [
-      "../browser/compose/mock_chrome_compose_client.cc",
-      "../browser/compose/mock_chrome_compose_client.h",
-    ]
+    deps += [ "//chrome/browser/compose:test_support" ]
   }
 
   if (is_win || is_mac || is_linux) {
@@ -3095,6 +3096,10 @@ if (!is_android) {
       deps += [ "//chrome/browser/background/extensions" ]
     }
 
+    if (enable_compose) {
+      deps += [ "//chrome/browser/compose:test_support" ]
+    }
+
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",
@@ -3952,15 +3957,7 @@ if (!is_android) {
     }
 
     if (enable_compose) {
-      sources += [
-        "../browser/compose/compose_dialog_browsertest.cc",
-        "../browser/compose/compose_enabling_browsertest.cc",
-      ]
-
-      deps += [
-        "//components/compose/core/browser",
-        "//components/compose/core/browser:features",
-      ]
+      deps += [ "//chrome/browser/compose:browser_tests" ]
     }
 
     if (is_win || is_mac || is_linux) {
@@ -7455,17 +7452,13 @@ test("unit_tests") {
 
   if (enable_compose) {
     sources += [
-      "../browser/compose/chrome_compose_client_unittest.cc",
-      "../browser/compose/compose_enabling_unittest.cc",
-      "../browser/compose/compose_text_usage_logger_unittest.cc",
-      "../browser/compose/proactive_nudge_tracker_unittest.cc",
       "../browser/ui/views/compose/compose_dialog_view_unittest.cc",
       "../common/compose/type_conversions_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/compose:unit_tests",
       "//chrome/common/compose",
       "//components/compose/core/browser",
-      "//components/compose/core/browser:features",
       "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
     ]
