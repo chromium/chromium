@@ -66,6 +66,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
       const ShowOptions& options,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  void OnDetachRequested(GlicInstance* instance,
+                         tabs::TabInterface* tab) override;
 
   // GlicWindowController implementation
   HostManager& host_manager() override;
@@ -130,6 +132,9 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   bool HasAttachedInstance(GlicInstance* instance);
 
   void NotifyLastActiveInstanceChanged();
+
+  // Returns a pointer to an instance with a Floaty embedder or nullptr.
+  GlicInstanceImpl* GetInstanceWithFloaty();
 
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;

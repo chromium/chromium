@@ -906,6 +906,44 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testMultiplePanelsDetachedAndFloating) {
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testThereCanOnlyBeOneFloaty) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Attached only supported with multi-instance.";
+  }
+  // Open two tabs, select the first, open Floaty glic.
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()));
+
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  GlicInstanceImpl* tab0_instance = GetGlicInstanceImpl();
+  // Execute test on the first tab instance.
+  ExecuteJsTest({.params = base::Value("first")});
+  ASSERT_EQ(mojom::PanelState_Kind::kDetached,
+            tab0_instance->GetPanelState().kind);
+
+  // Select the second tab, open Floaty, and execute the test on the second
+  // instance.
+  SetGlicInstanceTabIndex(1);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  RunTestSequence(InstrumentTab(kSecondTab),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("second")});
+  GlicInstanceImpl* tab1_instance = GetGlicInstanceImpl();
+
+  // Continue on the first tab. Verify there's only one Floaty.
+  SetGlicInstanceTabIndex(0);
+  ContinueJsTest();
+  ASSERT_EQ(mojom::PanelState_Kind::kDetached,
+            tab1_instance->GetPanelState().kind);
+  ASSERT_EQ(mojom::PanelState_Kind::kHidden,
+            tab0_instance->GetPanelState().kind);
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosePanel) {
   ExecuteJsTest();
   RunTestSequence(WaitForHide(kGlicViewElementId));
