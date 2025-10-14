@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/android/autofill/payments/payments_window_bridge.h"
+#include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/payments_window_manager_util.h"
@@ -52,6 +53,12 @@ void AndroidPaymentsWindowManager::WebContentsDestroyed() {
     return;
   }
 
+  // On Android, the PaymentsAutofillClient can only be a
+  // ChromePaymentsAutofillClient.
+  ChromePaymentsAutofillClient* payments_autofill_client =
+      static_cast<ChromePaymentsAutofillClient*>(
+          client_->GetPaymentsAutofillClient());
+
   switch (flow_state_->flow_type) {
     case FlowType::kBnpl:
       // This should only be reached if the user directly closed the ephemeral
@@ -62,9 +69,14 @@ void AndroidPaymentsWindowManager::WebContentsDestroyed() {
       TriggerCompletionCallbackAndLogMetricsForBnpl(
           std::move(flow_state_.value()));
 
-      // TODO(crbug.com/438786191): Make sure to run
-      // `TouchToFillPaymentMethodControllerImpl::OnDismissed()` to clear any
-      // leftover state from the TouchToFill bottom sheet.
+      // Clear any leftover state from the TouchToFillPaymentMethodController in
+      // case there is a bottom sheet that is currently hidden but not fully
+      // dismissed.
+      if (payments_autofill_client &&
+          payments_autofill_client->GetTouchToFillPaymentMethodController()) {
+        payments_autofill_client->GetTouchToFillPaymentMethodController()
+            ->OnDismissed(/*env=*/nullptr, /*dismissed_by_user=*/true);
+      }
       break;
     case FlowType::kVcn3ds:
     case FlowType::kNoFlow:
