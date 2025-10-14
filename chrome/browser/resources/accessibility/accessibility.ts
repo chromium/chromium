@@ -195,38 +195,61 @@ function toggleAccessibility(
       data.processId, data.routingId, mode, shouldRequestTree);
 }
 
-function requestTree(data: BrowserData|PageData|WidgetData, element: Element) {
-  const allow = getRequiredElement<HTMLInputElement>('filter-allow').value;
-  const allowEmpty =
-      getRequiredElement<HTMLInputElement>('filter-allow-empty').value;
-  const deny = getRequiredElement<HTMLInputElement>('filter-deny').value;
-  window.localStorage['chrome-accessibility-filter-allow'] = allow;
-  window.localStorage['chrome-accessibility-filter-allow-empty'] = allowEmpty;
-  window.localStorage['chrome-accessibility-filter-deny'] = deny;
+function requestTree(
+  data: BrowserData|PageData|WidgetData,
+  element: Element,
+): Promise<void> {
+  return new Promise((resolve) => {
+    const allow = getRequiredElement<HTMLInputElement>('filter-allow').value;
+    const allowEmpty =
+        getRequiredElement<HTMLInputElement>('filter-allow-empty').value;
+    const deny = getRequiredElement<HTMLInputElement>('filter-deny').value;
+
+    window.localStorage['chrome-accessibility-filter-allow'] = allow;
+    window.localStorage['chrome-accessibility-filter-allow-empty'] = allowEmpty;
+    window.localStorage['chrome-accessibility-filter-deny'] = deny;
 
   // The calling |element| is a button with an id of the format
   // <treeId>-<requestType>, where requestType is one of 'showOrRefreshTree',
   // 'copyTree'. Send the request type to C++ so is calls the corresponding
   // function with the result.
-  const requestType = element.id.split('-')[1] as RequestType;
-  if (data.type === 'browser') {
-    const delay =
-        getRequiredElement<HTMLInputElement>('native-ui-delay').valueAsNumber;
-    setTimeout(() => {
-      browserProxy.requestNativeUiTree(
-          (data as BrowserData).sessionId, requestType, allow, allowEmpty,
+    const requestType = element.id.split('-')[1] as RequestType;
+
+    if (data.type === 'browser') {
+      const delay =
+          getRequiredElement<HTMLInputElement>('native-ui-delay').valueAsNumber;
+      setTimeout(() => {
+        browserProxy.requestNativeUiTree(
+            (data as BrowserData).sessionId,
+            requestType,
+            allow,
+            allowEmpty,
+            deny);
+        resolve();
+      }, delay);
+    } else if (data.type === 'widget') {
+      browserProxy.requestWidgetsTree(
+          (data as WidgetData).widgetId,
+          requestType,
+          allow,
+          allowEmpty,
           deny);
-    }, delay);
-  } else if (data.type === 'widget') {
-    browserProxy.requestWidgetsTree(
-        (data as WidgetData).widgetId, requestType, allow, allowEmpty, deny);
-  } else {
-    const pageData = data as PageData;
-    browserProxy.requestWebContentsTree(
-        pageData.processId, pageData.routingId, requestType, allow, allowEmpty,
-        deny);
-  }
+      resolve();
+    } else {
+      const pageData = data as PageData;
+      browserProxy.requestWebContentsTree(
+          pageData.processId,
+          pageData.routingId,
+          requestType,
+          allow,
+          allowEmpty,
+          deny);
+      resolve();
+    }
+  });
 }
+
+
 
 function requestEvents(data: PageData, element: HTMLElement) {
   const start = element.textContent === 'Start recording';
@@ -377,7 +400,7 @@ function addToPagesList(data: PageData) {
   const row = document.createElement('div');
   row.className = 'row';
   row.id = id;
-  formatRow(row, data, null);
+  formatRow(row, data);
 
   const pages = getRequiredElement('pages');
   pages.appendChild(row);
@@ -388,7 +411,7 @@ function addToBrowsersList(data: BrowserData) {
   const row = document.createElement('div');
   row.className = 'row';
   row.id = id;
-  formatRow(row, data, null);
+  formatRow(row, data);
 
   const browsers = getRequiredElement('browsers');
   browsers.appendChild(row);
@@ -399,15 +422,14 @@ function addToWidgetsList(data: WidgetData) {
   const row = document.createElement('div');
   row.className = 'row';
   row.id = id;
-  formatRow(row, data, null);
+  formatRow(row, data);
 
   const widgets = getRequiredElement('widgets');
   widgets.appendChild(row);
 }
 
 function formatRow(
-    row: HTMLElement, data: BrowserData|PageData|WidgetData,
-    requestType: RequestType|null) {
+    row: HTMLElement, data: BrowserData|PageData|WidgetData) {
   if (!('url' in data)) {
     if ('error' in data) {
       row.appendChild(createErrorMessageElement(data));
@@ -457,7 +479,7 @@ function formatRow(
 
   const hasTree = 'tree' in data;
   row.appendChild(
-      createShowAccessibilityTreeElement(data, row.id, requestType, hasTree));
+      createShowAccessibilityTreeElement(data, row.id, hasTree));
   if (navigator.clipboard) {
     row.appendChild(createCopyAccessibilityTreeElement(data, row.id));
   }
@@ -601,27 +623,25 @@ function createModeElement(
 
 function createShowAccessibilityTreeElement(
     data: BrowserData|PageData|WidgetData, id: string,
-    requestType: RequestType|null, refresh: boolean) {
+    refresh: boolean) {
   const show = document.createElement('button');
-  if (requestType === 'showOrRefreshTree') {
-    // Give feedback that the tree has loaded.
-    show.textContent = 'Accessibility tree loaded';
-    show.ariaLabel = `Accessibility tree loaded for ${data.name}`;
-    setTimeout(() => {
-      show.textContent = 'Refresh accessibility tree';
-      show.ariaLabel = `Refresh accessibility tree for ${data.name}`;
-    }, 5000);
-  } else {
-    const textContent =
-        refresh ? 'Refresh accessibility tree' : 'Show accessibility tree';
-    show.textContent = textContent;
-    show.ariaLabel = `${textContent} for ${data.name}`;
-  }
+  const textContent =
+      refresh ? 'Refresh accessibility tree' : 'Show accessibility tree';
+
+  show.textContent = textContent;
+  show.ariaLabel = `${textContent} for ${data.name}`;
   show.id = id + '-showOrRefreshTree';
   show.setAttribute('aria-expanded', String(refresh));
-  show.addEventListener('click', requestTree.bind(null, data, show));
+
+  show.addEventListener('click', () => {
+    requestTree(data, show).then(() => {
+      show.textContent = 'Refresh accessibility tree';
+      show.ariaLabel = `Refresh accessibility tree for ${data.name}`;
+    });
+  });
   return show;
 }
+
 
 function createHideAccessibilityTreeElement(id: string, name: string) {
   const hide = document.createElement('button');
@@ -695,7 +715,7 @@ function showOrRefreshTree(data: PageData) {
   }
 
   row.textContent = '';
-  formatRow(row, data, 'showOrRefreshTree');
+  formatRow(row, data);
   getRequiredElement(id + '-showOrRefreshTree').focus();
 }
 
@@ -708,7 +728,7 @@ function startOrStopEvents(data: PageData) {
   }
 
   row.textContent = '';
-  formatRow(row, data, null);
+  formatRow(row, data);
   getRequiredElement(id + '-startOrStopEvents').focus();
 }
 
