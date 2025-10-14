@@ -18,6 +18,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/pref_names.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/payments/core/currency_formatter.h"
@@ -92,8 +93,7 @@
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
     _prefChangeRegistrar.Init(prefService);
     _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled,
-        &_prefChangeRegistrar);
+        commerce::kPriceTrackingHomeModuleEnabled, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled,
         &_prefChangeRegistrar);
@@ -133,8 +133,7 @@
 }
 
 - (void)fetchLatestShopCardItem {
-  if (!_prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled)) {
+  if (!_prefService->GetBoolean(commerce::kPriceTrackingHomeModuleEnabled)) {
     return;
   }
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm2 &&
@@ -320,8 +319,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 #pragma mark - Public
 - (void)disableModule {
-  _prefService->SetBoolean(
-      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, false);
+  _prefService->SetBoolean(commerce::kPriceTrackingHomeModuleEnabled, false);
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
                             ContentSuggestionsModuleType::kShopCard);
 }
@@ -368,10 +366,8 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName ==
-      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled) {
-    if (_prefService->GetBoolean(
-            prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled)) {
+  if (preferenceName == commerce::kPriceTrackingHomeModuleEnabled) {
+    if (_prefService->GetBoolean(commerce::kPriceTrackingHomeModuleEnabled)) {
       // TODO(crbug.com/404564187) Fetch ShopCardData if ShopCardData
       // is nil, then insert the card.
       [self.delegate insertShopCard];

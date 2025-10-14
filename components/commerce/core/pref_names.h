@@ -15,6 +15,10 @@ inline constexpr char kCommerceDailyMetricsLastUpdateTime[] =
 inline constexpr char kPriceEmailNotificationsEnabled[] =
     "price_tracking.email_notifications_enabled";
 
+// The pref that stores if the Price Tracking Home Module is enabled.
+inline constexpr char kPriceTrackingHomeModuleEnabled[] =
+    "home.module.price_tracking.enabled";
+
 inline constexpr char kProductSpecificationsAcceptedDisclosureVersion[] =
     "product_specifications.accepted_disclosure_version";
 

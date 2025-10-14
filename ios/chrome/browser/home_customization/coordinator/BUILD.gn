@@ -28,6 +28,7 @@ source_set("coordinator") {
     "//base",
     "//base:i18n",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:pref_names",
     "//components/commerce/core:shopping_service",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",

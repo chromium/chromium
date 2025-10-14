@@ -7,6 +7,7 @@
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/pref_names.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -130,7 +131,7 @@
     }
     case CustomizationToggleType::kShopCard:
       return _prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled);
+          commerce::kPriceTrackingHomeModuleEnabled);
     default:
       NOTREACHED();
   }
@@ -170,9 +171,8 @@
       break;
     }
     case CustomizationToggleType::kShopCard:
-      _prefService->SetBoolean(
-          prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled,
-          enabled);
+      _prefService->SetBoolean(commerce::kPriceTrackingHomeModuleEnabled,
+                               enabled);
       break;
   }
 }

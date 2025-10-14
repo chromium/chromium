@@ -15,18 +15,16 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       kPriceEmailNotificationsEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-
   registry->RegisterTimePref(kCommerceDailyMetricsLastUpdateTime, base::Time());
   registry->RegisterTimePref(kShoppingListBookmarkLastUpdateTime, base::Time());
-
   registry->RegisterBooleanPref(kShoppingListEnabledPrefName, true);
-
   registry->RegisterTimePref(kProductSpecificationsEntryPointLastDismissedTime,
                              base::Time());
   registry->RegisterIntegerPref(
       kProductSpecificationsEntryPointShowIntervalInDays, 0);
   registry->RegisterIntegerPref(kProductSpecificationsAcceptedDisclosureVersion,
                                 0 /* UNKNOWN */);
+  registry->RegisterBooleanPref(kPriceTrackingHomeModuleEnabled, true);
 }
 
 }  // namespace commerce

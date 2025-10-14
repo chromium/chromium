@@ -17,6 +17,7 @@
 #import "components/browser_sync/sync_to_signin_migration.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/collaboration/public/pref_names.h"
+#import "components/commerce/core/pref_names.h"
 #import "components/commerce/core/prefs.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
@@ -1126,6 +1127,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // instead.
   registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackEnabled,
                                 true);
+
+  // Deprecated 10/2025. Use `commerce::kPriceTrackingHomeModuleEnabled`
+  // instead.
+  registry->RegisterBooleanPref(
+      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1314,6 +1320,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
                     prefs::kHomeCustomizationMagicStackTipsEnabled, prefs);
   RenameBooleanPref(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
                     prefs::kHomeCustomizationMagicStackEnabled, prefs);
+  RenameBooleanPref(
+      commerce::kPriceTrackingHomeModuleEnabled,
+      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

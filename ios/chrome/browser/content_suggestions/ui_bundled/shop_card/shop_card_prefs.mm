@@ -14,8 +14,6 @@ const char kShopCardPriceDropUrlImpressions[] =
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
-      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, true);
-  registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled, true);
   registry->RegisterDictionaryPref(kShopCardPriceDropUrlImpressions);
 }

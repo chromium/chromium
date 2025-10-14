@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
+#import "components/commerce/core/pref_names.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -88,6 +89,11 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   // Set the old Magic Stack module pref value to test its migration to
   // the new name.
   pref_service_.SetBoolean(prefs::kHomeCustomizationMagicStackEnabled, false);
+
+  // Set the old Price Tracking module pref value to test its migration to the
+  // new name.
+  pref_service_.SetBoolean(
+      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, false);
 
   // Bottom omnibox position
   local_state()->SetBoolean(prefs::kBottomOmnibox, true);
@@ -174,6 +180,12 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_TRUE(
       pref_service_
           .FindPreference(ntp_tiles::prefs::kMagicStackHomeModuleEnabled)
+          ->IsDefaultValue());
+
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled));
+  EXPECT_TRUE(
+      pref_service_.FindPreference(commerce::kPriceTrackingHomeModuleEnabled)
           ->IsDefaultValue());
 
   // Check bottom omnibox position.
@@ -277,6 +289,16 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   // now be false (the migrated value).
   EXPECT_FALSE(
       pref_service_.GetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled));
+
+  EXPECT_TRUE(
+      pref_service_
+          .FindPreference(
+              prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled)
+          ->IsDefaultValue());
+  // The new pref `commerce::kPriceTrackingHomeModuleEnabled` should
+  // now be false (the migrated value).
+  EXPECT_FALSE(
+      pref_service_.GetBoolean(commerce::kPriceTrackingHomeModuleEnabled));
 
   // Check bottom omnibox position.
   EXPECT_TRUE(

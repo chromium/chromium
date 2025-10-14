@@ -10,6 +10,7 @@
 #import "components/bookmarks/test/test_bookmark_client.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/mock_shopping_service.h"
+#import "components/commerce/core/pref_names.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -101,7 +102,7 @@ class ShopCardMediatorTest : public PlatformTest {
          impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
                                     profile_)];
     pref_service_.registry()->RegisterBooleanPref(
-        prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, true);
+        commerce::kPriceTrackingHomeModuleEnabled, true);
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled, true);
   }
