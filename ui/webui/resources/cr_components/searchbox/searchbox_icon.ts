@@ -118,34 +118,52 @@ export class SearchboxIconElement extends CrLitElement {
         reflect: true,
       },
 
+      /**
+       * Whether the match features an image (as opposed to an icon or favicon).
+       */
+      hasImage: {
+        type: Boolean,
+        reflect: true,
+      },
+
       match: {type: Object},
 
       //========================================================================
       // Private properties
       //========================================================================
 
-      iconStyle_: {type: String},
-      iconSrc_: {type: String},
+      iconStyle_: {state: true, type: String},
+      iconSrc_: {state: true, type: String},
 
       /**
        * Flag indicating whether or not an icon image is loading. This is used
        * to show a default icon while the image is loading.
        */
-      iconLoading_: {type: Boolean},
+      iconLoading_: {state: true, type: Boolean},
 
       /**
        * Whether to use the icon image instead of the default icon for the
        * suggestion.
        */
-      showIconImg_: {type: Boolean},
+      showIconImg_: {state: true, type: Boolean},
 
-      imageSrc_: {type: String},
+      showImage_: {state: true, type: Boolean},
+      imageSrc_: {state: true, type: String},
 
       /**
        * Flag indicating whether or not an image is loading. This is used to
        * show a placeholder color while the image is loading.
        */
-      imageLoading_: {type: Boolean},
+      imageLoading_: {state: true, type: Boolean},
+
+      /**
+       * Flag indicating whether or not an image was successfully loaded. This
+       * is used to suppress the default "broken image" icon as needed.
+       */
+      imageError_: {
+        state: true,
+        type: Boolean,
+      },
 
       isLensSearchbox_: {
         type: Boolean,
@@ -163,13 +181,16 @@ export class SearchboxIconElement extends CrLitElement {
   accessor isWeatherAnswer: boolean = false;
   accessor isEnterpriseSearchAggregatorPeopleType: boolean = false;
   accessor maskImage: string = '';
+  protected accessor hasImage: boolean = false;
   accessor match: AutocompleteMatch|null = null;
   protected accessor iconStyle_: string = '';
   protected accessor iconSrc_: string = '';
   private accessor iconLoading_: boolean = false;
   protected accessor showIconImg_: boolean = false;
+  protected accessor showImage_: boolean = false;
   protected accessor imageSrc_: string = '';
   private accessor imageLoading_: boolean = false;
+  private accessor imageError_: boolean = false;
   private accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');
 
@@ -185,6 +206,7 @@ export class SearchboxIconElement extends CrLitElement {
           this.computeIsEnterpriseSearchAggregatorPeopleType_();
       this.isStarterPack = this.computeIsStarterPack_();
       this.isWeatherAnswer = this.computeIsWeatherAnswer_();
+      this.hasImage = this.computeHasImage_();
       this.maskImage = this.computeMaskImage_();
     }
 
@@ -211,6 +233,12 @@ export class SearchboxIconElement extends CrLitElement {
       // If imageSrc_ changes to a new truthy value, a new image is being
       // loaded.
       this.imageLoading_ = !!this.imageSrc_;
+      this.imageError_ = false;
+    }
+
+    if (changedPrivateProperties.has('imageSrc_') ||
+        changedPrivateProperties.has('imageError_')) {
+      this.showImage_ = this.computeShowImage_();
     }
 
     if (changedProperties.has('match') ||
@@ -258,6 +286,10 @@ export class SearchboxIconElement extends CrLitElement {
 
   private computeIsWeatherAnswer_(): boolean {
     return this.match?.isWeatherAnswerSuggestion || false;
+  }
+
+  private computeHasImage_(): boolean {
+    return !!this.match && !!this.match.imageUrl;
   }
 
   private computeIsEnterpriseSearchAggregatorPeopleType_(): boolean {
@@ -358,6 +390,10 @@ export class SearchboxIconElement extends CrLitElement {
     return this.computeSrc_(this.match?.iconUrl?.url);
   }
 
+  private computeShowImage_(): boolean {
+    return !!this.imageSrc_ && !this.imageError_;
+  }
+
   private computeImageSrc_(): string {
     return this.computeSrc_(this.match?.imageUrl);
   }
@@ -371,7 +407,10 @@ export class SearchboxIconElement extends CrLitElement {
     // this background can be seen underneath the image. Most of these images
     // are logos with a white background, so this adjusts them to look similar
     // the more common case of a square image with rounded corners.
-    return (this.imageLoading_ && this.match?.imageDominantColor) ?
+    // An opaque background will also be shown if there was an error with
+    // loading the image, in which case only the colored background is rendered.
+    return ((this.imageLoading_ || this.imageError_) &&
+            this.match?.imageDominantColor) ?
         // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
         (this.match.imageDominantColor ?
              `${this.match.imageDominantColor}40` :
@@ -385,6 +424,12 @@ export class SearchboxIconElement extends CrLitElement {
 
   protected onImageLoad_() {
     this.imageLoading_ = false;
+    this.imageError_ = false;
+  }
+
+  protected onImageError_() {
+    this.imageLoading_ = false;
+    this.imageError_ = true;
   }
 
   // All pedals, starter pack suggestions, and AiS except weather should have
