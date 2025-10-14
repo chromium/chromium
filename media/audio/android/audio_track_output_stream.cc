@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/android/jni_bytebuffer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -158,13 +159,14 @@ ScopedJavaLocalRef<jobject> AudioTrackOutputStream::OnMoreData(
   base::TimeDelta delay =
       AudioTimestampHelper::FramesToTime(delay_in_frame, params_.sample_rate());
 
-  void* native_buffer = env->GetDirectBufferAddress(audio_data.obj());
+  base::span<uint8_t> native_buffer =
+      base::android::JavaByteBufferToMutableSpan(env, audio_data);
+  CHECK_GE(native_buffer.size(), AudioBus::CalculateMemorySize(params_));
 
   if (params_.IsBitstreamFormat()) {
     // For bitstream formats, use the direct buffer memory to avoid additional
     // memory copy.
-    std::unique_ptr<AudioBus> audio_bus(
-        AudioBus::WrapMemory(params_, native_buffer));
+    auto audio_bus = AudioBus::WrapMemory(params_, native_buffer);
     audio_bus->set_is_bitstream_format(true);
 
     callback_->OnMoreData(delay, tick_clock_->NowTicks(), {}, audio_bus.get());
@@ -183,7 +185,7 @@ ScopedJavaLocalRef<jobject> AudioTrackOutputStream::OnMoreData(
 
   callback_->OnMoreData(delay, tick_clock_->NowTicks(), {}, audio_bus_.get());
 
-  int16_t* native_bus = reinterpret_cast<int16_t*>(native_buffer);
+  int16_t* native_bus = reinterpret_cast<int16_t*>(native_buffer.data());
   audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(audio_bus_->frames(),
                                                          native_bus);
 
