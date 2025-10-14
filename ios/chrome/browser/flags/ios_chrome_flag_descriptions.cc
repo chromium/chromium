@@ -1588,10 +1588,6 @@ const char kDownloadServiceForegroundSessionName[] =
 const char kDownloadServiceForegroundSessionDescription[] =
     "Enable download service to download in app foreground only";
 
-const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
-const char kTFLiteLanguageDetectionDescription[] =
-    "Uses TFLite for language detection in place of CLD3";
-
 const char kEnableLensInOmniboxCopiedImageName[] =
     "Enable Google Lens in the Omnibox for Copied Images";
 const char kEnableLensInOmniboxCopiedImageDescription[] =

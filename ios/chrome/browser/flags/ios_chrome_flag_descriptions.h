@@ -936,9 +936,6 @@ extern const char kTabGroupSyncDescription[];
 extern const char kTaiyakiName[];
 extern const char kTaiyakiDescription[];
 
-extern const char kTFLiteLanguageDetectionName[];
-extern const char kTFLiteLanguageDetectionDescription[];
-
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
 
