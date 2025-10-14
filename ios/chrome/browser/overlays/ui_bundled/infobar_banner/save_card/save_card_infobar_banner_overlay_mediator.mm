@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 
+#import <objc/runtime.h>
+
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
@@ -12,6 +14,7 @@
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator+Testing.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
@@ -30,6 +33,17 @@
 @end
 
 @implementation SaveCardInfobarBannerOverlayMediator
+
+- (instancetype)initWithRequest:(OverlayRequest*)request {
+  self = [super initWithRequest:request];
+  if (self) {
+    self.accessibilityNotificationPoster =
+        ^(UIAccessibilityNotifications notification, id argument) {
+          UIAccessibilityPostNotification(notification, argument);
+        };
+  }
+  return self;
+}
 
 #pragma mark - Accessors
 
@@ -76,6 +90,8 @@
     // Create and show the snackbar message.
     SnackbarMessage* message = [self createCardSavedSnackbarMessage];
     if (message) {
+      self.accessibilityNotificationPoster(
+          UIAccessibilityScreenChangedNotification, nil);
       [self.snackbarCommandsHandler showSnackbarMessage:message];
     }
 
@@ -94,6 +110,7 @@
 
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:titleText];
   message.subtitle = base::SysUTF16ToNSString(delegate->card_label());
+  message.accessibilityLabel = titleText;
 
   // "Got it" button
   SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
@@ -158,4 +175,22 @@
       setSubtitleText:base::SysUTF16ToNSString(delegate->card_label())];
 }
 
+@end
+
+#pragma mark - Testing Category Implementation
+
+@implementation SaveCardInfobarBannerOverlayMediator (Testing)
+
+- (void)setAccessibilityNotificationPoster:
+    (void (^)(UIAccessibilityNotifications,
+              id))accessibilityNotificationPoster {
+  objc_setAssociatedObject(self, @selector(accessibilityNotificationPoster),
+                           accessibilityNotificationPoster,
+                           OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (void (^)(UIAccessibilityNotifications, id))accessibilityNotificationPoster {
+  return objc_getAssociatedObject(self,
+                                  @selector(accessibilityNotificationPoster));
+}
 @end

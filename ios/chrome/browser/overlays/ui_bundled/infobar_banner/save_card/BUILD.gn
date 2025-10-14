@@ -4,6 +4,7 @@
 
 source_set("save_card") {
   sources = [
+    "save_card_infobar_banner_overlay_mediator+Testing.h",
     "save_card_infobar_banner_overlay_mediator.h",
     "save_card_infobar_banner_overlay_mediator.mm",
   ]
@@ -30,7 +31,10 @@ source_set("save_card") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "save_card_infobar_banner_overlay_mediator_unittest.mm" ]
+  sources = [
+    "save_card_infobar_banner_overlay_mediator+Testing.h",
+    "save_card_infobar_banner_overlay_mediator_unittest.mm",
+  ]
 
   deps = [
     ":save_card",
@@ -54,6 +58,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
     "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
     "//ios/chrome/browser/overlays/ui_bundled/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/snackbar",
