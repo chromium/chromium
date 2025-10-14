@@ -31,8 +31,13 @@ bool LayerTreeSettings::TreesInVizInClientProcess() const {
          base::FeatureList::IsEnabled(features::kTreesInViz);
 }
 
-bool LayerTreeSettings::UseLayerContextForAnimations() const {
+bool LayerTreeSettings::TreeAnimationsInVizInClientProcess() const {
   return TreesInVizInClientProcess() &&
+         base::FeatureList::IsEnabled(features::kTreeAnimationsInViz);
+}
+
+bool LayerTreeSettings::TreeAnimationsInVizInVizProcess() const {
+  return trees_in_viz_in_viz_process &&
          base::FeatureList::IsEnabled(features::kTreeAnimationsInViz);
 }
 

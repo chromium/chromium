@@ -37,7 +37,11 @@ class CC_EXPORT LayerTreeSettings {
 
   // If true, the remote display tree handles its own composited animations.
   // This can only be true when TreesInVizInClientProcess() is also true.
-  bool UseLayerContextForAnimations() const;
+  bool TreeAnimationsInVizInClientProcess() const;
+
+  // If true, the GPU-side display tree handles its own composited animation.
+  // This can only be true when |trees_in_viz_in_viz_process| is also true.
+  bool TreeAnimationsInVizInVizProcess() const;
 
   // If true, this is a GPU-side display tree receiving updates from a remote
   // client via the LayerContext API. Such trees do no raster work of their own

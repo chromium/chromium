@@ -450,8 +450,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       task_runner_provider_(task_runner_provider),
       current_begin_frame_tracker_(FROM_HERE),
       settings_(settings),
-      use_layer_context_for_animations_(
-          settings_.UseLayerContextForAnimations()),
       is_synchronous_single_threaded_(!task_runner_provider->HasImplThread() &&
                                       !settings_.single_thread_proxy_scheduler),
       cached_managed_memory_policy_(settings.memory_policy),
@@ -3630,7 +3628,8 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
     input_delegate_->WillBeginImplFrame(args);
 
   // TODO(zmo): Revisit if this is needed for TreeAnimationsInViz mode.
-  if (!settings().trees_in_viz_in_viz_process) {
+  if (!settings().trees_in_viz_in_viz_process ||
+      settings().TreeAnimationsInVizInVizProcess()) {
     Animate();
   }
 
@@ -4239,7 +4238,7 @@ void LayerTreeHostImpl::SetNeedsRedraw(bool animation_only,
   events_metrics_manager_.SaveActiveEventMetrics();
 
   if (settings_.TreesInVizInClientProcess()) {
-    if (!animation_only || !use_layer_context_for_animations_) {
+    if (!animation_only || !settings_.TreeAnimationsInVizInClientProcess()) {
       client_->SetNeedsRedrawOnImplThread();
     }
   } else {
