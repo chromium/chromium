@@ -256,6 +256,7 @@ void HttpStreamPool::TcpBasedAttempt::OnTcpHandshakeComplete() {
 void HttpStreamPool::TcpBasedAttempt::OnAttemptSlow() {
   CHECK(!is_slow_);
   is_slow_ = true;
+  slot()->UpdateIsSlow();
   manager_->OnTcpBasedAttemptSlow(this);
 }
 
@@ -289,6 +290,12 @@ HttpStreamPool::TcpBasedAttemptSlot::operator=(TcpBasedAttemptSlot&&) = default;
 
 void HttpStreamPool::TcpBasedAttemptSlot::AllocateAttempt(
     std::unique_ptr<TcpBasedAttempt> attempt) {
+  // New attempts should typically not be slow, so could potentially
+  // unconditionally set `is_slow_` to false, but best to be safe.
+  if (!attempt->is_slow()) {
+    is_slow_ = false;
+  }
+
   if (attempt->ip_endpoint().address().IsIPv4()) {
     CHECK(!ipv4_attempt_);
     ipv4_attempt_ = std::move(attempt);
@@ -310,6 +317,8 @@ HttpStreamPool::TcpBasedAttemptSlot::TakeAttempt(TcpBasedAttempt* raw_attempt) {
     }
     NOTREACHED();
   };
+
+  UpdateIsSlow();
 
   std::unique_ptr<TcpBasedAttempt> attempt = take_attempt();
   // Reset slot to avoid dangling pointer.
@@ -353,16 +362,8 @@ void HttpStreamPool::TcpBasedAttemptSlot::MaybeTakeSSLConfigWaitingCallbacks(
 }
 
 bool HttpStreamPool::TcpBasedAttemptSlot::IsSlow() const {
-  if (ipv4_attempt_ && ipv6_attempt_) {
-    return ipv4_attempt_->is_slow() && ipv6_attempt_->is_slow();
-  }
-  if (ipv4_attempt_) {
-    return ipv4_attempt_->is_slow();
-  }
-  if (ipv6_attempt_) {
-    return ipv6_attempt_->is_slow();
-  }
-  NOTREACHED();
+  DCHECK_EQ(is_slow_, CalculateIsSlow());
+  return is_slow_;
 }
 
 bool HttpStreamPool::TcpBasedAttemptSlot::HasIPEndPoint(
@@ -395,6 +396,20 @@ base::Value::Dict HttpStreamPool::TcpBasedAttemptSlot::GetInfoAsValue() const {
     dict.Set("ipv6_attempt", ipv6_attempt_->GetInfoAsValue());
   }
   return dict;
+}
+
+void HttpStreamPool::TcpBasedAttemptSlot::UpdateIsSlow() {
+  is_slow_ = CalculateIsSlow();
+}
+
+bool HttpStreamPool::TcpBasedAttemptSlot::CalculateIsSlow() const {
+  if (ipv4_attempt_ && !ipv4_attempt_->is_slow()) {
+    return false;
+  }
+  if (ipv6_attempt_ && !ipv6_attempt_->is_slow()) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace net

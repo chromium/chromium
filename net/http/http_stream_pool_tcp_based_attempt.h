@@ -140,8 +140,8 @@ class HttpStreamPool::TcpBasedAttemptSlot {
   void MaybeTakeSSLConfigWaitingCallbacks(
       std::vector<CompletionOnceCallback>& callbacks);
 
-  // Returns true when this slot is slow. A slot is considered slow when either
-  // IPv4 or IPv6 attempt is slow.
+  // Returns true when this slot is slow. A slot is considered slow all attempts
+  // it owns are slow.
   bool IsSlow() const;
 
   // Returns true if either IPv4 or IPv6 attempt has the given `ip_endpoint`.
@@ -150,11 +150,25 @@ class HttpStreamPool::TcpBasedAttemptSlot {
   // Sets the cancel reason of both attempts in this slot.
   void SetCancelReason(StreamSocketCloseReason reason);
 
+  // Updates `is_slow_` based on current state of `ipv4_attempt_` and
+  // `ipv6_attempt_`. Called when an attempt is added, removed, or marked as
+  // slow.
+  void UpdateIsSlow();
+
   base::Value::Dict GetInfoAsValue() const;
 
  private:
+  // Re-calculates whether this slot is considered slow, without updating
+  // `is_slow_`. This is not inlined in UpdateIsSlow() so that it can be used in
+  // DCHECKs.
+  bool CalculateIsSlow() const;
+
   std::unique_ptr<TcpBasedAttempt> ipv4_attempt_;
   std::unique_ptr<TcpBasedAttempt> ipv6_attempt_;
+
+  // False if either of `ipv4_attempt_` or `ipv6_attempt_` is non-null and not
+  // slow. Cached to reduced pointer dereferencing overhead of IsSlow() calls.
+  bool is_slow_ = false;
 };
 
 }  // namespace net
