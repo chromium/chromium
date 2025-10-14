@@ -424,7 +424,6 @@ class CORE_EXPORT HTMLSelectElement final
   LayoutBox* AutoscrollBox() override;
   void StopAutoscroll() override;
 
-  bool AreAuthorShadowsAllowed() const override { return false; }
   void FinishParsingChildren() override;
 
   // TypeAheadDataSource functions.

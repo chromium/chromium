@@ -2177,8 +2177,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       ShadowRootMode,
       SlotAssignmentMode = SlotAssignmentMode::kNamed);
 
-  // FIXME: Everyone should allow author shadows.
-  virtual bool AreAuthorShadowsAllowed() const { return true; }
   virtual void DidAddUserAgentShadowRoot(ShadowRoot&) {}
   virtual bool AlwaysCreateUserAgentShadowRoot() const { return false; }
 

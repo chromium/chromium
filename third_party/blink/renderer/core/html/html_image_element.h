@@ -217,8 +217,6 @@ class CORE_EXPORT HTMLImageElement
   void AdjustStyle(ComputedStyleBuilder&) override;
 
  private:
-  bool AreAuthorShadowsAllowed() const override { return false; }
-
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(

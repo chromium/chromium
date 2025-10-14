@@ -377,7 +377,6 @@ class CORE_EXPORT HTMLCanvasElement final
   void ParseAttribute(const AttributeModificationParams&) override;
   void AttributeChanged(const AttributeModificationParams&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-  bool AreAuthorShadowsAllowed() const override { return false; }
 
   void OnWidthOrHeightAssigned();
 

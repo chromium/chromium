@@ -69,8 +69,6 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
  private:
-  bool AreAuthorShadowsAllowed() const override { return false; }
-
   bool IsLabelable() const override { return true; }
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
