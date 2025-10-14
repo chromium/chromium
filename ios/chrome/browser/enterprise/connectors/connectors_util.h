@@ -27,13 +27,11 @@ base::Value::Dict GetContext(ProfileIOS* profile);
 // Value.
 ClientMetadata GetContextAsClientMetadata(ProfileIOS* profile);
 
-// Returns User DMToken or client id for a given `profile` if:
+// Returns client id for a given `profile` if:
 // * `profile` is NOT incognito profile.
 // * `profile` is NOT sign-in screen profile
 // * user corresponding to a `profile` is managed.
-// Otherwise returns empty optional. More about DMToken:
-// go/dmserver-domain-model#dmtoken.
-std::optional<std::string> GetUserDmToken(ProfileIOS* profile);
+// Otherwise returns empty optional.
 std::optional<std::string> GetUserClientId(ProfileIOS* profile);
 
 // Returns affiliation IDs contained in the PolicyData corresponding to the
