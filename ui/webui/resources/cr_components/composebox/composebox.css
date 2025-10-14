@@ -81,19 +81,6 @@
 
   --glif-rotation-duration: 1000ms;
 
-  --expand-ease-in-duration: 400ms;
-  --expand-delay: 300ms;
-  --expand-ease-out-duration: 300ms;
-  --expand-duration: calc(
-    var(--expand-ease-in-duration) + var(--expand-delay) +
-      var(--expand-ease-out-duration)
-  );
-  --collapse-ease-in-duration: 100ms;
-  --collapse-ease-out-duration: 500ms;
-  --collapse-duration: calc(
-    var(--collapse-ease-in-duration) + var(--collapse-ease-out-duration)
-  );
-
   --icon-entry-transition: opacity var(--expand-ease-out-duration) linear 800ms;
   --icon-exit-transition: opacity var(--collapse-ease-in-duration)
     var(--emphasized-accelerate);
@@ -111,6 +98,21 @@
   font-size: var(--cr-composebox-font-size, 18px);
   transition: var(--border-radius-transition);
   width: var(--ntp-composebox-width, 337px);
+}
+
+:host(:not([ntp-realbox-next-enabled])) {
+  --expand-ease-in-duration: 400ms;
+  --expand-delay: 300ms;
+  --expand-ease-out-duration: 300ms;
+  --expand-duration: calc(
+    var(--expand-ease-in-duration) + var(--expand-delay) +
+      var(--expand-ease-out-duration)
+  );
+  --collapse-ease-in-duration: 100ms;
+  --collapse-ease-out-duration: 500ms;
+  --collapse-duration: calc(
+    var(--collapse-ease-in-duration) + var(--collapse-ease-out-duration)
+  );
 }
 
 :host([expanded_]) {
