@@ -175,71 +175,69 @@ class ScopedBlockPopupsException {
 // Tests that the "exceptions" section on the settings page is hidden and
 // revealed properly when the preference switch is toggled.
 - (void)testSettingsPageWithExceptions {
-  // TODO(crbug.com/441738071): Still flaky on iOS 18.
-  if (!base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 18.");
-  }
   std::string allowedPattern = "[*.]example.com";
   ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK);
   ScopedBlockPopupsException exceptionSetter(allowedPattern);
 
   [ChromeEarlGreyUI openSettingsMenu];
   {
-    ScopedDisableTimerTracking disabler;
+    ScopedDisableTimerTracking timerTrackingDisabler;
     [ChromeEarlGreyUI tapSettingsMenuButton:ContentSettingsButton()];
+    [[EarlGrey selectElementWithMatcher:BlockPopupsSettingsButton()]
+        performAction:grey_tap()];
+
+    // Make sure that the "example.com" exception is listed.
+    [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
+                                            allowedPattern))]
+        assertWithMatcher:grey_sufficientlyVisible()];
+
+    // Toggle the switch off via the UI and make sure the exceptions are not
+    // visible.
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                     @"blockPopupsContentView_switch", YES)]
+        performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+    [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
+                                            allowedPattern))]
+        assertWithMatcher:grey_notVisible()];
+    [[EarlGrey selectElementWithMatcher:
+                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                                  IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+                              grey_not(grey_accessibilityTrait(
+                                  UIAccessibilityTraitNotEnabled)),
+                              nil)] assertWithMatcher:grey_notVisible()];
+    [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+
+    // Toggle the switch back on via the UI and make sure the exceptions are now
+    // visible.
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                     @"blockPopupsContentView_switch", NO)]
+        performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+    [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
+                                            allowedPattern))]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey selectElementWithMatcher:
+                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                                  IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+                              grey_not(TabGridEditButton()),
+                              grey_not(grey_accessibilityTrait(
+                                  UIAccessibilityTraitNotEnabled)),
+                              nil)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+
+    // Disable EarlGrey synchronization to avoid infinite spinner loop.
+    ScopedSynchronizationDisabler synchronizationDisabler;
+
+    // Close the settings menu.
+    [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
+        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
+        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+        performAction:grey_tap()];
   }
-  [[EarlGrey selectElementWithMatcher:BlockPopupsSettingsButton()]
-      performAction:grey_tap()];
-
-  // Make sure that the "example.com" exception is listed.
-  [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
-                                          allowedPattern))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Toggle the switch off via the UI and make sure the exceptions are not
-  // visible.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   @"blockPopupsContentView_switch", YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-  [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
-                                          allowedPattern))]
-      assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                                IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-                            grey_not(grey_accessibilityTrait(
-                                UIAccessibilityTraitNotEnabled)),
-                            nil)] assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Toggle the switch back on via the UI and make sure the exceptions are now
-  // visible.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          @"blockPopupsContentView_switch", NO)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
-  [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
-                                          allowedPattern))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                                IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-                            grey_not(TabGridEditButton()),
-                            grey_not(grey_accessibilityTrait(
-                                UIAccessibilityTraitNotEnabled)),
-                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Disable EarlGrey synchronization to avoid infinite spinner loop.
-  ScopedSynchronizationDisabler disabler;
-
-  // Close the settings menu.
-  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
 }
 
 @end
