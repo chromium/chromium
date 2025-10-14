@@ -436,8 +436,9 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
     case ax::mojom::Role::kListBox:
     case ax::mojom::Role::kDescriptionList:
       return kAXListViewClassname;
+    // An Android dialog is just a generic window, so both `kDialog` and
+    // `kAlertDialog` Chrome roles are mapped to Android's `kAXAlertDialog`.
     case ax::mojom::Role::kDialog:
-      return kAXDialogClassname;
     case ax::mojom::Role::kAlertDialog:
       return kAXAlertDialogClassname;
     case ax::mojom::Role::kRootWebArea:

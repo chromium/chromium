@@ -3,4 +3,4 @@ android.webkit.WebView focusable
 ++++android.widget.TextView interesting name='Test for modal dialog opened in an iframe. '
 ++++android.view.View
 ++++++android.view.View
-++++++++android.app.Dialog role_description='dialog' focusable focused interesting name='Text in the dialog.'
+++++++++android.app.AlertDialog role_description='dialog' focusable focused interesting name='Text in the dialog.'
