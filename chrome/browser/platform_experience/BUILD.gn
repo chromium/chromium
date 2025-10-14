@@ -8,6 +8,7 @@ source_set("features") {
   public = [ "features.h" ]
   sources = [ "features.cc" ]
   public_deps = [ "//base" ]
+  deps = [ "//chrome/common:constants" ]
 }
 
 source_set("prefs") {
@@ -22,7 +23,10 @@ source_set("prefs") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "prefs_unittest.cc" ]
+  sources = [
+    "features_unittest.cc",
+    "prefs_unittest.cc",
+  ]
   deps = [
     ":features",
     ":prefs",

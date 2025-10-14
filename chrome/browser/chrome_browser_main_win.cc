@@ -60,6 +60,7 @@
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/first_run/upgrade_util_win.h"
 #include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
+#include "chrome/browser/platform_experience/features.h"
 #include "chrome/browser/platform_experience/prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -745,8 +746,10 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(
-            &platform_experience::MaybeInstallPlatformExperienceHelper));
+        base::BindOnce([]() {
+          platform_experience::MaybeInstallPlatformExperienceHelper();
+          platform_experience::features::ActivateFieldTrials();
+        }));
     platform_experience::prefs::SetPrefOverrides(
         *g_browser_process->local_state());
   }
