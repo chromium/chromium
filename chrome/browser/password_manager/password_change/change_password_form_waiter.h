@@ -75,7 +75,11 @@ class ChangePasswordFormWaiter
 
   void OnTimeout();
 
-  const raw_ptr<password_manager::PasswordManagerClient> client_;
+  static password_manager::PasswordFormManager* GetCorrespondingFormManager(
+      base::WeakPtr<ChangePasswordFormWaiter> waiter,
+      autofill::FieldRendererId new_password_element_id);
+
+  const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
   PasswordFormFoundCallback callback_;
 
   base::TimeDelta timeout_ = base::TimeDelta::Max();

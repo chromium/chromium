@@ -487,7 +487,7 @@ TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormAlreadyParsed) {
   form_managers.push_back(CreateFormManager(form));
 
   EXPECT_CALL(cache(), GetFormManagers)
-      .WillOnce(testing::Return(base::span(form_managers)));
+      .WillRepeatedly(testing::Return(base::span(form_managers)));
   auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
                                                   result_future.GetCallback())
                     .Build();
