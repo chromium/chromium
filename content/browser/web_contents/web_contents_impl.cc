@@ -164,6 +164,7 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "content/public/browser/secure_embed_delegate.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
@@ -4184,7 +4185,11 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   std::unique_ptr<WebContentsViewDelegate> delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);
 
-  if (browser_plugin_guest_) {
+  if (params.secure_embed_delegate) {
+    secure_embed_delegate_ = params.secure_embed_delegate;
+  }
+
+  if (browser_plugin_guest_ || secure_embed_delegate_) {
     view_ = std::make_unique<WebContentsViewChildFrame>(
         this, std::move(delegate), &render_view_host_delegate_view_);
   } else {
@@ -4543,6 +4548,12 @@ WebContentsImpl::GetInputEventRouter() {
   if (!IsBeingDestroyed()) {
     if (GetOuterWebContents()) {
       return GetOuterWebContents()->GetInputEventRouter();
+    }
+
+    if (secure_embed_delegate_) {
+      return static_cast<WebContentsImpl*>(
+                 secure_embed_delegate_->GetEmbedderWebContents())
+          ->GetInputEventRouter();
     }
 
     if (!rwh_input_event_router_.get()) {

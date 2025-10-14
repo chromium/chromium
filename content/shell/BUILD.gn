@@ -340,6 +340,7 @@ static_library("content_shell_lib") {
     "//components/performance_manager",
     "//components/permissions",
     "//components/prefs",
+    "//components/secure_embed/buildflags",
     "//components/services/storage/test_api",
     "//components/url_formatter",
     "//components/variations",

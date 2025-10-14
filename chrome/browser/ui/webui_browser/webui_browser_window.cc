@@ -436,6 +436,10 @@ void WebUIBrowserWindow::OnWidgetBoundsChanged(views::Widget* widget,
   }
 }
 
+content::WebContents* WebUIBrowserWindow::GetEmbedderWebContents() {
+  return GetUIWebContents();
+}
+
 gfx::Rect WebUIBrowserWindow::GetContentsBoundsInScreen() const {
   ui::TrackedElement* content_region =
       ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
@@ -1099,6 +1103,10 @@ BrowserView* WebUIBrowserWindow::AsBrowserView() {
   return nullptr;
 }
 
+content::SecureEmbedDelegate* WebUIBrowserWindow::GetSecureEmbedDelegate() {
+  return this;
+}
+
 gfx::Rect WebUIBrowserWindow::GetBounds() const {
   return widget_->GetWindowBoundsInScreen();
 }
@@ -1251,4 +1259,8 @@ void WebUIBrowserWindow::CloseSidePanel() {
 WebUIBrowserSidePanelUI* WebUIBrowserWindow::GetWebUIBrowserSidePanelUI() {
   return static_cast<WebUIBrowserSidePanelUI*>(
       browser_->browser_window_features()->side_panel_ui());
+}
+
+content::WebContents* WebUIBrowserWindow::GetUIWebContents() const {
+  return web_contents_delegate_->web_contents();
 }

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "content/public/browser/secure_embed_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/color/color_provider_key.h"
@@ -40,6 +41,7 @@ class WebUILocationBar;
 // uses views::Widget for windowing management.
 class WebUIBrowserWindow : public BrowserWindow,
                            public ExclusiveAccessContext,
+                           public content::SecureEmbedDelegate,
                            public ui::ColorProviderSource,
                            public ui::AcceleratorProvider,
                            public ui::AcceleratorTarget,
@@ -220,6 +222,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   void ShowChromeLabs() override;
   views::WebView* GetContentsWebView() override;
   BrowserView* AsBrowserView() override;
+  content::SecureEmbedDelegate* GetSecureEmbedDelegate() override;
 
   // ui::BaseWindow:
   void Show() override;
@@ -274,11 +277,15 @@ class WebUIBrowserWindow : public BrowserWindow,
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
+  // content::SecureEmbedDelegate:
+  content::WebContents* GetEmbedderWebContents() override;
+
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
   void CloseSidePanel();
 
   WebUIBrowserUI* GetWebUIBrowserUI() const;
   WebUIBrowserSidePanelUI* GetWebUIBrowserSidePanelUI();
+  content::WebContents* GetUIWebContents() const;
 
   Browser* browser() { return browser_.get(); }
   views::Widget* widget() { return widget_.get(); }

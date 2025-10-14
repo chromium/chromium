@@ -5361,6 +5361,7 @@ static_library("ui_public_dependencies") {
     "//components/enterprise/buildflags",
     "//components/paint_preview/buildflags",
     "//components/safe_browsing:buildflags",
+    "//components/secure_embed/buildflags",
     "//components/segmentation_platform/public",
     "//components/sync",
     "//components/sync_user_events",

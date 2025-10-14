@@ -48,6 +48,7 @@ Browser::Browser(content::WebUI* web_ui)
   html_source->SetDefaultResource(IDR_WEBUI_EXAMPLES_BROWSER_INDEX_HTML);
 
   content::WebContents::CreateParams params(browser_context);
+  params.secure_embed_delegate = this;
   guest_contents_ = content::WebContents::Create(params);
 
   guest_contents::GuestContentsHandle::CreateForWebContents(
@@ -73,6 +74,10 @@ void Browser::BindInterface(
     mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver) {
   guest_contents::GuestContentsHostImpl::Create(web_ui()->GetWebContents(),
                                                 std::move(receiver));
+}
+
+content::WebContents* Browser::GetEmbedderWebContents() {
+  return web_ui()->GetWebContents();
 }
 
 void Browser::CreatePageHandler(

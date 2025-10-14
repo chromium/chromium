@@ -156,6 +156,7 @@ class SavePackage;
 class ScopedAccessibilityMode;
 class ScreenChangeMonitor;
 class ScreenOrientationProvider;
+class SecureEmbedDelegate;
 class SiteInstanceGroup;
 // For web_contents_impl_browsertest.cc
 class TestWCDelegateForDialogsAndFullscreen;
@@ -2280,6 +2281,9 @@ class CONTENT_EXPORT WebContentsImpl
   // Manages the guest state for browser plugin, if this WebContents is a guest;
   // NULL otherwise.
   std::unique_ptr<BrowserPluginGuest> browser_plugin_guest_;
+
+  // Helps manage being embeded with SecureEmbed.
+  raw_ptr<SecureEmbedDelegate> secure_embed_delegate_;
 
   // Helper classes ------------------------------------------------------------
 

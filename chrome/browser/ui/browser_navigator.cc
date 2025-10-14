@@ -47,6 +47,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/secure_embed/buildflags/buildflags.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -529,6 +530,11 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
   if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     create_params.initially_hidden = true;
   }
+
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+  create_params.secure_embed_delegate =
+      params.browser->window()->GetSecureEmbedDelegate();
+#endif
 
 #if defined(USE_AURA)
   if (params.browser->window() && params.browser->window()->GetNativeWindow()) {

@@ -6040,6 +6040,10 @@ void BrowserView::SetIsTabModalPopupDeprecated(
   browser_->set_is_tab_modal_popup_deprecated(is_tab_modal_popup_deprecated);
 }
 
+content::SecureEmbedDelegate* BrowserView::GetSecureEmbedDelegate() {
+  return nullptr;
+}
+
 void BrowserView::UpdateWebAppStatusIconsVisiblity() {
   if (web_app_frame_toolbar()) {
     web_app_frame_toolbar()->UpdateStatusIconsVisibility();
