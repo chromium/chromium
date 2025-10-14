@@ -638,7 +638,7 @@ void DownloadBubbleRowView::OnMainButtonPressed(const ui::Event& event) {
     return;
   }
   if (input_protector_->IsPossiblyUnintendedInteraction(
-          event, /*allow_key_events=*/true)) {
+          event, /*allow_key_events=*/false)) {
     return;
   }
   if (info_->has_subpage()) {
@@ -657,7 +657,7 @@ void DownloadBubbleRowView::OnActionButtonPressed(
     const ui::Event& event) {
   if (!bubble_controller_ || !info_->model() ||
       input_protector_->IsPossiblyUnintendedInteraction(
-          event, /*allow_key_events=*/true)) {
+          event, /*allow_key_events=*/false)) {
     return;
   }
   bubble_controller_->ProcessDownloadButtonPress(info_->model()->GetWeakPtr(),
