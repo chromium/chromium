@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_deref.h"
+#include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
@@ -72,7 +73,9 @@ class MultiContentsViewDropTargetControllerBrowserTest
 
   int GetViewWidth() { return browser()->GetBrowserView().width(); }
 
-  void SimulateTabDrag(bool is_maximized, const gfx::Point& point_in_view) {
+  void SimulateTabDrag(
+      bool is_maximized,
+      base::OnceCallback<gfx::Point(int view_width)> get_point_in_view) {
     MockTabDragController mock_tab_drag_controller;
     DragSessionData session_data;
     Tab* tab = tabstrip()->tab_at(0);
@@ -91,13 +94,15 @@ class MultiContentsViewDropTargetControllerBrowserTest
       EXPECT_TRUE(ui_test_utils::WaitForMaximized(browser()));
     }
 
-    // Return whether the drop timer is running which indicates if the drop
-    // target will show.
+    const gfx::Point point_in_view =
+        std::move(get_point_in_view).Run(GetViewWidth());
     const gfx::Point point_in_screen = views::View::ConvertPointToScreen(
         drop_target_view()->parent(), point_in_view);
     controller().OnTabDragUpdated(mock_tab_drag_controller, point_in_screen);
   }
 
+  // Return whether the drop timer is running which indicates if the drop
+  // target will show.
   bool IsDropTimerRunning() {
     return controller().IsDropTimerRunningForTesting();
   }
@@ -110,13 +115,17 @@ class MultiContentsViewDropTargetControllerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
                        OnTabDragUpdatedNotMaximizedWithStartPoint) {
-  SimulateTabDrag(false, gfx::Point(30, 250));
+  SimulateTabDrag(false, base::BindOnce([](int view_width) {
+                    return gfx::Point(30, 250);
+                  }));
   EXPECT_TRUE(IsDropTimerRunning());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
                        OnTabDragUpdatedMaximizedWithMiddlePoint) {
-  SimulateTabDrag(true, gfx::Point(GetViewWidth() / 2, 250));
+  SimulateTabDrag(true, base::BindOnce([](int view_width) {
+                    return gfx::Point(view_width / 2, 250);
+                  }));
   EXPECT_FALSE(IsDropTimerRunning());
 }
 
@@ -125,27 +134,24 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
                        OnTabDragUpdatedMaximizedWithStartPoint) {
-  SimulateTabDrag(true, gfx::Point(30, 250));
+  SimulateTabDrag(
+      true, base::BindOnce([](int view_width) { return gfx::Point(30, 250); }));
   EXPECT_FALSE(IsDropTimerRunning());
 }
 
-// TODO(crbug.com/440805211): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OnTabDragUpdatedMaximizedWithEndPoint \
-  DISABLED_OnTabDragUpdatedMaximizedWithEndPoint
-#else
-#define MAYBE_OnTabDragUpdatedMaximizedWithEndPoint \
-  OnTabDragUpdatedMaximizedWithEndPoint
-#endif
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
-                       MAYBE_OnTabDragUpdatedMaximizedWithEndPoint) {
-  SimulateTabDrag(true, gfx::Point(GetViewWidth() - 10, 250));
+                       OnTabDragUpdatedMaximizedWithEndPoint) {
+  SimulateTabDrag(true, base::BindOnce([](int view_width) {
+                    return gfx::Point(view_width - 10, 250);
+                  }));
   EXPECT_FALSE(IsDropTimerRunning());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
                        OnTabDragUpdatedNotMaximizedWithEndPoint) {
-  SimulateTabDrag(false, gfx::Point(GetViewWidth() - 10, 250));
+  SimulateTabDrag(false, base::BindOnce([](int view_width) {
+                    return gfx::Point(view_width - 10, 250);
+                  }));
   EXPECT_TRUE(IsDropTimerRunning());
 }
 #endif
