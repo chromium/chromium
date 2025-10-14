@@ -47,6 +47,7 @@ sys.exit(
             'histograms/merge_xml_test.py',
             'histograms/PRESUBMIT_test.py',
             'histograms/pretty_print_test.py',
+            "histograms/print_expanded_histograms_test.py",
             'histograms/validate_token_test.py',
             '../json_comment_eater/json_comment_eater_test.py',
             '../json_to_struct/element_generator_test.py',

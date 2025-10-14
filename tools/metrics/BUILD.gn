@@ -128,6 +128,8 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/PRESUBMIT_test.py",
     "//tools/metrics/histograms/pretty_print.py",
     "//tools/metrics/histograms/pretty_print_test.py",
+    "//tools/metrics/histograms/print_expanded_histograms.py",
+    "//tools/metrics/histograms/print_expanded_histograms_test.py",
     "//tools/metrics/histograms/validate_token.py",
     "//tools/metrics/histograms/validate_token_test.py",
 

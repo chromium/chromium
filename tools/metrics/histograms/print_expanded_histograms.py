@@ -31,16 +31,15 @@ def _ConstructHistogram(doc, name, histogram_dict):
     owner_node = doc.createElement('owner')
     owner_node.appendChild(doc.createTextNode(owner))
     histogram.appendChild(owner_node)
-  # Populate the description nodes.
+  # Populate the summary node - stored as description.
   if 'description' in histogram_dict:
-    description_node = doc.createElement('description')
-    description_node.appendChild(
-        doc.createTextNode(histogram_dict['description']))
-    histogram.appendChild(description_node)
+    summary_node = doc.createElement('summary')
+    summary_node.appendChild(doc.createTextNode(histogram_dict['description']))
+    histogram.appendChild(summary_node)
   return histogram
 
 
-def main():
+def main(argv=sys.argv[1:]):
   """Prints expanded histograms."""
   parser = argparse.ArgumentParser(description='Print expanded histograms.')
   parser.add_argument('--pattern',
@@ -50,7 +49,7 @@ def main():
   parser.add_argument('--print-names-only',
                       action='store_true',
                       help='If set, only prints the histogram names.')
-  args = parser.parse_args()
+  args = parser.parse_args(argv)
 
   try:
     pattern = re.compile(args.pattern)
