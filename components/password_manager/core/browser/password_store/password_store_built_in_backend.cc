@@ -423,8 +423,6 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
     base::OnceCallback<void(bool)> completion,
     os_crypt_async::Encryptor encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramBoolean("PasswordManager.OnEncryptorReceived.Success",
-                            true);
 
   // Piggyback on |remote_form_changes_received| to record password deletion
   // coming from sync.

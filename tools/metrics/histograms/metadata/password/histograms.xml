@@ -2479,17 +2479,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.OnEncryptorReceived.Success"
-    enum="BooleanSuccess" expires_after="2026-04-12">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records whether os_crypt_async::Encryptor is returned by
-    os_crypt_async::OSCryptAsync::GetInstance() call. Recorded after the
-    callback is invoked.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.OpenedAsShortcut" enum="Boolean"
     expires_after="2026-03-22">
   <owner>vasilii@chromium.org</owner>
