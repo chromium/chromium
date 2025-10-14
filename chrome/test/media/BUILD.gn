@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
-
-python_library("videostack_performance_test") {
+# Lab performance tests
+group("performance_tests") {
   testonly = true
-  pydeps_file = "videostack_performance_test.pydeps"
+  deps = [ "//chrome/test/media/performance:videostack_performance_test" ]
 }
