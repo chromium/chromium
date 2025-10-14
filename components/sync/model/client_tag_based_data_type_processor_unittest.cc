@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -230,6 +231,10 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
     db_->set_data_type_state(data_type_state);
   }
 
+  void SetMergeFullSyncDataError(const ModelError& error) {
+    merge_full_sync_data_error_ = error;
+  }
+
   int merge_call_count() const { return merge_call_count_; }
   int apply_call_count() const { return apply_call_count_; }
   int commit_failures_count() const { return commit_failures_count_; }
@@ -246,6 +251,11 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override {
     merge_call_count_++;
+
+    if (merge_full_sync_data_error_.has_value()) {
+      return merge_full_sync_data_error_;
+    }
+
     if (!SupportsIncrementalUpdates()) {
       // If the bridge does not support incremental updates, it should clear
       // local data in MergeFullSyncData.
@@ -300,6 +310,7 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
 
   base::OnceCallback<void(const FailedCommitResponseDataList&)>
       on_commit_attempt_errors_callback_;
+  std::optional<ModelError> merge_full_sync_data_error_;
 };
 
 }  // namespace
@@ -501,8 +512,10 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
   void ErrorReceived(const ModelError& error) {
     EXPECT_TRUE(expect_error_);
-    histogram_tester_->ExpectBucketCount("Sync.DataTypeErrorSite.PREFERENCE",
-                                         *expect_error_, /*count=*/1);
+    histogram_tester_->ExpectBucketCount(
+        base::StrCat({"Sync.DataTypeErrorSite.",
+                      DataTypeToHistogramSuffix(GetDataType())}),
+        *expect_error_, /*count=*/1);
     expect_error_ = std::nullopt;
     error_reported_ = true;
     // Do not expect for a start callback anymore.
@@ -2891,6 +2904,18 @@ TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
   ASSERT_EQ(0, bridge()->merge_call_count());
   OnSyncStarting();
   EXPECT_EQ(1, bridge()->merge_call_count());
+}
+
+TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
+       ShouldHandleErrorsDuringInitialUpdate) {
+  ModelReadyToSync();
+  ASSERT_EQ(0, bridge()->merge_call_count());
+  bridge()->SetMergeFullSyncDataError(
+      ModelError(FROM_HERE, ModelError::Type::kGenericTestError));
+  ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kApplyFullUpdates);
+  OnSyncStarting();
+  ASSERT_EQ(1, bridge()->merge_call_count());
+  EXPECT_TRUE(type_processor()->GetError().has_value());
 }
 
 TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,

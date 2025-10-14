@@ -198,7 +198,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // Handle the first update received from the server after being enabled. If
   // the data type does not support incremental updates, this will be called for
   // any server update.
-  std::optional<ModelError> OnFullUpdateReceived(
+  [[nodiscard]]std::optional<ModelError> OnFullUpdateReceived(
       const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive);

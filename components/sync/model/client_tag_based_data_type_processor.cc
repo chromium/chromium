@@ -252,6 +252,11 @@ bool ClientTagBasedDataTypeProcessor::IsAllowingChanges() const {
 }
 
 void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
+  // Use base::debug::Alias() to ensure that crash dumps in reports include
+  // DataType.
+  const DataType data_type = type_;
+  base::debug::Alias(&data_type);
+
   if (!start_callback_) {
     return;
   }
@@ -290,9 +295,16 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
       data_type_state.set_initial_sync_state(
           sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY);
 
-      // TODO(crbug.com/40668179): handle error case for commit-only types.
-      OnFullUpdateReceived(data_type_state, UpdateResponseDataList(),
-                           /*gc_directive=*/std::nullopt);
+      ReportIfError(
+          OnFullUpdateReceived(data_type_state, UpdateResponseDataList(),
+                               /*gc_directive=*/std::nullopt),
+          ErrorSite::kApplyFullUpdates);
+
+      if (model_error_) {
+        CHECK(!start_callback_);
+        return;
+      }
+
       CHECK(entity_tracker_);
     } else {
       activation_response->data_type_state = data_type_state;
@@ -316,6 +328,7 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
   // another methods of the bridge eventually were called. This behavior would
   // be complicated and be unexpected in some bridges.
   // See crbug.com/1055584 for more details.
+  CHECK(start_callback_);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(start_callback_),
                                 std::move(activation_response)));
