@@ -397,13 +397,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         info.primary_pattern != ContentSettingsPattern::Wildcard() ||
         info.secondary_pattern != ContentSettingsPattern::Wildcard();
 
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
-      has_site_level_exception |=
-          tracking_protection_settings_->HasTrackingProtectionException(
-              current_url);
-    }
-
     // Partitioned access is displayed when all of these conditions are met:
     return
         // * third-party cookies are blocked

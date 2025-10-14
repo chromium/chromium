@@ -136,7 +136,7 @@ class CookieSettingsBase {
     // Allowed by scheme.
     kAllowByScheme = 19,
     // Allowed by tracking protection exception.
-    kAllowByTrackingProtectionException = 20,
+    // kAllowByTrackingProtectionException = 20,  // Deprecated
     // Allowed by sandbox 'allow-same-site-none-cookies' value.
     kAllowBySandboxValue = 21,
 

@@ -199,7 +199,6 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
 
   switch (allow_mechanism) {
     case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
-    case ThirdPartyCookieAllowMechanism::kAllowByTrackingProtectionException:
       third_party_cookie_features.push_back(
           blink::mojom::WebFeature::
               kThirdPartyCookieDeprecation_AllowByExplicitSetting);

@@ -257,15 +257,7 @@ class CookieSettingsTestBase : public testing::Test {
 // Default test class to be used by most tests. If you want to add a new
 // parameter, consider whether all test cases actually require this parameter
 // or whether it is sufficient to add a new subclass of CookieSettingsTestBase.
-class CookieSettingsTest : public CookieSettingsTestBase {
- public:
-  CookieSettingsTest() {
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
-  }
-
- private:
-};
+using CookieSettingsTest = CookieSettingsTestBase;
 
 // Parameterized class that tests combinations of StorageAccess grants and 3pcd
 // grants. Tests that don't need the whole range of combinations should create
@@ -758,9 +750,6 @@ TEST_F(CookieSettingsTest, TestThirdPartyCookiePhaseout) {
 }
 
 TEST_F(CookieSettingsTest, CookiesAllowThirdParty) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kBlockedSite, kFirstPartySiteForCookies,
       /*top_frame_origin=*/std::nullopt, net::CookieSettingOverrides(),
@@ -881,20 +870,6 @@ TEST_F(CookieSettingsTestUserBypass, UserBypassTemporaryExceptions) {
   // Passing the expiry of the user bypass entries should disable user bypass
   // for |kFirstPartySite| leaving non-bypassed site(s) unaffected.
   EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
-}
-
-TEST_F(CookieSettingsTestUserBypass, TrackingProtectionExceptions) {
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
-
-  tracking_protection_settings_->AddTrackingProtectionException(
-      kFirstPartySite);
-  EXPECT_TRUE(
       cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
   EXPECT_FALSE(
       cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
@@ -1937,43 +1912,6 @@ TEST_F(CookieSettingsTest, ThirdPartyException) {
       kHttpsSite, kFirstPartySiteForCookies, /*top_frame_origin=*/std::nullopt,
       cookie_setting_overrides, /*cookie_partition_key=*/std::nullopt));
 }
-
-// The TRACKING_PROTECTION content setting is not registered on iOS
-#if !BUILDFLAG(IS_IOS)
-TEST_F(CookieSettingsTest,
-       TrackingProtectionExceptionReadWhenNoCookieException) {
-  GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
-  net::CookieSettingOverrides cookie_setting_overrides;
-
-  // Set default to block 3PCs
-  prefs_.SetInteger(prefs::kCookieControlsMode,
-                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
-  EXPECT_FALSE(
-      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
-  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
-      kHttpsSite, kFirstPartySiteForCookies, /*top_frame_origin=*/std::nullopt,
-      cookie_setting_overrides, /*cookie_partition_key=*/std::nullopt));
-
-  // Add Tracking Protection exception
-  tracking_protection_settings_->AddTrackingProtectionException(
-      first_party_url);
-  EXPECT_TRUE(
-      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
-  EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
-      kHttpsSite, kFirstPartySiteForCookies, /*top_frame_origin=*/std::nullopt,
-      cookie_setting_overrides, /*cookie_partition_key=*/std::nullopt));
-
-  // Explicitly block 3PCs for the URL. This should take priority over the
-  // Tracking Protection exception
-  cookie_settings_->SetThirdPartyCookieSetting(first_party_url,
-                                               CONTENT_SETTING_BLOCK);
-  EXPECT_FALSE(
-      cookie_settings_->IsThirdPartyAccessAllowed(first_party_url, nullptr));
-  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
-      kHttpsSite, kFirstPartySiteForCookies, /*top_frame_origin=*/std::nullopt,
-      cookie_setting_overrides, /*cookie_partition_key=*/std::nullopt));
-}
-#endif
 
 TEST_F(CookieSettingsTest, ManagedThirdPartyException) {
   SettingInfo info;

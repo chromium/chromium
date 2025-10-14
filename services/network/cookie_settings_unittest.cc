@@ -326,47 +326,6 @@ TEST_F(CookieSettingsTest, GetCookieSetting) {
       CONTENT_SETTING_BLOCK);
 }
 
-class CookieSettingsTrackingProtectionTest : public CookieSettingsTestBase {
- public:
-  CookieSettingsTrackingProtectionTest() {
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
-  }
-};
-
-// The TRACKING_PROTECTION content setting is not registered on iOS
-#if !BUILDFLAG(IS_IOS)
-TEST_F(CookieSettingsTrackingProtectionTest,
-       GetCookieSettingUsesTrackingProtectionSetting) {
-  // Set default to block 3PCs
-  CookieSettings settings;
-  settings.set_block_third_party_cookies(true);
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kOtherURL), net::SiteForCookies(),
-                                      GURL(kURL), net::CookieSettingOverrides(),
-                                      nullptr),
-            CONTENT_SETTING_BLOCK);
-
-  // Add TRACKING_PROTECTION exception
-  settings.set_content_settings(
-      ContentSettingsType::TRACKING_PROTECTION,
-      {CreateSetting("*", kURL, CONTENT_SETTING_ALLOW)});
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kOtherURL), net::SiteForCookies(),
-                                      GURL(kURL), net::CookieSettingOverrides(),
-                                      nullptr),
-            CONTENT_SETTING_ALLOW);
-
-  // Explicitly block COOKIES for the URL. This should take priority over the
-  // TRACKING_PROTECTION exception
-  settings.set_content_settings(
-      ContentSettingsType::COOKIES,
-      {CreateSetting(kOtherURL, kURL, CONTENT_SETTING_BLOCK)});
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kOtherURL), net::SiteForCookies(),
-                                      GURL(kURL), net::CookieSettingOverrides(),
-                                      nullptr),
-            CONTENT_SETTING_BLOCK);
-}
-#endif
-
 TEST_F(CookieSettingsTest, GetCookieSettingMultipleProviders) {
   CookieSettings settings;
   settings.set_content_settings(

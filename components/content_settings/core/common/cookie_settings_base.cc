@@ -53,7 +53,6 @@ constexpr StorageAccessResult GetStorageAccessResult(
     case AllowMechanism::kNone:
       return StorageAccessResult::ACCESS_BLOCKED;
     case AllowMechanism::kAllowByExplicitSetting:
-    case AllowMechanism::kAllowByTrackingProtectionException:
     case AllowMechanism::kAllowByGlobalSetting:
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
       return StorageAccessResult::ACCESS_ALLOWED;
@@ -103,7 +102,6 @@ constexpr std::optional<SettingSource> GetSettingSource(
     // Other mechanisms do not map to a `SettingSource`.
     case AllowMechanism::kNone:
     case AllowMechanism::kAllowByExplicitSetting:
-    case AllowMechanism::kAllowByTrackingProtectionException:
     case AllowMechanism::kAllowByGlobalSetting:
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
     case AllowMechanism::kAllowByStorageAccess:
@@ -215,7 +213,6 @@ bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
   switch (mechanism) {
     case AllowMechanism::kNone:
     case AllowMechanism::kAllowByExplicitSetting:
-    case AllowMechanism::kAllowByTrackingProtectionException:
     case AllowMechanism::kAllowByGlobalSetting:
     case AllowMechanism::kAllowBy3PCD:
     case AllowMechanism::kAllowBy3PCDHeuristics:
@@ -248,7 +245,6 @@ bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
       return true;
     case AllowMechanism::kNone:
     case AllowMechanism::kAllowByExplicitSetting:
-    case AllowMechanism::kAllowByTrackingProtectionException:
     case AllowMechanism::kAllowByGlobalSetting:
     case AllowMechanism::kAllowBy3PCD:
     case AllowMechanism::kAllowBy3PCDHeuristics:
@@ -294,7 +290,6 @@ CookieSettingsBase::AllowMechanismToMetadataSourceType(
       return MetadataSourceType::Heuristics;
     case AllowMechanism::kNone:
     case AllowMechanism::kAllowByExplicitSetting:
-    case AllowMechanism::kAllowByTrackingProtectionException:
     case AllowMechanism::kAllowByGlobalSetting:
     case AllowMechanism::kAllowByStorageAccess:
     case AllowMechanism::kAllowByTopLevelStorageAccess:
@@ -565,20 +560,6 @@ CookieSettingsBase::IsAllowedBy3pcdMetadataGrantsSettings(
   return {allowed, std::move(info)};
 }
 
-CookieSettingsBase::IsAllowedWithMetadata
-CookieSettingsBase::IsAllowedByTrackingProtectionSetting(
-    const GURL& url,
-    const GURL& first_party_url) const {
-  SettingInfo info;
-  bool allowed =
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionContentSettingFor3pcb) &&
-      GetContentSetting(url, first_party_url,
-                        ContentSettingsType::TRACKING_PROTECTION,
-                        &info) == CONTENT_SETTING_ALLOW;
-  return {allowed, std::move(info)};
-}
-
 bool CookieSettingsBase::IsAllowedBy3pcdHeuristicsGrantsSettings(
     const GURL& url,
     const GURL& first_party_url,
@@ -707,15 +688,6 @@ CookieSettingsBase::DecideAccess(const GURL& url,
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
   }
 
-  // Check for a TRACKING_PROTECTION exception, which should also disable 3PCB.
-  if (IsAllowedWithMetadata tp_info =
-          IsAllowedByTrackingProtectionSetting(url, first_party_url);
-      tp_info.allowed) {
-    setting_info = std::move(tp_info.info);
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowByTrackingProtectionException};
-  }
-
   return AllowPartitionedCookies{};
 }
 
@@ -786,11 +758,6 @@ CookieSettingsBase::GetCookieSettingInternal(
     FireStorageAccessHistogram(
         GetStorageAccessResult(allow_cookies->mechanism));
 
-    if (allow_cookies->mechanism ==
-        ThirdPartyCookieAllowMechanism::kAllowByTrackingProtectionException) {
-      is_explicit_setting = true;
-      cookie_setting = CONTENT_SETTING_ALLOW;
-    }
     if (info) {
       if (std::optional<SettingSource> source =
               GetSettingSource(allow_cookies->mechanism);

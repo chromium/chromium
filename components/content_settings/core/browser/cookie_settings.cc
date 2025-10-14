@@ -195,14 +195,6 @@ bool CookieSettings::IsStoragePartitioningBypassEnabled(
                              !info.secondary_pattern.MatchesAllHosts())) {
     return true;
   }
-  // Check for explicit Tracking Protection exception.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionContentSettingFor3pcb) &&
-      tracking_protection_settings_ &&
-      tracking_protection_settings_->HasTrackingProtectionException(
-          first_party_url)) {
-    return true;
-  }
   return false;
 }
 
@@ -406,10 +398,7 @@ void CookieSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  if (content_type_set.Contains(ContentSettingsType::COOKIES) ||
-      (base::FeatureList::IsEnabled(
-           privacy_sandbox::kTrackingProtectionContentSettingFor3pcb) &&
-       content_type_set.Contains(ContentSettingsType::TRACKING_PROTECTION))) {
+  if (content_type_set.Contains(ContentSettingsType::COOKIES)) {
     for (auto& observer : observers_) {
       observer.OnCookieSettingChanged();
     }
