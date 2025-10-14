@@ -59,6 +59,12 @@ std::optional<std::string> GetWindowsUserDomain();
 std::optional<std::string> GetMachineGuid();
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+// Get the last date a security patch is applied on the device, in the format of
+// milliseconds since epoch.
+std::optional<int64_t> GetSecurityPatchLevelEpoch();
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace device_signals
 
 #endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_BROWSER_UTILS_H_

@@ -152,6 +152,12 @@ public final class DeviceInfo {
         return ret;
     }
 
+    @CalledByNative
+    public static String getDeviceName() {
+        return Settings.Global.getString(
+                ContextUtils.getApplicationContext().getContentResolver(), "device_name");
+    }
+
     public static boolean isInitializedForTesting() {
         return sInitialized;
     }

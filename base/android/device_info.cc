@@ -121,6 +121,12 @@ bool was_launched_on_large_display() {
   return get_device_info().wasLaunchedOnLargeDisplay;
 }
 
+std::string device_name() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return base::android::ConvertJavaStringToUTF8(
+      env, Java_DeviceInfo_getDeviceName(env));
+}
+
 void set_is_xr_for_testing() {
   Java_DeviceInfo_setIsXrForTesting(AttachCurrentThread(), true);  // IN-TEST
   get_holder().reset();

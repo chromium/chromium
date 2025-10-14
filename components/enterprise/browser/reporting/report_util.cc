@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
 
@@ -207,7 +208,8 @@ std::string GetSecuritySignalsInReport(
                      os_report.has_potentially_harmful_apps());
     signals_dict.Set("verified_apps_enabled",
                      os_report.verified_apps_enabled());
-    signals_dict.Set("security_patch", os_report.security_patch());
+    signals_dict.Set("security_patch_ms",
+                     base::NumberToString(os_report.security_patch_ms()));
 #endif
   }
 

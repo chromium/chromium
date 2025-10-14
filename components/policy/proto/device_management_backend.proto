@@ -2486,7 +2486,7 @@ message OSReport {
 
   // The user-visible security patch level. This value represents the date when
   // the device most recently applied a security patch. Android only.
-  optional string security_patch = 23;
+  optional int64 security_patch_ms = 23;
 }
 
 // Report the status of a Chrome installation on non-Chrome OS platform.

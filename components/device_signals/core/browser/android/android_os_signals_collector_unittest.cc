@@ -7,10 +7,14 @@
 #include <array>
 #include <utility>
 
+#include "base/android/android_info.h"
+#include "base/android/device_info.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
+#include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -19,6 +23,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,8 +82,21 @@ class AndroidOsSignalsCollectorTest : public testing::Test {
   // collected based on permission.
   void CheckSignalsCollected(OsSignalsResponse& response,
                              bool can_collect_pii) {
-    // `can_collect_pii` will be used when we add the remaining signals, so
-    // leaving it unused here for now.
+    if (can_collect_pii) {
+      EXPECT_EQ(response.display_name,
+                base::android::device_info::device_name());
+    } else {
+      EXPECT_EQ(response.display_name, std::nullopt);
+    }
+    EXPECT_EQ(response.operating_system, policy::GetOSPlatform());
+    EXPECT_EQ(response.os_version, base::SysInfo::OperatingSystemVersion());
+    EXPECT_EQ(response.browser_version, version_info::GetVersionNumber());
+    EXPECT_EQ(response.device_model, base::android::android_info::model());
+    EXPECT_EQ(response.device_manufacturer,
+              base::android::android_info::manufacturer());
+    EXPECT_EQ(response.device_enrollment_domain, kFakeBrowserEnrollmentDomain);
+    EXPECT_EQ(response.security_patch_ms,
+              device_signals::GetSecurityPatchLevelEpoch());
     EXPECT_EQ(response.verified_apps_enabled, expected_verify_app_result_);
     EXPECT_EQ(response.has_potentially_harmful_apps,
               GetExpectedHarmfulAppsSignal());
