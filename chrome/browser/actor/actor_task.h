@@ -188,7 +188,9 @@ class ActorTask {
 
   TaskId id_;
 
-  std::string title_;
+  // The title does not change for the duration of a task.
+  const std::string title_;
+
   // A timer for the current state.
   base::ElapsedTimer current_state_timer_;
   // An accumulation of elapsed times for previous "active" states.

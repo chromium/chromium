@@ -80,11 +80,9 @@ ActorTask::ActorTask(Profile* profile,
     : profile_(profile),
       execution_engine_(std::move(execution_engine)),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
-      ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {
-  if (options && options->title.has_value()) {
-    title_ = options->title.value();
-  }
-}
+      title_(options && options->title.has_value() ? options->title.value()
+                                                   : ""),
+      ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {}
 
 ActorTask::~ActorTask() = default;
 
