@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -348,6 +349,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             observeAndMaybeAddReadAloud(modelList, currentTab);
         }
 
+        // --- Reader Mode ---
+        if (shouldShowReaderModeItem()) {
+            modelList.add(buildReaderModeItem(currentTab));
+        }
+
         // --- Share ---
         if (mShowShare) {
             modelList.add(buildShareListItem(false));
@@ -450,6 +456,18 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                     AppCompatResources.getDrawable(mContext, R.drawable.ic_open_in_new_white_24dp));
         }
         modelList.add(new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model));
+    }
+
+    private boolean shouldShowReaderModeItem() {
+        if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()
+                || !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+                        ReaderModeManager.CPA_FALLBACK_MENU_PARAM,
+                        false)) {
+            return false;
+        }
+        var cpaController = mContextualPageActionControllerSupplier.get();
+        return cpaController != null && cpaController.hasReaderMode();
     }
 
     /**

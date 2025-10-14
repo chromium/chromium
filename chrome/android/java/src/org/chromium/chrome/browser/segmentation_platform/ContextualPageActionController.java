@@ -205,6 +205,12 @@ public class ContextualPageActionController {
                 : mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS);
     }
 
+    public boolean hasReaderMode() {
+        return mSignalAccumulator == null
+                ? false
+                : mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.READER_MODE);
+    }
+
     private void removeProviders() {
         for (ActionProvider provider : mActionProviders.values()) {
             provider.destroy();

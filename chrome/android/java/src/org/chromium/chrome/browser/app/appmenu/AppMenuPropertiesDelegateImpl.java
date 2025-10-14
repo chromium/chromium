@@ -499,6 +499,18 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         return currentTab != null && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl());
     }
 
+    /** Construct the reader mode menu item. */
+    protected MVCListAdapter.ListItem buildReaderModeItem(Tab currentTab) {
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.reader_mode_menu_id,
+                        DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())
+                                ? R.string.hide_reading_mode_text
+                                : R.string.show_reading_mode_text,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_mobile_friendly_24dp : 0));
+    }
+
     /** Construct the reader mode preferences menu item. */
     protected ListItem buildReaderModePrefsItem() {
         return new MVCListAdapter.ListItem(

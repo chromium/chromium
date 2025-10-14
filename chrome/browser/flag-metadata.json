@@ -1639,12 +1639,12 @@
   {
     "name": "cct-adaptive-button",
     "owners": [ "jinsukkim@google.com", "chrome-connective-tissue@google.com" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 145
   },
   {
     "name": "cct-adaptive-button-test-switch",
     "owners": [ "jinsukkim@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 145
   },
   {
     "name": "cct-auth-tab",

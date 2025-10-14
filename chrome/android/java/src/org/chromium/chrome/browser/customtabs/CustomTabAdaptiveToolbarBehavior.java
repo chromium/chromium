@@ -210,8 +210,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
 
     @ExperimentalOpenInBrowser
     private boolean isOpenInBrowserButtonEnabled() {
-        return ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()
-                && mIntentDataProvider.getOpenInBrowserButtonState() != OPEN_IN_BROWSER_STATE_OFF;
+        return mIntentDataProvider.getOpenInBrowserButtonState() != OPEN_IN_BROWSER_STATE_OFF;
     }
 
     private boolean isShareButtonEnabled() {

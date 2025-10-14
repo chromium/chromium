@@ -1861,7 +1861,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     private boolean isCpaOnlyOpenInBrowserDefault() {
         return ChromeFeatureList.sCctAdaptiveButtonContextualOnly.getValue()
-                && ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()
                 && ChromeFeatureList.sCctAdaptiveButtonDefaultVariant.getValue()
                         == AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
     }
