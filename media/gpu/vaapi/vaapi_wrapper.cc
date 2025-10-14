@@ -422,8 +422,7 @@ bool FillVADRMPRIMESurfaceDescriptor(const gfx::NativePixmap& pixmap,
                                      VADRMPRIMESurfaceDescriptor& descriptor) {
   memset(&descriptor, 0, sizeof(VADRMPRIMESurfaceDescriptor));
 
-  auto shared_image_format =
-      viz::GetSharedImageFormat(pixmap.GetBufferFormat());
+  auto shared_image_format = pixmap.GetSharedImageFormat();
   const uint32_t va_fourcc = SharedImageFormatToVAFourCC(shared_image_format);
   DCHECK(va_fourcc);
 
@@ -510,8 +509,7 @@ bool FillVASurfaceAttribExternalBuffers(
   memset(&va_attrib_extbuf_and_fd, 0,
          sizeof(VASurfaceAttribExternalBuffersAndFD));
 
-  auto shared_image_format =
-      viz::GetSharedImageFormat(pixmap.GetBufferFormat());
+  auto shared_image_format = pixmap.GetSharedImageFormat();
   const uint32_t va_fourcc = SharedImageFormatToVAFourCC(shared_image_format);
   DCHECK(va_fourcc);
 
@@ -2426,8 +2424,7 @@ std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceForPixmap(
     scoped_refptr<const gfx::NativePixmap> pixmap,
     bool protected_content) {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto shared_image_format =
-      viz::GetSharedImageFormat(pixmap->GetBufferFormat());
+  auto shared_image_format = pixmap->GetSharedImageFormat();
   if (!SharedImageFormatToVAFourCC(shared_image_format)) {
     LOG(ERROR) << "Failed to get the VA fourcc from the buffer format";
     return nullptr;
