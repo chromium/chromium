@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.NewEntryPoint.Eligibility"
-    enum="AssistantNewEntryPointEligibility" expires_after="2026-02-10">
+    enum="AssistantNewEntryPointEligibility" expires_after="2026-04-12">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>

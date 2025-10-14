@@ -1156,7 +1156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.GestureTransition.CacheHitOrMissReason"
-    enum="NavigationTransitionCacheHitOrMissReason" expires_after="2026-02-09">
+    enum="NavigationTransitionCacheHitOrMissReason" expires_after="2026-04-12">
   <owner>liuwilliam@google.com</owner>
   <owner>baranerf@google.com</owner>
   <owner>chrome-seamless-core@google.com</owner>
@@ -1214,7 +1214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.GestureTransition.ScreenshotCacheSize" units="MB"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>liuwilliam@google.com</owner>
   <owner>baranerf@google.com</owner>
   <owner>chrome-seamless-core@google.com</owner>
@@ -2549,7 +2549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleEventDurationTime.{Event}" units="ms"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

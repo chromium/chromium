@@ -3324,7 +3324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.AcceptCHFrame" enum="AcceptCHFrameRestart"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
@@ -6206,7 +6206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.EndToEndLatencyUs.{ThreadName}" units="microseconds"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>lizeb@chromium.org</owner>
   <owner>rockot@google.com</owner>
   <owner>mthiesse@chromium.org</owner>

@@ -929,7 +929,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelSessionCreationSuccess"
-    enum="BooleanSuccess" expires_after="2026-02-09">
+    enum="BooleanSuccess" expires_after="2026-04-12">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

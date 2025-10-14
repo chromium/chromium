@@ -2893,7 +2893,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsRelationship"
-    enum="DuplicateNavigationServingResult" expires_after="2026-02-09">
+    enum="DuplicateNavigationServingResult" expires_after="2026-04-12">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>

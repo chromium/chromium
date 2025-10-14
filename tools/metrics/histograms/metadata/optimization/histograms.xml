@@ -599,7 +599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.AIPageContent.TotalLatency" units="ms"
-    expires_after="2026-04-05">
+    expires_after="2026-04-12">
   <owner>khushalsagar@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
@@ -661,7 +661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.ApplyDecision.{OptimizationType}"
-    enum="OptimizationGuideOptimizationTypeDecision" expires_after="2026-02-09">
+    enum="OptimizationGuideOptimizationTypeDecision" expires_after="2026-04-12">
   <owner>rajendrant@chromium.org</owner>
   <owner>catliu@chromium.org</owner>
   <summary>

@@ -1790,7 +1790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroupTitleLength" units="characters"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
