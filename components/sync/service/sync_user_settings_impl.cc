@@ -371,16 +371,6 @@ bool SyncUserSettingsImpl::SetDecryptionPassphrase(
   return crypto_->SetDecryptionPassphrase(passphrase);
 }
 
-void SyncUserSettingsImpl::SetExplicitPassphraseDecryptionNigoriKey(
-    std::unique_ptr<Nigori> nigori) {
-  return crypto_->SetExplicitPassphraseDecryptionNigoriKey(std::move(nigori));
-}
-
-std::unique_ptr<Nigori>
-SyncUserSettingsImpl::GetExplicitPassphraseDecryptionNigoriKey() const {
-  return crypto_->GetExplicitPassphraseDecryptionNigoriKey();
-}
-
 DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   DataTypeSet types = UserSelectableTypesToDataTypes(
       GetSelectedTypes(), prefs_->IsExplicitBrowserSignin() ||

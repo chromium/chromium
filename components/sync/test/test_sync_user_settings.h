@@ -77,10 +77,6 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
-  void SetExplicitPassphraseDecryptionNigoriKey(
-      std::unique_ptr<Nigori> nigori) override;
-  std::unique_ptr<Nigori> GetExplicitPassphraseDecryptionNigoriKey()
-      const override;
 
   void SetRegisteredSelectableTypes(UserSelectableTypeSet types);
   void SetInitialSyncFeatureSetupComplete();

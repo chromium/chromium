@@ -72,6 +72,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   void SetEncryptionPassphrase(const std::string& passphrase);
   bool SetDecryptionPassphrase(const std::string& passphrase);
 
+  // Asynchronously decrypts pending keys using `nigori`. `nigori` must not be
+  // null. It's safe to call this method with wrong `nigori` and, unlike
+  // SetDecryptionPassphrase(), when passphrase isn't required.
   void SetExplicitPassphraseDecryptionNigoriKey(std::unique_ptr<Nigori> nigori);
   // Returns stored decryption key, corresponding to the last successfully
   // decrypted explicit passphrase Nigori. Returns nullptr if there is no such

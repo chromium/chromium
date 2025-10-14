@@ -111,10 +111,6 @@ class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
   std::optional<PassphraseType> GetPassphraseType() const override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
-  void SetExplicitPassphraseDecryptionNigoriKey(
-      std::unique_ptr<Nigori> nigori) override;
-  std::unique_ptr<Nigori> GetExplicitPassphraseDecryptionNigoriKey()
-      const override;
 
   // SyncPrefObserver implementation.
   void OnSyncManagedPrefChange(bool is_sync_managed) override;

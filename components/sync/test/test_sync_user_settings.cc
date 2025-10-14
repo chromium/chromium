@@ -265,14 +265,6 @@ bool TestSyncUserSettings::SetDecryptionPassphrase(
   return true;
 }
 
-void TestSyncUserSettings::SetExplicitPassphraseDecryptionNigoriKey(
-    std::unique_ptr<Nigori> nigori) {}
-
-std::unique_ptr<Nigori>
-TestSyncUserSettings::GetExplicitPassphraseDecryptionNigoriKey() const {
-  return nullptr;
-}
-
 void TestSyncUserSettings::SetRegisteredSelectableTypes(
     UserSelectableTypeSet types) {
   registered_selectable_types_ = types;
