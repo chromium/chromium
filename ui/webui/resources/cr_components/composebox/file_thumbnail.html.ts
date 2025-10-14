@@ -14,7 +14,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
   ${this.file.url ? html`
     <div id="tabChip" class="chip">
       <div id="tabThumbnail" class="thumbnail">
-        <composebox-tab-favicon .url="${this.file.url.url}" .size="${33}">
+        <composebox-tab-favicon .url="${this.file.url.url}" .size="${24}">
         </composebox-tab-favicon>
         <div class="overlay">
           <cr-icon-button
