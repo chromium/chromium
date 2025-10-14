@@ -3402,6 +3402,24 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentOwnScreenFail) {
   EXPECT_FALSE(success_future.Get());
 }
 
+TEST_F(BocaAppPageHandlerProducerTest,
+       PresentOwnScreenWhilePresentingStudentScreen) {
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
+  base::test::TestFuture<bool> success_future;
+  EXPECT_CALL(*teacher_screen_presenter, Start).Times(0);
+  EXPECT_CALL(*student_screen_presenter, IsPresenting).WillOnce(Return(true));
+  boca_app_handler()->PresentOwnScreen(kReceiverId,
+                                       success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+}
+
 TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenSuccess) {
   auto teacher_screen_presenter =
       std::make_unique<MockTeacherScreenPresenter>();

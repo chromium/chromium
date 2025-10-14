@@ -800,6 +800,13 @@ void BocaAppHandler::PresentOwnScreen(const std::string& receiver_id,
     std::move(callback).Run(false);
     return;
   }
+  if (student_screen_presenter() &&
+      student_screen_presenter()->IsPresenting()) {
+    LOG(ERROR) << "[Boca] trying to present teacher's own screen while "
+               << "presenting student's screen";
+    std::move(callback).Run(false);
+    return;
+  }
   teacher_screen_presenter()->Start(
       receiver_id, user_identity_, std::move(callback),
       base::BindOnce(&BocaAppHandler::OnPresentOwnScreenEnded,
