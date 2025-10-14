@@ -384,7 +384,7 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDoesNotNoiseForCpuCanvas) {
   // precondition.
   Context2D()->GetOrCreatePaintCanvas();
 
-  CanvasElement().DisableAccelerationForCanvas2D();
+  Context2D()->DisableAcceleration();
   base::HistogramTester histogram_tester;
 
   auto* window = GetFrame().DomWindow();
