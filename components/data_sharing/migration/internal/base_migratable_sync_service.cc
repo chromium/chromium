@@ -9,18 +9,12 @@
 #include "base/notimplemented.h"
 #include "components/data_sharing/migration/public/context_id.h"
 #include "components/data_sharing/migration/public/migratable_bridge_mediator.h"
-#include "components/data_sharing/migration/public/shareable_private_bridge.h"
-#include "components/data_sharing/migration/public/shareable_shared_bridge.h"
 
 namespace data_sharing {
 
 BaseMigratableSyncService::BaseMigratableSyncService(
-    std::unique_ptr<ShareablePrivateBridge> private_bridge,
-    std::unique_ptr<ShareableSharedBridge> shared_bridge,
     std::unique_ptr<MigratableBridgeMediator> mediator)
-    : private_bridge_(std::move(private_bridge)),
-      shared_bridge_(std::move(shared_bridge)),
-      mediator_(std::move(mediator)) {}
+    : mediator_(std::move(mediator)) {}
 
 BaseMigratableSyncService::~BaseMigratableSyncService() = default;
 

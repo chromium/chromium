@@ -15,17 +15,13 @@
 namespace data_sharing {
 
 class MigratableBridgeMediator;
-class ShareablePrivateBridge;
-class ShareableSharedBridge;
 
 // A reusable base class for MigratableSyncService implementations. It handles
 // owning the bridges and the mediator and forwarding the migration commands.
 class COMPONENT_EXPORT(DATA_SHARING_MIGRATION) BaseMigratableSyncService
     : public MigratableSyncService {
  public:
-  BaseMigratableSyncService(
-      std::unique_ptr<ShareablePrivateBridge> private_bridge,
-      std::unique_ptr<ShareableSharedBridge> shared_bridge,
+  explicit BaseMigratableSyncService(
       std::unique_ptr<MigratableBridgeMediator> mediator);
   ~BaseMigratableSyncService() override;
 
@@ -35,8 +31,6 @@ class COMPONENT_EXPORT(DATA_SHARING_MIGRATION) BaseMigratableSyncService
   bool IsPromotionReady() const override;
 
  private:
-  std::unique_ptr<ShareablePrivateBridge> private_bridge_;
-  std::unique_ptr<ShareableSharedBridge> shared_bridge_;
   std::unique_ptr<MigratableBridgeMediator> mediator_;
 
   base::WeakPtrFactory<BaseMigratableSyncService> weak_ptr_factory_{this};

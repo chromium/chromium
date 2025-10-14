@@ -8,10 +8,9 @@ source_set("public") {
     "context_id.h",
     "migratable_bridge_mediator.h",
     "migratable_entity_converter.h",
+    "migratable_sync_bridge.h",
     "migratable_sync_service.h",
     "migratable_sync_service_coordinator.h",
-    "shareable_private_bridge.h",
-    "shareable_shared_bridge.h",
     "sync_entity_identifier.h",
   ]
 
@@ -19,6 +18,7 @@ source_set("public") {
     ":features",
     "//components/keyed_service/core",
     "//components/sync/base",
+    "//components/sync/model",
   ]
 }
 
