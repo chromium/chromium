@@ -5,6 +5,7 @@ import './composebox_tool_chip.js';
 import './context_menu_entrypoint.js';
 import './contextual_entrypoint_and_carousel.js';
 import './composebox_dropdown.js';
+import './error_scrim.js';
 import './file_carousel.js';
 import './icons.html.js';
 import '//resources/cr_components/localized_link/localized_link.js';
@@ -33,6 +34,7 @@ import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import type {FileUploadErrorType} from './composebox_query.mojom-webui.js';
 import {FileUploadStatus} from './composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
+import type {ErrorScrimElement} from './error_scrim.js';
 
 export interface ComposeboxElement {
   $: {
@@ -42,6 +44,7 @@ export interface ComposeboxElement {
     submitIcon: CrIconButtonElement,
     matches: ComposeboxDropdownElement,
     context: ContextualEntrypointAndCarouselElement,
+    errorScrim: ErrorScrimElement,
   };
 }
 
@@ -93,13 +96,6 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      showErrorScrim_: {
-        reflect: true,
-        type: Boolean,
-      },
-      errorMessage_: {
-        type: String,
-      },
       inputPlaceholder_: {
         reflect: true,
         type: String,
@@ -145,8 +141,6 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor selectedMatchIndex_: number = -1;
   protected accessor submitting_: boolean = false;
   protected accessor submitEnabled_: boolean = false;
-  protected accessor showErrorScrim_: boolean = false;
-  protected accessor errorMessage_: string = '';
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor smartComposeInlineHint_: string = '';
   protected accessor smartComposeEnabled_: boolean =
@@ -197,8 +191,7 @@ export class ComposeboxElement extends I18nMixinLit
             const {file, errorMessage} =
                 this.$.context.updateFileStatus(token, status, errorType);
             if (errorMessage) {
-                this.showErrorScrim_ = true;
-                this.errorMessage_ = errorMessage;
+                this.$.errorScrim.setErrorMessage(errorMessage);
             } else if (file){
               if (status === FileUploadStatus.kProcessing && this.showZps &&
                   (this.enableImageContextualSuggestions_ ||
@@ -269,16 +262,6 @@ export class ComposeboxElement extends I18nMixinLit
     super.updated(changedProperties);
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('showErrorScrim_') &&
-        this.showErrorScrim_) {
-      const announcer = getAnnouncerInstance();
-      announcer.announce(this.errorMessage_);
-      const dismissErrorButton =
-          this.shadowRoot.querySelector<HTMLElement>('#dismissErrorButton');
-      if (dismissErrorButton) {
-        dismissErrorButton.focus();
-      }
-    }
     if (changedPrivateProperties.has('selectedMatchIndex_')) {
       if (this.selectedMatch_) {
         // If the selected match is the default match (typing) the input will
@@ -360,8 +343,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onFileValidationError_(e: CustomEvent<{errorMessage: string}>) {
-    this.showErrorScrim_ = true;
-    this.errorMessage_ = e.detail.errorMessage;
+    this.$.errorScrim.setErrorMessage(e.detail.errorMessage);
   }
 
   protected deleteContext_(e: CustomEvent<{uuid: UnguessableToken}>) {
@@ -371,11 +353,6 @@ export class ComposeboxElement extends I18nMixinLit
     this.lastQueriedInput_ = this.$.input.value;
     this.searchboxHandler_.queryAutocomplete(
         stringToMojoString16(this.$.input.value), false);
-  }
-
-  protected onDismissErrorButtonClick_() {
-    this.errorMessage_ = '';
-    this.showErrorScrim_ = false;
   }
 
   protected async addFileContext_(e: CustomEvent) {

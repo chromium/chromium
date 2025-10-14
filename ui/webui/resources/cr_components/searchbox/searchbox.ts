@@ -7,6 +7,7 @@ import './searchbox_dropdown.js';
 import './searchbox_icon.js';
 import './searchbox_thumbnail.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
+import '//resources/cr_components/composebox/error_scrim.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -33,6 +34,7 @@ import type {ComposeboxFile} from '//resources/cr_components/composebox/common.j
 import type {FileUploadErrorType} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {FileUploadStatus} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
+import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 
 // LINT.IfChange(GhostLoaderTagName)
 const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
@@ -175,6 +177,7 @@ export interface SearchboxElement {
     inputWrapper: HTMLElement,
     matches: SearchboxDropdownElement,
     context: ContextualEntrypointAndCarouselElement,
+    errorScrim: ErrorScrimElement,
   };
 }
 
@@ -619,7 +622,10 @@ export class SearchboxElement extends SearchboxElementBase {
   private onContextualInputStatusChanged_(
       token: UnguessableToken, status: FileUploadStatus,
       errorType: FileUploadErrorType) {
-    this.$.context.updateFileStatus(token, status, errorType);
+    const result = this.$.context.updateFileStatus(token, status, errorType);
+    if (result.errorMessage) {
+      this.$.errorScrim.setErrorMessage(result.errorMessage);
+    }
   }
 
   //============================================================================
@@ -1068,6 +1074,10 @@ export class SearchboxElement extends SearchboxElementBase {
 
   protected onContextFilesChanged_(e: CustomEvent<{files: number}>) {
     this.hasContextFiles_ = e.detail.files > 0;
+  }
+
+  protected onFileValidationError_(e: CustomEvent<{errorMessage: string}>) {
+    this.$.errorScrim.setErrorMessage(e.detail.errorMessage);
   }
 
   protected onComposeButtonClick_(e: CustomEvent<ComposeClickEventDetail>) {
