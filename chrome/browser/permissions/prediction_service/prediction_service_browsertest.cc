@@ -117,6 +117,14 @@ constexpr auto kLikelihoodUnspecified =
     PermissionUiSelector::PredictionGrantLikelihood::
         PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED;
 
+constexpr auto kLikelihoodUnlikely =
+    PermissionUiSelector::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY;
+
+constexpr auto kLikelihoodLikely =
+    PermissionUiSelector::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_LIKELY;
+
 constexpr std::string kNoHoldbackChance = "0";
 
 // Just a meaningless color used to create snapshot dummies for the AIv3 and
@@ -1684,6 +1692,98 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
           : kAiv4GeolocationRenderedTextSizeHistogram,
       /*sample=*/55,
       /*expected_bucket_count=*/1);
+
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        false, 1);
+}
+
+// ---------------------------------------------------------------------------
+// -------------------- Prediction Service AIP92 -----------------------------
+// ---------------------------------------------------------------------------
+struct PredictionServiceAIP92TestCase {
+  std::string test_name;
+  bool feature_enabled;
+  PermissionUiSelector::PredictionGrantLikelihood prediction_service_likelihood;
+  bool should_expect_quiet_ui;
+};
+
+class PredictionServiceAIP92BrowserTest
+    : public PredictionServiceBrowserTestBase,
+      public testing::WithParamInterface<PredictionServiceAIP92TestCase> {
+ public:
+  PredictionServiceAIP92BrowserTest()
+      : PredictionServiceBrowserTestBase(
+            /*enabled_features=*/GetParam().feature_enabled
+                ? std::vector<FeatureRefAndParams>{{permissions::features::
+                                                        kPermissionsAIP92,
+                                                    {}},
+                                                   CONFIGURE_NO_HOLDBACK_CHANCE}
+                : std::vector<FeatureRefAndParams>{},
+            /*disabled_features=*/GetParam().feature_enabled
+                ? std::vector<
+                      FeatureRef>{permissions::features::kPermissionsAIv3,
+                                  permissions::features::kPermissionsAIv4}
+                : std::vector<FeatureRef>{
+                      permissions::features::kPermissionsAIv3,
+                      permissions::features::kPermissionsAIv4,
+                      permissions::features::kPermissionsAIP92}) {}
+
+  void SetUpOnMainThread() override {
+    PredictionServiceBrowserTestBase::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    PredictionServiceAIP92Test,
+    PredictionServiceAIP92BrowserTest,
+    ValuesIn<PredictionServiceAIP92TestCase>({
+        {/*test_name=*/"FeatureEnabledUnlikelyPrediction",
+         /*feature_enabled=*/true,
+         /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
+         /*should_expect_quiet_ui=*/true},
+        {/*test_name=*/"FeatureEnabledVeryUnlikelyPrediction",
+         /*feature_enabled=*/true,
+         /*prediction_service_likelihood=*/kLikelihoodUnlikely,
+         /*should_expect_quiet_ui=*/true},
+        {/*test_name=*/"FeatureEnabledLikelyPrediction",
+         /*feature_enabled=*/true,
+         /*prediction_service_likelihood=*/kLikelihoodLikely,
+         /*should_expect_quiet_ui=*/false},
+        {/*test_name=*/"FeatureDisabledUnlikelyPrediction",
+         /*feature_enabled=*/false,
+         /*prediction_service_likelihood=*/kLikelihoodUnlikely,
+         /*should_expect_quiet_ui=*/false},
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        PredictionServiceAIP92BrowserTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+IN_PROC_BROWSER_TEST_P(PredictionServiceAIP92BrowserTest, TestAIP92Workflow) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GeneratePredictionsResponse prediction_service_response =
+      BuildPredictionServiceResponse(GetParam().prediction_service_likelihood);
+
+  PredictionRequestFeatures expected_features = BuildRequestFeatures(
+      RequestType::kNotifications, ExperimentId::kNoExperimentId,
+      PermissionRequestRelevance::kUnspecified);
+  EXPECT_CALL(prediction_service(),
+              StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
+      .WillOnce(WithArg<2>(
+          [&](PredictionService::LookupResponseCallback response_callback) {
+            std::move(response_callback)
+                .Run(/*lookup_successful=*/true,
+                     /*response_from_cache=*/true, prediction_service_response);
+          }));
+
+  TriggerPromptAndVerifyUi(/*test_url=*/"test.a", PermissionAction::DISMISSED,
+                           GetParam().should_expect_quiet_ui,
+                           /*expected_relevance=*/std::nullopt,
+                           GetParam().prediction_service_likelihood);
 
   histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
                                         false, 1);
