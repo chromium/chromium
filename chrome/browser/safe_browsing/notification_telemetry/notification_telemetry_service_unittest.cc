@@ -123,6 +123,7 @@ class MockNotificationTelemetryStore
                                     const std::vector<GURL>& requested_urls,
                                     SuccessCallback success_callback) override {
     add_service_worker_push_behavior_called_ = true;
+    requested_urls_count_ = requested_urls.size();
     entries_.push_back(
         MakeServiceWorkerPushBehavior(script_url, requested_urls));
     std::move(success_callback).Run(true);
@@ -146,6 +147,7 @@ class MockNotificationTelemetryStore
   bool add_service_worker_push_behavior_called() {
     return add_service_worker_push_behavior_called_;
   }
+  int requested_urls_count() { return requested_urls_count_; }
 
   std::vector<CSBRR::ServiceWorkerBehavior> GetEntries() { return entries_; }
   void SetEntries(std::vector<CSBRR::ServiceWorkerBehavior> entries) {
@@ -156,6 +158,7 @@ class MockNotificationTelemetryStore
   bool get_service_worker_behaviors_called_ = false;
   bool add_service_worker_registration_behavior_called_ = false;
   bool add_service_worker_push_behavior_called_ = false;
+  int requested_urls_count_ = 0;
   std::vector<CSBRR::ServiceWorkerBehavior> entries_;
 };
 }  // namespace
@@ -444,7 +447,8 @@ TEST_P(NotificationTelemetryServiceTest,
 }
 
 TEST_P(NotificationTelemetryServiceTest, OnPushEventFinished) {
-  std::vector<GURL> requested_urls = {GURL("http://dest.com")};
+  std::vector<GURL> requested_urls = {GURL("http://dest.com"),
+                                      GURL("http://dest.com")};
   notification_telemetry_service()->OnPushEventFinished(
       GURL("http://scope.com"), requested_urls);
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -453,6 +457,8 @@ TEST_P(NotificationTelemetryServiceTest, OnPushEventFinished) {
 
   ASSERT_TRUE(GetNotificationTelemetryStore()
                   ->add_service_worker_push_behavior_called());
+  // Duplicate requested URLs should be deduped.
+  EXPECT_EQ(1, GetNotificationTelemetryStore()->requested_urls_count());
 }
 
 // TODO(crbug.com/434325703): Deflake.
@@ -526,11 +532,14 @@ TEST_P(NotificationTelemetryServiceTest, EmptyDbFoundOverTime) {
 TEST_P(NotificationTelemetryServiceTest, OnGetServiceWorkerBehaviors) {
   CSBRR::ServiceWorkerBehavior swb_push_1 = MakeServiceWorkerPushBehavior(
       GURL("https://script.com"),
-      std::vector<GURL>{GURL("https://request1.com")});
+      std::vector<GURL>{GURL("https://request1.com"),
+                        GURL("https://request2.com")});
   // `ServiceWorkerBehavior` with the same script_url as `swb_push_1`.
   CSBRR::ServiceWorkerBehavior swb_push_2 = MakeServiceWorkerPushBehavior(
       GURL("https://script.com"),
-      std::vector<GURL>{GURL("https://request2.com")});
+      std::vector<GURL>{GURL("https://request1.com"),
+                        GURL("https://request2.com"),
+                        GURL("https://request3.com")});
   CSBRR::ServiceWorkerBehavior swb_push_3 = MakeServiceWorkerPushBehavior(
       GURL("https://other_script.com"),
       std::vector<GURL>{GURL("https://other_request.com")});
@@ -553,7 +562,8 @@ TEST_P(NotificationTelemetryServiceTest, OnGetServiceWorkerBehaviors) {
   CSBRR::ServiceWorkerBehavior swb_push_merged = MakeServiceWorkerPushBehavior(
       GURL("https://script.com"),
       std::vector<GURL>{GURL("https://request1.com"),
-                        GURL("https://request2.com")});
+                        GURL("https://request2.com"),
+                        GURL("https://request3.com")});
   auto merged_entries =
       std::make_unique<std::vector<CSBRR::ServiceWorkerBehavior>>(
           std::vector<CSBRR::ServiceWorkerBehavior>{swb_push_merged, swb_push_3,

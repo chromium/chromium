@@ -142,6 +142,10 @@ class NotificationTelemetryService
   // Called after a new ServiceWorkerBehavior has been added to storage.
   void OnAddServiceWorkerBehavior(bool success);
 
+  // Removes any duplicate requested urls from a ServiceWorkerBehavior.
+  void DedupeRequestedURLs(
+      CSBRR::ServiceWorkerBehavior* service_worker_behavior);
+
   // Stored service worker info whose size is based on
   // `kNotificationTelemetryServiceWorkerInfoMaxCount`
   std::vector<ServiceWorkerTelemetryInfo> service_worker_infos_;

@@ -208,10 +208,14 @@ void NotificationTelemetryService::OnPushEventFinished(
   if (!base::FeatureList::IsEnabled(safe_browsing::kNotificationTelemetrySwb)) {
     return;
   }
+  // Remove duplicate URLs.
+  base::flat_set<GURL> requested_urls_set(requested_urls.value().begin(),
+                                          requested_urls.value().end());
   // Store the network request.
   if (telemetry_store_) {
     telemetry_store_->AddServiceWorkerPushBehavior(
-        script_url, requested_urls.value(),
+        script_url,
+        std::vector<GURL>(requested_urls_set.begin(), requested_urls_set.end()),
         base::BindOnce(
             &NotificationTelemetryService::OnAddServiceWorkerBehavior,
             weak_factory_.GetWeakPtr()));
@@ -396,6 +400,13 @@ void NotificationTelemetryService::OnGetServiceWorkerBehaviors(
       report->set_page_url(entry.scope_url());
     }
   }
+  // Each message value is a ServiceWorkerBehavior that has potentially been
+  // merged from other ServiceWorkerBehaviors with the same script url. In these
+  // cases, there may be duplicate requested URLs. So, we dedupe those requested
+  // URLs.
+  for (auto& [key, value] : messages) {
+    DedupeRequestedURLs(value);
+  }
   std::string serialized_report;
   if (report->SerializeToString(&serialized_report)) {
     // Log report size to enable server-side capacity planning.
@@ -407,6 +418,15 @@ void NotificationTelemetryService::OnGetServiceWorkerBehaviors(
   }
   // Whether we've sent a report or not, clear the database to avoid build up.
   telemetry_store_->DeleteAll(base::DoNothing());
+}
+
+void NotificationTelemetryService::DedupeRequestedURLs(
+    CSBRR::ServiceWorkerBehavior* service_worker_behavior) {
+  base::flat_set<std::string> requested_urls_set(
+      service_worker_behavior->requested_urls().begin(),
+      service_worker_behavior->requested_urls().end());
+  service_worker_behavior->mutable_requested_urls()->Assign(
+      requested_urls_set.begin(), requested_urls_set.end());
 }
 
 void NotificationTelemetryService::MaybeUploadReport() {
