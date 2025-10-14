@@ -55,6 +55,7 @@ class TeacherScreenPresenterImpl : public TeacherScreenPresenter {
              base::OnceCallback<void(bool)> success_cb,
              base::OnceClosure disconnected_cb) override;
   void Stop(base::OnceCallback<void(bool)> success_cb) override;
+  bool IsPresenting() override;
 
  private:
   void OnGetReceiverResponse(::boca::UserIdentity teacher_identity,
