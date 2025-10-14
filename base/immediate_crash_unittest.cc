@@ -150,9 +150,8 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
   const Instruction* const start = static_cast<Instruction*>(std::min(a, b));
   const Instruction* const end = static_cast<Instruction*>(std::max(a, b));
 
-  for (const Instruction& instruction : span(start, end)) {
-    body->push_back(instruction);
-  }
+  auto instructions = span(start, end);
+  body->insert(body->end(), instructions.begin(), instructions.end());
 }
 
 #if defined(OFFICIAL_BUILD)
