@@ -59,17 +59,14 @@ void ChannelProxy::Context::CreateChannel(
   DCHECK_EQ(factory->GetIPCTaskRunner(), ipc_task_runner_);
   channel_ = factory->BuildChannel(this);
   channel_->SetUrgentMessageObserver(urgent_message_observer_);
+  thread_safe_channel_ = channel_->CreateThreadSafeChannel();
 
-  Channel::AssociatedInterfaceSupport* support =
-      channel_->GetAssociatedInterfaceSupport();
-  if (support) {
-    thread_safe_channel_ = support->CreateThreadSafeChannel();
-
-    base::AutoLock filter_lock(pending_filters_lock_);
-    for (auto& entry : pending_io_thread_interfaces_)
-      support->AddGenericAssociatedInterface(entry.first, entry.second);
-    pending_io_thread_interfaces_.clear();
+  base::AutoLock filter_lock(pending_filters_lock_);
+  for (auto& entry : pending_io_thread_interfaces_) {
+    channel_->AddGenericAssociatedInterface(entry.first, entry.second);
   }
+
+  pending_io_thread_interfaces_.clear();
 }
 
 // Called on the IPC::Channel thread
@@ -207,10 +204,7 @@ void ChannelProxy::Context::AddGenericAssociatedInterfaceForIOThread(
     pending_io_thread_interfaces_.emplace_back(name, factory);
     return;
   }
-  Channel::AssociatedInterfaceSupport* support =
-      channel_->GetAssociatedInterfaceSupport();
-  if (support)
-    support->AddGenericAssociatedInterface(name, factory);
+  channel_->AddGenericAssociatedInterface(name, factory);
 }
 
 // Called on the listener's thread.

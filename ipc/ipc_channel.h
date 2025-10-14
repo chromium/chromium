@@ -81,31 +81,6 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
     CLOSE_FD_MESSAGE_TYPE = HELLO_MESSAGE_TYPE - 1
   };
 
-  // Helper interface a Channel may implement to expose support for associated
-  // Mojo interfaces.
-  class COMPONENT_EXPORT(IPC) AssociatedInterfaceSupport {
-   public:
-    using GenericAssociatedInterfaceFactory =
-        base::RepeatingCallback<void(mojo::ScopedInterfaceEndpointHandle)>;
-
-    virtual ~AssociatedInterfaceSupport() {}
-
-    // Returns a ThreadSafeForwarded for this channel which can be used to
-    // safely send mojom::Channel requests from arbitrary threads.
-    virtual std::unique_ptr<mojo::ThreadSafeForwarder<mojom::Channel>>
-    CreateThreadSafeChannel() = 0;
-
-    // Adds an interface factory to this channel for interface |name|. Must be
-    // safe to call from any thread.
-    virtual void AddGenericAssociatedInterface(
-        const std::string& name,
-        const GenericAssociatedInterfaceFactory& factory) = 0;
-
-    // Requests an associated interface from the remote endpoint.
-    virtual void GetRemoteAssociatedInterface(
-        mojo::GenericPendingAssociatedReceiver receiver) = 0;
-  };
-
   // The maximum message size in bytes. Attempting to receive a message of this
   // size or bigger results in a channel error.
   static constexpr size_t kMaximumMessageSize = 128 * 1024 * 1024;
@@ -185,10 +160,24 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // connection and listen for new ones, use ResetToAcceptingConnectionState.
   virtual void Close() = 0;
 
-  // Gets a helper for associating Mojo interfaces with this Channel.
-  //
-  // NOTE: Not all implementations support this.
-  virtual AssociatedInterfaceSupport* GetAssociatedInterfaceSupport() = 0;
+  // Channel support for associated Mojo interfaces.
+  using GenericAssociatedInterfaceFactory =
+      base::RepeatingCallback<void(mojo::ScopedInterfaceEndpointHandle)>;
+
+  // Returns a ThreadSafeForwarded for this channel which can be used to
+  // safely send mojom::Channel requests from arbitrary threads.
+  virtual std::unique_ptr<mojo::ThreadSafeForwarder<mojom::Channel>>
+  CreateThreadSafeChannel() = 0;
+
+  // Adds an interface factory to this channel for interface |name|. Must be
+  // safe to call from any thread.
+  virtual void AddGenericAssociatedInterface(
+      const std::string& name,
+      const GenericAssociatedInterfaceFactory& factory) = 0;
+
+  // Requests an associated interface from the remote endpoint.
+  virtual void GetRemoteAssociatedInterface(
+      mojo::GenericPendingAssociatedReceiver receiver) = 0;
 
   // Sets the UrgentMessageObserver for this channel. `observer` must outlive
   // the channel.

@@ -414,8 +414,7 @@ void GpuChannelHost::Listener::Initialize(
   DCHECK(channel_);
   bool result = channel_->Connect();
   DCHECK(result);
-  channel_->GetAssociatedInterfaceSupport()->GetRemoteAssociatedInterface(
-      std::move(receiver));
+  channel_->GetRemoteAssociatedInterface(std::move(receiver));
 }
 
 GpuChannelHost::Listener::~Listener() = default;

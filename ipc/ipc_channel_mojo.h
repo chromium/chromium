@@ -36,7 +36,6 @@ class UrgentMessageObserver;
 // channel.
 class COMPONENT_EXPORT(IPC) ChannelMojo
     : public Channel,
-      public Channel::AssociatedInterfaceSupport,
       public internal::MessagePipeReader::Delegate {
  public:
   ChannelMojo(const ChannelMojo&) = delete;
@@ -50,7 +49,6 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
   void Unpause(bool flush) override;
   void Flush() override;
   void Close() override;
-  Channel::AssociatedInterfaceSupport* GetAssociatedInterfaceSupport() override;
   void SetUrgentMessageObserver(UrgentMessageObserver* observer) override;
 
   // MessagePipeReader::Delegate
@@ -72,7 +70,7 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
 
   void ForwardMessage(mojo::Message message);
 
-  // Channel::AssociatedInterfaceSupport:
+  // AssociatedInterfaceSupport.
   std::unique_ptr<mojo::ThreadSafeForwarder<mojom::Channel>>
   CreateThreadSafeChannel() override;
   void AddGenericAssociatedInterface(

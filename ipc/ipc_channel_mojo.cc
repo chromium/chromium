@@ -188,9 +188,6 @@ void ChannelMojo::OnAssociatedInterfaceRequest(
   }
 }
 
-Channel::AssociatedInterfaceSupport*
-ChannelMojo::GetAssociatedInterfaceSupport() { return this; }
-
 std::unique_ptr<mojo::ThreadSafeForwarder<mojom::Channel>>
 ChannelMojo::CreateThreadSafeChannel() {
   return std::make_unique<mojo::ThreadSafeForwarder<mojom::Channel>>(
