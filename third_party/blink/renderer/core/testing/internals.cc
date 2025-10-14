@@ -3556,7 +3556,7 @@ void Internals::forceLoseCanvasContext(CanvasRenderingContext* context) {
 
 void Internals::disableCanvasAccelerationForCanvas2D(
     HTMLCanvasElement* canvas) {
-  canvas->DisableAccelerationForCanvas2D();
+  canvas->RenderingContext()->DisableAccelerationForCanvas2D();
 }
 
 bool Internals::isCanvasImageSourceAccelerated(
