@@ -4,7 +4,6 @@
 
 package org.chromium.ui.hierarchicalmenu;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -25,7 +24,6 @@ import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.TITLE;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
 
@@ -73,11 +71,19 @@ public class FlyoutControllerUnitTest {
     private ListItem mSubmenu0Child1;
     private ListItem mSubmenuLevel0;
     private ListItem mListItemWithoutModelClickCallback;
+    private HierarchicalMenuController mHierarchicalMenuController;
 
     @Before
     public void setUp() {
+        mHierarchicalMenuController =
+                new HierarchicalMenuController(
+                        HierarchicalMenuTestUtils.createKeyProvider(), /* flyoutHandler= */ null);
+
         mFlyoutController =
-                new FlyoutController(mFlyoutHandler, HierarchicalMenuTestUtils.createKeyProvider());
+                new FlyoutController(
+                        mFlyoutHandler,
+                        HierarchicalMenuTestUtils.createKeyProvider(),
+                        mHierarchicalMenuController);
 
         mListItemWithModelClickCallback =
                 new ListItem(
@@ -211,110 +217,8 @@ public class FlyoutControllerUnitTest {
         dialogs.subList(2, dialogs.size()).clear();
     }
 
-    @Test
-    public void testHighlightPath_UpdatesOnHoverSequentially() {
-        // Case 1: Hover root item 1 ("Submenu level 0")
-        triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
-        assertEquals(
-                "mSubmenuLevel0 should be highlighted",
-                true,
-                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Sibling should not be highlighted",
-                false,
-                mListItemWithoutModelClickCallback.model.get(IS_HIGHLIGHTED));
-
-        // Case 2: Hover a child ("Submenu level 1")
-        triggerHoverEnter(mSubmenuLevel1, 1, List.of(mSubmenuLevel0, mSubmenuLevel1));
-        assertEquals(
-                "Parent mSubmenuLevel0 should stay highlighted",
-                true,
-                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Child mSubmenuLevel1 should be highlighted",
-                true,
-                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Sibling of parent should not be highlighted",
-                false,
-                mListItemWithoutModelClickCallback.model.get(IS_HIGHLIGHTED));
-
-        // Case 3: Hover a "niece" ("Submenu 0 child 1")
-        triggerHoverEnter(mSubmenu0Child1, 1, List.of(mSubmenuLevel0, mSubmenu0Child1));
-        assertEquals(
-                "Common ancestor mSubmenuLevel0 should stay highlighted",
-                true,
-                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Old branch mSubmenuLevel1 should be de-highlighted",
-                false,
-                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "New branch mSubmenu0Child1 should be highlighted",
-                true,
-                mSubmenu0Child1.model.get(IS_HIGHLIGHTED));
-
-        // Case 4: Hover a grandchild ("Submenu 1 child 0")
-        triggerHoverEnter(
-                mListItemWithModelClickCallback,
-                2,
-                List.of(mSubmenuLevel0, mSubmenuLevel1, mListItemWithModelClickCallback));
-        assertEquals(
-                "Ancestor mSubmenuLevel0 should stay highlighted",
-                true,
-                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Old branch mSubmenu0Child1 should be de-highlighted",
-                false,
-                mSubmenu0Child1.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Parent mSubmenuLevel1 should be highlighted",
-                true,
-                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Grandchild item should be highlighted",
-                true,
-                mListItemWithModelClickCallback.model.get(IS_HIGHLIGHTED));
-
-        // Case 5: Hover an ancestor ("Submenu level 1")
-        triggerHoverEnter(mSubmenuLevel1, 1, List.of(mSubmenuLevel0, mSubmenuLevel1));
-        assertEquals(
-                "Ancestor mSubmenuLevel0 should stay highlighted",
-                true,
-                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Item mSubmenuLevel1 should stay highlighted",
-                true,
-                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Old child mListItemWithModelClickCallback should be de-highlighted",
-                false,
-                mListItemWithModelClickCallback.model.get(IS_HIGHLIGHTED));
-
-        // Case 6: Hover a sibling of the root ("Top level item")
-        triggerHoverEnter(
-                mListItemWithoutModelClickCallback, 0, List.of(mListItemWithoutModelClickCallback));
-        assertEquals(
-                "Old root mSubmenuLevel0 should be de-highlighted",
-                false,
-                mSubmenuLevel0.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "Old child mSubmenuLevel1 should be de-highlighted",
-                false,
-                mSubmenuLevel1.model.get(IS_HIGHLIGHTED));
-        assertEquals(
-                "New root mListItemWithoutModelClickCallback should be highlighted",
-                true,
-                mListItemWithoutModelClickCallback.model.get(IS_HIGHLIGHTED));
-    }
-
     private void triggerHoverEnter(ListItem item, int level, List<ListItem> path) {
-        mFlyoutController.handleHoverEvent(
-                createHoverEnterEvent(), item, mListView, level, false, path);
-    }
-
-    private MotionEvent createHoverEnterEvent() {
-        return MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 1.f, 1.f, 0);
+        mFlyoutController.onItemHovered(item, mListView, level, false, path);
     }
 
     private static void waitForUiDelay() {

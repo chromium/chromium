@@ -5,16 +5,13 @@
 package org.chromium.ui.hierarchicalmenu;
 
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,11 +28,8 @@ public class FlyoutController<T> {
     private final FlyoutHandler<T> mFlyoutHandler;
     private @Nullable Runnable mFlyoutAfterDelayRunnable;
     private @Nullable View mPendingFlyoutParentView;
-    private List<ListItem> mLastHighlightedPath = new ArrayList<ListItem>();
     private final HierarchicalMenuKeyProvider mKeyProvider;
-
-    private @Nullable Handler mHoverExitDelayHandler;
-    private @Nullable Runnable mPendingHoverExitRunnable;
+    private final HierarchicalMenuController mMenuController;
 
     /**
      * A data class holding a flyout popup window and the (optional) parent ListItem that triggered
@@ -89,83 +83,12 @@ public class FlyoutController<T> {
     }
 
     public FlyoutController(
-            FlyoutHandler<T> flyoutHandler, HierarchicalMenuKeyProvider keyProvider) {
+            FlyoutHandler<T> flyoutHandler,
+            HierarchicalMenuKeyProvider keyProvider,
+            HierarchicalMenuController menuController) {
         mFlyoutHandler = flyoutHandler;
         mKeyProvider = keyProvider;
-    }
-
-    /**
-     * Processes hover events for a menu item, managing highlight states and flyout menu triggers.
-     * This method should be called from an OnHoverListener.
-     *
-     * <p>On ACTION_HOVER_ENTER, it initiates the logic to highlight the item and potentially show a
-     * flyout submenu after a delay.
-     *
-     * <p>On ACTION_HOVER_EXIT, it updates the highlight path and cancels any pending flyout, but
-     * intentionally leaves existing flyout menus open until the user hovers over a new item.
-     *
-     * @param event The MotionEvent triggered by the hover.
-     * @param item The ListItem that is the target of the hover event.
-     * @param view The View associated with the hovered ListItem.
-     * @param levelOfHoveredItem The depth of the item within the menu hierarchy (e.g., 0 for root
-     *     items, 1 for sub-menu items).
-     * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
-     *     true}) or flyout ({@code false}), overriding the default.
-     * @param highlightPath The complete list of items from the root of the menu to the currently
-     *     hovered {@code item}, inclusive.
-     * @return {@code true} if the hover event was handled (ACTION_HOVER_ENTER or
-     *     ACTION_HOVER_EXIT), {@code false} otherwise.
-     */
-    public boolean handleHoverEvent(
-            MotionEvent event,
-            ListItem item,
-            View view,
-            int levelOfHoveredItem,
-            @Nullable Boolean drillDownOverrideValue,
-            List<ListItem> highlightPath) {
-        if (mPendingHoverExitRunnable != null) {
-            assert mHoverExitDelayHandler != null;
-            mHoverExitDelayHandler.removeCallbacks(mPendingHoverExitRunnable);
-            mPendingHoverExitRunnable = null;
-            mHoverExitDelayHandler = null;
-        }
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_HOVER_ENTER:
-                onItemHovered(
-                        item, view, levelOfHoveredItem, drillDownOverrideValue, highlightPath);
-                return true;
-            case MotionEvent.ACTION_HOVER_EXIT:
-                // Update highlights after a short delay. This is to prevent UI flicker when the
-                // user moves the pointer from the parent item view to a flyout item view. We
-                // receive an {@code ACTION_HOVER_EXIT} event to the parent view right before we
-                // receive an {@code ACTION_HOVER_ENTER} event on the flyout view. If we faithfully
-                // follow these, the parent item momentarily loses the hover style, so we ignore the
-                // first exit event in case it's immediately followed by an enter event.
-                cancelFlyoutDelay(view);
-                mPendingHoverExitRunnable =
-                        () -> {
-                            if (item.model.get(mKeyProvider.getIsHighlightedKey())) {
-                                updateHighlights(
-                                        highlightPath.subList(0, highlightPath.size() - 1));
-                            }
-                            mPendingHoverExitRunnable = null;
-                        };
-                mHoverExitDelayHandler = view.getHandler();
-                assert mHoverExitDelayHandler != null;
-                mHoverExitDelayHandler.postDelayed(
-                        mPendingHoverExitRunnable,
-                        view.getContext()
-                                .getResources()
-                                .getInteger(R.integer.flyout_menu_hover_exit_delay_in_ms));
-
-                // We only want to remove the flyout popups when the user hovers
-                // over another item. We don't close the flyout popup even when the
-                // item itself loses hover.
-                return true;
-            default:
-                return false;
-        }
+        mMenuController = menuController;
     }
 
     /**
@@ -181,7 +104,7 @@ public class FlyoutController<T> {
      */
     public void enterFlyoutWithoutDelay(
             ListItem item, View view, int levelOfHoveredItem, List<ListItem> highlightPath) {
-        updateHighlights(highlightPath);
+        mMenuController.updateHighlights(highlightPath);
         cancelFlyoutDelay(view);
         onFlyoutAfterDelay(item, view, levelOfHoveredItem);
     }
@@ -205,23 +128,30 @@ public class FlyoutController<T> {
         cancelFlyoutDelay(view);
 
         // We need to remove hover from the popup currently in focus.
-        updateHighlights(highlightPath.subList(0, clearFromIndex - 1));
+        mMenuController.updateHighlights(highlightPath.subList(0, clearFromIndex - 1));
 
         mFlyoutHandler.removeFlyoutWindows(clearFromIndex);
     }
 
-    private void onItemHovered(
+    /**
+     * Starts a timer that removes and adds flyout popups.
+     *
+     * @param item The hovered item.
+     * @param view The hovered view.
+     * @param levelOfHoveredItem The depth of the item within the menu hierarchy (e.g., 0 for root
+     *     items, 1 for sub-menu items).
+     * @param drillDownOverrideValue An optional override value. If non-null, this value is returned
+     *     directly. If null, the method determines the appropriate style based on system
+     *     conditions.
+     * @param highlightPath The complete list of items from the root of the menu to the currently
+     *     hovered {@code item}, inclusive.
+     */
+    public void onItemHovered(
             ListItem item,
             View view,
             int levelOfHoveredItem,
             @Nullable Boolean drillDownOverrideValue,
             List<ListItem> highlightPath) {
-        updateHighlights(highlightPath);
-
-        if (shouldUseDrillDown(drillDownOverrideValue)) {
-            return;
-        }
-
         // Since we received a new `HOVER` event, we cancel the previous timer.
         cancelFlyoutDelay(view);
 
@@ -237,39 +167,6 @@ public class FlyoutController<T> {
         handler.postDelayed(
                 mFlyoutAfterDelayRunnable,
                 view.getContext().getResources().getInteger(R.integer.flyout_menu_delay_in_ms));
-    }
-
-    /**
-     * Updates the highlight state of menu items based on the new hover path. The addition of flyout
-     * windows requires us to precisely control the hover states of the items. Specifically, when
-     * the user is hovering on an item inside a flyout popup, all of the ancestor items should
-     * remain highlighted, even when the hover itself is not on those items.
-     *
-     * @param highlightPath The list of {@link ListItem}s from the root to the currently hovered
-     *     item that should be highlighted.
-     */
-    private void updateHighlights(List<ListItem> highlightPath) {
-        int forkIndex = -1;
-
-        for (int i = 0; i < Math.min(mLastHighlightedPath.size(), highlightPath.size()); i++) {
-            if (mLastHighlightedPath.get(i) == highlightPath.get(i)) {
-                forkIndex = i;
-            } else {
-                break;
-            }
-        }
-
-        WritableBooleanPropertyKey isHighlightedKey = mKeyProvider.getIsHighlightedKey();
-
-        for (int i = forkIndex + 1; i < mLastHighlightedPath.size(); i++) {
-            mLastHighlightedPath.get(i).model.set(isHighlightedKey, false);
-        }
-
-        for (int i = forkIndex + 1; i < highlightPath.size(); i++) {
-            highlightPath.get(i).model.set(isHighlightedKey, true);
-        }
-
-        mLastHighlightedPath = highlightPath;
     }
 
     private void onFlyoutAfterDelay(ListItem item, View view, int levelOfHoveredItem) {
@@ -299,7 +196,12 @@ public class FlyoutController<T> {
         }
     }
 
-    private void cancelFlyoutDelay(View view) {
+    /**
+     * Cancels the timer that was supposed to remove or add flyout popups.
+     *
+     * @param view The hovered view.
+     */
+    public void cancelFlyoutDelay(View view) {
         if (mFlyoutAfterDelayRunnable != null && mPendingFlyoutParentView == view) {
             Handler handler = view.getHandler();
             if (handler != null) {
