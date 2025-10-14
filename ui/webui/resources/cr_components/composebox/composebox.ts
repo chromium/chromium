@@ -113,10 +113,6 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      //inDeepSearchMode_ : {
-       // reflect: true,
-//type: Boolean,
-      //},
       inCreateImageMode_: {
         reflect: true,
         type: Boolean,
@@ -158,7 +154,6 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor inputPlaceholder_: string =
       loadTimeData.getString('searchboxComposePlaceholder');
   protected accessor showFileCarousel_: boolean = false;
-  // protected accessor inDeepSearchMode_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor showContextMenuDescription_: boolean = true;
   protected accessor inputsDisabled_: boolean = false;

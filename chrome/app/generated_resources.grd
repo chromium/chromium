@@ -8553,17 +8553,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED">
         File upload has expired and been removed.
       </message>
-      <message name="IDS_NTP_COMPOSE_ADD_TAB" desc="Heading for a list of tabs that can be added to a contextual search. This is a subsection of a menu.">
-        Add tab
+      <message name="IDS_NTP_COMPOSE_MOST_RECENT_TABS" desc="Heading for a list of tabs that can be added to a contextual search. This is a subsection of a menu.">
+        Most recent tabs
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_IMAGE"  desc="Text for a button label that opens a menu so users can add an image to their search.">
         Add image
       </message>
-      <message name="IDS_NTP_COMPOSE_UPLOAD_FILE" desc="Text for a button label that opens a menu so users can add a file to their search.">
-        Upload file
+      <message name="IDS_NTP_COMPOSE_ADD_FILE" desc="Text for a button label that opens a menu so users can add a file to their search.">
+        Add file
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_CONTEXT" desc="The text to display to ask user to add context to their search e.g. pdf or image.">
-        Add tabs or more
+        Add tabs and more
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_CONTEXT_TITLE" desc="The a11y title for a button that allows users to add context to their search e.g. pdf or image.">
         Add a tab or file to your search, and also use a tool
@@ -8576,6 +8576,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_COMPOSE_DEEP_SEARCH" desc="The label for the deep search button in the context menu in the composebox as well as the chip that indicates that the user is in deep search mode.">
         Deep Search
+      </message>
+      <message name="IDS_NTP_COMPOSE_CREATE_IMAGES" desc="The label for the create images button in the context menu in the composebox as well as the chip that indicates that the user is in create images mode." translateable="false">
+        Create images
       </message>
 
       <!-- NTP Modules -->
