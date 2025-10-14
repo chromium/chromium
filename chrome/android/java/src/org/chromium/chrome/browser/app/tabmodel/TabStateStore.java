@@ -9,16 +9,17 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.os.SystemClock;
 
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageService.LoadedTabState;
-import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -39,9 +40,11 @@ public class TabStateStore implements TabPersistentStore {
     private final TabModelSelector mTabModelSelector;
     private final TabStateAttributes.Observer mAttributesObserver =
             this::onTabStateDirtinessChanged;
+    private final ObserverList<TabPersistentStoreObserver> mObservers = new ObserverList<>();
 
     private @Nullable TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private @Nullable TabMoveObserver mTabMoveObserver;
+    private int mRestoredTabCount;
 
     private class InnerRegistrationObserver
             implements TabModelSelectorTabRegistrationObserver.Observer {
@@ -139,8 +142,7 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public int getRestoredTabCount() {
-        // TODO(https://crbug.com/448151052): Implement.
-        return 0;
+        return mRestoredTabCount;
     }
 
     @Override
@@ -195,12 +197,12 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void addObserver(TabPersistentStoreObserver observer) {
-        // TODO(https://crbug.com/448151052): Implement.
+        mObservers.addObserver(observer);
     }
 
     @Override
     public void removeObserver(TabPersistentStoreObserver observer) {
-        // TODO(https://crbug.com/448151052): Implement.
+        mObservers.removeObserver(observer);
     }
 
     private void onTabStateDirtinessChanged(Tab tab, @DirtinessState int dirtiness) {
@@ -259,6 +261,11 @@ public class TabStateStore implements TabPersistentStore {
     private void onTabsLoaded(LoadedTabState[] loadedTabStates, long loadStartTime) {
         long duration = SystemClock.elapsedRealtime() - loadStartTime;
         Log.i(TAG, "Loaded %d tabs in %dms", loadedTabStates.length, duration);
+        mRestoredTabCount = loadedTabStates.length;
+
+        for (TabPersistentStoreObserver observer : mObservers) {
+            observer.onInitialized(mRestoredTabCount);
+        }
 
         for (int i = 0; i < loadedTabStates.length; i++) {
             TabState tabState = loadedTabStates[i].tabState;
@@ -268,20 +275,30 @@ public class TabStateStore implements TabPersistentStore {
                 continue;
             }
 
-            WebContentsState contentsState = tabState.contentsState;
-            Log.i(
-                    TAG,
-                    " Tab %d: url: %s, title: %s, state size: %d",
-                    i,
-                    contentsState.getVirtualUrlFromState(),
-                    contentsState.getDisplayTitleFromState(),
-                    contentsState.buffer().limit());
-
+            @TabId int tabId = loadedTabStates[i].tabId;
             Tab tab =
                     mTabCreatorManager
                             .getTabCreator(/* incognito= */ false)
-                            .createFrozenTab(tabState, loadedTabStates[i].tabId, i);
+                            .createFrozenTab(tabState, tabId, i);
             loadedTabStates[i].onTabCreationCallback.onResult(tab);
+
+            // TODO(https://crbug.com/448151052): Correctly mark the selected tab as active.
+            // TODO(https://crbug.com/451624258): This is the opposite order of creation and details
+            // from how the previous implementation did it. Verify this doesn't break anything.
+            for (TabPersistentStoreObserver observer : mObservers) {
+                observer.onDetailsRead(
+                        i,
+                        tabId,
+                        tab.getUrl().getSpec(),
+                        /* isStandardActiveIndex= */ false,
+                        /* isIncognitoActiveIndex= */ false,
+                        /* isIncognito= */ false,
+                        /* fromMerge= */ false);
+            }
+        }
+
+        for (TabPersistentStoreObserver observer : mObservers) {
+            observer.onStateLoaded();
         }
     }
 }
