@@ -99,6 +99,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.AdaptiveToolbarButton.FallbackIndicator.Clicked"
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-03-15">
+  <owner>jinsukkiim@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the variant of adaptive toolbar button for which fallback indicator
+    (menu dot) is clicked. Recorded when the overflow menu icon is clicked when
+    the indicator is visible. Android only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.AdaptiveToolbarButton.FallbackIndicator.Shown"
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-03-15">
+  <owner>jinsukkiim@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the variant of adaptive toolbar button for which fallback indicator
+    (menu dot) is shown. Recorded when the indicator is shown on the overflow
+    menu icon. Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.AdaptiveToolbarButton.HiddenReason"
     enum="CustomTabsMtbHiddenReason" expires_after="2026-03-15">
   <owner>jinsukkiim@google.com</owner>

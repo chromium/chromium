@@ -478,6 +478,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         indicator.setVisibility(show ? View.VISIBLE : View.GONE);
         if (!show) return;
 
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.AdaptiveToolbarButton.FallbackIndicator.Shown",
+                buttonVariant,
+                AdaptiveToolbarButtonVariant.MAX_VALUE);
         var lp = (MarginLayoutParams) indicator.getLayoutParams();
         int topMargin = getDimensionPx(R.dimen.custom_tabs_toolbar_menu_dot_top_margin);
         int endMargin = getDimensionPx(R.dimen.custom_tabs_toolbar_menu_dot_end_margin);
@@ -488,6 +492,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         indicator.setLayoutParams(lp);
 
         addFallbackMenuItem(buttonVariant);
+    }
+
+    /**
+     * Record the metric indicating that user clicked the fallback dot when it's shown on the
+     * overflow menu icon.
+     */
+    private void maybeRecordCpaFallbackIndicatorClicked() {
+        View indicator = mMenuButton.findViewById(R.id.menu_dot);
+        if (indicator.getVisibility() != View.VISIBLE) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.AdaptiveToolbarButton.FallbackIndicator.Clicked",
+                mVariantForFallbackMenu,
+                AdaptiveToolbarButtonVariant.MAX_VALUE);
     }
 
     /**
@@ -514,6 +532,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     public void onMenuVisibilityChanged(boolean isVisible) {
                         // TODO(crbug.com/424807997): Do this toggling in MenuButton MVC.
                         if (isVisible) {
+                            maybeRecordCpaFallbackIndicatorClicked();
                             mLocationBar.resetOptionalButtonState(/* resetFallbackMenu= */ false);
                             String menuTitle = getContext().getString(menuInfo.second);
                             int textId = R.string.accessibility_custom_tab_menu_item_highlight;
