@@ -186,6 +186,7 @@ source_set("impl") {
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/tabs:tab_list_interface",
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/web_applications",
       "//components/prefs",

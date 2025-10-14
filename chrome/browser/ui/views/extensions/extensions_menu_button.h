@@ -37,7 +37,6 @@ class ExtensionsMenuButton : public HoverButton,
   // ToolbarActionViewDelegateViews:
   views::FocusManager* GetFocusManagerForAccelerator() override;
   views::BubbleAnchor GetReferenceButtonForPopup() override;
-  content::WebContents* GetCurrentWebContents() const override;
   void UpdateState() override;
   void ShowContextMenuAsFallback() override;
 
@@ -46,6 +45,7 @@ class ExtensionsMenuButton : public HoverButton,
   }
 
  private:
+  content::WebContents* GetCurrentWebContents() const;
   void ButtonPressed();
 
   const raw_ptr<Browser, DanglingUntriaged> browser_;

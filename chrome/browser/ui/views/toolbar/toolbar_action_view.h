@@ -70,7 +70,6 @@ class ToolbarActionView : public views::MenuButton,
   void OnMouseEntered(const ui::MouseEvent& event) override;
 
   // ToolbarActionViewDelegateViews:
-  content::WebContents* GetCurrentWebContents() const override;
   void UpdateState() override;
 
   ToolbarActionViewController* view_controller() { return view_controller_; }

@@ -48,10 +48,6 @@ class WebUIBrowserExtensionsContainer::ActionInfo
   }
 
   // ToolbarActionViewDelegate:
-  content::WebContents* GetCurrentWebContents() const override {
-    return browser_->tab_strip_model()->GetActiveWebContents();
-  }
-
   void UpdateState() override {
     extensions_container_->NotifyOfOneAction(controller_->GetId());
   }
@@ -80,7 +76,8 @@ class WebUIBrowserExtensionsContainer::ActionInfo
 
   extensions_bar::mojom::ExtensionActionInfoPtr ToMojo(
       WebUIBrowserWindow& window) const {
-    content::WebContents* web_contents = GetCurrentWebContents();
+    content::WebContents* web_contents =
+        browser_->tab_strip_model()->GetActiveWebContents();
     auto result = extensions_bar::mojom::ExtensionActionInfo::New();
     result->id = controller_->GetId();
     result->accessible_name =

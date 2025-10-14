@@ -59,10 +59,6 @@ views::BubbleAnchor ExtensionsMenuButton::GetReferenceButtonForPopup() {
       ->GetExtensionsButton();
 }
 
-content::WebContents* ExtensionsMenuButton::GetCurrentWebContents() const {
-  return browser_->tab_strip_model()->GetActiveWebContents();
-}
-
 void ExtensionsMenuButton::UpdateState() {
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   const int icon_size =
@@ -96,6 +92,10 @@ void ExtensionsMenuButton::ShowContextMenuAsFallback() {
   // primary action cannot be taken; ShowContextMenuAsFallback() should never
   // be called directly.
   NOTREACHED();
+}
+
+content::WebContents* ExtensionsMenuButton::GetCurrentWebContents() const {
+  return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
 void ExtensionsMenuButton::ButtonPressed() {

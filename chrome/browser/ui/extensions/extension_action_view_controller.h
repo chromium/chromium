@@ -165,6 +165,9 @@ class ExtensionActionViewController
       extensions::ExtensionRegistry* extension_registry,
       ExtensionsContainer* extensions_container);
 
+  // Returns the current web contents.
+  content::WebContents* GetCurrentWebContents() const;
+
   // Notifies the view delegate that the underlying data has been updated and it
   // may need to refresh.
   void NotifyUpdateToDelegate();

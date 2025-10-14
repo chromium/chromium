@@ -163,12 +163,8 @@ void ToolbarActionView::MaybeUpdateHoverCardStatus(
                                     ToolbarActionHoverCardUpdateType::kHover);
 }
 
-content::WebContents* ToolbarActionView::GetCurrentWebContents() const {
-  return delegate_->GetCurrentWebContents();
-}
-
 void ToolbarActionView::UpdateState() {
-  content::WebContents* web_contents = GetCurrentWebContents();
+  content::WebContents* web_contents = delegate_->GetCurrentWebContents();
   GetViewAccessibility().SetName(
       view_controller_->GetAccessibleName(web_contents));
   if (!sessions::SessionTabHelper::IdForTab(web_contents).is_valid()) {
@@ -315,7 +311,7 @@ void ToolbarActionView::OnPopupClosed() {
 }
 
 void ToolbarActionView::ButtonPressed() {
-  if (view_controller_->IsEnabled(GetCurrentWebContents())) {
+  if (view_controller_->IsEnabled(delegate_->GetCurrentWebContents())) {
     base::RecordAction(base::UserMetricsAction(
         "Extensions.Toolbar.ExtensionActivatedFromToolbar"));
     view_controller_->ExecuteUserAction(

@@ -15,9 +15,6 @@ class WebContents;
 // ToolbarActionViewController.
 class ToolbarActionViewDelegate {
  public:
-  // Returns the current web contents.
-  virtual content::WebContents* GetCurrentWebContents() const = 0;
-
   // Updates the view to reflect current state.
   virtual void UpdateState() = 0;
 

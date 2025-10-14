@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/grit/generated_resources.h"
@@ -420,14 +421,13 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
     return;
   }
 
-  if (!IsEnabled(view_delegate_->GetCurrentWebContents())) {
+  content::WebContents* const web_contents = GetCurrentWebContents();
+  if (!IsEnabled(web_contents)) {
     GetPreferredPopupViewController()
         ->view_delegate_->ShowContextMenuAsFallback();
     return;
   }
 
-  content::WebContents* const web_contents =
-      view_delegate_->GetCurrentWebContents();
   ExtensionActionRunner* action_runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   if (!action_runner) {
@@ -568,6 +568,15 @@ void ExtensionActionViewController::InspectPopup() {
       PopupShowAction::kShowAndInspect, /*by_user*/ true, ShowPopupCallback());
 }
 
+content::WebContents* ExtensionActionViewController::GetCurrentWebContents()
+    const {
+  tabs::TabInterface* tab = TabListInterface::From(browser_)->GetActiveTab();
+  if (!tab) {
+    return nullptr;
+  }
+  return tab->GetContents();
+}
+
 void ExtensionActionViewController::NotifyUpdateToDelegate() {
   if (!view_delegate_ || !browser_->GetActiveTabInterface()) {
     return;
@@ -648,7 +657,7 @@ bool ExtensionActionViewController::CanHandleAccelerators() const {
   // disabled action (in most cases, this will result in opening the context
   // menu).
   if (extension_action_->action_type() == extensions::ActionInfo::Type::kPage) {
-    return IsEnabled(view_delegate_->GetCurrentWebContents());
+    return IsEnabled(GetCurrentWebContents());
   }
   return true;
 }
@@ -672,8 +681,7 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
   DCHECK(ExtensionIsValid());
   DCHECK_EQ(this, GetPreferredPopupViewController());
 
-  content::WebContents* const web_contents =
-      view_delegate_->GetCurrentWebContents();
+  content::WebContents* const web_contents = GetCurrentWebContents();
   const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
   DCHECK(extension_action_->GetIsVisible(tab_id));
   DCHECK(extension_action_->HasPopup(tab_id));
