@@ -157,6 +157,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                         DeviceLockActivityLauncherImpl.get(),
                         mProfileSupplier,
                         getModalDialogManagerSupplier(),
+                        /* snackbarManager= */ null,
                         config,
                         signinAccessPoint);
 

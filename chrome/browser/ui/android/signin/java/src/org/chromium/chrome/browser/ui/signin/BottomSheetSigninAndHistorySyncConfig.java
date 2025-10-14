@@ -61,6 +61,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
     public final @WithAccountSigninMode int withAccountSigninMode;
     public final @HistorySyncConfig.OptInMode int historyOptInMode;
     public final @Nullable CoreAccountId selectedCoreAccountId;
+    public final boolean shouldShowSigninSnackbar;
 
     /** Builder for {@link BottomSheetSigninAndHistorySyncConfig}. */
     public static class Builder {
@@ -71,6 +72,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
         private final @WithAccountSigninMode int mWithAccountSigninMode;
         private final @HistorySyncConfig.OptInMode int mHistoryOptInMode;
         private @Nullable CoreAccountId mSelectedCoreAccountId;
+        private boolean mShouldShowSigninSnackbar;
 
         /**
          * Constructor of the Builder.
@@ -109,6 +111,16 @@ public final class BottomSheetSigninAndHistorySyncConfig {
             return this;
         }
 
+        /**
+         * @param shouldShowSigninSnackbar If true, a snackbar will be shown after a successful
+         *     sign-in, informing the user they have signed and allows the user to undo the sign-in
+         *     by clicking the "Undo" button.
+         */
+        public Builder shouldShowSigninSnackbar(boolean shouldShowSigninSnackbar) {
+            mShouldShowSigninSnackbar = shouldShowSigninSnackbar;
+            return this;
+        }
+
         public BottomSheetSigninAndHistorySyncConfig build() {
             final HistorySyncConfig historySyncConfig =
                     new HistorySyncConfig(
@@ -119,7 +131,8 @@ public final class BottomSheetSigninAndHistorySyncConfig {
                     mNoAccountSigninMode,
                     mWithAccountSigninMode,
                     mHistoryOptInMode,
-                    mSelectedCoreAccountId);
+                    mSelectedCoreAccountId,
+                    mShouldShowSigninSnackbar);
         }
     }
 
@@ -129,7 +142,8 @@ public final class BottomSheetSigninAndHistorySyncConfig {
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @HistorySyncConfig.OptInMode int historyOptInMode,
-            @Nullable CoreAccountId selectedCoreAccountId) {
+            @Nullable CoreAccountId selectedCoreAccountId,
+            boolean shouldShowSigninSnackbar) {
         assert bottomSheetStrings != null;
         assert historySyncConfig != null;
 
@@ -139,6 +153,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
         this.withAccountSigninMode = withAccountSigninMode;
         this.historyOptInMode = historyOptInMode;
         this.selectedCoreAccountId = selectedCoreAccountId;
+        this.shouldShowSigninSnackbar = shouldShowSigninSnackbar;
     }
 
     @Override
@@ -154,7 +169,8 @@ public final class BottomSheetSigninAndHistorySyncConfig {
                 && noAccountSigninMode == other.noAccountSigninMode
                 && withAccountSigninMode == other.withAccountSigninMode
                 && historyOptInMode == other.historyOptInMode
-                && Objects.equals(selectedCoreAccountId, other.selectedCoreAccountId);
+                && Objects.equals(selectedCoreAccountId, other.selectedCoreAccountId)
+                && shouldShowSigninSnackbar == other.shouldShowSigninSnackbar;
     }
 
     @Override
@@ -165,6 +181,7 @@ public final class BottomSheetSigninAndHistorySyncConfig {
                 noAccountSigninMode,
                 withAccountSigninMode,
                 historyOptInMode,
-                selectedCoreAccountId);
+                selectedCoreAccountId,
+                shouldShowSigninSnackbar);
     }
 }

@@ -53,6 +53,8 @@ final class SigninAndHistorySyncBundleHelper {
             "Signin.BottomSheetWithAccountSigninMode";
     private static final String BOTTOM_SHEET_SELECTED_ACCOUNT_ID =
             "Signin.BottomSheetSelectedAccountId";
+    private static final String BOTTOM_SHEET_SHOW_SIGNIN_SNACKBAR =
+            "Signin.BottomSheetShouldShowSigninSnackbar";
 
     static Bundle getBundle(FullscreenSigninAndHistorySyncConfig config) {
         Bundle bundle = new Bundle();
@@ -100,6 +102,7 @@ final class SigninAndHistorySyncBundleHelper {
                 config.selectedCoreAccountId == null
                         ? null
                         : config.selectedCoreAccountId.getId().toString());
+        bundle.putBoolean(BOTTOM_SHEET_SHOW_SIGNIN_SNACKBAR, config.shouldShowSigninSnackbar);
         return bundle;
     }
 
@@ -121,6 +124,7 @@ final class SigninAndHistorySyncBundleHelper {
         if (selectedAccountId != null) {
             builder.selectedCoreAccountId(new CoreAccountId(new GaiaId(selectedAccountId)));
         }
+        builder.shouldShowSigninSnackbar(bundle.getBoolean(BOTTOM_SHEET_SHOW_SIGNIN_SNACKBAR));
         return builder.build();
     }
 }

@@ -100,6 +100,10 @@ public abstract class SigninPromoDelegate {
         return false;
     }
 
+    boolean shouldShowSigninSnackbar() {
+        return false;
+    }
+
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
         return profileData == null
                 ? mContext.getString(R.string.signin_promo_signin)
@@ -131,6 +135,7 @@ public abstract class SigninPromoDelegate {
                                 getHistoryOptInMode(),
                                 mContext.getString(R.string.history_sync_title),
                                 mContext.getString(R.string.history_sync_subtitle))
+                        .shouldShowSigninSnackbar(shouldShowSigninSnackbar())
                         .build();
         @Nullable Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
@@ -151,6 +156,7 @@ public abstract class SigninPromoDelegate {
                                 getHistoryOptInMode(),
                                 mContext.getString(R.string.history_sync_title),
                                 mContext.getString(R.string.history_sync_subtitle))
+                        .shouldShowSigninSnackbar(shouldShowSigninSnackbar())
                         .build();
         @Nullable Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
