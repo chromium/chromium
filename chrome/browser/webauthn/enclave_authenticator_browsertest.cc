@@ -3577,7 +3577,14 @@ BlockingUnexportableKeyProviderFactory() {
   return std::make_unique<BlockingUnexportableKeyProvider>();
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CancelRacesTPMCheck) {
+// TODO(https://crbug.com/452094561): Flaky on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CancelRacesTPMCheck DISABLED_CancelRacesTPMCheck
+#else
+#define MAYBE_CancelRacesTPMCheck CancelRacesTPMCheck
+#endif
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MAYBE_CancelRacesTPMCheck) {
   // https://crbug.com/352532554
 
   // Set the UnexportableKeyProvider to one that will block inside
