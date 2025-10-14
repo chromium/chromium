@@ -619,6 +619,7 @@ public class ReaderModeManager extends EmptyTabObserver
                 if (mMessageShown) {
                     return;
                 }
+
                 showReaderModeMessage(messageDispatcher);
                 mMessageShown = true;
             }
@@ -1014,9 +1015,11 @@ public class ReaderModeManager extends EmptyTabObserver
      * contextual page action UI is enabled to update the rate limiting logic and to suppress the
      * message prompt if the current tab is a CCT.
      *
-     * @param showCpaButton Whether the reader mode UI is the current CPA being shown.
+     * @param showCpaButton Whether the CPA button can be shown in the UI
+     * @param isReaderMode Whether the chose action is reader mode type.
      */
-    public void onContextualPageActionShown(OneshotSupplier<Boolean> showCpaButton) {
+    public void onContextualPageActionShown(
+            OneshotSupplier<Boolean> showCpaButton, boolean isReaderMode) {
         // If the feature is enabled and the tab is a custom tab, the manager should be aware if the
         // displayed contextual page action is the reader one. Once determined, #tryShowingPrompt
         // can successfully decide between showing a message prompt or suppressing it in favor of
@@ -1025,8 +1028,12 @@ public class ReaderModeManager extends EmptyTabObserver
             mHasBeenNotifiedOfCpa = true;
             showCpaButton.runSyncOrOnAvailable(
                     show -> {
-                        mIsReaderModeButtonShowingOnToolbar = show;
-                        if (show) {
+                        mIsReaderModeButtonShowingOnToolbar = isReaderMode && show;
+                        if (isReaderMode) {
+                            RecordHistogram.recordBooleanHistogram(
+                                    "Android.ReaderModeCpa.Shown", show);
+                        }
+                        if (mIsReaderModeButtonShowingOnToolbar) {
                             markUrlAsShown();
                         } else {
                             tryShowingPrompt();

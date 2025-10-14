@@ -262,7 +262,21 @@ public class ReaderModeActionProviderTest {
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         provider.onActionShown(mMockTab, AdaptiveToolbarButtonVariant.READER_MODE);
         shadowOf(Looper.getMainLooper()).runOneTask();
-        verify(mMockReaderModeManager).onContextualPageActionShown(mButtonVisibilitySupplier);
+        verify(mMockReaderModeManager).onContextualPageActionShown(mButtonVisibilitySupplier, true);
+        clearInvocations(mMockReaderModeManager);
+    }
+
+    @Test
+    public void testOnActionShownActionShownInvokedForTimedOutAccumulator() {
+        when(mMockSignalAccumulator.hasTimedOut()).thenReturn(true);
+        var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+        provider.onActionShown(mMockTab, AdaptiveToolbarButtonVariant.UNKNOWN);
+        shadowOf(Looper.getMainLooper()).runOneTask();
+
+        verify(mMockReaderModeManager)
+                .onContextualPageActionShown(mButtonVisibilitySupplier, false);
         clearInvocations(mMockReaderModeManager);
     }
 
