@@ -929,12 +929,9 @@
                 {
                     "name": "EnabledBothReadabilityDistillerAndTriggering",
                     "params": {
-                        "heuristic_min_content_length": "160",
-                        "heuristic_min_score": "50",
-                        "min_content_length": "100",
-                        "show_cpa": "true",
+                        "show_cpa": "false",
                         "use_distiller": "true",
-                        "use_heuristic": "true"
+                        "use_heuristic": "false"
                     },
                     "enable_features": [
                         "ReaderModeDistillInApp",
