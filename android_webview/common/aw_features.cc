@@ -238,7 +238,7 @@ const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier{
 
 // Connect to the non-embedded components provider from a background thread.
 BASE_FEATURE(kWebViewConnectToComponentProviderInBackground,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables phase 2 of using startup tasks logic for webview chromium
 // initialization which starts browser process asynchronously, when starting
