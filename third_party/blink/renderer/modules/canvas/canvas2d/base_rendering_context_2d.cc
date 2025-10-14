@@ -1115,7 +1115,7 @@ void BaseRenderingContext2D::DrawTextInternal(
       computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
 
   PlainTextPainter& text_painter = host->GetPlainTextPainter();
-  TextRun text_run(text, direction, bidi_override, /* normalize_space */ true);
+  TextRun text_run(text, direction, bidi_override);
   // Draw the item text at the correct point.
   gfx::PointF location(ClampTo<float>(x), ClampTo<float>(y));
   gfx::RectF bounds;
@@ -1172,8 +1172,7 @@ void BaseRenderingContext2D::DrawTextInternal(
       [font, text = std::move(text), direction, bidi_override, location,
        run_start, run_end, canvas, &text_painter,
        paint_type](MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
-        TextRun text_run(text, direction, bidi_override,
-                         /* normalize_space */ true);
+        TextRun text_run(text, direction, bidi_override);
         // Font::DrawType::kGlyphsAndClusters is required for printing to PDF,
         // otherwise the character to glyph mapping will not be reversible,
         // which prevents text data from being extracted from PDF files or

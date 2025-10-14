@@ -249,8 +249,7 @@ PlainTextNode::PlainTextNode(const TextRun& run,
         BidiParagraph::StringWithDirectionalOverride(run.ToStringView(),
                                                      run.Direction());
     TextRun run_with_override(text_with_override, run.Direction(),
-                              /* directional_override */ false,
-                              normalize_space);
+                              /* directional_override */ false);
     SegmentText(run_with_override, /* bidi_overridden */ true, font,
                 supports_bidi);
   } else {

@@ -45,9 +45,7 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
     const SimpleFontData* font_data = font->PrimaryFont();
     ASSERT_TRUE(font_data);
 
-    TextRun text_run(text, TextDirection::kLtr,
-                     /* directional_override */ false,
-                     /* normalize_space */ true);
+    TextRun text_run(text, TextDirection::kLtr);
 
     // X direction.
     EXPECT_EQ(78,
@@ -75,9 +73,7 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     Font* font = MakeGarbageCollected<Font>(font_description);
 
     gfx::PointF location(0, 0);
-    TextRun text_run(text, TextDirection::kLtr,
-                     /* directional_override */ false,
-                     /* normalize_space */ true);
+    TextRun text_run(text, TextDirection::kLtr);
 
     MockPaintCanvas mpc;
     cc::PaintFlags flags;

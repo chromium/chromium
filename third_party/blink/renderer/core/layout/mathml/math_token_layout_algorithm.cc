@@ -28,10 +28,8 @@ InkAscentDescent ComputeInkMetrics(const Font& font,
   }
 
   gfx::RectF glyph_bounds;
-  PlainTextPainter::Shared().ComputeInlineSize(
-      TextRun(characters, direction, /*directional_override=*/false,
-              /*normalize_space=*/true),
-      font, &glyph_bounds);
+  PlainTextPainter::Shared().ComputeInlineSize(TextRun(characters, direction),
+                                               font, &glyph_bounds);
   const float baseline =
       font_data->GetFontMetrics().AlphabeticBaseline().value_or(0);
   const float glyph_bounds_ascent = -glyph_bounds.y() - baseline;

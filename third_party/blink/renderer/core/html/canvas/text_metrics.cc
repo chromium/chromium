@@ -170,10 +170,8 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
     PlainTextPainter& text_painter) {
   runs_with_offset_.clear();
 
-  const PlainTextNode& node = text_painter.SegmentAndShape(
-      TextRun(text_, direction_, /* directional_override */ false,
-              /* normalize_space */ true),
-      *font_);
+  const PlainTextNode& node =
+      text_painter.SegmentAndShape(TextRun(text_, direction_), *font_);
   gfx::RectF glyph_bounds;
   float xpos = 0;
   runs_with_offset_.reserve(node.ItemList().size());

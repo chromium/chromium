@@ -50,11 +50,8 @@ String TextRun::NormalizedUTF16() const {
     UChar32 character;
     UNSAFE_TODO(U16_NEXT(source, position, len, character));
     // Don't normalize tabs as they are not treated as spaces for word-end.
-    if (NormalizeSpace() &&
-        Character::IsNormalizedCanvasSpaceCharacter(character)) {
-      character = uchar::kSpace;
-    } else if (Character::TreatAsSpace(character) &&
-               character != uchar::kNoBreakSpace) {
+    if (Character::TreatAsSpace(character) &&
+        character != uchar::kNoBreakSpace) {
       character = uchar::kSpace;
     } else if (Character::TreatAsZeroWidthSpaceInComplexScriptLegacy(
                    character)) {

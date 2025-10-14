@@ -48,15 +48,13 @@ class PLATFORM_EXPORT TextRun final {
   explicit TextRun(base::span<const UChar> c) : TextRun(StringView(c)) {}
 
   TextRun(const StringView& string)
-      : TextRun(string, TextDirection::kLtr, false, false) {}
+      : TextRun(string, TextDirection::kLtr, false) {}
   TextRun(const StringView& string,
           TextDirection direction,
-          bool directional_override = false,
-          bool normalize_space = false)
+          bool directional_override = false)
       : text_(string),
         direction_(static_cast<unsigned>(direction)),
-        directional_override_(directional_override),
-        normalize_space_(normalize_space) {}
+        directional_override_(directional_override) {}
 
   // TextRun supports move construction, but supports neither copy construction,
   // copy assignment, nor move assignment.
@@ -73,8 +71,7 @@ class PLATFORM_EXPORT TextRun final {
                  unsigned length,
                  std::optional<TextDirection> direction = std::nullopt) const {
     return TextRun(StringView(text_, start_offset, length),
-                   direction.value_or(Direction()), directional_override_,
-                   normalize_space_);
+                   direction.value_or(Direction()), directional_override_);
   }
 
   // Returns the start index of a sub run if it was created by |SubRun|.
@@ -90,8 +87,6 @@ class PLATFORM_EXPORT TextRun final {
 
   bool Is8Bit() const { return text_.Is8Bit(); }
   unsigned length() const { return text_.length(); }
-
-  bool NormalizeSpace() const { return normalize_space_; }
 
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
@@ -111,7 +106,6 @@ class PLATFORM_EXPORT TextRun final {
   const unsigned direction_ : 1;
   // Was this direction set by an override character.
   unsigned directional_override_ : 1;
-  const unsigned normalize_space_ : 1;
 };
 
 }  // namespace blink
