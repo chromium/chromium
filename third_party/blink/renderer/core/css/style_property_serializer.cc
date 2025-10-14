@@ -668,6 +668,8 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kRule:
       return GetShorthandValueForRule(rowRuleShorthand(),
                                       columnRuleShorthand());
+    case CSSPropertyID::kRuleBreak:
+      return GetShorthandValueForBidirectionalGapRules(ruleBreakShorthand());
     case CSSPropertyID::kRuleColor:
       return GetShorthandValueForBidirectionalGapRules(ruleColorShorthand());
     case CSSPropertyID::kRuleWidth:

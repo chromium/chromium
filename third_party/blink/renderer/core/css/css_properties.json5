@@ -8838,6 +8838,12 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
+      name: "rule-break",
+      longhands: ["row-rule-break", "column-rule-break"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "rule-color",
       longhands: ["column-rule-color", "row-rule-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

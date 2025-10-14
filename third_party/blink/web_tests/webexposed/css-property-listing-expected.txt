@@ -873,6 +873,9 @@ All changes to this list should go through Blink's feature review process: http:
         row-rule-color
         row-rule-style
         row-rule-width
+    rule-break
+        column-rule-break
+        row-rule-break
     rule-color
         column-rule-color
         row-rule-color

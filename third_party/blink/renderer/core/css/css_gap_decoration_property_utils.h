@@ -40,8 +40,6 @@ class CORE_EXPORT CSSGapDecorationUtils {
   static CSSPropertyID GetLonghandProperty(
       CSSGapDecorationPropertyDirection direction,
       CSSGapDecorationPropertyType type);
-  static CSSPropertyID GetShorthandProperty(
-      CSSGapDecorationPropertyDirection direction);
   static void AddProperties(CSSGapDecorationPropertyDirection direction,
                             const CSSValueList& rule_widths,
                             const CSSValueList& rule_styles,

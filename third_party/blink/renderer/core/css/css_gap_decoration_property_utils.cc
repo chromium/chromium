@@ -36,13 +36,6 @@ CSSPropertyID CSSGapDecorationUtils::GetLonghandProperty(
   }
 }
 
-CSSPropertyID CSSGapDecorationUtils::GetShorthandProperty(
-    CSSGapDecorationPropertyDirection direction) {
-  return direction == CSSGapDecorationPropertyDirection::kRow
-             ? CSSPropertyID::kRowRule
-             : CSSPropertyID::kColumnRule;
-}
-
 bool CSSGapDecorationUtils::RuleColorMaybeDependsOnCurrentColor(
     const GapDataList<StyleColor>& gap_rule_color) {
   return std::ranges::any_of(

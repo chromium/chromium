@@ -1320,6 +1320,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPositionTry:
     case CSSPropertyID::kRowRule:
     case CSSPropertyID::kRule:
+    case CSSPropertyID::kRuleBreak:
     case CSSPropertyID::kRuleColor:
     case CSSPropertyID::kRuleWidth:
     case CSSPropertyID::kRuleStyle:

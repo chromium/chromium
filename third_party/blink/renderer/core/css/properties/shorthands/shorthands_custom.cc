@@ -1085,6 +1085,43 @@ const CSSValue* RowRule::CSSValueFromComputedStyleInternal(
       value_phase, CSSGapDecorationPropertyDirection::kRow);
 }
 
+bool RuleBreak::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  DCHECK_EQ(ruleBreakShorthand().length(), 2u);
+  CSSValue* rule_break = css_parsing_utils::ConsumeIdent<
+      CSSValueID::kNone, CSSValueID::kIntersection, CSSValueID::kSpanningItem>(
+      stream);
+
+  if (!rule_break) {
+    return false;
+  }
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleBreak, CSSPropertyID::kRuleBreak, *rule_break,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kRowRuleBreak, CSSPropertyID::kRuleBreak, *rule_break,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+
+  return true;
+}
+
+const CSSValue* RuleBreak::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValuesForBidirectionalGapRuleShorthand(
+      ruleBreakShorthand(), style, layout_object, allow_visited_style,
+      value_phase);
+}
+
 bool Columns::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,

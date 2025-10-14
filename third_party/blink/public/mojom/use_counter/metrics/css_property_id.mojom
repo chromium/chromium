@@ -946,6 +946,7 @@ enum CSSSampleId {
     kOverscrollPosition = 884,
     kFontLanguageOverride = 885,
     kRubyOverhang = 886,
+    kRuleBreak = 887,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
