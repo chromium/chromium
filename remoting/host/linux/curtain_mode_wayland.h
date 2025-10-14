@@ -11,12 +11,15 @@ namespace remoting {
 
 class CurtainModeWayland : public CurtainMode {
  public:
-  CurtainModeWayland();
-
+  explicit CurtainModeWayland(bool is_headless);
   CurtainModeWayland(const CurtainModeWayland&) = delete;
   CurtainModeWayland& operator=(const CurtainModeWayland&) = delete;
+  ~CurtainModeWayland() override;
 
   bool Activate() override;
+
+ private:
+  bool is_headless_;
 };
 
 }  // namespace remoting

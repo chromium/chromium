@@ -160,7 +160,10 @@ GnomeInteractionStrategy::CreateLocalInputMonitor() {
 
 std::unique_ptr<CurtainMode> GnomeInteractionStrategy::CreateCurtainMode(
     base::WeakPtr<ClientSessionControl> client_session_control) {
-  return std::make_unique<CurtainModeWayland>();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return std::make_unique<CurtainModeWayland>(
+      remote_desktop_session_->is_headless());
 }
 
 void GnomeInteractionStrategy::Init(InitCallback callback) {

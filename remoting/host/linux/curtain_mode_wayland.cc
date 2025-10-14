@@ -6,12 +6,13 @@
 
 namespace remoting {
 
-CurtainModeWayland::CurtainModeWayland() = default;
+CurtainModeWayland::CurtainModeWayland(bool is_headless)
+    : is_headless_(is_headless) {}
+
+CurtainModeWayland::~CurtainModeWayland() = default;
 
 bool CurtainModeWayland::Activate() {
-  // Wayland support is only implemented for headless sessions which are
-  // already curtained.
-  return true;
+  return is_headless_;
 }
 
 }  // namespace remoting

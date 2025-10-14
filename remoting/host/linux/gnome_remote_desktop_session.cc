@@ -139,6 +139,16 @@ void GnomeRemoteDesktopSession::OnConnectionCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   connection_ = std::move(connection);
 
+  headless_detector_.Start(
+      connection_,
+      base::BindOnce(&GnomeRemoteDesktopSession::OnHeadlessDetection,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GnomeRemoteDesktopSession::OnHeadlessDetection(bool is_headless) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_headless_ = is_headless;
+
   // One of the gLinux patches modifies the method signature of CreateSession.
   // To ease the transition, try the patched signature if the upstream signature
   // fails.

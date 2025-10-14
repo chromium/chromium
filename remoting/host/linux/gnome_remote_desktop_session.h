@@ -19,6 +19,7 @@
 #include "remoting/host/linux/gnome_desktop_resizer.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/gnome_display_config_monitor.h"
+#include "remoting/host/linux/gnome_headless_detector.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_capturer.h"
@@ -54,39 +55,57 @@ class GnomeRemoteDesktopSession {
   // attempt to re-initialize.
   void Init(InitCallback callback);
 
+  bool is_initialized() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return initialization_state_ == InitializationState::kInitialized;
+  }
+
   base::WeakPtr<PipewireCaptureStreamManager> capture_stream_manager() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(is_initialized());
     return capture_stream_manager_.GetWeakPtr();
   }
 
   base::WeakPtr<PipewireMouseCursorCapturer> mouse_cursor_capturer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(is_initialized());
     return mouse_cursor_capturer_.GetWeakPtr();
   }
 
   base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(is_initialized());
     return display_config_monitor_.GetWeakPtr();
   }
 
   base::WeakPtr<GnomeDesktopResizer> desktop_resizer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(is_initialized());
     return desktop_resizer_.GetWeakPtr();
   }
 
   base::WeakPtr<EiSenderSession> ei_session() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(is_initialized());
     return ei_session_->GetWeakPtr();
   }
 
   GDBusConnectionRef connection() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(is_initialized());
     return connection_;
   }
 
   gvariant::ObjectPath session_path() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(is_initialized());
     return session_path_;
+  }
+
+  bool is_headless() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(is_initialized());
+    return is_headless_;
   }
 
  private:
@@ -108,6 +127,7 @@ class GnomeRemoteDesktopSession {
   void OnInitError(std::string_view what, Loggable why);
   void OnInitError(std::string_view what_and_why);
   void OnConnectionCreated(GDBusConnectionRef connection);
+  void OnHeadlessDetection(bool is_headless);
   void OnSessionCreated(std::tuple<gvariant::ObjectPath> args);
   void OnGotSessionId(std::string session_id);
   void OnScreenCastSessionCreated(std::tuple<gvariant::ObjectPath> args);
@@ -144,6 +164,9 @@ class GnomeRemoteDesktopSession {
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
       display_config_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
+  GnomeHeadlessDetector headless_detector_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool is_headless_ GUARDED_BY_CONTEXT(sequence_checker_){false};
 
   base::WeakPtrFactory<GnomeRemoteDesktopSession> weak_ptr_factory_{this};
 };
