@@ -1379,6 +1379,60 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
   });
 
+  test('placeholder text is updated when in deep search mode', async () => {
+    // Assert initial placeholder text.
+    assertEquals(
+        loadTimeData.getString('searchboxComposePlaceholder'),
+        composeboxElement.$.input.placeholder);
+
+    // Deep search mode enabled.
+    composeboxElement.$.context.dispatchEvent(
+        new CustomEvent('set-deep-search-mode', {
+          detail: {inDeepSearchMode: true},
+        }));
+    await microtasksFinished();
+    assertEquals(
+        loadTimeData.getString('composeDeepSearchPlaceholder'),
+        composeboxElement.$.input.placeholder);
+
+    // Deep search mode disabled.
+    composeboxElement.$.context.dispatchEvent(
+        new CustomEvent('set-deep-search-mode', {
+          detail: {inDeepSearchMode: false},
+        }));
+    await microtasksFinished();
+    assertEquals(
+        loadTimeData.getString('searchboxComposePlaceholder'),
+        composeboxElement.$.input.placeholder);
+  });
+
+  test('placeholder text is updated when in create image mode', async () => {
+    // Assert initial placeholder text.
+    assertEquals(
+        loadTimeData.getString('searchboxComposePlaceholder'),
+        composeboxElement.$.input.placeholder);
+
+    // Create image mode enabled.
+    composeboxElement.$.context.dispatchEvent(
+        new CustomEvent('set-create-image-mode', {
+          detail: {inCreateImageMode: true},
+        }));
+    await microtasksFinished();
+    assertEquals(
+        loadTimeData.getString('composeCreateImagePlaceholder'),
+        composeboxElement.$.input.placeholder);
+
+    // Create image mode disabled.
+    composeboxElement.$.context.dispatchEvent(
+        new CustomEvent('set-create-image-mode', {
+          detail: {inCreateImageMode: false},
+        }));
+    await microtasksFinished();
+    assertEquals(
+        loadTimeData.getString('searchboxComposePlaceholder'),
+        composeboxElement.$.input.placeholder);
+  });
+
   suite('Context menu', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
