@@ -49,8 +49,9 @@ class NavigationMessageListener {
 
   // Returns the index for the next message for `host` in its message queue.
   size_t GetNextMessageIndexForHost(const HostToken& host) {
-    CHECK(message_queues_.contains(host));
-    return message_queues_[host].next_message_index;
+    auto it = message_queues_.find(host);
+    CHECK(it != message_queues_.end());
+    return it->second.next_message_index;
   }
 
   // Returns true if there's at least 1 new queued message for `host`.
@@ -73,8 +74,9 @@ class NavigationMessageListener {
   WebMessage* NextMessageForHost(const HostToken& host) {
     CHECK(HasNextMessageForHost(host));
     size_t message_index = GetNextMessageIndexForHost(host);
-    message_queues_[host].next_message_index = message_index + 1;
-    return message_queues_[host].messages.at(message_index).get();
+    auto& message_queue = message_queues_[host];
+    message_queue.next_message_index = message_index + 1;
+    return message_queue.messages.at(message_index).get();
   }
 
   // Waits until there's a message waiting for `host`.
@@ -82,8 +84,9 @@ class NavigationMessageListener {
     if (HasNextMessageForHost(host)) {
       return;
     }
-    message_queues_[host].message_waiter = std::make_unique<base::RunLoop>();
-    message_queues_[host].message_waiter->Run();
+    auto& message_queue = message_queues_[host];
+    message_queue.message_waiter = std::make_unique<base::RunLoop>();
+    message_queue.message_waiter->Run();
     CHECK(HasNextMessageForHost(host));
   }
 
@@ -102,11 +105,12 @@ class NavigationMessageListener {
   // with `host`. Add the message to that host's queue.
   void OnPostMessage(const HostToken& host,
                      std::unique_ptr<WebMessage> message) {
-    message_queues_[host].messages.push_back(std::move(message));
+    auto& message_queue = message_queues_[host];
+    message_queue.messages.push_back(std::move(message));
     // We received a new message for `host`, so we can unblock calls to
     // `WaitForNextMessage*()` if needed.
-    if (message_queues_[host].message_waiter.get()) {
-      message_queues_[host].message_waiter->Quit();
+    if (message_queue.message_waiter.get()) {
+      message_queue.message_waiter->Quit();
     }
     if (any_message_waiter_.get()) {
       any_message_waiter_->Quit();
