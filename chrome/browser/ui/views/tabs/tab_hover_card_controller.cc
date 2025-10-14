@@ -459,7 +459,7 @@ void TabHoverCardController::HideHoverCard() {
 }
 
 void TabHoverCardController::OnCardClosing() {
-  tab_resource_usage_collector_->RemoveObserver(this);
+  tab_resource_usage_collector_observation_.Reset();
   delayed_show_timer_.Stop();
   hover_card_observation_.Reset();
   event_sniffer_.reset();
@@ -541,7 +541,8 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  tab_resource_usage_collector_->AddObserver(this);
+  tab_resource_usage_collector_observation_.Observe(
+      tab_resource_usage_collector_);
 }
 
 void TabHoverCardController::UpdateCardContent(Tab* tab) {

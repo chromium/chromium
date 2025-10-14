@@ -190,6 +190,12 @@ class TabHoverCardController : public views::ViewObserver,
   // resources are up to date when we eventually show the hover card.
   raw_ptr<TabResourceUsageCollector> tab_resource_usage_collector_;
 
+  // Observation of `tab_resource_usage_collector_`, active when `hover_card_`
+  // exists.
+  base::ScopedObservation<TabResourceUsageCollector,
+                          TabResourceUsageCollector::Observer>
+      tab_resource_usage_collector_observation_{this};
+
   // Tracks changes to the hover card preferences
   PrefChangeRegistrar pref_change_registrar_;
   bool hover_card_image_previews_enabled_ = false;
