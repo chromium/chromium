@@ -659,5 +659,36 @@ TEST_F(CWVAutofillControllerTest, ShowUnmaskAuthenticatorSelectorWithOptions) {
     capturedCancelBlock();
   }
 }
+
+// Tests that the delegate is called to load risk data when no
+// `CWVCreditCardVerifier` or `CWVCreditCardSaver` is present and the delegate
+// responds to autofillControllerLoadRiskData:riskDataHandler.
+TEST_F(CWVAutofillControllerTest, LoadRiskDataViaDelegate) {
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
+
+  base::MockOnceCallback<void(const std::string&)> mockCallback;
+  const std::string kRiskData = "TestRiskDataString";
+
+  base::RunLoop run_loop;
+
+  OCMExpect([delegate
+      autofillControllerLoadRiskData:autofill_controller_
+                     riskDataHandler:[OCMArg checkWithBlock:^BOOL(void (
+                                         ^riskDataHandler)(NSString*)) {
+                       riskDataHandler(base::SysUTF8ToNSString(kRiskData));
+                       return YES;
+                     }]]);
+
+  EXPECT_CALL(mockCallback, Run(kRiskData))
+      .WillOnce(
+          [&run_loop](const std::string&) { run_loop.Quit(); });
+
+  [autofill_controller_ loadRiskData:mockCallback.Get()];
+
+  run_loop.Run();
+
+  [delegate verify];
+}
 }  // namespace
 }  // namespace ios_web_view

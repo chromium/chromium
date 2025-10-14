@@ -508,6 +508,21 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
     [_verifier loadRiskData:std::move(callback)];
   } else if (_saver) {
     [_saver loadRiskData:std::move(callback)];
+  } else {
+    // Request risk data from the delegate. This is needed early for VCN
+    // flows, before a credit card verifier or saver object is created.
+    // The delegate will call the handler block asynchronously with the data.
+    if ([_delegate respondsToSelector:@selector
+                   (autofillControllerLoadRiskData:riskDataHandler:)]) {
+      auto wrappedRiskDataCallback =
+          base::BindOnce(&base::SysNSStringToUTF8).Then(std::move(callback));
+
+      void (^riskDataBlock)(NSString*) =
+          base::CallbackToBlock(std::move(wrappedRiskDataCallback));
+
+      [_delegate autofillControllerLoadRiskData:self
+                                riskDataHandler:riskDataBlock];
+    }
   }
 }
 

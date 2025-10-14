@@ -229,15 +229,41 @@ typedef void (^ProceduralBlock)(void);
     closeProgressDialogWithConfirmation:(BOOL)showConfirmation
                              completion:(ProceduralBlock)completion;
 
-// Called when the user needs to select an option to verify a credit card.
+// Called when the user needs to select a challenge option to verify a credit
+// card unmasking attempt.
+// |autofillController| The autofill controller requesting the selection.
+// |options| An array of CWVCardUnmaskChallengeOption objects, each representing
+// a method the user can choose to verify the card.
+// |acceptBlock| The block to execute when the user selects an option. The
+// |selectedOptionIdentifier| parameter passed to this block is the unique
+// identifier from the chosen CWVCardUnmaskChallengeOption.
+// |cancelBlock| The block to execute if the user cancels the selection process.
 - (void)autofillController:(CWVAutofillController*)autofillController
     showUnmaskCreditCardAuthenticatorWithChallengeOptions:
         (NSArray<CWVCardUnmaskChallengeOption*>*)options
                                               acceptBlock:
-                                                  (void (^)(NSString* option))
+                                                  (void (^)(
+                                                      NSString*
+                                                      selectedOptionIdentifier))
                                                       acceptBlock
                                               cancelBlock:
                                                   (ProceduralBlock)cancelBlock;
+
+// Called to request application-specific risk data required for certain payment
+// flows, such as unmasking a Virtual Card Number (VCN).
+//
+// The controller's |loadRiskData:| method is a router. It will first attempt
+// to forward the request to an active |CWVCreditCardVerifier| or
+// |CWVCreditCardSaver| instance. This delegate method serves as the fallback
+// if called when neither of those objects are present. This is a common
+// scenario for VCN flows where risk data is needed earlier in the process.
+//
+// |autofillController| The autofill controller requesting the data.
+// |handler| The completion handler block that must be called with the
+//   risk data to complete the operation.
+- (void)autofillControllerLoadRiskData:
+            (CWVAutofillController*)autofillController
+                       riskDataHandler:(void (^)(NSString*))handler;
 
 @end
 
