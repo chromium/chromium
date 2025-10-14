@@ -6,19 +6,29 @@
 #define CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_
 
 #include <memory>
-#include <utility>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/webid/proto/fedcm_clickthrough_rate_metadata.pb.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
-#include "components/segmentation_platform/public/trigger.h"
-#include "content/public/browser/web_contents.h"
+#include "components/segmentation_platform/public/result.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "ui/gfx/native_ui_types.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}
+
+namespace segmentation_platform {
+class SegmentationPlatformService;
+}
 
 using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;

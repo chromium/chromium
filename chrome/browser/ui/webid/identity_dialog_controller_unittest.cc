@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"

@@ -5,19 +5,26 @@
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/ui/webid/account_selection_view.h"
+#include "chrome/browser/webid/identity_provider_permission_request.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 
 // We add nognchecks on these includes so that Android bots do not fail
 // dependency checks.
@@ -26,11 +33,6 @@
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"  // nogncheck
 #include "components/tabs/public/tab_interface.h"  // nogncheck
 #endif
-
-#include "chrome/browser/ui/webid/account_selection_view.h"
-#include "chrome/browser/webid/identity_provider_permission_request.h"
-#include "components/permissions/permission_request_manager.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 
 IdentityDialogController::IdentityDialogController(
     content::WebContents* rp_web_contents,
