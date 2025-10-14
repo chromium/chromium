@@ -194,9 +194,14 @@ media::EncoderStatus IsAcceleratedConfigurationSupported(
   }
 
   // Hardware encoders don't currently support high bit depths or subsamplings
-  // other than 4:2:0.
-  if (options.subsampling.value_or(media::VideoChromaSampling::k420) !=
-          media::VideoChromaSampling::k420 ||
+  // other than 4:2:0, except for AV1 profile 1 we require 4:4:4.
+  media::VideoChromaSampling required_sampling =
+      (profile == media::AV1PROFILE_PROFILE_HIGH)
+          ? media::VideoChromaSampling::k444
+          : media::VideoChromaSampling::k420;
+
+  if ((options.subsampling.has_value() &&
+       options.subsampling.value() != required_sampling) ||
       options.bit_depth.value_or(8) != 8) {
     return media::EncoderStatus::Codes::kEncoderUnsupportedConfig;
   }

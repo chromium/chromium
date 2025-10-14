@@ -602,11 +602,18 @@ D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
       continue;
     }
     std::vector<VideoPixelFormat> formats;
-    for (VideoPixelFormat format : {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE}) {
+    for (VideoPixelFormat format :
+         {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE, PIXEL_FORMAT_ABGR}) {
       D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT input_format{
           .Codec = D3D12_VIDEO_ENCODER_CODEC_AV1,
           .Profile = profile_level.Profile,
-          .Format = VideoPixelFormatToDxgiFormat(format),
+          // It makes no sense to encode at Y:U:V 444 if input UV is already
+          // subsampled. So only allow profile 1 encoding when input is RGBA
+          // frame, and converts to AYUV which is the only DXGI format supported
+          // by drivers at 8b profile 1.
+          .Format = (format == PIXEL_FORMAT_ABGR)
+                        ? DXGI_FORMAT_AYUV
+                        : VideoPixelFormatToDxgiFormat(format),
       };
       if (CheckD3D12VideoEncoderInputFormat(video_device, &input_format)
               .is_ok()) {

@@ -156,8 +156,74 @@ class D3D12VideoEncodeAV1DelegateTest
 TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles) {
   std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
       expected_profiles = {
-          {AV1PROFILE_PROFILE_MAIN, {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE}}};
-  EXPECT_CALL(*video_device3_.Get(), CheckFeatureSupport).Times(6);
+          {AV1PROFILE_PROFILE_MAIN,
+           {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE, PIXEL_FORMAT_ABGR}}};
+  EXPECT_CALL(*video_device3_.Get(), CheckFeatureSupport).Times(7);
+  auto profiles =
+      D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(video_device3_.Get());
+  EXPECT_EQ(profiles, expected_profiles);
+}
+
+TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles_HighProfile) {
+  // Simulate only AV1 high profile is supported and only PIXEL_FORMAT_ABGR is
+  // supported for it. Patch the mock to only support high profile and ABGR
+  // format.
+  ON_CALL(*video_device3_.Get(), CheckFeatureSupport(_, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO feature, void* pFeatureSupportData,
+                        UINT FeatureSupportDataSize) -> HRESULT {
+        if (feature == D3D12_FEATURE_VIDEO_ENCODER_CODEC) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC*>(
+                  pFeatureSupportData);
+          feature_data->IsSupported =
+              feature_data->Codec == D3D12_VIDEO_ENCODER_CODEC_AV1;
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_PROFILE_LEVEL) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          CHECK(feature_data->Profile.pAV1Profile);
+          feature_data->IsSupported = (*feature_data->Profile.pAV1Profile ==
+                                       D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          CHECK_EQ(*feature_data->Profile.pAV1Profile,
+                   D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+          feature_data->IsSupported = feature_data->Format == DXGI_FORMAT_AYUV;
+        } else if (feature ==
+                   D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT) {
+          auto* feature_data = static_cast<
+              D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT*>(
+              pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          CHECK_LE(*feature_data->Profile.pAV1Profile,
+                   D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+          auto* av1_support = feature_data->CodecSupportLimits.pAV1Support;
+          av1_support->SupportedInterpolationFilters =
+              D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_EIGHTTAP;
+          av1_support->SupportedFeatureFlags =
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING |
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS |
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER |
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_REDUCED_TX_SET;
+          av1_support->RequiredFeatureFlags =
+              D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER;
+          feature_data->IsSupported = true;
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_SUPPORT1) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT1*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          feature_data->SupportFlags =
+              D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK;
+        }
+        return S_OK;
+      });
+  std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
+      expected_profiles = {{AV1PROFILE_PROFILE_HIGH, {PIXEL_FORMAT_ABGR}}};
   auto profiles =
       D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(video_device3_.Get());
   EXPECT_EQ(profiles, expected_profiles);

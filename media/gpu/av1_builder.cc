@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
+#include "third_party/libgav1/src/src/obu_parser.h"
 
 namespace media {
 
@@ -84,7 +85,9 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildSequenceHeaderOBU(
 
   // AV1 spec section 5.5.2, color config syntax.
   ret.WriteBool(false);  // Disable high bitdepth.
-  ret.WriteBool(false);  // Disable monochrome.
+  if (seq_hdr.profile != libgav1::BitstreamProfile::kProfile1) {
+    ret.WriteBool(false);  // Disable monochrome.
+  }
 
   if (seq_hdr.color_description_present_flag) {
     ret.WriteBool(true);  // Color description present.
@@ -99,7 +102,9 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildSequenceHeaderOBU(
   // Rec.709, transfer is sRGB and at the same time the identity
   // matrix is used.
   ret.WriteBool(seq_hdr.color_range);
-  ret.Write(0, 2);       // Chroma sample position = 0.
+  if (seq_hdr.profile != libgav1::BitstreamProfile::kProfile1) {
+    ret.Write(0, 2);  // Chroma sample position = 0.
+  }
 
   ret.WriteBool(true);   // Separate uv delta q.
   ret.WriteBool(false);  // No film grain parameters present.

@@ -69,6 +69,19 @@ bool IsVBRSupported(ID3D12VideoDevice3* video_device,
   return SUCCEEDED(hr) && vbr.IsSupported;
 }
 
+DXGI_FORMAT GetDxgiInputFormat(VideoCodecProfile output_profile,
+                               VideoPixelFormat input_format) {
+  if ((output_profile == H264PROFILE_HIGH10PROFILE ||
+       output_profile == HEVCPROFILE_MAIN10) &&
+      input_format == PIXEL_FORMAT_P010LE) {
+    return DXGI_FORMAT_P010;
+  } else if (output_profile == AV1PROFILE_PROFILE_HIGH) {
+    return DXGI_FORMAT_AYUV;
+  } else {
+    return DXGI_FORMAT_NV12;
+  }
+}
+
 }  // namespace
 
 // static
@@ -212,13 +225,7 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   input_size_.Width = config.input_visible_size.width();
   input_size_.Height = config.input_visible_size.height();
 
-  if ((output_profile_ == H264PROFILE_HIGH10PROFILE ||
-       output_profile_ == HEVCPROFILE_MAIN10) &&
-      config.input_format == PIXEL_FORMAT_P010LE) {
-    input_format_ = DXGI_FORMAT_P010;
-  } else {
-    input_format_ = DXGI_FORMAT_NV12;
-  }
+  input_format_ = GetDxgiInputFormat(output_profile_, config.input_format);
   processed_input_frame_.Reset();
 
   rate_control_ = D3D12VideoEncoderRateControl::Create(
