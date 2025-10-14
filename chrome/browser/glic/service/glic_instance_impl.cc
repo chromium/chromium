@@ -181,9 +181,6 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 }
 
 void GlicInstanceImpl::Detach(tabs::TabInterface* tab) {
-  if (coordinator_delegate_) {
-    coordinator_delegate_->OnDetachRequested(this, tab);
-  }
   Show(FloatingShowOptions::From(tab->GetBrowserWindowInterface()));
   Close(CreateSidePanelEmbedderKey(tab));
 }

@@ -446,19 +446,4 @@ void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(
   }
 }
 
-GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceWithFloaty() {
-  for (const auto& [unused, instance] : instances_) {
-    if (instance->GetPanelState().kind == mojom::PanelState_Kind::kDetached) {
-      return instance.get();
-    }
-  }
-  return nullptr;
-}
-
-void GlicInstanceCoordinatorImpl::OnDetachRequested(GlicInstance* instance,
-                                                    tabs::TabInterface* tab) {
-  if (auto* floaty_instance = GetInstanceWithFloaty()) {
-    floaty_instance->Close(FloatingEmbedderKey{});
-  }
-}
 }  // namespace glic
