@@ -418,14 +418,6 @@ GoogleServiceAuthError SyncServiceAndroidBridge::GetAuthError(JNIEnv* env) {
   return native_sync_service_->GetAuthError();
 }
 
-jboolean SyncServiceAndroidBridge::HasUnrecoverableError(JNIEnv* env) {
-  return native_sync_service_->HasUnrecoverableError();
-}
-
-jboolean SyncServiceAndroidBridge::RequiresClientUpgrade(JNIEnv* env) {
-  return native_sync_service_->RequiresClientUpgrade();
-}
-
 base::android::ScopedJavaLocalRef<jobject>
 SyncServiceAndroidBridge::GetAccountInfo(JNIEnv* env) {
   CoreAccountInfo account_info = native_sync_service_->GetAccountInfo();

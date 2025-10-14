@@ -200,7 +200,6 @@ public class SyncSettingsUtils {
 
     /** Return a short summary of the current sync status. */
     public static String getSyncStatusSummary(Context context, Profile profile) {
-        // TODO(crbug.com/40890809): Use getUserActionableError().
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService == null) {
             return context.getString(R.string.sync_off);
@@ -215,48 +214,40 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_is_disabled_by_administrator);
         }
 
-        if (!syncService.isInitialSyncFeatureSetupComplete()) {
-            return context.getString(R.string.sync_settings_not_confirmed);
-        }
-
-        @GoogleServiceAuthErrorState int authErrorState = syncService.getAuthError().getState();
-        if (authErrorState != GoogleServiceAuthErrorState.NONE) {
-            return getSyncStatusSummaryForAuthError(context, authErrorState);
-        }
-
-        if (syncService.requiresClientUpgrade()) {
-            return context.getString(
-                    R.string.sync_error_upgrade_client, ApkInfo.getHostPackageLabel());
-        }
-
-        if (syncService.hasUnrecoverableError()) {
-            return context.getString(R.string.sync_error_generic);
-        }
-
         if (syncService.getSelectedTypes().isEmpty()) {
             return context.getString(R.string.sync_data_types_off);
         }
 
+        @UserActionableError int userActionableError = syncService.getUserActionableError();
+
+        switch (userActionableError) {
+            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
+                return context.getString(R.string.sync_settings_not_confirmed);
+            case UserActionableError.UNRECOVERABLE_ERROR:
+                return context.getString(R.string.sync_error_generic);
+            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
+                return getSyncStatusSummaryForAuthError(
+                        context, syncService.getAuthError().getState());
+            case UserActionableError.NEEDS_CLIENT_UPGRADE:
+                return context.getString(
+                        R.string.sync_error_upgrade_client, ApkInfo.getHostPackageLabel());
+            case UserActionableError.NEEDS_PASSPHRASE:
+                return context.getString(R.string.sync_need_passphrase);
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
+                return context.getString(R.string.sync_error_card_title);
+            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
+                return context.getString(R.string.password_sync_error_summary);
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return context.getString(R.string.sync_needs_verification_title);
+            case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
+                return context.getString(R.string.sync_error_outdated_gms);
+            case UserActionableError.NONE:
+                break;
+        }
+
         if (!syncService.isSyncFeatureActive()) {
             return context.getString(R.string.sync_setup_progress);
-        }
-
-        if (syncService.isPassphraseRequiredForPreferredDataTypes()) {
-            return context.getString(R.string.sync_need_passphrase);
-        }
-
-        if (syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
-            return syncService.isEncryptEverythingEnabled()
-                    ? context.getString(R.string.sync_error_card_title)
-                    : context.getString(R.string.password_sync_error_summary);
-        }
-
-        if (syncService.isTrustedVaultRecoverabilityDegraded()) {
-            return context.getString(R.string.sync_needs_verification_title);
-        }
-
-        if (syncService.getUserActionableError() == UserActionableError.NEEDS_UPM_BACKEND_UPGRADE) {
-            return context.getString(R.string.sync_error_outdated_gms);
         }
 
         return context.getString(R.string.sync_on);

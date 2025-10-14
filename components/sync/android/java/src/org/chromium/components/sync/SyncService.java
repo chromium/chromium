@@ -73,10 +73,6 @@ public interface SyncService {
      */
     boolean isSyncDisabledByEnterprisePolicy();
 
-    boolean hasUnrecoverableError();
-
-    boolean requiresClientUpgrade();
-
     @Nullable CoreAccountInfo getAccountInfo();
 
     /**

@@ -111,20 +111,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public boolean hasUnrecoverableError() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().hasUnrecoverableError(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public boolean requiresClientUpgrade() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().requiresClientUpgrade(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public @Nullable CoreAccountInfo getAccountInfo() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -607,10 +593,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         @JniType("GoogleServiceAuthError")
         GoogleServiceAuthError getAuthError(long nativeSyncServiceAndroidBridge);
-
-        boolean hasUnrecoverableError(long nativeSyncServiceAndroidBridge);
-
-        boolean requiresClientUpgrade(long nativeSyncServiceAndroidBridge);
 
         @Nullable CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
 

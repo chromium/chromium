@@ -79,12 +79,6 @@ public class FakeSyncServiceImpl implements SyncService {
                 });
     }
 
-    @Override
-    public boolean hasUnrecoverableError() {
-        ThreadUtils.assertOnUiThread();
-        return mHasUnrecoverableError;
-    }
-
     @AnyThread
     public void setHasUnrecoverableError(boolean hasUnrecoverableError) {
         ThreadUtils.runOnUiThreadBlocking(
@@ -168,12 +162,6 @@ public class FakeSyncServiceImpl implements SyncService {
     public boolean isEncryptEverythingEnabled() {
         ThreadUtils.assertOnUiThread();
         return mEncryptEverythingEnabled;
-    }
-
-    @Override
-    public boolean requiresClientUpgrade() {
-        ThreadUtils.assertOnUiThread();
-        return mRequiresClientUpgrade;
     }
 
     @AnyThread

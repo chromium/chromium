@@ -311,7 +311,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         when(mSyncService.getAuthError())
                 .thenReturn(new GoogleServiceAuthError(GoogleServiceAuthErrorState.NONE));
-        when(mSyncService.hasUnrecoverableError()).thenReturn(false);
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
         when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(false);

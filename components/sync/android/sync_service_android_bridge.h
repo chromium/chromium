@@ -91,8 +91,6 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   void GetAllNodes(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& callback);
   GoogleServiceAuthError GetAuthError(JNIEnv* env);
-  jboolean HasUnrecoverableError(JNIEnv* env);
-  jboolean RequiresClientUpgrade(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetAccountInfo(JNIEnv* env);
   jboolean HasSyncConsent(JNIEnv* env);
   jboolean IsPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
