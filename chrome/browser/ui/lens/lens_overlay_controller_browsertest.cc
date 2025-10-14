@@ -87,6 +87,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/chrome_paths.h"
@@ -148,9 +149,11 @@
 #include "ui/compositor/compositor_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -796,6 +799,17 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
       const SkBitmap& region_bitmap) {
     GetLensSearchController()->OpenLensOverlayWithPendingRegion(
         invocation_source, std::move(region), region_bitmap);
+  }
+
+  void SimulateOpenInNewTabButtonClick() {
+    views::Button* open_in_new_tab_button =
+        browser()
+            ->GetBrowserView()
+            .contents_height_side_panel()
+            ->GetHeaderView<SidePanelHeader>()
+            ->header_open_in_new_tab_button();
+    views::test::ButtonTestApi(open_in_new_tab_button)
+        .NotifyClick(ui::test::TestEvent());
   }
 
   void SimulateLeftClickDrag(gfx::Point from, gfx::Point to) {
@@ -3405,7 +3419,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
   // Simulate clicking the open in new tab option.
-  coordinator->OpenInNewTab();
+  SimulateOpenInNewTabButtonClick();
 
   // Verify the new tab opens to a URL with the same path, no gsc param, and a
   // different vsrid. Other params may be changed or unchanged.
@@ -3488,8 +3502,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   test_side_panel_coordinator->ResetSidePanelTracking();
 
   // Should do nothing.
-  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
-  coordinator->OpenInNewTab();
+  SimulateOpenInNewTabButtonClick();
 
   // Verify no action recorded.
   EXPECT_EQ(0, user_action_tester.GetActionCount(

@@ -35,10 +35,6 @@ class SidePanelUI {
   virtual void Toggle(SidePanelEntryKey key,
                       SidePanelOpenTrigger open_trigger) = 0;
 
-  // Opens the current side panel contents in a new tab. This is called by the
-  // header button, when it's visible.
-  virtual void OpenInNewTab() = 0;
-
   // Get the current entry id if the side panel is open.
   virtual std::optional<SidePanelEntryId> GetCurrentEntryId() const = 0;
 

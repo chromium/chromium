@@ -59,7 +59,6 @@ class SidePanelCoordinator final
   void Close() override;
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
-  void OpenInNewTab() override;
 
   // Re-runs open new tab URL check and sets button state to enabled/disabled
   // accordingly.
@@ -88,8 +87,7 @@ class SidePanelCoordinator final
   SidePanelEntry* GetLoadingEntryForTesting() const;
 
  private:
-  friend class SidePanelCoordinatorTest;
-
+  void OpenInNewTab();
   void UpdatePinState();
 
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is

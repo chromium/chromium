@@ -54,8 +54,6 @@ void WebUIBrowserSidePanelUI::Close() {
 void WebUIBrowserSidePanelUI::Toggle(SidePanelEntryKey key,
                                      SidePanelOpenTrigger open_trigger) {}
 
-void WebUIBrowserSidePanelUI::OpenInNewTab() {}
-
 content::WebContents* WebUIBrowserSidePanelUI::GetWebContentsForTest(
     SidePanelEntryId id) {
   return nullptr;

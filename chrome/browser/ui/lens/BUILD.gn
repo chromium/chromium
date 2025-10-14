@@ -299,6 +299,7 @@ source_set("browser_tests") {
     "//ui/base/unowned_user_data",
     "//ui/compositor",
     "//ui/events:events_base",
+    "//ui/events:test_support",
     "//ui/views",
     "//ui/views:test_support",
     "//ui/views/controls/webview",
