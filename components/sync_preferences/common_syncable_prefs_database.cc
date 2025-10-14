@@ -151,6 +151,7 @@ enum {
   kAutofillAiTravelEntitiesEnabled = 102,
   kCrossDeviceTabResumptionHomeModuleEnabled = 103,
   kAutofillAmountExtractionAiTermsSeen = 104,
+  kCrossDevicePriceTrackingHomeModuleEnabled = 105,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -279,6 +280,10 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           MergeBehavior::kMergeableDict}},
         {prefs::kCrossDeviceOmniboxIsInBottomPosition,
          {syncable_prefs_ids::kCrossDeviceOmniboxIsInBottomPosition,
+          syncer::PREFERENCES, PrefSensitivity::kNone,
+          MergeBehavior::kMergeableDict}},
+        {prefs::kCrossDevicePriceTrackingHomeModuleEnabled,
+         {syncable_prefs_ids::kCrossDevicePriceTrackingHomeModuleEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone,
           MergeBehavior::kMergeableDict}},
         {prefs::kCrossDeviceSafetyCheckHomeModuleEnabled,

@@ -22,11 +22,18 @@ inline constexpr char kCrossDeviceCrossPlatformPromosIOS16thActiveDay[] =
 inline constexpr char kCrossDeviceOmniboxIsInBottomPosition[] =
     "cross_device.omnibox.is_in_bottom_position";
 
-// Dictionary that stores if the Safety Check Home Module is enabled.
+// Dictionary that stores if the Price Tracking Home Module is enabled across a
+// user's syncing devices.
+inline constexpr char kCrossDevicePriceTrackingHomeModuleEnabled[] =
+    "cross_device.home.module.price_tracking.enabled";
+
+// Dictionary that stores if the Safety Check Home Module is enabled across a
+// user's syncing devices.
 inline constexpr char kCrossDeviceSafetyCheckHomeModuleEnabled[] =
     "cross_device.home.module.safety_check.enabled";
 
-// Dictionary that stores if the Tab Resumption Home Module is enabled.
+// Dictionary that stores if the Tab Resumption Home Module is enabled across a
+// user's syncing devices.
 inline constexpr char kCrossDeviceTabResumptionHomeModuleEnabled[] =
     "cross_device.home.module.tab_resumption.enabled";
 

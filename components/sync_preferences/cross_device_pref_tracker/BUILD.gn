@@ -30,6 +30,7 @@ source_set("cross_device_pref_tracker") {
   deps = [
     ":timestamped_pref_value",
     "//base",
+    "//components/commerce/core:pref_names",
     "//components/keyed_service/core",
     "//components/ntp_tiles:pref_names",
     "//components/omnibox/browser:pref_names",
