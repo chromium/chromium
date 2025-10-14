@@ -26,37 +26,37 @@
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/visual_logging.h"
-#include "components/permissions/permission_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #endif
-
-class PortForwardingStatusSerializer;
-class Profile;
-class DevToolsHttpServiceHandler;
-class DevToolsHttpServiceRegistry;
 
 namespace content {
 class NavigationHandle;
 class WebContents;
 }  // namespace content
 
-namespace network {
-class SimpleURLLoader;
-}
-
 namespace infobars {
 class ContentInfoBarManager;
 }
 
+namespace network {
+class SimpleURLLoader;
+}
+
+namespace permissions {
+enum class PermissionAction;
+}
+
+class DevToolsHttpServiceHandler;
+class DevToolsHttpServiceRegistry;
 class DevToolsUIBindingsDispatchHttpRequestTest;
+class PortForwardingStatusSerializer;
+class Profile;
 
 // Base implementation of DevTools bindings around front-end.
 class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
