@@ -18,9 +18,11 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -409,8 +411,8 @@ std::string ManifestBuilder::ToJson() const {
     for (const auto& origin : policy.second.origins) {
       values.Append(origin.Serialize());
     }
-    std::string_view feature_name =
-        blink::GetPermissionsPolicyFeatureToNameMap().at(policy.first);
+    std::string_view feature_name = CHECK_DEREF(base::FindOrNull(
+        blink::GetPermissionsPolicyFeatureToNameMap(), policy.first));
     policies.Set(feature_name, std::move(values));
   }
   json.Set("permissions_policy", std::move(policies));

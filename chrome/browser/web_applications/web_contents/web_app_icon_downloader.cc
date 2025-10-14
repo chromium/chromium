@@ -8,8 +8,10 @@
 #include <tuple>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -178,7 +180,8 @@ void WebAppIconDownloader::DidDownloadFavicon(
     return;
   }
 
-  const IconUrlWithSize icon_urls_with_sizes = in_progress_requests_.at(id);
+  const IconUrlWithSize icon_urls_with_sizes =
+      CHECK_DEREF(base::FindOrNull(in_progress_requests_, id));
   size_t num_deleted = in_progress_requests_.erase(id);
   CHECK_EQ(num_deleted, 1ul);
 

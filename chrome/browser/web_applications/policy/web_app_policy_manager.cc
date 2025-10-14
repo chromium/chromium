@@ -748,8 +748,8 @@ void WebAppPolicyManager::RefreshPolicySettingsForTesting() {
 void WebAppPolicyManager::OverrideManifest(
     const GURL& custom_values_key,
     blink::mojom::ManifestPtr& manifest) const {
-  const CustomManifestValues& custom_values =
-      custom_manifest_values_by_url_.at(custom_values_key);
+  const CustomManifestValues& custom_values = CHECK_DEREF(
+      base::FindOrNull(custom_manifest_values_by_url_, custom_values_key));
   if (custom_values.name) {
     manifest->name = custom_values.name.value();
   }
