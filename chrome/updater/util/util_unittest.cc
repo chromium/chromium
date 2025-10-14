@@ -297,10 +297,6 @@ TEST(Util, EnumerateUpdateClientTempDirectories) {
         ADD_FAILURE() << "Unexpected directory: " << dir;
       }));
 
-  // TODO(crbug.com/447234785): enable the following test for `posix` after
-  // `CreateNewTempDirectory` in `file_util_posix.cc` starts respecting
-  // `prefix`.
-#if BUILDFLAG(IS_WIN)
   base::FilePath dir;
   for (const auto& matcher :
        {FILE_PATH_LITERAL("chrome_url_fetcher_"),
@@ -318,7 +314,6 @@ TEST(Util, EnumerateUpdateClientTempDirectories) {
 
   EXPECT_EQ(count, 3);
   EXPECT_TRUE(base::DeletePathRecursively(dir));
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace updater

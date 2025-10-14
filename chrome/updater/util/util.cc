@@ -388,9 +388,9 @@ void EnumerateUpdateClientTempDirectories(
 #endif  // BUILDFLAG(IS_WIN)
 
   for (const auto& matcher :
-       {FILE_PATH_LITERAL("chrome_url_fetcher_*"),
-        FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping*"),
-        FILE_PATH_LITERAL("chrome_BITS_*")}) {
+       {FILE_PATH_LITERAL("*chrome_url_fetcher_*"),
+        FILE_PATH_LITERAL("*chrome_Unpacker_BeginUnzipping*"),
+        FILE_PATH_LITERAL("*chrome_BITS_*")}) {
     base::FileEnumerator(temp_dir,
                          /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
                          matcher)

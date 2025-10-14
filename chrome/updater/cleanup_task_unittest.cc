@@ -52,29 +52,21 @@ TEST_F(CleanupTaskTest, RunCleanupObsoleteFiles) {
   test::SetupMockUpdater(google_update_exe.value());
 #endif  // BUILDFLAG(IS_WIN)
 
-  // TODO(crbug.com/447234785): enable the following test for `posix` after
-  // `CreateNewTempDirectory` in `file_util_posix.cc` starts respecting
-  // `prefix`.
-#if BUILDFLAG(IS_WIN)
   base::FilePath chrome_url_fetcher_dir;
   base::FilePath chrome_unpacker_dir;
   base::FilePath chrome_bits_dir;
   base::FilePath random_temp_dir;
-  if (!IsSystemInstall(GetUpdaterScopeForTesting()) ||
-      base::internal::IsUserDefaultAdmin()) {
-    // Set up mock update_client temp directories.
-    ASSERT_TRUE(base::CreateNewTempDirectory(
-        FILE_PATH_LITERAL("chrome_url_fetcher_BazBar"),
-        &chrome_url_fetcher_dir));
-    ASSERT_TRUE(base::CreateNewTempDirectory(
-        FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzippingBazBar"),
-        &chrome_unpacker_dir));
-    ASSERT_TRUE(base::CreateNewTempDirectory(
-        FILE_PATH_LITERAL("chrome_BITS_BazBar"), &chrome_bits_dir));
-    ASSERT_TRUE(base::CreateNewTempDirectory(FILE_PATH_LITERAL("random_temp"),
-                                             &random_temp_dir));
-  }
-#endif  // BUILDFLAG(IS_WIN)
+
+  // Set up mock update_client temp directories.
+  ASSERT_TRUE(base::CreateNewTempDirectory(
+      FILE_PATH_LITERAL("chrome_url_fetcher_BazBar"), &chrome_url_fetcher_dir));
+  ASSERT_TRUE(base::CreateNewTempDirectory(
+      FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzippingBazBar"),
+      &chrome_unpacker_dir));
+  ASSERT_TRUE(base::CreateNewTempDirectory(
+      FILE_PATH_LITERAL("chrome_BITS_BazBar"), &chrome_bits_dir));
+  ASSERT_TRUE(base::CreateNewTempDirectory(FILE_PATH_LITERAL("random_temp"),
+                                           &random_temp_dir));
 
   std::optional<base::FilePath> folder_path = GetVersionedInstallDirectory(
       GetUpdaterScopeForTesting(), base::Version("100"));
@@ -97,19 +89,14 @@ TEST_F(CleanupTaskTest, RunCleanupObsoleteFiles) {
   ASSERT_FALSE(base::PathExists(*folder_path));
   ASSERT_TRUE(base::PathExists(*folder_path_current));
 
-// TODO(crbug.com/447234785): enable the following test for `posix` after
-// `CreateNewTempDirectory` in `file_util_posix.cc` starts respecting `prefix`.
-#if BUILDFLAG(IS_WIN)
-  if (!IsSystemInstall(GetUpdaterScopeForTesting()) ||
-      base::internal::IsUserDefaultAdmin()) {
-    // Expect all the mock update_client temp directories to be cleaned up.
-    EXPECT_FALSE(base::PathExists(chrome_url_fetcher_dir));
-    EXPECT_FALSE(base::PathExists(chrome_unpacker_dir));
-    EXPECT_FALSE(base::PathExists(chrome_bits_dir));
-    EXPECT_TRUE(base::PathExists(random_temp_dir));
-    EXPECT_TRUE(base::DeletePathRecursively(random_temp_dir));
-  }
+  // Expect all the mock update_client temp directories to be cleaned up.
+  EXPECT_FALSE(base::PathExists(chrome_url_fetcher_dir));
+  EXPECT_FALSE(base::PathExists(chrome_unpacker_dir));
+  EXPECT_FALSE(base::PathExists(chrome_bits_dir));
+  EXPECT_TRUE(base::PathExists(random_temp_dir));
+  EXPECT_TRUE(base::DeletePathRecursively(random_temp_dir));
 
+#if BUILDFLAG(IS_WIN)
   // Expect only a single file `GoogleUpdate.exe` and nothing else under
   // `\Google\Update`.
   test::ExpectOnlyMockUpdater(google_update_exe.value());
