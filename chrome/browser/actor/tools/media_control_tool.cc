@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor/action_result.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor {
 
@@ -41,16 +42,16 @@ void MediaControlTool::Invoke(InvokeCallback callback) {
                      MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
-
-  invoke_callback_ = std::move(callback);
+  PostResponseTask(std::move(callback),
+                   MakeResult(mojom::ActionResultCode::kOk));
 }
 
 std::string MediaControlTool::DebugString() const {
-  return "MediaControlTool";
+  return absl::StrFormat("MediaControlTool[%s]", JournalEvent());
 }
 
 std::string MediaControlTool::JournalEvent() const {
-  return "MediaControl";
+  return MediaControlName(media_control_);
 }
 
 std::unique_ptr<ObservationDelayController>

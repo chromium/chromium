@@ -14,6 +14,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -122,6 +123,8 @@ optimization_guide::proto::Actions MakeScriptTool(
     content::RenderFrameHost& rfh,
     const std::string& name,
     const std::string& input_arguments);
+optimization_guide::proto::Actions MakeMediaControl(tabs::TabHandle tab_handle,
+                                                    MediaControl media_control);
 
 /////////////////////////
 // ToolRequest action makers

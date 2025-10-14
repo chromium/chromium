@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
@@ -69,6 +70,7 @@ using apc::CreateWindowAction;
 using apc::DragAndReleaseAction;
 using apc::HistoryBackAction;
 using apc::HistoryForwardAction;
+using apc::MediaControlAction;
 using apc::MoveMouseAction;
 using apc::NavigateAction;
 using apc::ScriptToolAction;
@@ -472,6 +474,32 @@ std::unique_ptr<ToolRequest> CreateScriptToolRequest(
       action.tool_name(), action.input_arguments());
 }
 
+std::unique_ptr<ToolRequest> CreateMediaControlRequest(
+    const MediaControlAction& action) {
+  const tabs::TabHandle tab_handle = GetTabHandle(action);
+  if (tab_handle == TabHandle::Null()) {
+    return nullptr;
+  }
+
+  MediaControl media_control;
+  switch (action.media_control_action_case()) {
+    case MediaControlAction::kPlay:
+      media_control = PlayMedia();
+      break;
+    case MediaControlAction::kPause:
+      media_control = PauseMedia();
+      break;
+    case MediaControlAction::kSeek:
+      media_control = SeekMedia{.seek_time_microseconds =
+                                    action.seek().seek_time_microseconds()};
+      break;
+    default:
+      return nullptr;
+  }
+
+  return std::make_unique<MediaControlToolRequest>(tab_handle, media_control);
+}
+
 class ActorJournalFetchPageProgressListener
     : public page_content_annotations::FetchPageProgressListener {
  public:
@@ -586,6 +614,10 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
     case optimization_guide::proto::Action::kScrollTo: {
       const ScrollToAction& scroll_to_action = action.scroll_to();
       return CreateScrollToRequest(scroll_to_action);
+    }
+    case optimization_guide::proto::Action::kMediaControl: {
+      const MediaControlAction& media_control_action = action.media_control();
+      return CreateMediaControlRequest(media_control_action);
     }
     case optimization_guide::proto::Action::kCreateWindow: {
       const CreateWindowAction& create_window_action = action.create_window();

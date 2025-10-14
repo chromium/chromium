@@ -34,7 +34,6 @@ class MediaControlTool : public Tool {
  private:
   tabs::TabHandle tab_handle_;
   MediaControl media_control_;
-  InvokeCallback invoke_callback_;
 };
 
 }  // namespace actor

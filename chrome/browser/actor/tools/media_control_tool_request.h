@@ -19,11 +19,14 @@ struct PauseMedia {};
 
 // A media control action to seek to a specific time in the media.
 struct SeekMedia {
-  uint64_t seek_time_microseconds;
+  int64_t seek_time_microseconds;
 };
 
 // A variant that holds one of several possible media control actions.
 using MediaControl = std::variant<PlayMedia, PauseMedia, SeekMedia>;
+
+// Returns the name of the media control variant.
+std::string MediaControlName(const MediaControl& media_control);
 
 // A tool request for performing a media control action on a specific tab.
 class MediaControlToolRequest : public TabToolRequest {

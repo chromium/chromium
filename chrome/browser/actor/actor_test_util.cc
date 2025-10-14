@@ -366,6 +366,23 @@ Actions MakeScriptTool(content::RenderFrameHost& rfh,
   return action;
 }
 
+Actions MakeMediaControl(tabs::TabHandle tab_handle,
+                         MediaControl media_control) {
+  Actions action;
+  auto* media_control_action = action.add_actions()->mutable_media_control();
+  media_control_action->set_tab_id(tab_handle.raw_value());
+
+  if (std::get_if<PlayMedia>(&media_control)) {
+    media_control_action->mutable_play();
+  } else if (std::get_if<PauseMedia>(&media_control)) {
+    media_control_action->mutable_pause();
+  } else if (const auto* seek = std::get_if<SeekMedia>(&media_control)) {
+    media_control_action->mutable_seek()->set_seek_time_microseconds(
+        seek->seek_time_microseconds);
+  }
+  return action;
+}
+
 PageTarget MakeTarget(content::RenderFrameHost& rfh, int content_node_id) {
   std::string document_identifier =
       *DocumentIdentifierUserData::GetDocumentIdentifier(

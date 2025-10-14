@@ -9,8 +9,23 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_utils.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor {
+
+namespace {
+
+struct MediaControlNameVisitor {
+  std::string operator()(const PlayMedia&) const { return "PlayMedia"; }
+  std::string operator()(const PauseMedia&) const { return "PauseMedia"; }
+  std::string operator()(const SeekMedia&) const { return "SeekMedia"; }
+};
+
+}  // namespace
+
+std::string MediaControlName(const MediaControl& media_control) {
+  return std::visit(MediaControlNameVisitor{}, media_control);
+}
 
 MediaControlToolRequest::MediaControlToolRequest(tabs::TabHandle tab_handle,
                                                  MediaControl media_control)
@@ -37,7 +52,7 @@ void MediaControlToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 }
 
 std::string MediaControlToolRequest::JournalEvent() const {
-  return "MediaControl";
+  return absl::StrFormat("MediaControl[%s]", MediaControlName(media_control_));
 }
 
 std::optional<ObservationDelayController::PageStabilityConfig>
