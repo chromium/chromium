@@ -81,7 +81,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   const std::string kToken = "test_token";
 
   EXPECT_CALL(*mock_dns_request_,
-              SendRequest("email._web-identity.example.com", _))
+              SendRequest("_email-verification.example.com", _))
       .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
         std::move(callback).Run(
             std::vector<std::string>{"iss=issuer.example.com"});

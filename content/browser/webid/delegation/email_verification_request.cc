@@ -115,7 +115,7 @@ void EmailVerificationRequest::Send(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  std::string hostname = "email._web-identity." + *domain;
+  std::string hostname = "_email-verification." + *domain;
 
   dns_request_->SendRequest(
       hostname, base::BindOnce(&EmailVerificationRequest::OnDnsRequestComplete,
