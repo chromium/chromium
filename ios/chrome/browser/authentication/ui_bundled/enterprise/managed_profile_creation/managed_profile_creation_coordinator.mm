@@ -96,7 +96,7 @@
                  mergeBrowsingDataByDefault:_mergeBrowsingDataByDefault
       browsingDataMigrationDisabledByPolicy:
           _browsingDataMigrationDisabledByPolicy
-                                     gaiaID:_identity.gaiaID];
+                                     gaiaID:_identity.gaiaId];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
 

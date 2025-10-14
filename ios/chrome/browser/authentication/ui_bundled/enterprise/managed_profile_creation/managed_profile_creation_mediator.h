@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/browsing_data_migration_view_controller.h"
 
 class ChromeAccountManagerService;
+class GaiaId;
 
 @protocol ManagedProfileCreationConsumer;
 
@@ -51,7 +52,7 @@ class IdentityManager;
                mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
     browsingDataMigrationDisabledByPolicy:
         (BOOL)browsingDataMigrationDisabledByPolicy
-                                   gaiaID:(NSString*)gaiaID
+                                   gaiaID:(const GaiaId&)gaiaID
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
