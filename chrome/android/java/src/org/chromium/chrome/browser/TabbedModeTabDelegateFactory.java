@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.pdf.PdfInfo;
@@ -89,6 +90,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
     private @Nullable NativePageFactory mNativePageFactory;
     private final BackPressManager mBackPressManager;
+    private final MultiInstanceManager mMultiInstanceManager;
 
     public TabbedModeTabDelegateFactory(
             Activity activity,
@@ -118,7 +120,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             StartupMetricsTracker startupMetricsTracker,
             @Nullable ExclusiveAccessManager exclusiveAccessManager,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            MultiInstanceManager multiInstanceManager) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -147,6 +150,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mStartupMetricsTracker = startupMetricsTracker;
         mExclusiveAccessManager = exclusiveAccessManager;
         mBackPressManager = backPressManager;
+        mMultiInstanceManager = multiInstanceManager;
     }
 
     @Override
@@ -217,7 +221,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mEdgeToEdgeControllerSupplier,
                             mTopInsetCoordinatorSupplier,
                             mStartupMetricsTracker,
-                            mBackPressManager);
+                            mBackPressManager,
+                            mMultiInstanceManager);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab, pdfInfo);
     }

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -177,6 +178,17 @@ public abstract class MultiInstanceManager {
      */
     public void moveTabsToOtherWindow(List<Tab> tabs) {
         // Not implemented
+    }
+
+    /**
+     * If there's only one window currently, opens the {@param loadUrlParams} in a new window.
+     * Otherwise, opens a dialog to select which window to move the {@param loadUrlParams} to.
+     *
+     * @param loadUrlParams The url to open.
+     * @param parentTabId The ID of the parent tab.
+     */
+    public void openUrlInSelectedWindow(LoadUrlParams loadUrlParams, int parentTabId) {
+        // not implemented
     }
 
     /**

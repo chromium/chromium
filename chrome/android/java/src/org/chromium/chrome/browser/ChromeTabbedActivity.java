@@ -3485,7 +3485,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             mTopInsetCoordinatorSupplier,
                             getStartupMetricsTracker(),
                             mRootUiCoordinator.getExclusiveAccessManager(),
-                            mBackPressManager);
+                            mBackPressManager,
+                            mMultiInstanceManager);
         }
         return mTabDelegateFactory;
     }
@@ -4929,7 +4930,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
         return !isIncognitoWindow();
     }
 
-    private boolean isIncognitoWindow() {
+    /** Returns whether current activity is an incognito window. */
+    public boolean isIncognitoWindow() {
         return mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD
                 || ChromeFeatureList.sIncognitoThemeOverlayTesting.isEnabled();
     }

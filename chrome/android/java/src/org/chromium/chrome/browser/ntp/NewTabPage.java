@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -501,6 +502,8 @@ public class NewTabPage
      * @param moduleRegistrySupplier Supplier for the {@link ModuleRegistry}.
      * @param edgeToEdgeControllerSupplier Supplier for the {@link EdgeToEdgeController}.
      * @param startupMetricsTracker Used to record NTP startup metric.
+     * @param multiInstanceManager multiInstanceManager An instance of the {@link
+     *     MultiInstanceManager}.
      */
     public NewTabPage(
             Activity activity,
@@ -525,7 +528,8 @@ public class NewTabPage
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
-            StartupMetricsTracker startupMetricsTracker) {
+            StartupMetricsTracker startupMetricsTracker,
+            MultiInstanceManager multiInstanceManager) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -549,7 +553,12 @@ public class NewTabPage
 
         SuggestionsNavigationDelegate navigationDelegate =
                 new SuggestionsNavigationDelegate(
-                        activity, profile, nativePageHost, tabModelSelector, mTab);
+                        activity,
+                        profile,
+                        nativePageHost,
+                        tabModelSelector,
+                        mTab,
+                        multiInstanceManager);
         mNewTabPageManager =
                 new NewTabPageManagerImpl(
                         navigationDelegate, profile, nativePageHost, snackbarManager);

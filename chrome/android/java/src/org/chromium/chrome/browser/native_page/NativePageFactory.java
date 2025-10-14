@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageCreationTracker;
@@ -98,6 +99,7 @@ public class NativePageFactory {
     private @Nullable NativePageBuilder mNativePageBuilder;
     private static @Nullable NativePage sTestPage;
     private final BackPressManager mBackPressManager;
+    private final MultiInstanceManager mMultiInstanceManager;
 
     public NativePageFactory(
             Activity activity,
@@ -117,7 +119,8 @@ public class NativePageFactory {
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             StartupMetricsTracker startupMetricsTracker,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            MultiInstanceManager multiInstanceManager) {
         mActivity = activity;
         mBottomSheetController = sheetController;
         mBrowserControlsManager = browserControlsManager;
@@ -136,6 +139,7 @@ public class NativePageFactory {
         mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
         mStartupMetricsTracker = startupMetricsTracker;
         mBackPressManager = backPressManager;
+        mMultiInstanceManager = multiInstanceManager;
     }
 
     private NativePageBuilder getBuilder() {
@@ -160,7 +164,8 @@ public class NativePageFactory {
                             mEdgeToEdgeControllerSupplier,
                             mTopInsetCoordinatorSupplier,
                             mStartupMetricsTracker,
-                            mBackPressManager);
+                            mBackPressManager,
+                            mMultiInstanceManager);
         }
         return mNativePageBuilder;
     }
@@ -194,6 +199,7 @@ public class NativePageFactory {
         private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
         private final StartupMetricsTracker mStartupMetricsTracker;
         private final BackPressManager mBackPressManager;
+        private final MultiInstanceManager mMultiInstanceManager;
 
         public NativePageBuilder(
                 Activity activity,
@@ -214,7 +220,8 @@ public class NativePageFactory {
                 ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
                 ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
                 StartupMetricsTracker startupMetricsTracker,
-                BackPressManager backPressManager) {
+                BackPressManager backPressManager,
+                MultiInstanceManager multiInstanceManager) {
             mActivity = activity;
             mNewTabPageCreationTracker = newTabPageCreationTracker;
             mBottomSheetController = sheetController;
@@ -234,6 +241,7 @@ public class NativePageFactory {
             mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
             mStartupMetricsTracker = startupMetricsTracker;
             mBackPressManager = backPressManager;
+            mMultiInstanceManager = multiInstanceManager;
         }
 
         protected NativePage buildNewTabPage(Tab tab, String url) {
@@ -271,7 +279,8 @@ public class NativePageFactory {
                     mModuleRegistrySupplier,
                     mEdgeToEdgeControllerSupplier,
                     mTopInsetCoordinatorSupplier,
-                    mStartupMetricsTracker);
+                    mStartupMetricsTracker,
+                    mMultiInstanceManager);
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {
@@ -336,7 +345,12 @@ public class NativePageFactory {
                             mEdgeToEdgeControllerSupplier);
             NativePageNavigationDelegate navigationDelegate =
                     new NativePageNavigationDelegateImpl(
-                            mActivity, tab.getProfile(), host, mTabModelSelector, tab);
+                            mActivity,
+                            tab.getProfile(),
+                            host,
+                            mTabModelSelector,
+                            tab,
+                            mMultiInstanceManager);
 
             return new RecentTabsPage(
                     mActivity,

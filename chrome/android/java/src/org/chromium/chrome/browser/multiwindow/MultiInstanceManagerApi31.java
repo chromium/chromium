@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -85,6 +86,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -246,6 +248,45 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 UiUtils.isInstanceSwitcherV2Enabled()
                         ? R.string.menu_move_tab_to_other_window
                         : R.string.menu_move_to_other_window);
+    }
+
+    @Override
+    public void openUrlInSelectedWindow(LoadUrlParams loadUrlParams, int parentTabId) {
+        // TODO(crbug.com/451706863): Add tests for methods using dialogs.
+        if (MultiWindowUtils.getInstanceCount() == 1) {
+
+            ChromeAsyncTabLauncher chromeAsyncTabLauncher =
+                    new ChromeAsyncTabLauncher(
+                            ((ChromeTabbedActivity) mActivity).isIncognitoWindow());
+            chromeAsyncTabLauncher.launchTabInOtherWindow(
+                    loadUrlParams,
+                    mActivity,
+                    parentTabId,
+                    null,
+                    MultiWindowUtils.NewWindowEntryPoint.OTHER);
+            return;
+        }
+
+        TargetSelectorCoordinator.showDialog(
+                mActivity,
+                mModalDialogManagerSupplier.get(),
+                new LargeIconBridge(getProfile()),
+                (instanceInfo) -> {
+                    ChromeTabbedActivity selectedActivity =
+                            (ChromeTabbedActivity) getActivityById(instanceInfo.instanceId);
+                    ChromeAsyncTabLauncher chromeAsyncTabLauncher =
+                            new ChromeAsyncTabLauncher(
+                                    selectedActivity != null
+                                            && selectedActivity.isIncognitoWindow());
+                    chromeAsyncTabLauncher.launchTabInOtherWindow(
+                            loadUrlParams,
+                            mActivity,
+                            parentTabId,
+                            selectedActivity,
+                            MultiWindowUtils.NewWindowEntryPoint.OTHER);
+                },
+                getInstanceInfo(),
+                R.string.contextmenu_open_in_other_window);
     }
 
     @Override

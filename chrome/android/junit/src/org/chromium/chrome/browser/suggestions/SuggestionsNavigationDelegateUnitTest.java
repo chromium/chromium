@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -58,6 +59,7 @@ public class SuggestionsNavigationDelegateUnitTest {
     @Mock private NativePageHost mHost;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -67,7 +69,7 @@ public class SuggestionsNavigationDelegateUnitTest {
     public void setUp() {
         mSuggestionsNavigationDelegate =
                 new SuggestionsNavigationDelegate(
-                        mActivity, mProfile, mHost, mTabModelSelector, mTab);
+                        mActivity, mProfile, mHost, mTabModelSelector, mTab, mMultiInstanceManager);
 
         lenient().when(mTabModelSelector.isIncognitoSelected()).thenReturn(IS_INCOGNITO_SELECTED);
     }

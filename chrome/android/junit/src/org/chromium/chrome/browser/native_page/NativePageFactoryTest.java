@@ -114,7 +114,7 @@ public class NativePageFactoryTest {
         private MockNativePageBuilder() {
             super(
                     null, null, null, null, null, null, null, null, null, null, null, null, null,
-                    null, null, null, null, null, null);
+                    null, null, null, null, null, null, null);
         }
 
         @Override
@@ -144,7 +144,7 @@ public class NativePageFactoryTest {
         mNativePageFactory =
                 new NativePageFactory(
                         null, null, null, null, null, null, null, null, null, null, null, null,
-                        null, null, null, null, null, null);
+                        null, null, null, null, null, null, null);
         mNativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
         NativePageFactory.setPdfPageForTesting(mPdfPage);
         mPdfInfo = new PdfInfo();

@@ -11,6 +11,7 @@ import android.app.Activity;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -34,18 +35,21 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
     protected final Tab mTab;
     protected final Activity mActivity;
     protected final NativePageHost mHost;
+    private final MultiInstanceManager mMultiInstanceManager;
 
     public NativePageNavigationDelegateImpl(
             Activity activity,
             Profile profile,
             NativePageHost host,
             TabModelSelector tabModelSelector,
-            Tab tab) {
+            Tab tab,
+            MultiInstanceManager multiInstanceManager) {
         mActivity = activity;
         mProfile = profile;
         mHost = host;
         mTabModelSelector = tabModelSelector;
         mTab = tab;
+        mMultiInstanceManager = multiInstanceManager;
     }
 
     @Override
@@ -78,7 +82,14 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                 mHost.loadUrl(loadUrlParams, true);
                 break;
             case WindowOpenDisposition.NEW_WINDOW:
-                openUrlInNewWindow(loadUrlParams);
+                // If there is only one window, launch in a new window.
+                if (IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        && MultiWindowUtils.getActiveInstanceCount() > 1) {
+                    mMultiInstanceManager.openUrlInSelectedWindow(
+                            loadUrlParams, mHost.getParentId());
+                } else {
+                    openUrlInNewWindow(loadUrlParams);
+                }
                 break;
             case WindowOpenDisposition.SAVE_TO_DISK:
                 saveUrlForOffline(loadUrlParams.getUrl());
