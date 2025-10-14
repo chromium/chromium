@@ -41,7 +41,7 @@
 <translation id="1145018782460575098">La fenêtre de mise à jour du micrologiciel pour les appareils externes est ouverte. <ph name="NUM_UPDATES" /> mises à jour disponibles.</translation>
 <translation id="1145516343487477149">Trouvez des articles d'aide et des réponses aux questions fréquentes sur les Chromebooks</translation>
 <translation id="1154390310959620237">Vous ne pouvez personnaliser que cinq raccourcis. Supprimez-en un pour en ajouter un autre.</translation>
-<translation id="1155154308031262006">Saisissez une requête</translation>
+<translation id="1155154308031262006">Saisissez un prompt</translation>
 <translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Économiseur d'écran De l'aube au crépuscule</translation>
 <translation id="1167755866710282443">Ouvrez le menu pour personnaliser les touches. Faites-le glisser pour le déplacer.</translation>
@@ -142,7 +142,7 @@
           Sélectionnez "Trouver l'inspiration" pour obtenir des options d'images IA plus uniques et variées.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Lorsque vous créez avec l'IA, la requête est envoyée aux serveurs d'IA de Google pour générer des images et améliorer le produit, conformément aux <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Règles de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          Lorsque vous créez avec l'IA, le prompt est envoyé aux serveurs d'IA de Google pour générer des images et améliorer le produit, conformément aux <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Règles de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           L'IA générative est expérimentale, elle n'en est encore qu'à ses débuts, et sa disponibilité est actuellement limitée.</translation>
@@ -218,7 +218,7 @@
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1808803439260407870">Art classique</translation>
-<translation id="181434555916624618">Pour le moment, les résultats contenant des personnes ne sont pas affichés. Essayez une autre requête.</translation>
+<translation id="181434555916624618">Pour le moment, les résultats contenant des personnes ne sont pas affichés. Essayez un autre prompt.</translation>
 <translation id="1815850098929213707">La touche <ph name="KEYS" /> est sélectionnée. Appuyez sur le bouton pour modifier la commande.</translation>
 <translation id="1818174214124933000">Lorsque vous sélectionnez "Envoyer", vos commentaires et votre contenu (présentés ci-dessous) sont envoyés à Google, examinés par des réviseurs humains et utilisés pour entraîner ou améliorer nos produits et services, conformément aux <ph name="LINK_POLICY_BEGIN" />Règles de confidentialité<ph name="LINK_POLICY_END" /> et aux <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Conditions d'utilisation de Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Caractères</translation>
@@ -446,8 +446,8 @@
 <translation id="2878126681324394319">Télécharger le modèle de résumé et de création du titre</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="2880569433548999039">Économiseur d'écran Flux nuageux</translation>
-<translation id="2882230315487799269">Personnaliser la requête IA</translation>
-<translation id="2888298276507578975">Saisissez une requête telle que "rédiger une note de remerciement"</translation>
+<translation id="2882230315487799269">Personnaliser le pompt IA</translation>
+<translation id="2888298276507578975">Saisissez un prompt tel que "rédiger une note de remerciement"</translation>
 <translation id="2890557891229184386">île tropicale</translation>
 <translation id="2895772081848316509">sombre</translation>
 <translation id="2915996080311180594">Redémarrer plus tard</translation>
@@ -497,7 +497,7 @@
 <translation id="3170673040743561620">Placez votre document sur le scanner</translation>
 <translation id="3174321110679064523">Fond d'écran De l'aube au crépuscule</translation>
 <translation id="3178532070248519384">avant-garde</translation>
-<translation id="3182676044300231689">Saisissez une requête telle que "rendre plus confiant"</translation>
+<translation id="3182676044300231689">Saisissez un prompt tel que "rendre plus confiant"</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="319101249942218879">Image d'avatar modifiée</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
@@ -600,7 +600,7 @@
 <translation id="3651050199673793219">Sélectionner une unité de température</translation>
 <translation id="3661106764436337772">Écrivez plus vite et avec plus d'assurance</translation>
 <translation id="3662461537616691585">bordeaux et marron</translation>
-<translation id="3664755900672940272">Exemples de requêtes mélangés</translation>
+<translation id="3664755900672940272">Exemples de prompts mélangés</translation>
 <translation id="3668449597372804501">Fond d'écran Flux nuageux</translation>
 <translation id="3668570675727296296">Paramètres linguistiques</translation>
 <translation id="3675132884790542448">cochons</translation>
@@ -698,7 +698,7 @@
 <translation id="4113067922640381334">Vous pouvez profiter de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mode sombre</translation>
 <translation id="4126551873361000548">Revenir en arrière de 10 secondes</translation>
-<translation id="4128271910628504223">Saisissez une requête telle que "dessiner une forêt dans la brume"</translation>
+<translation id="4128271910628504223">Saisissez un prompt tel que "dessiner une forêt dans la brume"</translation>
 <translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
 <translation id="4130750466177569591">J'accepte</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
@@ -732,13 +732,13 @@
 <translation id="4249717042534905822">dimanche</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
 <translation id="4251839292699800785">Bureau élégant</translation>
-<translation id="4252261480746798874">Lorsque vous sélectionnez "Créer le vôtre", vous pouvez rédiger une requête personnalisée. Vous pouvez aussi sélectionner "Choisir un thème", puis sélectionner les mots soulignés pour personnaliser votre fond d'écran IA.
+<translation id="4252261480746798874">Lorsque vous sélectionnez "Créer le vôtre", vous pouvez rédiger un prompt personnalisé. Vous pouvez aussi sélectionner "Choisir un thème", puis sélectionner les mots soulignés pour personnaliser votre fond d'écran IA.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Sélectionnez "Trouver l'inspiration" pour obtenir des options d'images IA plus uniques et variées.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Lorsque vous créez votre propre fond d'écran, la requête est envoyée aux serveurs Google pour générer des images et améliorer le produit, conformément aux <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Conditions d'utilisation et aux Règles de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. N'incluez aucun élément personnel, sensible ou confidentiel.
+          Lorsque vous créez votre propre fond d'écran, le prompt est envoyé aux serveurs Google pour générer des images et améliorer le produit, conformément aux <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Conditions d'utilisation et aux Règles de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. N'incluez aucun élément personnel, sensible ou confidentiel.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Vérifiez les réponses de l'IA générative, car elle peut faire des erreurs, y compris sur des personnes. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />En savoir plus<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
@@ -760,7 +760,7 @@
 <translation id="4320904097188876154">rose fluo</translation>
 <translation id="432961742358282111">Effectuer un clic droit ou appuyer de manière prolongée pour obtenir des définitions, des traductions ou des conversions d'unités. Utiliser les flèches vers la gauche ou vers la droite pour gérer cette fonctionnalité.</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> appuyée</translation>
-<translation id="4334293042716981313">Vous pouvez aussi <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />écrire votre propre requête<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
+<translation id="4334293042716981313">Vous pouvez aussi <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />écrire votre propre prompt<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">touche</translation>
 <translation id="4356100841225547054">Désactiver le volume</translation>
 <translation id="4361257691546579041">Le type d'APN est "par défaut".</translation>
@@ -1234,7 +1234,7 @@
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
 <translation id="6462978824459367242">Le bouton "Ajouter un APN" est désormais activé</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescanner la page ?}=1{Rescanner la page {PAGE_NUMBER} ?}one{Rescanner la page {PAGE_NUMBER} ?}other{Rescanner les pages {PAGE_NUMBER} ?}}</translation>
-<translation id="6468146470109254228">Vos trois requêtes et résultats les plus récents. Vous ne pouvez y accéder qu'en utilisant Fond d'écran et style.</translation>
+<translation id="6468146470109254228">Vos trois prompts et résultats les plus récents. Vous ne pouvez y accéder qu'en utilisant Fond d'écran et style.</translation>
 <translation id="6472207088655375767">Mot de passe à usage unique</translation>
 <translation id="6472979596862005515">bateaux</translation>
 <translation id="64778964625672495">rouge foncé</translation>
@@ -1740,7 +1740,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Pour gérer cette fonctionnalité, utilisez les flèches vers la gauche ou vers la droite.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Échec – À court d'encre</translation>
-<translation id="8721554916373590179">Exemples de requêtes</translation>
+<translation id="8721554916373590179">Exemples de prompts</translation>
 <translation id="8723108084122415655">Seuil de latence dépassé pour le réseau non défini par défaut</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8726019395068607495">Tâche suspendue - Capot ouvert</translation>
@@ -1749,7 +1749,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8747900814994928677">Confirmer la modification</translation>
 <translation id="8749478549112817787">Arrière-plan de caméra</translation>
 <translation id="8755946156089753497">tour</translation>
-<translation id="8760616037557661287">Requêtes précédentes</translation>
+<translation id="8760616037557661287">Prompts précédents</translation>
 <translation id="876280838467039397">Télécharger et sélectionner le modèle de transcription <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
