@@ -1903,6 +1903,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 if (DeviceInfo.isDesktop()) {
                     BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(
                             mProfileSupplier.get(), /* fromKeyboardShortcut= */ true);
+                } else if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+                    BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(
+                            mProfileSupplier.get(), /* fromKeyboardShortcut= */ true);
                 } else {
                     BookmarkBarUtils.toggleDevicePrefShowBookmarksBar(
                             /* fromKeyboardShortcut= */ true);
