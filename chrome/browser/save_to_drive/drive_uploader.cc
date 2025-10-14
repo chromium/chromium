@@ -92,6 +92,9 @@ constexpr base::TimeDelta kDefaultTimeout = base::Seconds(30);
 constexpr std::string_view kErrorReasonQuotaExceeded = "quotaExceeded";
 constexpr std::string_view kErrorStorageQuotaExceeded = "storageQuotaExceeded";
 
+constexpr base::TimeDelta kUploadInProgressUpdateDispatchInterval =
+    base::Milliseconds(500);
+
 std::optional<DriveUploader::Item> ParseClientFolderResponse(
     std::unique_ptr<endpoint_fetcher::EndpointResponse> endpoint_response) {
   if (!endpoint_response || endpoint_response->response.empty() ||
@@ -299,6 +302,23 @@ void DriveUploader::set_oauth_headers_for_testing(
 
 const std::vector<std::string>& DriveUploader::oauth_headers() const {
   return oauth_headers_;
+}
+
+void DriveUploader::NotifyUploadInProgress(size_t uploaded_bytes,
+                                           size_t total_bytes) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  if (now - last_upload_in_progress_update_time_ <
+      kUploadInProgressUpdateDispatchInterval) {
+    return;
+  }
+  last_upload_in_progress_update_time_ = now;
+
+  SaveToDriveProgress progress;
+  progress.status = SaveToDriveStatus::kUploadInProgress;
+  progress.error_type = SaveToDriveErrorType::kNoError;
+  progress.file_size_bytes = total_bytes;
+  progress.uploaded_bytes = uploaded_bytes;
+  progress_callback_.Run(std::move(progress));
 }
 
 void DriveUploader::NotifyUploadSuccess(

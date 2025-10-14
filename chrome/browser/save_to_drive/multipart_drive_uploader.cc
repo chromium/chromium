@@ -115,12 +115,7 @@ void MultipartDriveUploader::OnContentRead(mojo_base::BigBuffer buffer) {
 
 void MultipartDriveUploader::OnUploadProgress(uint64_t current_bytes,
                                               uint64_t total_bytes) {
-  SaveToDriveProgress progress;
-  progress.status = SaveToDriveStatus::kUploadInProgress;
-  progress.error_type = SaveToDriveErrorType::kNoError;
-  progress.file_size_bytes = total_bytes;
-  progress.uploaded_bytes = current_bytes;
-  progress_callback_.Run(std::move(progress));
+  NotifyUploadInProgress(current_bytes, total_bytes);
 }
 
 void MultipartDriveUploader::HandleUploadResponse(

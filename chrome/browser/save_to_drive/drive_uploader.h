@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -118,6 +119,12 @@ class DriveUploader : public signin::IdentityManager::Observer {
   void OnFetchParentFolder(
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
+  // Notifies through `progress_callback_` the latest upload progress. This
+  // method will throttle the progress updates to avoid spamming the extension.
+  // `uploaded_bytes` is the number of bytes that have been uploaded so far and
+  // `total_bytes` is the total number of bytes that need to be uploaded.
+  void NotifyUploadInProgress(size_t uploaded_bytes, size_t total_bytes);
+
   // Notifies through `progress_callback_` that the upload succeeded.
   // `response` is the response from the Drive API that contains the uploaded
   // file metadata.
@@ -156,6 +163,9 @@ class DriveUploader : public signin::IdentityManager::Observer {
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       scoped_identity_manager_observation_{this};
+  // The last time an upload progress update was sent to the extension. This is
+  // used to throttle the upload in progress updates.
+  base::TimeTicks last_upload_in_progress_update_time_;
 
   base::WeakPtrFactory<DriveUploader> weak_ptr_factory_{this};
 };
