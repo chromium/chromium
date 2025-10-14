@@ -16,6 +16,51 @@
 
 namespace media::hls {
 
+namespace {
+
+// Converts a number representing "bytes per second" into a more human readable
+// form for presentation, ie "27 Kbps" or "3.1 Mbps".
+//
+// When the value would otherwise be a single digit value (such as "2 Kbps"),
+// it instead gets formatted to use a few decimal places as well.  The `digits`
+// parameter is used to control the number of digits that can appear after the
+// decimal place. It should be set to 10^(max decimals).
+//
+// The string representation is never rounded, only truncated.
+std::string FormatBandwidth(types::DecimalInteger bandwidth, int digits) {
+  types::DecimalInteger basis = 1;
+  if (bandwidth > 1000000) {
+    basis = 1000000;
+  } else if (bandwidth > 1000) {
+    basis = 1000;
+  }
+  const types::DecimalInteger decimal_basis = basis / digits;
+  const types::DecimalInteger left_digits = bandwidth / basis;
+
+  std::stringstream bandwidth_text;
+  bandwidth_text << left_digits;
+  if (left_digits < 10 && decimal_basis > 1) {
+    bandwidth_text << "." << ((bandwidth / decimal_basis) % digits);
+  }
+  switch (basis) {
+    case 1:
+      bandwidth_text << " bps";
+      break;
+    case 1000:
+      bandwidth_text << " Kbps";
+      break;
+    case 1000000:
+      bandwidth_text << " Mbps";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  return bandwidth_text.str();
+}
+
+}  // namespace
+
 VariantStream::VariantStream(
     GURL primary_rendition_uri,
     types::DecimalInteger bandwidth,
@@ -85,11 +130,7 @@ const std::string VariantStream::Format(
         break;
       }
       case FormatComponent::kBandwidth: {
-        if (bandwidth_ > 1000000) {
-          format << bandwidth_ / 1000000 << " Mbps";
-        } else {
-          format << bandwidth_ / 1000 << " Kbps";
-        }
+        format << FormatBandwidth(bandwidth_, 10);
         break;
       }
       case FormatComponent::kUri: {
@@ -136,7 +177,7 @@ VariantStream::OptimalFormatForCollection(
   // there is more than one total size available.
   base::flat_set<types::DecimalInteger> resolutions;
   base::flat_set<types::DecimalInteger> rates;
-  base::flat_set<types::DecimalInteger> bandwidths;
+  base::flat_set<std::string> formatted_bandwidths;
 
   bool missing_resolution = false;
   bool missing_frame_rate = false;
@@ -174,8 +215,7 @@ VariantStream::OptimalFormatForCollection(
     } else {
       missing_frame_rate = true;
     }
-
-    bandwidths.insert(bandwidth);
+    formatted_bandwidths.insert(FormatBandwidth(bandwidth, 10));
   }
 
   if (resolutions.size() == streams.size()) {
@@ -194,7 +234,7 @@ VariantStream::OptimalFormatForCollection(
             VariantStream::FormatComponent::kFrameRate};
   }
 
-  if (bandwidths.size() == streams.size()) {
+  if (formatted_bandwidths.size() == streams.size()) {
     if (missing_resolution || resolutions.size() == 1) {
       // Don't include resolution. Maybe frame rate?
       if (missing_frame_rate || rates.size() == 1) {

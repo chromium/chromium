@@ -756,7 +756,31 @@ TEST_F(HlsRenditionManagerTest, VariantNames) {
             .GetSelectablePrimaryRenditions();
     ASSERT_EQ(variants.size(), 2u);
     ASSERT_EQ(variants[0].label().value(), "831 Kbps");
-    ASSERT_EQ(variants[1].label().value(), "1 Mbps");
+    ASSERT_EQ(variants[1].label().value(), "1.1 Mbps");
+  }
+
+  {
+    // Bandwidth differentiation greater than 0.1Mbps, but less than 1 Mbps.
+    auto variants =
+        GetRenditionManager(
+            MakeVariantStr(1144430, "1920x1080", "60.00"), "playlist1.m3u8",
+            MakeVariantStr(1344430, "1920x1080", "60.00"), "playlist2.m3u8")
+            .GetSelectablePrimaryRenditions();
+    ASSERT_EQ(variants.size(), 2u);
+    ASSERT_EQ(variants[0].label().value(), "1.1 Mbps");
+    ASSERT_EQ(variants[1].label().value(), "1.3 Mbps");
+  }
+
+  {
+    // Bandwidth differentiation resolution too small to differentiate names
+    auto variants =
+        GetRenditionManager(
+            MakeVariantStr(1144430, "1920x1080", "60.00"), "playlist1.m3u8",
+            MakeVariantStr(1144432, "1920x1080", "60.00"), "playlist2.m3u8")
+            .GetSelectablePrimaryRenditions();
+    ASSERT_EQ(variants.size(), 2u);
+    ASSERT_EQ(variants[0].label().value(), "Stream: 1");
+    ASSERT_EQ(variants[1].label().value(), "Stream: 2");
   }
 
   {
