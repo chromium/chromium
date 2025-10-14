@@ -89,8 +89,6 @@ class ArcApps : public KeyedService,
   using AppIdToTaskIds = std::map<std::string, std::set<int>>;
   using TaskIdToAppId = std::map<int, std::string>;
 
-  void Initialize();
-
   // apps::AppPublisher overrides.
   void GetCompressedIconData(const std::string& app_id,
                              int32_t size_in_dip,

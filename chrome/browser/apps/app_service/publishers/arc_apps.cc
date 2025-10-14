@@ -556,25 +556,23 @@ ArcApps* ArcApps::Get(Profile* profile) {
 
 ArcApps::ArcApps(AppServiceProxy* proxy)
     : AppPublisher(proxy), profile_(proxy->profile()) {
-  if (auto* arc_session_manager = arc::ArcSessionManager::Get()) {
-    arc_session_manager_observation_.Observe(arc_session_manager);
-  } else {
-    CHECK_IS_TEST();
-  }
-}
-
-ArcApps::~ArcApps() {
-  proxy()->UnregisterPublisher(AppType::kArc);
-}
-
-void ArcApps::Initialize() {
   if (!arc::IsArcAllowedForProfile(profile_) ||
       (arc::ArcServiceManager::Get() == nullptr)) {
     return;
   }
 
+  if (auto* arc_session_manager = arc::ArcSessionManager::Get()) {
+    arc_session_manager_observation_.Observe(arc_session_manager);
+  } else {
+    CHECK_IS_TEST();
+  }
+
   // Register this to AppService.
   RegisterPublisher(AppType::kArc);
+}
+
+ArcApps::~ArcApps() {
+  proxy()->UnregisterPublisher(AppType::kArc);
 }
 
 void ArcApps::OnInitialized() {
