@@ -42,7 +42,8 @@ class MockQueryController : public TestComposeboxQueryController {
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
       bool send_lns_surface,
-      bool enable_multi_context_input_flow);
+      bool enable_multi_context_input_flow,
+      bool enable_viewport_images);
   ~MockQueryController() override;
 
   MOCK_METHOD(void, NotifySessionStarted, (), (override));
@@ -57,7 +58,8 @@ class MockQueryController : public TestComposeboxQueryController {
   MOCK_METHOD(void, ClearFiles, (), (override));
   MOCK_METHOD(FileInfo*,
               GetFileInfo,
-              (const base::UnguessableToken& file_token), (override));
+              (const base::UnguessableToken& file_token),
+              (override));
 
   void NotifySessionStartedBase() {
     TestComposeboxQueryController::NotifySessionStarted();
@@ -82,8 +84,10 @@ class MockComposeboxMetricsRecorder : public ComposeboxMetricsRecorder {
   MockComposeboxMetricsRecorder();
   ~MockComposeboxMetricsRecorder() override;
 
-  MOCK_METHOD(void, NotifySessionStateChanged,
-              (composebox::SessionState session_state), (override));
+  MOCK_METHOD(void,
+              NotifySessionStateChanged,
+              (composebox::SessionState session_state),
+              (override));
 };
 
 class ContextualSearchboxHandlerTestHarness

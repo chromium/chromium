@@ -68,7 +68,8 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         /*identity_manager=*/nullptr, url_loader_factory(),
         version_info::Channel::UNKNOWN, "en-US", template_url_service(),
         fake_variations_client(), /*send_lns_surface=*/false,
-        /*enable_multi_context_input_flow=*/false);
+        /*enable_multi_context_input_flow=*/false,
+        /*enable_viewport_images=*/true);
     query_controller_ = query_controller_ptr.get();
     web_contents()->SetDelegate(&delegate_);
     auto metrics_recorder_ptr =

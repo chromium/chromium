@@ -93,12 +93,13 @@ class ComposeboxQueryControllerTest
   ~ComposeboxQueryControllerTest() override = default;
 
   void CreateController(bool send_lns_surface,
-                        bool enable_multi_context_input_flow = false) {
+                        bool enable_multi_context_input_flow = false,
+                        bool enable_viewport_images = true) {
     controller_ = std::make_unique<TestComposeboxQueryController>(
         identity_manager(), shared_url_loader_factory_,
         version_info::Channel::UNKNOWN, kLocale, template_url_service(),
         fake_variations_client_.get(), send_lns_surface,
-        enable_multi_context_input_flow);
+        enable_multi_context_input_flow, enable_viewport_images);
     controller_->AddObserver(this);
 
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
@@ -1095,6 +1096,58 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
                                          &vit_value));
   EXPECT_EQ(vit_value, "wp");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPageContextPdfFileWithViewportButViewportsDisabledRequestSuccess) {
+  // Create the controller with viewports disabled.
+  CreateController(/*send_lns_surface=*/false,
+                   /*enable_multi_context_input_flow=*/true,
+                   /*enable_viewport_images=*/false);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow with viewport and pdf context inputs.
+  GURL page_url = GURL("https://www.test.com");
+  std::string page_title = "Test Page";
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->page_url = page_url;
+  input_data->page_title = page_title;
+  input_data->pdf_current_page = 1;
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);  // Fill with a solid color
+  input_data->viewport_screenshot = bitmap;
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Get the file and viewport upload requests.
+  std::optional<lens::LensOverlayServerRequest> file_upload_request =
+      controller().last_sent_file_upload_request();
+
+  // Validate the file upload request payload.
+  EXPECT_EQ(file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

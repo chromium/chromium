@@ -1690,6 +1690,13 @@ const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZpsMultiFile[] = {
     {"ShowContextMenu", "true"},
 };
 const FeatureEntry::FeatureParam
+    kComposeboxShowContextMenuAndZpsMultiFileNoViewport[] = {
+        {"MaxNumFiles", "5"},
+        {"ShowComposeboxZps", "true"},
+        {"ShowContextMenu", "true"},
+        {"EnableViewportImages", "false"},
+};
+const FeatureEntry::FeatureParam
     kComposeboxShowContextMenuAndZpsMultiFileAndTabPreviews[] = {
         {"MaxNumFiles", "5"},
         {"ShowComposeboxZps", "true"},
@@ -1722,6 +1729,9 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show Contextual Input Menu and ZPS 5 File Limit",
      kComposeboxShowContextMenuAndZpsMultiFile,
      std::size(kComposeboxShowContextMenuAndZpsMultiFile), nullptr},
+    {"- Show Contextual Input Menu and ZPS 5 File Limit, no viewport uploading",
+     kComposeboxShowContextMenuAndZpsMultiFileNoViewport,
+     std::size(kComposeboxShowContextMenuAndZpsMultiFileNoViewport), nullptr},
     {"- Show Contextual Input Menu, ZPS 5 File Limit and Tab Previews",
      kComposeboxShowContextMenuAndZpsMultiFileAndTabPreviews,
      std::size(kComposeboxShowContextMenuAndZpsMultiFileAndTabPreviews),
@@ -2899,7 +2909,6 @@ const FeatureEntry::FeatureVariation
          kPhotoPickerAdoptionStudyChromePickerWithoutBrowse,
          std::size(kPhotoPickerAdoptionStudyChromePickerWithoutBrowse),
          nullptr}};
-
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_Pixel[] = {

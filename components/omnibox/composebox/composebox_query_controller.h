@@ -208,7 +208,8 @@ class ComposeboxQueryController {
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
       bool send_lns_surface,
-      bool enable_multi_context_input_flow);
+      bool enable_multi_context_input_flow,
+      bool enable_viewport_images);
   virtual ~ComposeboxQueryController();
 
   // Session management. Virtual for testing.
@@ -451,10 +452,15 @@ class ComposeboxQueryController {
   // Whether or not to send the lns_surface parameter.
   // TODO(crbug.com/430070871): Remove this once the server supports the
   // `lns_surface` parameter.
-  bool send_lns_surface_ = false;
+  bool send_lns_surface_;
 
   // Whether or not to use the multiple-input id request generation flow.
-  bool enable_multi_context_input_flow_ = false;
+  bool enable_multi_context_input_flow_;
+
+  // Whether or not to include viewport images with page context uploads.
+  // TODO(crbug.com/448647393): Remove this once the server supports viewport
+  // images for multi-context input.
+  bool enable_viewport_images_;
 
   lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 

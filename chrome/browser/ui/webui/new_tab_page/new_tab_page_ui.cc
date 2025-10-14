@@ -848,7 +848,8 @@ void NewTabPageUI::BindInterface(
         TemplateURLServiceFactory::GetForProfile(profile_),
         profile_->GetVariationsClient(),
         ntp_composebox::kSendLnsSurfaceParam.Get(),
-        ntp_composebox::kMaxNumFiles.Get() > 1);
+        ntp_composebox::kMaxNumFiles.Get() > 1,
+        ntp_composebox::kEnableViewportImages.Get());
     composebox_metrics_recorder = std::make_unique<ComposeboxMetricsRecorder>(
         kComposeboxMetricsReporterPrefName);
   }
@@ -1057,8 +1058,7 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   MetricsReporterService* service =
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
-  bool enable_multi_context_input_flow =
-      ntp_composebox::kMaxNumFiles.Get() > 1;
+  bool enable_multi_context_input_flow = ntp_composebox::kMaxNumFiles.Get() > 1;
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler),
@@ -1069,7 +1069,8 @@ void NewTabPageUI::CreatePageHandler(
           TemplateURLServiceFactory::GetForProfile(profile_),
           profile_->GetVariationsClient(),
           ntp_composebox::kSendLnsSurfaceParam.Get(),
-          enable_multi_context_input_flow),
+          enable_multi_context_input_flow,
+          ntp_composebox::kEnableViewportImages.Get()),
       std::make_unique<ComposeboxMetricsRecorder>(
           kComposeboxMetricsReporterPrefName),
       profile_, web_contents(), service->metrics_reporter());

@@ -50,7 +50,8 @@ TestComposeboxQueryController::TestComposeboxQueryController(
     TemplateURLService* template_url_service,
     variations::VariationsClient* variations_client,
     bool send_lns_surface,
-    bool enable_multi_context_input_flow)
+    bool enable_multi_context_input_flow,
+    bool enable_viewport_images)
     : ComposeboxQueryController(identity_manager,
                                 url_loader_factory,
                                 channel,
@@ -58,7 +59,8 @@ TestComposeboxQueryController::TestComposeboxQueryController(
                                 template_url_service,
                                 variations_client,
                                 send_lns_surface,
-                                enable_multi_context_input_flow) {}
+                                enable_multi_context_input_flow,
+                                enable_viewport_images) {}
 TestComposeboxQueryController::~TestComposeboxQueryController() = default;
 
 std::unique_ptr<EndpointFetcher>
