@@ -292,7 +292,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
 
 // https://crbug.com/1450933 Flaky on Mac.
 // TODO(crbug.com/381277829): Flaky on ASAN and MSAN builds.
-#if BUILDFLAG(IS_MAC) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/451698327): Disabled on Linux dbg due to flakiness.
+#if BUILDFLAG(IS_MAC) || defined(ADDRESS_SANITIZER) || \
+    defined(MEMORY_SANITIZER) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_CaptureVisibleTabPng DISABLED_CaptureVisibleTabPng
 #else
 #define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng
