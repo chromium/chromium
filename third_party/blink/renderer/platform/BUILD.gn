@@ -621,7 +621,6 @@ component("platform") {
     "exported/web_string.cc",
     "exported/web_surface_layer_bridge.cc",
     "exported/web_text_input_info.cc",
-    "exported/web_text_run.cc",
     "exported/web_thread_safe_data.cc",
     "exported/web_time_range.cc",
     "exported/web_url.cc",

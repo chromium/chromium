@@ -242,7 +242,6 @@ source_set("blink_headers") {
     "platform/web_text_input_info.h",
     "platform/web_text_input_mode.h",
     "platform/web_text_input_type.h",
-    "platform/web_text_run.h",
     "platform/web_theme_engine.h",
     "platform/web_thread_safe_data.h",
     "platform/web_time_range.h",
