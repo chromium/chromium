@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, RemoveWithPending) {
   // Simulate idle timeout to terminate the service worker.
   content::ServiceWorkerContext* context =
       util::GetServiceWorkerContextForExtensionId(extension->id(), profile());
-  content::TriggerTimeoutAndCheckRunningState(context, version_id);
+  content::SetServiceWorkerIdleDelay(context, version_id, base::Seconds(0));
   observer.WaitForWorkerStopped();
 
   // Open the test page in an incognito window.
