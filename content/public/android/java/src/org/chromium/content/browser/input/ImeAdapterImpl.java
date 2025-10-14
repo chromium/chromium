@@ -467,6 +467,10 @@ public class ImeAdapterImpl
         // InputMethodService evaluates fullscreen mode even when the new input connection is
         // null. This makes sure IME doesn't enter fullscreen mode or open custom UI.
         outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_FULLSCREEN | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_MEDIA_INSERTION)) {
+            outAttrs.contentMimeTypes =
+                    ImeAdapterImplJni.get().getSupportedMimeTypes(mNativeImeAdapterAndroid);
+        }
 
         if (!allowKeyboardLearning) {
             outAttrs.imeOptions |= EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
@@ -1837,6 +1841,8 @@ public class ImeAdapterImpl
                 long nativeImeAdapterAndroid, boolean immediateRequest, boolean monitorRequest);
 
         void advanceFocusForIME(long nativeImeAdapterAndroid, int focusType);
+
+        String[] getSupportedMimeTypes(long nativeImeAdapterAndroid);
 
         // Stylus Writing
         void handleStylusWritingGestureAction(

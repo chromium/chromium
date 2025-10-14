@@ -41,6 +41,7 @@ using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using base::android::ToJavaArrayOfStrings;
 
 namespace content {
 namespace {
@@ -498,6 +499,24 @@ void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env, jint focus_type) {
 
   rfh->GetAssociatedLocalFrame()->AdvanceFocusForIME(
       static_cast<blink::mojom::FocusType>(focus_type));
+}
+
+ScopedJavaLocalRef<jobjectArray> ImeAdapterAndroid::GetSupportedMimeTypes(
+    JNIEnv* env) {
+  RenderFrameHostImpl* render_frame_host =
+      static_cast<RenderFrameHostImpl*>(GetFocusedFrame());
+
+  if (!render_frame_host) {
+    return ScopedJavaLocalRef<jobjectArray>();
+  }
+
+  std::vector<std::string> supported_mime_types;
+
+  if (render_frame_host->has_focused_richly_editable_element()) {
+    supported_mime_types.push_back("image/*");
+  }
+
+  return ToJavaArrayOfStrings(env, supported_mime_types);
 }
 
 void ImeAdapterAndroid::SetEditableSelectionOffsets(JNIEnv*,

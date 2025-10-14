@@ -126,6 +126,9 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
 
   void AdvanceFocusForIME(JNIEnv*, jint);
 
+  base::android::ScopedJavaLocalRef<jobjectArray> GetSupportedMimeTypes(
+      JNIEnv*);
+
  private:
   RenderWidgetHostImpl* GetFocusedWidget();
   RenderFrameHost* GetFocusedFrame();
