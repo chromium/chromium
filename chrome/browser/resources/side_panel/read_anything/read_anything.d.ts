@@ -80,6 +80,9 @@ declare namespace chrome {
     // Whether the TS text segmentation feature flag is enabled.
     let isTsTextSegmentationEnabled: boolean;
 
+    // Whether Readability.js is used as the primary distillation method.
+    let isReadabilityEnabled: boolean;
+
     // Whether the phrase highlighting feature flag is enabled.
     let isPhraseHighlightingEnabled: boolean;
 
