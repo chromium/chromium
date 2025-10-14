@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model:snapshot_source",
     "//ios/chrome/browser/snapshots/model:test_utils",
     "//ios/testing:ocmock_support",
+    "//ios/web/common:uikit",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

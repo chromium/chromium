@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -54,7 +55,18 @@ class SnapshotBrowserAgentTest : public PlatformTest {
     UIView* view = [[UIView alloc] initWithFrame:{{0, 0}, {300, 400}}];
     view.backgroundColor = [UIColor redColor];
     delegate_.view = view;
+
+    UIWindow* window = GetAnyKeyWindow();
+    [window addSubview:delegate_.view];
+    [window makeKeyAndVisible];
+
+    // Hack to forcefully render the view to successfully capture a snapshot.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [window layoutIfNeeded];
   }
+
+  void TearDown() override { [delegate_.view removeFromSuperview]; }
 
   // Create a fake WebState that is configured to take snapshot using the
   // fake SnapshotGeneratorDelegate.

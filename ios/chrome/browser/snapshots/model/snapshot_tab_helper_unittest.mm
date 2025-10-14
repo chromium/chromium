@@ -115,12 +115,23 @@ class SnapshotTabHelperTest : public PlatformTest {
     UIView* view = [[UIView alloc] initWithFrame:frame];
     view.backgroundColor = [UIColor redColor];
     delegate_.view = view;
+
+    UIWindow* window = GetAnyKeyWindow();
+    [window addSubview:delegate_.view];
+    [window makeKeyAndVisible];
+
+    // Hack to forcefully render the view to successfully capture a snapshot.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [window layoutIfNeeded];
   }
 
   SnapshotTabHelperTest(const SnapshotTabHelperTest&) = delete;
   SnapshotTabHelperTest& operator=(const SnapshotTabHelperTest&) = delete;
 
   ~SnapshotTabHelperTest() override { [snapshot_storage_ shutdown]; }
+
+  void TearDown() override { [delegate_.view removeFromSuperview]; }
 
   void SetCachedSnapshot(UIImage* image) {
     const SnapshotID snapshot_id(web_state_.GetUniqueIdentifier());

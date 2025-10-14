@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
@@ -18,14 +19,26 @@ namespace {
 class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
  protected:
   ChromeActivityItemThumbnailGeneratorTest() {
+    // Add a fake view to the delegate, which is used to capture a snapshot.
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     CGRect frame = {CGPointZero, CGSizeMake(400, 300)};
     delegate_.view = [[UIView alloc] initWithFrame:frame];
     delegate_.view.backgroundColor = [UIColor redColor];
+    UIWindow* window = GetAnyKeyWindow();
+    [window addSubview:delegate_.view];
+    [window makeKeyAndVisible];
+
+    // Hack to forcefully render the view to successfully capture a snapshot.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [window layoutIfNeeded];
+
     SnapshotTabHelper::CreateForWebState(&fake_web_state_);
     SnapshotSourceTabHelper::CreateForWebState(&fake_web_state_);
     SnapshotTabHelper::FromWebState(&fake_web_state_)->SetDelegate(delegate_);
   }
+
+  void TearDown() override { [delegate_.view removeFromSuperview]; }
 
   base::test::TaskEnvironment task_environment_;
   FakeSnapshotGeneratorDelegate* delegate_ = nil;

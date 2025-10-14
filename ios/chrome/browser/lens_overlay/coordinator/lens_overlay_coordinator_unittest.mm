@@ -164,6 +164,12 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     CGRect frame = {CGPointZero, CGSizeMake(300, 400)};
     delegate_.view = [[UIView alloc] initWithFrame:frame];
     delegate_.view.backgroundColor = [UIColor blueColor];
+    [scoped_window_.Get() addSubview:delegate_.view];
+
+    // Hack to forcefully render the view to successfully capture snapshots.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [scoped_window_.Get() layoutIfNeeded];
 
     // Mark the only web state as active.
     browser_.get()->GetWebStateList()->InsertWebState(std::move(web_state));
@@ -200,6 +206,8 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   ~LensOverlayCoordinatorTest() override { profile_state_.profile = nullptr; }
 
   void TearDown() override {
+    [delegate_.view removeFromSuperview];
+
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
       // Dismisses `base_view_controller_` and waits for the dismissal to
       // finish.

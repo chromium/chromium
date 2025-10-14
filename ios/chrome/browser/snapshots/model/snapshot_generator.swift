@@ -134,26 +134,31 @@ import UIKit
 
     let format = UIGraphicsImageRendererFormat.preferred()
     format.scale = SnapshotImageScale.floatForDevice()
-    format.opaque = true
+    format.opaque = false
 
     let renderer = UIGraphicsImageRenderer(bounds: baseView.bounds, format: format)
 
     var snapshotSuccess = true
     let image = renderer.image { context in
-      // Take animations into account by rendering the presentation layer.
-      // Fallback to the rendering the layer if not possible.
-      let layerToRender = baseView.layer.presentation() ?? baseView.layer
+      if #available(iOS 26, *) {
+        // A translucent background starting from iOS 26 only works well with drawHierarchy.
+        snapshotSuccess = baseView.drawHierarchy(in: baseView.bounds, afterScreenUpdates: false)
+      } else {
+        // Take animations into account by rendering the presentation layer.
+        // Fallback to the rendering the layer if not possible.
+        let layerToRender = baseView.layer.presentation() ?? baseView.layer
 
-      // To mitigate against crashes like crbug.com/1429512, ensure that the
-      // layer's position is valid. Otherwise mark the snapshotting as failed.
-      let position = layerToRender.position
-      let validPosition = !position.x.isNaN && !position.y.isNaN
-      guard validPosition else {
-        snapshotSuccess = false
-        return
+        // To mitigate against crashes like crbug.com/1429512, ensure that the
+        // layer's position is valid. Otherwise mark the snapshotting as failed.
+        let position = layerToRender.position
+        let validPosition = !position.x.isNaN && !position.y.isNaN
+        guard validPosition else {
+          snapshotSuccess = false
+          return
+        }
+
+        layerToRender.render(in: context.cgContext)
       }
-
-      layerToRender.render(in: context.cgContext)
     }
 
     // Set the mode to UIViewTintAdjustmentModeAutomatic.
@@ -225,7 +230,7 @@ import UIKit
 
     let format = UIGraphicsImageRendererFormat.preferred()
     format.scale = SnapshotImageScale.floatForDevice()
-    format.opaque = true
+    format.opaque = false
 
     let renderer = UIGraphicsImageRenderer(size: snapshotFrameInWindow.size, format: format)
 
@@ -242,16 +247,21 @@ import UIKit
         x: -snapshotFrameInWindow.origin.x, y: -snapshotFrameInWindow.origin.y)
 
       for overlay in overlays {
-        cgContextRef.saveGState()
-        let superview = overlay.superview ?? baseView
-        // The following is only correct if `superview` is indeed `overlay.superview`, since `frame`
-        // is defined as "the view’s location and size in its superview’s coordinate system".
-        // However it appears that some overlays do not have any superviews.
-        let frameInWindow = superview.convert(overlay.frame, to: nil)
-        // This shifts the context so that drawing starts at the overlay's offset.
-        cgContextRef.translateBy(x: frameInWindow.origin.x, y: frameInWindow.origin.y)
-        overlay.layer.render(in: cgContextRef)
-        cgContextRef.restoreGState()
+        if #available(iOS 26, *) {
+          // A translucent background starting from iOS 26 only works well with drawHierarchy.
+          overlay.drawHierarchy(in: overlay.bounds, afterScreenUpdates: false)
+        } else {
+          cgContextRef.saveGState()
+          let superview = overlay.superview ?? baseView
+          // The following is only correct if `superview` is indeed `overlay.superview`, since `frame`
+          // is defined as "the view’s location and size in its superview’s coordinate system".
+          // However it appears that some overlays do not have any superviews.
+          let frameInWindow = superview.convert(overlay.frame, to: nil)
+          overlay.layer.render(in: cgContextRef)
+          // This shifts the context so that drawing starts at the overlay's offset.
+          cgContextRef.translateBy(x: frameInWindow.origin.x, y: frameInWindow.origin.y)
+          cgContextRef.restoreGState()
+        }
       }
     }
   }

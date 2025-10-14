@@ -156,6 +156,7 @@ source_set("unit_tests") {
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/testing:nserror_support",
     "//ios/testing:ocmock_support",
+    "//ios/web/common:uikit",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

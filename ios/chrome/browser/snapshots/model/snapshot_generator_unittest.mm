@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -62,6 +63,15 @@ class LegacySnapshotGeneratorTest : public PlatformTest {
     UIView* view = [[UIView alloc] initWithFrame:frame];
     view.backgroundColor = [UIColor redColor];
     delegate_.view = view;
+
+    UIWindow* window = GetAnyKeyWindow();
+    [window addSubview:view];
+    [window makeKeyAndVisible];
+
+    // Hack to forcefully render the view.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [window layoutIfNeeded];
   }
 
  protected:
@@ -142,6 +152,15 @@ class SnapshotGeneratorTest : public PlatformTest {
     UIView* view = [[UIView alloc] initWithFrame:frame];
     view.backgroundColor = [UIColor redColor];
     delegate_.view = view;
+
+    UIWindow* window = GetAnyKeyWindow();
+    [window addSubview:view];
+    [window makeKeyAndVisible];
+
+    // Hack to forcefully render the view.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [window layoutIfNeeded];
   }
 
  protected:
@@ -228,18 +247,28 @@ TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshotWithNTP) {
 }
 
 @interface FakeOverlaysSnapshotGeneratorDelegate : FakeSnapshotGeneratorDelegate
+// Overlay UIView with the green background.
+@property(nonatomic, strong) UIView* overlay;
 @end
 
 @implementation FakeOverlaysSnapshotGeneratorDelegate
 
 #pragma mark - SnapshotGeneratorDelegate
 
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    CGRect frame = {CGPointZero, kWebStateViewSize};
+    UIView* overlay = [[UIView alloc] initWithFrame:frame];
+    overlay.backgroundColor = [UIColor greenColor];
+    _overlay = overlay;
+  }
+  return self;
+}
+
 - (NSArray<UIView*>*)snapshotOverlaysWithWebStateInfo:
     (WebStateSnapshotInfo*)webStateInfo {
-  CGRect frame = {CGPointZero, kWebStateViewSize};
-  UIView* overlay = [[UIView alloc] initWithFrame:frame];
-  overlay.backgroundColor = [UIColor greenColor];
-  return @[ overlay ];
+  return @[ self.overlay ];
 }
 
 @end
@@ -262,7 +291,18 @@ class LegacySnapshotGeneratorWithOverlaysTest : public PlatformTest {
     UIView* view = [[UIView alloc] initWithFrame:frame];
     view.backgroundColor = [UIColor redColor];
     delegate_.view = view;
+
+    UIWindow* window = GetAnyKeyWindow();
+    [window addSubview:view];
+    [window makeKeyAndVisible];
+
+    // Hack to forcefully render the view.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [window layoutIfNeeded];
   }
+
+  void TearDown() override { [delegate_.view removeFromSuperview]; }
 
  protected:
   web::WebTaskEnvironment task_environment_;
@@ -273,16 +313,34 @@ class LegacySnapshotGeneratorWithOverlaysTest : public PlatformTest {
 
 // Tests the snapshot taken by UIKit-based API. The page has an overlay.
 TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateUIViewSnapshot) {
+  UIWindow* window = GetAnyKeyWindow();
+  [window addSubview:delegate_.overlay];
+
+  // Hack to forcefully render the overlay view.
+  [NSRunLoop.currentRunLoop
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  [window layoutIfNeeded];
+
   UIImage* snapshot = [generator_ generateUIViewSnapshotWithOverlays];
 
   // The base color of UIView is red, but it's overriden by an overlay.
   ASSERT_TRUE(snapshot);
   EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
   EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor greenColor]));
+
+  [delegate_.overlay removeFromSuperview];
 }
 
 // Tests the snapshot taken by UIKit-based API. The page has an overlay.
 TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
+  UIWindow* window = GetAnyKeyWindow();
+  [window addSubview:delegate_.overlay];
+
+  // Hack to forcefully render the overlay view.
+  [NSRunLoop.currentRunLoop
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  [window layoutIfNeeded];
+
   // Enable the flag to take a snapshot with WebKit-based API.
   web_state_.SetCanTakeSnapshot(true);
   web_state_.SetCurrentURL(GURL(kTestURL));
@@ -302,6 +360,8 @@ TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
   ASSERT_TRUE(snapshot);
   EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
   EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor greenColor]));
+
+  [delegate_.overlay removeFromSuperview];
 }
 
 class SnapshotGeneratorWithOverlaysTest : public PlatformTest {
@@ -322,7 +382,18 @@ class SnapshotGeneratorWithOverlaysTest : public PlatformTest {
     UIView* view = [[UIView alloc] initWithFrame:frame];
     view.backgroundColor = [UIColor redColor];
     delegate_.view = view;
+
+    UIWindow* window = GetAnyKeyWindow();
+    [window addSubview:view];
+    [window makeKeyAndVisible];
+
+    // Hack to forcefully render the view.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [window layoutIfNeeded];
   }
+
+  void TearDown() override { [delegate_.view removeFromSuperview]; }
 
  protected:
   web::WebTaskEnvironment task_environment_;
@@ -333,16 +404,34 @@ class SnapshotGeneratorWithOverlaysTest : public PlatformTest {
 
 // Tests the snapshot taken by UIKit-based API. The page has an overlay.
 TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateUIViewSnapshot) {
+  UIWindow* window = GetAnyKeyWindow();
+  [window addSubview:delegate_.overlay];
+
+  // Hack to forcefully render the overlay view.
+  [NSRunLoop.currentRunLoop
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  [window layoutIfNeeded];
+
   UIImage* snapshot = [generator_ generateUIViewSnapshotWithOverlays];
 
   // The base color of UIView is red, but it's overriden by an overlay.
   ASSERT_TRUE(snapshot);
   EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
   EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor greenColor]));
+
+  [delegate_.overlay removeFromSuperview];
 }
 
 // Tests the snapshot taken by UIKit-based API. The page has an overlay.
 TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
+  UIWindow* window = GetAnyKeyWindow();
+  [window addSubview:delegate_.overlay];
+
+  // Hack to forcefully render the overlay view.
+  [NSRunLoop.currentRunLoop
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  [window layoutIfNeeded];
+
   // Enable the flag to take a snapshot with WebKit-based API.
   web_state_.SetCanTakeSnapshot(true);
   web_state_.SetCurrentURL(GURL(kTestURL));
@@ -362,4 +451,6 @@ TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
   ASSERT_TRUE(snapshot);
   EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
   EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor greenColor]));
+
+  [delegate_.overlay removeFromSuperview];
 }

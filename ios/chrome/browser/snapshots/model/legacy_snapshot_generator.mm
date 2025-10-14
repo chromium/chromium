@@ -212,7 +212,7 @@ struct SnapshotInfo {
   UIGraphicsImageRendererFormat* format =
       [UIGraphicsImageRendererFormat preferredFormat];
   format.scale = kScale;
-  format.opaque = YES;
+  format.opaque = NO;
 
   UIGraphicsImageRenderer* renderer =
       [[UIGraphicsImageRenderer alloc] initWithBounds:baseView.bounds
@@ -221,20 +221,27 @@ struct SnapshotInfo {
   __block BOOL snapshotSuccess = YES;
   UIImage* image =
       [renderer imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
-        // Take animations into account by rendering the presentation layer.
-        // Fallback to the rendering the layer if not possible.
-        CALayer* layerToRender =
-            baseView.layer.presentationLayer ?: baseView.layer;
-        // To mitigate against crashes like crbug.com/1429512, ensure that
-        // the layer's position is valid. If not, mark the snapshotting as
-        // failed.
-        CGPoint pos = layerToRender.position;
-        if (isnan(pos.x) || isnan(pos.y)) {
-          snapshotSuccess = NO;
-          return;
-        }
+        if (@available(iOS 26, *)) {
+          // A translucent background starting from iOS 26 only works well with
+          // drawViewHierarchyInRect.
+          snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
+                                           afterScreenUpdates:NO];
+        } else {
+          // Take animations into account by rendering the presentation layer.
+          // Fallback to the rendering the layer if not possible.
+          CALayer* layerToRender =
+              baseView.layer.presentationLayer ?: baseView.layer;
+          // To mitigate against crashes like crbug.com/1429512, ensure that
+          // the layer's position is valid. If not, mark the snapshotting as
+          // failed.
+          CGPoint pos = layerToRender.position;
+          if (isnan(pos.x) || isnan(pos.y)) {
+            snapshotSuccess = NO;
+            return;
+          }
 
-        [layerToRender renderInContext:UIContext.CGContext];
+          [layerToRender renderInContext:UIContext.CGContext];
+        }
       }];
 
   if (!snapshotSuccess) {
@@ -298,7 +305,7 @@ struct SnapshotInfo {
   UIGraphicsImageRendererFormat* format =
       [UIGraphicsImageRendererFormat preferredFormat];
   format.scale = kScale;
-  format.opaque = YES;
+  format.opaque = NO;
 
   UIGraphicsImageRenderer* renderer =
       [[UIGraphicsImageRenderer alloc] initWithSize:frameInWindow.size
@@ -326,14 +333,20 @@ struct SnapshotInfo {
 // Draws `overlays` onto `context` at offsets relative to the window.
 - (void)drawOverlays:(NSArray<UIView*>*)overlays context:(CGContext*)context {
   for (UIView* overlay in overlays) {
-    CGContextSaveGState(context);
-    CGRect frameInWindow = [overlay.superview convertRect:overlay.frame
-                                                   toView:nil];
-    // This shifts the context so that drawing starts at the overlay's offset.
-    CGContextTranslateCTM(context, frameInWindow.origin.x,
-                          frameInWindow.origin.y);
-    [[overlay layer] renderInContext:context];
-    CGContextRestoreGState(context);
+    if (@available(iOS 26, *)) {
+      // A translucent background starting from iOS 26 only works well with
+      // drawViewHierarchyInRect.
+      [overlay drawViewHierarchyInRect:overlay.bounds afterScreenUpdates:NO];
+    } else {
+      CGContextSaveGState(context);
+      CGRect frameInWindow = [overlay.superview convertRect:overlay.frame
+                                                     toView:nil];
+      // This shifts the context so that drawing starts at the overlay's offset.
+      CGContextTranslateCTM(context, frameInWindow.origin.x,
+                            frameInWindow.origin.y);
+      [[overlay layer] renderInContext:context];
+      CGContextRestoreGState(context);
+    }
   }
 }
 
