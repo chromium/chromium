@@ -104,6 +104,4 @@ bool UsePrefetchPrerenderIntegration() {
              ->UsePrefetchPrerenderIntegration();
 }
 
-BASE_FEATURE(kPrerender2CrossOriginIframes, base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features

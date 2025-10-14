@@ -692,7 +692,8 @@ void PrerenderHost::ReadyToCommitNavigation(
 
     const bool is_prerender_2_cross_origin_iframes_enabled =
         attributes_.enable_cross_origin_prerender_iframes ||
-        base::FeatureList::IsEnabled(features::kPrerender2CrossOriginIframes);
+        base::FeatureList::IsEnabled(
+            blink::features::kPrerender2CrossOriginIframes);
     if (is_prerender_2_cross_origin_iframes_enabled &&
         base::Contains(
             parsed_headers->supports_loading_mode,
