@@ -225,7 +225,7 @@ using signin_metrics::PromoAction;
       // If the signin was successful, but the identity isn't showing up on the
       // device, then it must be an identity that's restricted by policy.
       bool identityOnDeviceFound = false;
-      const GaiaId gaia(identity.gaiaID);
+      const GaiaId gaia(identity.gaiaId);
       std::vector<AccountInfo> accountsOnDevice =
           _identityManager->GetAccountsOnDevice();
       for (const AccountInfo& accountInfo : accountsOnDevice) {
