@@ -792,6 +792,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ntp/IncognitoDescriptionView.java",
   "java/src/org/chromium/chrome/browser/ntp/IncognitoNewTabPage.java",
   "java/src/org/chromium/chrome/browser/ntp/IncognitoNewTabPageView.java",
+  "java/src/org/chromium/chrome/browser/ntp/IncognitoNtpOmniboxAutofocusManager.java",
   "java/src/org/chromium/chrome/browser/ntp/NativePageRootFrameLayout.java",
   "java/src/org/chromium/chrome/browser/ntp/NewTabPage.java",
   "java/src/org/chromium/chrome/browser/ntp/NewTabPageCreationState.java",

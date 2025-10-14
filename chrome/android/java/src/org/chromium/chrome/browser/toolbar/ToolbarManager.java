@@ -100,6 +100,7 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinat
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
+import org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
@@ -404,6 +405,7 @@ public class ToolbarManager
     private @Nullable MiniOriginBarController mMiniOriginBarController;
     private @Nullable ToolbarPositionController mToolbarPositionController;
     private @Nullable UndoBarThrottle mUndoBarThrottle;
+    private @Nullable IncognitoNtpOmniboxAutofocusManager mIncognitoNtpOmniboxAutofocusManager;
 
     private CustomTabCount mCustomTabCount;
     private int mIncognitoNtpViewIdForA11y = View.NO_ID;
@@ -2439,6 +2441,15 @@ public class ToolbarManager
             mUpdateMenuItemHelper.registerObserver(mMenuStateObserver);
         }
 
+        mIncognitoNtpOmniboxAutofocusManager =
+                IncognitoNtpOmniboxAutofocusManager.maybeCreate(
+                        mActivity,
+                        getOmniboxStub(),
+                        mLayoutManager,
+                        mTabModelSelector,
+                        this::getIncognitoNtpView,
+                        this::getIncognitoNtpContentHeight);
+
         mInitializedWithNative = true;
         mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
         refreshSelectedTab(mActivityTabProvider.get());
@@ -2466,6 +2477,36 @@ public class ToolbarManager
         }
 
         TraceEvent.end("ToolbarManager.initializeWithNative");
+    }
+
+    /**
+     * Provides the primary content view of the Incognito New Tab Page for a given tab.
+     *
+     * @param tab The tab to get the NTP view from.
+     * @return The content {@link View} of the Incognito NTP, or {@code null} if it cannot be found.
+     */
+    private @Nullable View getIncognitoNtpView(Tab tab) {
+        if (tab == null || tab.getView() == null) {
+            return null;
+        }
+
+        return tab.getView().findViewById(R.id.new_tab_incognito_container);
+    }
+
+    /**
+     * Calculates the height of the main text content area on the Incognito New Tab Page, excluding
+     * all paddings after very last TextView.
+     *
+     * @param ntpView The Incognito NTP view.
+     * @return The height of the content in pixels.
+     */
+    private double getIncognitoNtpContentHeight(View ntpView) {
+        final double cookiesCardPaddingBottom =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.md_incognito_ntp_padding_vertical);
+
+        return ntpView.getHeight() - (ntpView.getPaddingBottom() + cookiesCardPaddingBottom);
     }
 
     /**
@@ -2531,6 +2572,11 @@ public class ToolbarManager
     @SuppressWarnings("NullAway")
     public void destroy() {
         mIsDestroyed = true;
+
+        if (mIncognitoNtpOmniboxAutofocusManager != null) {
+            mIncognitoNtpOmniboxAutofocusManager.destroy();
+            mIncognitoNtpOmniboxAutofocusManager = null;
+        }
 
         var omnibox = mLocationBar.getOmniboxStub();
         if (omnibox != null) {
