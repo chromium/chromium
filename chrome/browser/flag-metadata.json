@@ -3237,11 +3237,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-cros-first-party-vietnamese-input",
-    "owners": ["jhtin@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "enable-cros-hindi-inscript-layout",
     "owners": [ "jshin@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 250
