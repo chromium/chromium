@@ -196,6 +196,7 @@ BASE_DECLARE_FEATURE(kNotificationPermissionVariant);
 BASE_DECLARE_FEATURE(kNotificationPermissionBottomSheet);
 BASE_DECLARE_FEATURE(kNotificationTrampoline);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
+BASE_DECLARE_FEATURE(kOmniboxAutofocusOnIncognitoNtp);
 BASE_DECLARE_FEATURE(kAvoidRelayoutDuringFocusAnimation);
 BASE_DECLARE_FEATURE(kShortCircuitUnfocusAnimation);
 BASE_DECLARE_FEATURE(kShowHomeButtonPolicyAndroid);

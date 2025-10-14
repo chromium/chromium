@@ -499,6 +499,8 @@ public abstract class ChromeFeatureList {
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String NOTIFICATION_TRAMPOLINE = "NotificationTrampoline";
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
+    public static final String OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP =
+            "OmniboxAutofocusOnIncognitoNtp";
     public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =
             "OmniboxCacheSuggestionResources";
     public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =
@@ -1338,6 +1340,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(MEDIA_INDICATORS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, true);
+    public static final MutableFlagWithSafeDefault sOmniboxAutofocusOnIncognitoNtp =
+            newMutableFlagWithSafeDefault(OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP, false);
     public static final MutableFlagWithSafeDefault sQuickDeleteAndroidSurvey =
             newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sReadAloudTapToSeek =
@@ -1840,6 +1844,19 @@ public abstract class ChromeFeatureList {
             sDisableInstanceLimit.newIntParam("max_instance_limit_memory_threshold_mb", 6500);
     public static final MutableIntParamWithSafeDefault sDisableInstanceLimitMaxCount =
             sDisableInstanceLimit.newIntParam("max_instance_limit", 20);
+
+    public static final MutableBooleanParamWithSafeDefault
+            sOmniboxAutofocusOnIncognitoNtpNotFirstTab =
+                    sOmniboxAutofocusOnIncognitoNtp.newBooleanParam("not_first_tab", false);
+
+    public static final MutableBooleanParamWithSafeDefault
+            sOmniboxAutofocusOnIncognitoNtpWithHardwareKeyboard =
+                    sOmniboxAutofocusOnIncognitoNtp.newBooleanParam(
+                            "with_hardware_keyboard", false);
+
+    public static final MutableBooleanParamWithSafeDefault
+            sOmniboxAutofocusOnIncognitoNtpWithPrediction =
+                    sOmniboxAutofocusOnIncognitoNtp.newBooleanParam("with_prediction", false);
 
     public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterAutoDeletePromoTest =
             sAndroidTabDeclutterAutoDelete.newBooleanParam(

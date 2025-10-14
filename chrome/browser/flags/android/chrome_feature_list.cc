@@ -367,6 +367,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNotificationPermissionVariant,
     &kNotificationTrampoline,
     &kOmahaMinSdkVersionAndroid,
+    &kOmniboxAutofocusOnIncognitoNtp,
     &kPageAnnotationsService,
     &kPageContentProvider,
     &kPartnerCustomizationsUma,
@@ -962,6 +963,9 @@ BASE_FEATURE(kPwaRestoreUi, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPwaRestoreUiAtStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmahaMinSdkVersionAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOmniboxAutofocusOnIncognitoNtp,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShortCircuitUnfocusAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 
