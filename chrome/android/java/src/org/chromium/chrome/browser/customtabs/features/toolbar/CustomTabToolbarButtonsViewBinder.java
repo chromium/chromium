@@ -68,7 +68,6 @@ public class CustomTabToolbarButtonsViewBinder
         public int totalStartAlignedButtonWidth;
         public int spacingFromLastStartAlignedButton;
         public int totalEndAlignedButtonWidth;
-        public int spacingFromLastEndAlignedButton;
     }
 
     /**
@@ -179,14 +178,19 @@ public class CustomTabToolbarButtonsViewBinder
             CustomTabToolbar view, PropertyModel model, ButtonVisibilityFlipper visFlipper) {
         var resources = view.getResources();
         int defaultButtonWidth = resources.getDimensionPixelSize(R.dimen.toolbar_button_width);
-        int defaultIconWidth = resources.getDimensionPixelSize(R.dimen.toolbar_icon_default_width);
-        int iconSpacing = resources.getDimensionPixelSize(R.dimen.custom_tabs_toolbar_icon_spacing);
-        int availableWidth = model.get(TOOLBAR_WIDTH);
+        int defaultButtonHorizontalPadding =
+                resources.getDimensionPixelSize(
+                        R.dimen.custom_tabs_toolbar_button_horizontal_padding);
+        int toolbarHorizontalPadding =
+                resources.getDimensionPixelSize(R.dimen.custom_tabs_toolbar_horizontal_padding);
         int locationBarMinWidth =
                 getLocationBarMinWidth(
                         view.getResources(), model.get(OMNIBOX_ENABLED), model.get(TITLE_VISIBLE));
         var posParams = new ButtonPositioningParams();
-        posParams.availableWidth = availableWidth;
+        posParams.availableWidth = model.get(TOOLBAR_WIDTH);
+        posParams.availableWidth -= 2 * toolbarHorizontalPadding;
+        posParams.totalStartAlignedButtonWidth = toolbarHorizontalPadding;
+        posParams.totalEndAlignedButtonWidth = toolbarHorizontalPadding;
 
         if (model.get(IS_INCOGNITO)) {
             int incognitoIconWidth =
@@ -209,8 +213,7 @@ public class CustomTabToolbarButtonsViewBinder
                     closeButton,
                     posParams,
                     defaultButtonWidth,
-                    iconSpacing,
-                    defaultIconWidth,
+                    defaultButtonHorizontalPadding,
                     isEndPosition);
         } else if (view.getCloseButton() != null) {
             view.getCloseButton().setVisibility(View.GONE);
@@ -227,8 +230,7 @@ public class CustomTabToolbarButtonsViewBinder
                     menuButton,
                     posParams,
                     defaultButtonWidth,
-                    iconSpacing,
-                    defaultIconWidth,
+                    defaultButtonHorizontalPadding,
                     isEndPosition);
         }
 
@@ -242,7 +244,7 @@ public class CustomTabToolbarButtonsViewBinder
             for (var actionButtonModel : models) {
                 if (visFlipper.isCustomButtonToHide(actionButtonModel.get(TYPE))) continue;
                 if (!maybeInflateAndPositionCustomButton(
-                        view, actionButtonModel, posParams, defaultButtonWidth, iconSpacing)) {
+                        view, actionButtonModel, posParams, defaultButtonWidth)) {
                     break;
                 }
                 visFlipper.addVisibleButtonType(actionButtonModel.get(TYPE));
@@ -271,8 +273,7 @@ public class CustomTabToolbarButtonsViewBinder
                     minimizeButton,
                     posParams,
                     defaultButtonWidth,
-                    iconSpacing,
-                    defaultIconWidth,
+                    defaultButtonHorizontalPadding,
                     /* isEndAligned= */ false);
         } else {
             // Set to true only when hidden due to width constraint.
@@ -287,7 +288,7 @@ public class CustomTabToolbarButtonsViewBinder
             assertNonNull(optionalButton);
             optionalButton.setVisibility(View.VISIBLE);
             positionOptionalButton(
-                    optionalButton, posParams, defaultButtonWidth, iconSpacing, defaultIconWidth);
+                    optionalButton, posParams, defaultButtonWidth, defaultButtonHorizontalPadding);
             customActionButtons.addView(optionalButton);
         } else if (optionalButton != null) {
             optionalButton.setVisibility(View.GONE);
@@ -305,8 +306,7 @@ public class CustomTabToolbarButtonsViewBinder
                     sideSheetMaximizeButton,
                     posParams,
                     defaultButtonWidth,
-                    iconSpacing,
-                    defaultIconWidth,
+                    defaultButtonHorizontalPadding,
                     /* isEndAligned= */ true);
         } else if (view.getSideSheetMaximizeButton() != null) {
             view.getSideSheetMaximizeButton().setVisibility(View.GONE);
@@ -331,8 +331,7 @@ public class CustomTabToolbarButtonsViewBinder
      * @param posParams A {@link ButtonPositioningParams} tracking the current state of the
      *     positioning process. It will be modified by this method.
      * @param defaultButtonWidth The default width of a toolbar button.
-     * @param iconSpacing The spacing between two adjacent icons.
-     * @param iconWidth The width of the icon within the button.
+     * @param defaultHorizontalPadding The default horizontal padding for a toolbar button.
      * @param isEndAligned True if the button is aligned to the end of the toolbar, false if aligned
      *     to the start.
      */
@@ -340,29 +339,8 @@ public class CustomTabToolbarButtonsViewBinder
             View button,
             ButtonPositioningParams posParams,
             @Px int defaultButtonWidth,
-            @Px int iconSpacing,
-            @Px int iconWidth,
+            @Px int defaultHorizontalPadding,
             boolean isEndAligned) {
-        int startPadding;
-        int endPadding;
-        // We calculate this button's padding based on the padding of the button that came before.
-        if (isEndAligned) {
-            assert posParams.spacingFromLastEndAlignedButton <= iconSpacing;
-            // Remaining space to reach iconSpacing.
-            endPadding = iconSpacing - posParams.spacingFromLastEndAlignedButton;
-            // Remaining space to reach the default button width. If the button will be wider than
-            // the default width because its icon is wider, make the start padding 0.
-            startPadding = Math.max(0, defaultButtonWidth - iconWidth - endPadding);
-            posParams.spacingFromLastEndAlignedButton = startPadding;
-        } else {
-            assert posParams.spacingFromLastStartAlignedButton <= iconSpacing;
-            // Similar to the block above, just start and end padding are reversed.
-            startPadding = iconSpacing - posParams.spacingFromLastStartAlignedButton;
-            endPadding = Math.max(0, defaultButtonWidth - iconWidth - startPadding);
-            posParams.spacingFromLastStartAlignedButton = endPadding;
-        }
-        int buttonWidth = iconWidth + startPadding + endPadding;
-        setHorizontalPadding(button, startPadding, endPadding);
         // Adjust the layout gravity based on where the button is aligned, and offset it by
         // the total width of the buttons we've previously placed.
         setHorizontalLayoutParams(
@@ -372,12 +350,13 @@ public class CustomTabToolbarButtonsViewBinder
                 isEndAligned);
         if (isEndAligned) {
             // We've placed a button at the end.
-            posParams.totalEndAlignedButtonWidth += buttonWidth;
+            posParams.totalEndAlignedButtonWidth += defaultButtonWidth;
         } else {
             // We've placed a button at the start.
-            posParams.totalStartAlignedButtonWidth += buttonWidth;
+            posParams.totalStartAlignedButtonWidth += defaultButtonWidth;
+            posParams.spacingFromLastStartAlignedButton = defaultHorizontalPadding;
         }
-        posParams.availableWidth -= buttonWidth;
+        posParams.availableWidth -= defaultButtonWidth;
     }
 
     /**
@@ -388,14 +367,12 @@ public class CustomTabToolbarButtonsViewBinder
      * @param posParams A {@link ButtonPositioningParams} tracking the current state of the
      *     positioning process. It will be modified by this method.
      * @param defaultButtonWidth The default width of a toolbar button.
-     * @param iconSpacing The spacing between two adjacent icons.
      */
     private static boolean maybeInflateAndPositionCustomButton(
             CustomTabToolbar view,
             PropertyModel model,
             ButtonPositioningParams posParams,
-            @Px int defaultButtonWidth,
-            @Px int iconSpacing) {
+            @Px int defaultButtonWidth) {
         Drawable drawable = model.get(ICON);
         Resources resources = view.getResources();
         // The height will be scaled to match spec while keeping the aspect ratio, so get the scaled
@@ -404,14 +381,9 @@ public class CustomTabToolbarButtonsViewBinder
         int sourceScaledHeight = resources.getDimensionPixelSize(R.dimen.toolbar_icon_height);
         int sourceWidth = drawable.getIntrinsicWidth();
         int sourceScaledWidth = sourceWidth * sourceScaledHeight / sourceHeight;
-
-        // Remaining space to reach iconSpacing to make up to the required spacing.
-        assert posParams.spacingFromLastEndAlignedButton <= iconSpacing;
-        int endPadding = iconSpacing - posParams.spacingFromLastEndAlignedButton;
-        // Remaining space to reach at least the default button width. If the button will be wider
-        // than the default width because its icon is wider, make the start padding 0.
-        int startPadding = Math.max(0, defaultButtonWidth - sourceScaledWidth - endPadding);
-        int buttonWidth = sourceScaledWidth + startPadding + endPadding;
+        int minPadding = resources.getDimensionPixelSize(R.dimen.min_toolbar_icon_side_padding);
+        int horizontalPadding = Math.max((defaultButtonWidth - sourceScaledWidth) / 2, minPadding);
+        int buttonWidth = sourceScaledWidth + 2 * horizontalPadding;
 
         if (buttonWidth > posParams.availableWidth) return false;
 
@@ -426,24 +398,25 @@ public class CustomTabToolbarButtonsViewBinder
         button.setOnClickListener(model.get(CLICK_LISTENER));
         button.setContentDescription(model.get(DESCRIPTION));
 
-        int minPadding = resources.getDimensionPixelSize(R.dimen.min_toolbar_icon_side_padding);
-
-        int sidePadding = Math.max((2 * sourceScaledHeight - sourceScaledWidth) / 2, minPadding);
         int topPadding = button.getPaddingTop();
         int bottomPadding = button.getPaddingBottom();
-        button.setPadding(sidePadding, topPadding, sidePadding, bottomPadding);
+        button.setPadding(horizontalPadding, topPadding, horizontalPadding, bottomPadding);
         button.setImageDrawable(drawable);
 
         // Add the view at the beginning of the list. This isn't reflected in how the button is
         // positioned; it's only for keeping the index aligned with the params list.
         assumeNonNull(view.getCustomActionButtonsParent()).addView(button, 0);
-        positionButton(
+
+        // Adjust the layout gravity based on where the button is aligned, and offset it by
+        // the total width of the buttons we've previously placed.
+        setHorizontalLayoutParams(
                 button,
-                posParams,
-                defaultButtonWidth,
-                iconSpacing,
-                sourceScaledWidth,
+                /* startMargin= */ 0,
+                posParams.totalEndAlignedButtonWidth,
                 /* isEndAligned= */ true);
+        // We've placed a button at the end.
+        posParams.totalEndAlignedButtonWidth += buttonWidth;
+        posParams.availableWidth -= buttonWidth;
 
         return true;
     }
@@ -483,17 +456,17 @@ public class CustomTabToolbarButtonsViewBinder
         titleUrlContainer.setLayoutParams(titleUrlLp);
 
         // Ensure correct spacing between the last start aligned button and the location bar.
-        int desiredSpace =
-                resources.getDimensionPixelSize(R.dimen.custom_tabs_location_bar_start_spacing);
-        int paddingFromBg =
-                omniboxEnabled
-                        ? resources.getDimensionPixelSize(
-                                R.dimen.custom_tabs_url_bar_bg_horizontal_padding)
-                        : 0;
-        int remainingSpace =
-                Math.max(
-                        0,
-                        desiredSpace - posParams.spacingFromLastStartAlignedButton - paddingFromBg);
+        int remainingSpace;
+        if (omniboxEnabled) {
+            remainingSpace =
+                    resources.getDimensionPixelSize(
+                            R.dimen.custom_tabs_url_bar_bg_horizontal_padding);
+        } else {
+            int desiredSpace =
+                    resources.getDimensionPixelSize(R.dimen.custom_tabs_location_bar_start_spacing);
+            remainingSpace =
+                    Math.max(0, desiredSpace - posParams.spacingFromLastStartAlignedButton);
+        }
         setHorizontalPadding(locationBar, remainingSpace, locationBar.getPaddingEnd());
     }
 
@@ -504,35 +477,23 @@ public class CustomTabToolbarButtonsViewBinder
      * @param posParams A {@link ButtonPositioningParams} tracking the current state of the
      *     positioning process. It will be modified by this method.
      * @param defaultButtonWidth The default width of a toolbar button.
-     * @param iconSpacing The spacing between two adjacent icons.
-     * @param iconWidth The width of the icon within the button.
+     * @param defaultHorizontalPadding The default horizontal padding for a toolbar button.
      */
     private static void positionOptionalButton(
             View button,
             ButtonPositioningParams posParams,
             @Px int defaultButtonWidth,
-            @Px int iconSpacing,
-            @Px int iconWidth) {
-        int startPadding;
-        int endPadding;
-        // We calculate this button's padding based on the padding of the button that came before.
-        assert posParams.spacingFromLastEndAlignedButton <= iconSpacing;
-        // Remaining space to reach iconSpacing.
-        endPadding = iconSpacing - posParams.spacingFromLastEndAlignedButton;
-        // Remaining space to reach the default button width. If the button will be wider than
-        // the default width because its icon is wider, make the start padding 0.
-        startPadding = Math.max(0, defaultButtonWidth - iconWidth - endPadding);
-        posParams.spacingFromLastEndAlignedButton = startPadding;
-        setOptionalButtonHorizontalPadding(button, startPadding, endPadding);
+            @Px int defaultHorizontalPadding) {
+        setOptionalButtonHorizontalPadding(
+                button, defaultHorizontalPadding, defaultHorizontalPadding);
 
         // Adjust background padding to align it with the menu button.
-        int paddingStart =
-                getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_start);
-        int paddingEnd = getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_end);
+        int paddingHori =
+                getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_horizontal_padding);
         int paddingVert =
                 getDimensionPx(button, R.dimen.custom_tabs_adaptive_button_bg_padding_vert);
         View background = button.findViewById(R.id.swappable_icon_secondary_background);
-        background.setPaddingRelative(paddingStart, paddingVert, paddingEnd, paddingVert);
+        background.setPaddingRelative(paddingHori, paddingVert, paddingHori, paddingVert);
 
         // Optional button is end aligned. Offset it by the total width of the buttons we've
         // previously placed.

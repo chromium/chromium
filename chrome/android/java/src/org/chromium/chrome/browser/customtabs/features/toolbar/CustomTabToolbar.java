@@ -972,6 +972,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mMinimizeButton.setOnLongClickListener(this);
         mMinimizeButtonEnabled = true;
         mButtonVisibilityRule.addButton(ButtonId.MINIMIZE, mMinimizeButton, true);
+        Resources res = mMinimizeButton.getResources();
+        int startPadding = res.getDimensionPixelSize(R.dimen.custom_tabs_toolbar_button_spacer_8);
+        int endPadding = res.getDimensionPixelSize(R.dimen.custom_tabs_toolbar_button_spacer_16);
+        mMinimizeButton.setPaddingRelative(
+                startPadding,
+                mMinimizeButton.getPaddingTop(),
+                endPadding,
+                mMinimizeButton.getPaddingBottom());
     }
 
     private void setMinimizeButtonVisibility() {

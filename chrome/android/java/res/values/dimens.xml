@@ -224,12 +224,15 @@ found in the LICENSE file.
     <dimen name="custom_tabs_toolbar_button_spacer_24">24dp</dimen>
     <dimen name="custom_tabs_toolbar_button_spacer_16">16dp</dimen>
     <dimen name="custom_tabs_toolbar_button_spacer_8">8dp</dimen>
+    <dimen name="custom_tabs_toolbar_button_horizontal_padding">12dp</dimen>
     <dimen name="custom_tabs_adaptive_button_fg_padding_start">16dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_height">36dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_padding_start">10dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_padding_end">2dp</dimen>
+    <dimen name="custom_tabs_adaptive_button_bg_horizontal_padding">6dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_padding_vert">10dp</dimen>
     <dimen name="custom_tabs_toolbar_vertical_padding">16dp</dimen>
+    <dimen name="custom_tabs_toolbar_horizontal_padding">8dp</dimen>
     <dimen name="custom_tabs_toolbar_horizontal_margin_no_start">8dp</dimen>
     <dimen name="custom_tabs_toolbar_menu_dot_top_margin">6dp</dimen>
     <dimen name="custom_tabs_toolbar_menu_dot_end_margin">10dp</dimen>
@@ -255,7 +258,6 @@ found in the LICENSE file.
     <dimen name="custom_tabs_menu_footer_icon_size">16sp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_horizontal">8dp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_vertical">12dp</dimen>
-    <dimen name="custom_tabs_toolbar_icon_spacing">16dp</dimen>
 
     <dimen name="custom_tabs_toast_branding_icon_size">28dp</dimen>
     <dimen name="custom_tabs_toast_branding_height">50dp</dimen>

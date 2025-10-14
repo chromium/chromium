@@ -82,11 +82,16 @@ public class CustomTabToolbarButtonsViewBinderTest {
     private CustomTabToolbar mToolbar;
     private PropertyModel mModel;
     private PropertyListModel<PropertyModel, PropertyKey> mCustomActionButtons;
+    private int mToolbarHorizontalPadding;
 
     @Before
     public void setUp() throws ExecutionException {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
+        mToolbarHorizontalPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.custom_tabs_toolbar_horizontal_padding);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -164,11 +169,11 @@ public class CustomTabToolbarButtonsViewBinderTest {
 
         // Close button at start, menu at end.
         FrameLayout.LayoutParams closeLp = (FrameLayout.LayoutParams) closeButton.getLayoutParams();
-        assertEquals(0, closeLp.getMarginStart());
+        assertEquals(mToolbarHorizontalPadding, closeLp.getMarginStart());
         assertNotEquals("Gravity should be start.", 0, closeLp.gravity & Gravity.START);
         FrameLayout.LayoutParams menuLp =
                 (FrameLayout.LayoutParams) mToolbar.getMenuButton().getLayoutParams();
-        assertEquals(0, menuLp.getMarginEnd());
+        assertEquals(mToolbarHorizontalPadding, menuLp.getMarginEnd());
         assertNotEquals("Gravity should be end.", 0, closeLp.gravity & Gravity.END);
     }
 
@@ -189,11 +194,11 @@ public class CustomTabToolbarButtonsViewBinderTest {
 
         // Close button at end, menu at start.
         FrameLayout.LayoutParams closeLp = (FrameLayout.LayoutParams) closeButton.getLayoutParams();
-        assertEquals(0, closeLp.getMarginEnd());
+        assertEquals(mToolbarHorizontalPadding, closeLp.getMarginEnd());
         assertNotEquals("Gravity should be end.", 0, closeLp.gravity & Gravity.END);
         FrameLayout.LayoutParams menuLp =
                 (FrameLayout.LayoutParams) mToolbar.getMenuButton().getLayoutParams();
-        assertEquals(0, menuLp.getMarginStart());
+        assertEquals(mToolbarHorizontalPadding, menuLp.getMarginStart());
         assertNotEquals("Gravity should be start.", 0, closeLp.gravity & Gravity.START);
     }
 
@@ -450,10 +455,10 @@ public class CustomTabToolbarButtonsViewBinderTest {
                         mActivity.getResources(),
                         mModel.get(OMNIBOX_ENABLED),
                         mModel.get(TITLE_VISIBLE));
-        mActivity.getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
         int buttonWidth =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        int startWidth = locationBarMinWidth + buttonWidth * maxButtons;
+        int startWidth =
+                locationBarMinWidth + 2 * mToolbarHorizontalPadding + buttonWidth * maxButtons;
         mModel.set(TOOLBAR_WIDTH, startWidth);
     }
 

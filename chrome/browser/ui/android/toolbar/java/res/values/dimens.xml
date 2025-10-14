@@ -47,7 +47,6 @@ found in the LICENSE file.
 
     <!-- Custom Tabs dimensions -->
     <dimen name="toolbar_icon_height">24dp</dimen>
-    <dimen name="toolbar_icon_default_width">@dimen/toolbar_icon_height</dimen>
 
     <!-- Navigation history popup dimensions -->
     <dimen name="navigation_popup_width">312dp</dimen>

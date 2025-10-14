@@ -9,4 +9,5 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/close_button"
     style="@style/ToolbarButton"
-    android:contentDescription="@string/close_tab" />
+    android:contentDescription="@string/close_tab"
+    android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding" />
