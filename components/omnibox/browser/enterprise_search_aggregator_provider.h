@@ -21,7 +21,6 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace network {
 class SimpleURLLoader;
