@@ -72,6 +72,18 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
     private int mTabsPreviouslyOpenedCount;
     private final @NonNull GestureDetector mNtpSingleTapDetector;
 
+    /**
+     * Overrides the result of {@link #checkAutofocusAllowedWithPrediction(Tab)} for testing
+     * purposes.
+     */
+    public static @Nullable Boolean sAutofocusAllowedWithPredictionForTesting;
+
+    /**
+     * Overrides the result of {@link #checkAutofocusAllowedWithHardwareKeyboard()} for testing
+     * purposes.
+     */
+    public static @Nullable Boolean sIsHardwareKeyboardAttachedForTesting;
+
     private static final int AUTOFOCUS_PREDICTION_AVERAGE_KEYBOARD_HEIGHT_PERCENT = 42;
     private static final int AUTOFOCUS_PREDICTION_MAX_NTP_TEXT_HIDDEN_PERCENT = 25;
     private static final int AUTOFOCUS_PREDICTION_FREE_SPACE_THRESHOLD_PERCENT =
@@ -343,6 +355,9 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
 
     /** Checks if autofocus is allowed when a hardware keyboard is connected. */
     private boolean checkAutofocusAllowedWithHardwareKeyboard() {
+        if (sIsHardwareKeyboardAttachedForTesting != null) {
+            return sIsHardwareKeyboardAttachedForTesting;
+        }
         return UiUtils.isHardwareKeyboardAttached();
     }
 
@@ -351,6 +366,10 @@ public class IncognitoNtpOmniboxAutofocusManager implements TabModelObserver {
      * tab.
      */
     private boolean checkAutofocusAllowedWithPrediction(Tab tab) {
+        if (sAutofocusAllowedWithPredictionForTesting != null) {
+            return sAutofocusAllowedWithPredictionForTesting;
+        }
+
         if (tab.getView() == null) {
             return false;
         }
