@@ -187,7 +187,7 @@ public class SiteSettingsTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
+                    .setRevision(4)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 
@@ -4155,6 +4155,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
     public void renderRwsSingleWebsiteSettings() throws Exception {
         createStorageAccessExceptions();
         final SettingsActivity settingsActivity =

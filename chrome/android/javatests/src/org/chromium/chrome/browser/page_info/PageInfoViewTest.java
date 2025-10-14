@@ -290,8 +290,8 @@ public class PageInfoViewTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(8)
-                    .setDescription("Red interstitial color, icon, and string facelift")
+                    .setRevision(9)
+                    .setDescription("New string for granted precise location")
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_BUBBLES_PAGE_INFO)
                     .build();
 
@@ -783,6 +783,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Features.EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
     public void testShowPermissionsSubpage() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -813,7 +814,10 @@ public class PageInfoViewTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ContentFeatureList.ONE_TIME_PERMISSION)
+    @Features.EnableFeatures({
+        ContentFeatureList.ONE_TIME_PERMISSION,
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
+    })
     public void testShowPermissionsSubpageWithEphemeralGrantAndPersistentGrant()
             throws IOException {
         GURL url = new GURL(mTestServerRule.getServer().getURL("/"));
@@ -835,7 +839,8 @@ public class PageInfoViewTest {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
-        onView(withText("Location")).check(matches(hasSibling(withText("Allowed this time"))));
+        onView(withText("Location"))
+                .check(matches(hasSibling(withText("Allowed this time • Precise"))));
         onView(withText("Camera")).check(matches(hasSibling(withText("Allowed"))));
     }
 

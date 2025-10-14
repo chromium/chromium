@@ -172,7 +172,7 @@ public class SingleWebsiteSettingsTest {
                 new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
         GeolocationSetting blockSetting =
                 new GeolocationSetting(ContentSetting.BLOCK, ContentSetting.BLOCK);
-        runGeolocationTest(allowSetting, blockSetting, "Allowed", "Blocked");
+        runGeolocationTest(allowSetting, blockSetting, "Allowed • Precise", "Blocked");
     }
 
     @Test
@@ -184,6 +184,38 @@ public class SingleWebsiteSettingsTest {
         GeolocationSetting blockSetting =
                 new GeolocationSetting(ContentSetting.BLOCK, ContentSetting.BLOCK);
         runGeolocationTest(allowSetting, blockSetting, "Allowed • Approximate", "Blocked");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testOneTimePreciseGeolocationPermission() {
+        GeolocationSetting allowSetting =
+                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        GeolocationSetting askSetting =
+                new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
+
+        Website website =
+                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.ONE_TIME);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
+
+        // Check initial state
+        String preferenceKey =
+                SingleWebsiteSettings.getPreferenceKey(
+                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
+        Preference preference = websitePreferences.findPreference(preferenceKey);
+        assertNotNull("Geolocation Preference not found.", preference);
+        assertEquals("Allowed this time • Precise", preference.getSummary());
+        assertEquals(allowSetting, getGeolocationSetting(website));
+
+        // Delete one time permission.
+        onView(withId(R.id.image_view_widget)).perform(click());
+        assertNull(websitePreferences.findPreference(preferenceKey));
+        assertEquals(askSetting, getGeolocationSetting(website));
+
+        settingsActivity.finish();
     }
 
     @Test

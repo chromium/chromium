@@ -1254,15 +1254,15 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         preference.setOnPreferenceChangeListener(this);
         @ContentSettingsType.EnumType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
-        boolean isApproximateGeolocation =
-                contentType == ContentSettingsType.GEOLOCATION_WITH_OPTIONS
-                        && mHasApproximateLocationGrant;
         preference.setSummary(
                 isEmbargoed
                         ? getString(R.string.automatically_blocked)
                         : getString(
                                 ContentSettingsResources.getCategorySummary(
-                                        value, isOneTime, isApproximateGeolocation)));
+                                        contentType,
+                                        value,
+                                        isOneTime,
+                                        mHasApproximateLocationGrant)));
         if (preference instanceof ChromeImageViewPreference) {
             ChromeImageViewPreference oneTimePreference = (ChromeImageViewPreference) preference;
             oneTimePreference.setImageView(
@@ -1600,10 +1600,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         preference.setSummary(
                 getString(
                         ContentSettingsResources.getCategorySummary(
-                                permission,
-                                false,
-                                type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS
-                                        && mHasApproximateLocationGrant)));
+                                type, permission, false, mHasApproximateLocationGrant)));
         preference.setIcon(getContentSettingsIcon(type, permission));
 
         if (mWebsiteSettingsObserver != null) {

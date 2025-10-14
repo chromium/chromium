@@ -148,6 +148,12 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_APPROX_GEO_ALLOWED_THIS_TIME" desc="Summary text explaining that the approximate location permission is allowed ephemerally.">
     Allowed this time • Approximate
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PRECISE_GEO_ALLOWED" desc="Summary text explaining that the precise location permission is allowed.">
+    Allowed • Precise
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PRECISE_GEO_ALLOWED_THIS_TIME" desc="Summary text explaining that the precise location permission is allowed ephemerally.">
+    Allowed this time • Precise
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED_EXCEPT_THIRD_PARTY" desc="Summary text for when only third-party cookies are blocked.">
     Allowed, except third-party
   </message>

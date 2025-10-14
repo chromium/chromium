@@ -821,27 +821,41 @@ public class ContentSettingsResources {
     }
 
     public static int getCategorySummary(@ContentSetting int value, boolean isOneTime) {
-        return getCategorySummary(value, isOneTime, /* isApproximateGeolocation= */ false);
+        return getCategorySummary(
+                ContentSettingsType.DEFAULT,
+                value,
+                isOneTime,
+                /* isApproximateGeolocation= */ false);
     }
 
     /**
      * Returns the string resource id for a given ContentSetting to show with a permission category.
      *
+     * @param type the ContentSettingsType for which we want the resource.
      * @param value The ContentSetting for which we want the resource.
      * @param isOneTime Whether the content setting value has a OneTime session model.
      */
     public static int getCategorySummary(
-            @ContentSetting int value, boolean isOneTime, boolean isApproximateGeolocation) {
+            @ContentSettingsType.EnumType int type,
+            @ContentSetting int value,
+            boolean isOneTime,
+            boolean isApproximateGeolocation) {
         switch (value) {
             case ContentSetting.ALLOW:
-                if (isApproximateGeolocation) {
+                if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                    if (isApproximateGeolocation) {
+                        return isOneTime
+                                ? R.string.website_settings_category_approx_geo_allowed_this_time
+                                : R.string.website_settings_category_approx_geo_allowed;
+                    }
                     return isOneTime
-                            ? R.string.website_settings_category_approx_geo_allowed_this_time
-                            : R.string.website_settings_category_approx_geo_allowed;
+                            ? R.string.website_settings_category_precise_geo_allowed_this_time
+                            : R.string.website_settings_category_precise_geo_allowed;
                 }
                 return isOneTime
                         ? R.string.website_settings_category_allowed_this_time
                         : R.string.website_settings_category_allowed;
+
             case ContentSetting.BLOCK:
                 return R.string.website_settings_category_blocked;
             case ContentSetting.ASK:
