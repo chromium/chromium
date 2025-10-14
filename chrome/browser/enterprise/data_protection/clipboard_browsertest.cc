@@ -11,6 +11,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
+#include "chrome/browser/printing/print_test_utils.h"
+#include "chrome/browser/printing/test_print_preview_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -63,26 +66,31 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
         "/enterprise/data_protection/clipboard_test_page.html");
   }
 
-  void FocusWebContents() {
+  void FocusWebContents(content::WebContents* web_contents = nullptr) {
 #if BUILDFLAG(IS_MAC)
     content::HandleMissingKeyWindow();
 #endif
-    browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+    if (web_contents == nullptr) {
+      web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    }
+    web_contents->Focus();
     views::test::WaitForWidgetActive(
         BrowserView::GetBrowserViewForBrowser(browser())->GetWidget(), true);
   }
 
-  void WriteTextToClipboard(const std::string& text) {
+  void WriteTextToClipboard(const std::string& text,
+                            content::WebContents* web_contents = nullptr) {
     // Clear the clipboard before writing so that test cases where the write is
     // blocked don't read whatever data happened to have been in the system
     // clipboard at the time of the test running.
     ui::Clipboard::GetForCurrentThread()->Clear(
         ui::ClipboardBuffer::kCopyPaste);
 
-    FocusWebContents();
+    FocusWebContents(web_contents);
     ASSERT_TRUE(content::ExecJs(
-        rfh(), base::StringPrintf("navigator.clipboard.writeText(\"%s\");",
-                                  text.c_str())));
+        web_contents ? web_contents->GetPrimaryMainFrame() : rfh(),
+        base::StringPrintf("navigator.clipboard.writeText(\"%s\");",
+                           text.c_str())));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -353,5 +361,37 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   ASSERT_FALSE(helper.dialog());
   EXPECT_EQ(content::EvalJs(rfh(), "pasted_text"), "Allowed");
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
+                       ChromePrintReportsInitiator) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "sources": { "urls": ["http://127.0.0.1"] },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
+
+  printing::TestPrintPreviewObserver print_preview_observer(
+      /*wait_for_loaded=*/true);
+  printing::test::StartPrint(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  content::WebContents* preview_web_contents =
+      print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+
+  FocusWebContents(preview_web_contents);
+  WriteTextToClipboard("Blocked", preview_web_contents);
+
+  // Verify that nothing was written to the clipboard.
+  base::test::TestFuture<std::u16string> future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().empty());
+}
+#endif
 
 }  // namespace enterprise_data_protection

@@ -1538,6 +1538,14 @@ void ContentBrowserClient::ReportLegacyTechEvent(
     uint64_t column,
     std::optional<LegacyTechCookieIssueDetails> cookie_issue_details) {}
 
+std::optional<GURL>
+ContentBrowserClient::MaybeOverrideSourceURLForClipboardAccess(
+    RenderFrameHost* render_frame_host,
+    const GURL& original_url) {
+  DCHECK(render_frame_host);
+  return std::nullopt;
+}
+
 bool ContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
   return true;

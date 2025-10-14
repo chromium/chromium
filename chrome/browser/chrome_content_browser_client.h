@@ -914,6 +914,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsClipboardPasteAllowed(
       content::RenderFrameHost* render_frame_host) override;
 
+  std::optional<GURL> MaybeOverrideSourceURLForClipboardAccess(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& original_url) override;
+
   void IsClipboardPasteAllowedByPolicy(
       const content::ClipboardEndpoint& source,
       const content::ClipboardEndpoint& destination,

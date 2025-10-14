@@ -505,6 +505,7 @@
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -7455,6 +7456,23 @@ base::OnceClosure ChromeContentBrowserClient::FetchRemoteSms(
   return ::FetchRemoteSms(web_contents, origin_list, std::move(callback));
 }
 #endif
+
+std::optional<GURL>
+ChromeContentBrowserClient::MaybeOverrideSourceURLForClipboardAccess(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& original_url) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (render_frame_host &&
+      printing::PrintPreviewDialogController::IsPrintPreviewURL(original_url)) {
+    return std::make_optional(
+        printing::PrintPreviewDialogController::GetInstance()
+            ->GetInitiator(WebContents::FromRenderFrameHost(render_frame_host))
+            ->GetPrimaryMainFrame()
+            ->GetLastCommittedURL());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  return std::nullopt;
+}
 
 bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {

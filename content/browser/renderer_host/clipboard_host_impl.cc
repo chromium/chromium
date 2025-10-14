@@ -774,12 +774,21 @@ void ClipboardHostImpl::OnCopyAllowedResult(
 
 std::unique_ptr<ui::DataTransferEndpoint>
 ClipboardHostImpl::CreateDataEndpoint() {
-  if (!render_frame_host().GetMainFrame()->GetLastCommittedURL().is_valid()) {
+  auto* render_frame_host_main_frame = render_frame_host().GetMainFrame();
+  auto source_url = render_frame_host_main_frame->GetLastCommittedURL();
+  if (!source_url.is_valid()) {
     return nullptr;
   }
 
+  if (auto maybe_url = GetContentClient()
+                           ->browser()
+                           ->MaybeOverrideSourceURLForClipboardAccess(
+                               render_frame_host_main_frame, source_url)) {
+    source_url = *maybe_url;
+  }
+
   return std::make_unique<ui::DataTransferEndpoint>(
-      render_frame_host().GetMainFrame()->GetLastCommittedURL(),
+      source_url,
       ui::DataTransferEndpointOptions{
           .notify_if_restricted =
               render_frame_host().HasTransientUserActivation(),
