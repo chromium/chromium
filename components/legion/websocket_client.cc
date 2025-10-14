@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/http/http_request_headers.h"
 #include "net/storage_access_api/status.h"
@@ -54,19 +55,21 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 WebSocketClient::WebSocketClient(const GURL& service_url,
-                                 NetworkContextFactory network_context_factory,
-                                 OnResponseCallback on_response)
+                                 NetworkContextFactory network_context_factory)
     : service_url_(service_url),
       network_context_factory_(std::move(network_context_factory)),
-      on_response_(std::move(on_response)),
       readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
 
 WebSocketClient::~WebSocketClient() = default;
 
-void WebSocketClient::Write(base::span<const uint8_t> data) {
+void WebSocketClient::Send(legion::Request request,
+                             ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!response_callback_);
+  response_callback_ = std::move(callback);
+
   if (state_ == State::kDisconnected ||
-      data.size() > std::numeric_limits<uint32_t>::max()) {
+      request.size() > std::numeric_limits<uint32_t>::max()) {
     ClosePipe(SocketStatus::kError);
     return;
   }
@@ -76,12 +79,34 @@ void WebSocketClient::Write(base::span<const uint8_t> data) {
   }
 
   if (state_ != State::kOpen) {
-    pending_write_data_.emplace(data.begin(), data.end());
+    pending_write_data_.emplace(request.begin(), request.end());
     return;
   }
 
-  InternalWrite(data);
+  InternalWrite(request);
 }
+
+void WebSocketClient::OnResponse(SocketStatus status,
+                                 std::vector<uint8_t> data) {
+  if (!response_callback_) {
+    return;
+  }
+
+  if (status == SocketStatus::kOk) {
+    std::move(response_callback_).Run(base::ok(std::move(data)));
+    return;
+  }
+
+  Transport::TransportError transport_error;
+  if (status == SocketStatus::kSocketClosed) {
+    transport_error = Transport::TransportError::kSocketClosed;
+  } else {
+    transport_error = Transport::TransportError::kError;
+  }
+  std::move(response_callback_).Run(base::unexpected(transport_error));
+}
+
+
 
 void WebSocketClient::Connect() {
   // A disconnect handler is used so that the request can be completed in the
@@ -266,11 +291,12 @@ void WebSocketClient::ProcessCompletedResponse() {
   pending_read_data_index_ = 0;
   pending_read_finished_ = false;
 
-  // Call on_response_ asynchronously since this object may be destroyed during
+  // Call OnResponse asynchronously since this object may be destroyed during
   // the callback.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(on_response_, SocketStatus::kOk,
-                                std::move(pending_read_data)));
+      FROM_HERE,
+      base::BindOnce(&WebSocketClient::OnResponse, weak_ptr_factory_.GetWeakPtr(),
+                     SocketStatus::kOk, std::move(pending_read_data)));
 }
 
 void WebSocketClient::ClosePipe(SocketStatus status) {
@@ -284,10 +310,12 @@ void WebSocketClient::ClosePipe(SocketStatus status) {
   pending_read_finished_ = false;
   pending_read_data_.clear();
 
-  // Call on_response_ asynchronously since this object may be destroyed during
+  // Call OnResponse asynchronously since this object may be destroyed during
   // the callback.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(on_response_, status, std::vector<uint8_t>()));
+      FROM_HERE, base::BindOnce(&WebSocketClient::OnResponse,
+                                weak_ptr_factory_.GetWeakPtr(), status,
+                                std::vector<uint8_t>()));
 }
 
 void WebSocketClient::OnMojoPipeDisconnect() {
