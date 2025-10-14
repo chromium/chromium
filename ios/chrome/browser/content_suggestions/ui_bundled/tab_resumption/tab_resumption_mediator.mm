@@ -852,9 +852,13 @@ class TabResumptionMediatorProxy {
           if (!strongSelf || !strongSelf.delegate) {
             return;
           }
-          [strongSelf onPriceTrackedBookmarksReceived:subscriptions
-                                                  url:url
-                                                 item:item];
+          if (subscriptions.empty()) {
+            [strongSelf fetchImageForItem:item];
+          } else {
+            [strongSelf onPriceTrackedBookmarksReceived:subscriptions
+                                                    url:url
+                                                   item:item];
+          }
         }));
   } else {
     // Fetch the favicon.
