@@ -36,7 +36,7 @@ class MockSecureChannelClient : public SecureChannel {
   MOCK_METHOD(
       void,
       Write,
-      (Request request, SecureChannel::OnWriteCompletedCallback callback),
+      (Request request, SecureChannel::OnResponseReceivedCallback callback),
       (override));
 };
 

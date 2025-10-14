@@ -25,19 +25,17 @@ class Transport {
     kError,
   };
 
-  // Callback for when a send operation completes or the status of the
-  // connection changes.
-  using MessageCallback =
-      base::RepeatingCallback<void(base::expected<Response, TransportError>)>;
+  // Callback for when a response is received for a request.
+  using ResponseCallback =
+      base::OnceCallback<void(base::expected<Response, TransportError>)>;
 
   virtual ~Transport() = default;
 
   // Asynchronously sends data to the server.
   // The transport implementation will handle connection management.
-  // Results, responses, and status updates related to this send or the
-  // connection itself will be delivered via the MessageCallback
-  // that the concrete implementation was constructed with.
-  virtual void Send(Request request) = 0;
+  // The provided `callback` will be invoked with the corresponding response
+  // from the server. Only one request can be in-flight at a time.
+  virtual void Send(Request request, ResponseCallback callback) = 0;
 };
 
 }  // namespace legion

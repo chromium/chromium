@@ -6,11 +6,17 @@ import("//testing/test.gni")
 
 source_set("legion") {
   sources = [
-    "features.cc",
-    "features.h",
-    "secure_channel.h",
+    "attestation_handler.h",
     "client.cc",
     "client.h",
+    "features.cc",
+    "features.h",
+    "legion_common.h",
+    "oak_session.h",
+    "secure_channel.h",
+    "secure_channel_impl.cc",
+    "secure_channel_impl.h",
+    "transport.h",
     "websocket_client.cc",
     "websocket_client.h",
   ]
@@ -25,7 +31,10 @@ source_set("legion") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "client_unittest.cc" ]
+  sources = [
+    "client_unittest.cc",
+    "secure_channel_impl_unittest.cc",
+  ]
   deps = [
     ":legion",
     "//base",
