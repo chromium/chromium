@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
@@ -36,11 +37,13 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -85,6 +88,7 @@ public class AccessibilityState {
             "Accessibility.Android.UpdateAccessibilityServices.Runtime";
     private static final int MAX_RUNTIME_BUCKET = 16 * 1000; // 16,000 microseconds = 16ms.
     private static int sPollCount;
+    private static @Nullable AconfigFlaggedApiDelegate sAconfigFlaggedApiDelegate;
 
     /** Interface for the observers of the system's accessibility state. */
     public interface Listener {
@@ -253,6 +257,7 @@ public class AccessibilityState {
     private static boolean sDisplayInversionEnabled;
     private static boolean sHighContrastEnabled;
     private static int sFontWeightAdjustment;
+    private static int sTextCursorBlinkInterval;
     private static float sAnimatorDurationScale;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
@@ -489,6 +494,13 @@ public class AccessibilityState {
         return sAnimatorDurationScale;
     }
 
+    /** Returns the current TEXT_CURSOR_BLINK_INTERVAL from the users OS accessibility settings. */
+    @CalledByNative
+    public static int getTextCursorBlinkInterval() {
+        if (!sExtraStateInitialized) updateExtraState();
+        return sTextCursorBlinkInterval;
+    }
+
     /** Returns whether the user settings specify preferred reduced motion. */
     @CalledByNative
     public static boolean prefersReducedMotion() {
@@ -523,6 +535,19 @@ public class AccessibilityState {
                         ContextUtils.getApplicationContext().getContentResolver(),
                         Settings.Global.ANIMATOR_DURATION_SCALE,
                         1f);
+
+        if (sAconfigFlaggedApiDelegate == null) {
+            sAconfigFlaggedApiDelegate =
+                    ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+        }
+
+        if (sAconfigFlaggedApiDelegate != null && context instanceof Activity) {
+            ViewConfiguration viewConfiguration = ViewConfiguration.get(context);
+            sTextCursorBlinkInterval =
+                    sAconfigFlaggedApiDelegate.getTextCursorBlinkInterval(viewConfiguration);
+        } else {
+            sTextCursorBlinkInterval = 500;
+        }
 
         int highTextContrastEnabled =
                 Settings.Secure.getInt(
@@ -1038,7 +1063,7 @@ public class AccessibilityState {
         contentResolver.unregisterContentObserver(sTextContrastObserver);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             UiModeManager uiModeManager =
-                (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+                    (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
             if (uiModeManager != null && sContrastChangeListener != null) {
                 uiModeManager.removeContrastChangeListener(sContrastChangeListener);
             }
@@ -1053,6 +1078,7 @@ public class AccessibilityState {
         sHighContrastEnabled = false;
         sAnimatorDurationScale = 1f;
         sAccessibilityManager = null;
+        sTextCursorBlinkInterval = 500;
     }
 
     private static void processServicesChange() {
@@ -1065,6 +1091,7 @@ public class AccessibilityState {
         AccessibilityStateJni.get().onAnimatorDurationScaleChanged();
         AccessibilityStateJni.get().onDisplayInversionEnabledChanged(isDisplayInversionEnabled());
         AccessibilityStateJni.get().onContrastLevelChanged(isHighContrastEnabled());
+        AccessibilityStateJni.get().onTextCursorBlinkIntervalChanged(getTextCursorBlinkInterval());
     }
 
     private static class ServicesObserver extends ContentObserver {
@@ -1093,6 +1120,8 @@ public class AccessibilityState {
         void onDisplayInversionEnabledChanged(boolean enabled);
 
         void onContrastLevelChanged(boolean highContrastEnabled);
+
+        void onTextCursorBlinkIntervalChanged(int textCursorBlinkInterval);
 
         void recordAccessibilityServiceInfoHistograms();
     }
