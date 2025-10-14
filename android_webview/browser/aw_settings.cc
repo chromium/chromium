@@ -210,7 +210,8 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateAttributionBehaviorLocked(env, obj);
   UpdateSpeculativeLoadingAllowedLocked(env, obj);
   UpdateBackForwardCacheEnabledLocked(env, obj);
-  UpdateBackForwardCacheSettingsLocked(env, obj);
+  UpdateBackForwardCacheSettingsTimeoutLocked(env, obj);
+  UpdateBackForwardCacheSettingsMaxPagesInCacheLocked(env, obj);
   UpdateGeolocationEnabledLocked(env, obj);
 }
 
@@ -518,36 +519,36 @@ void AwSettings::UpdateBackForwardCacheEnabledLocked(
   }
 }
 
-void AwSettings::UpdateBackForwardCacheSettingsLocked(
+void AwSettings::UpdateBackForwardCacheSettingsTimeoutLocked(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  auto settings_obj = Java_AwSettings_getBackForwardCacheSettings(env, obj);
-  if (!settings_obj) {
-    return;
-  }
-  AwBackForwardCacheSettings settings =
-      AwBackForwardCacheSettings::FromJavaAwBackForwardCacheSettings(
-          env, settings_obj);
+  int timeout_in_seconds =
+      Java_AwSettings_getBackForwardCacheSettingsTimeout(env, obj);
   if (web_contents()) {
-    if (!aw_back_forward_cache_settings_.has_value() ||
-        settings.max_pages_in_cache() !=
-            aw_back_forward_cache_settings_->max_pages_in_cache()) {
+    if (timeout_in_seconds != back_forward_cache_timeout_in_seconds_) {
       web_contents()
           ->GetController()
           .GetBackForwardCache()
-          .SetEmbedderSuppliedCacheSize(settings.max_pages_in_cache());
-    }
-    if (!aw_back_forward_cache_settings_.has_value() ||
-        settings.timeout_in_seconds() !=
-            aw_back_forward_cache_settings_->timeout_in_seconds()) {
-      web_contents()
-          ->GetController()
-          .GetBackForwardCache()
-          .SetEmbedderSuppliedTimeToLive(
-              base::Seconds(settings.timeout_in_seconds()));
+          .SetEmbedderSuppliedTimeToLive(base::Seconds(timeout_in_seconds));
     }
   }
-  aw_back_forward_cache_settings_.emplace(settings);
+  back_forward_cache_timeout_in_seconds_ = timeout_in_seconds;
+}
+
+void AwSettings::UpdateBackForwardCacheSettingsMaxPagesInCacheLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  int max_pages_in_cache =
+      Java_AwSettings_getBackForwardCacheSettingsMaxPagesInCache(env, obj);
+  if (web_contents()) {
+    if (max_pages_in_cache != back_forward_cache_max_pages_in_cache_) {
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .SetEmbedderSuppliedCacheSize(max_pages_in_cache);
+    }
+  }
+  back_forward_cache_max_pages_in_cache_ = max_pages_in_cache;
 }
 
 void AwSettings::UpdateGeolocationEnabledLocked(

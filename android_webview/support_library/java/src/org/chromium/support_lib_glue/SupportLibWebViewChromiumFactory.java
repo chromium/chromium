@@ -129,6 +129,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.CUSTOM_REQUEST_HEADERS,
                 Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_V2 + Features.DEV_SUFFIX,
+                Features.BACK_FORWARD_CACHE_SETTINGS_V2 + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -304,6 +305,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.GET_ORIGIN_MATCHED_HEADERS,
         ApiCall.SET_RENDERER_LIBRARY_PREFETCH_MODE,
         ApiCall.GET_RENDERER_LIBRARY_PREFETCH_MODE,
+        ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_TIMEOUT_IN_SECONDS,
+        ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -467,7 +470,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int HAS_ORIGIN_MATCHED_HEADER = 152;
         int CLEAR_ORIGIN_MATCHED_HEADER = 153;
         int CLEAR_ALL_ORIGIN_MATCHED_HEADERS = 154;
-        int SET_BACK_FORWARD_CACHE_SETTINGS = 155;
+        @Deprecated int SET_BACK_FORWARD_CACHE_SETTINGS = 155;
         int GET_BACK_FORWARD_CACHE_SETTINGS = 156;
         int BACK_FORWARD_CACHE_SETTINGS_GET_TIMEOUT_IN_SECONDS = 157;
         int BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE = 158;
@@ -478,9 +481,11 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_ORIGIN_MATCHED_HEADERS = 163;
         int SET_RENDERER_LIBRARY_PREFETCH_MODE = 164;
         int GET_RENDERER_LIBRARY_PREFETCH_MODE = 165;
+        int BACK_FORWARD_CACHE_SETTINGS_SET_TIMEOUT_IN_SECONDS = 166;
+        int BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE = 167;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 166;
+        int COUNT = 168;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

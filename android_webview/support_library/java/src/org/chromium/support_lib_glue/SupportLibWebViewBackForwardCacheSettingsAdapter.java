@@ -6,7 +6,6 @@ package org.chromium.support_lib_glue;
 
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
-import org.chromium.android_webview.AwBackForwardCacheSettings;
 import org.chromium.android_webview.AwSupportLibIsomorphic;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
@@ -15,28 +14,22 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 /**
  * Adapter between WebViewBackForwardCacheSettingsBoundaryInterface and AwBackForwardCacheSettings.
- *
- * <p>Once created, instances are kept alive by the peer AwBackForwardCacheSettings.
  */
 @Lifetime.Temporary
 class SupportLibWebViewBackForwardCacheSettingsAdapter extends IsomorphicAdapter
         implements WebViewBackForwardCacheSettingsBoundaryInterface {
-    private final AwBackForwardCacheSettings mAwBackForwardCacheSettings;
 
-    SupportLibWebViewBackForwardCacheSettingsAdapter(AwBackForwardCacheSettings settings) {
-        mAwBackForwardCacheSettings = settings;
-    }
+    private final int mMaxPagesInCache;
+    private final int mTimeoutInSeconds;
 
-    SupportLibWebViewBackForwardCacheSettingsAdapter(
-            WebViewBackForwardCacheSettingsBoundaryInterface settings) {
-        mAwBackForwardCacheSettings =
-                new AwBackForwardCacheSettings(
-                        settings.getTimeoutInSeconds(), settings.getMaxPagesInCache());
+    SupportLibWebViewBackForwardCacheSettingsAdapter(int maxPagesInCache, int timeoutInSeconds) {
+        mMaxPagesInCache = maxPagesInCache;
+        mTimeoutInSeconds = timeoutInSeconds;
     }
 
     @Override
     AwSupportLibIsomorphic getPeeredObject() {
-        return mAwBackForwardCacheSettings;
+        return null;
     }
 
     @Override
@@ -45,7 +38,7 @@ class SupportLibWebViewBackForwardCacheSettingsAdapter extends IsomorphicAdapter
                 TraceEvent.scoped(
                         "WebView.APICall.AndroidX.BACK_FORWARD_CACHE_SETTINGS_GET_TIMEOUT_IN_SECONDS")) {
             recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_TIMEOUT_IN_SECONDS);
-            return mAwBackForwardCacheSettings.getTimeoutInSeconds();
+            return mTimeoutInSeconds;
         }
     }
 
@@ -55,7 +48,7 @@ class SupportLibWebViewBackForwardCacheSettingsAdapter extends IsomorphicAdapter
                 TraceEvent.scoped(
                         "WebView.APICall.AndroidX.BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE")) {
             recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE);
-            return mAwBackForwardCacheSettings.getMaxPagesInCache();
+            return mMaxPagesInCache;
         }
     }
 }
