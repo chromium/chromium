@@ -1408,11 +1408,12 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
   const int stage_type_index =
       blink_breakdown
           ? kBlinkBreakdownInitialIndex + static_cast<int>(*blink_breakdown)
-      : trees_in_viz_breakdown ? kTreesInVizBreakdownIndex +
-                                     static_cast<int>(*trees_in_viz_breakdown)
       : viz_breakdown
           ? kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown)
-          : static_cast<int>(stage_type);
+      : trees_in_viz_breakdown ? kTreesInVizBreakdownIndex +
+                                     static_cast<int>(*trees_in_viz_breakdown)
+                               : static_cast<int>(stage_type);
+
   const int histogram_index =
       stage_type_index * kFrameSequenceTrackerTypeCount +
       frame_sequence_tracker_type_index;
