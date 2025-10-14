@@ -134,12 +134,6 @@ void RecordOnDeviceLoadModelResult(
       "OptimizationGuide.ModelExecution.OnDeviceBaseModelLoadResult", result);
 }
 
-void RecordRankUpdateEviction(bool evicted) {
-  base::UmaHistogramBoolean(
-      "OptimizationGuide.ModelExecution.DidEvictBaseModelForRankUpdate",
-      evicted);
-}
-
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
@@ -463,7 +457,6 @@ void OnDeviceModelServiceController::BaseModelController::RequireAdaptationRank(
   }
   // Add the rank and reset all remotes to force a reload.
   supported_adaptation_ranks_.push_back(required_rank);
-  RecordRankUpdateEviction(remote_.is_bound());
   remote_.reset();
   for (auto& kv : model_adaptation_controllers_) {
     kv.second.ResetRemote();

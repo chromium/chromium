@@ -938,18 +938,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.ModelExecution.DidEvictBaseModelForRankUpdate"
-    enum="Boolean" expires_after="2025-10-26">
-  <owner>holte@chromium.org</owner>
-  <owner>cduvall@chromium.org</owner>
-  <summary>
-    Recorded when an adaptation config update is received that requires an
-    additional rank to be supported by the base model. The value indicates
-    whether a loaded model was evicted to force a reload.
-  </summary>
-</histogram>
-
-<histogram
     name="OptimizationGuide.ModelExecution.FeatureCurrentlyEnabledResult.{ModelExecutionFeature}"
     enum="FeatureCurrentlyEnabledResult" expires_after="2026-02-22">
   <owner>rajendrant@chromium.org</owner>

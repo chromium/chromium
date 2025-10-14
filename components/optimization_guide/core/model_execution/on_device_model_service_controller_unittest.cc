@@ -3967,15 +3967,10 @@ TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
 
   // The rank1 feature shouldn't require an eviction at any point, because
   // it's in the allowed_adaptation_ranks.
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecution.DidEvictBaseModelForRankUpdate", 0);
 
   // The rank2 feature "download" finishing should evict the model.
   controller().MaybeUpdateModelAdaptation(rank2_asset.feature(),
                                           rank2_asset.metadata());
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.DidEvictBaseModelForRankUpdate", true,
-      1);
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_EQ(get_current_ranks(), std::vector<uint32_t>());
 
