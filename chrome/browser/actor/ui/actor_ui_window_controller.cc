@@ -4,9 +4,12 @@
 
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
@@ -61,6 +64,18 @@ void ActorUiContentsContainerController::OnWebContentsAttached(
               base::BindRepeating(&ActorUiContentsContainerController::
                                       OnActorOverlayBackgroundChange,
                                   weak_ptr_factory_.GetWeakPtr())));
+
+      // Record user action if associated task isn't paused or stopped
+      actor::ActorKeyedService* actor_service =
+          actor::ActorKeyedService::Get(web_contents()->GetBrowserContext());
+      if (!actor_service) {
+        return;
+      }
+
+      // Log user action if associated task isn't paused or stopped
+      if (actor_service->IsActiveOnTab(*tab)) {
+        actor::ui::RecordActuatingTabWebContentsAttached();
+      }
 
       // Asynchronous post needed for the window to completely open and
       // activate before trying to show the UI components.

@@ -6,25 +6,43 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 
 namespace actor::ui {
 
-void LogHandoffButtonClick(ui::HandoffButtonState::ControlOwnership ownership) {
+constexpr char kActorUiPrefix[] = "Actor.Ui.";
+
+std::string GetActorUiMetricName(const char* suffix) {
+  return base::StrCat({kActorUiPrefix, suffix});
+}
+
+void LogHandoffButtonClick(HandoffButtonState::ControlOwnership ownership) {
   switch (ownership) {
-    case ui::HandoffButtonState::ControlOwnership::kActor:
+    case HandoffButtonState::ControlOwnership::kActor:
       base::RecordAction(base::UserMetricsAction(
-          "Actor.Ui.HandoffButton.TakeControl.Clicked"));
+          GetActorUiMetricName("HandoffButton.TakeControl.Clicked").c_str()));
       break;
-    case ui::HandoffButtonState::ControlOwnership::kClient:
+    case HandoffButtonState::ControlOwnership::kClient:
       base::RecordAction(base::UserMetricsAction(
-          "Actor.Ui.HandoffButton.GiveControl.Clicked"));
+          GetActorUiMetricName("HandoffButton.GiveControl.Clicked").c_str()));
       break;
   }
 }
 
 void LogTaskIconClick() {
-  base::RecordAction(base::UserMetricsAction("Actor.Ui.TaskIcon.Click"));
+  base::RecordAction(
+      base::UserMetricsAction(GetActorUiMetricName("TaskIcon.Click").c_str()));
+}
+
+void RecordActuatingTabWebContentsAttached() {
+  base::RecordAction(base::UserMetricsAction(
+      GetActorUiMetricName("ActuatingTabWebContentsAttached").c_str()));
+}
+
+void RecordTabControllerError(ActorUiTabControllerError error) {
+  base::UmaHistogramEnumeration(GetActorUiMetricName("TabController.Error"),
+                                error);
 }
 
 }  // namespace actor::ui

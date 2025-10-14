@@ -91,6 +91,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->
 
+<!-- LINT.IfChange(ActorUiTabControllerError) -->
+
+<enum name="ActorUiTabControllerError">
+  <int value="0" label="kRequestedForNonExistentTab"/>
+  <int value="1" label="kCallbackError"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_tab_controller_interface.h:ActorUiTabControllerError) -->
+
 <!-- LINT.IfChange(ComputedTargetResult) -->
 
 <enum name="ComputedTargetResult">

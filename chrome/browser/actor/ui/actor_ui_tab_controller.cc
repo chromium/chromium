@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
@@ -31,6 +32,7 @@ void LogAndIgnoreCallbackError(const std::string_view source_name,
                                bool result) {
   if (!result) {
     LOG(DFATAL) << "Unexpected error in callback from " << source_name;
+    RecordTabControllerError(ActorUiTabControllerError::kCallbackError);
   }
 }
 
@@ -162,6 +164,7 @@ void ActorUiTabController::SetActorTabIndicatorVisibility(
 }
 
 void ActorUiTabController::UpdateUi(UiResultCallback callback) {
+  // TODO(crbug.com/447593256): Propagate errors when component update fails.
   // TODO(crbug.com/428216197): Only notify relevant UI components on change and
   // decouple visibility + state changes into 2 functions.
   if (features::kGlicActorUiOverlay.Get()) {

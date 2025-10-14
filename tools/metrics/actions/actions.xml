@@ -3394,6 +3394,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Actor.Ui.ActuatingTabWebContentsAttached">
+  <owner>chrstne@google.com</owner>
+  <owner>kenok@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when the WebContents of an actuating tab is attached while the
+    associated ActorTask isn't paused or stopped.
+  </description>
+</action>
+
 <action name="Actor.Ui.HandoffButton.GiveControl.Clicked">
   <owner>chrstne@google.com</owner>
   <owner>kenok@google.com</owner>

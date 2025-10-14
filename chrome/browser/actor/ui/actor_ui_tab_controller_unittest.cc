@@ -301,7 +301,6 @@ TEST_F(ActorUiTabControllerTest,
 }
 
 TEST_F(ActorUiTabControllerTest, OnUiTabStateChange_CallsCallbacks) {
-  base::HistogramTester histogram_tester;
   HandoffButtonState handoff_button_state(
       true, HandoffButtonState::ControlOwnership::kActor);
   UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
@@ -379,5 +378,12 @@ TEST_F(ActorUiTabControllerTest, SetScrimBackgroundOnHoverChanges) {
   subscriptions.clear();
 }
 
+TEST_F(ActorUiTabControllerTest, From_RecordsHistogramWhenTabDoesNotExist) {
+  base::HistogramTester histogram_tester;
+  ActorUiTabControllerInterface::From(nullptr);
+  histogram_tester.ExpectBucketCount(
+      "Actor.Ui.TabController.Error",
+      ActorUiTabControllerError::kRequestedForNonExistentTab, 1);
+}
 }  // namespace
 }  // namespace actor::ui

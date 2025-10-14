@@ -4,9 +4,12 @@
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 
+#include "base/test/bind.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,11 +25,14 @@
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/animated_image_view.h"
+#include "url/gurl.h"
 
 namespace actor::ui {
 namespace {
@@ -81,6 +87,10 @@ class ActorUiTabControllerTest : public BaseActorUiTabControllerTest {
         {{features::kGlicActorUiTabIndicator.name, "true"}});
     InProcessBrowserTest::SetUp();
   }
+
+  ActorKeyedService* actor_keyed_service() {
+    return ActorKeyedService::Get(browser()->profile());
+  }
 };
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -123,6 +133,53 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
   EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kStopped);
 }
+
+IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
+                       RecordsUserActionOnActiveStatusChange) {
+  TaskId task_id = actor_keyed_service()->CreateTask();
+
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank?1"),
+                            ::ui::PageTransition::PAGE_TRANSITION_TYPED));
+  tabs::TabInterface* actuating_tab =
+      browser()->tab_strip_model()->GetActiveTab();
+
+  // Start acting on the tab.
+  base::RunLoop loop;
+  actor_keyed_service()->GetTask(task_id)->AddTab(
+      actuating_tab->GetHandle(),
+      base::BindLambdaForTesting([&](ActionResultPtr result) {
+        EXPECT_TRUE(IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  base::UserActionTester user_action_tester;
+  // Add a new tab and make actuating tab active to trigger the active status
+  // change.
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank?2"),
+                            ::ui::PageTransition::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfTab(actuating_tab));
+
+  // The UserAction should record the active status change.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Actor.Ui.ActuatingTabWebContentsAttached"));
+
+  // Stop acting on the tab.
+  actor_keyed_service()->GetTask(task_id)->RemoveTab(
+      actuating_tab->GetHandle());
+
+  // The UserAction shouldn't record any further changes if we reactivate the
+  // previously actuating tab.
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank?3"),
+                            ::ui::PageTransition::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfTab(actuating_tab));
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Actor.Ui.ActuatingTabWebContentsAttached"));
+}
+
 #else   // !BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
                        TabIndicatorNotVisibleWhenGlicIsDisabled) {
