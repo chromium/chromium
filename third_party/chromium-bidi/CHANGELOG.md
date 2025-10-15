@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.4.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.3.1...chromium-bidi-v10.4.0) (2025-10-15)
+
+
+### Features
+
+* allow for disabling durable messages ([#3848](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3848)) ([e6b28ac](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e6b28ac25990bb997074d4505415d1a8fc9e281a))
+
 ## [10.3.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.3.0...chromium-bidi-v10.3.1) (2025-10-15)
 
 
