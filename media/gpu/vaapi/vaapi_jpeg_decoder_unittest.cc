@@ -536,15 +536,15 @@ TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
   // TODO(andrescj): revisit this once crrev.com/c/1573718 lands.
   gfx::NativePixmapHandle handle = exported_pixmap->pixmap->ExportHandle();
   viz::SharedImageFormat si_format =
-      viz::GetSharedImageFormat(exported_pixmap->pixmap->GetBufferFormat());
+      exported_pixmap->pixmap->GetSharedImageFormat();
   ASSERT_EQ(si_format.NumberOfPlanes(), static_cast<int>(handle.planes.size()));
-  if (exported_pixmap->pixmap->GetBufferFormat() == gfx::BufferFormat::YVU_420)
-    std::swap(handle.planes[1], handle.planes[2]);
+  ASSERT_EQ(si_format, viz::MultiPlaneFormat::kYV12);
+  std::swap(handle.planes[1], handle.planes[2]);
 
   std::unique_ptr<vaapi_test_utils::DecodedImage> decoded_image =
       vaapi_test_utils::NativePixmapToDecodedImage(
           handle, exported_pixmap->pixmap->GetBufferSize(),
-          exported_pixmap->pixmap->GetBufferFormat());
+          gfx::BufferFormat::YVU_420);
   ASSERT_TRUE(decoded_image);
 
   // Decode the image using libyuv. Using |temp_*| for resource management.

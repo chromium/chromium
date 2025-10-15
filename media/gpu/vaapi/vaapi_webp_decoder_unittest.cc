@@ -126,8 +126,8 @@ TEST_P(VaapiWebPDecoderTest, DecodeAndExportAsNativePixmapDmaBuf) {
   EXPECT_FALSE(Decoder()->GetScopedVASurface());
   ASSERT_TRUE(exported_pixmap);
   ASSERT_TRUE(exported_pixmap->pixmap);
-  ASSERT_EQ(gfx::BufferFormat::YUV_420_BIPLANAR,
-            exported_pixmap->pixmap->GetBufferFormat());
+  ASSERT_EQ(viz::MultiPlaneFormat::kNV12,
+            exported_pixmap->pixmap->GetSharedImageFormat());
 
   // Make sure the visible area is contained by the surface.
   EXPECT_FALSE(exported_pixmap->va_surface_resolution.IsEmpty());
@@ -142,13 +142,13 @@ TEST_P(VaapiWebPDecoderTest, DecodeAndExportAsNativePixmapDmaBuf) {
 
   gfx::NativePixmapHandle handle = exported_pixmap->pixmap->ExportHandle();
   viz::SharedImageFormat si_format =
-      viz::GetSharedImageFormat(exported_pixmap->pixmap->GetBufferFormat());
+      exported_pixmap->pixmap->GetSharedImageFormat();
   ASSERT_EQ(si_format.NumberOfPlanes(), static_cast<int>(handle.planes.size()));
 
   std::unique_ptr<vaapi_test_utils::DecodedImage> hw_decoded_webp =
       vaapi_test_utils::NativePixmapToDecodedImage(
           handle, exported_pixmap->pixmap->GetBufferSize(),
-          exported_pixmap->pixmap->GetBufferFormat());
+          gfx::BufferFormat::YUV_420_BIPLANAR);
   ASSERT_TRUE(hw_decoded_webp);
 
   // Decode the image using libwebp and wrap the decoded image in a
