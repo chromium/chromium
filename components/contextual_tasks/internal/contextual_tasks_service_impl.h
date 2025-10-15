@@ -64,12 +64,13 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
                           const std::string& conversation_turn_id) override;
   void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
   void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
-  void AttachSessionIdToTask(const base::Uuid& task_id,
-                             SessionID session_id) override;
-  void DetachSessionIdFromTask(const base::Uuid& task_id,
-                               SessionID session_id) override;
-  std::optional<ContextualTask> GetMostRecentContextualTaskForSessionID(
-      SessionID session_id) const override;
+  void AssociateTabWithTask(const base::Uuid& task_id,
+                            SessionID tab_id) override;
+  void DisassociateTabFromTask(const base::Uuid& task_id,
+                               SessionID tab_id) override;
+  std::optional<ContextualTask> GetContextualTaskForTab(
+      SessionID tab_id) const override;
+  void ClearAllTabAssociationsForTask(const base::Uuid& task_id) override;
   void GetContextForTask(
       const base::Uuid& task_id,
       const std::set<ContextualTaskContextSource>& sources,
@@ -86,7 +87,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       const std::vector<Thread>& threads) override;
   void OnThreadRemovedRemotely(const std::vector<Thread>& threads) override;
 
-  size_t GetSessionIdMapSizeForTesting() const;
+  size_t GetTabIdMapSizeForTesting() const;
 
  private:
   void NotifyTaskAdded(const ContextualTask& task, TriggerSource source);
@@ -97,9 +98,9 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   // unique task ID for efficient lookup.
   std::map<base::Uuid, ContextualTask> tasks_;
 
-  // A map from session IDs to task IDs, used to find the most recent task
-  // associated with a given session.
-  std::map<SessionID, base::Uuid> session_to_task_;
+  // A map from tab IDs to task IDs, used to find the task associated with a
+  // given tab.
+  std::map<SessionID, base::Uuid> tab_to_task_;
 
   // The entry point for the decorator chain that enriches the context.
   std::unique_ptr<CompositeContextDecorator> composite_context_decorator_;

@@ -90,22 +90,27 @@ void ContextualTasksContextControllerImpl::GetContextForTask(
   service_->GetContextForTask(task_id, sources, std::move(context_callback));
 }
 
-void ContextualTasksContextControllerImpl::AttachSessionIdToTask(
+void ContextualTasksContextControllerImpl::AssociateTabWithTask(
     const base::Uuid& task_id,
-    SessionID session_id) {
-  service_->AttachSessionIdToTask(task_id, session_id);
+    SessionID tab_id) {
+  service_->AssociateTabWithTask(task_id, tab_id);
 }
 
-void ContextualTasksContextControllerImpl::DetachSessionIdFromTask(
+void ContextualTasksContextControllerImpl::DisassociateTabFromTask(
     const base::Uuid& task_id,
-    SessionID session_id) {
-  service_->DetachSessionIdFromTask(task_id, session_id);
+    SessionID tab_id) {
+  service_->DisassociateTabFromTask(task_id, tab_id);
 }
 
 std::optional<ContextualTask>
-ContextualTasksContextControllerImpl::GetMostRecentContextualTaskForSessionID(
-    SessionID session_id) const {
-  return service_->GetMostRecentContextualTaskForSessionID(session_id);
+ContextualTasksContextControllerImpl::GetContextualTaskForTab(
+    SessionID tab_id) const {
+  return service_->GetContextualTaskForTab(tab_id);
+}
+
+void ContextualTasksContextControllerImpl::ClearAllTabAssociationsForTask(
+    const base::Uuid& task_id) {
+  service_->ClearAllTabAssociationsForTask(task_id);
 }
 
 void ContextualTasksContextControllerImpl::AddObserver(Observer* observer) {

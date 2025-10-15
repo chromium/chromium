@@ -89,8 +89,8 @@ void ContextualTasksServiceImpl::DeleteTask(const base::Uuid& task_id) {
   }
 
   const auto& task = task_it->second;
-  for (const auto& session_id : task.GetSessionIds()) {
-    session_to_task_.erase(session_id);
+  for (const auto& tab_id : task.GetTabIds()) {
+    tab_to_task_.erase(tab_id);
   }
 
   tasks_.erase(task_it);
@@ -205,37 +205,54 @@ void ContextualTasksServiceImpl::DetachUrlFromTask(const base::Uuid& task_id,
   }
 }
 
-void ContextualTasksServiceImpl::AttachSessionIdToTask(
-    const base::Uuid& task_id,
-    SessionID session_id) {
+void ContextualTasksServiceImpl::AssociateTabWithTask(const base::Uuid& task_id,
+                                                      SessionID tab_id) {
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
-    session_to_task_[session_id] = task_id;
-    it->second.AddSessionId(session_id);
+    tab_to_task_[tab_id] = task_id;
+    it->second.AddTabId(tab_id);
   }
 }
 
-void ContextualTasksServiceImpl::DetachSessionIdFromTask(
+void ContextualTasksServiceImpl::DisassociateTabFromTask(
     const base::Uuid& task_id,
-    SessionID session_id) {
-  session_to_task_.erase(session_id);
+    SessionID tab_id) {
+  tab_to_task_.erase(tab_id);
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
-    it->second.RemoveSessionId(session_id);
+    it->second.RemoveTabId(tab_id);
   }
 }
 
 std::optional<ContextualTask>
-ContextualTasksServiceImpl::GetMostRecentContextualTaskForSessionID(
-    SessionID session_id) const {
-  auto it = session_to_task_.find(session_id);
-  if (it != session_to_task_.end()) {
+ContextualTasksServiceImpl::GetContextualTaskForTab(SessionID tab_id) const {
+  auto it = tab_to_task_.find(tab_id);
+  if (it != tab_to_task_.end()) {
     auto task_it = tasks_.find(it->second);
     if (task_it != tasks_.end()) {
       return task_it->second;
     }
   }
   return std::nullopt;
+}
+
+void ContextualTasksServiceImpl::ClearAllTabAssociationsForTask(
+    const base::Uuid& task_id) {
+  auto task_it = tasks_.find(task_id);
+  if (task_it == tasks_.end()) {
+    return;
+  }
+
+  // Get a copy of the tab IDs before clearing them from the task.
+  const std::vector<SessionID> tab_ids_to_remove = task_it->second.GetTabIds();
+
+  // Clear the tab IDs from the task object itself.
+  task_it->second.ClearTabIds();
+
+  // Remove each of the tab IDs from the main lookup map.
+  for (const auto& tab_id : tab_ids_to_remove) {
+    tab_to_task_.erase(tab_id);
+  }
 }
 
 void ContextualTasksServiceImpl::GetContextForTask(
@@ -279,8 +296,8 @@ void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
 void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
     const std::vector<Thread>& threads) {}
 
-size_t ContextualTasksServiceImpl::GetSessionIdMapSizeForTesting() const {
-  return session_to_task_.size();
+size_t ContextualTasksServiceImpl::GetTabIdMapSizeForTesting() const {
+  return tab_to_task_.size();
 }
 
 void ContextualTasksServiceImpl::NotifyTaskAdded(const ContextualTask& task,

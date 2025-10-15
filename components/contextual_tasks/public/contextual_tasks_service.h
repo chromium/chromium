@@ -114,13 +114,14 @@ class ContextualTasksService : public KeyedService {
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) = 0;
 
-  // Methods related to attaching tabs to tasks using their SessionID.
-  virtual void AttachSessionIdToTask(const base::Uuid& task_id,
-                                     SessionID session_id) = 0;
-  virtual void DetachSessionIdFromTask(const base::Uuid& task_id,
-                                       SessionID session_id) = 0;
-  virtual std::optional<ContextualTask> GetMostRecentContextualTaskForSessionID(
-      SessionID session_id) const = 0;
+  // Methods related to associating tabs to tasks using their tab ID.
+  virtual void AssociateTabWithTask(const base::Uuid& task_id,
+                                    SessionID tab_id) = 0;
+  virtual void DisassociateTabFromTask(const base::Uuid& task_id,
+                                       SessionID tab_id) = 0;
+  virtual std::optional<ContextualTask> GetContextualTaskForTab(
+      SessionID tab_id) const = 0;
+  virtual void ClearAllTabAssociationsForTask(const base::Uuid& task_id) = 0;
 
   // Add / remove observers.
   virtual void AddObserver(Observer* observer) = 0;

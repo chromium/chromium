@@ -51,12 +51,13 @@ class ContextualTasksContextControllerImpl
       const std::set<ContextualTaskContextSource>& sources,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) override;
-  void AttachSessionIdToTask(const base::Uuid& task_id,
-                             SessionID session_id) override;
-  void DetachSessionIdFromTask(const base::Uuid& task_id,
-                               SessionID session_id) override;
-  std::optional<ContextualTask> GetMostRecentContextualTaskForSessionID(
-      SessionID session_id) const override;
+  void AssociateTabWithTask(const base::Uuid& task_id,
+                            SessionID tab_id) override;
+  void DisassociateTabFromTask(const base::Uuid& task_id,
+                               SessionID tab_id) override;
+  std::optional<ContextualTask> GetContextualTaskForTab(
+      SessionID tab_id) const override;
+  void ClearAllTabAssociationsForTask(const base::Uuid& task_id) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>

@@ -94,15 +94,18 @@ class ContextualTask {
   // Removes a URL from the task.
   void RemoveUrl(const GURL& url);
 
-  // Returns the SessionIDs of tabs related to the task.
-  std::vector<SessionID> GetSessionIds() const;
+  // Returns the tab IDs of tabs related to the task.
+  std::vector<SessionID> GetTabIds() const;
 
-  // Adds a SessionID to the task. If the SessionID already exists, this method
+  // Adds a tab ID to the task. If the tab ID already exists, this method
   // does nothing.
-  void AddSessionId(SessionID session_id);
+  void AddTabId(SessionID tab_id);
 
-  // Removes a SessionID from the task.
-  void RemoveSessionId(SessionID session_id);
+  // Removes a tab ID from the task.
+  void RemoveTabId(SessionID tab_id);
+
+  // Clears all tab IDs associated with the task.
+  void ClearTabIds();
 
  private:
   // The unique ID of the task.
@@ -118,9 +121,9 @@ class ContextualTask {
   // URLs relevant to the task.
   std::vector<UrlResource> url_resources_;
 
-  // SessionIDs of tabs related to the task. SessionIDs are local to the
-  // device and are not synced.
-  std::vector<SessionID> session_ids_;
+  // Tab IDs of tabs related to the task. Tab IDs are local to the device and
+  // are not synced.
+  std::vector<SessionID> tab_ids_;
 };
 
 }  // namespace contextual_tasks

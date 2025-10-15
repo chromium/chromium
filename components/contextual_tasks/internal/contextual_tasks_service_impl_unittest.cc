@@ -212,9 +212,9 @@ TEST_F(ContextualTasksServiceImplTest, DeleteTask) {
   ContextualTask task = service_->CreateTask();
   EXPECT_EQ(1u, GetTasks().size());
 
-  SessionID session_id = SessionID::FromSerializedValue(1);
-  service_->AttachSessionIdToTask(task.GetTaskId(), session_id);
-  EXPECT_TRUE(service_->GetMostRecentContextualTaskForSessionID(session_id));
+  SessionID tab_id = SessionID::FromSerializedValue(1);
+  service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
+  EXPECT_TRUE(service_->GetContextualTaskForTab(tab_id));
 
   base::RunLoop run_loop;
   EXPECT_CALL(observer_,
@@ -224,7 +224,7 @@ TEST_F(ContextualTasksServiceImplTest, DeleteTask) {
   service_->DeleteTask(task.GetTaskId());
   run_loop.Run();
   EXPECT_TRUE(GetTasks().empty());
-  EXPECT_FALSE(service_->GetMostRecentContextualTaskForSessionID(session_id));
+  EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id));
   service_->RemoveObserver(&observer_);
 }
 
@@ -638,50 +638,68 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
   service_->RemoveObserver(&observer_);
 }
 
-TEST_F(ContextualTasksServiceImplTest, AttachSessionIdToTask) {
+TEST_F(ContextualTasksServiceImplTest, AssociateTabWithTask) {
   ContextualTask task = service_->CreateTask();
-  SessionID session_id = SessionID::FromSerializedValue(1);
+  SessionID tab_id = SessionID::FromSerializedValue(1);
 
-  service_->AttachSessionIdToTask(task.GetTaskId(), session_id);
+  service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
 
   std::optional<ContextualTask> recent_task =
-      service_->GetMostRecentContextualTaskForSessionID(session_id);
+      service_->GetContextualTaskForTab(tab_id);
   ASSERT_TRUE(recent_task.has_value());
   EXPECT_EQ(task.GetTaskId(), recent_task->GetTaskId());
 }
 
-TEST_F(ContextualTasksServiceImplTest, AttachSessionIdToInvalidTask) {
+TEST_F(ContextualTasksServiceImplTest, AssociateTabWithInvalidTask) {
   ContextualTask task = service_->CreateTask();
-  SessionID session_id = SessionID::FromSerializedValue(1);
+  SessionID tab_id = SessionID::FromSerializedValue(1);
   base::Uuid task_id = task.GetTaskId();
   service_->DeleteTask(task_id);
 
   // The session Id is not added, as the task is deleted.
-  service_->AttachSessionIdToTask(task_id, session_id);
+  service_->AssociateTabWithTask(task_id, tab_id);
 
   std::optional<ContextualTask> recent_task =
-      service_->GetMostRecentContextualTaskForSessionID(session_id);
-  ASSERT_FALSE(recent_task.has_value());
-  EXPECT_EQ(0u, service_->GetSessionIdMapSizeForTesting());
+      service_->GetContextualTaskForTab(tab_id);
+  EXPECT_EQ(0u, service_->GetTabIdMapSizeForTesting());
 }
 
-TEST_F(ContextualTasksServiceImplTest, DetachSessionIdFromTask) {
+TEST_F(ContextualTasksServiceImplTest, DisassociateTabFromTask) {
   ContextualTask task = service_->CreateTask();
-  SessionID session_id = SessionID::FromSerializedValue(1);
+  SessionID tab_id = SessionID::FromSerializedValue(1);
 
-  service_->AttachSessionIdToTask(task.GetTaskId(), session_id);
-  EXPECT_TRUE(service_->GetMostRecentContextualTaskForSessionID(session_id));
+  service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
+  EXPECT_TRUE(service_->GetContextualTaskForTab(tab_id));
 
-  service_->DetachSessionIdFromTask(task.GetTaskId(), session_id);
-  EXPECT_FALSE(service_->GetMostRecentContextualTaskForSessionID(session_id));
+  service_->DisassociateTabFromTask(task.GetTaskId(), tab_id);
+  EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id));
 }
 
-TEST_F(ContextualTasksServiceImplTest,
-       GetMostRecentContextualTaskForSessionID_NotFound) {
-  SessionID session_id = SessionID::FromSerializedValue(1);
+TEST_F(ContextualTasksServiceImplTest, GetContextualTaskForTab_NotFound) {
+  SessionID tab_id = SessionID::FromSerializedValue(1);
   std::optional<ContextualTask> recent_task =
-      service_->GetMostRecentContextualTaskForSessionID(session_id);
+      service_->GetContextualTaskForTab(tab_id);
   EXPECT_FALSE(recent_task.has_value());
+}
+
+TEST_F(ContextualTasksServiceImplTest, ClearAllTabAssociationsForTask) {
+  ContextualTask task = service_->CreateTask();
+  SessionID tab_id1 = SessionID::FromSerializedValue(1);
+  SessionID tab_id2 = SessionID::FromSerializedValue(2);
+
+  service_->AssociateTabWithTask(task.GetTaskId(), tab_id1);
+  service_->AssociateTabWithTask(task.GetTaskId(), tab_id2);
+
+  EXPECT_TRUE(service_->GetContextualTaskForTab(tab_id1).has_value());
+  EXPECT_TRUE(service_->GetContextualTaskForTab(tab_id2).has_value());
+  EXPECT_EQ(2u, GetTaskById(task.GetTaskId())->GetTabIds().size());
+
+  service_->ClearAllTabAssociationsForTask(task.GetTaskId());
+
+  EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id1).has_value());
+  EXPECT_FALSE(service_->GetContextualTaskForTab(tab_id2).has_value());
+  EXPECT_EQ(0u, GetTaskById(task.GetTaskId())->GetTabIds().size());
+  EXPECT_EQ(0u, service_->GetTabIdMapSizeForTesting());
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetContextForTask) {

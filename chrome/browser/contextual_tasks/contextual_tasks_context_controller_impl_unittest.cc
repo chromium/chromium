@@ -67,17 +67,21 @@ class MockContextualTasksService : public ContextualTasksService {
                    context_callback),
               (override));
   MOCK_METHOD(void,
-              AttachSessionIdToTask,
-              (const base::Uuid& task_id, SessionID session_id),
+              AssociateTabWithTask,
+              (const base::Uuid& task_id, SessionID tab_id),
               (override));
   MOCK_METHOD(void,
-              DetachSessionIdFromTask,
-              (const base::Uuid& task_id, SessionID session_id),
+              DisassociateTabFromTask,
+              (const base::Uuid& task_id, SessionID tab_id),
               (override));
   MOCK_METHOD(std::optional<ContextualTask>,
-              GetMostRecentContextualTaskForSessionID,
-              (SessionID session_id),
+              GetContextualTaskForTab,
+              (SessionID tab_id),
               (const, override));
+  MOCK_METHOD(void,
+              ClearAllTabAssociationsForTask,
+              (const base::Uuid& task_id),
+              (override));
 
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
@@ -239,41 +243,38 @@ TEST_F(ContextualTasksContextControllerImplTest, UpdateThreadTurnId) {
                                   conversation_turn_id);
 }
 
-TEST_F(ContextualTasksContextControllerImplTest, AttachSessionIdToTask) {
+TEST_F(ContextualTasksContextControllerImplTest, AssociateTabWithTask) {
   SessionID tab_session_id = SessionID::NewUnique();
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
 
-  EXPECT_CALL(mock_service_, AttachSessionIdToTask(task_id, tab_session_id))
+  EXPECT_CALL(mock_service_, AssociateTabWithTask(task_id, tab_session_id))
       .Times(1);
 
-  controller_->AttachSessionIdToTask(task_id, tab_session_id);
+  controller_->AssociateTabWithTask(task_id, tab_session_id);
 }
 
-TEST_F(ContextualTasksContextControllerImplTest,
-       GetMostRecentContextualTaskForSessionID) {
+TEST_F(ContextualTasksContextControllerImplTest, GetContextualTaskForTab) {
   SessionID tab_session_id = SessionID::NewUnique();
   ContextualTask expected_task(base::Uuid::GenerateRandomV4());
 
-  EXPECT_CALL(mock_service_,
-              GetMostRecentContextualTaskForSessionID(tab_session_id))
+  EXPECT_CALL(mock_service_, GetContextualTaskForTab(tab_session_id))
       .WillOnce(Return(std::make_optional(expected_task)));
 
   std::optional<ContextualTask> task =
-      controller_->GetMostRecentContextualTaskForSessionID(tab_session_id);
+      controller_->GetContextualTaskForTab(tab_session_id);
   ASSERT_TRUE(task.has_value());
   EXPECT_EQ(task->GetTaskId(), expected_task.GetTaskId());
 }
 
 TEST_F(ContextualTasksContextControllerImplTest,
-       GetMostRecentContextualTaskForSessionID_NotFound) {
+       GetContextualTaskForTab_NotFound) {
   SessionID tab_session_id = SessionID::NewUnique();
 
-  EXPECT_CALL(mock_service_,
-              GetMostRecentContextualTaskForSessionID(tab_session_id))
+  EXPECT_CALL(mock_service_, GetContextualTaskForTab(tab_session_id))
       .WillOnce(Return(std::nullopt));
 
   std::optional<ContextualTask> task =
-      controller_->GetMostRecentContextualTaskForSessionID(tab_session_id);
+      controller_->GetContextualTaskForTab(tab_session_id);
   EXPECT_FALSE(task.has_value());
 }
 
