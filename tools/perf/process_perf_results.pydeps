@@ -211,6 +211,7 @@
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_backend.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_backend_list.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_console.py
+../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_fetch.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_log.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_memory.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_page.py
