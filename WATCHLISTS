@@ -990,6 +990,9 @@
                   'chrome/android/javatests/src/org/chromium/chrome/browser/contextualsearch/|' \
                   'components/contextual_search/',
     },
+    'contextual_tasks': {
+      'filepath': 'contextual_tasks/',
+    },
     'core_timing': {
       'filepath': 'third_party/blink/renderer/core/timing/' \
     },
@@ -2899,6 +2902,7 @@
     'contextual_search': ['donnd+watch@chromium.org',
                           'twellington+watch@chromium.org',
                           'gangwu+watch@chromium.org'],
+    'contextual_tasks': ['sophiechang@chromium.org'],
     'core_timing': ['speed-metrics-dev+watchlist@chromium.org',
                     'core-timing-reviews@chromium.org'],
     'core_web_vitals_plm': ['speed-metrics-dev+watchlist@chromium.org',
