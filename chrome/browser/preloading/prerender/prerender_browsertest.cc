@@ -126,17 +126,8 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
 };
 
 // An end-to-end test of prerendering and activating.
-// TODO(crbug.com/452239399): Re-enable on android-14-tablet-landscape-arm64-rel.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate) {
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-  if (base::android::android_info::sdk_int() ==
-          base::android::android_info::SDK_VERSION_U &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
-    GTEST_SKIP()
-        << "Disabled on android-14-tablet-landscape-arm64-rel due to flakiness "
-           "(crbug.com/452239399)";
-  }
-#endif
+// TODO(crbug.com/452239399): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DISABLED_PrerenderAndActivate) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
