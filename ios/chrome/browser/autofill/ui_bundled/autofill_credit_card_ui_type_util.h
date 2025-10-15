@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_UI_TYPE_UTIL_H_
-#define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_UI_TYPE_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_CREDIT_CARD_UI_TYPE_UTIL_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_CREDIT_CARD_UI_TYPE_UTIL_H_
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -15,4 +15,4 @@
 autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
     AutofillCreditCardUIType type);
 
-#endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_UI_TYPE_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_CREDIT_CARD_UI_TYPE_UTIL_H_

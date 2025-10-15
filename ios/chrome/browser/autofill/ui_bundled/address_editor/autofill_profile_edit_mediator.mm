@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"

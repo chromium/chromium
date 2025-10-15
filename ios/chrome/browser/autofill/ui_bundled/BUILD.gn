@@ -137,8 +137,8 @@ source_set("util") {
 source_set("ui_type") {
   sources = [
     "autofill_credit_card_ui_type.h",
-    "autofill_ui_type_util.h",
-    "autofill_ui_type_util.mm",
+    "autofill_credit_card_ui_type_util.h",
+    "autofill_credit_card_ui_type_util.mm",
   ]
   deps = [
     "//base",
