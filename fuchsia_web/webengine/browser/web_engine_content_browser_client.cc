@@ -16,6 +16,7 @@
 #include "build/chromecast_buildflags.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/policy/content/safe_search_service.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
@@ -208,7 +209,6 @@ void WebEngineContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
     content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
-
   // TODO(crbug.com/40245916): Remove once supported in WebEngine.
   web_prefs->disable_webauthn = true;
 
@@ -351,9 +351,10 @@ void WebEngineContentBrowserClient::CreateThrottlesForNavigation(
       frame_impl->explicit_sites_filter_error_page();
 
   if (explicit_sites_filter_error_page) {
+    content::BrowserContext* context =
+        navigation_handle.GetWebContents()->GetBrowserContext();
     registry.AddThrottle(std::make_unique<SafeSitesNavigationThrottle>(
-        registry,
-        navigation_handle.GetWebContents()->GetBrowserContext(),
+        registry, SafeSearchFactory::GetForBrowserContext(context),
         *explicit_sites_filter_error_page));
   }
 }

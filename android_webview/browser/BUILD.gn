@@ -299,6 +299,7 @@ source_set("browser") {
     "//components/payments/content/android",
     "//components/permissions",
     "//components/policy:generated",
+    "//components/policy/content:safe_sites_navigation_throttle",
     "//components/policy/content/",
     "//components/policy/core/browser",
     "//components/pref_registry",

@@ -47,6 +47,8 @@
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
+#include "components/policy/content/policy_blocklist_service.h"
+#include "components/policy/content/safe_search_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
@@ -54,6 +56,7 @@
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
@@ -390,8 +393,12 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   PasswordManagerNavigationThrottle::MaybeCreateAndAdd(registry);
 
+  content::BrowserContext* context =
+      handle.GetWebContents()->GetBrowserContext();
   registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      registry, handle.GetWebContents()->GetBrowserContext()));
+      registry, user_prefs::UserPrefs::Get(context),
+      PolicyBlocklistFactory::GetForBrowserContext(context),
+      SafeSearchFactory::GetForBrowserContext(context)));
 
   // Before setting up SSL error detection, configure SSLErrorHandler to invoke
   // the relevant extension API whenever an SSL interstitial is shown.

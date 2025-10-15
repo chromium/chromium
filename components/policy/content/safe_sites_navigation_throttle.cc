@@ -18,10 +18,10 @@
 // object.
 SafeSitesNavigationThrottle::SafeSitesNavigationThrottle(
     content::NavigationThrottleRegistry& registry,
-    content::BrowserContext* context,
+    SafeSearchService* safe_search_service,
     std::optional<std::string_view> safe_sites_error_page_content)
     : Client(registry),
-      safe_search_service_(SafeSearchFactory::GetForBrowserContext(context)),
+      safe_search_service_(safe_search_service),
       safe_sites_error_page_content_(std::move(safe_sites_error_page_content)) {
   SetDeferredResultCallback(base::BindRepeating(
       &SafeSitesNavigationThrottle::OnDeferredResult, base::Unretained(this)));

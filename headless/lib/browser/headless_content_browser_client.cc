@@ -22,6 +22,9 @@
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
 #include "components/headless/command_handler/headless_command_switches.h"
+#include "components/policy/content/policy_blocklist_service.h"
+#include "components/policy/content/safe_search_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -504,8 +507,12 @@ void HeadlessContentBrowserClient::CreateThrottlesForNavigation(
   // (happens in tests).
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   if (browser_->GetPrefs()) {
+    content::BrowserContext* context =
+        handle.GetWebContents()->GetBrowserContext();
     registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-        registry, handle.GetWebContents()->GetBrowserContext()));
+        registry, user_prefs::UserPrefs::Get(context),
+        PolicyBlocklistFactory::GetForBrowserContext(context),
+        SafeSearchFactory::GetForBrowserContext(context)));
   }
 }
 #endif  // defined(HEADLESS_USE_POLICY)

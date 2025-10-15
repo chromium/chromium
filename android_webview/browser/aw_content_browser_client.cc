@@ -80,6 +80,8 @@
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
+#include "components/policy/content/policy_blocklist_service.h"
+#include "components/policy/content/safe_search_service.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
@@ -89,6 +91,7 @@
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
+#include "components/user_prefs/user_prefs.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -688,9 +691,12 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
   navigation_interception::InterceptNavigationDelegate::MaybeCreateAndAdd(
       registry, navigation_interception::SynchronyMode::kSync);
 
+  AwBrowserContext* context =
+      AwBrowserContext::FromWebContents(navigation_handle.GetWebContents());
   registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      registry,
-      AwBrowserContext::FromWebContents(navigation_handle.GetWebContents())));
+      registry, user_prefs::UserPrefs::Get(context),
+      PolicyBlocklistFactory::GetForBrowserContext(context),
+      SafeSearchFactory::GetForBrowserContext(context)));
 
   AwSafeBrowsingNavigationThrottle::MaybeCreateAndAdd(registry);
 

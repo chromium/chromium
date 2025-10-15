@@ -28,13 +28,16 @@ using SafeSitesFilterBehavior = policy::SafeSitesFilterBehavior;
 // which runs the callback from within the object.
 PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
     content::NavigationThrottleRegistry& registry,
-    content::BrowserContext* context)
+    PrefService* prefs,
+    PolicyBlocklistService* blocklist_service,
+    SafeSearchService* safe_search_service)
     : content::NavigationThrottle(registry),
-      blocklist_service_(PolicyBlocklistFactory::GetForBrowserContext(context)),
-      prefs_(user_prefs::UserPrefs::Get(context)) {
+      blocklist_service_(blocklist_service),
+      prefs_(prefs) {
   DCHECK(prefs_);
   auto safe_sites_navigation_throttle =
-      std::make_unique<SafeSitesNavigationThrottle>(registry, context);
+      std::make_unique<SafeSitesNavigationThrottle>(registry,
+                                                    safe_search_service);
   if (base::FeatureList::IsEnabled(
           policy::features::kPolicyBlocklistProceedUntilResponse)) {
     safe_sites_navigation_throttle_ =

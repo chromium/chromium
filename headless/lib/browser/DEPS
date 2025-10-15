@@ -6,6 +6,7 @@ include_rules = [
   "+components/printing/common",
   "+components/profile_metrics",
   "+components/security_state",
+  "+components/user_prefs",
   "+components/viz",
   "+printing",
   "+services/cert_verifier/public/mojom",

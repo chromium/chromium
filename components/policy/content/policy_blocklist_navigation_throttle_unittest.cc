@@ -117,7 +117,7 @@ class SafeSitesNavigationThrottleTest
  private:
   virtual void CreateAndAddThrottle(content::NavigationThrottleRegistry& registry) {
     registry.AddThrottle(std::make_unique<SafeSitesNavigationThrottle>(
-        registry, browser_context()));
+        registry, SafeSearchFactory::GetForBrowserContext(browser_context())));
   }
 
   safe_search_api::StubURLChecker stub_url_checker_;
@@ -131,7 +131,8 @@ class SafeSitesNavigationThrottleWithErrorContentTest
   // SafeSitesNavigationThrottleTest:
   void CreateAndAddThrottle(content::NavigationThrottleRegistry& registry) override {
     registry.AddThrottle(std::make_unique<SafeSitesNavigationThrottle>(
-        registry, browser_context(), kErrorPageContent));
+        registry, SafeSearchFactory::GetForBrowserContext(browser_context()),
+        kErrorPageContent));
   }
 };
 
@@ -163,7 +164,9 @@ class PolicyBlocklistNavigationThrottleTest
   // SafeSitesNavigationThrottleTest:
   void CreateAndAddThrottle(content::NavigationThrottleRegistry& registry) override {
     registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-        registry, browser_context()));
+        registry, user_prefs::UserPrefs::Get(browser_context()),
+        PolicyBlocklistFactory::GetForBrowserContext(browser_context()),
+        SafeSearchFactory::GetForBrowserContext(browser_context())));
   }
 
   void SetBlocklistUrlPattern(const std::string& pattern) {
