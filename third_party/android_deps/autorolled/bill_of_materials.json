@@ -137,7 +137,7 @@
     {
         "name": "collection-ktx",
         "group": "androidx.collection",
-        "version": "1.6.0-SNAPSHOT"
+        "version": "1.6.0-alpha01"
     },
     {
         "name": "animation",
@@ -1505,6 +1505,106 @@
         "version": "11.0.0_r3"
     },
     {
+        "name": "curtains",
+        "group": "com.squareup.curtains",
+        "version": "1.2.4"
+    },
+    {
+        "name": "leakcanary-android",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-android-core",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-android-instrumentation",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-android-test",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-android-utils",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-core",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-gc",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-object-watcher",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-object-watcher-android",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-object-watcher-android-androidx",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-object-watcher-android-core",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "leakcanary-test-core",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "plumber-android",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "plumber-android-core",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "shark",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "shark-android",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "shark-graph",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "shark-hprof",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
+        "name": "shark-log",
+        "group": "com.squareup.leakcanary",
+        "version": "3.0-alpha-8"
+    },
+    {
         "name": "moshi",
         "group": "com.squareup.moshi",
         "version": "1.13.0"
@@ -1712,7 +1812,7 @@
     {
         "name": "kotlin-stdlib-common",
         "group": "org.jetbrains.kotlin",
-        "version": "2.1.20"
+        "version": "2.0.20"
     },
     {
         "name": "kotlin-stdlib-jdk7",

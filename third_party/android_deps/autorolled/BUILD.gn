@@ -28,32 +28,37 @@ template("define_autorolled_targets") {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("com_google_guava_guava_java") {
-    jar_path = "autorolled/cipd/libs/com_google_guava_guava/guava.jar"
-    output_name = "com_google_guava_guava"
-    enable_bytecode_checks = false
-    deps = [
-      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-      "//third_party/android_deps:com_google_j2objc_j2objc_annotations_java",
-      "//third_party/android_deps:org_jspecify_jspecify_java",
-    ]
+  if (!defined(guava_android_target)) {
+    java_prebuilt("com_google_guava_guava_java") {
+      jar_path = "autorolled/cipd/libs/com_google_guava_guava/guava.jar"
+      output_name = "com_google_guava_guava"
+      supports_android = true
+      enable_bytecode_checks = false
 
-    jar_excluded_patterns = []
-    if (!enable_java_asserts) {
-      # Omit the file since we use our own copy.
-      jar_excluded_patterns += [ "com/google/common/base/Preconditions.class" ]
-      deps += [ "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ]
+      # Target is swapped out when internal code is enabled.
+      # Please depend on //third_party/android_deps:guava_java instead.
+      visibility = [ "//third_party/android_deps:*" ]
+      deps = [
+        "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+        "//third_party/android_deps:com_google_j2objc_j2objc_annotations_java",
+        "//third_party/android_deps:org_jspecify_jspecify_java",
+      ]
+
+      jar_excluded_patterns = []
+      if (!enable_java_asserts) {
+        # Omit the file since we use our own copy.
+        jar_excluded_patterns +=
+            [ "com/google/common/base/Preconditions.class" ]
+        deps += [ "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ]
+      }
+
+      # Dep needed to fix:
+      #   warning: unknown enum constant ReflectionSupport$Level.FULL
+      deps += [ ":com_google_j2objc_j2objc_annotations_java" ]
+
+      # Always bundle this part of guava in with the main target.
+      public_deps = [ ":com_google_guava_failureaccess_java" ]
     }
-
-    # Only allow android targets to depend on this if there is no internal alias.
-    supports_android = !defined(guava_android_java)
-
-    # Dep needed to fix:
-    #   warning: unknown enum constant ReflectionSupport$Level.FULL
-    deps += [ ":com_google_j2objc_j2objc_annotations_java" ]
-
-    # Always bundle this part of guava in with the main target.
-    public_deps = [ ":com_google_guava_failureaccess_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -98,7 +103,7 @@ template("define_autorolled_targets") {
     supports_android = true
     enable_bytecode_checks = false
 
-    # Please depend on //third_party/android_deps:guava_android_java instead.
+    # Please depend on //third_party/android_deps:guava_java instead.
     visibility = [ "//third_party/android_deps:*" ]
   }
 
@@ -270,7 +275,7 @@ template("define_autorolled_targets") {
           "//third_party/android_deps:google_android_datatransport_transport_api_java",
           "//third_party/android_deps:google_android_datatransport_transport_backend_cct_java",
           "//third_party/android_deps:google_android_datatransport_transport_runtime_java",
-          "//third_party/android_deps:guava_android_java",
+          "//third_party/android_deps:guava_java",
           "//third_party/androidx:androidx_appcompat_appcompat_java",
           "//third_party/androidx:androidx_collection_collection_java",
           "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
@@ -605,6 +610,36 @@ template("define_autorolled_targets") {
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt("com_squareup_leakcanary_leakcanary_android_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android/leakcanary-android.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_android/com_squareup_leakcanary_leakcanary_android.info"
+      enable_bytecode_checks = false
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_core_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_android_java",
+        "//third_party/android_deps:com_squareup_leakcanary_plumber_android_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt(
+        "com_squareup_leakcanary_leakcanary_android_instrumentation_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android_instrumentation/leakcanary-android-instrumentation.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_android_instrumentation/com_squareup_leakcanary_leakcanary_android_instrumentation.info"
+      enable_bytecode_checks = false
+      testonly = true
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_core_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_test_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_test_core_java",
+        "//third_party/android_deps:com_squareup_leakcanary_shark_android_java",
+        "//third_party/androidx:androidx_test_runner_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("com_squareup_okio_okio_jvm_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_okio_okio_jvm/okio-jvm.jar"
       output_name = "com_squareup_okio_okio_jvm"
@@ -621,7 +656,7 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
       testonly = true
       deps = [
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:io_grpc_grpc_api_java",
         "//third_party/android_deps:io_grpc_grpc_core_java",
       ]
@@ -637,7 +672,7 @@ template("define_autorolled_targets") {
       deps = [
         "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
         "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
       ]
     }
 
@@ -647,7 +682,7 @@ template("define_autorolled_targets") {
       info_path = "autorolled/committed/libs/io_grpc_grpc_binder/io_grpc_grpc_binder.info"
       enable_bytecode_checks = false
       deps = [
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:io_grpc_grpc_api_java",
         "//third_party/android_deps:io_grpc_grpc_core_java",
         "//third_party/androidx:androidx_annotation_annotation_java",
@@ -673,7 +708,7 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
       testonly = true
       deps = [
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:io_grpc_grpc_api_java",
         "//third_party/android_deps:io_grpc_grpc_core_java",
       ]
@@ -688,7 +723,7 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
       deps = [
         "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:io_grpc_grpc_api_java",
         "//third_party/android_deps:protobuf_lite_runtime_java",
       ]
@@ -703,7 +738,7 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
       deps = [
         "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:io_grpc_grpc_api_java",
         "//third_party/android_deps:org_codehaus_mojo_animal_sniffer_annotations_java",
       ]
@@ -736,7 +771,7 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
       testonly = true
       deps = [
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:io_grpc_grpc_api_java",
         "//third_party/android_deps:io_grpc_grpc_core_java",
         "//third_party/android_deps:org_codehaus_mojo_animal_sniffer_annotations_java",
@@ -1348,6 +1383,370 @@ template("define_autorolled_targets") {
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt("com_squareup_curtains_curtains_java") {
+      aar_path =
+          "autorolled/cipd/libs/com_squareup_curtains_curtains/curtains.aar"
+      info_path = "autorolled/committed/libs/com_squareup_curtains_curtains/com_squareup_curtains_curtains.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt(
+        "com_squareup_leakcanary_leakcanary_android_core_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android_core/leakcanary-android-core.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_android_core/com_squareup_leakcanary_leakcanary_android_core.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_utils_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_android_androidx_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
+        "//third_party/android_deps:com_squareup_leakcanary_shark_android_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt(
+        "com_squareup_leakcanary_leakcanary_android_test_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android_test/leakcanary-android-test.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_android_test/com_squareup_leakcanary_leakcanary_android_test.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      testonly = true
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_utils_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_core_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_test_core_java",
+        "//third_party/android_deps:com_squareup_leakcanary_shark_android_java",
+        "//third_party/androidx:androidx_test_runner_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt(
+        "com_squareup_leakcanary_leakcanary_android_utils_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android_utils/leakcanary-android-utils.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_android_utils/com_squareup_leakcanary_leakcanary_android_utils.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_core_java",
+        "//third_party/android_deps:com_squareup_leakcanary_shark_log_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_leakcanary_core_java") {
+      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_core/leakcanary-core.jar"
+      output_name = "com_squareup_leakcanary_leakcanary_core"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_gc_java",
+        "//third_party/android_deps:com_squareup_leakcanary_shark_java",
+        "//third_party/android_deps:com_squareup_okio_okio_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_leakcanary_gc_java") {
+      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_gc/leakcanary-gc.jar"
+      output_name = "com_squareup_leakcanary_leakcanary_gc"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_leakcanary_object_watcher_java") {
+      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher/leakcanary-object-watcher.jar"
+      output_name = "com_squareup_leakcanary_leakcanary_object_watcher"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_gc_java",
+        "//third_party/android_deps:com_squareup_leakcanary_shark_log_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt(
+        "com_squareup_leakcanary_leakcanary_object_watcher_android_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher_android/leakcanary-object-watcher-android.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_object_watcher_android/com_squareup_leakcanary_leakcanary_object_watcher_android.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt(
+        "com_squareup_leakcanary_leakcanary_object_watcher_android_androidx_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_androidx/leakcanary-object-watcher-android-androidx.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_androidx/com_squareup_leakcanary_leakcanary_object_watcher_android_androidx.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt(
+        "com_squareup_leakcanary_leakcanary_object_watcher_android_core_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_core/leakcanary-object-watcher-android-core.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_core/com_squareup_leakcanary_leakcanary_object_watcher_android_core.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_curtains_curtains_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_utils_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_object_watcher_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_leakcanary_test_core_java") {
+      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_test_core/leakcanary-test-core.jar"
+      output_name = "com_squareup_leakcanary_leakcanary_test_core"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      testonly = true
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_core_java",
+        "//third_party/android_deps:com_squareup_leakcanary_shark_java",
+        "//third_party/junit",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt("com_squareup_leakcanary_plumber_android_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_plumber_android/plumber-android.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_plumber_android/com_squareup_leakcanary_plumber_android.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_plumber_android_core_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt("com_squareup_leakcanary_plumber_android_core_java") {
+      aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_plumber_android_core/plumber-android-core.aar"
+      info_path = "autorolled/committed/libs/com_squareup_leakcanary_plumber_android_core/com_squareup_leakcanary_plumber_android_core.info"
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_curtains_curtains_java",
+        "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_utils_java",
+        "//third_party/android_deps:com_squareup_leakcanary_shark_log_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_shark_java") {
+      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark/shark.jar"
+      output_name = "com_squareup_leakcanary_shark"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_shark_graph_java",
+        "//third_party/android_deps:com_squareup_okio_okio_java",
+        "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_shark_android_java") {
+      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark_android/shark-android.jar"
+      output_name = "com_squareup_leakcanary_shark_android"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_shark_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_shark_graph_java") {
+      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark_graph/shark-graph.jar"
+      output_name = "com_squareup_leakcanary_shark_graph"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_shark_hprof_java",
+        "//third_party/android_deps:com_squareup_okio_okio_java",
+        "//third_party/androidx:androidx_collection_collection_ktx_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_shark_hprof_java") {
+      jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark_hprof/shark-hprof.jar"
+      output_name = "com_squareup_leakcanary_shark_hprof"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "//third_party/android_deps:com_squareup_leakcanary_shark_log_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    java_prebuilt("com_squareup_leakcanary_shark_log_java") {
+      jar_path =
+          "autorolled/cipd/libs/com_squareup_leakcanary_shark_log/shark-log.jar"
+      output_name = "com_squareup_leakcanary_shark_log"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("com_squareup_moshi_moshi_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_moshi_moshi/moshi.jar"
       output_name = "com_squareup_moshi_moshi"
@@ -1449,7 +1848,7 @@ template("define_autorolled_targets") {
         "//third_party/android_deps:com_google_android_annotations_java",
         "//third_party/android_deps:com_google_code_gson_gson_java",
         "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:io_grpc_grpc_api_java",
         "//third_party/android_deps:io_grpc_grpc_context_java",
         "//third_party/android_deps:io_perfmark_perfmark_api_java",
@@ -1681,7 +2080,7 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:org_robolectric_nativeruntime_dist_compat_java",
         "//third_party/android_deps:org_robolectric_shadowapi_java",
         "//third_party/android_deps:org_robolectric_utils_java",
@@ -1719,7 +2118,7 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:org_robolectric_annotations_java",
       ]
     }
@@ -1740,7 +2139,7 @@ template("define_autorolled_targets") {
       testonly = true
       deps = [
         "//third_party/android_deps:com_google_auto_value_auto_value_annotations_java",
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:org_robolectric_pluginapi_java",
         "//third_party/android_deps:org_robolectric_utils_java",
       ]
@@ -1762,7 +2161,7 @@ template("define_autorolled_targets") {
       testonly = true
       deps = [
         "//third_party/android_deps:com_google_auto_value_auto_value_annotations_java",
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:org_robolectric_pluginapi_java",
         "//third_party/android_deps:org_robolectric_utils_java",
       ]
@@ -1783,7 +2182,7 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:guava_java",
         "//third_party/android_deps:javax_annotation_javax_annotation_api_java",
         "//third_party/android_deps:javax_inject_javax_inject_java",
         "//third_party/android_deps:org_ow2_asm_asm_commons_java",

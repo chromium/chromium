@@ -41,7 +41,7 @@ versionCache['androidx.browser:browser'] = '1.10.0-SNAPSHOT'
 versionCache['androidx.cardview:cardview'] = '1.1.0-SNAPSHOT'
 versionCache['androidx.collection:collection'] = '1.6.0-alpha01'
 versionCache['androidx.collection:collection-jvm'] = '1.6.0-alpha01'
-versionCache['androidx.collection:collection-ktx'] = '1.6.0-SNAPSHOT'
+versionCache['androidx.collection:collection-ktx'] = '1.6.0-alpha01'
 versionCache['androidx.compose.animation:animation'] = '1.10.0-SNAPSHOT'
 versionCache['androidx.compose.animation:animation-android'] = '1.10.0-SNAPSHOT'
 versionCache['androidx.compose.animation:animation-core'] = '1.10.0-SNAPSHOT'
@@ -315,6 +315,26 @@ versionCache['com.google.testparameterinjector:test-parameter-injector'] = '1.18
 versionCache['com.googlecode.java-diff-utils:diffutils'] = '1.3.0'
 versionCache['com.ibm.icu:icu4j'] = '77.1'
 versionCache['com.jakewharton.android.repackaged:dalvik-dx'] = '11.0.0_r3'
+versionCache['com.squareup.curtains:curtains'] = '1.2.4'
+versionCache['com.squareup.leakcanary:leakcanary-android'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-android-core'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-android-instrumentation'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-android-test'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-android-utils'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-core'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-gc'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-object-watcher'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-object-watcher-android'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-object-watcher-android-androidx'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-object-watcher-android-core'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:leakcanary-test-core'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:plumber-android'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:plumber-android-core'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:shark'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:shark-android'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:shark-graph'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:shark-hprof'] = '3.0-alpha-8'
+versionCache['com.squareup.leakcanary:shark-log'] = '3.0-alpha-8'
 versionCache['com.squareup.moshi:moshi'] = '1.13.0'
 versionCache['com.squareup.okio:okio'] = '3.9.1'
 versionCache['com.squareup.okio:okio-jvm'] = '3.16.1'
@@ -356,7 +376,7 @@ versionCache['org.jetbrains.kotlin:kotlin-android-extensions-runtime'] = '1.9.22
 versionCache['org.jetbrains.kotlin:kotlin-bom'] = '1.8.22'
 versionCache['org.jetbrains.kotlin:kotlin-parcelize-runtime'] = '1.9.22'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib'] = '2.2.20'
-versionCache['org.jetbrains.kotlin:kotlin-stdlib-common'] = '2.1.20'
+versionCache['org.jetbrains.kotlin:kotlin-stdlib-common'] = '2.0.20'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib-jdk7'] = '1.9.0'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib-jdk8'] = '1.8.21'
 versionCache['org.jetbrains.kotlinx:atomicfu-jvm'] = '0.23.2'
@@ -409,10 +429,10 @@ repositories {
 
 dependencies {
     // Use testCompile to have requires_robolectric = true set on targets.
-    testCompileLatest "org.robolectric:robolectric:+"
+    testCompileLatest 'org.robolectric:robolectric:+'
 
-    compileLatest "com.google.guava:guava:+"
-    buildCompileLatest "com.google.guava:guava:+"
+    compileLatest 'com.google.guava:guava:+'
+    buildCompileLatest 'com.google.guava:guava:+'
 
     // Libraries from Google:
     compileLatest 'com.google.protobuf:protobuf-javalite:+'
@@ -431,50 +451,52 @@ dependencies {
 
     // A dependency of androidx.xr.runtime:runtime, but must be listed here in
     // order to be auto-rolled and not manually rolled.
-    compileLatest "com.google.ar:impress:+"
+    compileLatest 'com.google.ar:impress:+'
 
     // Play Services & Firebase
-    compileLatest "com.google.android.gms:play-services-auth-api-phone:+"
-    compileLatest "com.google.android.gms:play-services-auth-base:+"
-    compileLatest "com.google.android.gms:play-services-auth-blockstore:+"
-    compileLatest "com.google.android.gms:play-services-auth:+"
-    compileLatest "com.google.android.gms:play-services-base:+"
-    compileLatest "com.google.android.gms:play-services-basement:+"
-    compileLatest "com.google.android.gms:play-services-cast-framework:+"
-    compileLatest "com.google.android.gms:play-services-cast:+"
-    compileLatest "com.google.android.gms:play-services-fido:+"
-    compileLatest "com.google.android.gms:play-services-gcm:+"
-    compileLatest "com.google.android.gms:play-services-identity-credentials:+"
-    compileLatest "com.google.android.gms:play-services-iid:+"
-    compileLatest "com.google.android.gms:play-services-instantapps:+"
-    compileLatest "com.google.android.gms:play-services-location:+"
-    compileLatest "com.google.android.gms:play-services-tasks:+"
-    compileLatest "com.google.android.gms:play-services-vision-common:+"
-    compileLatest "com.google.android.gms:play-services-vision:+"
-    compileLatest "com.google.firebase:firebase-messaging:+"
+    compileLatest 'com.google.android.gms:play-services-auth-api-phone:+'
+    compileLatest 'com.google.android.gms:play-services-auth-base:+'
+    compileLatest 'com.google.android.gms:play-services-auth-blockstore:+'
+    compileLatest 'com.google.android.gms:play-services-auth:+'
+    compileLatest 'com.google.android.gms:play-services-base:+'
+    compileLatest 'com.google.android.gms:play-services-basement:+'
+    compileLatest 'com.google.android.gms:play-services-cast-framework:+'
+    compileLatest 'com.google.android.gms:play-services-cast:+'
+    compileLatest 'com.google.android.gms:play-services-fido:+'
+    compileLatest 'com.google.android.gms:play-services-gcm:+'
+    compileLatest 'com.google.android.gms:play-services-identity-credentials:+'
+    compileLatest 'com.google.android.gms:play-services-iid:+'
+    compileLatest 'com.google.android.gms:play-services-instantapps:+'
+    compileLatest 'com.google.android.gms:play-services-location:+'
+    compileLatest 'com.google.android.gms:play-services-tasks:+'
+    compileLatest 'com.google.android.gms:play-services-vision-common:+'
+    compileLatest 'com.google.android.gms:play-services-vision:+'
+    compileLatest 'com.google.firebase:firebase-messaging:+'
 
     // Other libraries
     compileLatest 'com.airbnb.android:lottie:+'
-    compileLatest "com.google.errorprone:error_prone_annotations:+"
-    compileLatest "org.jspecify:jspecify:+"
-    compileLatest "javax.inject:javax.inject:+"
+    compileLatest 'com.google.errorprone:error_prone_annotations:+'
+    compileLatest 'org.jspecify:jspecify:+'
+    compileLatest 'javax.inject:javax.inject:+'
     compileLatest 'javax.annotation:javax.annotation-api:+'
-    buildCompileLatest "org.ow2.asm:asm:+"
-    buildCompileLatest "org.ow2.asm:asm-commons:+"
+    compileLatest 'com.squareup.leakcanary:leakcanary-android:+'
+    androidTestCompileLatest 'com.squareup.leakcanary:leakcanary-android-instrumentation:+'
+    buildCompileLatest 'org.ow2.asm:asm:+'
+    buildCompileLatest 'org.ow2.asm:asm-commons:+'
     buildCompileLatest 'com.android.extensions.xr:extensions-xr:+'
 
     // Needed by internal targets
     compileLatest 'com.google.auto.service:auto-service-annotations:+'
-    compileLatest "com.google.code.findbugs:jsr305:+"
-    compileLatest "com.google.j2objc:j2objc-annotations:+"
-    compileLatest "com.squareup.okio:okio-jvm:+"
-    compileLatest "io.reactivex.rxjava2:rxandroid:+"
-    compileLatest "org.checkerframework:checker-qual:+"
-    compileLatest "org.checkerframework:checker-util:+"
-    compileLatest "org.codehaus.mojo:animal-sniffer-annotations:+"
-    compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-android:+"
-    compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+"
-    compileLatest "org.reactivestreams:reactive-streams:+"
+    compileLatest 'com.google.code.findbugs:jsr305:+'
+    compileLatest 'com.google.j2objc:j2objc-annotations:+'
+    compileLatest 'com.squareup.okio:okio-jvm:+'
+    compileLatest 'io.reactivex.rxjava2:rxandroid:+'
+    compileLatest 'org.checkerframework:checker-qual:+'
+    compileLatest 'org.checkerframework:checker-util:+'
+    compileLatest 'org.codehaus.mojo:animal-sniffer-annotations:+'
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-android:+'
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+'
+    compileLatest 'org.reactivestreams:reactive-streams:+'
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

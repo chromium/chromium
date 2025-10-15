@@ -1,0 +1,19 @@
+Name: LeakCanary shared test utils
+Short Name: leakcanary-test-core
+URL: https://repo.maven.apache.org/maven2/com/squareup/leakcanary/leakcanary-test-core/3.0-alpha-8/leakcanary-test-core-3.0-alpha-8.jar
+Version: 3.0-alpha-8
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+LeakCanary
+
+See also: https://github.com/square/leakcanary/
+
+
+Local Modifications:
+No modifications.
