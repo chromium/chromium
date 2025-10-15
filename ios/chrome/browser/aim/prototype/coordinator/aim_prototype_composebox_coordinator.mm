@@ -154,7 +154,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                          browser:self.browser
                    omniboxClient:std::move(omniboxClient)
              presentationContext:OmniboxPresentationContext::kAIMPrototype];
-  // TODO(crbug.com/355179721): Add omnibox focus delegate.
   _omniboxCoordinator.presenterDelegate = self.omniboxPopupPresenterDelegate;
   [_omniboxCoordinator start];
 

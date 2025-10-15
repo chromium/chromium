@@ -325,8 +325,6 @@
   BOOL followSteadyState =
       omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
   // Disable toolbar animations when focusing the omnibox on secondary toolbar.
-  // TODO(crbug.com/40275116): Add animation in OmniboxFocusOrchestrator if
-  // needed.
   BOOL animateTransition = _enableAnimationsForOmniboxFocus &&
                            (followSteadyState || _steadyStateOmniboxPosition ==
                                                      ToolbarType::kPrimary);

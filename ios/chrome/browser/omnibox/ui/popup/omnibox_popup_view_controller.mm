@@ -169,8 +169,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
 }
 
 - (void)loadView {
-  // TODO(crbug.com/40866206): Check why largeIconService not available in
-  // incognito.
   if (self.largeIconService) {
     _carouselAttributeProvider = [[FaviconAttributesProvider alloc]
         initWithFaviconSize:kMaxTileFaviconSize
@@ -1164,7 +1162,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
   return carouselItems;
 }
 
-// TODO(crbug.com/40866206): Move to a mediator.
 - (void)fetchFaviconForCarouselItem:(CarouselItem*)carouselItem {
   __weak OmniboxPopupCarouselCell* weakCell = self.carouselCell;
   __weak CarouselItem* weakItem = carouselItem;

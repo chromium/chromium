@@ -1322,8 +1322,6 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
   [self showResultsPageAnimated:!isStateRestoration];
 
-  // TODO(crbug.com/355179986): Implement omnibox navigation with
-  // omnibox_delegate.
   auto omniboxClient = std::make_unique<LensOmniboxClient>(
       profile, feature_engagement::TrackerFactory::GetForProfile(profile),
       /*web_provider=*/_resultMediator,
@@ -1336,7 +1334,6 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                    omniboxClient:std::move(omniboxClient)
              presentationContext:OmniboxPresentationContext::kLensOverlay];
 
-  // TODO(crbug.com/355179721): Add omnibox focus delegate.
   _omniboxCoordinator.presenterDelegate = _resultViewController;
   _omniboxCoordinator.searchOnlyUI = YES;
   [_omniboxCoordinator start];
