@@ -29,9 +29,9 @@ class VIEWS_EXPORT WidgetViewAXCache {
   ~WidgetViewAXCache();
 
   // Build the initial map of all ViewAccessibility instances in the tree
-  // rooted at `root_view_ax`. This should be called once, right after
-  // enablement of the WidgetAXManager.
-  void Initialize(ViewAccessibility& root_view_ax);
+  // rooted at `root_view_ax`. This may be called once for the root, and once
+  // for the full tree.
+  void Init(ViewAccessibility& root_view_ax, bool full_tree = true);
 
   ViewAccessibility* Get(ui::AXNodeID id) const;
   void Insert(ViewAccessibility* view_ax);

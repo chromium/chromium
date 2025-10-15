@@ -635,6 +635,11 @@ void Widget::InitAccessibility() {
   AddObserver(&root_view_->GetViewAccessibility());
 
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
+
+  // Must be called after `root_view_` is initialized.
+  if (ax_manager_) {
+    ax_manager_->Init();
+  }
 }
 
 void Widget::ShowEmojiPanel() {

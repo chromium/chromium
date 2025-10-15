@@ -17,6 +17,10 @@ WidgetAXManagerTestApi::WidgetAXManagerTestApi(WidgetAXManager* manager)
 
 WidgetAXManagerTestApi::~WidgetAXManagerTestApi() = default;
 
+void WidgetAXManagerTestApi::Enable() {
+  manager_->Enable();
+}
+
 const std::vector<WidgetAXManager::Event>&
 WidgetAXManagerTestApi::pending_events() const {
   return manager_->pending_events_;

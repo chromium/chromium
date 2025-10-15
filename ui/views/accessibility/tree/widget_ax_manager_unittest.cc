@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/views/accessibility/tree/widget_ax_manager_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/widget_test.h"
@@ -49,7 +50,8 @@ TEST_F(WidgetAXManagerTest, InitiallyDisabled) {
 }
 
 TEST_F(WidgetAXManagerTest, EnableSetsEnabled) {
-  manager()->Enable();
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
   EXPECT_TRUE(manager()->is_enabled());
 }
 
@@ -62,7 +64,7 @@ TEST_F(WidgetAXManagerTest, IsEnabledAfterAXModeAdded) {
   EXPECT_TRUE(manager()->is_enabled());
 }
 
-TEST_F(WidgetAXManagerTest, Enable_InitializesCacheWithRootAndSubtree) {
+TEST_F(WidgetAXManagerTest, Enable_SerializesSubtree) {
   WidgetAXManagerTestApi api(manager());
 
   View* root = widget()->GetRootView();
@@ -77,13 +79,14 @@ TEST_F(WidgetAXManagerTest, Enable_InitializesCacheWithRootAndSubtree) {
   auto& g1ax = g1->GetViewAccessibility();
   auto& g2ax = g2->GetViewAccessibility();
 
-  EXPECT_EQ(api.cache()->Get(rax.GetUniqueId()), nullptr);
+  EXPECT_EQ(api.cache()->Get(rax.GetUniqueId()),
+            &widget()->GetRootView()->GetViewAccessibility());
   EXPECT_EQ(api.cache()->Get(c1ax.GetUniqueId()), nullptr);
   EXPECT_EQ(api.cache()->Get(c2ax.GetUniqueId()), nullptr);
   EXPECT_EQ(api.cache()->Get(g1ax.GetUniqueId()), nullptr);
   EXPECT_EQ(api.cache()->Get(g2ax.GetUniqueId()), nullptr);
 
-  manager()->Enable();
+  api.Enable();
 
   EXPECT_EQ(api.cache()->Get(rax.GetUniqueId()), &rax);
   EXPECT_EQ(api.cache()->Get(c1ax.GetUniqueId()), &c1ax);
@@ -98,12 +101,96 @@ TEST_F(WidgetAXManagerTest, Enable_InitializesCacheWithRootAndSubtree) {
   EXPECT_FALSE(api.cache()->HasCachedChildren(&g2ax));
 }
 
-TEST_F(WidgetAXManagerTest, EnableInitializesBrowserAccessibilityManager) {
-  WidgetAXManagerTestApi test_api(manager());
+TEST_F(WidgetAXManagerTest, InitInitializesBasicAXTreeManagerWhenAXOff) {
+  WidgetAXManager manager(widget());
+  WidgetAXManagerTestApi api(&manager);
 
-  EXPECT_EQ(test_api.ax_tree_manager(), nullptr);
-  manager()->Enable();
-  EXPECT_NE(test_api.ax_tree_manager(), nullptr);
+  EXPECT_EQ(api.ax_tree_manager(), nullptr);
+  manager.Init();
+  EXPECT_NE(api.ax_tree_manager(), nullptr);
+
+  auto& rax = widget()->GetRootView()->GetViewAccessibility();
+  EXPECT_EQ(api.cache()->Get(rax.GetUniqueId()), &rax);
+  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->size(), 1);
+
+  EXPECT_EQ(api.ax_tree_manager()->GetRoot()->id(), rax.GetUniqueId());
+}
+
+TEST_F(WidgetAXManagerTest, InitInitializesFullyAXTreeManagerWhenAXOn) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAXManager manager(widget());
+  WidgetAXManagerTestApi api(&manager);
+
+  EXPECT_EQ(api.ax_tree_manager(), nullptr);
+  manager.Init();
+  EXPECT_TRUE(manager.is_enabled());
+  EXPECT_NE(api.ax_tree_manager(), nullptr);
+
+  api.WaitForNextSerialization();
+  EXPECT_GT(api.ax_tree_manager()->ax_tree()->size(), 1);
+}
+
+TEST_F(WidgetAXManagerTest, Init_DoesNotInitAXTreeManagerForNonTopLevel) {
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildNativeWidgetWithParent(
+          widget(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+
+  auto* child_mgr = child_widget->ax_manager();
+  WidgetAXManagerTestApi child_api(child_mgr);
+
+  ASSERT_FALSE(child_widget->is_top_level());
+
+  // Init() should not create an AXTreeManager on that child widget.
+  EXPECT_EQ(child_api.ax_tree_manager(), nullptr);
+  child_mgr->Init();
+  EXPECT_EQ(child_api.ax_tree_manager(), nullptr);
+
+  child_api.TearDown();
+  child_widget->CloseNow();
+  child_widget.reset();
+}
+
+TEST_F(WidgetAXManagerTest, ChildWidget_EnableSerializesFullTree) {
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildNativeWidgetWithParent(
+          widget(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  auto* child_mgr = child_widget->ax_manager();
+  child_mgr->Init();
+
+  WidgetAXManagerTestApi child_api(child_mgr);
+
+  View* child_root = child_widget->GetRootView();
+  auto* c1 = child_root->AddChildView(std::make_unique<View>());
+  auto* c2 = child_root->AddChildView(std::make_unique<View>());
+  auto* g1 = c1->AddChildView(std::make_unique<View>());
+  auto* g2 = c2->AddChildView(std::make_unique<View>());
+
+  EXPECT_EQ(child_api.ax_tree_manager(), nullptr);
+
+  ui::AXPlatform::GetInstance().NotifyModeAdded(ui::AXMode::kNativeAPIs);
+  child_api.WaitForNextSerialization();
+
+  EXPECT_TRUE(child_mgr->is_enabled());
+  EXPECT_NE(child_api.ax_tree_manager(), nullptr);
+
+  // Expect >1 because the whole subtree (root + descendants) should be
+  // serialized.
+  EXPECT_GT(child_api.ax_tree_manager()->ax_tree()->size(), 1);
+
+  // Spot-check that descendants made it into the tree.
+  auto id = [&](View* v) {
+    return static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
+  };
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(child_root)),
+            nullptr);
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(c1)), nullptr);
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(c2)), nullptr);
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(g1)), nullptr);
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(g2)), nullptr);
+
+  child_api.TearDown();
+  child_widget->CloseNow();
+  child_widget.reset();
 }
 
 TEST_F(WidgetAXManagerTest, InitParamsCreatesParentRelationship) {
@@ -192,7 +279,8 @@ TEST_F(WidgetAXManagerOffTest, CrashesWhenFlagOff) {
 
 TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   WidgetAXManagerTestApi api(manager());
-  manager()->Enable();
+  api.Enable();
+  api.WaitForNextSerialization();
 
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
@@ -237,7 +325,8 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
 
 TEST_F(WidgetAXManagerTest, OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
   WidgetAXManagerTestApi api(manager());
-  manager()->Enable();
+  api.Enable();
+  api.WaitForNextSerialization();
 
   // TODO(crbug.com/40672441): Uncomment this line once we serialize the full
   // tree on Enable().
@@ -280,7 +369,7 @@ TEST_F(WidgetAXManagerTest, OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
 
 TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
   WidgetAXManagerTestApi api(manager());
-  manager()->Enable();
+  api.Enable();
 
   auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
   api.WaitForNextSerialization();
@@ -312,7 +401,7 @@ TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
 
 TEST_F(WidgetAXManagerTest, OnDataChanged_CanScheduleAgainAfterSend) {
   WidgetAXManagerTestApi api(manager());
-  manager()->Enable();
+  api.Enable();
 
   auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
   api.WaitForNextSerialization();
@@ -352,18 +441,11 @@ TEST_F(WidgetAXManagerTest, UpdatesIgnoredWhenDisabled) {
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before);
 }
 
-// TODO: In a follow-up CL, this test should confirmt that only the root gets
-// serialized.
-TEST_F(WidgetAXManagerTest, SendPendingUpdate_NoAXTreeWhenDisabled) {
-  WidgetAXManagerTestApi api(manager());
-  EXPECT_EQ(api.ax_tree_manager(), nullptr);
-}
-
 TEST_F(WidgetAXManagerTest, SendPendingUpdate_SerializationOnEnable) {
   WidgetAXManagerTestApi api(manager());
 
   // On enable, the manager should serialize the root automatically.
-  manager()->Enable();
+  api.Enable();
 
   EXPECT_NE(api.ax_tree_manager(), nullptr);
   EXPECT_EQ(api.ax_tree_manager()->ax_tree()->root()->id(),
@@ -378,7 +460,7 @@ TEST_F(WidgetAXManagerTest,
        SendPendingUpdate_SerializationOnChildAddedAndRemoved) {
   WidgetAXManagerTestApi api(manager());
 
-  manager()->Enable();
+  api.Enable();
 
   EXPECT_EQ(api.ax_tree_manager()->ax_tree()->root()->id(),
             static_cast<int32_t>(
@@ -404,7 +486,7 @@ TEST_F(WidgetAXManagerTest,
 TEST_F(WidgetAXManagerTest, SendPendingUpdate_SendsSerializedUpdates) {
   WidgetAXManagerTestApi api(manager());
 
-  manager()->Enable();
+  api.Enable();
 
   // TODO(crbug.com/40672441): Uncomment this line once we serialize the full
   // tree on Enable(). api.WaitForNextSerialization();
@@ -427,7 +509,8 @@ TEST_F(WidgetAXManagerTest, SendPendingUpdate_SendsSerializedUpdates) {
 
 TEST_F(WidgetAXManagerTest, SendPendingUpdate_NoSerializeWhenNodeNotInTree) {
   WidgetAXManagerTestApi api(manager());
-  manager()->Enable();
+  api.Enable();
+  api.WaitForNextSerialization();
 
   // This view is not part of the widget.
   auto v = ViewAccessibility::Create(nullptr);
@@ -538,7 +621,8 @@ TEST_F(WidgetAXManagerTest, CanFireAccessibilityEvents) {
 }
 
 TEST_F(WidgetAXManagerTest, GetOrCreateAXNodeUniqueId) {
-  manager()->Enable();
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
 
   auto v = std::make_unique<View>();
   EXPECT_EQ(manager()->GetOrCreateAXNodeUniqueId(
@@ -558,7 +642,8 @@ TEST_F(WidgetAXManagerTest, GetOrCreateAXNodeUniqueId) {
 TEST_F(WidgetAXManagerTest, OnChildAddedAndRemoved_ReserializeOnParent) {
   WidgetAXManagerTestApi api(manager());
 
-  manager()->Enable();
+  api.Enable();
+  api.WaitForNextSerialization();
 
   auto child = ViewAccessibility::Create(nullptr);
   auto parent = ViewAccessibility::Create(nullptr);
@@ -581,7 +666,7 @@ TEST_F(WidgetAXManagerTest, OnChildAddedAndRemoved_ReserializeOnParent) {
 
 TEST_F(WidgetAXManagerTest, CacheTracksChildAddRemoveAfterEnable) {
   WidgetAXManagerTestApi api(manager());
-  manager()->Enable();
+  api.Enable();
 
   View* root = widget()->GetRootView();
 

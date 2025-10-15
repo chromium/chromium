@@ -13,8 +13,14 @@ namespace views {
 WidgetViewAXCache::WidgetViewAXCache() = default;
 WidgetViewAXCache::~WidgetViewAXCache() = default;
 
-void WidgetViewAXCache::Initialize(ViewAccessibility& root_view_ax) {
-  CHECK(node_map_.empty());
+void WidgetViewAXCache::Init(ViewAccessibility& root_view_ax, bool full_tree) {
+  CHECK_LE(node_map_.size(), 1u);
+  if (!full_tree) {
+    CHECK(node_map_.empty());
+    Insert(&root_view_ax);
+    return;
+  }
+
   std::queue<ViewAccessibility*> q;
   q.push(&root_view_ax);
 

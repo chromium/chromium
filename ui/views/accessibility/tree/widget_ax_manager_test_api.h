@@ -20,6 +20,8 @@ class WidgetAXManagerTestApi {
   explicit WidgetAXManagerTestApi(WidgetAXManager* manager);
   ~WidgetAXManagerTestApi();
 
+  void Enable();
+
   const std::vector<WidgetAXManager::Event>& pending_events() const;
   const absl::flat_hash_set<ui::AXNodeID>& pending_data_updates() const;
   bool processing_update_posted() const;

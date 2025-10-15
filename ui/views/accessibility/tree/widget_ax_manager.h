@@ -53,7 +53,10 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   WidgetAXManager& operator=(WidgetAXManager&&) = delete;
   ~WidgetAXManager() override;
 
-  void Enable();
+  // Initializes the manager if needed. Initialization cannot be done in the
+  // constructor because the widget's RootView isn't available yet. Must be
+  // called once.
+  void Init();
 
   bool is_enabled() const { return is_enabled_; }
 
@@ -110,6 +113,9 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
 
  private:
   friend class WidgetAXManagerTestApi;
+
+  void InitAXTreeManager();
+  void Enable();
 
   void SchedulePendingUpdate();
   void SendPendingUpdate();

@@ -88,7 +88,7 @@ TEST_F(WidgetViewAXCacheTest, ChildSnapshotIsStableUntilCleared) {
   EXPECT_EQ(cache().CachedChildAt(&parent->GetViewAccessibility(), 2), nullptr);
 }
 
-TEST_F(WidgetViewAXCacheTest, Initialize) {
+TEST_F(WidgetViewAXCacheTest, Init_RootOnly) {
   auto parent = std::make_unique<View>();
   auto* a = parent->AddChildView(std::make_unique<View>());
   auto* b = parent->AddChildView(std::make_unique<View>());
@@ -96,7 +96,59 @@ TEST_F(WidgetViewAXCacheTest, Initialize) {
   auto* b2 = b->AddChildView(std::make_unique<View>());
   auto excluded = std::make_unique<View>();
 
-  cache().Initialize(parent->GetViewAccessibility());
+  cache().Init(parent->GetViewAccessibility(), false /* full_tree */);
+  EXPECT_EQ(cache().Get(parent->GetViewAccessibility().GetUniqueId()),
+            &parent->GetViewAccessibility());
+  EXPECT_EQ(cache().Get(a->GetViewAccessibility().GetUniqueId()), nullptr);
+  EXPECT_EQ(cache().Get(b->GetViewAccessibility().GetUniqueId()), nullptr);
+  EXPECT_EQ(cache().Get(b1->GetViewAccessibility().GetUniqueId()), nullptr);
+  EXPECT_EQ(cache().Get(b2->GetViewAccessibility().GetUniqueId()), nullptr);
+  EXPECT_EQ(cache().Get(excluded->GetViewAccessibility().GetUniqueId()),
+            nullptr);
+}
+
+TEST_F(WidgetViewAXCacheTest, Init_FullTree) {
+  auto parent = std::make_unique<View>();
+  auto* a = parent->AddChildView(std::make_unique<View>());
+  auto* b = parent->AddChildView(std::make_unique<View>());
+  auto* b1 = b->AddChildView(std::make_unique<View>());
+  auto* b2 = b->AddChildView(std::make_unique<View>());
+  auto excluded = std::make_unique<View>();
+
+  cache().Init(parent->GetViewAccessibility());
+  EXPECT_EQ(cache().Get(parent->GetViewAccessibility().GetUniqueId()),
+            &parent->GetViewAccessibility());
+  EXPECT_EQ(cache().Get(a->GetViewAccessibility().GetUniqueId()),
+            &a->GetViewAccessibility());
+  EXPECT_EQ(cache().Get(b->GetViewAccessibility().GetUniqueId()),
+            &b->GetViewAccessibility());
+  EXPECT_EQ(cache().Get(b1->GetViewAccessibility().GetUniqueId()),
+            &b1->GetViewAccessibility());
+  EXPECT_EQ(cache().Get(b2->GetViewAccessibility().GetUniqueId()),
+            &b2->GetViewAccessibility());
+  EXPECT_EQ(cache().Get(excluded->GetViewAccessibility().GetUniqueId()),
+            nullptr);
+}
+
+TEST_F(WidgetViewAXCacheTest, Init_FirstRootOnlyThenFullTree) {
+  auto parent = std::make_unique<View>();
+  auto* a = parent->AddChildView(std::make_unique<View>());
+  auto* b = parent->AddChildView(std::make_unique<View>());
+  auto* b1 = b->AddChildView(std::make_unique<View>());
+  auto* b2 = b->AddChildView(std::make_unique<View>());
+  auto excluded = std::make_unique<View>();
+
+  cache().Init(parent->GetViewAccessibility(), false /* full_tree */);
+  EXPECT_EQ(cache().Get(parent->GetViewAccessibility().GetUniqueId()),
+            &parent->GetViewAccessibility());
+  EXPECT_EQ(cache().Get(a->GetViewAccessibility().GetUniqueId()), nullptr);
+  EXPECT_EQ(cache().Get(b->GetViewAccessibility().GetUniqueId()), nullptr);
+  EXPECT_EQ(cache().Get(b1->GetViewAccessibility().GetUniqueId()), nullptr);
+  EXPECT_EQ(cache().Get(b2->GetViewAccessibility().GetUniqueId()), nullptr);
+  EXPECT_EQ(cache().Get(excluded->GetViewAccessibility().GetUniqueId()),
+            nullptr);
+
+  cache().Init(parent->GetViewAccessibility());
   EXPECT_EQ(cache().Get(parent->GetViewAccessibility().GetUniqueId()),
             &parent->GetViewAccessibility());
   EXPECT_EQ(cache().Get(a->GetViewAccessibility().GetUniqueId()),
