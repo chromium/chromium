@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/capture_version.h"
 #include "media/base/limits.h"
@@ -1110,6 +1111,7 @@ void MediaStreamVideoTrack::SetContentHint(
 }
 
 void MediaStreamVideoTrack::StopAndNotify(base::OnceClosure callback) {
+  TRACE_EVENT("media", "MediaStreamVideoTrack::StopAndNotify");
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   if (source_) {
     source_->RemoveTrack(this, std::move(callback));

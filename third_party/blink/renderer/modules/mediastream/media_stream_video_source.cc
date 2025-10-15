@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/token.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
@@ -500,6 +501,7 @@ void MediaStreamVideoSource::StartFrameMonitoring() {
 
 void MediaStreamVideoSource::SetReadyState(
     WebMediaStreamSource::ReadyState state) {
+  TRACE_EVENT("media", "MediaStreamVideoSource::SetReadyState", "state", state);
   DVLOG(3) << "MediaStreamVideoSource::SetReadyState state " << state;
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (!Owner().IsNull())
