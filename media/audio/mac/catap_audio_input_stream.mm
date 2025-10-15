@@ -227,11 +227,28 @@ void ReportMismatchStatus(int total_callbacks_with_channel_count_mismatch,
       total_callbacks_with_frames_mismatch);
 }
 
+bool IsLoopbackDevice(const std::string& device_id) {
+  return device_id == AudioDeviceDescription::kLoopbackInputDeviceId ||
+         device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
+         device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast ||
+         device_id == AudioDeviceDescription::kLoopbackWithoutChromeId ||
+         device_id == AudioDeviceDescription::kLoopbackAllDevicesId;
+}
+
 // True if the capturer should be configured to only capture the default
 // device.
 bool IsDefaultOutputDeviceLoopback(const std::string& device_id) {
   return device_id != AudioDeviceDescription::kLoopbackAllDevicesId &&
          !base::FeatureList::IsEnabled(kMacCatapCaptureAllDevices);
+}
+
+bool ExcludeChromeLoopback(const std::string& device_id) {
+  return device_id == AudioDeviceDescription::kLoopbackWithoutChromeId;
+}
+
+bool MuteLocalPlaybackLoopback(const std::string& device_id) {
+  return device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
+         device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast;
 }
 
 // Returns Unique ID (UID) for default output device, or `nullopt` if
@@ -352,39 +369,51 @@ class PropertyListenerHelper {
 // TODO(crbug.com/415953612): Is this okay, or do we need to support this?
 constexpr float kMaxVolume = 0.0;
 
+CatapAudioInputStreamSource::Config::Config(const AudioParameters& params,
+                                            const std::string& device_id)
+    : output_channels(params.channels()),
+      sample_rate(params.sample_rate()),
+      frames_per_buffer(params.frames_per_buffer()),
+      capture_default_device(IsDefaultOutputDeviceLoopback(device_id)),
+      mute_local_device(MuteLocalPlaybackLoopback(device_id)),
+      exclude_chrome(ExcludeChromeLoopback(device_id)) {}
+
+std::string CatapAudioInputStreamSource::Config::AsHumanReadableString() const {
+  std::ostringstream s;
+  s << "output channels: " << output_channels
+    << ", sample_rate: " << sample_rate
+    << ", frames_per_buffer: " << frames_per_buffer
+    << ", capture_default_device: " << capture_default_device
+    << ", mute_local_device: " << mute_local_device
+    << ", exclude_chrome: " << exclude_chrome;
+  return s.str();
+}
+
 CatapAudioInputStreamSource::CatapAudioInputStreamSource(
     const raw_ptr<CatapApi> catap_api,
-    const AudioParameters& params,
-    const std::string& device_id,
+    const Config& config,
     const AudioManager::LogCallback log_callback,
     const raw_ptr<AudioPropertyChangeCallback> audio_property_change_callback)
     : catap_api_(catap_api),
-      params_(params),
+      config_(config),
       buffer_frames_duration_(
-          AudioTimestampHelper::FramesToTime(params_.frames_per_buffer(),
-                                             params_.sample_rate())),
-      glitch_helper_(params_.sample_rate(),
+          AudioTimestampHelper::FramesToTime(config_.frames_per_buffer,
+                                             config_.sample_rate)),
+      glitch_helper_(config_.sample_rate,
                      AudioGlitchInfo::Direction::kLoopback),
-      device_id_(device_id),
-      capture_default_device_(IsDefaultOutputDeviceLoopback(device_id_)),
       audio_bus_(
-          AudioBus::Create(params_.channels(), params_.frames_per_buffer())),
+          AudioBus::Create(config_.output_channels, config_.frames_per_buffer)),
       sink_(nullptr),
       log_callback_(std::move(log_callback)),
       audio_property_change_callback_(audio_property_change_callback) {
-  CHECK(device_id_ == AudioDeviceDescription::kLoopbackInputDeviceId ||
-        device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
-        device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast ||
-        device_id == AudioDeviceDescription::kLoopbackWithoutChromeId ||
-        device_id == AudioDeviceDescription::kLoopbackAllDevicesId);
   CHECK(!log_callback_.is_null());
   CHECK(catap_api_);
 
   // Only mono and stereo audio is supported.
-  CHECK(params_.channels() == 1 || params_.channels() == 2);
+  CHECK(config_.output_channels == 1 || config_.output_channels == 2);
 
-  SendLogMessage("%s({device_id=%s}, {params=[%s]})", __func__,
-                 device_id.c_str(), params.AsHumanReadableString().c_str());
+  SendLogMessage("%s({config=[%s]})", __func__,
+                 config_.AsHumanReadableString().c_str());
 }
 
 CatapAudioInputStreamSource::~CatapAudioInputStreamSource() {
@@ -399,7 +428,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
   TRACE_EVENT0("audio", "CatapAudioInputStreamSource::Open");
   base::ElapsedTimer timer;
 
-  SendLogMessage("%s => deviceId: %s", __func__, device_id_.c_str());
+  SendLogMessage("%s", __func__);
 
   if (is_device_open_) {
     ReportOpenStatus(OpenStatus::kErrorDeviceAlreadyOpen, timer.Elapsed());
@@ -408,7 +437,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
   }
 
   NSArray<NSNumber*>* process_audio_device_ids_to_exclude = @[];
-  if (device_id_ == AudioDeviceDescription::kLoopbackWithoutChromeId) {
+  if (config_.exclude_chrome) {
     // Get a list of all CoreAudio process device IDs that belong to the Chrome
     // audio service.
     pid_t chrome_audio_service_pid = getpid();
@@ -436,7 +465,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
     return AudioInputStream::OpenOutcome::kFailed;
   }
 
-  if (capture_default_device_) {
+  if (config_.capture_default_device) {
     if (!default_output_device_uid) {
       ReportOpenStatus(OpenStatus::kGetDefaultDeviceUidEmpty, timer.Elapsed());
       SendLogMessage("%s => Error getting UID for default output device",
@@ -448,13 +477,14 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
     tap_description_.stream = @(0);
   }
 
-  if (params_.channels() == 1) {
+  if (config_.output_channels == 1) {
     [tap_description_ setMono:YES];
   }
-  if (device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
-      device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast) {
-    // No audio is sent to the hardware (e.g, speakers) while the audio is
-    // captured.
+  if (config_.mute_local_device) {
+    // device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId ||
+    //   device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast) {
+    //  No audio is sent to the hardware (e.g, speakers) while the audio is
+    //  captured.
     [tap_description_ setMuteBehavior:CATapMuted];
   }
   [tap_description_ setName:@"ChromeAudioService"];
@@ -544,7 +574,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
   }
 
   property_listener_ = std::make_unique<PropertyListenerHelper>(
-      capture_default_device_, aggregate_device_id_,
+      config_.capture_default_device, aggregate_device_id_,
       base::BindRepeating(&CatapAudioInputStreamSource::ProcessPropertyChange,
                           weak_ptr_factory_.GetWeakPtr()),
       catap_api_);
@@ -625,7 +655,7 @@ void CatapAudioInputStreamSource::Stop() {
 void CatapAudioInputStreamSource::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStreamSource::Close");
-  SendLogMessage("%s => deviceId: %s", __func__, device_id_.c_str());
+  SendLogMessage("%s", __func__);
   // Check if stopped.
   CHECK(!sink_);
   base::ElapsedTimer timer;
@@ -707,7 +737,7 @@ void CatapAudioInputStreamSource::OnCatapSample(
   // the change and call OnError(). We have not seen such case, but it could
   // happen that one buffer is received with the wrong number of channels.
   constexpr int kMaxNumberOfWarningReports = 10;
-  if (static_cast<unsigned int>(params_.channels()) !=
+  if (static_cast<unsigned int>(config_.output_channels) !=
       input_buffer->mNumberChannels) {
     ++total_callbacks_with_channel_count_mismatch_;
     if (total_callbacks_with_channel_count_mismatch_ <
@@ -715,23 +745,23 @@ void CatapAudioInputStreamSource::OnCatapSample(
       DLOG(WARNING) << "CatapAudioInputStream::OnCatapSample: "
                        "input_buffer->mNumberChannels: "
                     << input_buffer->mNumberChannels
-                    << " does not match params_.channels(): "
-                    << params_.channels();
+                    << " does not match config_.output_channels: "
+                    << config_.output_channels;
     }
     return;
   }
-  if (frames != params_.frames_per_buffer()) {
+  if (frames != config_.frames_per_buffer) {
     ++total_callbacks_with_frames_mismatch_;
     if (total_callbacks_with_frames_mismatch_ < kMaxNumberOfWarningReports) {
       DLOG(WARNING) << "CatapAudioInputStream::OnCatapSample: "
                        "frames: "
-                    << frames << " does not match params_.frames_per_buffer(): "
-                    << params_.frames_per_buffer();
+                    << frames << " does not match config_.frames_per_buffer: "
+                    << config_.frames_per_buffer;
     }
     return;
   }
 
-  glitch_helper_.OnFramesReceived(*input_time, params_.frames_per_buffer());
+  glitch_helper_.OnFramesReceived(*input_time, config_.frames_per_buffer);
 
   audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data, frames);
   sink_->OnData(audio_bus_.get(), capture_time, kMaxVolume,
@@ -808,7 +838,7 @@ bool CatapAudioInputStreamSource::ConfigureSampleRateOfAggregateDevice() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Set sample rate.
   UInt32 property_size = sizeof(Float64);
-  Float64 sample_rate = params_.sample_rate();
+  Float64 sample_rate = config_.sample_rate;
   OSStatus result = catap_api_->AudioObjectSetPropertyData(
       aggregate_device_id_, &kSampleRateAddress, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, property_size, &sample_rate);
@@ -847,7 +877,7 @@ bool CatapAudioInputStreamSource::ConfigureFramesPerBufferOfAggregateDevice() {
       kAudioDevicePropertyBufferFrameSize, kAudioObjectPropertyScopeGlobal,
       kAudioObjectPropertyElementMain};
   UInt32 property_size = sizeof(UInt32);
-  UInt32 frames_per_buffer = params_.frames_per_buffer();
+  UInt32 frames_per_buffer = config_.frames_per_buffer;
   OSStatus result = catap_api_->AudioObjectSetPropertyData(
       aggregate_device_id_, &property_address, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, property_size, &frames_per_buffer);
@@ -939,7 +969,7 @@ void CatapAudioInputStreamSource::ProcessPropertyChange(
                    "property", "SampleRate");
       std::optional<double> sample_rate = GetSampleRateOfAggregateDevice();
       if (!sample_rate.has_value() ||
-          sample_rate.value() != params_.sample_rate()) {
+          sample_rate.value() != config_.sample_rate) {
         SendLogMessage("%s => Sample rate changed. New sample rate: %f",
                        __func__, sample_rate.value_or(-1.0));
         // Nothing should be done after the callback is called, because 'this'
@@ -992,7 +1022,9 @@ CatapAudioInputStream::CatapAudioInputStream(
       log_callback_(log_callback),
 
       get_default_device_uid_callback_(
-          std::move(get_default_device_uid_callback)) {}
+          std::move(get_default_device_uid_callback)) {
+  CHECK(IsLoopbackDevice(device_id_));
+}
 
 AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1001,8 +1033,9 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   if (source_) {
     return AudioInputStream::OpenOutcome::kAlreadyOpen;
   }
+  CatapAudioInputStreamSource::Config config(params_, device_id_);
   source_ = std::make_unique<CatapAudioInputStreamSource>(
-      catap_api_.get(), params_, device_id_, log_callback_, this);
+      catap_api_.get(), config, log_callback_, this);
 
   AudioInputStream::OpenOutcome outcome =
       source_->Open(get_default_device_uid_callback_.Run());
