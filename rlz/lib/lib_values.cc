@@ -159,13 +159,17 @@ bool GetAccessPointFromName(const char* name, AccessPoint* point) {
 
 const char* GetEventName(Event event) {
   switch (event) {
-  case INVALID_EVENT: return "";
-  case INSTALL:       return "I";
-  case SET_TO_GOOGLE: return "S";
-  case FIRST_SEARCH:  return "F";
-  case REPORT_RLS:    return "R";
-  case ACTIVATE:      return "A";
-  case LAST_EVENT:    ;  // Fall through.
+  case INVALID_EVENT:                    return "";
+  case INSTALL:                          return "I";
+  case SET_TO_GOOGLE:                    return "S";
+  case FIRST_SEARCH:                     return "F";
+  case REPORT_RLS:                       return "R";
+  case ACTIVATE:                         return "A";
+  case ENTERPRISE_ENROLLMENT:            return "X";
+  case ENTERPRISE_UNENROLLMENT:          return "Y";
+  case ENTERPRISE_ENROLLED_ACTIVATE:     return "Z";
+  case ENTERPRISE_ENROLLED_FIRST_SEARCH: return "W";
+  case LAST_EVENT:                       ;  // Fall through.
   }
 
   ASSERT_STRING("GetPointName: Unknown Event");

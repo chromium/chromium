@@ -408,14 +408,29 @@ const char kHomepageFirstSearch[] = "C2F";
 const char kAppListInstall[] = "C7I";
 const char kAppListSetToGoogle[] = "C7S";
 const char kAppListFirstSearch[] = "C7F";
+
+const char kEnterpriseEnrollment[] = "C1X";
+const char kEnterpriseUnenrollment[] = "C1Y";
+const char kEnterpriseEnrolledActivate[] = "C1Z";
+const char kEnterpriseEnrolledFirstSearch[] = "C1W";
 #elif BUILDFLAG(IS_IOS)
 const char kOmniboxInstallPhone[] = "CDI";
 const char kOmniboxSetToGooglePhone[] = "CDS";
 const char kOmniboxFirstSearchPhone[] = "CDF";
 
+const char kEnterpriseEnrollmentPhone[] = "CDX";
+const char kEnterpriseUnenrollmentPhone[] = "CDY";
+const char kEnterpriseEnrolledActivatePhone[] = "CDZ";
+const char kEnterpriseEnrolledFirstSearchPhone[] = "CDW";
+
 const char kOmniboxInstallTablet[] = "C9I";
 const char kOmniboxSetToGoogleTablet[] = "C9S";
 const char kOmniboxFirstSearchTablet[] = "C9F";
+
+const char kEnterpriseEnrollmentTablet[] = "C9X";
+const char kEnterpriseUnenrollmentTablet[] = "C9Y";
+const char kEnterpriseEnrolledActivateTablet[] = "C9Z";
+const char kEnterpriseEnrolledFirstSearchTablet[] = "C9W";
 #elif BUILDFLAG(IS_MAC)
 const char kOmniboxInstall[] = "C5I";
 const char kOmniboxSetToGoogle[] = "C5S";
@@ -428,6 +443,11 @@ const char kHomepageFirstSearch[] = "C6F";
 const char kAppListInstall[] = "C8I";
 const char kAppListSetToGoogle[] = "C8S";
 const char kAppListFirstSearch[] = "C8F";
+
+const char kEnterpriseEnrollment[] = "C5X";
+const char kEnterpriseUnenrollment[] = "C5Y";
+const char kEnterpriseEnrolledActivate[] = "C5Z";
+const char kEnterpriseEnrolledFirstSearch[] = "C5W";
 #elif BUILDFLAG(IS_CHROMEOS)
 const char kOmniboxInstall[] = "CAI";
 const char kOmniboxSetToGoogle[] = "CAS";
@@ -440,6 +460,11 @@ const char kHomepageFirstSearch[] = "CBF";
 const char kAppListInstall[] = "CCI";
 const char kAppListSetToGoogle[] = "CCS";
 const char kAppListFirstSearch[] = "CCF";
+
+const char kEnterpriseEnrollment[] = "CAX";
+const char kEnterpriseUnenrollment[] = "CAY";
+const char kEnterpriseEnrolledActivate[] = "CAZ";
+const char kEnterpriseEnrolledFirstSearch[] = "CAW";
 #endif
 
 const char* OmniboxInstall() {
@@ -472,6 +497,46 @@ const char* OmniboxFirstSearch() {
 #endif
 }
 
+const char* EnterpriseEnrollment() {
+#if BUILDFLAG(IS_IOS)
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+             ? kEnterpriseEnrollmentTablet
+             : kEnterpriseEnrollmentPhone;
+#else
+  return kEnterpriseEnrollment;
+#endif
+}
+
+const char* EnterpriseUnenrollment() {
+#if BUILDFLAG(IS_IOS)
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+             ? kEnterpriseUnenrollmentTablet
+             : kEnterpriseUnenrollmentPhone;
+#else
+  return kEnterpriseUnenrollment;
+#endif
+}
+
+const char* EnterpriseEnrolledActivate() {
+#if BUILDFLAG(IS_IOS)
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+             ? kEnterpriseEnrolledActivateTablet
+             : kEnterpriseEnrolledActivatePhone;
+#else
+  return kEnterpriseEnrolledActivate;
+#endif
+}
+
+const char* EnterpriseEnrolledFirstSearch() {
+#if BUILDFLAG(IS_IOS)
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+             ? kEnterpriseEnrolledFirstSearchTablet
+             : kEnterpriseEnrolledFirstSearchPhone;
+#else
+  return kEnterpriseEnrolledFirstSearch;
+#endif
+}
+
 const base::TimeDelta kDelay = base::Milliseconds(20);
 
 TEST_F(RlzLibTest, RecordProductEvent) {
@@ -479,6 +544,22 @@ TEST_F(RlzLibTest, RecordProductEvent) {
                                  rlz_lib::FIRST_SEARCH);
 
   ExpectEventRecorded(OmniboxFirstSearch(), true);
+}
+
+TEST_F(RlzLibTest, RecordEnterpriseEvents) {
+  task_environment_.RunUntilIdle();
+
+  RLZTracker::RecordEnterpriseEnrollment();
+  RLZTracker::RecordEnterpriseUnenrollment();
+  RLZTracker::RecordEnterpriseEnrolledActivate();
+  RLZTracker::RecordEnterpriseEnrolledFirstSearch();
+
+  task_environment_.RunUntilIdle();
+
+  ExpectEventRecorded(EnterpriseEnrollment(), true);
+  ExpectEventRecorded(EnterpriseUnenrollment(), true);
+  ExpectEventRecorded(EnterpriseEnrolledActivate(), true);
+  ExpectEventRecorded(EnterpriseEnrolledFirstSearch(), true);
 }
 
 TEST_F(RlzLibTest, QuickStopAfterStart) {
