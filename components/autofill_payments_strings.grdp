@@ -1453,6 +1453,9 @@
     <message name="IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_KLARNA_BOTTOM_SHEET" desc="Text for the payment option button in the BNPL select provider bottomsheet, explaining that users can pay monthly or in installments. It is specifically for Klarna options.">
         Pay in low monthly installments
     </message>
+    <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_BOTTOM_SHEET_FOOTNOTE_HIDE_OPTION" desc="Text shown in the footnote of the BNPL select provider bottom sheet, instructing users how to hide the pay later options.">
+      To hide pay later options, go to <ph name="BEGIN_LINK">&lt;link&gt;</ph>payment settings<ph name="END_LINK">&lt;/link&gt;</ph>
+    </message>
   </if>
 
   <!-- Mandatory Reauth related strings -->

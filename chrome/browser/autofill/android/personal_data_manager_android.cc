@@ -863,7 +863,7 @@ PersonalDataManagerAndroid::CreateJavaBnplIssuerContextFromNative(
           bnpl_issuer_context.issuer.issuer_id(),
           g_browser_process->GetApplicationLocale(), {bnpl_issuer_context});
 
-  return Java_BnplIssuerContext_createBnplIssuerContext(
+  return Java_BnplIssuerContext_Constructor(
       env, image_ids.first.value(), bnpl_issuer_context.issuer.GetDisplayName(),
       selection_text,
       bnpl_issuer_context.issuer.payment_instrument().has_value(),

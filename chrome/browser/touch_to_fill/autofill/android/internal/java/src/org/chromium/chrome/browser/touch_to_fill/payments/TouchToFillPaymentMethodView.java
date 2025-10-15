@@ -62,6 +62,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.PROGRESS_ICON:
                 case ItemType.BNPL_SELECTION_PROGRESS_HEADER:
                 case ItemType.ERROR_DESCRIPTION:
+                case ItemType.BNPL_SELECTION_PROGRESS_FOOTER:
                     return true;
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:

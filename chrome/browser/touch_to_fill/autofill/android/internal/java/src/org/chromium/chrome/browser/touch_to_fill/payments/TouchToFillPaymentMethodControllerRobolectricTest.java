@@ -41,6 +41,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.APPLY_LINK_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.FOOTER_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.ON_LINK_CLICK_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
@@ -72,6 +75,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
@@ -436,6 +440,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* reviewText= */ "Review text for affirm",
                     /* approveText= */ "Approve text for affirm",
                     /* linkText= */ new SpannableString("Link text for affirm"));
+    private static final String BNPL_FOOTER_TEXT =
+            "To hide pay later options, go to <link>payment settings</link>";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -829,25 +835,16 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         List.of(
                                 BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
                                 BNPL_ISSUER_CONTEXT_KLARNA_LINKED,
-                                BNPL_ISSUER_CONTEXT_ZIP_LINKED));
+                                BNPL_ISSUER_CONTEXT_ZIP_LINKED),
+                        BNPL_FOOTER_TEXT);
 
         assertThat(
                 mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
                 is(BNPL_ISSUER_SELECTION_SCREEN));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_content_description));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_half_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_full_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CLOSED_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_closed));
+        assertBnplIssuerSelectionScreenHasCorrectAccessibilityStrings(
+                mTouchToFillPaymentMethodModel);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
@@ -855,6 +852,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_AFFIRM_LINKED);
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_KLARNA_LINKED);
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_ZIP_LINKED);
+
+        assertFooterModelHasExpectedValues(itemList, BNPL_FOOTER_TEXT);
     }
 
     @Test
@@ -865,25 +864,16 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         List.of(
                                 BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED,
                                 BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED,
-                                BNPL_ISSUER_CONTEXT_ZIP_UNLINKED));
+                                BNPL_ISSUER_CONTEXT_ZIP_UNLINKED),
+                        BNPL_FOOTER_TEXT);
 
         assertThat(
                 mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
                 is(BNPL_ISSUER_SELECTION_SCREEN));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_content_description));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_half_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_full_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CLOSED_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_closed));
+        assertBnplIssuerSelectionScreenHasCorrectAccessibilityStrings(
+                mTouchToFillPaymentMethodModel);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
@@ -891,6 +881,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED);
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED);
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_ZIP_UNLINKED);
+
+        assertFooterModelHasExpectedValues(itemList, BNPL_FOOTER_TEXT);
     }
 
     @Test
@@ -901,25 +893,16 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         List.of(
                                 BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT,
                                 BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW,
-                                BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH));
+                                BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH),
+                        BNPL_FOOTER_TEXT);
 
         assertThat(
                 mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
                 is(BNPL_ISSUER_SELECTION_SCREEN));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_content_description));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_half_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_full_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CLOSED_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_closed));
+        assertBnplIssuerSelectionScreenHasCorrectAccessibilityStrings(
+                mTouchToFillPaymentMethodModel);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
@@ -930,6 +913,26 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 itemList, BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW);
         assertBnplIssuerContextModelMatches(
                 itemList, BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH);
+
+        assertFooterModelHasExpectedValues(itemList, BNPL_FOOTER_TEXT);
+    }
+
+    @Test
+    public void testShowBnplIssuerScreenFooterLinkOpensPaymentMethodSettings() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED), BNPL_FOOTER_TEXT);
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        Optional<PropertyModel> footerModel = getBnplSelectionProgressFooterModel(sheetItems);
+        assertTrue(footerModel.isPresent());
+
+        footerModel.get().get(ON_LINK_CLICK_CALLBACK).onResult(null);
+
+        verify(mDelegateMock).showPaymentMethodSettings();
     }
 
     @Test
@@ -1891,6 +1894,37 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(
                 bnplIssuerContextModel.get().get(APPLY_ISSUER_DEACTIVATED_STYLE),
                 is(!expectedBnplIssuerContext.isEligible()));
+    }
+
+    private void assertBnplIssuerSelectionScreenHasCorrectAccessibilityStrings(
+            PropertyModel model) {
+        assertThat(
+                model.get(SHEET_CONTENT_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_issuer_bottom_sheet_content_description));
+        assertThat(
+                model.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_issuer_bottom_sheet_half_height));
+        assertThat(
+                model.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_issuer_bottom_sheet_full_height));
+        assertThat(
+                model.get(SHEET_CLOSED_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_issuer_bottom_sheet_closed));
+    }
+
+    private static Optional<PropertyModel> getBnplSelectionProgressFooterModel(ModelList items) {
+        return StreamSupport.stream(items.spliterator(), false)
+                .filter(item -> item.type == BNPL_SELECTION_PROGRESS_FOOTER)
+                .findFirst()
+                .map(item -> item.model);
+    }
+
+    private void assertFooterModelHasExpectedValues(ModelList itemList, String expectedFooterText) {
+        Optional<PropertyModel> footerModel = getBnplSelectionProgressFooterModel(itemList);
+        assertTrue(footerModel.isPresent());
+        assertThat(footerModel.get().get(FOOTER_TEXT), is(expectedFooterText));
+        assertFalse(footerModel.get().get(APPLY_LINK_DEACTIVATED_STYLE));
+        assertNotNull(footerModel.get().get(ON_LINK_CLICK_CALLBACK));
     }
 
     private static Optional<PropertyModel> getIbanModelByAutofillName(ModelList items, Iban iban) {

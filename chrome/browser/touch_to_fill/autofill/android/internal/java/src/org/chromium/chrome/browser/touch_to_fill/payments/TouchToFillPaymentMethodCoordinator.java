@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
@@ -126,8 +127,8 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
-    public void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts) {
-        mMediator.showBnplIssuers(bnplIssuerContexts);
+    public void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts, String footerText) {
+        mMediator.showBnplIssuers(bnplIssuerContexts, footerText);
     }
 
     @Override
@@ -219,6 +220,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 BNPL_TOS_TEXT,
                 TouchToFillPaymentMethodViewBinder::createBnplIssuerTosItemView,
                 TouchToFillPaymentMethodViewBinder::bindBnplIssuerTosItemView);
+        adapter.registerType(
+                BNPL_SELECTION_PROGRESS_FOOTER,
+                TouchToFillPaymentMethodViewBinder::createBnplSelectionProgressFooterItemView,
+                TouchToFillPaymentMethodViewBinder::bindBnplSelectionProgressFooterView);
         view.setSheetItemListAdapter(adapter);
     }
 

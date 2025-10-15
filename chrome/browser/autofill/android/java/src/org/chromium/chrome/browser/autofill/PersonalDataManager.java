@@ -692,6 +692,8 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /** Autofill BNPL issuer context information. */
+    // TODO(crbug.com/430575808): Move `BnplIssuerContext` to its own separate
+    // file.
     public static class BnplIssuerContext {
         private final @DrawableRes int mIconId;
         private final String mDisplayName;
@@ -708,10 +710,11 @@ public class PersonalDataManager implements Destroyable {
          * @param isLinked Whether the issuer is linked or not.
          * @param isEligible Whether the issuer is eligible to be selected.
          */
+        @CalledByNative("BnplIssuerContext")
         public BnplIssuerContext(
                 @DrawableRes int iconId,
-                String displayName,
-                String selectionText,
+                @JniType("std::u16string") String displayName,
+                @JniType("std::u16string") String selectionText,
                 boolean isLinked,
                 boolean isEligible) {
             mIconId = iconId;
@@ -744,16 +747,6 @@ public class PersonalDataManager implements Destroyable {
         /** Returns {@code true} if the issuer is eligible to be selected. */
         public boolean isEligible() {
             return mIsEligible;
-        }
-
-        @CalledByNative("BnplIssuerContext")
-        private static BnplIssuerContext createBnplIssuerContext(
-                int iconId,
-                @JniType("std::u16string") String displayName,
-                @JniType("std::u16string") String selectionText,
-                boolean isLinked,
-                boolean isEligible) {
-            return new BnplIssuerContext(iconId, displayName, selectionText, isLinked, isEligible);
         }
     }
 

@@ -156,6 +156,12 @@ std::u16string GetBnplIssuerSelectionOptionText(
   NOTREACHED();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+std::u16string GetBnplUiFooterText() {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_BOTTOM_SHEET_FOOTNOTE_HIDE_OPTION);
+}
+#else
 TextWithLink GetBnplUiFooterText() {
   TextWithLink text_with_link;
   std::u16string payments_settings_link_text = l10n_util::GetStringUTF16(
@@ -170,6 +176,7 @@ TextWithLink GetBnplUiFooterText() {
 
   return text_with_link;
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool ShouldAppendBnplSuggestion(const AutofillClient& client,
                                 bool is_card_number_field_empty,

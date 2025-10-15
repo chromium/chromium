@@ -90,8 +90,14 @@ std::u16string GetBnplIssuerSelectionOptionText(
     const std::string& app_locale,
     base::span<const BnplIssuerContext> issuer_contexts);
 
-// Returns the footer text to be displayed in a BNPL flow.
+// Returns the footer text to be displayed in a BNPL flow. On Android, this
+// returns a string with <link> tags that will be processed by the Android UI.
+// On desktop, this returns a TextWithLink object.
+#if BUILDFLAG(IS_ANDROID)
+std::u16string GetBnplUiFooterText();
+#else
 TextWithLink GetBnplUiFooterText();
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Returns true if the user has initiated an action on the credit card form
 // and the current context meets all conditions for BNPL eligibility to be

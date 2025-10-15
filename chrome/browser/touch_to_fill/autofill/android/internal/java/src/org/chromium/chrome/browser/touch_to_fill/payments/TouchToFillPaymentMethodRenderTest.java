@@ -448,6 +448,8 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* reviewText= */ "Review text for affirm",
                     /* approveText= */ "Approve text for affirm",
                     /* linkText= */ new SpannableString("Link text for affirm"));
+    private static final String BNPL_FOOTER_TEXT =
+            "To hide pay later options, go to <link>payment settings</link>";
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillPaymentMethodCoordinator mCoordinator;
@@ -775,7 +777,8 @@ public class TouchToFillPaymentMethodRenderTest {
                             List.of(
                                     BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
                                     BNPL_ISSUER_CONTEXT_KLARNA_LINKED,
-                                    BNPL_ISSUER_CONTEXT_ZIP_LINKED));
+                                    BNPL_ISSUER_CONTEXT_ZIP_LINKED),
+                            BNPL_FOOTER_TEXT);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -794,7 +797,8 @@ public class TouchToFillPaymentMethodRenderTest {
                             List.of(
                                     BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED,
                                     BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED,
-                                    BNPL_ISSUER_CONTEXT_ZIP_UNLINKED));
+                                    BNPL_ISSUER_CONTEXT_ZIP_UNLINKED),
+                            BNPL_FOOTER_TEXT);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

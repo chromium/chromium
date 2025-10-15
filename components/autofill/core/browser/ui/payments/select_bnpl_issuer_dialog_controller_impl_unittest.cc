@@ -74,10 +74,15 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, GetSelectionOptionText) {
           .empty());
 }
 
+// This test checks the `TextWithLink` returned from the `GetLinkText()` method.
+// On Android, `GetLinkText()` does not return a `TextWithLink` so this test is
+// not applicable.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SelectBnplIssuerDialogControllerImplTest, GetLinkText) {
   InitController();
 
   EXPECT_FALSE(controller_->GetLinkText().text.empty());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill::payments

@@ -11,6 +11,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_SELECTION_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.NON_TRANSFORMING_BNPL_ISSUER_CONTEXT_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.APPLY_LINK_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.FOOTER_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.ON_LINK_CLICK_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
@@ -48,6 +51,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
@@ -100,6 +104,7 @@ import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvi
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodComponent.Delegate;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ErrorDescriptionProperties;
@@ -545,11 +550,13 @@ class TouchToFillPaymentMethodMediator {
      * <p>This method shows a bottom sheet listing the provided BNPL issuers.
      *
      * @param bnplIssuerContexts A list of {@link BnplIssuerContext} to be displayed.
+     * @param footerText The text to be displayed on the footer.
      */
-    public void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts) {
+    public void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts, String footerText) {
         mInputProtector.markShowTime();
 
         assert bnplIssuerContexts != null;
+        assert footerText != null;
         mBnplIssuerContexts = bnplIssuerContexts;
         mIbans = null;
         mAffiliatedLoyaltyCards = null;
@@ -565,7 +572,9 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(BNPL_ISSUER, createBnplIssuerContextModel(issuerContext)));
         }
 
-        // TODO(crbug.com/438784993): Add footer to BNPL issuer selection screen.
+        // TODO(crbug.com/438784405): Display terms on the BNPL issuer selection screen.
+
+        sheetItems.add(buildFooterForBnplSelectionProgress(footerText, /* isInProgress= */ false));
 
         mModel.set(
                 SHEET_CONTENT_DESCRIPTION_ID,
@@ -704,13 +713,13 @@ class TouchToFillPaymentMethodMediator {
         recordTouchToFillCreditCardOutcomeHistogram(TouchToFillCreditCardOutcome.SCAN_NEW_CARD);
     }
 
+    // TODO(crbug.com/430575808): Log `MANAGE_PAYMENTS` outcome metric for BNPL.
     public void showPaymentMethodSettings() {
         mDelegate.showPaymentMethodSettings();
         if (mSuggestions != null) {
             recordTouchToFillCreditCardOutcomeHistogram(
                     TouchToFillCreditCardOutcome.MANAGE_PAYMENTS);
-        } else {
-            assert mIbans != null;
+        } else if (mIbans != null) {
             recordTouchToFillIbanOutcomeHistogram(TouchToFillIbanOutcome.MANAGE_PAYMENTS);
         }
     }
@@ -1036,6 +1045,16 @@ class TouchToFillPaymentMethodMediator {
                                 OPEN_MANAGEMENT_UI_TITLE_ID,
                                 R.string.autofill_bottom_sheet_manage_loyalty_cards)
                         .with(OPEN_MANAGEMENT_UI_CALLBACK, this::showManageLoyaltyCards)
+                        .build());
+    }
+
+    private ListItem buildFooterForBnplSelectionProgress(String footerText, boolean isInProgress) {
+        return new ListItem(
+                BNPL_SELECTION_PROGRESS_FOOTER,
+                new PropertyModel.Builder(BnplSelectionProgressFooterProperties.ALL_KEYS)
+                        .with(FOOTER_TEXT, footerText)
+                        .with(ON_LINK_CLICK_CALLBACK, (view) -> showPaymentMethodSettings())
+                        .with(APPLY_LINK_DEACTIVATED_STYLE, isInProgress)
                         .build());
     }
 

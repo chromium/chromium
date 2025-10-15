@@ -90,7 +90,12 @@ u16string SelectBnplIssuerDialogControllerImpl::GetSelectionOptionText(
 // TODO(crbug.com/405187652) Check if we want the selection dialog footer to
 // have multiple lines when the text doesn't fit into one line.
 TextWithLink SelectBnplIssuerDialogControllerImpl::GetLinkText() const {
+#if !BUILDFLAG(IS_ANDROID)
   return GetBnplUiFooterText();
+#else
+  // `GetBnplUiFooterText` on Android does not return a `TextWithLink`.
+  NOTREACHED();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill::payments

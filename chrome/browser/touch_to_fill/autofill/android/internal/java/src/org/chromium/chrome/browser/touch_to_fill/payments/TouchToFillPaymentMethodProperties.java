@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -123,6 +124,9 @@ class TouchToFillPaymentMethodProperties {
 
         // A section contains texts shown on BNPL ToS screen.
         int BNPL_TOS_TEXT = 14;
+
+        // The footer at the bottom of the BNPL selection and progress screens.
+        int BNPL_SELECTION_PROGRESS_FOOTER = 15;
     }
 
     /** Metadata associated with a card's image. */
@@ -248,7 +252,6 @@ class TouchToFillPaymentMethodProperties {
     static class TermsLabelProperties {
         static final PropertyModel.WritableBooleanPropertyKey CARD_BENEFITS_TERMS_AVAILABLE =
                 new PropertyModel.WritableBooleanPropertyKey("card_benefits_terms_available");
-
         static final PropertyKey[] ALL_TERMS_LABEL_KEYS = {CARD_BENEFITS_TERMS_AVAILABLE};
 
         private TermsLabelProperties() {}
@@ -404,6 +407,24 @@ class TouchToFillPaymentMethodProperties {
         };
 
         private FooterProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the BNPL footer for selection and
+     * progress screen in the TouchToFill sheet for payments.
+     */
+    static class BnplSelectionProgressFooterProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<String> FOOTER_TEXT =
+                new PropertyModel.ReadableObjectPropertyKey<>("footer_text");
+        static final PropertyModel.ReadableObjectPropertyKey<Callback<View>>
+                ON_LINK_CLICK_CALLBACK = new ReadableObjectPropertyKey<>("on_link_click_callback");
+        static final PropertyModel.ReadableBooleanPropertyKey APPLY_LINK_DEACTIVATED_STYLE =
+                new PropertyModel.ReadableBooleanPropertyKey("apply_link_deactivated_style");
+        static final PropertyKey[] ALL_KEYS = {
+            FOOTER_TEXT, ON_LINK_CLICK_CALLBACK, APPLY_LINK_DEACTIVATED_STYLE
+        };
+
+        private BnplSelectionProgressFooterProperties() {}
     }
 
     private TouchToFillPaymentMethodProperties() {}

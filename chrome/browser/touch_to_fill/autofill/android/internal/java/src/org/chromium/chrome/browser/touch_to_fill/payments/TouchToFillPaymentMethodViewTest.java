@@ -40,6 +40,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.APPLY_LINK_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.FOOTER_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.ON_LINK_CLICK_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
@@ -72,6 +75,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
@@ -105,6 +109,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.GRAYED_OUT_OPACITY_ALPHA;
 
 import android.text.SpannableString;
+import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,6 +149,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ErrorDescriptionProperties;
@@ -405,6 +411,8 @@ public class TouchToFillPaymentMethodViewTest {
                             /* isLinked= */ true,
                             /* isEligible= */ false);
     private static final String BNPL_ISSUER_TOS_ITEM_TEXT = "Affirm ToS text";
+    private static final String BNPL_FOOTER_TEXT =
+            "To hide pay later options, go to <link>payment settings</link>";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1715,6 +1723,70 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(descriptionTextView.getText().toString(), is(description));
     }
 
+    @Test
+    @MediumTest
+    public void testBnplSelectionProgressFooterLinkDisabled() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BNPL_SELECTION_PROGRESS_FOOTER,
+                                            createBnplSelectionProgressFooterModel(
+                                                    BNPL_FOOTER_TEXT,
+                                                    actionCallback,
+                                                    /* isLinkEnabled= */ false)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView footerLabel =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_footer_label);
+        assertThat(
+                footerLabel.getText().toString(),
+                is("To hide pay later options, go to payment settings"));
+        SpannableString spannableString = (SpannableString) footerLabel.getText();
+        ClickableSpan[] spans =
+                spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
+        assertThat(spans.length, is(1));
+        spans[0].onClick(footerLabel);
+        verify(actionCallback, never()).run();
+    }
+
+    @Test
+    @MediumTest
+    public void testBnplSelectionProgressFooterLinkEnabled() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BNPL_SELECTION_PROGRESS_FOOTER,
+                                            createBnplSelectionProgressFooterModel(
+                                                    BNPL_FOOTER_TEXT,
+                                                    actionCallback,
+                                                    /* isLinkEnabled= */ true)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView footerLabel =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_footer_label);
+        assertThat(
+                footerLabel.getText().toString(),
+                is("To hide pay later options, go to payment settings"));
+        SpannableString spannableString = (SpannableString) footerLabel.getText();
+        ClickableSpan[] spans =
+                spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
+        assertThat(spans.length, is(1));
+        spans[0].onClick(footerLabel);
+        waitForEvent(actionCallback).run();
+    }
+
     private RecyclerView getCreditCardSuggestions() {
         return mTouchToFillPaymentMethodView
                 .getContentView()
@@ -1860,6 +1932,15 @@ public class TouchToFillPaymentMethodViewTest {
         return new PropertyModel.Builder(BnplSelectionProgressHeaderProperties.ALL_KEYS)
                 .with(BNPL_BACK_BUTTON_ENABLED, backButtonEnabled)
                 .with(BNPL_ON_BACK_BUTTON_CLICKED, actionCallback)
+                .build();
+    }
+
+    private static PropertyModel createBnplSelectionProgressFooterModel(
+            String footerText, Runnable actionCallback, boolean isLinkEnabled) {
+        return new PropertyModel.Builder(BnplSelectionProgressFooterProperties.ALL_KEYS)
+                .with(FOOTER_TEXT, footerText)
+                .with(ON_LINK_CLICK_CALLBACK, (view) -> actionCallback.run())
+                .with(APPLY_LINK_DEACTIVATED_STYLE, !isLinkEnabled)
                 .build();
     }
 

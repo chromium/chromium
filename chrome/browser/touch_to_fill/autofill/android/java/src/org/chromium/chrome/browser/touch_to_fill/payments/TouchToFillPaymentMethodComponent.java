@@ -146,8 +146,10 @@ interface TouchToFillPaymentMethodComponent {
      * @param bnplIssuerContexts A list of {@link PersonalDataManager.BnplIssuerContext} objects,
      *     each representing a BNPL issuer context, to be displayed on the bottom sheet for the user
      *     to select from.
+     * @param footerText The footer text to be displayed on the bottom sheet.
      */
-    void showBnplIssuers(List<PersonalDataManager.BnplIssuerContext> bnplIssuerContexts);
+    void showBnplIssuers(
+            List<PersonalDataManager.BnplIssuerContext> bnplIssuerContexts, String footerText);
 
     /**
      * Displays an error screen bottom sheet.

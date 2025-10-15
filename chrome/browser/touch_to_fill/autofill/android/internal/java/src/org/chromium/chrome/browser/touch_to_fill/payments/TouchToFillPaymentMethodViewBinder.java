@@ -13,6 +13,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.APPLY_LINK_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.FOOTER_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.ON_LINK_CLICK_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
@@ -60,8 +63,11 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
+import android.text.SpannableString;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +85,9 @@ import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionIn
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.util.AttrUtils;
 
 /**
  * Provides functions that map {@link TouchToFillPaymentMethodProperties} changes in a {@link
@@ -690,6 +699,82 @@ class TouchToFillPaymentMethodViewBinder {
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
+    }
+
+    /**
+     * Factory used to create a new BNPL footer for selection and progress screens inside the
+     * ListView inside the {@link TouchToFillPaymentMethodView}.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createBnplSelectionProgressFooterItemView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(
+                        R.layout.touch_to_fill_bnpl_selection_and_progress_screen_footer_item,
+                        parent,
+                        false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindBnplSelectionProgressFooterView(
+            PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == FOOTER_TEXT
+                || propertyKey == ON_LINK_CLICK_CALLBACK
+                || propertyKey == APPLY_LINK_DEACTIVATED_STYLE) {
+            buildFooterSpannable(model, view);
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /** Builds the entire SpannableString for the footer from the properties in the model. */
+    private static void buildFooterSpannable(PropertyModel model, View view) {
+        ClickableSpan span;
+        if (model.get(APPLY_LINK_DEACTIVATED_STYLE)) {
+            // For the disabled state, create a custom span 38% opacity for the link text.
+            span =
+                    new ClickableSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            // This is intentionally left empty as there are no click events
+                            // when disabled.
+                        }
+
+                        @Override
+                        public void updateDrawState(TextPaint textPaint) {
+                            // Resolves the standard link color, just like ChromeClickableSpan does.
+                            int defaultColor =
+                                    view.getContext()
+                                            .getColor(R.color.default_text_color_link_baseline);
+                            int linkColor =
+                                    AttrUtils.resolveColor(
+                                            view.getContext().getTheme(),
+                                            R.attr.globalClickableSpanColor,
+                                            defaultColor);
+                            // Create the new color for the disabled link with 38% opacity.
+                            int alpha = (int) (255 * GRAYED_OUT_OPACITY_ALPHA);
+                            int lowOpacityColor = (linkColor & 0x00FFFFFF) | (alpha << 24);
+                            textPaint.setColor(lowOpacityColor);
+                            textPaint.setUnderlineText(true);
+                        }
+                    };
+        } else {
+            // For the enabled state, create a ChromeClickableSpan.
+            span = new ChromeClickableSpan(view.getContext(), model.get(ON_LINK_CLICK_CALLBACK));
+        }
+        String rawFooterText = model.get(FOOTER_TEXT);
+        TextView footer = view.findViewById(R.id.bnpl_footer_label);
+        SpannableString spannableFooter =
+                SpanApplier.applySpans(
+                        rawFooterText, new SpanApplier.SpanInfo("<link>", "</link>", span));
+        footer.setText(spannableFooter);
+        footer.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private static void setScanCreditCardButton(View view, boolean shouldShowScanCreditCard) {
