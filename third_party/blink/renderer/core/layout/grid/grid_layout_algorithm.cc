@@ -2087,12 +2087,7 @@ class GapAccumulator {
     const auto& rows = layout_data.Rows();
 
     const wtf_size_t range_count = rows.RangeCount();
-    // `EndLineOfImplicitGrid` is equivalent to the total track count.
-    const wtf_size_t total_tracks = rows.EndLineOfImplicitGrid();
     Vector<wtf_size_t> gap_idx_to_set_idx;
-
-    gap_idx_to_set_idx.ReserveInitialCapacity(
-        std::min<wtf_size_t>(total_tracks - 1, kGridMaxTracks));
 
     for (wtf_size_t range_idx = 0; range_idx < range_count; ++range_idx) {
       const wtf_size_t range_set_count = rows.RangeSetCount(range_idx);
@@ -2112,11 +2107,13 @@ class GapAccumulator {
         // `begin_set_index` plus the track's set position within this range.
         // The set position is determined using the modulo operator since sets
         // preserve the order in which track definitions appear in their range.
-        wtf_size_t set_idx = kNotFound;
+        // If a range has no sets, we exclude it from the list because gaps
+        // are not emitted for collapsed tracks.
         if (range_set_count) {
-          set_idx = begin_set_index + (track_idx_in_range % range_set_count);
+          wtf_size_t set_idx =
+              begin_set_index + (track_idx_in_range % range_set_count);
+          gap_idx_to_set_idx.emplace_back(set_idx);
         }
-        gap_idx_to_set_idx.emplace_back(set_idx);
         CHECK_LE(gap_idx_to_set_idx.size(),
                  static_cast<wtf_size_t>(kGridMaxTracks));
         if (gap_idx_to_set_idx.size() == kGridMaxTracks) {
@@ -2866,8 +2863,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
          gap_index < main_gaps.size(); ++gap_index) {
       LayoutUnit row_gap_midpoint = main_gaps[gap_index].GetGapOffset() +
                                     *cumulative_gap_offset_adjustment;
+      CHECK_LT(gap_index, track_idx_to_set_idx->size());
       current_processed_gap_set_idx = (*track_idx_to_set_idx)[gap_index];
-      CHECK_NE(current_processed_gap_set_idx, kNotFound);
       row_gap_midpoint +=
           (*row_offset_adjustments)[current_processed_gap_set_idx];
       // Make the gap offset relative to this fragmentainer.
