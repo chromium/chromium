@@ -192,8 +192,7 @@ void VaapiImageDecodeAcceleratorWorker::DecodeTask(
       std::make_unique<gpu::ImageDecodeAcceleratorWorker::DecodeResult>();
   result->handle = gfx::GpuMemoryBufferHandle(std::move(pixmap_handle));
   result->visible_size = exported_pixmap->pixmap->GetBufferSize();
-  result->si_format =
-      viz::GetSharedImageFormat(exported_pixmap->pixmap->GetBufferFormat());
+  result->si_format = exported_pixmap->pixmap->GetSharedImageFormat();
   result->buffer_byte_size = exported_pixmap->byte_size;
   result->yuv_color_space = decoder->GetYUVColorSpace();
   std::move(scoped_decode_callback).Run(std::move(result));

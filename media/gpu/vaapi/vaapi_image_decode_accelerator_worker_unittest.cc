@@ -45,8 +45,6 @@ using testing::StrictMock;
 namespace media {
 namespace {
 
-constexpr gfx::BufferFormat kFormatForDecodes = gfx::BufferFormat::YVU_420;
-
 constexpr gfx::Size kVaSurfaceResolution(128, 256);
 
 constexpr gfx::Size kVisibleSize(120, 250);
@@ -74,12 +72,11 @@ class MockNativePixmapDmaBuf : public gfx::NativePixmapDmaBuf {
  public:
   MockNativePixmapDmaBuf(const gfx::Size& size)
       : gfx::NativePixmapDmaBuf(size,
-                                kFormatForDecodes,
+                                gfx::BufferFormat::YVU_420,
                                 gfx::NativePixmapHandle()) {}
 
   gfx::NativePixmapHandle ExportHandle() const override {
     gfx::NativePixmapHandle handle{};
-    DCHECK_EQ(gfx::BufferFormat::YVU_420, GetBufferFormat());
     handle.planes = std::vector<gfx::NativePixmapPlane>(3u);
     return handle;
   }
