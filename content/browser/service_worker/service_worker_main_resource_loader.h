@@ -272,6 +272,10 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body);
 
+  void OnReceiveRedirectFromSyntheticNetworkRequest(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr response_head);
+
   void OnCompleteSyntheticNetworkRequest(
       const network::URLLoaderCompletionStatus& status);
 
