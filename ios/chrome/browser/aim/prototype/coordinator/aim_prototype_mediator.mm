@@ -604,6 +604,9 @@ size_t WhitespaceCount(const std::u16string& string) {
               destinationURL:(const GURL&)destinationURL
                 isSearchType:(BOOL)isSearchType {
   if (isSearchType) {
+    if (IsAimURL(destinationURL)) {
+      [self.consumer setAIModeEnabled:YES];
+    }
     [self sendText:[NSString cr_fromString16:text]];
   } else {
     UrlLoadParams params = UrlLoadParams::InCurrentTab(destinationURL);

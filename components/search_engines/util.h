@@ -221,6 +221,9 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
     TemplateURLService::OwnedTemplateURLVector* urls,
     const TemplateURL* url);
 
+// Returns whether the provided `url` leads to the AIM web page.
+bool IsAimURL(const GURL& url);
+
 // Retrieves the URL for the AIM web page.
 // `aim_entrypoint` (aep) is required as it identifies the source of the
 // request. `query_start_time` is the time that the user clicked the submit
