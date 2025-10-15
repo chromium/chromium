@@ -337,6 +337,9 @@ BASE_DECLARE_FEATURE(kTabGridNewTransitions);
 // Feature flag for the tab grid drag and drop functionality.
 BASE_DECLARE_FEATURE(kTabGridDragAndDrop);
 
+// YES if the tab grid drag and drop feature is enabled.
+bool IsTabGridDragAndDropEnabled();
+
 // Whether the new tab grid tabs transitions should be enabled.
 bool IsNewTabGridTransitionsEnabled();
 

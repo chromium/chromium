@@ -52,6 +52,9 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 // presented.
 - (NSArray<UIView*>*)allGroupTabViews;
 
+// Highlights or resets the highlighting of the cell.
+- (void)setHighlightForGrouping:(BOOL)highlight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_GROUP_GRID_CELL_H_

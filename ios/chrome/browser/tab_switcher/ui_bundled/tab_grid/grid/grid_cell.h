@@ -77,6 +77,9 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 // `index`.
 - (void)setAccessibilityIdentifiersWithIndex:(NSUInteger)index;
 
+// Highlights or resets the highlighting of the cell.
+- (void)setHighlightForGrouping:(BOOL)highlight;
+
 @end
 
 @interface GridTransitionCell : GridCell <LegacyGridToTabTransitionView>

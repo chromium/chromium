@@ -150,6 +150,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Current mode of the Tab Grid. Should be set through consumer protocol.
   TabGridMode _mode;
+
+  // The index path of the cell currently highlighted.
+  NSIndexPath* _highlightedGroupIndexPath;
 }
 
 - (instancetype)init {
@@ -1982,6 +1985,40 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     }
   }
   return EmptyThumbnailLayoutTypePortrait;
+}
+
+// Highlights the cell at `indexPath`.
+- (void)highlightCellAtIndexPath:(NSIndexPath*)indexPath {
+  if (_highlightedGroupIndexPath == indexPath) {
+    return;
+  }
+  [self clearCurrentlyHighlightedCell];
+  UICollectionViewCell* cell =
+      [self.collectionView cellForItemAtIndexPath:indexPath];
+  if ([cell isKindOfClass:[GridCell class]]) {
+    GridCell* gridCell = ObjCCastStrict<GridCell>(cell);
+    [gridCell setHighlightForGrouping:YES];
+  } else if ([cell isKindOfClass:[GroupGridCell class]]) {
+    GroupGridCell* groupGridCell = ObjCCastStrict<GroupGridCell>(cell);
+    [groupGridCell setHighlightForGrouping:YES];
+  }
+  _highlightedGroupIndexPath = indexPath;
+}
+
+// Resets the currently highlighted cell.
+- (void)clearCurrentlyHighlightedCell {
+  if (_highlightedGroupIndexPath) {
+    UICollectionViewCell* cell =
+        [self.collectionView cellForItemAtIndexPath:_highlightedGroupIndexPath];
+    if ([cell isKindOfClass:[GridCell class]]) {
+      GridCell* gridCell = ObjCCastStrict<GridCell>(cell);
+      [gridCell setHighlightForGrouping:NO];
+    } else if ([cell isKindOfClass:[GroupGridCell class]]) {
+      GroupGridCell* groupGridCell = ObjCCastStrict<GroupGridCell>(cell);
+      [groupGridCell setHighlightForGrouping:NO];
+    }
+    _highlightedGroupIndexPath = nil;
+  }
 }
 
 @end

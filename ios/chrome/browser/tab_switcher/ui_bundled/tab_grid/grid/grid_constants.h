@@ -105,4 +105,10 @@ typedef NS_ENUM(NSUInteger, GridCellState) {
   GridCellStateEditingSelected,
 };
 
+// The scale transform of a grid cell's contents.
+extern const CGFloat kGridCellHighlightScaleTransform;
+
+// The duration of the grid cell highlight animation.
+extern const CGFloat kGridCellHighlightDuration;
+
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_GRID_CONSTANTS_H_

@@ -105,10 +105,20 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 // Whether or not the cell is currently displaying an editing state.
 @property(nonatomic, readonly) BOOL isInSelectionMode;
 @property(nonatomic, weak) GridEmptyThumbnailView* emptyView;
+// UI elements for highlighted state.
+// Container for the cell's contents to enable shrinking transform.
+@property(nonatomic, strong) UIView* containerView;
+// Background view to show while cell is highlighted.
+@property(nonatomic, strong) UIView* groupingBackgroundView;
+// Dimming view over the cell contents while cell is highlighted.
+@property(nonatomic, strong) UIView* dimmingView;
 
 @end
 
-@implementation GridCell
+@implementation GridCell {
+  // YES if the cell is currently highlighted.
+  BOOL _highlighted;
+}
 
 + (instancetype)transitionSelectionCellFromCell:(GridCell*)cell {
   GridCell* transitionSelectionCell = [[self alloc] initWithFrame:cell.bounds];
@@ -134,9 +144,22 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
     self.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
 
     [self setupSelectedBackgroundView];
-    UIView* contentView = self.contentView;
-    contentView.layer.cornerRadius = kGridCellCornerRadius;
-    contentView.layer.masksToBounds = YES;
+    self.contentView.layer.cornerRadius = kGridCellCornerRadius;
+    self.contentView.layer.masksToBounds = YES;
+    UIView* contentContainer = self.contentView;
+
+    if (IsTabGridDragAndDropEnabled()) {
+      UIView* containerView = [[UIView alloc] init];
+      containerView.translatesAutoresizingMaskIntoConstraints = NO;
+      containerView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      containerView.layer.cornerRadius = kGridCellCornerRadius;
+      containerView.layer.masksToBounds = YES;
+      [self.contentView addSubview:containerView];
+      _containerView = containerView;
+      AddSameConstraints(self.contentView, containerView);
+      contentContainer = _containerView;
+    }
+
     UIView* topBar = [self setupTopBar];
     TopAlignedImageView* snapshotView = [[TopAlignedImageView alloc] init];
     snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -153,8 +176,8 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
                    forControlEvents:UIControlEventTouchUpInside];
     closeTapTargetButton.accessibilityIdentifier =
         kGridCellCloseButtonIdentifier;
-    [contentView addSubview:topBar];
-    [contentView addSubview:snapshotView];
+    [contentContainer addSubview:topBar];
+    [contentContainer addSubview:snapshotView];
     if (IsTabGridEmptyThumbnailUIEnabled()) {
       GridEmptyThumbnailView* emptyView = [[GridEmptyThumbnailView alloc]
           initWithType:EmptyThumbnailTypeGridCell];
@@ -165,7 +188,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
     }
     PriceCardView* priceCardView = [[PriceCardView alloc] init];
     [snapshotView addSubview:priceCardView];
-    [contentView addSubview:closeTapTargetButton];
+    [contentContainer addSubview:closeTapTargetButton];
     _topBar = topBar;
     _snapshotView = snapshotView;
     _closeTapTargetButton = closeTapTargetButton;
@@ -186,24 +209,25 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
     self.layer.masksToBounds = NO;
     CGFloat margin = IsTabGridEmptyThumbnailUIEnabled() ? kSnapshotInset : 0;
     NSArray* constraints = @[
-      [topBar.topAnchor constraintEqualToAnchor:contentView.topAnchor],
-      [topBar.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
+      [topBar.topAnchor constraintEqualToAnchor:contentContainer.topAnchor],
+      [topBar.leadingAnchor
+          constraintEqualToAnchor:contentContainer.leadingAnchor],
       [topBar.trailingAnchor
-          constraintEqualToAnchor:contentView.trailingAnchor],
+          constraintEqualToAnchor:contentContainer.trailingAnchor],
       [snapshotView.topAnchor constraintEqualToAnchor:topBar.bottomAnchor],
       [snapshotView.leadingAnchor
-          constraintEqualToAnchor:contentView.leadingAnchor
+          constraintEqualToAnchor:contentContainer.leadingAnchor
                          constant:margin],
       [snapshotView.trailingAnchor
-          constraintEqualToAnchor:contentView.trailingAnchor
+          constraintEqualToAnchor:contentContainer.trailingAnchor
                          constant:-margin],
       [snapshotView.bottomAnchor
-          constraintEqualToAnchor:contentView.bottomAnchor
+          constraintEqualToAnchor:contentContainer.bottomAnchor
                          constant:-margin],
       [closeTapTargetButton.topAnchor
-          constraintEqualToAnchor:contentView.topAnchor],
+          constraintEqualToAnchor:contentContainer.topAnchor],
       [closeTapTargetButton.trailingAnchor
-          constraintEqualToAnchor:contentView.trailingAnchor],
+          constraintEqualToAnchor:contentContainer.trailingAnchor],
       [closeTapTargetButton.widthAnchor
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
       [closeTapTargetButton.heightAnchor
@@ -219,6 +243,32 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
                                    constant:-kGridCellPriceDropTrailingSpacing],
     ];
     [NSLayoutConstraint activateConstraints:constraints];
+
+    if (IsTabGridDragAndDropEnabled()) {
+      self.groupingBackgroundView = [[UIView alloc] initWithFrame:self.bounds];
+      self.groupingBackgroundView.translatesAutoresizingMaskIntoConstraints =
+          NO;
+      self.groupingBackgroundView.backgroundColor =
+          [UIColor colorNamed:kStaticBlue400Color];
+      self.groupingBackgroundView.layer.cornerRadius = kGridCellCornerRadius;
+      self.groupingBackgroundView.layer.masksToBounds = YES;
+      self.groupingBackgroundView.alpha = 0;
+      self.groupingBackgroundView.hidden = YES;
+      // Insert it behind the cell's contentView
+      [self.contentView insertSubview:self.groupingBackgroundView
+                         belowSubview:self.containerView];
+      AddSameConstraints(self.groupingBackgroundView, self.contentView);
+
+      self.dimmingView = [[UIView alloc] initWithFrame:self.bounds];
+      self.dimmingView.translatesAutoresizingMaskIntoConstraints = NO;
+      self.dimmingView.backgroundColor =
+          [[UIColor blackColor] colorWithAlphaComponent:0.5];
+      self.dimmingView.layer.cornerRadius = kGridCellCornerRadius;
+      self.dimmingView.hidden = YES;
+      self.dimmingView.alpha = 0.0;
+      [contentContainer addSubview:self.dimmingView];
+      AddSameConstraints(self.dimmingView, contentContainer);
+    }
 
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
         @[ UITraitPreferredContentSizeCategory.class ]);
@@ -260,6 +310,9 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   self.opacity = 1.0;
   self.hidden = NO;
   [self hideActivityIndicator];
+  if (IsTabGridDragAndDropEnabled()) {
+    [self setHighlightForGrouping:NO];
+  }
   if (self.layoutGuideCenter) {
     [self.layoutGuideCenter referenceView:nil
                                 underName:kSelectedRegularCellGuide];
@@ -408,6 +461,38 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   self.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
   self.snapshotView.accessibilityIdentifier =
       GridCellSnapshotAccessibilityIdentifier(index);
+}
+
+- (void)setHighlightForGrouping:(BOOL)highlight {
+  CHECK(IsTabGridDragAndDropEnabled());
+  if (_highlighted == highlight) {
+    return;
+  }
+  _highlighted = highlight;
+
+  __weak __typeof(self) weakSelf = self;
+  if (highlight) {
+    [UIView animateWithDuration:kGridCellHighlightDuration
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                       [weakSelf highlightCell];
+                     }
+                     completion:nil];
+
+  } else {
+    [UIView animateWithDuration:kGridCellHighlightDuration
+        delay:0
+        options:UIViewAnimationOptionBeginFromCurrentState
+        animations:^{
+          [weakSelf resetHighlight];
+        }
+        completion:^(BOOL finished) {
+          GridCell* strongSelf = weakSelf;
+          strongSelf.dimmingView.hidden = YES;
+          strongSelf.groupingBackgroundView.hidden = YES;
+        }];
+  }
 }
 
 #pragma mark - Private
@@ -720,6 +805,36 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
           self.traitCollection.preferredContentSizeCategory);
   if (isPreviousAccessibilityCategory ^ isCurrentAccessibilityCategory) {
     [self updateTopBarSize];
+  }
+}
+
+// Animations to highlight this cell.
+- (void)highlightCell {
+  // Shrink and dim contents of cell while revealing blue
+  // background covering rest of the cell.
+  self.groupingBackgroundView.alpha = 1.0;
+  self.groupingBackgroundView.hidden = NO;
+  self.dimmingView.hidden = NO;
+  self.dimmingView.alpha = 1.0;
+  [self.containerView bringSubviewToFront:self.dimmingView];
+  self.containerView.transform = CGAffineTransformMakeScale(
+      kGridCellHighlightScaleTransform, kGridCellHighlightScaleTransform);
+  if (!self.border.hidden) {
+    // If cell is selected, then fill in space between
+    // border and the cell view to merge into one blue
+    // background with _groupingBackgroundView.
+    self.border.layer.borderWidth =
+        kGridCellSelectionRingGapWidth + kGridCellSelectionRingTintWidth + 1;
+  }
+}
+
+// Animations to reset the highlight of this cell.
+- (void)resetHighlight {
+  self.groupingBackgroundView.alpha = 0.0;
+  self.dimmingView.alpha = 0.0;
+  self.containerView.transform = CGAffineTransformIdentity;
+  if (!self.border.hidden) {
+    self.border.layer.borderWidth = kGridCellSelectionRingTintWidth;
   }
 }
 
