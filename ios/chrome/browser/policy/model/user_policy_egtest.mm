@@ -332,7 +332,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 
 // Tests that when user policies are enabled, in the sign-in flow, sign-in error
 // popup isn't shown after cancelling the managed accout confirmation dialog.
-// TODO(crbug.com/441923304): Fix this flaky test.
+// TODO(crbug.com/441924945): Fix this flaky test.
 - (void)FLAKY_testCancelSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
