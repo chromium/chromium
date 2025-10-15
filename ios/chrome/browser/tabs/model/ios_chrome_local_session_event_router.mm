@@ -190,17 +190,9 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
       break;
     }
     case WebStateListChange::Type::kGroupCreate:
-      // TODO(crbug.com/329640035): Notify the router about the group creation.
-      break;
     case WebStateListChange::Type::kGroupVisualDataUpdate:
-      // TODO(crbug.com/329640035): Notify the router about the group's visual
-      // data update.
-      break;
     case WebStateListChange::Type::kGroupMove:
-      // Do nothing when a tab group is moved.
-      break;
     case WebStateListChange::Type::kGroupDelete:
-      // TODO(crbug.com/329640035): Notify the router about the group deletion.
       break;
   }
 }
