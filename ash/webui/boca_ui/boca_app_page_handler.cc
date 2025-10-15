@@ -771,6 +771,13 @@ void BocaAppHandler::PresentStudentScreen(
     std::move(callback).Run(false);
     return;
   }
+  if (teacher_screen_presenter() &&
+      teacher_screen_presenter()->IsPresenting()) {
+    LOG(ERROR) << "[Boca] Trying to present student's screen while "
+               << "presenting teacher's screen";
+    std::move(callback).Run(false);
+    return;
+  }
   std::string student_id = student->id;
   auto end_view_screen_cb = base::BindOnce(
       &BocaAppHandler::OnEndViewScreenResponseForPresentStudentScreen,
@@ -1378,6 +1385,13 @@ void BocaAppHandler::PresentStudentScreenInternal(
   }
   if (!student_screen_presenter()) {
     LOG(ERROR) << "[Boca] unexpected call to present student screen";
+    std::move(callback).Run(false);
+    return;
+  }
+  if (teacher_screen_presenter() &&
+      teacher_screen_presenter()->IsPresenting()) {
+    LOG(ERROR) << "[Boca] Trying to present student's screen while "
+               << "presenting teacher's screen";
     std::move(callback).Run(false);
     return;
   }
