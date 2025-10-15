@@ -31,7 +31,6 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
@@ -157,8 +156,8 @@ void IDBDatabase::TransactionCreated(IDBTransaction* transaction) {
   DCHECK(!transactions_.Contains(transaction->Id()));
   transactions_.insert(transaction->Id(), transaction);
 
-  // Log a histogram and collect a crash dump if the number of active
-  // transactions becomes unusually large, to help diagnose crbug.com/381086791.
+  // Log a histogram when the number of active transactions becomes unusually
+  // large, to help diagnose crbug.com/381086791.
   //
   // We plan to:
   // - Set a trace recording *start* trigger when the 10001th transaction is
@@ -166,17 +165,11 @@ void IDBDatabase::TransactionCreated(IDBTransaction* transaction) {
   // - Set a trace recording *stop* trigger when the 11000th transaction is
   //   created. This will give us a timeline of events that occur between the
   //   10001th and 11000th transactions are created.
-  // - Additionally, produce a non-fatal crash dump when the transaction count
-  //   is exactly 10k, to provide more insights about the conditions under which
-  //   this occurs. No need for multiple dumps per client, so do this only when
-  //   the transaction count is exactly 10k.
   //
   // TODO(crbug.com/381086791): Remove this diagnostic code once the issue is
   // understood and resolved.
   constexpr size_t kHighTransactionCount = 10000;
-  if (transactions_.size() == kHighTransactionCount) {
-    base::debug::DumpWithoutCrashing();
-  } else if (transactions_.size() > kHighTransactionCount) {
+  if (transactions_.size() > kHighTransactionCount) {
     base::UmaHistogramCounts100000(
         "IndexedDB.NumTransactionsInIDBDatabaseOnTransactionCreated."
         "10kTransactions",
