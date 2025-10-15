@@ -205,12 +205,12 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     gfx::Size plane_size,
     GLenum target,
     GLuint texture_id) {
-  if (native_pixmap->GetBufferFormat() != plane_format ||
+  if (native_pixmap->GetSharedImageFormat() !=
+          viz::GetSharedImageFormat(plane_format) ||
       !gl::IsFormatSupported(plane_format)) {
-    VLOG(1) << "Format " << gfx::BufferFormatToString(plane_format)
+    VLOG(1) << "Format " << viz::GetSharedImageFormat(plane_format).ToString()
             << " is unsupported or does not match the NativePixmap's format ("
-            << gfx::BufferFormatToString(native_pixmap->GetBufferFormat())
-            << ")";
+            << native_pixmap->GetSharedImageFormat().ToString() << ")";
     return nullptr;
   }
 
