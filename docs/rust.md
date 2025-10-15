@@ -20,10 +20,9 @@ environments that are supported by the Chromium project. The first milestone
 to include full production-ready support was M119.
 
 Rust can be used anywhere in the Chromium repository (not just `//third_party`)
-subject to [current interop capabilities][interop-rust-doc], however it is
-currently subject to a internal approval and FYI process. Googlers can view
-go/chrome-rust for details. New usages of Rust are documented at
-[`rust-fyi@chromium.org`](https://groups.google.com/a/chromium.org/g/rust-fyi).
+subject to [current interop capabilities][interop-rust-doc]. There is no special
+process for introducing Rust. Similar to any code change, OWNERS approval is
+required. Googlers can see go/chrome-rust for more details.
 
 For questions or help, reach out to
 [`rust-dev@chromium.org`](https://groups.google.com/a/chromium.org/g/rust-dev),
