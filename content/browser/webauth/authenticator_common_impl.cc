@@ -248,10 +248,8 @@ bool AddTransportsFromCertificate(
 base::TimeDelta AdjustTimeout(std::optional<base::TimeDelta> timeout,
                               RenderFrameHost* render_frame_host) {
   // Time to wait for an authenticator to successfully complete an operation.
-  base::TimeDelta adjusted_timeout_lower = base::Minutes(3);
-  base::TimeDelta adjusted_timeout_upper = base::Hours(20);
   if (!timeout) {
-    return adjusted_timeout_upper;
+    return device::kMaxRequestTimeout;
   }
   const bool testing_api_enabled =
       AuthenticatorEnvironment::GetInstance()->IsVirtualAuthenticatorEnabledFor(
@@ -262,8 +260,8 @@ base::TimeDelta AdjustTimeout(std::optional<base::TimeDelta> timeout,
   if (testing_api_enabled) {
     return *timeout;
   }
-  return std::max(adjusted_timeout_lower,
-                  std::min(adjusted_timeout_upper, *timeout));
+  return std::max(device::kMinRequestTimeout,
+                  std::min(device::kMaxRequestTimeout, *timeout));
 }
 
 bool UsesDiscoverableCreds(const device::MakeCredentialOptions& options) {

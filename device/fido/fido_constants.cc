@@ -245,6 +245,9 @@ const char kExtensionLargeBlobWritten[] = "written";
 
 const base::TimeDelta kBleDevicePairingModeWaitingInterval = base::Seconds(2);
 
+const base::TimeDelta kMinRequestTimeout = base::Minutes(3);
+const base::TimeDelta kMaxRequestTimeout = base::Hours(20);
+
 std::ostream& operator<<(std::ostream& os, CtapRequestCommand command) {
   return os << "0x" << std::hex << static_cast<int>(command) << " ("
             << CtapRequestCommandName(command) << ")";

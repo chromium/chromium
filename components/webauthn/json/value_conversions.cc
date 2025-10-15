@@ -4,6 +4,7 @@
 
 #include "components/webauthn/json/value_conversions.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <ranges>
@@ -13,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/authenticator_selection_criteria.h"
@@ -392,6 +394,12 @@ base::Value::Dict ToValue(
   return value;
 }
 
+int adjustTimeout(int timeout) {
+  const int minTimeoutMs = device::kMinRequestTimeout.InMilliseconds();
+  const int maxTimeoutMs = device::kMaxRequestTimeout.InMilliseconds();
+  return std::max(minTimeoutMs, std::min(maxTimeoutMs, timeout));
+}
+
 }  // namespace
 
 base::Value ToValue(
@@ -423,6 +431,12 @@ base::Value ToValue(
 
   if (!options->attestation_formats.empty()) {
     value.Set("attestationFormats", ToValue(options->attestation_formats));
+  }
+
+  if (options->timeout) {
+    int timeout =
+        adjustTimeout(base::TimeDelta(*options->timeout).InMilliseconds());
+    value.Set("timeout", timeout);
   }
 
   base::Value::Dict extensions;
@@ -517,6 +531,12 @@ base::Value ToValue(
   value.Set("userVerification", ToValue(options->user_verification));
   if (!options->hints.empty()) {
     value.Set("hints", ToValue(options->hints));
+  }
+
+  if (options->timeout) {
+    int timeout =
+        adjustTimeout(base::TimeDelta(*options->timeout).InMilliseconds());
+    value.Set("timeout", timeout);
   }
 
   base::Value::Dict extensions;

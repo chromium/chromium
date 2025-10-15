@@ -489,6 +489,10 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobSupported[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobWrite[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobWritten[];
 
+// The minimum and maximum timeouts for Get and Create requests.
+COMPONENT_EXPORT(DEVICE_FIDO) extern const base::TimeDelta kMinRequestTimeout;
+COMPONENT_EXPORT(DEVICE_FIDO) extern const base::TimeDelta kMaxRequestTimeout;
+
 // Maximum number of seconds the browser waits for Bluetooth authenticator to
 // send packets that advertises that the device is in pairing mode before
 // setting pairing mode to false. The interval time is set to 2 seconds, which
