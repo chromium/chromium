@@ -2682,7 +2682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.JobAttemptedHttps" enum="Boolean"
-    expires_after="2025-11-15">
+    expires_after="2026-10-09">
   <owner>bashi@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -2693,7 +2693,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.JobHttpsNotAttemptedReason"
-    enum="HttpsNotAttemptedReason" expires_after="2025-11-15">
+    enum="HttpsNotAttemptedReason" expires_after="2026-10-09">
   <owner>bashi@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
