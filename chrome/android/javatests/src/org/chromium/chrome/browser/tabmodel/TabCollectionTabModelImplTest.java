@@ -2769,6 +2769,7 @@ public class TabCollectionTabModelImplTest {
         assertEquals(tab1, getCurrentTab());
 
         CallbackHelper onTabPendingClosure = new CallbackHelper();
+        CallbackHelper willUndoTabClosure = new CallbackHelper();
         CallbackHelper onTabCloseUndone = new CallbackHelper();
         CallbackHelper didSelectOnCloseHelper = new CallbackHelper();
         CallbackHelper didSelectOnUndoHelper = new CallbackHelper();
@@ -2781,6 +2782,13 @@ public class TabCollectionTabModelImplTest {
                         assertEquals(1, tabs.size());
                         assertEquals(tab1, tabs.get(0));
                         onTabPendingClosure.notifyCalled();
+                    }
+
+                    @Override
+                    public void willUndoTabClosure(List<Tab> tabs, boolean isAllTabs) {
+                        assertEquals(1, tabs.size());
+                        assertEquals(tab1, tabs.get(0));
+                        willUndoTabClosure.notifyCalled();
                     }
 
                     @Override
@@ -2825,6 +2833,7 @@ public class TabCollectionTabModelImplTest {
                     assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
                     mCollectionModel.cancelTabClosure(tab1.getId());
                 });
+        willUndoTabClosure.waitForOnly();
         onTabCloseUndone.waitForOnly();
         didSelectOnUndoHelper.waitForOnly();
         ThreadUtils.runOnUiThreadBlocking(
@@ -2935,6 +2944,7 @@ public class TabCollectionTabModelImplTest {
         Tab tab0 = getCurrentTab();
 
         CallbackHelper onTabPendingClosure = new CallbackHelper();
+        CallbackHelper willUndoTabClosure = new CallbackHelper();
         CallbackHelper onTabCloseUndone = new CallbackHelper();
         CallbackHelper didSelectTabHelper = new CallbackHelper();
         TabModelObserver observer =
@@ -2946,6 +2956,13 @@ public class TabCollectionTabModelImplTest {
                         assertEquals(1, tabs.size());
                         assertEquals(tab0, tabs.get(0));
                         onTabPendingClosure.notifyCalled();
+                    }
+
+                    @Override
+                    public void willUndoTabClosure(List<Tab> tabs, boolean isAllTabs) {
+                        assertEquals(1, tabs.size());
+                        assertEquals(tab0, tabs.get(0));
+                        willUndoTabClosure.notifyCalled();
                     }
 
                     @Override
@@ -2982,6 +2999,7 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.cancelTabClosure(tab0.getId());
                 });
 
+        willUndoTabClosure.waitForOnly();
         onTabCloseUndone.waitForOnly();
         didSelectTabHelper.waitForOnly();
 
@@ -3055,6 +3073,7 @@ public class TabCollectionTabModelImplTest {
         List<Tab> tabsToClose = List.of(tab1, tab2);
         Set<Tab> tabsToCloseSet = new HashSet<>(tabsToClose);
         CallbackHelper pendingClosureHelper = new CallbackHelper();
+        CallbackHelper willUndoTabClosure = new CallbackHelper();
         CallbackHelper onTabCloseUndoneHelper = new CallbackHelper();
 
         TabModelObserver observer =
@@ -3065,6 +3084,14 @@ public class TabCollectionTabModelImplTest {
                         assertEquals(tabsToClose, tabs);
                         assertFalse(isAllTabs);
                         pendingClosureHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void willUndoTabClosure(List<Tab> tabs, boolean isAllTabs) {
+                        assertEquals(1, tabs.size());
+                        assertTrue(tabsToCloseSet.containsAll(tabs));
+                        assertFalse(isAllTabs);
+                        willUndoTabClosure.notifyCalled();
                     }
 
                     @Override
@@ -3102,6 +3129,7 @@ public class TabCollectionTabModelImplTest {
                         mCollectionModel.cancelTabClosure(tabToClose.getId());
                     }
                 });
+        willUndoTabClosure.waitForCallback(0, 2);
         onTabCloseUndoneHelper.waitForCallback(0, 2);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -3132,6 +3160,7 @@ public class TabCollectionTabModelImplTest {
         List<Tab> tabsToClose = List.of(tab1, tab2);
         Set<Tab> tabsToCloseSet = new HashSet<>(tabsToClose);
         CallbackHelper pendingClosureHelper = new CallbackHelper();
+        CallbackHelper willUndoTabClosure = new CallbackHelper();
         CallbackHelper tabClosureUndoneHelper = new CallbackHelper();
 
         TabModelObserver observer =
@@ -3142,6 +3171,13 @@ public class TabCollectionTabModelImplTest {
                         assertEquals(tabsToClose, tabs);
                         assertFalse(isAllTabs);
                         pendingClosureHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void willUndoTabClosure(List<Tab> tabs, boolean isAllTabs) {
+                        assertTrue(tabsToCloseSet.containsAll(tabs));
+                        assertFalse(isAllTabs);
+                        willUndoTabClosure.notifyCalled();
                     }
 
                     @Override
@@ -3177,6 +3213,7 @@ public class TabCollectionTabModelImplTest {
                         mCollectionModel.cancelTabClosure(tabToClose.getId());
                     }
                 });
+        willUndoTabClosure.waitForCallback(0, 2);
         tabClosureUndoneHelper.waitForCallback(0, 2);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -3253,6 +3290,7 @@ public class TabCollectionTabModelImplTest {
         assertEquals(3, getCount());
 
         CallbackHelper willCloseAllTabsHelper = new CallbackHelper();
+        CallbackHelper willUndoTabClosure = new CallbackHelper();
         CallbackHelper tabClosureUndoneHelper = new CallbackHelper();
         TabModelObserver observer =
                 new TabModelObserver() {
@@ -3264,6 +3302,12 @@ public class TabCollectionTabModelImplTest {
                     @Override
                     public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
                         fail("should not be called for close all tabs operation");
+                    }
+
+                    @Override
+                    public void willUndoTabClosure(List<Tab> tabs, boolean isAllTabs) {
+                        assertTrue(allTabSet.containsAll(tabs));
+                        willUndoTabClosure.notifyCalled();
                     }
 
                     @Override
@@ -3302,6 +3346,7 @@ public class TabCollectionTabModelImplTest {
                         mCollectionModel.cancelTabClosure(tabToClose.getId());
                     }
                 });
+        willUndoTabClosure.waitForCallback(0, 3);
         tabClosureUndoneHelper.waitForCallback(0, 3);
 
         assertNotNull(getCurrentTab());

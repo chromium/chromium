@@ -209,7 +209,17 @@ public interface TabModelObserver {
     default void onTabCloseCommitted(List<Tab> tabs, boolean isAllTabs) {}
 
     /**
-     * Called just before {@code tabs} closed have been successfully restored by an undo action.
+     * Called before the {@code tabs} have been reinserted into the model by an undo action.
+     *
+     * @param tabs The list of {@link Tab}s that has been reopened.
+     * @param isAllTabs Whether tabs are all the tabs.
+     */
+    default void willUndoTabClosure(List<Tab> tabs, boolean isAllTabs) {}
+
+    /**
+     * Called after the {@code tabs} have been reinserted into the model by an undo action, but
+     * before the restoration is fully complete. Some updates, such as setting the index, if
+     * applicable, may still be in-flight.
      *
      * @param tabs The list of {@link Tab}s that has been reopened.
      * @param isAllTabs Whether tabs are all the tabs.

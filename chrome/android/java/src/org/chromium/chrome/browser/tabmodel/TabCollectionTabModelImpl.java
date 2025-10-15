@@ -164,6 +164,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         @Override
         public void insertUndoneTabClosureAt(Tab tab, int insertIndex) {
             assert !tab.isDestroyed() : "Attempting to undo tab that is destroyed.";
+
+            // Alert observers that the tab closure will be undone. Intentionally notifies before
+            // the tabs have been re-inserted into the model.
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.willUndoTabClosure(Collections.singletonList(tab), /* isAllTabs= */ false);
+            }
+
             Token tabGroupId = tab.getTabGroupId();
             boolean restoredTabGroup = tabGroupId != null && !tabGroupExists(tabGroupId);
             int finalIndex =
@@ -203,7 +210,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             // * UndoRefocusHelper may update the index out-of-band.
             for (TabModelObserver obs : mTabModelObservers) {
                 if (ChromeFeatureList.sTabClosureMethodRefactor.isEnabled()) {
-                    obs.onTabCloseUndone(List.of(tab), /* isAllTabs= */ false);
+                    obs.onTabCloseUndone(Collections.singletonList(tab), /* isAllTabs= */ false);
                 } else {
                     obs.tabClosureUndone(tab);
                 }
