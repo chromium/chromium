@@ -177,7 +177,6 @@ public class TabGroupsPaneUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgePadAdjuster_BeforeLoadHint() {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         assertFalse(mEdgeToEdgeSupplier.hasObservers());
@@ -189,7 +188,6 @@ public class TabGroupsPaneUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgePadAdjuster_AfterLoadHint() {
         mTabGroupsPane.notifyLoadHint(LoadHint.HOT);
         assertTrue(mEdgeToEdgeSupplier.hasObservers());
@@ -199,7 +197,6 @@ public class TabGroupsPaneUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgePadAdjuster_ChangeController() {
         mTabGroupsPane.notifyLoadHint(LoadHint.HOT);
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);

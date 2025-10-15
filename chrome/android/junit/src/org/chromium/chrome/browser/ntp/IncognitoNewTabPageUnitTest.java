@@ -29,7 +29,6 @@ import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPageManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,7 +39,6 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /** Unit test for {@link org.chromium.chrome.browser.ntp.IncognitoNewTabPage} */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
 @DisableFeatures({
     ChromeFeatureList.TRACKING_PROTECTION_3PCD,
     ChromeFeatureList.IP_PROTECTION_UX,

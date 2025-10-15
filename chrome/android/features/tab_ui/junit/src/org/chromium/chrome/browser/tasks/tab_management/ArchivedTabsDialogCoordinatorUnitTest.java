@@ -295,7 +295,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgePadAdjuster() {
         EdgeToEdgePadAdjuster padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
         assertNotNull("Pad adjuster should be created when feature enabled.", padAdjuster);

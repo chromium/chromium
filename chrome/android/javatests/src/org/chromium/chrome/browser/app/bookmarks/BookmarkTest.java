@@ -1893,7 +1893,6 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testEdgeToEdge() throws InterruptedException {
         openBookmarkManager();
         RecyclerView recyclerView = mBookmarkManagerCoordinator.getRecyclerViewForTesting();
@@ -1914,7 +1913,6 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testEdgeToEdge_editView() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         openBookmarkManager();

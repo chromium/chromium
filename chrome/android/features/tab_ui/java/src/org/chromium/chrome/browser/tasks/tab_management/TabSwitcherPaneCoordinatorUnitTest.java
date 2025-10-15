@@ -434,7 +434,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgePadAdjuster() {
         int originalPadding = mCoordinator.getContainerViewModelForTesting().get(BOTTOM_PADDING);
         var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();

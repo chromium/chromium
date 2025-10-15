@@ -148,7 +148,6 @@ public class BookmarkPageUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testEdgeToEdge() {
         assertTrue("Bookmark page should support E2E.", mBookmarkPage.supportsEdgeToEdge());
 

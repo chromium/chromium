@@ -293,7 +293,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Test
     @Config(sdk = 30)
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgeForMediaViewer_NotMediaViewer() {
         doReturn(false)
                 .when(mBrowserServicesIntentDataProvider)
