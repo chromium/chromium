@@ -45,7 +45,6 @@
 +org.chromium.components.browser_ui.widget.ContextMenuDialog
 +org.chromium.components.embedder_support.util.UrlUtilities
 +org.chromium.components.media_router.caf.CastMediaSource
-+org.chromium.components.stylus_handwriting.DirectWritingSettingsHelper
 +org.chromium.components.url_formatter.UrlFormatter
 +org.chromium.content_public.browser.WebContentsStatics
 +org.chromium.gms.ChromiumPlayServicesAvailability

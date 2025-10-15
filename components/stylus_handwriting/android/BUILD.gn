@@ -73,7 +73,6 @@ android_library("java") {
 
 robolectric_library("junit_test_support") {
   sources = [
-    "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowDirectWritingSettingsHelper.java",
     "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowGlobalSettings.java",
     "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowSecureSettings.java",
   ]
