@@ -130,6 +130,34 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="First sync"/>
 </enum>
 
+<!-- LINT.IfChange(CrossDevicePrefTrackerAvailabilityAtQuery) -->
+
+<enum name="CrossDevicePrefTrackerAvailabilityAtQuery">
+  <int value="0" label="Available">
+    The tracker is fully operational (DeviceInfoTracker available,
+    LocalDeviceInfo initialized, and Sync configured for writes).
+  </int>
+  <int value="1" label="DeviceInfoTracker Missing">
+    Prerequisite failed: DeviceInfoTracker is not available. Queries cannot be
+    fulfilled.
+  </int>
+  <int value="2" label="Sync Not Configured">
+    DeviceInfoTracker and LocalDeviceInfo available, but Sync is not configured
+    for writes (e.g., signed out or Prefs sync disabled). Writes are blocked;
+    data may be stale.
+  </int>
+  <int value="3" label="LocalDeviceInfo Missing">
+    DeviceInfoTracker available and Sync configured, but LocalDeviceInfo is
+    missing (writes blocked).
+  </int>
+  <int value="4" label="Sync Not Configured + LocalDeviceInfo Missing">
+    DeviceInfoTracker available, but both LocalDeviceInfo is missing and Sync is
+    not configured.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h:CrossDevicePrefTrackerAvailabilityAtQuery) -->
+
 <!-- LINT.IfChange(CrossUserSharingKeyPairState) -->
 
 <enum name="CrossUserSharingKeyPairState">

@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
@@ -64,6 +65,48 @@ constexpr char kUpdateTimeKey[] = "update_time";
 // distinguish between initial synchronization (which might reflect default
 // values) and explicit local modifications.
 constexpr char kLastObservedChangeTimeKey[] = "last_observed_change_time";
+
+// Histogram name for tracking service availability at query time.
+constexpr char kTrackerAvailabilityAtQueryHistogram[] =
+    "Sync.CrossDevicePrefTracker.AvailabilityAtQuery";
+
+// Helper to determine the current service availability state.
+CrossDevicePrefTrackerAvailabilityAtQuery GetAvailabilityState(
+    const syncer::DeviceInfoTracker* device_info_tracker,
+    bool is_local_device_info_ready,
+    bool is_sync_configured_for_writes) {
+  if (!device_info_tracker) {
+    return CrossDevicePrefTrackerAvailabilityAtQuery::kDeviceInfoTrackerMissing;
+  }
+
+  if (is_local_device_info_ready && is_sync_configured_for_writes) {
+    return CrossDevicePrefTrackerAvailabilityAtQuery::kAvailable;
+  }
+
+  if (is_local_device_info_ready && !is_sync_configured_for_writes) {
+    return CrossDevicePrefTrackerAvailabilityAtQuery::kSyncNotConfigured;
+  }
+
+  if (!is_local_device_info_ready && is_sync_configured_for_writes) {
+    return CrossDevicePrefTrackerAvailabilityAtQuery::kLocalDeviceInfoMissing;
+  }
+
+  return CrossDevicePrefTrackerAvailabilityAtQuery::
+      kSyncNotConfiguredAndLocalDeviceInfoMissing;
+}
+
+// Helper to record the Tracker's service availability metric.
+void LogTrackerServiceAvailability(
+    const syncer::DeviceInfoTracker* device_info_tracker,
+    bool is_local_device_info_ready,
+    bool is_sync_configured_for_writes) {
+  CrossDevicePrefTrackerAvailabilityAtQuery availability =
+      GetAvailabilityState(device_info_tracker, is_local_device_info_ready,
+                           is_sync_configured_for_writes);
+
+  base::UmaHistogramEnumeration(kTrackerAvailabilityAtQueryHistogram,
+                                availability);
+}
 
 // Internal, sortable representation of a `TimestampedPrefValue`.
 //
@@ -501,6 +544,10 @@ std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
   syncer::DeviceInfoTracker* device_info_tracker =
       device_info_sync_service_->GetDeviceInfoTracker();
 
+  LogTrackerServiceAvailability(device_info_tracker,
+                                is_local_device_info_ready_,
+                                is_sync_configured_for_writes_);
+
   // Use `ResolveCrossDevicePrefName()` to allow either tracked or cross-device
   // pref names as input.
   std::string cross_device_pref_name = ResolveCrossDevicePrefName(pref_name);
@@ -531,6 +578,10 @@ CrossDevicePrefTrackerImpl::GetMostRecentValue(
 
   syncer::DeviceInfoTracker* device_info_tracker =
       device_info_sync_service_->GetDeviceInfoTracker();
+
+  LogTrackerServiceAvailability(device_info_tracker,
+                                is_local_device_info_ready_,
+                                is_sync_configured_for_writes_);
 
   // Use `ResolveCrossDevicePrefName()` to allow either tracked or cross-device
   // pref names as input.
