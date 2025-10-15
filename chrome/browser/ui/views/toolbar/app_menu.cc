@@ -13,6 +13,7 @@
 #include <set>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
@@ -501,7 +502,7 @@ class AppMenuView : public views::View {
     }
 
     // all buttons on menu should must be a custom button in order for
-    // the keyboard nativigation work.
+    // the keyboard navigation work.
     DCHECK(views::IsViewClass<views::Button>(menu_button.get()));
 
     return AddChildView(std::move(menu_button));
@@ -528,25 +529,35 @@ class FullscreenButton : public ImageButton {
 
  public:
   explicit FullscreenButton(PressedCallback callback,
-                            ButtonMenuItemModel* menu_model,
-                            size_t fullscreen_index,
-                            bool is_in_fullscreen)
-      : ImageButton(std::move(callback)) {
+                            ButtonMenuItemModel& menu_model,
+                            size_t button_index)
+      : ImageButton(std::move(callback)),
+        menu_model_(menu_model),
+        button_index_(button_index) {
     // Since |fullscreen_button_| will reside in a menu, make it ALWAYS
     // focusable regardless of the platform.
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    set_tag(fullscreen_index);
+    set_tag(button_index_);
     SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
     SetBackground(std::make_unique<InMenuButtonBackground>(
         InMenuButtonBackground::ButtonType::kLeadingBorder,
         InMenuButtonBackground::ButtonShape::kCircular));
-    const int accname_string_id =
-        is_in_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN : IDS_ACCNAME_FULLSCREEN;
-    SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
     GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
+  }
+  FullscreenButton(const FullscreenButton&) = delete;
+  FullscreenButton& operator=(const FullscreenButton&) = delete;
+
+  void UpdateState(bool is_fullscreen, bool can_fullscreen) {
+    SetEnabled(can_fullscreen || is_fullscreen);
+
+    const int accname_string_id =
+        is_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN
+                      : (can_fullscreen ? IDS_ACCNAME_FULLSCREEN
+                                        : IDS_ACCNAME_FULLSCREEN_DISABLED);
+    SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
     GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
-        menu_model, fullscreen_index, accname_string_id,
+        &menu_model_.get(), button_index_, accname_string_id,
 #if BUILDFLAG(IS_CHROMEOS)
         // ChromeOS uses a dedicated "fullscreen" media key for fullscreen
         // mode on most ChromeOS devices which cannot be specified in the
@@ -559,8 +570,6 @@ class FullscreenButton : public ImageButton {
 #endif
         ));
   }
-  FullscreenButton(const FullscreenButton&) = delete;
-  FullscreenButton& operator=(const FullscreenButton&) = delete;
 
   // Overridden from ImageButton.
   gfx::Size CalculatePreferredSize(
@@ -570,6 +579,12 @@ class FullscreenButton : public ImageButton {
     pref.Enlarge(insets.width(), insets.height());
     return pref;
   }
+
+ private:
+  // The menu model that contains the fullscreen button.
+  const raw_ref<ButtonMenuItemModel> menu_model_;
+  // The index of the fullscreen button in `menu_model_`.
+  const size_t button_index_;
 };
 
 BEGIN_METADATA(FullscreenButton)
@@ -729,8 +744,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
               menu->CancelAndEvaluate(menu_model, index);
             },
             menu, menu_model, fullscreen_index),
-        menu_model, fullscreen_index,
-        menu->browser_->window() && menu->browser_->window()->IsFullscreen());
+        CHECK_DEREF(menu_model), fullscreen_index);
     const auto& fullscreen_icon = kFullscreenRefreshIcon;
     fullscreen_button->SetImageModel(
         ImageButton::STATE_NORMAL,
@@ -845,18 +859,14 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
   }
 
   void UpdateFullScreenButton() {
-    bool can_fullscreen = menu()
-                              ->browser_->browser_window_features()
-                              ->exclusive_access_manager()
-                              ->context()
-                              ->CanUserEnterFullscreen();
-    const int accname_string_id = can_fullscreen
-                                      ? IDS_ACCNAME_FULLSCREEN
-                                      : IDS_ACCNAME_FULLSCREEN_DISABLED;
-
-    fullscreen_button_->SetEnabled(can_fullscreen);
-    fullscreen_button_->SetTooltipText(
-        l10n_util::GetStringUTF16(accname_string_id));
+    const bool is_fullscreen = menu()->browser_->window() &&
+                               menu()->browser_->window()->IsFullscreen();
+    const bool can_fullscreen = menu()
+                                    ->browser_->browser_window_features()
+                                    ->exclusive_access_manager()
+                                    ->context()
+                                    ->CanUserEnterFullscreen();
+    fullscreen_button_->UpdateState(is_fullscreen, can_fullscreen);
   }
 
   // Returns the max width the zoom string can be.
@@ -901,7 +911,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
   // Button for decrementing the zoom.
   raw_ptr<Button> decrement_button_ = nullptr;
 
-  raw_ptr<Button> fullscreen_button_ = nullptr;
+  raw_ptr<FullscreenButton> fullscreen_button_ = nullptr;
 
   // Cached width of how wide the zoom label string can be. This is the width at
   // 100%. This should not be accessed directly, use GetZoomLabelMaxWidth()
