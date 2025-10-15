@@ -288,9 +288,8 @@ public class StripLayoutHelperTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         CompositorAnimationHandler.setTestingMode(true);
-        CompositorAnimationHandler mHandler =
-                new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
-        when(mUpdateHost.getAnimationHandler()).thenReturn(mHandler);
+        when(mUpdateHost.getAnimationHandler())
+                .thenReturn(new CompositorAnimationHandler(CallbackUtils.emptyRunnable()));
         when(mModel.getProfile()).thenReturn(mProfile);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
@@ -4438,10 +4437,6 @@ public class StripLayoutHelperTest {
     }
 
     private void setupForAnimations() {
-        CompositorAnimationHandler mHandler =
-                new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
-        when(mUpdateHost.getAnimationHandler()).thenReturn(mHandler);
-
         // Update layout when updateHost.requestUpdate is called.
         doAnswer(
                         invocation -> {
