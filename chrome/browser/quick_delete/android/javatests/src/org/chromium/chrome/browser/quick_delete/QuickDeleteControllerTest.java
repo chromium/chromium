@@ -120,6 +120,12 @@ public class QuickDeleteControllerTest {
             }
             mTabSwitcher = null;
         }
+
+        // Clear user prefs which are shared between tests.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).clearPref(QUICK_DELETE_EVER_USED_PREF);
+                });
     }
 
     @Test
@@ -280,7 +286,10 @@ public class QuickDeleteControllerTest {
         WebPageStation realPage =
                 mSecondPage.loadPageProgrammatically(
                         "https://www.google.com/", WebPageStation.newBuilder());
-        assertEquals(1, realPage.getTabModel().getCount());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(1, realPage.getTabModel().getCount());
+                });
 
         QuickDeleteDialogFacility dialog = realPage.openRegularTabAppMenu().clearBrowsingData();
         mTabSwitcher = dialog.confirmDelete(/* regularTabsExistAfterDeletion= */ true).first;
