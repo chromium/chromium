@@ -9740,7 +9740,8 @@ crbug.com/448325313 [ Mac ] http/tests/devtools/persistence/persistence-move-bre
 crbug.com/448484970 [ Win11-arm64 ] external/wpt/webxr/xrSession_visibilityState_inline.https.html [ Failure Pass ]
 crbug.com/448484970 [ Mac ] external/wpt/webxr/xrSession_visibilityState_inline.https.html [ Failure Pass ]
 crbug.com/448489521 [ Debug Linux ] external/wpt/css/css-contain/contain-size-select-elem-005.html [ Failure Pass ]
-crbug.com/448490201 [ Debug Linux ] virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-08.html [ Failure Pass ]
+crbug.com/448490201 [ Linux ] virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-08.html [ Failure Pass ]
+crbug.com/448490201 [ Win ] virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-08.html [ Failure Pass ]
 
 crbug.com/448507881 [ Linux ] external/wpt/css/css-anchor-position/anchored-transition-display-none.html [ Pass Timeout ]
 crbug.com/448507881 [ Linux ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchored-transition-display-none.html [ Pass Timeout ]
