@@ -199,7 +199,9 @@ $print_to_definitions$
       }
       std::string resolve_field_function;
       if (field.type() == FieldDescriptor::Type::TYPE_MESSAGE ||
-          field.type() == FieldDescriptor::Type::TYPE_GROUP) {
+          field.type() == FieldDescriptor::Type::TYPE_GROUP ||
+          field.type() == FieldDescriptor::Type::TYPE_STRING ||
+          field.type() == FieldDescriptor::Type::TYPE_BYTES) {
         resolve_field_function = "::proto_extras::ResolveRepeatedPtrField";
       } else {
         resolve_field_function = "::proto_extras::ResolveRepeatedField";

@@ -53,4 +53,8 @@ message TestMessage {
   EmptyEmbeddedMessage empty_embedded_message = 16;
 
   bytes cord_bytes_field = 17 [ctype = CORD];
+
+  repeated bytes repeated_byte_field = 18;
+  repeated bytes repeated_string_field = 19;
+  repeated EmptyEmbeddedMessage repeated_message_field = 20;
 }
