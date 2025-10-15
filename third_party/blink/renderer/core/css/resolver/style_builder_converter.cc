@@ -282,20 +282,20 @@ struct BasicShapeAndCoordBox {
 
  public:
   BasicShape* shape;
-  CoordBox coord_box;
+  GeometryBox box;
 };
 
 BasicShapeAndCoordBox BasicShapeAndCoordBoxForValue(StyleResolverState& state,
                                                     const CSSValue& value) {
   BasicShape* shape = nullptr;
-  CoordBox coord_box = CoordBox::kBorderBox;
+  GeometryBox box = GeometryBox::kBorderBox;
   if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
     shape = BasicShapeForValue(state, pair->First());
-    coord_box = To<CSSIdentifierValue>(pair->Second()).ConvertTo<CoordBox>();
+    box = To<CSSIdentifierValue>(pair->Second()).ConvertTo<GeometryBox>();
   } else {
     shape = BasicShapeForValue(state, value);
   }
-  return {shape, coord_box};
+  return {shape, box};
 }
 
 }  // namespace
@@ -305,9 +305,9 @@ StyleBorderShape* StyleBuilderConverter::ConvertBorderShape(
     const CSSValue& value) {
   // Either:
   // - none;
-  // - a single shape (meaning default coord box is border-box);
-  // - a pair of shape + coord_box;
-  // - list of either: two pairs of shape + coord_box or two shapes.
+  // - a single shape (meaning default box is border-box);
+  // - a pair of shape + box;
+  // - list of either: two pairs of shape + box or two shapes.
   if (value.IsIdentifierValue()) {
     CHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
     return nullptr;
@@ -315,12 +315,12 @@ StyleBorderShape* StyleBuilderConverter::ConvertBorderShape(
 
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2u);
-    auto [outer_shape, outer_coord_box] =
+    auto [outer_shape, outer_box] =
         BasicShapeAndCoordBoxForValue(state, list->First());
-    auto [inner_shape, inner_coord_box] =
+    auto [inner_shape, inner_box] =
         BasicShapeAndCoordBoxForValue(state, list->Last());
-    return MakeGarbageCollected<StyleBorderShape>(
-        *outer_shape, inner_shape, outer_coord_box, inner_coord_box);
+    return MakeGarbageCollected<StyleBorderShape>(*outer_shape, inner_shape,
+                                                  outer_box, inner_box);
   }
 
   auto [outer_shape, outer_coord_box] =

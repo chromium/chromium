@@ -1970,16 +1970,17 @@ const CSSValue* BorderTopWidth::CSSValueFromComputedStyleInternal(
 
 namespace {
 
-const CSSValue* ConsumeBasicShapeAndCoordBox(CSSParserTokenStream& stream,
-                                             const CSSParserContext& context) {
+const CSSValue* ConsumeBasicShapeAndGeometryBox(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
   CSSValue* shape = css_parsing_utils::ConsumeBasicShape(stream, context);
   if (!shape) {
     return nullptr;
   }
-  CSSValue* coord_box = css_parsing_utils::ConsumeCoordBox(stream);
-  if (coord_box) {
+  CSSValue* box = css_parsing_utils::ConsumeGeometryBox(stream);
+  if (box) {
     return MakeGarbageCollected<CSSValuePair>(
-        shape, coord_box, CSSValuePair::kKeepIdenticalValues);
+        shape, box, CSSValuePair::kKeepIdenticalValues);
   }
   return shape;
 }
@@ -1995,12 +1996,12 @@ const CSSValue* BorderShape::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(stream);
   }
 
-  const CSSValue* outer = ConsumeBasicShapeAndCoordBox(stream, context);
+  const CSSValue* outer = ConsumeBasicShapeAndGeometryBox(stream, context);
   if (!outer) {
     return nullptr;
   }
 
-  const CSSValue* inner = ConsumeBasicShapeAndCoordBox(stream, context);
+  const CSSValue* inner = ConsumeBasicShapeAndGeometryBox(stream, context);
   if (!inner || base::ValuesEquivalent(inner, outer)) {
     return outer;
   }
@@ -2024,9 +2025,9 @@ const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
   const CSSValue* outer_shape =
       ValueForBasicShape(style, &border_shape.OuterShape());
   list->Append(*outer_shape);
-  CoordBox coord_box = border_shape.OuterCoordBox();
-  if (coord_box != CoordBox::kBorderBox) {
-    list->Append(*CSSIdentifierValue::Create(coord_box));
+  GeometryBox box = border_shape.OuterBox();
+  if (box != GeometryBox::kBorderBox) {
+    list->Append(*CSSIdentifierValue::Create(box));
   }
   if (!border_shape.HasSeparateInnerShape()) {
     return list;
@@ -2034,9 +2035,9 @@ const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
   const CSSValue* inner_shape =
       ValueForBasicShape(style, &border_shape.InnerShape());
   list->Append(*inner_shape);
-  coord_box = border_shape.InnerCoordBox();
-  if (coord_box != CoordBox::kBorderBox) {
-    list->Append(*CSSIdentifierValue::Create(coord_box));
+  box = border_shape.InnerBox();
+  if (box != GeometryBox::kBorderBox) {
+    list->Append(*CSSIdentifierValue::Create(box));
   }
   return list;
 }
