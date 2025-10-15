@@ -453,13 +453,16 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
     }
   }
 
-  InputScope input_scope = overlay_window->GetController()
-                                   ->GetWebContents()
-                                   ->GetRenderWidgetHostView()
-                                   ->GetTextInputClient()
-                                   ->ShouldDoLearning()
-                               ? IS_DEFAULT
-                               : IS_PRIVATE;
+  // Default to private input scope in the case where we don't have a
+  // TextInputClient, such as when this is running inside an InnerWebContents.
+  InputScope input_scope = IS_PRIVATE;
+  ui::TextInputClient* text_input_client = overlay_window->GetController()
+                                               ->GetWebContents()
+                                               ->GetRenderWidgetHostView()
+                                               ->GetTextInputClient();
+  if (text_input_client && text_input_client->ShouldDoLearning()) {
+    input_scope = IS_DEFAULT;
+  }
 
   ui::tsf_inputscope::SetInputScope(
       overlay_window->GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
