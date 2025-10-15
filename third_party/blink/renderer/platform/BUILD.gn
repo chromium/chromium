@@ -754,8 +754,6 @@ component("platform") {
     "fonts/script_run_iterator.h",
     "fonts/segmented_font_data.cc",
     "fonts/segmented_font_data.h",
-    "fonts/shaping/caching_word_shape_iterator.cc",
-    "fonts/shaping/caching_word_shape_iterator.h",
     "fonts/shaping/case_mapping_harfbuzz_buffer_filler.cc",
     "fonts/shaping/case_mapping_harfbuzz_buffer_filler.h",
     "fonts/shaping/font_features.cc",
