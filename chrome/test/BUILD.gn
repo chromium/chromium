@@ -3641,6 +3641,7 @@ if (!is_android) {
       "../browser/ui/native_window_tracker_browsertest.cc",
       "../browser/ui/promos/ios_promos_utils_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",
+      "../browser/ui/sad_tab_helper_browsertest.cc",
       "../browser/ui/tab_modal_confirm_dialog_browsertest.cc",
       "../browser/ui/tab_modal_confirm_dialog_browsertest.h",
       "../browser/ui/tab_ui_helper_browsertest.cc",
