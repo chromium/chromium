@@ -9,6 +9,7 @@ mojom("mojom") {
     "ai_prototyping_service.mojom",
     "enhanced_calendar_service.mojom",
     "tab_organization_service.mojom",
+    "zero_state_suggestions_service.mojom",
   ]
 
   public_deps = [
