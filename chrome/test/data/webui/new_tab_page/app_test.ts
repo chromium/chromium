@@ -1379,28 +1379,36 @@ suite('NewTabPageAppTest', () => {
                   'NewTabPage.ComposeEntrypoint.Click.UserTextPresent', true));
         });
 
-    test('Propagate composebox text when closed', async () => {
-      searchboxHandler.reset();
-      $$(app, '#searchbox')!.dispatchEvent(
-          new CustomEvent('open-composebox', {
-            detail: {searchboxText: '', contextFiles: []},
-          }));
-      await microtasksFinished();
-      const ntpComposebox = app.shadowRoot.querySelector('ntp-composebox');
-      ntpComposebox!.setText('hello');
-      const composeboxScrim =
-          app.shadowRoot.querySelector<HTMLElement>('#scrim');
-      assertTrue(!!composeboxScrim);
-      assertEquals(ntpComposebox!.getText(), 'hello');
-      composeboxScrim.click();
-      await microtasksFinished();
+    [false, true].forEach((ntpRealboxNextEnabled) => {
+      test(
+          `Propagate composebox text when closed when ntpRealboxNextEnabled is ${
+              ntpRealboxNextEnabled}`,
+          async () => {
+            searchboxHandler.reset();
+            const searchbox = $$(app, '#searchbox');
+            assertTrue(!!searchbox);
+            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+              detail: {searchboxText: '', contextFiles: []},
+            }));
+            await microtasksFinished();
+            const ntpComposebox =
+                app.shadowRoot.querySelector('ntp-composebox');
+            ntpComposebox!.setText('hello');
+            const composeboxScrim =
+                app.shadowRoot.querySelector<HTMLElement>('#scrim');
+            assertTrue(!!composeboxScrim);
+            assertEquals(ntpComposebox!.getText(), 'hello');
+            composeboxScrim.click();
+            await microtasksFinished();
 
-      const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+            const searchboxContainer =
+                app.shadowRoot.querySelector('cr-searchbox');
 
-      assertEquals(
-          'hello',
-          searchboxContainer!.shadowRoot
-              .querySelector<HTMLInputElement>('#input')!.value);
+            assertEquals(
+                'hello',
+                searchboxContainer!.shadowRoot
+                    .querySelector<HTMLInputElement>('#input')!.value);
+          });
     });
     suite('Close options disabled', () => {
       suiteSetup(() => {
