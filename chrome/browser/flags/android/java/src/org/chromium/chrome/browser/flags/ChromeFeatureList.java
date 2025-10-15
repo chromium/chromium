@@ -1680,7 +1680,7 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(
                     READALOUD_AUDIO_OVERVIEWS,
                     "read_aloud_audio_overviews_speed_addition_percentage",
-                    20);
+                    10);
 
     public static final IntCachedFeatureParam sReadAloudReadabilityDelayMsAfterPageLoad =
             newIntCachedFeatureParam(
@@ -1692,7 +1692,7 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
               READALOUD_AUDIO_OVERVIEWS,
               "read_aloud_audio_overviews_should_consider_language_in_overview_readability",
-              false
+              true
             );
 
     /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
