@@ -45,4 +45,22 @@ void RecordTabControllerError(ActorUiTabControllerError error) {
                                 error);
 }
 
+std::string GetUiEventDurationHistogramName(std::string_view ui_event_name) {
+  return base::StrCat({"Actor.EventDispatcher.", ui_event_name, ".Duration"});
+}
+
+void RecordUiEventDuration(std::string_view ui_event_name,
+                           base::TimeDelta duration) {
+  // Use a high-resolution timer that records in microseconds.
+  // The range is set from 1 microsecond to 10 seconds with 50 buckets.
+  base::UmaHistogramMicrosecondsTimes(
+      GetUiEventDurationHistogramName(ui_event_name), duration);
+}
+
+void RecordUiEventFailure(std::string_view ui_event_name) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Actor.EventDispatcher.", ui_event_name, ".Failure"}),
+      true);
+}
+
 }  // namespace actor::ui

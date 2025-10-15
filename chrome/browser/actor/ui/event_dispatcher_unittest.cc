@@ -4,7 +4,12 @@
 
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 
+#include <memory>
+#include <optional>
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/shared_types.h"
@@ -35,14 +40,25 @@ constexpr std::string_view kModelPageTargetTypeHistogram =
     "Actor.EventDispatcher.ModelPageTargetType";
 constexpr std::string_view kComputedTargetResultHistogram =
     "Actor.EventDispatcher.ComputedTargetResult";
+constexpr std::string_view kMouseMoveDurationHistogram =
+    "Actor.EventDispatcher.MouseMove.Duration";
+constexpr std::string_view kMouseMoveFailureHistogram =
+    "Actor.EventDispatcher.MouseMove.Failure";
+constexpr std::string_view kMouseClickDurationHistogram =
+    "Actor.EventDispatcher.MouseClick.Duration";
+constexpr std::string_view kMouseClickFailureHistogram =
+    "Actor.EventDispatcher.MouseClick.Failure";
 
 class EventDispatcherTest : public ::testing::Test {
- protected:
+ public:
   void SetUp() override {
     mock_state_manager_ = std::make_unique<MockActorUiStateManager>();
     dispatcher_ = NewUiEventDispatcher(mock_state_manager_.get());
   }
 
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histograms_;
   std::unique_ptr<MockActorUiStateManager> mock_state_manager_;
   std::unique_ptr<UiEventDispatcher> dispatcher_;
@@ -150,6 +166,7 @@ TEST_F(EventDispatcherTest, TwoUiEvents) {
 TEST_F(EventDispatcherTest, TwoUiEventsWithFirstOneFailing) {
   EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<MouseMove>(_), _))
       .WillOnce(WithArgs<1>([&](UiCompleteCallback callback) {
+        task_environment_.FastForwardBy(base::Microseconds(50));
         std::move(callback).Run(MakeErrorResult());
       }));
   EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<MouseClick>(_), _))
@@ -159,6 +176,103 @@ TEST_F(EventDispatcherTest, TwoUiEventsWithFirstOneFailing) {
   TestFuture<ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
   EXPECT_EQ(result.Get()->code, ::actor::mojom::ActionResultCode::kError);
+
+  // MouseMove duration shouldn't be recorded as it failed.
+  histograms_.ExpectTotalCount(kMouseMoveDurationHistogram, 0);
+  histograms_.ExpectBucketCount(kMouseMoveFailureHistogram, true, 1);
+  // MouseClick histograms shouldn't be recorded as it was never sent.
+  histograms_.ExpectTotalCount(kMouseClickDurationHistogram, 0);
+  histograms_.ExpectTotalCount(kMouseClickFailureHistogram, 0);
+}
+
+TEST_F(EventDispatcherTest, TwoUiEventsWithSecondOneFailing) {
+  EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<MouseMove>(_), _))
+      .WillOnce(WithArgs<1>([&](UiCompleteCallback callback) {
+        task_environment_.FastForwardBy(base::Microseconds(50));
+        std::move(callback).Run(MakeOkResult());
+      }));
+  EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<MouseClick>(_), _))
+      .WillOnce(WithArgs<1>([&](UiCompleteCallback callback) {
+        task_environment_.FastForwardBy(base::Microseconds(50));
+        std::move(callback).Run(MakeErrorResult());
+      }));
+  ClickToolRequest tr(tabs::TabHandle(123), PageTarget(gfx::Point(10, 50)),
+                      MouseClickType::kLeft, MouseClickCount::kSingle);
+  TestFuture<ActionResultPtr> result;
+  dispatcher_->OnPreTool(tr, result.GetCallback());
+  EXPECT_EQ(result.Get()->code, ::actor::mojom::ActionResultCode::kError);
+
+  // MouseMove duration should be recorded as it was completed.
+  histograms_.ExpectBucketCount(kMouseMoveDurationHistogram,
+                                base::Microseconds(50).InMicroseconds(), 1);
+  histograms_.ExpectTotalCount(kMouseMoveFailureHistogram, 0);
+  // MouseClick duration shouldn't be recorded as it failed.
+  histograms_.ExpectTotalCount(kMouseClickDurationHistogram, 0);
+  histograms_.ExpectBucketCount(kMouseClickFailureHistogram, true, 1);
+}
+
+TEST_F(EventDispatcherTest, AllUiEventsLogDurationHistograms) {
+  // Trigger synchronous events.
+  {
+    // This generates both StartTask and TaskStateChanged events.
+    UiEventDispatcher::ChangeTaskState change_state{
+        .task_id = TaskId(1),
+        .old_state = ActorTask::State::kCreated,
+        .new_state = ActorTask::State::kActing};
+    EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<StartTask>(_)));
+    EXPECT_CALL(*mock_state_manager_,
+                OnUiEvent(VariantWith<TaskStateChanged>(_)));
+    dispatcher_->OnActorTaskSyncChange(change_state);
+    // This generates a StoppedActingOnTab event.
+    UiEventDispatcher::RemoveTab remove_tab{.task_id = TaskId(1),
+                                            .handle = tabs::TabHandle(123)};
+    EXPECT_CALL(*mock_state_manager_,
+                OnUiEvent(VariantWith<StoppedActingOnTab>(_)));
+    dispatcher_->OnActorTaskSyncChange(remove_tab);
+  }
+  // Trigger asynchronous events.
+  {
+    // This generates both MouseMove and MouseClick events.
+    EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<MouseMove>(_), _))
+        .WillOnce(WithArgs<1>([](UiCompleteCallback callback) {
+          std::move(callback).Run(MakeOkResult());
+        }));
+    EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<MouseClick>(_), _))
+        .WillOnce(WithArgs<1>([](UiCompleteCallback callback) {
+          std::move(callback).Run(MakeOkResult());
+        }));
+    ClickToolRequest click_tr(tabs::TabHandle(867),
+                              PageTarget(gfx::Point(10, 50)),
+                              MouseClickType::kLeft, MouseClickCount::kSingle);
+    TestFuture<ActionResultPtr> click_result;
+    dispatcher_->OnPreTool(click_tr, click_result.GetCallback());
+    ASSERT_TRUE(click_result.Get());
+    EXPECT_TRUE(IsOk(*click_result.Get()));
+
+    // An AddTab change generates a StartingToActOnTab event.
+    EXPECT_CALL(*mock_state_manager_,
+                OnUiEvent(VariantWith<StartingToActOnTab>(_), _))
+        .WillOnce(WithArgs<1>([](UiCompleteCallback callback) {
+          std::move(callback).Run(MakeOkResult());
+        }));
+    UiEventDispatcher::AddTab add_tab{.task_id = TaskId(1),
+                                      .handle = tabs::TabHandle(456)};
+    TestFuture<ActionResultPtr> add_tab_result;
+    dispatcher_->OnActorTaskAsyncChange(add_tab, add_tab_result.GetCallback());
+    ASSERT_TRUE(add_tab_result.Get());
+    EXPECT_TRUE(IsOk(*add_tab_result.Get()));
+  }
+  // Ensure all SyncUiEvent Durations are logged.
+  histograms_.ExpectTotalCount("Actor.EventDispatcher.StartTask.Duration", 1);
+  histograms_.ExpectTotalCount(
+      "Actor.EventDispatcher.TaskStateChanged.Duration", 1);
+  histograms_.ExpectTotalCount(
+      "Actor.EventDispatcher.StoppedActingOnTab.Duration", 1);
+  // Ensure all AsyncUiEvent Durations are logged.
+  histograms_.ExpectTotalCount("Actor.EventDispatcher.MouseMove.Duration", 1);
+  histograms_.ExpectTotalCount("Actor.EventDispatcher.MouseClick.Duration", 1);
+  histograms_.ExpectTotalCount(
+      "Actor.EventDispatcher.StartingToActOnTab.Duration", 1);
 }
 
 TEST_F(EventDispatcherTest, TypeCausesMouseMove) {

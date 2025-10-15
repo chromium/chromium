@@ -5,6 +5,8 @@
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <type_traits>
 #include <variant>
 
@@ -12,13 +14,17 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/tool_request_variant.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/actor/ui/ui_event_debugstring.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
@@ -316,11 +322,29 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     events.pop_front();
     VLOG(4) << VisitorTraits<V>::phase_name
             << "(AsyncUiEvent): " << DebugString(event);
+
+    // Create a callback that records metrics based on the result.
+    base::OnceCallback<ActionResultPtr(ActionResultPtr)> record_metrics =
+        base::BindOnce(
+            [](std::string_view event_name, base::TimeTicks start_time,
+               ActionResultPtr result) {
+              if (result->code == ActionResultCode::kOk) {
+                RecordUiEventDuration(event_name,
+                                      base::TimeTicks::Now() - start_time);
+              } else {
+                RecordUiEventFailure(event_name);
+              }
+              // Pass the result along to the next step.
+              return result;
+            },
+            GetUiEventName(event), base::TimeTicks::Now());
+
     TRACE_EVENT_END("actor");
     ui_state_manager_->OnUiEvent(
         std::move(event),
-        base::BindOnce(&UiEventDispatcherImpl::MaybeSendNextEvent<V>,
-                       weak_ptr_factory_.GetWeakPtr()));
+        std::move(record_metrics)
+            .Then(base::BindOnce(&UiEventDispatcherImpl::MaybeSendNextEvent<V>,
+                                 weak_ptr_factory_.GetWeakPtr())));
   }
 
   // Synchronously send events.
@@ -333,6 +357,11 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
       events.pop_front();
       VLOG(4) << VisitorTraits<V>::phase_name
               << "(SyncUiEvent): " << DebugString(event);
+
+      base::ScopedUmaHistogramTimer timer(
+          GetUiEventDurationHistogramName(GetUiEventName(event)),
+          base::ScopedUmaHistogramTimer::ScopedHistogramTiming::
+              kMicrosecondTimes);
       ui_state_manager_->OnUiEvent(std::move(event));
     }
     ResetAndComplete(MakeOkResult());

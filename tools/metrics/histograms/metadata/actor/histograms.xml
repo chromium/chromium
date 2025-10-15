@@ -36,6 +36,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State) -->
 
+<!-- LINT.IfChange(UiEvent) -->
+
+<variants name="UiEvent">
+  <variant name="MouseClick" summary="MouseClick UiEvent"/>
+  <variant name="MouseMove" summary="MouseMove UiEvent"/>
+  <variant name="StartingToActOnTab" summary="StartingToActOnTab UiEvent"/>
+  <variant name="StartTask" summary="StartTask UiEvent"/>
+  <variant name="StoppedActingOnTab" summary="StoppedActingOnTab UiEvent"/>
+  <variant name="TaskStateChanged" summary="TaskStateChanged UiEvent"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/ui_event_debugstring.h:GetUiEventName) -->
+
 <histogram name="Actor.DomNodeGeometry.GetDomNodeResult"
     enum="GetDomNodeResult" expires_after="2026-08-11">
   <owner>kmg@google.com</owner>
@@ -67,6 +80,29 @@ chromium-metrics-reviews@google.com.
     The type of the PageTarget specified by the model. Recorded when PageTargets
     are converted from DomNode to gfx::Point.
   </summary>
+</histogram>
+
+<histogram name="Actor.EventDispatcher.{UiEvent}.Duration" units="microseconds"
+    expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration of time it takes for a UI event to complete.
+
+    Note that this metric is only recorded on clients on which a high-resolution
+    clock is available.
+  </summary>
+  <token key="UiEvent" variants="UiEvent"/>
+</histogram>
+
+<histogram name="Actor.EventDispatcher.{UiEvent}.Failure" enum="Boolean"
+    expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Recorded when a UI event fails.</summary>
+  <token key="UiEvent" variants="UiEvent"/>
 </histogram>
 
 <histogram name="Actor.ExecutionEngine.Action.ResultCode"
