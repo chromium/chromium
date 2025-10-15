@@ -139,6 +139,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       "max_stream_per_group";
   static constexpr std::string_view kConnectionAttemptDelayParamName =
       "connection_attempt_delay";
+  static constexpr std::string_view kEnablePriorityTaskRunnerParamName =
+      "enable_priority_task_runner";
   static constexpr std::string_view kTcpBasedAttemptDelayBehaviorParamName =
       "tcp_based_attempt_delay_behavior";
   static constexpr std::string_view kVerboseNetLogParamName = "verbose_netlog";
@@ -173,6 +175,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     NetErrorDetails error_details;
     raw_ptr<QuicChromiumClientSession> session;
   };
+
+  static const scoped_refptr<base::SequencedTaskRunner> TaskRunner(
+      RequestPriority priority);
 
   // The time to wait between connection attempts.
   static base::TimeDelta GetConnectionAttemptDelay();

@@ -15,6 +15,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
+#include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_pool.h"
@@ -264,7 +265,8 @@ void HttpStreamPool::Job::OnPreconnectComplete(int status) {
 }
 
 void HttpStreamPool::Job::CallOnPreconnectCompleteLater(int status) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  // Currently the notification is only used for testing so using IDLE priority.
+  TaskRunner(IDLE)->PostTask(
       FROM_HERE, base::BindOnce(&Job::OnPreconnectComplete,
                                 weak_ptr_factory_.GetWeakPtr(), status));
 }

@@ -1083,7 +1083,8 @@ void HttpStreamPool::AttemptManager::ResolveServiceEndpoint(
 
 void HttpStreamPool::AttemptManager::ResetServiceEndpointRequestLater() {
   CHECK(is_shutting_down());
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  // Using IDLE since resetting ServiceEndpointRequest is not urgent.
+  TaskRunner(IDLE)->PostTask(
       FROM_HERE, base::BindOnce(&AttemptManager::ResetServiceEndpointRequest,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
@@ -2213,8 +2214,9 @@ void HttpStreamPool::AttemptManager::MaybeComplete() {
   CHECK(ip_based_pooling_disabling_jobs_.empty());
 
   if (on_complete_callback_for_testing_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(on_complete_callback_for_testing_));
+    // Using IDLE priority since this is not urgent.
+    TaskRunner(IDLE)->PostTask(FROM_HERE,
+                               std::move(on_complete_callback_for_testing_));
   }
 
   group_->OnAttemptManagerComplete(this);
@@ -2223,9 +2225,10 @@ void HttpStreamPool::AttemptManager::MaybeComplete() {
 
 void HttpStreamPool::AttemptManager::MaybeCompleteLater() {
   if (CanComplete()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::MaybeComplete,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    // Using IDLE priority since completing `this` is not urgent.
+    TaskRunner(IDLE)->PostTask(FROM_HERE,
+                               base::BindOnce(&AttemptManager::MaybeComplete,
+                                              weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

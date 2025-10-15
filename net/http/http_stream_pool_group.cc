@@ -461,7 +461,8 @@ void HttpStreamPool::Group::MaybeComplete() {
 
 void HttpStreamPool::Group::MaybeCompleteLater() {
   if (CanComplete()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    // Use IDLE priority since completing group is not urgent.
+    TaskRunner(IDLE)->PostTask(
         FROM_HERE,
         base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
   }

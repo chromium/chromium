@@ -162,8 +162,9 @@ void HttpStreamPool::TcpBasedAttempt::Start() {
                       base::BindOnce(&TcpBasedAttempt::OnAttemptSlow,
                                      base::Unretained(this)));
   } else {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&TcpBasedAttempt::OnAttemptComplete,
+    TaskRunner(manager_->GetPriority())
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&TcpBasedAttempt::OnAttemptComplete,
                                   weak_ptr_factory_.GetWeakPtr(), rv));
   }
 }

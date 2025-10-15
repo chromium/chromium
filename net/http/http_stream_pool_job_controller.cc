@@ -192,7 +192,7 @@ void HttpStreamPool::JobController::HandleStreamRequest(
 
   if (!IsPortAllowedForScheme(origin_stream_key_.destination().port(),
                               origin_stream_key_.destination().scheme())) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    TaskRunner(priority_)->PostTask(
         FROM_HERE,
         base::BindOnce(&HttpStreamPool::JobController::CallOnStreamFailed,
                        weak_ptr_factory_.GetWeakPtr(), ERR_UNSAFE_PORT,
@@ -211,7 +211,7 @@ void HttpStreamPool::JobController::HandleStreamRequest(
     }
     CHECK(!stream_ready_time_.has_value());
     stream_ready_time_ = base::TimeTicks::Now();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    TaskRunner(priority_)->PostTask(
         FROM_HERE,
         base::BindOnce(
             &HttpStreamPool::JobController::CallRequestCompleteAndStreamReady,
@@ -357,7 +357,7 @@ void HttpStreamPool::JobController::OnStreamReady(
   // Use PostTask to align the behavior with HttpStreamFactory::Job, see
   // https://crrev.com/2827533002.
   // TODO(crbug.com/346835898): Avoid using PostTask here if possible.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  TaskRunner(priority_)->PostTask(
       FROM_HERE,
       base::BindOnce(&JobController::CallRequestCompleteAndStreamReady,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -377,7 +377,7 @@ void HttpStreamPool::JobController::OnStreamFailed(
     // Use PostTask to align the behavior with HttpStreamFactory::Job, see
     // https://crrev.com/2827533002.
     // TODO(crbug.com/346835898): Avoid using PostTask here if possible.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    TaskRunner(priority_)->PostTask(
         FROM_HERE,
         base::BindOnce(&JobController::CallOnStreamFailed,
                        weak_ptr_factory_.GetWeakPtr(), status,
@@ -397,7 +397,7 @@ void HttpStreamPool::JobController::OnCertificateError(
   // Use PostTask to align the behavior with HttpStreamFactory::Job, see
   // https://crrev.com/2827533002.
   // TODO(crbug.com/346835898): Avoid using PostTask here if possible.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  TaskRunner(priority_)->PostTask(
       FROM_HERE,
       base::BindOnce(&JobController::CallOnCertificateError,
                      weak_ptr_factory_.GetWeakPtr(), status, ssl_info));
@@ -413,7 +413,7 @@ void HttpStreamPool::JobController::OnNeedsClientAuth(
   // Use PostTask to align the behavior with HttpStreamFactory::Job, see
   // https://crrev.com/2827533002.
   // TODO(crbug.com/346835898): Avoid using PostTask here if possible.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  TaskRunner(priority_)->PostTask(
       FROM_HERE, base::BindOnce(&JobController::CallOnNeedsClientAuth,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 base::RetainedRef(cert_info)));
@@ -422,7 +422,7 @@ void HttpStreamPool::JobController::OnNeedsClientAuth(
 void HttpStreamPool::JobController::OnPreconnectComplete(Job* job, int status) {
   TRACE_EVENT("net.stream", "JobController::OnPreconnectComplete", flow_,
               "result", status);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  TaskRunner(priority_)->PostTask(
       FROM_HERE,
       base::BindOnce(&JobController::ResetJobAndInvokePreconnectCallback,
                      weak_ptr_factory_.GetWeakPtr(), job, status));

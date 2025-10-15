@@ -29,6 +29,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/base/session_usage.h"
+#include "net/base/task/task_runner.h"
 #include "net/http/alternative_service.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_key.h"
@@ -75,6 +76,10 @@ constexpr base::FeatureParam<base::TimeDelta>
         &features::kHappyEyeballsV3,
         HttpStreamPool::kConnectionAttemptDelayParamName.data(),
         HttpStreamPool::kDefaultConnectionAttemptDelay};
+
+constexpr base::FeatureParam<bool> kEnablePriorityTaskRunner{
+    &features::kHappyEyeballsV3,
+    HttpStreamPool::kEnablePriorityTaskRunnerParamName.data(), true};
 
 constexpr base::FeatureParam<HttpStreamPool::TcpBasedAttemptDelayBehavior>
     kTcpBasedAttemptDelayBehavior{
@@ -123,6 +128,15 @@ std::ostream& operator<<(std::ostream& os, const StreamCounts& counts) {
 }
 
 }  // namespace
+
+// static
+const scoped_refptr<base::SequencedTaskRunner> HttpStreamPool::TaskRunner(
+    RequestPriority priority) {
+  if (kEnablePriorityTaskRunner.Get()) {
+    return GetTaskRunner(priority);
+  }
+  return base::SequencedTaskRunner::GetCurrentDefault();
+}
 
 // static
 base::TimeDelta HttpStreamPool::GetConnectionAttemptDelay() {
@@ -624,7 +638,7 @@ void HttpStreamPool::CheckConsistency() {
     }
   }
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  TaskRunner(IDLE)->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HttpStreamPool::CheckConsistency,
                      weak_ptr_factory_.GetWeakPtr()),
