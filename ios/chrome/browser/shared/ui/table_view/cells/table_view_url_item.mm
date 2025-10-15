@@ -20,10 +20,6 @@
 
 namespace {
 
-// Default delimiter to use between the hostname and the supplemental URL text
-// if text is specified but not the delimiter.
-const char kDefaultSupplementalURLTextDelimiter[] = "•";
-
 // The max number of lines for the cell title label.
 const int kMaxNumberOfLinesForCellTitleLabel = 2;
 
@@ -50,10 +46,7 @@ const int kMaxNumberOfLinesForCellTitleLabel = 2;
   cell.titleLabel.text = [self titleLabelText];
   cell.URLLabel.text = [self URLLabelText];
   cell.thirdRowLabel.text = self.thirdRowText;
-  cell.faviconBadgeView.image = self.badgeImage;
   cell.metadataLabel.text = self.metadata;
-  cell.metadataImage.image = self.metadataImage;
-  cell.metadataImage.tintColor = self.metadataImageColor;
   cell.cellUniqueIdentifier = self.uniqueIdentifier;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
 
@@ -98,28 +91,18 @@ const int kMaxNumberOfLinesForCellTitleLabel = 2;
   if (self.detailText) {
     return self.detailText;
   }
-  // If there's no title text, the URL is used as the cell title.  Add the
-  // supplemental text to the URL label below if it exists.
+
   if (!self.title.length) {
-    return self.supplementalURLText;
+    return nil;
   }
 
-  // Append the hostname with the supplemental text.
+  // Append the hostname.
   if (!self.URL) {
     return @"";
   }
 
   NSString* hostname = [self displayedURL];
-  if (self.supplementalURLText.length) {
-    NSString* delimeter =
-        self.supplementalURLTextDelimiter.length
-            ? self.supplementalURLTextDelimiter
-            : base::SysUTF8ToNSString(kDefaultSupplementalURLTextDelimiter);
-    return [NSString stringWithFormat:@"%@ %@ %@", hostname, delimeter,
-                                      self.supplementalURLText];
-  } else {
-    return hostname;
-  }
+  return hostname;
 }
 
 - (NSString*)displayedURL {

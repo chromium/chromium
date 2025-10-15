@@ -84,60 +84,6 @@ TEST_F(TableViewURLItemTest, MetadataLabelIsVisibleWhenNonEmpty) {
   EXPECT_FALSE(URLCell.metadataLabel.hidden);
 }
 
-// Tests that the suppelemental URL text is appended to the hostname when there
-// is a title.
-TEST_F(TableViewURLItemTest, SupplementalURLTextWithTitle) {
-  NSString* const kTitle = @"Title";
-  const GURL kURL("https://www.google.com");
-  NSString* const kSupplementalURLText = @"supplement";
-  NSString* const kSupplementalURLTextDelimiter = @"x";
-  NSString* const kExpectedURLLabelText = [NSString
-      stringWithFormat:
-          @"%@ %@ %@",
-          base::SysUTF16ToNSString(
-              url_formatter::
-                  FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                      kURL)),
-          kSupplementalURLTextDelimiter, kSupplementalURLText];
-
-  TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:0];
-  item.title = kTitle;
-  item.URL = [[CrURL alloc] initWithGURL:kURL];
-  item.supplementalURLText = kSupplementalURLText;
-  item.supplementalURLTextDelimiter = kSupplementalURLTextDelimiter;
-
-  id cell = [[[item cellClass] alloc] init];
-  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  [item configureCell:cell withStyler:styler];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
-  EXPECT_NSEQ(kExpectedURLLabelText,
-              base::apple::ObjCCast<TableViewURLCell>(cell).URLLabel.text);
-}
-
-// Tests that when there is no title, the URL is used as the title and the
-// supplemental URL text is used in the URL label.
-TEST_F(TableViewURLItemTest, SupplementalURLTextWithNoTitle) {
-  const GURL kURL("https://www.google.com");
-  NSString* const kSupplementalURLText = @"supplement";
-
-  TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:0];
-  item.URL = [[CrURL alloc] initWithGURL:kURL];
-  item.supplementalURLText = kSupplementalURLText;
-
-  id cell = [[[item cellClass] alloc] init];
-  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  [item configureCell:cell withStyler:styler];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
-  TableViewURLCell* url_cell = base::apple::ObjCCast<TableViewURLCell>(cell);
-  EXPECT_NSEQ(
-      base::SysUTF16ToNSString(
-          url_formatter::
-              FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                  kURL)),
-      url_cell.titleLabel.text);
-  EXPECT_NSEQ(kSupplementalURLText, url_cell.URLLabel.text);
-}
-
 // Tests that the third row text is shown when the other two rows are shown.
 TEST_F(TableViewURLItemTest, ThirdRowText) {
   NSString* const kTitle = @"Title";

@@ -21,10 +21,6 @@
 @property(nonatomic, readwrite, copy) NSString* title;
 // CrURL from which the cell will retrieve a favicon and display the host name.
 @property(nonatomic, readwrite, strong) CrURL* URL;
-// Supplemental text used to describe the URL.
-@property(nonatomic, readwrite, copy) NSString* supplementalURLText;
-// Delimiter used to separate the URL hostname and the supplemental text.
-@property(nonatomic, readwrite, copy) NSString* supplementalURLTextDelimiter;
 // Custom third row text. This is not shown if it is empty or if the second row
 // is empty.
 @property(nonatomic, readwrite, copy) NSString* thirdRowText;
@@ -35,13 +31,6 @@
 @property(nonatomic, copy) NSString* detailText;
 // Metadata text displayed at the trailing edge of the cell.
 @property(nonatomic, readwrite, copy) NSString* metadata;
-// Metadata image displayed at the trailing edge of the cell, before the
-// metadata text if there's any.
-@property(nonatomic, readwrite, copy) UIImage* metadataImage;
-// Tint color for metadata image.
-@property(nonatomic, readwrite, copy) UIColor* metadataImageColor;
-// The image for the badge view added over the favicon.
-@property(nonatomic, readwrite, strong) UIImage* badgeImage;
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
 
