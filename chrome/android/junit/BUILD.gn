@@ -351,7 +351,7 @@ if (is_android) {
       "//services/media_session/public/cpp/android:media_session_java",
       "//services/media_session/public/mojom:mojom_java",
       "//services/service_manager/public/java:service_manager_java",
-      "//third_party/android_deps:chromium_play_services_availability_shadows_java",
+      "//third_party/android_deps:chromium_play_services_availability_java",
       "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
       "//third_party/android_deps:espresso_java",
       "//third_party/android_deps:guava_android_java",

@@ -15,15 +15,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
-import org.chromium.gms.shadows.ShadowChromiumPlayServicesAvailability;
 
 import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link BackgroundTaskSchedulerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowChromiumPlayServicesAvailability.class})
+@Config(manifest = Config.NONE)
 public class BackgroundTaskSchedulerImplWithMockTest {
     private static final int TEST_MINUTES = 10;
 
