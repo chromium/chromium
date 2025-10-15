@@ -1427,11 +1427,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPermissionAccess) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
-  histogram_tester->ExpectUniqueSample(
-      "Glic.Sharing.ActiveTabSharingState.OnTabContextPermissionGranted",
-      ActiveTabSharingState::kActiveTabIsShared, 1);
+
+  // TODO(b/450026474): Metrics are currently broken in multi-instance.
+  // Re-enable this check when fixed.
+  if (!GetParam().multi_instance) {
+    histogram_tester->ExpectUniqueSample(
+        "Glic.Sharing.ActiveTabSharingState.OnTabContextPermissionGranted",
+        ActiveTabSharingState::kActiveTabIsShared, 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosedCaptioning) {
@@ -1569,22 +1573,24 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCloseAndOpenWhileOpening) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  TrackFloatingGlicInstance();
+  RunTestSequence(OpenGlicFloatingWindow(GlicInstrumentMode::kNone));
   ExecuteJsTest();
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlicFloatingWindow(GlicInstrumentMode::kNone));
   ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testNotifyPanelWillOpenIsCalledOnce) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
-  histogram_tester->ExpectUniqueSample(
-      "Glic.Sharing.ActiveTabSharingState.OnPanelOpenAndReady",
-      ActiveTabSharingState::kTabContextPermissionNotGranted, 1);
+
+  // TODO(b/450026474): Metrics are currently broken in multi-instance.
+  // Re-enable this check when fixed.
+  if (!GetParam().multi_instance) {
+    histogram_tester->ExpectUniqueSample(
+        "Glic.Sharing.ActiveTabSharingState.OnPanelOpenAndReady",
+        ActiveTabSharingState::kTabContextPermissionNotGranted, 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetOsHotkeyState) {
@@ -1786,11 +1792,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testNavigateToDifferentClientPage) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // TODO(b/452126494): active browser tracking isn't implemented yet for
+  // mulit-instance, which results in us classifying the client as
+  // INACTIVE_RESPONSIVE instead of RESPONSIVE.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   base::HistogramTester histogram_tester;
-  WebUIStateListener listener(GetHost());
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
+  WebUIStateListener listener(GetHost());
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest({.params = base::Value(0)});  // test run count: 0.
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
