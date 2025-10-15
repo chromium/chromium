@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_BMP_BMP_IMAGE_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_BMP_BMP_IMAGE_READER_H_
 
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
@@ -227,18 +225,15 @@ class PLATFORM_EXPORT BMPImageReader final {
     switch (bytes_per_pixel) {
       case 2:
         return ReadUint16(encoded_pixel);
-
       case 3: {
         // It doesn't matter that we never set the most significant byte
         // of the return value, the caller won't read it.
-        uint32_t pixel;
-        memcpy(&pixel, encoded_pixel.data(), 3);
+        uint32_t pixel = 0;
+        base::byte_span_from_ref(pixel).first<3u>().copy_from(encoded_pixel);
         return pixel;
       }
-
       case 4:
         return ReadUint32(encoded_pixel);
-
       default:
         NOTREACHED();
     }
@@ -249,9 +244,9 @@ class PLATFORM_EXPORT BMPImageReader final {
   inline unsigned GetComponent(uint32_t pixel, int component) const {
     uint8_t value =
         (pixel & bit_masks_[component]) >> bit_shifts_right_[component];
-    return lookup_table_addresses_[component]
-               ? lookup_table_addresses_[component][value]
-               : value;
+    return lookup_table_spans_[component].empty()
+               ? value
+               : lookup_table_spans_[component][value];
   }
 
   inline unsigned GetAlpha(uint32_t pixel) const {
@@ -351,17 +346,17 @@ class PLATFORM_EXPORT BMPImageReader final {
   // Masks/offsets for the color values for non-palette formats. These are
   // bitwise, with array entries 0, 1, 2, 3 corresponding to R, G, B, A.
   // These are uninitialized (and ignored) for images with less than 16bpp.
-  uint32_t bit_masks_[4];
+  std::array<uint32_t, 4> bit_masks_;
 
   // Right shift values, meant to be applied after the masks. We need to shift
   // the bitfield values down from their offsets into the 32 bits of pixel
   // data, as well as truncate the least significant bits of > 8-bit fields.
-  int bit_shifts_right_[4];
+  std::array<int, 4> bit_shifts_right_;
 
   // We use a lookup table to convert < 8-bit values into 8-bit values. The
   // values in the table are "round(val * 255.0 / ((1 << n) - 1))" for an
-  // n-bit source value. These elements are set to 0 for 8-bit sources.
-  const uint8_t* lookup_table_addresses_[4];
+  // n-bit source value. These elements are empty spans for 8-bit sources.
+  std::array<base::span<const uint8_t>, 4> lookup_table_spans_;
 
   // The color palette, for paletted formats.
   Vector<RGBTriple> color_table_;
