@@ -92,6 +92,11 @@ ACTION_P(PostFetchReply, image, http_response_code) {
   self.selectedBackgroundId = selectedBackgroundId;
 }
 
+- (void)currentBackgroundConfigurationChanged:
+    (id<BackgroundCustomizationConfiguration>)currentConfiguration {
+  self.selectedBackgroundId = currentConfiguration.configurationID;
+}
+
 @end
 
 // Tests for the Home Customization Background Configuration mediator.

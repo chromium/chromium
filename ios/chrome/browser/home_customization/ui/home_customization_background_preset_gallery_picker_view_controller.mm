@@ -203,6 +203,20 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
                 animatingDifferences:NO];
 }
 
+- (void)currentBackgroundConfigurationChanged:
+    (id<BackgroundCustomizationConfiguration>)currentConfiguration {
+  NSString* currentItemID = currentConfiguration.configurationID;
+  NSIndexPath* currentItemIndexPath =
+      [_diffableDataSource indexPathForItemIdentifier:currentItemID];
+
+  [self.collectionView
+      selectItemAtIndexPath:currentItemIndexPath
+                   animated:NO
+             scrollPosition:UICollectionViewScrollPositionNone];
+
+  _selectedBackgroundId = currentItemID;
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
   // Log final maximums before disappearing, for example.
   base::UmaHistogramSparse(

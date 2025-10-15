@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class BackgroundCollectionConfiguration;
+@protocol BackgroundCustomizationConfiguration;
 
 // A consumer protocol for receiving updates about background configurations.
 @protocol HomeCustomizationBackgroundConfigurationConsumer
@@ -19,6 +20,12 @@
             (NSArray<BackgroundCollectionConfiguration*>*)
                 backgroundCollectionConfigurations
                          selectedBackgroundId:(NSString*)selectedBackgroundId;
+
+// Alerts the consumer that the given configuration is now the current
+// background.
+- (void)currentBackgroundConfigurationChanged:
+    (id<BackgroundCustomizationConfiguration>)currentConfiguration;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_CONFIGURATION_CONSUMER_H_

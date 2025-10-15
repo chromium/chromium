@@ -143,6 +143,27 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   _selectedColorId = selectedBackgroundId;
 }
 
+- (void)currentBackgroundConfigurationChanged:
+    (id<BackgroundCustomizationConfiguration>)currentConfiguration {
+  NSString* currentItemID = currentConfiguration.configurationID;
+
+  NSUInteger selectedIndex =
+      [_backgroundCollectionConfiguration.configurationOrder
+          indexOfObject:currentItemID];
+  if (selectedIndex == NSNotFound) {
+    _selectedColorId = nil;
+    return;
+  }
+
+  [_collectionView
+      selectItemAtIndexPath:[NSIndexPath indexPathForItem:selectedIndex
+                                                inSection:0]
+                   animated:NO
+             scrollPosition:UICollectionViewScrollPositionNone];
+
+  _selectedColorId = currentItemID;
+}
+
 #pragma mark - UICollectionViewDelegate
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView

@@ -380,6 +380,26 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 - (void)onBackgroundChanged {
   self.themeHasChanged = YES;
 
+  id<BackgroundCustomizationConfiguration> currentConfiguration;
+
+  std::optional<HomeCustomBackground> customBackground =
+      _backgroundCustomizationService->GetCurrentCustomBackground();
+  std::optional<sync_pb::UserColorTheme> colorTheme =
+      _backgroundCustomizationService->GetCurrentColorTheme();
+  if (customBackground) {
+    currentConfiguration = [self
+        generateConfigurationItemForRecentBackground:customBackground.value()];
+  } else if (colorTheme) {
+    currentConfiguration =
+        [self generateConfigurationItemForRecentBackground:colorTheme.value()];
+  } else {
+    currentConfiguration =
+        [[BackgroundCustomizationConfigurationItem alloc] initWithNoBackground];
+  }
+
+  [self.configurationConsumer
+      currentBackgroundConfigurationChanged:currentConfiguration];
+
   if (!self.consumer || self.consumer.navigationItem.leftBarButtonItem) {
     return;
   }

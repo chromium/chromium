@@ -488,6 +488,20 @@
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
+- (void)currentBackgroundConfigurationChanged:
+    (id<BackgroundCustomizationConfiguration>)currentConfiguration {
+  NSString* currentItemID = currentConfiguration.configurationID;
+  NSIndexPath* currentItemIndexPath =
+      [_diffableDataSource indexPathForItemIdentifier:currentItemID];
+
+  [self.collectionView
+      selectItemAtIndexPath:currentItemIndexPath
+                   animated:NO
+             scrollPosition:UICollectionViewScrollPositionNone];
+
+  _selectedBackgroundId = currentItemID;
+}
+
 #pragma mark - Helpers
 
 // Returns an array of identifiers for the background options, which can be used
