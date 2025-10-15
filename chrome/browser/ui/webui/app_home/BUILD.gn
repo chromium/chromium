@@ -126,6 +126,7 @@ if (enable_extensions) {
       "//base/test:test_support",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",

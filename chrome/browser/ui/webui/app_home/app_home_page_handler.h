@@ -72,6 +72,7 @@ class AppHomePageHandler
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
+  void OnWebAppManifestUpdated(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // extensions::ExtensionRegistryObserver:
@@ -155,7 +156,8 @@ class AppHomePageHandler
   void FillWebAppInfoList(std::vector<app_home::mojom::AppInfoPtr>* result);
   void FillExtensionInfoList(std::vector<app_home::mojom::AppInfoPtr>* result);
   app_home::mojom::AppInfoPtr CreateAppInfoPtrFromWebApp(
-      const webapps::AppId& app_id);
+      const webapps::AppId& app_id,
+      bool is_update = false);
   app_home::mojom::AppInfoPtr CreateAppInfoPtrFromExtension(
       const extensions::Extension* extension);
 

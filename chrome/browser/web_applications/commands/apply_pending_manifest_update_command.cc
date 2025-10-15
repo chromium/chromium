@@ -12,11 +12,13 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+
 namespace web_app {
 namespace {
 
@@ -281,7 +283,7 @@ void ApplyPendingManifestUpdateCommand::DeletePendingUpdateInfoThenComplete(
     WebApp* app_to_update = update->UpdateApp(app_id_);
     app_to_update->SetPendingUpdateInfo(std::nullopt);
   }
-
+  lock_->install_manager().NotifyWebAppManifestUpdated(app_id_);
   lock_->registrar().NotifyPendingUpdateInfoChanged(
       app_id_, /*pending_update_available=*/false,
       WebAppRegistrar::PendingUpdateInfoChangePassKey());

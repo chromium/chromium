@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -324,7 +325,8 @@ void AppHomePageHandler::CreateExtensionAppShortcut(
 }
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
-    const webapps::AppId& app_id) {
+    const webapps::AppId& app_id,
+    bool is_update) {
   auto& registrar = web_app_provider_->registrar_unsafe();
 
   auto app_info = app_home::mojom::AppInfo::New();
@@ -337,7 +339,20 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
   std::string name = registrar.GetAppShortName(app_id);
   app_info->name = name;
 
-  app_info->icon_url = apps::AppIconSource::GetIconURL(app_id, kWebAppIconSize);
+  GURL app_icon_url = apps::AppIconSource::GetIconURL(app_id, kWebAppIconSize);
+  if (is_update) {
+    // For updating, the resource the url is pointing to changes even if the url
+    // itself shouldn't change. Adding the timestamp helps keep the url updated
+    // so that the latest resource can be loaded without refreshing the page.
+    GURL::Replacements query_add;
+    std::string query_timestamp =
+        "t=" +
+        base::NumberToString(
+            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    query_add.SetQueryStr(query_timestamp);
+    app_icon_url = app_icon_url.ReplaceComponents(query_add);
+  }
+  app_info->icon_url = app_icon_url;
 
   bool is_locally_installed;
   if (registrar.GetInstallState(app_id) == std::nullopt) {
@@ -548,6 +563,10 @@ void AppHomePageHandler::OnWebAppWillBeUninstalled(
 
 void AppHomePageHandler::OnWebAppInstalled(const webapps::AppId& app_id) {
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
+}
+
+void AppHomePageHandler::OnWebAppManifestUpdated(const webapps::AppId& app_id) {
+  page_->UpdateApp(CreateAppInfoPtrFromWebApp(app_id, /*is_update=*/true));
 }
 
 void AppHomePageHandler::OnWebAppInstallManagerDestroyed() {

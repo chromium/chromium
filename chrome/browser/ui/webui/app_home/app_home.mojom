@@ -105,4 +105,7 @@ interface Page {
   AddApp(AppInfo app_info);
   // Inform frontend that an app is uninstalled.
   RemoveApp(AppInfo app_info);
+  // Inform frontend that the app was updated and that the
+  // frontend needs to rearrange apps if needed.
+  UpdateApp(AppInfo app_info);
 };
