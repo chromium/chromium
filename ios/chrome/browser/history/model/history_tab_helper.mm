@@ -104,8 +104,6 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
         url.EqualsIgnoringRef(original_url)) {
       redirects.push_back(referrer_url);
     }
-    // TODO(crbug.com/40511880): the redirect chain is not constructed the same
-    // way as desktop so this part needs to be revised.
     redirects.push_back(original_url);
     redirects.push_back(url);
   }

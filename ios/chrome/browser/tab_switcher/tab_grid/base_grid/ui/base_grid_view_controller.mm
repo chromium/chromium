@@ -471,8 +471,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     UICollectionViewCell* collectionViewCell =
         [self.collectionView cellForItemAtIndexPath:path];
     if (![collectionViewCell isKindOfClass:[GridCell class]]) {
-      // TODO(crbug.com/334885429): Update once the transition animation for the
-      // group cells is available.
       continue;
     }
     GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
