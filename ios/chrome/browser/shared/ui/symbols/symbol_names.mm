@@ -330,6 +330,9 @@ NSString* const kBuilding2Symbol = @"building.2";
 NSString* const kBookSymbol = @"book";
 NSString* const kKeySymbol = @"key";
 NSString* const kTextDocument = @"text.document";
+NSString* const kTextJustifyLeftSymbol = @"text.justifyleft";
+NSString* const kVideoSymbol = @"video";
+NSString* const kWaveformSymbol = @"waveform.mid";
 NSString* const kPhotoOnRectangleSymbol = @"photo.on.rectangle";
 NSString* const kSystemCameraSymbol = @"camera";
 

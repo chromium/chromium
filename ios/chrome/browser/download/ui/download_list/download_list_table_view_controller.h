@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/download/ui/download_list/download_list_action_delegate.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_consumer.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_filter_view.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_record_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"

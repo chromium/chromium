@@ -8,7 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/download/model/download_filter_util.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_action_delegate.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_consumer.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_filter_view.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_group_item.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_grouping_util.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
@@ -27,6 +30,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+constexpr CGFloat kFilterViewHeight = 48.0;
 
 /// Size for the file icon image in the download list cells.
 constexpr CGFloat kFileIconImageSize = 44.0;
@@ -44,6 +48,10 @@ typedef UITableViewDiffableDataSource<DownloadListGroupItem*, DownloadListItem*>
     DownloadListDiffableDataSource;
 typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
     DownloadListSnapshot;
+
+@interface DownloadListTableViewController ()
+@property(nonatomic, strong) DownloadListFilterView* filterHeaderView;
+@end
 
 @implementation DownloadListTableViewController {
   DownloadListDiffableDataSource* _diffableDataSource;
@@ -65,6 +73,10 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   // Configure table view.
   [TableViewCellContentConfiguration registerCellForTableView:self.tableView];
   RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
+
+  // Setup filter header view
+  [self setupFilterHeaderView];
+
   [self configureDiffableDataSource];
 
   // Load download records.
@@ -72,6 +84,23 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 }
 
 #pragma mark - Private
+
+- (void)setupFilterHeaderView {
+  self.filterHeaderView = [[DownloadListFilterView alloc]
+      initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width,
+                               kFilterViewHeight)];
+  self.filterHeaderView.mutator = self.mutator;
+}
+
+#pragma mark - Mutator setter override
+
+- (void)setMutator:(id<DownloadListMutator>)mutator {
+  _mutator = mutator;
+  // Update the filter view's mutator when it's set.
+  if (self.filterHeaderView) {
+    self.filterHeaderView.mutator = mutator;
+  }
+}
 
 /// Dismisses the view controller when close button is tapped.
 - (void)closeButtonTapped {
@@ -308,6 +337,18 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
     self.navigationItem.largeTitleDisplayMode =
         UINavigationItemLargeTitleDisplayModeAlways;
     self.tableView.backgroundView = nil;
+  }
+}
+
+- (void)setFilterViewShown:(BOOL)shown {
+  if (shown) {
+    // Show the filter view if it's not already set.
+    if (self.tableView.tableHeaderView != self.filterHeaderView) {
+      self.tableView.tableHeaderView = self.filterHeaderView;
+    }
+  } else {
+    // Hide the filter view by setting tableHeaderView to nil.
+    self.tableView.tableHeaderView = nil;
   }
 }
 
