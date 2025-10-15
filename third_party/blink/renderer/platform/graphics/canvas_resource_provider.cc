@@ -786,8 +786,8 @@ CanvasResourceProviderSharedImage::GetBackingClientSharedImageForExternalWrite(
 
   // NOTE: The above invocation of WillDrawInternal() ensures that this
   // invocation of GetSyncToken() will generate a new sync token.
-  internal_access_sync_token = resource_->GetSyncToken();
-
+  resource_->GetSyncToken();
+  internal_access_sync_token = resource_->sync_token();
   return resource_->GetClientSharedImage();
 }
 

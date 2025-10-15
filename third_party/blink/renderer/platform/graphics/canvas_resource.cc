@@ -526,14 +526,12 @@ void CanvasResourceSharedImage::WaitSyncToken() {
   }
 }
 
-const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
+void CanvasResourceSharedImage::GetSyncToken() {
   if (GetClientSharedImage()->is_software()) {
     // This class doesn't currently have a way of verifying the sync token
     // within this call for software SharedImages, so it instead ensures that it
     // is verified at the time of generation.
     DCHECK(sync_token().verified_flush());
-
-    return sync_token();
   }
 
   if (is_cross_thread()) {
@@ -542,8 +540,6 @@ const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
     // another thread, the sync token generated at Transfer time shouldn't
     // have been invalidated.
     DCHECK(sync_token().verified_flush());
-
-    return sync_token();
   }
 
   auto* raster_interface = RasterInterface();
@@ -554,8 +550,6 @@ const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
     raster_interface->GenUnverifiedSyncTokenCHROMIUM(
         owning_thread_data().sync_token.GetData());
   }
-
-  return sync_token();
 }
 
 void CanvasResourceSharedImage::VerifySyncToken() {
@@ -633,7 +627,8 @@ ExternalCanvasResource::~ExternalCanvasResource() {
   }
 
   if (release_callback_) {
-    std::move(release_callback_).Run(GetSyncToken(), resource_is_lost_);
+    GetSyncToken();
+    std::move(release_callback_).Run(sync_token(), resource_is_lost_);
   }
 }
 
@@ -661,9 +656,10 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       },
       base::RetainedRef(this));
 
+  GetSyncToken();
   scoped_refptr<StaticBitmapImage> image =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          client_si_, GetSyncToken(), GetAlphaType(), context_provider_wrapper_,
+          client_si_, sync_token(), GetAlphaType(), context_provider_wrapper_,
           owning_thread_ref_, owning_thread_task_runner_,
           std::move(release_callback));
   image->SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpTypes());
@@ -678,7 +674,7 @@ void ExternalCanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
   }
 }
 
-const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
+void ExternalCanvasResource::GetSyncToken() {
   // This method is expected to be used both in WebGL and WebGPU, that's why it
   // uses InterfaceBase.
   if (!sync_token_.HasData()) {
@@ -688,8 +684,6 @@ const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
   } else {
     VerifySyncToken();
   }
-
-  return sync_token_;
 }
 
 void ExternalCanvasResource::VerifySyncToken() {
@@ -786,9 +780,10 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       },
       base::RetainedRef(this));
 
+  GetSyncToken();
   scoped_refptr<StaticBitmapImage> image =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          back_buffer_shared_image_, GetSyncToken(), GetAlphaType(),
+          back_buffer_shared_image_, sync_token(), GetAlphaType(),
           context_provider_wrapper_, owning_thread_ref_,
           owning_thread_task_runner_, std::move(release_callback));
   image->SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpTypes());
@@ -808,9 +803,8 @@ void CanvasResourceSwapChain::WaitSyncToken(const gpu::SyncToken& sync_token) {
   }
 }
 
-const gpu::SyncToken CanvasResourceSwapChain::GetSyncToken() {
+void CanvasResourceSwapChain::GetSyncToken() {
   DCHECK(sync_token_.verified_flush());
-  return sync_token_;
 }
 
 void CanvasResourceSwapChain::PresentSwapChain() {

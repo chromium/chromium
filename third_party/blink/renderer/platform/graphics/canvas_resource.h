@@ -102,10 +102,10 @@ class PLATFORM_EXPORT CanvasResource
   // the thread where it was created.
   virtual void Transfer() {}
 
-  // Returns the sync token to indicate when all writes to the current resource
-  // are finished on the GPU thread. Note that the token is not guaranteed to be
-  // verified at the time of calling this method.
-  virtual const gpu::SyncToken GetSyncToken() = 0;
+  // Updates the sync token if necessary to indicate when all writes to the
+  // current resource are finished on the GPU thread. Note that the token is not
+  // guaranteed to be verified at the time of calling this method.
+  virtual void GetSyncToken() = 0;
 
   // Provides a TransferableResource representation of this resource to share it
   // with the compositor.
@@ -165,6 +165,7 @@ class PLATFORM_EXPORT CanvasResource
 
  private:
   friend class CanvasResourceProviderTest;
+  friend class WebGPUMailboxTexture;
 
   static void OnPlaceholderReleasedResourceOnOwningThread(
       scoped_refptr<CanvasResource> resource);
@@ -222,7 +223,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   // Wait on the saved |sync_token_|.
   void WaitSyncToken();
-  const gpu::SyncToken GetSyncToken() override;
+  void GetSyncToken() override;
 
   void NotifyResourceLost() final;
 
@@ -246,6 +247,8 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void UploadSoftwareRenderingResults(SkSurface* sk_surface);
 
  private:
+  friend class CanvasResourceProviderSharedImage;
+
   // These members are either only accessed on the owning thread, or are only
   // updated on the owning thread and then are read on a different thread.
   // We ensure to correctly update their state in Transfer, which is called
@@ -329,7 +332,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
     return client_si_;
   }
   void WaitSyncToken(const gpu::SyncToken&) override;
-  const gpu::SyncToken GetSyncToken() override;
+  void GetSyncToken() override;
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
 
@@ -394,7 +397,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage()
       const override;
   void WaitSyncToken(const gpu::SyncToken&) override;
-  const gpu::SyncToken GetSyncToken() override;
+  void GetSyncToken() override;
 
  private:
   bool UsesAcceleratedRaster() const final { return true; }

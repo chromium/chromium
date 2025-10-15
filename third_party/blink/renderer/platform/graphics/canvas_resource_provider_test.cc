@@ -119,6 +119,18 @@ class CanvasResourceProviderTest : public Test {
     return resource->sync_token();
   }
 
+  void EnsureResourceRecycled(CanvasResourceProvider* provider,
+                              scoped_refptr<CanvasResource>&& resource) {
+    viz::TransferableResource transferable_resource;
+    CanvasResource::ReleaseCallback release_callback;
+    resource->GetSyncToken();
+    CHECK(resource->PrepareTransferableResource(
+        &transferable_resource, &release_callback,
+        /*needs_verified_synctoken=*/false));
+    std::move(release_callback)
+        .Run(std::move(resource), resource->sync_token(), false);
+  }
+
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ImageTrackingDecodeCache image_decode_cache_;
@@ -287,17 +299,6 @@ scoped_refptr<CanvasResource> UpdateResource(CanvasResourceProvider* provider) {
   return provider->ProduceCanvasResource(FlushReason::kTesting);
 }
 
-void EnsureResourceRecycled(CanvasResourceProvider* provider,
-                            scoped_refptr<CanvasResource>&& resource) {
-  viz::TransferableResource transferable_resource;
-  CanvasResource::ReleaseCallback release_callback;
-  auto sync_token = resource->GetSyncToken();
-  CHECK(resource->PrepareTransferableResource(
-      &transferable_resource, &release_callback,
-      /*needs_verified_synctoken=*/false));
-  std::move(release_callback).Run(std::move(resource), sync_token, false);
-}
-
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageEndExternalWrite) {
   // Set up this test to use OOP rasterization to be able to verify
@@ -320,7 +321,8 @@ TEST_F(CanvasResourceProviderTest,
       shared_image_usage_flags);
 
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
-  auto old_compositor_read_sync_token = resource->GetSyncToken();
+  resource->GetSyncToken();
+  auto old_compositor_read_sync_token = GetSyncToken(resource.get());
 
   // NOTE: Need to ensure that this SyncToken's release count is greater than
   // that of the last one that TestRasterInterface waited on for
@@ -339,7 +341,8 @@ TEST_F(CanvasResourceProviderTest,
 
   // In addition, it should have ensured that the resource generates a new
   // compositor read sync token on the next request for that token.
-  EXPECT_NE(resource->GetSyncToken(), old_compositor_read_sync_token);
+  resource->GetSyncToken();
+  EXPECT_NE(GetSyncToken(resource.get()), old_compositor_read_sync_token);
 }
 
 TEST_F(CanvasResourceProviderTest,
@@ -389,7 +392,8 @@ TEST_F(CanvasResourceProviderTest,
   provider->Canvas().clear(SkColors::kBlack);
   auto resource_again = provider->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_EQ(resource_ptr, resource_again);
-  EXPECT_NE(sync_token, resource_again->GetSyncToken());
+  resource_again->GetSyncToken();
+  EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
@@ -401,7 +405,10 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
-  ASSERT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+
+  resource->GetSyncToken();
+  new_resource->GetSyncToken();
+  ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
 
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
@@ -431,7 +438,9 @@ TEST_F(CanvasResourceProviderTest,
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
-  ASSERT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+  resource->GetSyncToken();
+  new_resource->GetSyncToken();
+  ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
   EnsureResourceRecycled(provider.get(), std::move(resource));
@@ -452,7 +461,9 @@ TEST_F(CanvasResourceProviderTest,
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
-  ASSERT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+  resource->GetSyncToken();
+  new_resource->GetSyncToken();
+  ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
   EnsureResourceRecycled(provider.get(), std::move(resource));
@@ -472,7 +483,9 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
   new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
-  ASSERT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+  resource->GetSyncToken();
+  new_resource->GetSyncToken();
+  ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
 
   EnsureResourceRecycled(provider.get(), std::move(resource));
   EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
