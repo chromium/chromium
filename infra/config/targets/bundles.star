@@ -359,6 +359,38 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_canary_emulator_fyi_gtests",
+    targets = [
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_profile_generator_tests",
+        "chromium_gtests",
+        "android_emulator_specific_chrome_public_tests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "fieldtrial_android_tests",
+        "jni_zero_sample_apk_test",
+        "linux_flavor_specific_chromium_gtests",
+        "minidump_uploader_test",
+        "system_webview_shell_instrumentation_tests",  # Not an experimental test
+        "webview_ui_instrumentation_tests",
+        "webview_ui_test_app_test_apk_no_field_trial",
+    ],
+)
+
+targets.bundle(
+    name = "android_canary_isolated_scripts",
+    targets = [
+        "android_isolated_scripts",
+        "android_rel_isolated_scripts",
+        "chromium_junit_tests_scripts",
+        "components_perftests_isolated_scripts",
+        "telemetry_android_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts_android",
+    ],
+)
+
+targets.bundle(
     name = "android_ci_only_fieldtrial_webview_tests",
     targets = [
         "webview_trichrome_64_cts_tests_no_field_trial",

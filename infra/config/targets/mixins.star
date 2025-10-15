@@ -460,6 +460,29 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "canary-x64-emulator",
+    generate_pyl_entry = False,
+    description = "Run with android_canary_google_apis_x64",
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_canary_google_apis_x64.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_canary_google_apis_x64",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_canary_google_apis_x64",
+                path = ".android_emulator/android_canary_google_apis_x64",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "chrome-finch-swarming-pool",
     swarming = targets.swarming(
         dimensions = {

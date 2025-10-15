@@ -94,6 +94,7 @@
     "android-15-x64-fyi-rel": "ci/android-15-x64-fyi-rel/gn-args.json",
     "android-16-x64-fyi-rel": "ci/android-16-x64-fyi-rel/gn-args.json",
     "android-annotator-rel": "ci/android-annotator-rel/gn-args.json",
+    "android-canary-x64-fyi-rel": "ci/android-canary-x64-fyi-rel/gn-args.json",
     "android-cronet-asan-x86-rel": "ci/android-cronet-asan-x86-rel/gn-args.json",
     "android-structured-test-ids-16-x64-rel-fyi": "ci/android-structured-test-ids-16-x64-rel-fyi/gn-args.json"
   },
@@ -587,6 +588,7 @@
     "android-arm64-rel": "try/android-arm64-rel/gn-args.json",
     "android-bfcache-rel": "try/android-bfcache-rel/gn-args.json",
     "android-binary-size": "try/android-binary-size/gn-args.json",
+    "android-canary-x64-fyi-rel": "try/android-canary-x64-fyi-rel/gn-args.json",
     "android-cast-arm-dbg": "try/android-cast-arm-dbg/gn-args.json",
     "android-cast-arm-rel": "try/android-cast-arm-rel/gn-args.json",
     "android-cast-arm64-dbg": "try/android-cast-arm64-dbg/gn-args.json",
