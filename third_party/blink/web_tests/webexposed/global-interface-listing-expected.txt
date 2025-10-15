@@ -8250,6 +8250,7 @@ interface Request
     method clone
     method constructor
     method formData
+    method getRetryOptions
     method json
     method text
 interface ResizeObserver

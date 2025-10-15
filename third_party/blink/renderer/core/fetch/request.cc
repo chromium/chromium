@@ -185,7 +185,8 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetAttributionReportingSupport(original->AttributionSupport());
   request->SetServiceWorkerRaceNetworkRequestToken(
       original->ServiceWorkerRaceNetworkRequestToken());
-  if (original->HasRetryOptions()) {
+  if (RuntimeEnabledFeatures::FetchRetryEnabled(context) &&
+      original->HasRetryOptions()) {
     request->SetRetryOptions(original->RetryOptions().value());
   }
 
@@ -673,7 +674,8 @@ Request* Request::CreateRequestWithRequestOrString(
   if (init->hasKeepalive())
     request->SetKeepalive(init->keepalive());
 
-  if (init->hasRetryOptions()) {
+  if (RuntimeEnabledFeatures::FetchRetryEnabled(execution_context) &&
+      init->hasRetryOptions()) {
     UseCounter::Count(execution_context, WebFeature::kFetchRetry);
     network::FetchRetryOptions options;
     RetryOptions* retry_options = init->retryOptions();
@@ -1258,6 +1260,32 @@ Request* Request::clone(ScriptState* script_state,
   auto* signal = MakeGarbageCollected<AbortSignal>(script_state, signals);
 
   return MakeGarbageCollected<Request>(script_state, request, headers, signal);
+}
+
+RetryOptions* Request::getRetryOptions() const {
+  if (!request_->HasRetryOptions()) {
+    return nullptr;
+  }
+
+  const network::FetchRetryOptions& network_options =
+      request_->RetryOptions().value();
+  RetryOptions* options = RetryOptions::Create();
+  options->setMaxAttempts(network_options.max_attempts);
+  if (network_options.initial_delay.has_value()) {
+    options->setInitialDelay(
+        network_options.initial_delay.value().InMilliseconds());
+  }
+  if (network_options.backoff_factor.has_value()) {
+    options->setBackoffFactor(network_options.backoff_factor.value());
+  }
+  if (network_options.max_age.has_value()) {
+    options->setMaxAge(network_options.max_age->InMilliseconds());
+  }
+  options->setRetryAfterUnload(network_options.retry_after_unload);
+  options->setRetryNonIdempotent(network_options.retry_non_idempotent);
+  options->setRetryOnlyIfServerUnreached(
+      network_options.retry_only_if_server_unreached);
+  return options;
 }
 
 FetchRequestData* Request::PassRequestData(ScriptState* script_state,
