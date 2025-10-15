@@ -37,6 +37,10 @@ class ExtensionActionPlatformDelegate {
   virtual void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                          PopupShowAction show_action,
                          ShowPopupCallback callback) = 0;
+
+  // Shows the context menu for the action as a fallback for performing another
+  // action.
+  virtual void ShowContextMenuAsFallback() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_

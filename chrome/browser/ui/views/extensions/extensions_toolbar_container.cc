@@ -1085,6 +1085,11 @@ void ExtensionsToolbarContainer::CollapseConfirmation() {
   UpdateControlsVisibility();
 }
 
+void ExtensionsToolbarContainer::ShowContextMenuAsFallback(
+    const extensions::ExtensionId& action_id) {
+  GetViewForId(action_id)->ShowContextMenuAsFallback();
+}
+
 void ExtensionsToolbarContainer::OnMouseExited(const ui::MouseEvent& event) {
   UpdateToolbarActionHoverCard(nullptr,
                                ToolbarActionHoverCardUpdateType::kHover);

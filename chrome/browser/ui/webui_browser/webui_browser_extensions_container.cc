@@ -53,11 +53,6 @@ class WebUIBrowserExtensionsContainer::ActionInfo
     extensions_container_->NotifyOfOneAction(controller_->GetId());
   }
 
-  void ShowContextMenuAsFallback() override {
-    extensions_container_->ShowContextMenu(ui::mojom::MenuSourceType::kNone,
-                                           controller()->GetId());
-  }
-
   // ToolbarActionViewDelegateViews:
   views::FocusManager* GetFocusManagerForAccelerator() override {
     return extensions_container_->window_->widget()->GetFocusManager();
@@ -286,6 +281,11 @@ void WebUIBrowserExtensionsContainer::UpdateToolbarActionHoverCard(
     ToolbarActionView* action_view,
     ToolbarActionHoverCardUpdateType update_type) {
   NOTIMPLEMENTED();
+}
+
+void WebUIBrowserExtensionsContainer::ShowContextMenuAsFallback(
+    const extensions::ExtensionId& action_id) {
+  ShowContextMenu(ui::mojom::MenuSourceType::kNone, action_id);
 }
 
 void WebUIBrowserExtensionsContainer::CollapseConfirmation() {

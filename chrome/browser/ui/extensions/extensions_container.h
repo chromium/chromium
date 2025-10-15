@@ -80,6 +80,11 @@ class ExtensionsContainer {
   // hiding the button. Does nothing if the confirmation is not showing
   // anymore.
   virtual void CollapseConfirmation() = 0;
+
+  // Shows the context menu for the action as a fallback for performing another
+  // action.
+  virtual void ShowContextMenuAsFallback(
+      const extensions::ExtensionId& action_id) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_

@@ -38,7 +38,6 @@ class ExtensionsMenuButton : public HoverButton,
   views::FocusManager* GetFocusManagerForAccelerator() override;
   views::BubbleAnchor GetReferenceButtonForPopup() override;
   void UpdateState() override;
-  void ShowContextMenuAsFallback() override;
 
   std::u16string_view label_text_for_testing() const {
     return label()->GetText();

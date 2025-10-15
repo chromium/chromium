@@ -49,6 +49,8 @@ class WebUIBrowserExtensionsContainer
   void UpdateToolbarActionHoverCard(
       ToolbarActionView* action_view,
       ToolbarActionHoverCardUpdateType update_type) override;
+  void ShowContextMenuAsFallback(
+      const extensions::ExtensionId& action_id) override;
 
   void CollapseConfirmation() override;
 

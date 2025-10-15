@@ -46,6 +46,7 @@ class ExtensionActionPlatformDelegateViews
   void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                  PopupShowAction show_action,
                  ShowPopupCallback callback) override;
+  void ShowContextMenuAsFallback() override;
 
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

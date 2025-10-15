@@ -210,6 +210,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
       ToolbarActionView* action_view,
       ToolbarActionHoverCardUpdateType update_type) override;
   void CollapseConfirmation() override;
+  void ShowContextMenuAsFallback(
+      const extensions::ExtensionId& action_id) override;
 
   // ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;

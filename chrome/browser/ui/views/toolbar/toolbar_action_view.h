@@ -18,6 +18,10 @@
 
 class ExtensionContextMenuController;
 
+namespace content {
+class WebContents;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarActionView
 // A wrapper around a ToolbarActionViewController to display a toolbar action
@@ -60,6 +64,10 @@ class ToolbarActionView : public views::MenuButton,
 
   void MaybeUpdateHoverCardStatus(const ui::MouseEvent& event);
 
+  // Shows the context menu for the action as a fallback for performing another
+  // action.
+  void ShowContextMenuAsFallback();
+
   // views::MenuButton:
   gfx::Rect GetAnchorBoundsInScreen() const override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
@@ -96,7 +104,6 @@ class ToolbarActionView : public views::MenuButton,
   // ToolbarActionViewDelegateViews:
   views::FocusManager* GetFocusManagerForAccelerator() override;
   views::BubbleAnchor GetReferenceButtonForPopup() override;
-  void ShowContextMenuAsFallback() override;
   void OnPopupShown(bool by_user) override;
   void OnPopupClosed() override;
 

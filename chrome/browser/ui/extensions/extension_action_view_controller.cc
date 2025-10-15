@@ -426,8 +426,7 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
 
   content::WebContents* const web_contents = GetCurrentWebContents();
   if (!IsEnabled(web_contents)) {
-    GetPreferredPopupViewController()
-        ->view_delegate_->ShowContextMenuAsFallback();
+    platform_delegate_->ShowContextMenuAsFallback();
     return;
   }
 
