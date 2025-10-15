@@ -258,11 +258,6 @@ bool DrawVideoFrameIntoResourceProvider(
                      "RasterContextProvider.";
       return false;  // Unable to get/create a shared main thread context.
     }
-    if (!raster_context_provider->ContextCapabilities().gpu_rasterization) {
-      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o OOP "
-                     "raster support.";
-      return false;
-    }
   }
 
   cc::PaintFlags media_flags;
