@@ -34,35 +34,9 @@
 
 namespace media {
 
-namespace {
-
-bool IsJpegImage(base::span<const uint8_t> encoded_data) {
-  if (encoded_data.size() < 3u)
-    return false;
-  return UNSAFE_TODO(memcmp("\xFF\xD8\xFF", encoded_data.data(), 3u)) == 0;
-}
-
-}  // namespace
-
 VaapiImageDecoder* VaapiImageDecodeAcceleratorWorker::GetInitializedDecoder(
     const std::vector<uint8_t>& encoded_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  // TODO(crbug.com/988123): revisit the
-  // Media.VaapiImageDecodeAcceleratorWorker.VAAPIError UMA to be able to record
-  // WebP and JPEG failures separately.
-  const auto uma_cb =
-      base::BindRepeating(&ReportVaapiErrorToUMA,
-                          "Media.VaapiImageDecodeAcceleratorWorker.VAAPIError");
-  if (IsJpegImage(encoded_data) &&
-      base::Contains(decoders_, gpu::ImageDecodeAcceleratorType::kJpeg)) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kVaapiJpegImageDecodeAcceleration));
-    if (!decoders_[gpu::ImageDecodeAcceleratorType::kJpeg]->Initialize(
-            uma_cb)) {
-      return nullptr;
-    }
-    return decoders_[gpu::ImageDecodeAcceleratorType::kJpeg].get();
-  }
   return nullptr;
 }
 

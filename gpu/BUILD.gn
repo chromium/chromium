@@ -543,12 +543,6 @@ test("gpu_unittests") {
     ]
   }
 
-  if (is_chromeos) {
-    # Image decode acceleration with hardware is only supported in Chrome OS.
-    # The intention is to run this test in the linux-chromeos build.
-    sources += [ "ipc/service/image_decode_accelerator_stub_unittest.cc" ]
-  }
-
   if (is_mac) {
     sources += [
       "command_buffer/client/internal/mappable_buffer_io_surface_unittest.cc",

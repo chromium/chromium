@@ -273,33 +273,7 @@ SkYUVColorSpace VaapiJpegDecoder::GetYUVColorSpace() const {
 // static
 std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
 VaapiJpegDecoder::GetSupportedProfile() {
-  if (!base::FeatureList::IsEnabled(
-          features::kVaapiJpegImageDecodeAcceleration)) {
-    return std::nullopt;
-  }
-  if (VaapiWrapper::GetImplementationType() == VAImplementation::kMesaGallium) {
-    // TODO(crbug.com/40632250): we can't advertise accelerated image decoding
-    // in AMD until we support VAAPI surfaces with multiple buffer objects.
-    return std::nullopt;
-  }
-
-  gpu::ImageDecodeAcceleratorSupportedProfile profile;
-  profile.image_type = gpu::ImageDecodeAcceleratorType::kJpeg;
-
-  const bool got_supported_resolutions = VaapiWrapper::GetSupportedResolutions(
-      VAProfileJPEGBaseline, VaapiWrapper::CodecMode::kDecode,
-      profile.min_encoded_dimensions, profile.max_encoded_dimensions);
-  if (!got_supported_resolutions) {
-    return std::nullopt;
-  }
-
-  // TODO(andrescj): Ideally, we would advertise support for all the formats
-  // supported by the driver. However, for now, we will only support exposing
-  // YUV 4:2:0 surfaces as DmaBufs.
-  CHECK(VaapiWrapper::GetDecodeSupportedInternalFormats(VAProfileJPEGBaseline)
-            .yuv420);
-  profile.subsamplings.push_back(gpu::ImageDecodeAcceleratorSubsampling::k420);
-  return profile;
+  return std::nullopt;
 }
 
 std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(

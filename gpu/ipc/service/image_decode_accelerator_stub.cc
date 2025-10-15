@@ -157,39 +157,8 @@ void ImageDecodeAcceleratorStub::ScheduleImageDecode(
                                     command_buffer_id_, release_count);
 
   base::AutoLock lock(lock_);
-  if (!base::FeatureList::IsEnabled(
-          features::kVaapiJpegImageDecodeAcceleration)) {
-    ScheduleSyncTokenRelease(decode_sync_token);
-    return;
-  }
-
-  if (!channel_) {
-    // The channel is no longer available, so don't do any decoding.
-    ScheduleSyncTokenRelease(decode_sync_token);
-    return;
-  }
-
-  mojom::ScheduleImageDecodeParams& decode_params = *params;
-
-  // Start the actual decode.
-  worker_->Decode(
-      std::move(decode_params.encoded_data), decode_params.output_size,
-      base::BindOnce(&ImageDecodeAcceleratorStub::OnDecodeCompleted,
-                     base::WrapRefCounted(this), decode_params.output_size));
-
-  // Schedule a task to eventually release the decode sync token. Note that this
-  // task won't run until the sequence is re-enabled when a decode completes.
-  const SyncToken discardable_handle_sync_token(
-      CommandBufferNamespace::GPU_IO,
-      CommandBufferIdFromChannelAndRoute(channel_->client_id(),
-                                         decode_params.raster_decoder_route_id),
-      decode_params.discardable_handle_release_count);
-  scheduler_->ScheduleTask(Scheduler::Task(
-      sequence_,
-      base::BindOnce(&ImageDecodeAcceleratorStub::ProcessCompletedDecode,
-                     base::WrapRefCounted(this), std::move(params)),
-      /*sync_token_fences=*/{discardable_handle_sync_token},
-      decode_sync_token));
+  ScheduleSyncTokenRelease(decode_sync_token);
+  return;
 }
 
 void ImageDecodeAcceleratorStub::ProcessCompletedDecode(

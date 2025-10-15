@@ -1033,17 +1033,9 @@ GpuImageDecodeCache::GpuImageDecodeCache(
   }
 
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
-  // Note that to compute |allow_accelerated_jpeg_decodes_| and
-  // |allow_accelerated_webp_decodes_|, the last thing we check is the feature
-  // flag. That's because we want to ensure that the hardware decoder supports
-  // the image type so that finch experiments involving hardware decode
-  // acceleration only count users in that population (both in the 'control'
-  // and the 'enabled' groups).
-  allow_accelerated_jpeg_decodes_ =
-      context_->ContextSupport()->IsJpegDecodeAccelerationSupported() &&
-      base::FeatureList::IsEnabled(features::kVaapiJpegImageDecodeAcceleration);
-  // TODO(crbug.com/450466845): Remove this ivar and all code depending on it
-  // being true.
+  // TODO(crbug.com/450466845): Remove these ivars and all code depending on
+  // them being true.
+  allow_accelerated_jpeg_decodes_ = false;
   allow_accelerated_webp_decodes_ = false;
 
   {
