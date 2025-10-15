@@ -802,7 +802,9 @@ IpcPacketSocketFactory::IpcPacketSocketFactory(
 
 IpcPacketSocketFactory::~IpcPacketSocketFactory() {}
 
-webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
+std::unique_ptr<webrtc::AsyncPacketSocket>
+IpcPacketSocketFactory::CreateUdpSocket(
+    const webrtc::Environment&,
     const webrtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port) {
@@ -810,7 +812,7 @@ webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
   DCHECK(socket_dispatcher);
   auto socket_client =
       std::make_unique<P2PSocketClientImpl>(batch_udp_packets_);
-  std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
+  auto socket = std::make_unique<IpcPacketSocket>();
 
   if (!socket->Init(socket_dispatcher, traffic_annotation_,
                     network::P2P_SOCKET_UDP, std::move(socket_client),
@@ -818,10 +820,12 @@ webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
                     devtools_token_getter_)) {
     return nullptr;
   }
-  return socket.release();
+  return socket;
 }
 
-webrtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
+std::unique_ptr<webrtc::AsyncListenSocket>
+IpcPacketSocketFactory::CreateServerTcpSocket(
+    const webrtc::Environment&,
     const webrtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,
@@ -829,7 +833,9 @@ webrtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
   NOTREACHED();
 }
 
-webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
+std::unique_ptr<webrtc::AsyncPacketSocket>
+IpcPacketSocketFactory::CreateClientTcpSocket(
+    const webrtc::Environment&,
     const webrtc::SocketAddress& local_address,
     const webrtc::SocketAddress& remote_address,
     const webrtc::PacketSocketTcpOptions& opts) {
@@ -861,7 +867,7 @@ webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
                     remote_address, devtools_token_getter_)) {
     return nullptr;
   }
-  return socket.release();
+  return socket;
 }
 
 std::unique_ptr<webrtc::AsyncDnsResolverInterface>

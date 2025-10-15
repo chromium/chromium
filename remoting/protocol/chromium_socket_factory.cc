@@ -449,7 +449,9 @@ ChromiumPacketSocketFactory::ChromiumPacketSocketFactory(
 
 ChromiumPacketSocketFactory::~ChromiumPacketSocketFactory() = default;
 
-webrtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateUdpSocket(
+std::unique_ptr<webrtc::AsyncPacketSocket>
+ChromiumPacketSocketFactory::CreateUdpSocket(
+    const webrtc::Environment& /*env*/,
     const webrtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port) {
@@ -464,10 +466,12 @@ webrtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateUdpSocket(
   if (!result->Init(local_address, min_port, max_port)) {
     return nullptr;
   }
-  return result.release();
+  return result;
 }
 
-webrtc::AsyncListenSocket* ChromiumPacketSocketFactory::CreateServerTcpSocket(
+std::unique_ptr<webrtc::AsyncListenSocket>
+ChromiumPacketSocketFactory::CreateServerTcpSocket(
+    const webrtc::Environment& env,
     const webrtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,
@@ -478,7 +482,9 @@ webrtc::AsyncListenSocket* ChromiumPacketSocketFactory::CreateServerTcpSocket(
   return nullptr;
 }
 
-webrtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateClientTcpSocket(
+std::unique_ptr<webrtc::AsyncPacketSocket>
+ChromiumPacketSocketFactory::CreateClientTcpSocket(
+    const webrtc::Environment& /*env*/,
     const webrtc::SocketAddress& local_address,
     const webrtc::SocketAddress& remote_address,
     const webrtc::PacketSocketTcpOptions& opts) {
@@ -486,7 +492,7 @@ webrtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateClientTcpSocket(
   if (!socket->InitClientTcp(local_address, remote_address, opts)) {
     return nullptr;
   }
-  return socket.release();
+  return socket;
 }
 
 std::unique_ptr<webrtc::AsyncDnsResolverInterface>

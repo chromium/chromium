@@ -689,7 +689,9 @@ IpcPacketSocketFactory::IpcPacketSocketFactory(
 
 IpcPacketSocketFactory::~IpcPacketSocketFactory() = default;
 
-webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
+std::unique_ptr<webrtc::AsyncPacketSocket>
+IpcPacketSocketFactory::CreateUdpSocket(
+    const webrtc::Environment& /*env*/,
     const webrtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port) {
@@ -701,10 +703,12 @@ webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
                     webrtc::SocketAddress())) {
     return nullptr;
   }
-  return socket.release();
+  return socket;
 }
 
-webrtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
+std::unique_ptr<webrtc::AsyncListenSocket>
+IpcPacketSocketFactory::CreateServerTcpSocket(
+    const webrtc::Environment& env,
     const webrtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,
@@ -712,7 +716,9 @@ webrtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
   NOTREACHED();
 }
 
-webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
+std::unique_ptr<webrtc::AsyncPacketSocket>
+IpcPacketSocketFactory::CreateClientTcpSocket(
+    const webrtc::Environment& /*env*/,
     const webrtc::SocketAddress& local_address,
     const webrtc::SocketAddress& remote_address,
     const webrtc::PacketSocketTcpOptions& opts) {
@@ -736,7 +742,7 @@ webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
   if (!socket->Init(type, std::move(socket_client), local_address, 0, 0,
                     remote_address))
     return nullptr;
-  return socket.release();
+  return socket;
 }
 
 std::unique_ptr<webrtc::AsyncDnsResolverInterface>
