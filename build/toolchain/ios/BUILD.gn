@@ -84,33 +84,9 @@ ios_toolchain("ios_clang_arm64e") {
   }
 }
 
-ios_toolchain("ios_clang_arm64_16_0") {
-  toolchain_args = {
-    current_cpu = "arm64"
-    ios_deployment_target = "16.0"
-  }
-}
-
-ios_toolchain("ios_clang_arm64e_16_0") {
-  toolchain_args = {
-    current_cpu = "arm64e"
-    ios_deployment_target = "16.0"
-
-    # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
-    use_lld = false
-  }
-}
-
 ios_toolchain("ios_clang_x64") {
   toolchain_args = {
     current_cpu = "x64"
-  }
-}
-
-ios_toolchain("ios_clang_x64_16_0") {
-  toolchain_args = {
-    current_cpu = "x64"
-    ios_deployment_target = "16.0"
   }
 }
 
