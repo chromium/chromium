@@ -31,6 +31,13 @@ BwgService::BwgService(ProfileIOS* profile,
   identity_manager_->AddObserver(this);
   pref_service_ = pref_service;
 
+  // For managed accounts, we err on the side of caution and only show Gemini
+  // entrypoints when we know whether they are eligible. Otherwise, we're OK
+  // with having the entrypoint maybe disappear at a later time (actual Gemini
+  // requests to ineligible accounts will fail regardless).
+  is_disabled_by_gemini_policy_ =
+      auth_service_->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
+
   if (IsAskGeminiChipEnabled()) {
     optimization_guide_ = optimization_guide;
     optimization_guide_->RegisterOptimizationTypes(
