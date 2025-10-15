@@ -2328,19 +2328,17 @@ suite('NewTabPageRealboxTest', () => {
             expectedSrc: string|null) {
           assertTrue(!!element!.$.icon.$.icon, 'Icon element does not exists');
           assertEquals(
-              !element!.$.icon.$.icon.hidden, !expectUseIconImg,
+              isVisible(element!.$.icon.$.icon),
+              !expectUseIconImg && !hasEntityImage,
               'Icon visibility is incorrect');
+
           assertTrue(
               !!element!.$.icon.$.iconImg, 'Icon image element does not exist');
           assertEquals(
-              !element!.$.icon.$.iconImg.hidden, expectUseIconImg,
+              isVisible(element!.$.icon.$.iconImg),
+              expectUseIconImg && !hasEntityImage,
               'Icon image visibility is incorrect');
-          // If there is an entity image, icon and iconImg should both have
-          // 'display' overridden to 'none'.
-          if (hasEntityImage) {
-            assertStyle(element!.$.icon.$.icon, 'display', 'none');
-            assertStyle(element!.$.icon.$.iconImg, 'display', 'none');
-          }
+
           if (expectedSrc) {
             assertEquals(
                 element!.$.icon.$.iconImg.getAttribute('src'), expectedSrc,
@@ -2357,6 +2355,13 @@ suite('NewTabPageRealboxTest', () => {
               element, hasEntityImage, /*expectUseIconImg=*/ false,
               expectedSrc);
           element!.$.icon.$.iconImg.dispatchEvent(new Event('load'));
+
+          const iconImg = element!.$.icon.$.iconImg;
+          assertTrue(!!iconImg);
+          const loadPromise = eventToPromise('load', iconImg);
+          iconImg.dispatchEvent(new Event('load'));
+          await loadPromise;
+
           await microtasksFinished();
           // After load: icon image visible.
           assertIconState(
