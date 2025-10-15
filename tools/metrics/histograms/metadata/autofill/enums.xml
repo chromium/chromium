@@ -2420,8 +2420,8 @@ Called by update_autofill_enums.py.-->
              for masked server card with no benefit available was filled
              (once)"/>
   <int value="103"
-      label="Form was submitted after a suggestion for a masked server card
-             with a benefit available was filled (once)"/>
+      label="(DEPRECATED) Form was submitted after a suggestion for a masked
+             server card with a benefit available was filled (once)"/>
   <int value="104"
       label="(DEPRECATED) Form was submitted after a suggestion for a masked
              server card with no benefit available was filled (once)"/>
@@ -2434,8 +2434,8 @@ Called by update_autofill_enums.py.-->
              after suggestions containing cards with a benefit available were
              shown (once)"/>
   <int value="107"
-      label="Form was submitted after suggestions containing cards with a
-             benefit available were shown (once)"/>
+      label="(DEPRECATED) Form was submitted after suggestions containing
+             cards with a benefit available were shown (once)"/>
   <int value="108" label="Local card suggestion selected"/>
   <int value="109" label="Local card suggestion selected (once)"/>
 </enum>

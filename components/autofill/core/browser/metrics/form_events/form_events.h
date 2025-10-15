@@ -309,9 +309,10 @@ enum FormEvent {
   // card with no benefit available was filled. Logged once per page load.
   DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_WILL_SUBMIT_ONCE =
       102,
+  // DEPRECATED in M143, DO NOT USE.
   // A form was submitted after a suggestion of a masked server card with
   // benefit available was filled. Logged once per page load.
-  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE =
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE =
       103,
   // DEPRECATED in M128, DO NOT USE.
   // A form was submitted after a suggestion of a masked server card with no
@@ -333,11 +334,12 @@ enum FormEvent {
   // page load.
   DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE =
       106,
+  // DEPRECATED in M143, DO NOT USE.
   // A form is submitted after suggestions containing cards with a benefit
   // available were shown and a masked server card suggestion was filled.
   // The filled card can be any masked server card, even it has no available
   // benefit. Logged once per page load.
-  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE =
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE =
       107,
 
   // A local card suggestion was selected to fill the form.

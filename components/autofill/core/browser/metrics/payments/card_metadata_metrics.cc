@@ -331,9 +331,6 @@ void LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent event,
               CardBenefitFormEvent::
                   kSuggestionWithBenefitSubmittedWithMultipleServerCards);
         }
-        LogBenefitFormEventToBenefitSourceHistogramDeprecated(
-            context.selected_benefit_source,
-            FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE);
       } else {
         if (context.masked_server_card_count >= 2) {
           LogBenefitFormEventToMainBenefitHistogram(
@@ -341,9 +338,6 @@ void LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent event,
                   kSuggestionWithoutBenefitSubmittedWithMultipleServerCards);
         }
       }
-      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
-          context.instrument_ids_to_available_benefit_sources,
-          FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
     case CardMetadataLoggingEvent::kWillSubmit:
       // Currently do not log kWillSubmit events for benefits.
@@ -417,33 +411,6 @@ void LogBenefitFormEventToAllBenefitHistograms(std::string_view benefit_source,
   }
   LogBenefitFormEventToMainBenefitHistogram(event);
   LogBenefitFormEventToBenefitSubhistogram(benefit_source_suffix, event);
-}
-
-void LogBenefitFormEventToBenefitSourceHistogramDeprecated(
-    std::string_view benefit_source,
-    FormEvent event) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Autofill.FormEvents.CreditCard.WithBenefits.",
-                    GetCardBenefitSourceSuffix(benefit_source)}),
-      event, NUM_FORM_EVENTS);
-}
-
-void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
-    const base::flat_map<int64_t, std::string>&
-        instrument_ids_to_available_benefit_sources,
-    FormEvent event) {
-  // `benefit_sources_logged` holds all credit card benefit sources that were
-  // shown with benefits available to the user and logged for the `event`.
-  std::unordered_set<std::string> benefit_sources_logged;
-
-  for (const auto& [instrument_id, benefit_source] :
-       instrument_ids_to_available_benefit_sources) {
-    if (!benefit_sources_logged.contains(benefit_source)) {
-      LogBenefitFormEventToBenefitSourceHistogramDeprecated(benefit_source,
-                                                            event);
-      benefit_sources_logged.insert(benefit_source);
-    }
-  }
 }
 
 }  // namespace autofill::autofill_metrics

@@ -707,20 +707,10 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
   }
 
   // Log masked server card submitted events for benefits.
-  if (latest_filled_card_was_masked_server_card_) {
-    if (metadata_logging_context_.SelectedCardHasBenefitAvailable()) {
-      Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
-          form);
-    }
-    // Log when a form is submitted after a suggestion for a card with benefits
-    // was shown. The user may have selected a card other than the card with
-    // benefits.
-    if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
-      Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
-          form);
-      LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kSubmitted,
-                                     metadata_logging_context_);
-    }
+  if (latest_filled_card_was_masked_server_card_ &&
+      metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
+    LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kSubmitted,
+                                   metadata_logging_context_);
   }
 
   // Log if a card info retrieval enrolled card was filled before form
