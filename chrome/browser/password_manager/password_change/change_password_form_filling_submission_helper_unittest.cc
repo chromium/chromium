@@ -256,14 +256,17 @@ class ChangePasswordFormFillingSubmissionHelperTest
                                      kNewPassword);
   }
 
-  void ExpectSuccessfulSubmission() {
+  void WaitForSuccessfulSubmission() {
     base::RunLoop run_loop;
     EXPECT_CALL(*optimization_service(), ExecuteModel)
-        .WillOnce(
-            DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
-                  WithArg<3>(&PostResponseForSubmissionButtonClick<true>)));
+        .WillOnce(WithArg<3>(
+            [&run_loop](
+                optimization_guide::
+                    OptimizationGuideModelExecutionResultCallback callback) {
+              PostResponseForSubmissionButtonClick<true>(
+                  std::move(callback).Then(run_loop.QuitClosure()));
+            }));
     run_loop.Run();
-    task_environment()->RunUntilIdle();
   }
 
   password_manager::PasswordForm* existing_credential() {
@@ -328,7 +331,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
       .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
 
-  ExpectSuccessfulSubmission();
+  WaitForSuccessfulSubmission();
   // Simulate submission detected.
   verifier->OnPasswordFormSubmission(web_contents());
 
@@ -374,7 +377,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SucceededNewCredential) {
   EXPECT_CALL(*profile_password_store(), AddLogin)
       .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
 
-  ExpectSuccessfulSubmission();
+  WaitForSuccessfulSubmission();
   verifier->OnPasswordFormSubmission(web_contents());
 
   EXPECT_TRUE(base::test::RunUntil([&verifier]() {
@@ -411,7 +414,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SavePassword) {
   // Presave generated password.
   EXPECT_CALL(*profile_password_store(), UpdateLogin);
   FillChangePasswordForm(form_manager.get(), verifier.get());
-  ExpectSuccessfulSubmission();
+  WaitForSuccessfulSubmission();
 
   // Unblock fetch after presaving the generated password.
   static_cast<password_manager::FakeFormFetcher*>(
@@ -458,7 +461,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   // Presave generated password.
   EXPECT_CALL(*profile_password_store(), UpdateLogin);
   FillChangePasswordForm(form_manager.get(), verifier.get());
-  ExpectSuccessfulSubmission();
+  WaitForSuccessfulSubmission();
 
   // Unblock fetch after presaving the generated password.
   static_cast<password_manager::FakeFormFetcher*>(
@@ -535,7 +538,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Failed) {
   // Presave generated password as backup
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
       .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
-  ExpectSuccessfulSubmission();
+  WaitForSuccessfulSubmission();
 
   EXPECT_TRUE(base::test::RunUntil([&verifier]() {
     EXPECT_TRUE(verifier->submission_verifier());
@@ -591,12 +594,12 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, OnTimeout) {
   base::test::TestFuture<bool> completion_future;
   auto verifier =
       CreateVerifier(form_manager.get(), completion_future.GetCallback());
-  FillChangePasswordForm(form_manager.get(), verifier.get());
   password_manager::PasswordForm presaved_generated_password_form;
   // Presave generated password as backup
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
       .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
-  ExpectSuccessfulSubmission();
+  FillChangePasswordForm(form_manager.get(), verifier.get());
+  WaitForSuccessfulSubmission();
 
   ASSERT_TRUE(verifier->submission_verifier());
   EXPECT_FALSE(verifier->submission_verifier()->capturer());
@@ -710,7 +713,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   auto verifier =
       CreateVerifier(form_manager.get(), completion_future.GetCallback());
   FillChangePasswordForm(form_manager.get(), verifier.get());
-  ExpectSuccessfulSubmission();
+  WaitForSuccessfulSubmission();
 
   EXPECT_TRUE(base::test::RunUntil([&verifier]() {
     EXPECT_TRUE(verifier->submission_verifier());
@@ -739,7 +742,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   auto verifier =
       CreateVerifier(form_manager.get(), completion_future.GetCallback());
   FillChangePasswordForm(form_manager.get(), verifier.get());
-  ExpectSuccessfulSubmission();
+  WaitForSuccessfulSubmission();
 
   // Sets up clicking on the Submit button using MES to find the button.
   // Expects MES to be called for checking if the submission was successful.
