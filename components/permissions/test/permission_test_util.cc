@@ -27,7 +27,13 @@ class FakePermissionContext : public ContentSettingPermissionContextBase {
       network::mojom::PermissionsPolicyFeature permissions_policy_feature)
       : ContentSettingPermissionContextBase(browser_context,
                                             content_settings_type,
-                                            permissions_policy_feature) {}
+                                            permissions_policy_feature) {
+#if BUILDFLAG(IS_ANDROID)
+    if (content_settings_type == ContentSettingsType::NOTIFICATIONS) {
+      enabled_app_level_notification_permission_for_testing_ = true;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
 };
 
 class FakePermissionContextAlwaysAllow : public FakePermissionContext {

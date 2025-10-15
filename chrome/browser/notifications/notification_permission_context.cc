@@ -71,7 +71,13 @@ NotificationPermissionContext::NotificationPermissionContext(
     : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::NOTIFICATIONS,
-          network::mojom::PermissionsPolicyFeature::kNotFound) {}
+          network::mojom::PermissionsPolicyFeature::kNotFound) {
+#if BUILDFLAG(IS_ANDROID)
+  if (Profile::FromBrowserContext(browser_context)->AsTestingProfile()) {
+    enabled_app_level_notification_permission_for_testing_ = true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
 NotificationPermissionContext::~NotificationPermissionContext() = default;
 
