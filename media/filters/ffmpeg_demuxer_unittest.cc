@@ -764,9 +764,8 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Sync) {
 
   // Run the test twice with a seek in between.
   for (int i = 0; i < 2; ++i) {
-    Read(audio, FROM_HERE, 1, 0, true, DemuxerStream::Status::kOk,
-         base::Microseconds(2902));
-    Read(audio, FROM_HERE, 1, 2902, true);
+    Read(audio, FROM_HERE, 1, -2902, true, DemuxerStream::Status::kOk);
+    Read(audio, FROM_HERE, 1, 0, true);
     EXPECT_EQ(base::Microseconds(-2902), demuxer_->start_time());
 
     // Though the internal start time may be below zero, the exposed media time
@@ -893,9 +892,9 @@ TEST_F(FFmpegDemuxerTest, Read_AudioVideoNegativeStartTime) {
   DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
   DemuxerStream* audio = GetStream(DemuxerStream::AUDIO);
 
-  Read(audio, FROM_HERE, 10, 0, true, DemuxerStream::Status::kOk,
+  Read(audio, FROM_HERE, 10, -1005465, true, DemuxerStream::Status::kOk,
        base::Microseconds(1005464));  // ~ 43 * 23220
-  Read(audio, FROM_HERE, 10, 23220, true, DemuxerStream::Status::kOk,
+  Read(audio, FROM_HERE, 10, -982245, true, DemuxerStream::Status::kOk,
        kInfiniteDuration);
 
   // The rest are all similar, just verify that discard padding is correct.
@@ -912,7 +911,7 @@ TEST_F(FFmpegDemuxerTest, Read_AudioVideoNegativeStartTime) {
                       }));
   run_loop.Run();
   task_environment_.RunUntilIdle();
-  Read(audio, FROM_HERE, 10, 998458, true);  // First audible audio.
+  Read(audio, FROM_HERE, 10, -7007, true);  // First audible audio.
 
   // Note: Frames are in decode (not presentation) order at this point.
   Read(video, FROM_HERE, 26791, -66733, true, DemuxerStream::Status::kOk,

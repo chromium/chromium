@@ -494,110 +494,22 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     return;
   }
 
-  // If this file has negative timestamps don't rebase any other stream types
-  // against the negative starting time.
-  base::TimeDelta start_time = demuxer_->start_time();
-  if (!is_audio && start_time.is_negative()) {
-    start_time = base::TimeDelta();
-  }
-
-  // Don't rebase timestamps for positive start times, the HTML Media Spec
-  // details this in section "4.8.10.6 Offsets into the media resource." We
-  // will still need to rebase timestamps before seeking with FFmpeg though.
-  if (start_time.is_positive()) {
-    start_time = base::TimeDelta();
-  }
-
-  buffer->set_timestamp(stream_timestamp - start_time);
+  buffer->set_timestamp(stream_timestamp);
 
   auto discard_padding = GetDiscardPaddingFromAVPacket(
       packet.get(), is_audio ? audio_decoder_config().samples_per_second() : 0);
 
-  if (is_audio) {
-    const bool has_finite_front_padding =
-        discard_padding && discard_padding->first != kInfiniteDuration;
-    if (has_finite_front_padding) {
-      // We only allow front discard padding on the first packet. Note that
-      // discarding the entire packet is still allowed on later packets.
-      if (last_packet_duration_ != kNoTimestamp) {
-        discard_padding->first = base::TimeDelta();
-      }
-
-      // In cases where the first buffer has a discrete and finite discard which
-      // spans multiple packets (or we just can't tell), treat negative
-      // timestamps as being dropped. Duration may be inaccurate, so instead of
-      // tracking a total amount discarded (like AudioDiscardHelper does
-      // post-decode), just flag that any negative timestamps should be treated
-      // as partially discarded.
-      if (buffer->duration() == kNoTimestamp ||
-          discard_padding->first > buffer->duration()) {
-        // We add one millisecond of padding to adjust for inaccurate durations
-        // and rounding errors which might occur in converting the timestamp.
-        fixup_negative_timestamps_until_ =
-            stream_timestamp + discard_padding->first + base::Milliseconds(1);
-      }
-
-      // Fixup negative timestamps where the before-zero portion is completely
-      // discarded after decoding.
-      if (buffer->timestamp().is_negative()) {
-        // Discard padding may also remove samples after zero.
-        auto fixed_ts = discard_padding->first + buffer->timestamp();
-
-        // Allow for rounding error in the discard padding calculations.
-        if (fixed_ts == base::Microseconds(-1)) {
-          fixed_ts = base::TimeDelta();
-        }
-
-        if (fixed_ts >= base::TimeDelta()) {
-          buffer->set_timestamp(fixed_ts);
-        }
-      }
-    }
-
-    // Treat this buffer as if it was partially discarded by a front discard
-    // indicated by a previous packet.
-    if (fixup_negative_timestamps_until_ &&
-        stream_timestamp < fixup_negative_timestamps_until_.value() &&
-        last_packet_timestamp_ != kNoTimestamp &&
-        buffer->timestamp().is_negative()) {
-      buffer->set_timestamp(last_packet_timestamp_);
-    }
-
-    // Only allow negative timestamps past if we know they'll be fixed up by the
-    // code paths below; otherwise they should be treated as a parse error.
-    if ((!fixup_chained_ogg_ || last_packet_timestamp_ == kNoTimestamp) &&
-        buffer->timestamp().is_negative()) {
-      MEDIA_LOG(ERROR, media_log_)
-          << "FFmpegDemuxer: unfixable negative timestamp.";
-      demuxer_->NotifyDemuxerError(DEMUXER_ERROR_COULD_NOT_PARSE);
-      return;
-    }
-
-    // If enabled, and no codec delay is present, mark audio packets with
-    // negative timestamps for post-decode discard. If codec delay is present,
-    // discard is handled by the decoder using that value.
-    if (fixup_negative_timestamps_ && stream_timestamp.is_negative() &&
-        buffer->duration() != kNoTimestamp &&
-        !audio_decoder_config().codec_delay()) {
-      if ((stream_timestamp + buffer->duration()).is_negative()) {
-        CHECK(!discard_padding.has_value() ||
-              discard_padding->second == base::TimeDelta());
-
-        // Discard the entire packet if it's entirely before zero, but don't
-        // override the discard padding if it refers to frames beyond this
-        // packet.
-        if (!discard_padding || discard_padding->first <= buffer->duration()) {
-          discard_padding =
-              std::make_pair(kInfiniteDuration, base::TimeDelta());
-        }
-      } else {
-        // Only discard part of the frame if it overlaps zero.
-        discard_padding = std::make_pair(
-            std::max(-stream_timestamp, discard_padding ? discard_padding->first
-                                                        : base::TimeDelta()),
-            discard_padding ? discard_padding->second : base::TimeDelta());
-      }
-    }
+  // Codec delay functions a bit weird for consistency with MSE (which has
+  // no concept of codec delay). We shift time such that all the preroll is
+  // part of the seekable timeline. This data is still discarded during
+  // decoding and the timeline unchanged such that a/v sync works properly.
+  //
+  // We may be able to stop doing this, but it's been the behavior for so
+  // long it's hard to know what might break.
+  if (is_audio && audio_decoder_config().codec_delay() &&
+      demuxer_->start_time().is_negative()) {
+    buffer->set_timestamp(stream_timestamp - demuxer_->start_time());
+    DCHECK_GE(buffer->timestamp(), base::TimeDelta());
   }
 
   if (discard_padding) {
@@ -627,12 +539,8 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
                                  : base::Microseconds(1)));
     }
 
-    if (is_audio) {
-      // The demuxer should always output positive timestamps.
-      DCHECK_GE(buffer->timestamp(), base::TimeDelta());
-    }
-
-    if (last_packet_timestamp_ < buffer->timestamp()) {
+    if (last_packet_timestamp_ < buffer->timestamp() &&
+        buffer->timestamp() >= base::TimeDelta()) {
       buffered_ranges_.Add(last_packet_timestamp_, buffer->timestamp());
       demuxer_->NotifyBufferingChanged();
     }
@@ -709,7 +617,6 @@ void FFmpegDemuxerStream::FlushBuffers(bool preserve_packet_position) {
   end_of_stream_ = false;
   last_packet_timestamp_ = kNoTimestamp;
   last_packet_duration_ = kNoTimestamp;
-  fixup_negative_timestamps_until_.reset();
   aborted_ = false;
 }
 
@@ -1109,15 +1016,17 @@ void FFmpegDemuxer::SeekInternal(base::TimeDelta time,
   // Additionally, to workaround limitations in how we expose seekable ranges to
   // Blink (http://crbug.com/137275), we also want to clamp seeks before the
   // start time to the start time.
+  FFmpegDemuxerStream* audio_stream =
+      GetFirstEnabledFFmpegStream(DemuxerStream::AUDIO);
+
   base::TimeDelta seek_time;
-  if (start_time_.is_negative()) {
+  if (start_time_.is_negative() && audio_stream &&
+      audio_stream->audio_decoder_config().codec_delay()) {
     seek_time = time + start_time_;
   } else {
     seek_time = std::max(start_time_, time);
   }
 
-  FFmpegDemuxerStream* audio_stream =
-      GetFirstEnabledFFmpegStream(DemuxerStream::AUDIO);
   if (audio_stream) {
     const AudioDecoderConfig& config = audio_stream->audio_decoder_config();
 
@@ -1379,7 +1288,6 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
   int supported_audio_track_count = 0;
   int supported_video_track_count = 0;
   bool has_opus_or_vorbis_audio = false;
-  bool needs_negative_timestamp_fixup = false;
   const base::span<AVStream*> stream_span =
       AVFormatContextToSpan(format_context);
   for (size_t i = 0; i < stream_span.size(); ++i) {
@@ -1550,11 +1458,6 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
         codec_id == AV_CODEC_ID_OPUS || codec_id == AV_CODEC_ID_VORBIS;
     if (!has_opus_or_vorbis_audio)
       has_opus_or_vorbis_audio = is_opus_or_vorbis;
-
-    if (codec_type == AVMEDIA_TYPE_AUDIO && start_time.is_negative() &&
-        is_opus_or_vorbis) {
-      needs_negative_timestamp_fixup = true;
-    }
   }
 
   if (media_tracks->tracks().empty()) {
@@ -1583,30 +1486,11 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
       supported_audio_track_count == 1 && !supported_video_track_count &&
       has_opus_or_vorbis_audio;
 
-  // FFmpeg represents audio data marked as before the beginning of stream as
-  // having negative timestamps.  This data must be discarded after it has been
-  // decoded, not before since it is used to warmup the decoder.  There are
-  // currently two known cases for this: vorbis in ogg and opus.
-  //
-  // For API clarity, it was decided that the rest of the media pipeline should
-  // not be exposed to negative timestamps.  Which means we need to rebase these
-  // negative timestamps and mark them for discard post decoding.
-  //
-  // Post-decode frame dropping for packets with negative timestamps is outlined
-  // in section A.2 in the Ogg Vorbis spec:
-  // http://xiph.org/vorbis/doc/Vorbis_I_spec.html
-  //
-  // FFmpeg's use of negative timestamps for opus pre-skip is nonstandard, but
-  // for more information on pre-skip see section 4.2 of the Ogg Opus spec:
-  // https://tools.ietf.org/html/draft-ietf-codec-oggopus-08#section-4.2
-  if (needs_negative_timestamp_fixup || needs_chained_ogg_fixup) {
+  if (needs_chained_ogg_fixup) {
     for (auto& stream : streams_) {
-      if (!stream)
-        continue;
-      if (needs_negative_timestamp_fixup)
-        stream->enable_negative_timestamp_fixups();
-      if (needs_chained_ogg_fixup)
+      if (stream) {
         stream->enable_chained_ogg_fixups();
+      }
     }
   }
 
