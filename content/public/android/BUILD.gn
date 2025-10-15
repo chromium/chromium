@@ -724,6 +724,7 @@ robolectric_binary("content_junit_tests") {
   resources_package = "org.chromium.content"
   sources = [
     "java/src/org/chromium/content/browser/input/ImeAdapterImplUnitTest.java",
+    "java/src/org/chromium/content/browser/input/ImeUtilsTest.java",
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessConnectionMetricsUnitTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessRankingTest.java",

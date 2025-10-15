@@ -189,6 +189,8 @@ public class ImeAdapterImpl
 
     private final ArrayDeque<KeyEvent> mKeyDownEvents = new ArrayDeque<>();
 
+    private String[] mSupportedMimeTypes = {};
+
     /**
      * {@ResultReceiver} passed in InputMethodManager#showSoftInput}. We need this to scroll to the
      * editable node at the right timing, which is after input method window shows up.
@@ -468,8 +470,9 @@ public class ImeAdapterImpl
         // null. This makes sure IME doesn't enter fullscreen mode or open custom UI.
         outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_FULLSCREEN | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_MEDIA_INSERTION)) {
-            outAttrs.contentMimeTypes =
+            mSupportedMimeTypes =
                     ImeAdapterImplJni.get().getSupportedMimeTypes(mNativeImeAdapterAndroid);
+            outAttrs.contentMimeTypes = mSupportedMimeTypes;
         }
 
         if (!allowKeyboardLearning) {
@@ -594,6 +597,11 @@ public class ImeAdapterImpl
         mWebContents
                 .getStylusWritingHandler()
                 .updateInputState(mLastText, mLastSelectionStart, mLastSelectionEnd);
+    }
+
+    /** Retrieves the supported MIME types of the current input field. */
+    public String[] getSupportedMimeTypes() {
+        return mSupportedMimeTypes;
     }
 
     /**
@@ -1474,6 +1482,19 @@ public class ImeAdapterImpl
                 immediateRequest, monitorRequest, getContainerView());
     }
 
+    /**
+     * Sends rich content into the current focused text field
+     *
+     * @param inputContentInfo information about the rich content to be inserted
+     * @return whether the insertion is successful.
+     */
+    boolean commitContent(String dataUrl) {
+        onImeEvent();
+        if (!isValid()) return false;
+        return ImeAdapterImplJni.get()
+                .insertMediaFromURL(mNativeImeAdapterAndroid, ImeAdapterImpl.this, dataUrl);
+    }
+
     /** Lazily creates/returns a StylusWritingImeCallback object. */
     public StylusWritingImeCallback getStylusWritingImeCallback() {
         if (mStylusWritingImeCallback == null) {
@@ -1824,6 +1845,8 @@ public class ImeAdapterImpl
                 int end,
                 String text,
                 int newCursorPosition);
+
+        boolean insertMediaFromURL(long nativeImeAdapterAndroid, ImeAdapterImpl self, String url);
 
         void finishComposingText(long nativeImeAdapterAndroid);
 

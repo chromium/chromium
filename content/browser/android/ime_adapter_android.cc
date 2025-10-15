@@ -400,6 +400,20 @@ void ImeAdapterAndroid::FinishComposingText(JNIEnv* env) {
   rwhi->ImeFinishComposingText(true);
 }
 
+bool ImeAdapterAndroid::InsertMediaFromURL(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jstring>& url) {
+  auto* input_handler = GetFocusedFrameWidgetInputHandler();
+  if (!input_handler) {
+    return false;
+  }
+
+  input_handler->ExecuteEditCommand("PasteFromImageURL",
+                                    ConvertJavaStringToUTF16(env, url));
+  return true;
+}
+
 void ImeAdapterAndroid::CancelComposition() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
