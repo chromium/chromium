@@ -4060,6 +4060,7 @@ if (!is_android) {
       "//components/push_messaging",
       "//components/push_messaging:test_support",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
+      "//components/sync_bookmarks",
       "//third_party/federated_compute:confidential_compute",
     ]
 

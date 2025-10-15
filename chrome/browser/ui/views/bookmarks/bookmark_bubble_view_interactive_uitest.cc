@@ -6,6 +6,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
@@ -15,6 +16,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
@@ -22,6 +24,10 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -94,6 +100,28 @@ class BookmarkBubbleViewIPHInteractiveTest
     return mock_tracker;
   }
 
+  bookmarks::BookmarkModel* CreateBookmarkModel() {
+    signin::ConsentLevel consent_level =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync;
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        "test@email.com", consent_level);
+
+    bookmarks::BookmarkModel* bookmark_model =
+        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+
+    // If we are not syncing, we need to add account nodes in order to use the
+    // shopping collection.
+    if (consent_level == signin::ConsentLevel::kSignin) {
+      bookmark_model->CreateAccountPermanentFolders();
+    }
+
+    return bookmark_model;
+  }
+
  protected:
   feature_engagement::test::MockTracker* GetMockTracker(Profile* profile) {
     return static_cast<feature_engagement::test::MockTracker*>(
@@ -103,6 +131,10 @@ class BookmarkBubbleViewIPHInteractiveTest
 
  private:
   base::CallbackListSubscription create_services_subscription_;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+#endif
 
   base::WeakPtrFactory<BookmarkBubbleViewIPHInteractiveTest> weak_ptr_factory_{
       this};
@@ -110,8 +142,7 @@ class BookmarkBubbleViewIPHInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
                        ShoppingCollectionIPH_Shown) {
-  bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::BookmarkModel* model = CreateBookmarkModel();
 
   ON_CALL(*GetMockTracker(browser()->profile()),
           ShouldTriggerHelpUI(
@@ -142,8 +173,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
                        ShoppingCollectionIPH_NotShown) {
-  bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::BookmarkModel* model = CreateBookmarkModel();
 
   ON_CALL(*GetMockTracker(browser()->profile()),
           ShouldTriggerHelpUI(testing::_))

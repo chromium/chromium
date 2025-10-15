@@ -8,12 +8,14 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -52,6 +54,9 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
       profile_(profile),
       url_(url),
       type_(type) {
+  CHECK(commerce::ShoppingServiceFactory::GetForBrowserContext(profile_)
+            ->IsShoppingListEligible());
+
   SetProperty(views::kElementIdentifierKey, kPriceTrackingBubbleDialogId);
   SetShowCloseButton(true);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -77,10 +82,13 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
                                      base::DoNothing()));
 
     if (!bookmark_folder_name.has_value()) {
+      // At this point, the account has a viable shopping collection folder.
       const bookmarks::BookmarkNode*
           default_shopping_collection_bookmark_folder =
               commerce::GetShoppingCollectionBookmarkFolder(
                   BookmarkModelFactory::GetForBrowserContext(profile_), true);
+      CHECK(default_shopping_collection_bookmark_folder);
+
       bookmark_folder_name =
           default_shopping_collection_bookmark_folder->GetTitle();
     }

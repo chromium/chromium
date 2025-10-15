@@ -25,6 +25,7 @@
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace commerce {
@@ -481,9 +482,19 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
   const base::Uuid collection_uuid =
       base::Uuid::ParseLowercase(bookmarks::kShoppingCollectionUuid);
 
-  const bookmarks::BookmarkNode* collection_node = model->GetNodeByUuid(
-      collection_uuid,
-      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
+  // Only try to use account nodes if the user is not syncing.
+  bool use_account_nodes = base::FeatureList::IsEnabled(
+                               syncer::kReplaceSyncPromosWithSignInPromos) &&
+                           model->IsLocalOnlyNode(*model->other_node());
+
+  const auto node_type_for_lookup =
+      use_account_nodes
+          ? bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes
+          : bookmarks::BookmarkModel::NodeTypeForUuidLookup::
+                kLocalOrSyncableNodes;
+
+  const bookmarks::BookmarkNode* collection_node =
+      model->GetNodeByUuid(collection_uuid, node_type_for_lookup);
 
   CHECK(!collection_node || collection_node->is_folder());
 
@@ -492,15 +503,23 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
   }
 
   if (!collection_node) {
+    const bookmarks::BookmarkPermanentNode* parent_node =
+        use_account_nodes ? model->account_other_node() : model->other_node();
+    // The account other node may not exist if account storage for bookmarks is
+    // disabled. If the user is syncing, then the `parent_node` would be the
+    // local node. If they are not, then we should not return the local other
+    // node, as this would not allow for the shopping feature to work.
+    // Therefore, simply return `nullptr` instead.
+    if (!parent_node) {
+      return nullptr;
+    }
+
     collection_node = model->AddFolder(
-        model->other_node(), model->other_node()->children().size(),
+        parent_node, parent_node->children().size(),
         l10n_util::GetStringUTF16(IDS_SHOPPING_COLLECTION_FOLDER_NAME), nullptr,
         std::nullopt, collection_uuid);
-    CHECK_EQ(
-        model->GetNodeByUuid(collection_uuid,
-                             bookmarks::BookmarkModel::NodeTypeForUuidLookup::
-                                 kLocalOrSyncableNodes),
-        collection_node);
+    CHECK_EQ(model->GetNodeByUuid(collection_uuid, node_type_for_lookup),
+             collection_node);
   }
 
   return collection_node;
