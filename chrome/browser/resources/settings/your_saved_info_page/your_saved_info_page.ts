@@ -213,11 +213,15 @@ export class SettingsYourSavedInfoPageElement extends
   private computePasswordsCardData_(): ChipData[] {
     return [
       {
-        label: this.i18n('passwords'),
+        label: this.i18n('passwordsLabel'),
         icon: 'cr20:password',
         counter: this.passwordsCount,
       },
-      {label: 'Passkeys', icon: 'cr:security', counter: this.passkeysCount},
+      {
+        label: this.i18n('passkeysLabel'),
+        icon: 'settings20:passkey',
+        counter: this.passkeysCount,
+      },
     ];
   }
 

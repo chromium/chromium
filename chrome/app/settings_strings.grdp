@@ -609,6 +609,9 @@
   <message name="IDS_SETTINGS_PAYMENT_METHODS_NONE" desc="Placeholder that is shown when there are no payment methods in the list of saved payment methods.">
     Saved payment methods will appear here
   </message>
+  <message name="IDS_AUTOFILL_PASSKEYS_TITLE" desc="Title for the passkeys chip on the 'Your saved info' page directing the user to manage their passkeys in the Password Manager.">
+    Passkeys
+  </message>
   <message name="IDS_SETTINGS_PASSKEYS_LENGTH_ERROR" desc="Error message in the passkey edit dialog when the user inputs an empty username.">
     Enter your username
   </message>
