@@ -146,6 +146,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
     public void showMenu(RectProvider anchorViewRectProvider, int tabId, boolean focusable) {
         mIsMenuFocusableUponCreation = focusable;
         boolean isIncognito = mTabGroupModelFilter.getTabModel().isIncognitoBranded();
+        dismiss();
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabId,
