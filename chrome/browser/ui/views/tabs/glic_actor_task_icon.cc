@@ -99,28 +99,10 @@ void GlicActorTaskIcon::SetTaskIconToDefault() {
   SetFloatyClosedTooltipText();
 }
 
-void GlicActorTaskIcon::ShowCheckTasksLabel() {
-  // TODO(crbug.com/431015299): Replace with finalized strings when ready.
-  const std::u16string glic_actor_task_icon_check_task_label =
-      u"Check your task";
-  const std::u16string glic_actor_task_icon_check_task_tooltip_text =
-      u"Check your task";
-
+void GlicActorTaskIcon::ShowNudgeLabel(const std::u16string nudge_label) {
   HighlightTaskIcon();
-  SetText(glic_actor_task_icon_check_task_label);
-  SetTooltipText(glic_actor_task_icon_check_task_tooltip_text);
-}
-
-void GlicActorTaskIcon::ShowCompleteTasksLabel() {
-  // TODO(crbug.com/431015299): Replace with finalized strings when ready.
-  const std::u16string glic_actor_task_icon_complete_task_label =
-      u"Task complete";
-  const std::u16string glic_actor_task_icon_complete_task_tooltip_text =
-      u"Task complete";
-
-  HighlightTaskIcon();
-  SetText(glic_actor_task_icon_complete_task_label);
-  SetTooltipText(glic_actor_task_icon_complete_task_tooltip_text);
+  SetText(nudge_label);
+  SetTooltipText(nudge_label);
 }
 
 GlicActorTaskIcon::~GlicActorTaskIcon() = default;

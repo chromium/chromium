@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace tabs {
 using glic::GlicInstance;
@@ -82,17 +84,17 @@ void GlicActorTaskIconController::OnStateUpdate(
   }
 
   // Determines the text to be shown.
-  // TODO(crbug.com/431015299): Consider consolidating these 3 calls and pass
-  // the text as a string from the manager instead.
   switch (actor_task_icon_state.text) {
     case ActorTaskIconState::Text::kDefault:
       tab_strip_action_container_->ShowGlicActorTaskIcon();
       break;
     case ActorTaskIconState::Text::kNeedsAttention:
-      tab_strip_action_container_->TriggerGlicActorTaskIconCheckTasksNudge();
+      tab_strip_action_container_->TriggerGlicActorNudge(
+          l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
       break;
     case ActorTaskIconState::Text::kCompleteTasks:
-      tab_strip_action_container_->TriggerGlicActorTaskIconCompleteTasksNudge();
+      tab_strip_action_container_->TriggerGlicActorNudge(
+          l10n_util::GetStringUTF16(IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL));
       break;
   }
 

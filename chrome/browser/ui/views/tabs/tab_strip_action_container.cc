@@ -680,31 +680,16 @@ bool TabStripActionContainer::GetIsShowingGlicNudge() {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
-void TabStripActionContainer::TriggerGlicActorTaskIconCheckTasksNudge() {
 #if BUILDFLAG(ENABLE_GLIC)
+void TabStripActionContainer::TriggerGlicActorNudge(
+    const std::u16string nudge_text) {
   CHECK(glic_actor_task_icon_);
-  // Make sure the task icon is visible, for example if another window was
-  // opened after the CheckTask state was sent.
   ShowGlicActorTaskIcon();
-  glic_actor_task_icon_->ShowCheckTasksLabel();
+  glic_actor_task_icon_->ShowNudgeLabel(nudge_text);
+  HighlightGlicActorTaskIcon();
   ShowTabStripNudge(glic_actor_task_icon_);
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
-
-void TabStripActionContainer::TriggerGlicActorTaskIconCompleteTasksNudge() {
-#if BUILDFLAG(ENABLE_GLIC)
-  CHECK(glic_actor_task_icon_);
-  // Make sure the task icon is visible, for example if another window was
-  // opened after the CompleteTask state was sent.
-  ShowGlicActorTaskIcon();
-  glic_actor_task_icon_->ShowCompleteTasksLabel();
-  ShowTabStripNudge(glic_actor_task_icon_);
-#else
-  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
-}
 
 void TabStripActionContainer::ShowGlicActorTaskIcon() {
 #if BUILDFLAG(ENABLE_GLIC)

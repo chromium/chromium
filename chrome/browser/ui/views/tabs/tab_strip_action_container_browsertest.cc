@@ -43,11 +43,13 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/slide_animation.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -683,7 +685,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   // TODO(crbug.com/431015299): Replace with finalized strings when ready.
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(), u"Check your task");
+  EXPECT_EQ(GlicActorTaskIcon()->GetText(),
+            l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
 
   ResetAnimation(1);
 
@@ -719,7 +722,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   // TODO(crbug.com/431015299): Replace with finalized strings when ready.
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(), u"Check your task");
+  EXPECT_EQ(GlicActorTaskIcon()->GetText(),
+            l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
 
   ResetAnimation(1);
 

@@ -144,11 +144,12 @@ class TabStripActionContainer : public views::View,
   void SetGlicDetached(bool detached) override;
 
   // UI Controls for the GlicActorTaskIcon:
-  void TriggerGlicActorTaskIconCheckTasksNudge();
-  void TriggerGlicActorTaskIconCompleteTasksNudge();
   void ShowGlicActorTaskIcon();
   void HideGlicActorTaskIcon();
   bool GetIsShowingGlicActorTaskIconNudge();
+#if BUILDFLAG(ENABLE_GLIC)
+  void TriggerGlicActorNudge(const std::u16string nudge_text);
+#endif
 
   // UI controls for updating buttons based on the floaty view state:
   void HighlightGlicActorTaskIcon();
