@@ -9,6 +9,7 @@
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -19,6 +20,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
 
@@ -32,6 +34,15 @@ bool AutofillProfileMatchesAccountInfo(const AutofillProfile& profile,
                                        const AccountInfo& info) {
   return profile.GetRawInfo(NAME_FULL) == base::UTF8ToUTF16(info.full_name) &&
          profile.GetRawInfo(EMAIL_ADDRESS) == base::UTF8ToUTF16(info.email);
+}
+
+void RemoveNickname(std::string& name) {
+  static base::NoDestructor<std::unique_ptr<const RE2>> nickname_pattern(
+      std::make_unique<const RE2>(R"(\s+\([^)]*\)$|\s+\"[^\"]*\")"));
+  RE2::GlobalReplace(&name, **nickname_pattern, "");
+
+  name = base::UTF16ToUTF8(base::TrimWhitespace(base::UTF8ToUTF16(name),
+                                                base::TrimPositions::TRIM_ALL));
 }
 
 }  // namespace
@@ -118,7 +129,7 @@ void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail() {
     return;
   }
 
-  const std::optional<AccountInfo>& extended_info =
+  std::optional<AccountInfo> extended_info =
       identity_manager_observer_.GetSource()->FindExtendedAccountInfo(
           identity_manager_observer_.GetSource()->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin));
@@ -184,8 +195,7 @@ void AccountNameEmailStore::SoftRemoveAccountNameEmail() {
       /*non_permanent_account_profile_removal=*/true);
 }
 
-void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
-    const AccountInfo& info) {
+void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(AccountInfo& info) {
   // During signin the `OnExtendedAccountInfoUpdated` method might call this
   // method with an empty `info.full_name` since not all data arrives all at
   // once and `AccountInfo` is updated multiple times. The kAccountNameEmail
@@ -194,6 +204,14 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
     return;
   }
   CHECK(!info.email.empty());
+
+  // The account name can contain nicknames in one of the following styles:
+  // 1. John Smith (JJ)
+  // 2. John "JJ" Smith
+  // where the JJ is the nickname added to the account data (either by the user
+  // itself or as a result of the account being managed by a separate app).
+  // The nickname shouldn't be added to the AutofillProfile and is removed.
+  RemoveNickname(info.full_name);
 
   const std::string new_hash = HashAccountInfo(info);
   const bool hashes_different =

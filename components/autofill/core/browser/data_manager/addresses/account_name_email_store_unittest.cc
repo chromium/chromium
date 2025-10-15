@@ -653,6 +653,36 @@ TEST_F(AccountNameEmailStoreSyncTest, SyncTheFeatureState) {
                   base::UTF8ToUTF16(kTestEmailAddress1))));
 }
 
+struct NicknameTestCase {
+  std::string account_name_with_nickname;
+  std::string expected_autofill_profile_full_name;
+};
+
+class AccountNameEmailStoreWithNicknameTest
+    : public AccountNameEmailStoreCoreTest,
+      public testing::WithParamInterface<NicknameTestCase> {};
+
+// Tests that AutofillProfile is created without the nickname.
+TEST_P(AccountNameEmailStoreWithNicknameTest, CreatedProfileMissesNickname) {
+  auto test_case = GetParam();
+  CreatePrimaryAccount(test_case.account_name_with_nickname,
+                       kTestEmailAddress1);
+  EXPECT_THAT(
+      address_data_manager().GetProfiles(),
+      ElementsAre(IsCorrectAccountNameEmail(
+          base::UTF8ToUTF16(test_case.expected_autofill_profile_full_name),
+          base::UTF8ToUTF16(kTestEmailAddress1))));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AccountNameEmailNicknameTest,
+    AccountNameEmailStoreWithNicknameTest,
+    testing::Values(
+        NicknameTestCase{"John Ben Smith (JJ)", "John Ben Smith"},
+        NicknameTestCase{"John Ben Smith (John Smith)", "John Ben Smith"},
+        NicknameTestCase{"John Ben \"John Smith\" Smith", "John Ben Smith"},
+        NicknameTestCase{"John Smith", "John Smith"}));
+
 }  // namespace
 
 }  // namespace autofill
