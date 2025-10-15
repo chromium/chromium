@@ -59,12 +59,8 @@ export class SettingsYourSavedInfoPageElement extends
       },
       paymentsCardData_: {
         type: Array,
-        value: () => {
-          return [{
-            label: loadTimeData.getString('addPaymentMethodCreditOrDebitCard'),
-            icon: 'settings20:credit-card',
-          }];
-        },
+        computed:
+            'computePaymentsCardData_(creditCardsCount, ibansCount, payOverTimeIssuersCount)',
       },
       addressesCardData_: {
         type: Array,
@@ -282,6 +278,30 @@ export class SettingsYourSavedInfoPageElement extends
         label: this.i18n('passkeysLabel'),
         icon: 'settings20:passkey',
         counter: this.passkeysCount,
+      },
+    ];
+  }
+
+  private computePaymentsCardData_(): ChipData[] {
+    return [
+      {
+        label: this.i18n('creditAndDebitCardTitle'),
+        icon: 'settings20:credit-card',
+        counter: this.creditCardsCount,
+      },
+      {
+        label: this.i18n('ibanTitle'),
+        icon: 'settings20:iban',
+        counter: this.ibansCount,
+      },
+      {
+        label: this.i18n('autofillPayOverTimeSettingsLabel'),
+        icon: 'settings20:hourglass',
+        counter: this.payOverTimeIssuersCount,
+      },
+      {
+        label: this.i18n('loyaltyCardsTitle'),
+        icon: 'settings20:loyalty-programs',
       },
     ];
   }

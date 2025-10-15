@@ -528,6 +528,9 @@
   <message name="IDS_SETTINGS_PAYMENTS_SAVED_TO_THIS_DEVICE_ONLY" desc="Shown in the payments section of settings. Descriptive text to inform the user that this credit card will be saved to local device only.">
    This card will be saved to this device only
   </message>
+  <message name="IDS_SETTINGS_CREDIT_AND_DEBIT_CARD_TITLE" desc="Title of a payment cards chip on Your Saved Info page in settings.">
+    Credit &amp; debit cards
+  </message>
   <message name="IDS_SETTINGS_ADD_CREDIT_CARD_TITLE" desc="The title for the dialog that's shown when entering the information for a new card. This can be either credit, debit, or prepaid card.">
     Add card
   </message>
