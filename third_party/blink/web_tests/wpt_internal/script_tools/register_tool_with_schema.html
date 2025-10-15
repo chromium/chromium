@@ -12,9 +12,9 @@ promise_test(async () => {
     return obj.text;
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
-  automationDelegate.registerTool({
+  modelContext.registerTool({
     execute: echo,
     name: "echo",
     description: "echo input",
@@ -33,6 +33,6 @@ promise_test(async () => {
     },
   });
 
-  automationDelegate.unregisterTool("echo");
+  modelContext.unregisterTool("echo");
 }, "register and unregister script tool");
 </script>

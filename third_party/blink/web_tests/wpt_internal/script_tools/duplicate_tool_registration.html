@@ -12,17 +12,17 @@ promise_test(async () => {
     return "empty";
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.registerTool({
+      modelContext.registerTool({
         execute: empty,
         name: "empty",
         description: "echo empty",
       });
 
-      automationDelegate.registerTool({
+      modelContext.registerTool({
         execute: empty,
         name: "empty",
         description: "echo empty",

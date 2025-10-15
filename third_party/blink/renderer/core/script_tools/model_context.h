@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_AUTOMATION_DELEGATE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_AUTOMATION_DELEGATE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_MODEL_CONTEXT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_MODEL_CONTEXT_H_
 
 #include "base/functional/callback.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_automation_delegate.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_model_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_provide_context_params.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_registration_params.h"
@@ -18,11 +18,11 @@
 
 namespace blink {
 
-class CORE_EXPORT AutomationDelegate : public ScriptWrappable {
+class CORE_EXPORT ModelContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AutomationDelegate(scoped_refptr<base::SingleThreadTaskRunner>);
+  explicit ModelContext(scoped_refptr<base::SingleThreadTaskRunner>);
 
   void ForEachScriptTool(
       base::FunctionRef<void(const mojom::blink::ScriptTool&)>) const;
@@ -73,4 +73,4 @@ class CORE_EXPORT AutomationDelegate : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_AUTOMATION_DELEGATE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_MODEL_CONTEXT_H_

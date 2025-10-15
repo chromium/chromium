@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ClearContext) {
   ExpectOkResult(echo_result);
 
   ASSERT_TRUE(content::ExecJs(web_contents(),
-                              "window.automationDelegate.clearContext();"));
+                              "navigator.modelContext.clearContext();"));
 
   auto echo_action_after_clear =
       MakeScriptToolRequest(*main_frame(), "echo", echo_input);

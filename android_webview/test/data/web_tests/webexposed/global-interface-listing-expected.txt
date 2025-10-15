@@ -350,13 +350,6 @@ interface AudioWorkletNode : AudioNode
     getter port
     method constructor
     setter onprocessorerror
-interface AutomationDelegate
-    attribute @@toStringTag
-    method clearContext
-    method constructor
-    method provideContext
-    method registerTool
-    method unregisterTool
 interface BackForwardCacheRestoration : PerformanceEntry
     attribute @@toStringTag
     getter pageshowEventEnd
@@ -6257,6 +6250,13 @@ interface MimeTypeArray
     method constructor
     method item
     method namedItem
+interface ModelContext
+    attribute @@toStringTag
+    method clearContext
+    method constructor
+    method provideContext
+    method registerTool
+    method unregisterTool
 interface Mojo
     static method bindInterface
     static method createDataPipe
@@ -6513,6 +6513,7 @@ interface Navigator
     getter mediaCapabilities
     getter mediaDevices
     getter mimeTypes
+    getter modelContext
     getter onLine
     getter pdfViewerEnabled
     getter permissions
@@ -6552,6 +6553,7 @@ interface Navigator
     method share
     method vibrate
     method webkitGetUserMedia
+    setter modelContext
 interface NavigatorManagedData : EventTarget
     attribute @@toStringTag
     getter onmanagedconfigurationchange
@@ -12136,7 +12138,6 @@ namespace console
     attribute awConsole
     attribute globalThis
     attribute propertyNamesInGlobal
-    getter automationDelegate
     getter caches
     getter clientInformation
     getter closed
@@ -12383,7 +12384,6 @@ namespace console
     method structuredClone
     method webkitCancelAnimationFrame
     method webkitRequestAnimationFrame
-    setter automationDelegate
     setter clientInformation
     setter devicePixelRatio
     setter event

@@ -371,13 +371,6 @@ interface AuthenticatorResponse
     attribute @@toStringTag
     getter clientDataJSON
     method constructor
-interface AutomationDelegate
-    attribute @@toStringTag
-    method clearContext
-    method constructor
-    method provideContext
-    method registerTool
-    method unregisterTool
 interface BackForwardCacheRestoration : PerformanceEntry
     attribute @@toStringTag
     getter pageshowEventEnd
@@ -6527,6 +6520,13 @@ interface MimeTypeArray
     method constructor
     method item
     method namedItem
+interface ModelContext
+    attribute @@toStringTag
+    method clearContext
+    method constructor
+    method provideContext
+    method registerTool
+    method unregisterTool
 interface Mojo
     static method bindInterface
     static method createDataPipe
@@ -6789,6 +6789,7 @@ interface Navigator
     getter mediaDevices
     getter mediaSession
     getter mimeTypes
+    getter modelContext
     getter onLine
     getter pdfViewerEnabled
     getter permissions
@@ -6848,6 +6849,7 @@ interface Navigator
     method updateAdInterestGroups
     method vibrate
     method webkitGetUserMedia
+    setter modelContext
 interface NavigatorLogin
     attribute @@toStringTag
     method constructor
@@ -13294,7 +13296,6 @@ namespace console
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
-    getter automationDelegate
     getter caches
     getter clientInformation
     getter closed
@@ -13548,7 +13549,6 @@ namespace console
     method webkitRequestAnimationFrame
     method webkitRequestFileSystem
     method webkitResolveLocalFileSystemURL
-    setter automationDelegate
     setter clientInformation
     setter devicePixelRatio
     setter event

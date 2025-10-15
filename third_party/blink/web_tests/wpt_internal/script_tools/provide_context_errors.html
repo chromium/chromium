@@ -8,26 +8,26 @@
 
 <script>
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Missing required tools parameter
   assert_throws_js(
     TypeError,
     () => {
-      automationDelegate.provideContext({});
+      modelContext.provideContext({});
     },
     "provideContext should throw when tools parameter is missing"
   );
 }, "provideContext throws on missing tools parameter");
 
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Invalid tools parameter type
   assert_throws_js(
     TypeError,
     () => {
-      automationDelegate.provideContext({
+      modelContext.provideContext({
         tools: "not an array"
       });
     },
@@ -36,13 +36,13 @@ promise_test(async () => {
 }, "provideContext throws when tools is not an array");
 
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Tool missing required execute function
   assert_throws_js(
     TypeError,
     () => {
-      automationDelegate.provideContext({
+      modelContext.provideContext({
         tools: [
           {
             name: "incomplete_tool",
@@ -56,13 +56,13 @@ promise_test(async () => {
 }, "provideContext throws when tool missing required execute function");
 
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Tool missing required name
   assert_throws_js(
     TypeError,
     () => {
-      automationDelegate.provideContext({
+      modelContext.provideContext({
         tools: [
           {
             execute: async () => "test",
@@ -76,13 +76,13 @@ promise_test(async () => {
 }, "provideContext throws when tool missing required name");
 
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Tool missing required description
   assert_throws_js(
     TypeError,
     () => {
-      automationDelegate.provideContext({
+      modelContext.provideContext({
         tools: [
           {
             execute: async () => "test",
@@ -96,13 +96,13 @@ promise_test(async () => {
 }, "provideContext throws when tool missing required description");
 
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Test empty tool name
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.provideContext({
+      modelContext.provideContext({
         tools: [
           {
             execute: async () => "test",
@@ -117,13 +117,13 @@ promise_test(async () => {
 }, "provideContext throws on empty tool name");
 
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Test empty tool description
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.provideContext({
+      modelContext.provideContext({
         tools: [
           {
             execute: async () => "test",
@@ -142,10 +142,10 @@ promise_test(async () => {
     return "valid";
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Register a tool to ensure state is preserved on failure
-  automationDelegate.registerTool({
+  modelContext.registerTool({
     execute: validTool,
     name: "existing_tool",
     description: "Existing tool"
@@ -155,7 +155,7 @@ promise_test(async () => {
   assert_throws_js(
     TypeError,
     () => {
-      automationDelegate.provideContext({
+      modelContext.provideContext({
         tools: [
           {
             execute: validTool,
@@ -174,13 +174,13 @@ promise_test(async () => {
   );
 
   // Existing tool should still be there
-  automationDelegate.unregisterTool("existing_tool");
+  modelContext.unregisterTool("existing_tool");
 
   // The valid tool from the failed provideContext should NOT be registered
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.unregisterTool("valid_tool");
+      modelContext.unregisterTool("valid_tool");
     },
     "valid tool should not be registered after failed provideContext"
   );

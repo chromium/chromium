@@ -16,10 +16,10 @@ promise_test(async () => {
     return obj.text.split('').reverse().join('');
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Register multiple tools via provideContext
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: [
       {
         execute: echo,
@@ -49,7 +49,7 @@ promise_test(async () => {
   });
 
   // Clean up
-  automationDelegate.clearContext();
+  modelContext.clearContext();
 }, "provideContext registers multiple tools successfully");
 
 promise_test(async () => {
@@ -57,10 +57,10 @@ promise_test(async () => {
     return "simple";
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Register single tool via provideContext
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: [
       {
         execute: simple,
@@ -71,19 +71,19 @@ promise_test(async () => {
   });
 
   // Clean up
-  automationDelegate.clearContext();
+  modelContext.clearContext();
 }, "provideContext with single tool works");
 
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Empty tools array should work
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: []
   });
 
   // Clean up
-  automationDelegate.clearContext();
+  modelContext.clearContext();
 }, "provideContext with empty tools array works");
 
 promise_test(async () => {
@@ -91,10 +91,10 @@ promise_test(async () => {
     return "test";
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Register tools with complex input schemas
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: [
       {
         execute: tool,
@@ -122,7 +122,7 @@ promise_test(async () => {
   });
 
   // Clean up
-  automationDelegate.unregisterTool("complex_schema_tool");
+  modelContext.unregisterTool("complex_schema_tool");
 }, "provideContext works with complex input schemas and annotations");
 
 promise_test(async () => {
@@ -130,10 +130,10 @@ promise_test(async () => {
     return "test";
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Sequential provideContext calls
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: [
       {
         execute: tool,
@@ -143,7 +143,7 @@ promise_test(async () => {
     ]
   });
 
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: [
       {
         execute: tool,
@@ -157,12 +157,12 @@ promise_test(async () => {
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.unregisterTool("tool1");
+      modelContext.unregisterTool("tool1");
     },
     "first tool should be replaced"
   );
 
   // Clean up
-  automationDelegate.unregisterTool("tool2");
+  modelContext.unregisterTool("tool2");
 }, "sequential provideContext calls replace previous tools");
 </script>

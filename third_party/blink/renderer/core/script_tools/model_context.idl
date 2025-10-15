@@ -4,9 +4,9 @@
 
 [
     Exposed=Window,
-    ImplementedAs=AutomationDelegate,
+    ImplementedAs=ModelContext,
     RuntimeEnabled=ScriptTools
-] interface AutomationDelegate {
+] interface ModelContext {
   [CallWith=ScriptState, RaisesException] undefined registerTool(ToolRegistrationParams params);
   [CallWith=ScriptState, RaisesException] undefined unregisterTool(DOMString tool_name);
 

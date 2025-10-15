@@ -12,16 +12,16 @@ promise_test(async () => {
     return obj.text;
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Register tools via both methods
-  automationDelegate.registerTool({
+  modelContext.registerTool({
     execute: echo,
     name: "individual_tool",
     description: "Individual tool"
   });
 
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: [
       {
         execute: echo,
@@ -37,13 +37,13 @@ promise_test(async () => {
   });
 
   // Clear all tools
-  automationDelegate.clearContext();
+  modelContext.clearContext();
 
   // Verify all tools are gone
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.unregisterTool("individual_tool");
+      modelContext.unregisterTool("individual_tool");
     },
     "individual tool should be cleared"
   );
@@ -51,7 +51,7 @@ promise_test(async () => {
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.unregisterTool("batch_tool1");
+      modelContext.unregisterTool("batch_tool1");
     },
     "batch tool 1 should be cleared"
   );
@@ -59,21 +59,21 @@ promise_test(async () => {
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.unregisterTool("batch_tool2");
+      modelContext.unregisterTool("batch_tool2");
     },
     "batch tool 2 should be cleared"
   );
 }, "clearContext removes all tools regardless of registration method");
 
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // clearContext on empty state should not throw
-  automationDelegate.clearContext();
+  modelContext.clearContext();
 
   // Multiple clearContext calls should not throw
-  automationDelegate.clearContext();
-  automationDelegate.clearContext();
+  modelContext.clearContext();
+  modelContext.clearContext();
 }, "clearContext works when no tools are registered");
 
 promise_test(async () => {
@@ -81,25 +81,25 @@ promise_test(async () => {
     return "test";
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Register, clear, register again
-  automationDelegate.registerTool({
+  modelContext.registerTool({
     execute: tool,
     name: "test_tool",
     description: "Test tool"
   });
 
-  automationDelegate.clearContext();
+  modelContext.clearContext();
 
   // Should be able to register again with same name after clearing
-  automationDelegate.registerTool({
+  modelContext.registerTool({
     execute: tool,
     name: "test_tool",
     description: "Test tool again"
   });
 
   // Clean up
-  automationDelegate.unregisterTool("test_tool");
+  modelContext.unregisterTool("test_tool");
 }, "can register same tool name after clearContext");
 </script>

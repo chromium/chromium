@@ -20,10 +20,10 @@ promise_test(async () => {
     return obj.text.toUpperCase();
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // First register tools via provideContext
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: [
       {
         execute: echo,
@@ -39,20 +39,20 @@ promise_test(async () => {
   });
 
   // Then register individual tool
-  automationDelegate.registerTool({
+  modelContext.registerTool({
     execute: upper,
     name: "upper",
     description: "Uppercase tool"
   });
 
   // Unregister one tool that was registered via provideContext
-  automationDelegate.unregisterTool("echo");
+  modelContext.unregisterTool("echo");
 
   // Unregister the individually registered tool
-  automationDelegate.unregisterTool("upper");
+  modelContext.unregisterTool("upper");
 
   // Clean up remaining tool
-  automationDelegate.unregisterTool("reverse");
+  modelContext.unregisterTool("reverse");
 }, "can mix provideContext and individual tool registration/unregistration");
 
 promise_test(async () => {
@@ -68,10 +68,10 @@ promise_test(async () => {
     return "new2";
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
   // Register initial tools via provideContext
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: [
       {
         execute: oldTool,
@@ -82,7 +82,7 @@ promise_test(async () => {
   });
 
   // Use provideContext again to replace the tools
-  automationDelegate.provideContext({
+  modelContext.provideContext({
     tools: [
       {
         execute: newTool1,
@@ -101,13 +101,13 @@ promise_test(async () => {
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.unregisterTool("tool_to_replace");
+      modelContext.unregisterTool("tool_to_replace");
     },
     "old tool should not exist after provideContext replacement"
   );
 
   // Clean up new tools
-  automationDelegate.unregisterTool("new_tool1");
-  automationDelegate.unregisterTool("new_tool2");
+  modelContext.unregisterTool("new_tool1");
+  modelContext.unregisterTool("new_tool2");
 }, "provideContext replaces previously registered tools");
 </script>

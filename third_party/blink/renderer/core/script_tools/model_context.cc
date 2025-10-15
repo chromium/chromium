@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/script_tools/automation_delegate.h"
+#include "third_party/blink/renderer/core/script_tools/model_context.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
 
@@ -46,13 +46,15 @@ ScriptObject JSONStringToScriptObject(ScriptState* script_state,
 
 }  // namespace
 
-class AutomationDelegate::ToolFunctionFinishedCallback
+class ModelContext::ToolFunctionFinishedCallback
     : public ThenCallable<IDLAny, ToolFunctionFinishedCallback> {
  public:
-  explicit ToolFunctionFinishedCallback(AutomationDelegate* delegate,
+  explicit ToolFunctionFinishedCallback(ModelContext* model_context,
                                         uint32_t execution_id,
                                         bool success)
-      : delegate_(delegate), execution_id_(execution_id), success_(success) {}
+      : model_context_(model_context),
+        execution_id_(execution_id),
+        success_(success) {}
   ~ToolFunctionFinishedCallback() override = default;
 
   void React(ScriptState* script_state, ScriptValue value) {
@@ -64,42 +66,42 @@ class AutomationDelegate::ToolFunctionFinishedCallback
       }
     }
 
-    delegate_->OnToolExecuted(execution_id_, std::move(result));
+    model_context_->OnToolExecuted(execution_id_, std::move(result));
   }
 
   void Trace(Visitor* visitor) const override {
     ThenCallable<IDLAny, ToolFunctionFinishedCallback>::Trace(visitor);
-    visitor->Trace(delegate_);
+    visitor->Trace(model_context_);
   }
 
  private:
-  Member<AutomationDelegate> delegate_;
+  Member<ModelContext> model_context_;
   const uint32_t execution_id_;
   const bool success_;
 };
 
-AutomationDelegate::AutomationDelegate(
+ModelContext::ModelContext(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)) {}
 
-void AutomationDelegate::ForEachScriptTool(
+void ModelContext::ForEachScriptTool(
     base::FunctionRef<void(const mojom::blink::ScriptTool&)> func) const {
   for (const auto& tool : tool_map_) {
     func(*tool.value->script_tool);
   }
 }
 
-void AutomationDelegate::registerTool(ScriptState* script_state,
-                                      ToolRegistrationParams* params,
-                                      ExceptionState& exception_state) {
+void ModelContext::registerTool(ScriptState* script_state,
+                                ToolRegistrationParams* params,
+                                ExceptionState& exception_state) {
   if (!RegisterTool(script_state, params, exception_state)) {
     return;
   }
 }
 
-void AutomationDelegate::unregisterTool(ScriptState* script_state,
-                                        const String& tool_name,
-                                        ExceptionState& exception_state) {
+void ModelContext::unregisterTool(ScriptState* script_state,
+                                  const String& tool_name,
+                                  ExceptionState& exception_state) {
   auto it = tool_map_.find(tool_name);
   if (it == tool_map_.end()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -110,9 +112,9 @@ void AutomationDelegate::unregisterTool(ScriptState* script_state,
   tool_map_.erase(it);
 }
 
-void AutomationDelegate::provideContext(ScriptState* script_state,
-                                        ProvideContextParams* params,
-                                        ExceptionState& exception_state) {
+void ModelContext::provideContext(ScriptState* script_state,
+                                  ProvideContextParams* params,
+                                  ExceptionState& exception_state) {
   auto prev_tool_map = std::move(tool_map_);
 
   for (auto tool : params->tools()) {
@@ -123,12 +125,12 @@ void AutomationDelegate::provideContext(ScriptState* script_state,
   }
 }
 
-void AutomationDelegate::clearContext(ScriptState* script_state,
-                                      ExceptionState& exception_state) {
+void ModelContext::clearContext(ScriptState* script_state,
+                                ExceptionState& exception_state) {
   tool_map_.clear();
 }
 
-void AutomationDelegate::ExecuteTool(
+void ModelContext::ExecuteTool(
     const String& name,
     const String& input_arguments,
     WebDocument::ScriptToolExecutedCallback tool_executed_cb) {
@@ -183,9 +185,9 @@ void AutomationDelegate::ExecuteTool(
                   this, execution_id, false));
 }
 
-bool AutomationDelegate::RegisterTool(ScriptState* script_state,
-                                      ToolRegistrationParams* params,
-                                      ExceptionState& exception_state) {
+bool ModelContext::RegisterTool(ScriptState* script_state,
+                                ToolRegistrationParams* params,
+                                ExceptionState& exception_state) {
   if (tool_map_.find(params->name()) != tool_map_.end()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Duplicate tool name");
@@ -234,8 +236,8 @@ bool AutomationDelegate::RegisterTool(ScriptState* script_state,
   return true;
 }
 
-void AutomationDelegate::OnToolExecuted(uint32_t execution_id,
-                                        std::optional<String> result) {
+void ModelContext::OnToolExecuted(uint32_t execution_id,
+                                  std::optional<String> result) {
   auto it = pending_executions_.find(execution_id);
   CHECK(it != pending_executions_.end());
 
@@ -248,12 +250,12 @@ void AutomationDelegate::OnToolExecuted(uint32_t execution_id,
   pending_executions_.erase(it);
 }
 
-void AutomationDelegate::Trace(Visitor* visitor) const {
+void ModelContext::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(tool_map_);
 }
 
-void AutomationDelegate::ToolData::Trace(Visitor* visitor) const {
+void ModelContext::ToolData::Trace(Visitor* visitor) const {
   visitor->Trace(tool_function);
 }
 

@@ -4,7 +4,7 @@
 
 [
   RuntimeEnabled=ScriptTools,
-  ImplementedAs=AutomationDelegateSupplement
-] partial interface Window {
-  [Replaceable] readonly attribute AutomationDelegate automationDelegate;
+  ImplementedAs=ModelContextSupplement
+] partial interface Navigator {
+  [Replaceable] readonly attribute ModelContext modelContext;
 };
