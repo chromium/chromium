@@ -143,10 +143,6 @@ signout_confirmation::mojom::ExtensionInfoPtr OnExtensionIconLoaded(
 }
 
 bool HasAccountExtensions(Profile* profile) {
-  if (!extensions::sync_util::IsSyncingExtensionsInTransportMode(profile)) {
-    return false;
-  }
-
   extensions::AccountExtensionTracker* tracker =
       extensions::AccountExtensionTracker::Get(profile);
   std::vector<const extensions::Extension*> account_extensions =
@@ -234,8 +230,7 @@ void SignoutConfirmationHandler::ComputeAndSendSignoutConfirmationData(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void SignoutConfirmationHandler::ComputeAccountExtensions() {
-  if (!browser_ || !extensions::sync_util::IsSyncingExtensionsInTransportMode(
-                       browser_->profile())) {
+  if (!browser_) {
     ComputeAndSendSignoutConfirmationDataWithoutExtensions();
     return;
   }
