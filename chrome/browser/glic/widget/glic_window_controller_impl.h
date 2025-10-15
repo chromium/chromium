@@ -166,6 +166,8 @@ class GlicWindowControllerImpl
   void FindInstanceFromGlicContentsAndBindToTab(
       content::WebContents* source_glic_web_contents,
       tabs::TabInterface* tab_to_bind) override {}
+  bool FindInstanceFromIdAndBindToTab(const InstanceId& instance_id,
+                                      tabs::TabInterface* tab_to_bind) override;
 
   // GlicInstance implementation
   Host& host() override;

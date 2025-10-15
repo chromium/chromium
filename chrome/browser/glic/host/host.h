@@ -84,6 +84,7 @@ class Host : public GlicSharingManagerProvider {
         const std::optional<int32_t>& window_id,
         glic::mojom::WebClientHandler::CreateTabCallback callback) = 0;
     virtual void CreateTask(
+        InstanceId instance_id,
         actor::webui::mojom::TaskOptionsPtr options,
         mojom::WebClientHandler::CreateTaskCallback callback) = 0;
     virtual void PerformActions(

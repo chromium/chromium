@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "base/uuid.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor/action_result.h"
@@ -42,6 +43,8 @@ class ActorUiStateManagerInterface;
 
 class ActorTask;
 class ToolRequest;
+
+using ParentInstanceId = base::Uuid;
 
 // This class owns all ActorTasks for a given profile. ActorTasks are kept in
 // memory until the process is destroyed.
@@ -78,7 +81,8 @@ class ActorKeyedService : public KeyedService {
   // `options`, when provided, contains information used to initialize the
   // task.
   TaskId CreateTask();
-  TaskId CreateTaskWithOptions(webui::mojom::TaskOptionsPtr options);
+  TaskId CreateTaskWithOptions(webui::mojom::TaskOptionsPtr options,
+                               ParentInstanceId parent_instance_id);
 
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.

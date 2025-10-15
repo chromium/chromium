@@ -274,9 +274,10 @@ void GlicInstanceImpl::CreateTab(
 }
 
 void GlicInstanceImpl::CreateTask(
+    InstanceId instance_id,
     actor::webui::mojom::TaskOptionsPtr options,
     mojom::WebClientHandler::CreateTaskCallback callback) {
-  service_->CreateTask(std::move(options), std::move(callback));
+  service_->CreateTask(id_, std::move(options), std::move(callback));
 }
 
 void GlicInstanceImpl::PerformActions(

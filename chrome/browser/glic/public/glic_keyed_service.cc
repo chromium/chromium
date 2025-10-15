@@ -455,6 +455,7 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
 }
 
 void GlicKeyedService::CreateTask(
+    InstanceId instance_id,
     actor::webui::mojom::TaskOptionsPtr options,
     mojom::WebClientHandler::CreateTaskCallback callback) {
   if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
@@ -462,8 +463,8 @@ void GlicKeyedService::CreateTask(
         base::unexpected(mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
     return;
   }
-  actor::TaskId task_id =
-      actor_keyed_service_->CreateTaskWithOptions(std::move(options));
+  actor::TaskId task_id = actor_keyed_service_->CreateTaskWithOptions(
+      std::move(options), instance_id);
   std::move(callback).Run(task_id.value());
 }
 

@@ -966,7 +966,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void CreateTask(actor::webui::mojom::TaskOptionsPtr options,
                   CreateTaskCallback callback) override {
-    host().instance_delegate().CreateTask(std::move(options),
+    host().instance_delegate().CreateTask(base::Uuid(), std::move(options),
                                           std::move(callback));
   }
 

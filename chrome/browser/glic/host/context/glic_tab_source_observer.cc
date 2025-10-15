@@ -4,9 +4,12 @@
 
 #include "chrome/browser/glic/host/context/glic_tab_source_observer.h"
 
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -64,8 +67,28 @@ void GlicTabSourceObserver::OnTabStripModelChanged(
   }
 
   for (const auto& change_insert : change.GetInsert()->contents) {
+    // Start observing the newly created web contents
+    Observe(change_insert.contents);
     MaybeAddSidePanel(change_insert.tab, change_insert.contents);
   }
+}
+
+void GlicTabSourceObserver::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  content::WebContents& web_contents = *navigation_handle->GetWebContents();
+  // Check if the navigation came from an Actor Task.
+  if (auto* actor_keyed_service =
+          actor::ActorKeyedService::Get(web_contents.GetBrowserContext())) {
+    if (auto* task = actor_keyed_service->GetActingActorTaskForWebContents(
+            &web_contents)) {
+      // TODO (crbug.com/451720781): Record if/when this fails to daisy chain.
+      coordinator_->FindInstanceFromIdAndBindToTab(
+          task->parent_instance_id(), tabs::TabInterface::GetFromContents(
+                                          navigation_handle->GetWebContents()));
+    }
+  }
+
+  Observe(nullptr);
 }
 
 void GlicTabSourceObserver::OnBrowserAdded(Browser* browser) {

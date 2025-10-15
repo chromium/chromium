@@ -139,8 +139,30 @@ void GlicInstanceCoordinatorImpl::FindInstanceFromGlicContentsAndBindToTab(
       auto show_options = ShowOptions::ForSidePanel(*tab_to_bind);
       show_options.focus_on_show = tab_to_bind->IsActivated();
       instance->Show(show_options);
+      return;
     }
   }
+}
+
+// TODO (crbug.com/451718132): Add test coverage for daisy chaining
+// functionality
+bool GlicInstanceCoordinatorImpl::FindInstanceFromIdAndBindToTab(
+    const InstanceId& instance_id,
+    tabs::TabInterface* tab_to_bind) {
+  GlicInstanceImpl* instance = GetInstanceImplFor(instance_id);
+  if (!instance || !tab_to_bind) {
+    return false;
+  }
+
+  // Early return if an instance is already bound to the target tab.
+  if (GetInstanceImplForTab(tab_to_bind)) {
+    return false;
+  }
+
+  auto show_options = ShowOptions::ForSidePanel(*tab_to_bind);
+  show_options.focus_on_show = tab_to_bind->IsActivated();
+  instance->Show(show_options);
+  return true;
 }
 
 void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,

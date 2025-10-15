@@ -491,6 +491,13 @@ GlicInstance* GlicWindowControllerImpl::GetInstanceForTab(
   return this;
 }
 
+bool GlicWindowControllerImpl::FindInstanceFromIdAndBindToTab(
+    const InstanceId& instance_id,
+    tabs::TabInterface* tab_to_bind) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool GlicWindowControllerImpl::BeforeViewCreated(
     Browser* browser,
     mojom::InvocationSource source) {

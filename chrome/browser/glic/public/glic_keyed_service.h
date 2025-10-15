@@ -179,6 +179,7 @@ class GlicKeyedService : public KeyedService,
       const std::optional<int32_t>& window_id,
       glic::mojom::WebClientHandler::CreateTabCallback callback) override;
   void CreateTask(
+      InstanceId instance_id,
       actor::webui::mojom::TaskOptionsPtr options,
       mojom::WebClientHandler::CreateTaskCallback callback) override;
   void PerformActions(
