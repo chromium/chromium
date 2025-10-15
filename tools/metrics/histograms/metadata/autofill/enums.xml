@@ -2400,14 +2400,14 @@ Called by update_autofill_enums.py.-->
       label="(DEPRECATED) Suggestion for a masked server card with no benefit
              available was selected (once)"/>
   <int value="97"
-      label="Suggestion for a masked server card with a benefit available was
-             filled"/>
+      label="(DEPRECATED) Suggestion for a masked server card with a benefit
+             available was filled"/>
   <int value="98"
       label="(DEPRECATED) Suggestion for a masked server card with no benefit
              available was filled"/>
   <int value="99"
-      label="Suggestion for a masked server card with a benefit available was
-             filled (once)"/>
+      label="(DEPRECATED) Suggestion for a masked server card with a benefit
+             available was filled (once)"/>
   <int value="100"
       label="(DEPRECATED) Suggestion for a masked server card with no benefit
              available was filled (once)"/>
@@ -2430,8 +2430,9 @@ Called by update_autofill_enums.py.-->
              after suggestions containing cards with a benefit available were
              shown (once)"/>
   <int value="106"
-      label="Suggestion for a masked server card was filled after suggestions
-             containing cards with a benefit available were shown (once)"/>
+      label="(DEPRECATED) Suggestion for a masked server card was filled
+             after suggestions containing cards with a benefit available were
+             shown (once)"/>
   <int value="107"
       label="Form was submitted after suggestions containing cards with a
              benefit available were shown (once)"/>

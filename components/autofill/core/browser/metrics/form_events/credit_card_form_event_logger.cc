@@ -410,27 +410,13 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       CardMetadataLoggingEvent::kFilled, metadata_logging_context_,
       HasBeenLogged(has_logged_form_filling_suggestion_filled_));
 
-  // Log masked server card filled events for benefits.
-  if (latest_filled_card_was_masked_server_card_) {
-    if (metadata_logging_context_.SelectedCardHasBenefitAvailable()) {
-      Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
-          form);
-    }
-
-    if (!has_logged_masked_server_card_suggestion_filled_) {
-      has_logged_masked_server_card_suggestion_filled_ = true;
-      if (metadata_logging_context_.SelectedCardHasBenefitAvailable()) {
-        Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE,
-            form);
-      }
-      // Log when a masked server card was filled after benefits were shown.
-      if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
-        Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
-            form);
-        LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kFilled,
-                                       metadata_logging_context_);
-      }
-    }
+  // Log when a masked server card was filled after benefits were shown.
+  if (latest_filled_card_was_masked_server_card_ &&
+      !has_logged_masked_server_card_suggestion_filled_ &&
+      metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
+    has_logged_masked_server_card_suggestion_filled_ = true;
+    LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kFilled,
+                                   metadata_logging_context_);
   }
 
   const FieldType field_type = field.Type().GetCreditCardType();
