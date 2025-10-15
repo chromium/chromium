@@ -149,7 +149,6 @@ export class ContextMenuEntrypointElement extends
   }
 
   protected onDeepSearchClick_() {
-    this.inputsDisabled = !this.inputsDisabled;
     this.fire('deep-search-click');
     this.$.menu.close();
   }

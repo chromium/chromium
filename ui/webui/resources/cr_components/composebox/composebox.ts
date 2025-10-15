@@ -33,7 +33,7 @@ import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import type {FileUploadErrorType} from './composebox_query.mojom-webui.js';
 import {FileUploadStatus} from './composebox_query.mojom-webui.js';
-import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
+import type {ComposeboxMode, ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from './error_scrim.js';
 
 export interface ComposeboxElement {
@@ -324,6 +324,10 @@ export class ComposeboxElement extends I18nMixinLit
 
   setText(text: string) {
     this.input_ = text;
+  }
+
+  setInitialMode(mode: ComposeboxMode) {
+    this.$.context.setInitialMode(mode);
   }
 
   resetModes() {

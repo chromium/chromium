@@ -508,6 +508,90 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(event.detail.contextFiles[0].name, 'title');
   });
 
+  test('clicking deep search button opens composebox', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      composeboxShowDeepSearchButton: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    realbox.ntpRealboxNextEnabled = true;
+    realbox.realboxLayoutMode = 'Compact';
+    document.body.appendChild(realbox);
+    await microtasksFinished();
+    const contextElement =
+        realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
+    assertTrue(!!contextElement);
+    const contextMenuEntrypoint = contextElement.shadowRoot.querySelector(
+        'composebox-context-menu-entrypoint');
+    assertTrue(!!contextMenuEntrypoint);
+
+    testProxy.handler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: []}));
+
+    // Act.
+    const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
+
+    const entrypointButton =
+        contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+            '#entrypoint');
+    assertTrue(!!entrypointButton);
+    entrypointButton.click();
+    await microtasksFinished();
+
+    const deepSearchButton =
+        contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+            '#deepSearch');
+    assertTrue(!!deepSearchButton);
+    deepSearchButton.click();
+
+    // Assert.
+    const event = await whenOpenComposeBox;
+    assertEquals('deep-search', event.detail.mode);
+  });
+
+  test('clicking create image button opens composebox', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      composeboxShowCreateImageButton: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    realbox.ntpRealboxNextEnabled = true;
+    realbox.realboxLayoutMode = 'Compact';
+    document.body.appendChild(realbox);
+    await microtasksFinished();
+    const contextElement =
+        realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
+    assertTrue(!!contextElement);
+    const contextMenuEntrypoint = contextElement.shadowRoot.querySelector(
+        'composebox-context-menu-entrypoint');
+    assertTrue(!!contextMenuEntrypoint);
+
+    testProxy.handler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: []}));
+
+    // Act.
+    const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
+
+    const entrypointButton =
+        contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+            '#entrypoint');
+    assertTrue(!!entrypointButton);
+    entrypointButton.click();
+    await microtasksFinished();
+
+    const createImageButton =
+        contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
+            '#createImage');
+    assertTrue(!!createImageButton);
+    createImageButton.click();
+
+    // Assert.
+    const event = await whenOpenComposeBox;
+    assertEquals('create-image', event.detail.mode);
+  });
+
   //============================================================================
   // Test Querying Autocomplete
   //============================================================================

@@ -74,6 +74,8 @@ ${this.ntpRealboxNextEnabled ? html`
           @add-tab-context="${this.addTabContext_}"
           @add-file-context="${this.addFileContext_}"
           @on-file-validation-error="${this.onFileValidationError_}"
+          @set-deep-search-mode="${this.setDeepSearchMode_}"
+          @set-create-image-mode="${this.setCreateImageMode_}"
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.dropdownIsVisible}"
           realbox-layout-mode="${this.realboxLayoutMode}">

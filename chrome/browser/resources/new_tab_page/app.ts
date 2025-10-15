@@ -15,6 +15,7 @@ import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customi
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
+import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -395,6 +396,7 @@ export class AppElement extends AppElementBase {
   private showWebstoreToastListenerId_: number|null = null;
   private pendingComposeboxContextFiles_: ComposeboxFile[] = [];
   private pendingComposeboxText_: string = '';
+  private pendingComposeboxMode_: ComposeboxMode = ComposeboxMode.DEFAULT;
 
   constructor() {
     performance.mark('app-creation-start');
@@ -672,6 +674,10 @@ export class AppElement extends AppElementBase {
         composebox.setText(this.pendingComposeboxText_);
         this.pendingComposeboxText_ = '';
       }
+      if (this.pendingComposeboxMode_ !== ComposeboxMode.DEFAULT) {
+        composebox.setInitialMode(this.pendingComposeboxMode_);
+        this.pendingComposeboxMode_ = ComposeboxMode.DEFAULT;
+      }
     }
   }
 
@@ -747,7 +753,9 @@ export class AppElement extends AppElementBase {
   }
 
   protected openComposebox_(e: CustomEvent<{
-      searchboxText: string, contextFiles: ComposeboxFile[],
+    searchboxText: string,
+    contextFiles: ComposeboxFile[],
+    mode: ComposeboxMode,
   }>) {
     if (e.detail.searchboxText) {
       this.pendingComposeboxText_ = e.detail.searchboxText;
@@ -755,6 +763,7 @@ export class AppElement extends AppElementBase {
     if (e.detail.contextFiles && e.detail.contextFiles.length > 0) {
       this.pendingComposeboxContextFiles_ = e.detail.contextFiles;
     }
+    this.pendingComposeboxMode_ = e.detail.mode;
     this.toggleComposebox_();
   }
 

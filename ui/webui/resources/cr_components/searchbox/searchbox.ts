@@ -9,6 +9,10 @@ import './searchbox_thumbnail.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import '//resources/cr_components/composebox/error_scrim.js';
 
+import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
+import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
+import {ComposeboxMode} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
+import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -20,6 +24,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {FileUploadStatus} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -28,10 +33,6 @@ import {getHtml} from './searchbox.html.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
-import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
-import {FileUploadStatus} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
-import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 
 // LINT.IfChange(GhostLoaderTagName)
 const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
@@ -1108,12 +1109,27 @@ export class SearchboxElement extends SearchboxElementBase {
         !this.isInputEmpty());
   }
 
-  protected openComposebox_(files: ComposeboxFile[] = []) {
+  protected setDeepSearchMode_() {
+    this.openComposebox_([], ComposeboxMode.DEEP_SEARCH);
+  }
+
+  protected setCreateImageMode_() {
+    this.openComposebox_([], ComposeboxMode.CREATE_IMAGE);
+  }
+
+  protected openComposebox_(
+      files: ComposeboxFile[] = [],
+      mode: ComposeboxMode = ComposeboxMode.DEFAULT) {
     this.dispatchEvent(new CustomEvent('open-composebox', {
-      detail: {searchboxText: this.$.input.value, contextFiles: files},
+      detail: {
+        searchboxText: this.$.input.value,
+        contextFiles: files,
+        mode: mode,
+      },
       bubbles: true,
       composed: true,
     }));
+    this.setInputText('');
   }
 
   hasThumbnail(): boolean {
