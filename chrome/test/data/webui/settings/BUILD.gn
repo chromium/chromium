@@ -21,6 +21,7 @@ build_webui_tests("build") {
     "appearance_page_index_test.ts",
     "appearance_page_test.ts",
     "autofill_ai_add_or_edit_dialog_test.ts",
+    "autofill_ai_entries_list_test.ts",
     "autofill_ai_section_test.ts",
     "autofill_fake_data.ts",
     "autofill_page_index_test.ts",

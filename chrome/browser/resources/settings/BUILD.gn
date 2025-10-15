@@ -75,6 +75,7 @@ build_webui("build") {
     "autofill_page/address_edit_dialog.ts",
     "autofill_page/address_remove_confirmation_dialog.ts",
     "autofill_page/autofill_ai_add_or_edit_dialog.ts",
+    "autofill_page/autofill_ai_entries_list.ts",
     "autofill_page/autofill_ai_section.ts",
     "autofill_page/autofill_page.ts",
     "autofill_page/autofill_page_index.ts",
