@@ -858,10 +858,18 @@ void CanvasRenderingContext2D::DrawElementInternal(
       builder.Context(),
       PaintFlag::kPrivacyPreserving | PaintFlag::kOmitCompositingInfo);
 
-  PropertyTreeState property_tree_state = canvas_element->GetLayoutBox()
+  // Use the drawn element's local property tree state to start drawing, but
+  // then modify this to include effects and clips between the drawn element
+  // and the canvas element. This will exclude transforms above the local
+  // border box state (e.g., css transform is ignored), but will include effects
+  // (e.g., css filter is not ignored).
+  PropertyTreeState property_tree_state = layer->GetLayoutBox()
                                               ->FirstFragment()
                                               .LocalBorderBoxProperties()
                                               .Unalias();
+  const auto& canvas_fragment = canvas_element->GetLayoutBox()->FirstFragment();
+  property_tree_state.SetEffect(canvas_fragment.ContentsEffect().Unalias());
+  property_tree_state.SetClip(canvas_fragment.ContentsClip().Unalias());
 
   cc::PaintRecord paint_record = builder.EndRecording(property_tree_state);
 

@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <head>
-  <title>drawElementImage ignores CSS transforms</title>
+  <title>drawElementImage paints CSS blur filters</title>
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
-  <link rel="author" href="mailto:schenney@chromium.org">
-  <link rel="match" href="css-transform-on-div-ref.html">
-  <meta name="assert" value="A div with a CSS transform paints without the transform.">
+  <link rel="match" href="css-blur-filter-on-div-ref.html">
+  <meta name="assert" value="A div with a CSS blur filter paints with the filter.">
   <style>
-    canvas {
-      background: black;
-    }
     div {
       width: 100px;
       height: 100px;
-      background-color: green;
-      transform: rotate(45deg);
+      background: green;
+      filter: blur(10px);
     }
   </style>
 </head>
