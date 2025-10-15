@@ -145,9 +145,6 @@
 
 namespace {
 
-// Deprecated 11/2024
-constexpr char kEnableDoNotTrackIos[] = "enable_do_not_track";
-
 // Deprecated 12/2024.
 inline constexpr char kPageContentCollectionEnabled[] =
     "page_content_collection.enabled";
@@ -1050,9 +1047,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeBlocklist);
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeAllowlist);
 
-  // Deprecated 11/2024.
-  registry->RegisterBooleanPref(kEnableDoNotTrackIos, false);
-
   // Deprecated 12/2024.
   registry->RegisterBooleanPref(kPageContentCollectionEnabled, false);
 
@@ -1189,9 +1183,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 09/2024.
   browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
-
-  // Added 11/2024
-  prefs->ClearPref(kEnableDoNotTrackIos);
 
   // Added 12/2024.
   prefs->ClearPref(kPageContentCollectionEnabled);
@@ -1332,9 +1323,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
 void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 11/2024.
-  [defaults removeObjectForKey:@"DisplaySwitchProfile"];
 
   // Added 01/2025.
   [defaults removeObjectForKey:@"ChromeRecentTabsCollapsedSections"];
