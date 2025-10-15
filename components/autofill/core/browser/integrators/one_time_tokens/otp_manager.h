@@ -26,6 +26,11 @@ class OtpManager {
   // autofill UI. Concrete implementations of `OtpManager` should retrieve OTPs
   // already when it becomes clear that the website asks for an OTP. It should
   // not wait until the user focuses the field.
+  //
+  // TODO(crbug.com/415273270): This function delays the `callback` until
+  // an OTP arrived. That's bad for cooperative behavior. Instead the callback
+  // should return immediately when no OTPs are cached but the Autofill UI
+  // should be updated once OTPs arrive.
   virtual void GetOtpSuggestions(GetOtpSuggestionsCallback callback) = 0;
 };
 

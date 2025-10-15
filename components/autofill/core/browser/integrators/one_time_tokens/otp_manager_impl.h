@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_MANAGER_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_MANAGER_IMPL_H_
 
+#include <optional>
+#include <string>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -15,17 +18,14 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/metrics/otp_form_event_logger.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
-
-namespace one_time_tokens {
-struct OtpFetchReply;
-}  // namespace one_time_tokens
+#include "components/one_time_tokens/core/browser/one_time_token_service.h"
 
 namespace autofill {
 
 class BrowserAutofillManager;
 
-// This class triggers the fetching of OTPs from the `SmsOtpBackend` as soon
-// as `OnFieldTypesDetermined()` is notified about the classification of
+// This class triggers the fetching of OTPs from the `OneTimeTokenService` as
+// soon as `OnFieldTypesDetermined()` is notified about the classification of
 // OTP fields. OTPs are fetched only once per instantiation. This is ok
 // if the `OtpManagerImpl` is recreated on each frame navigation.
 //
@@ -36,11 +36,14 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
       base::OnceCallback<void(std::vector<std::string>)>;
 
   OtpManagerImpl(BrowserAutofillManager& owner,
-                 one_time_tokens::SmsOtpBackend* sms_otp_backend);
+                 one_time_tokens::OneTimeTokenService* one_time_token_service);
   OtpManagerImpl(const OtpManagerImpl&) = delete;
   OtpManagerImpl& operator=(const OtpManagerImpl&) = delete;
   ~OtpManagerImpl() override;
 
+  // OtpManager:
+  // Returns any cached OTPs (if they exist) and renews a subscription so that
+  // incoming OTPs can be reported.
   void GetOtpSuggestions(GetOtpSuggestionsCallback callback) override;
 
   // AutofillManager::Observer:
@@ -49,13 +52,17 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
       FormGlobalId form,
       AutofillManager::Observer::FieldTypeSource source) override;
 
-  void StartOtpRetrievalForTesting() { StartOtpRetrieval(); }
-
  private:
-  void StartOtpRetrieval();
+  // Fetches recent OTPs and creates or renewes a subscription. Any OTPs
+  // discovered in this process are reported to `OnOneTimeTokenReceived`.
+  void GetRecentOtpsAndRenewSubscription();
 
-  // Handler for when the SMS backend returns OTPs.
-  void OnOtpRetrievalComplete(const one_time_tokens::OtpFetchReply& reply);
+  // TODO(crbug.com/415273270): Update UI (dropdown or keyboard accessory) when
+  // a new token is received.
+  void OnOneTimeTokenReceived(
+      one_time_tokens::OneTimeTokenSource,
+      std::variant<one_time_tokens::OneTimeToken,
+                   one_time_tokens::OneTimeTokenRetrievalError>);
 
   // Returns true if an OTP must not be delivered to the caller in an autofill
   // context, e.g., because the page called the WebOTP API.
@@ -65,21 +72,16 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   raw_ref<BrowserAutofillManager> owner_;
 
   // May be nullptr on platforms that don't support SMS OTP fetching.
-  raw_ptr<one_time_tokens::SmsOtpBackend> sms_otp_backend_ = nullptr;
+  raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_services_ =
+      nullptr;
 
-  // Set to true the first time the SMS backend is asked for an OTP retrieval.
-  bool sms_otp_retrieval_was_ever_started_ = false;
-  // Set to true while waiting for the response of the SMS backend.
-  bool sms_otp_retrieval_in_progress_ = false;
-
-  // Fetched OTP values. Most recent entry last.
-  std::vector<one_time_tokens::OneTimeToken> otp_suggestions_;
+  // Subscription to a `OneTimetokenService`.
+  one_time_tokens::ExpiringSubscription subscription_;
 
   // Only the last call from the UI to generate suggestions is retained as such
   // a callback corresponds to the desire to show an autofill dropdown. A new
   // call to `GetOtpSuggestions()` invalidates the previous call.
-  std::optional<GetOtpSuggestionsCallback>
-      last_pending_get_suggestions_callback_;
+  GetOtpSuggestionsCallback last_pending_get_suggestions_callback_;
 
   base::ScopedObservation<BrowserAutofillManager, AutofillManager::Observer>
       autofill_manager_observation_{this};

@@ -10,70 +10,64 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+
+using one_time_tokens::ExpiringSubscriptionHandle;
+using one_time_tokens::OneTimeToken;
+using one_time_tokens::OneTimeTokenRetrievalError;
+using one_time_tokens::OneTimeTokenService;
+using one_time_tokens::OneTimeTokenSource;
+using one_time_tokens::OneTimeTokenType;
 
 namespace autofill {
 
 namespace {
-std::vector<std::string> OtpsToSuggestionStrings(
-    const std::vector<one_time_tokens::OneTimeToken>& otp_values) {
-  return base::ToVector(otp_values, &one_time_tokens::OneTimeToken::value);
-}
-
-// Filters out OTPs that are older than 5 minutes.
-void FilterExpiredOtps(std::vector<one_time_tokens::OneTimeToken>& otps) {
-  const base::Time five_minutes_ago = base::Time::Now() - base::Minutes(5);
-  std::erase_if(otps, [five_minutes_ago](const auto& otp) {
-    return otp.on_device_arrival_time() < five_minutes_ago;
-  });
-}
-
+constexpr base::TimeDelta kSubscriptionDuration = base::Minutes(1);
 }  // namespace
 
 OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
-                               one_time_tokens::SmsOtpBackend* sms_otp_backend)
-    : owner_(owner), sms_otp_backend_(sms_otp_backend) {
+                               OneTimeTokenService* one_time_token_service)
+    : owner_(owner), one_time_token_services_(one_time_token_service) {
   autofill_manager_observation_.Observe(&owner);
-
-  // TODO(crbug.com/415273270) This is just a hack to prepopulate the OTPs in
-  // case no real backend is triggered. The feature definition should migrate to
-  // autofill.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kDebugUiForOtps)) {
-    otp_suggestions_ = {one_time_tokens::OneTimeToken(
-        // TODO(crbug.com/41527327) kSmsOtp is just a dummy value at the
-        // moment. It's unclear if otp_source_ will remain in the current form.
-        // Depending on that we may want to fix this or not.
-        one_time_tokens::OneTimeTokenType::kSmsOtp, "Identified OTP field.",
-        base::Time::Now())};
-  }
 }
 
 OtpManagerImpl::~OtpManagerImpl() = default;
 
 void OtpManagerImpl::GetOtpSuggestions(
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
-  // If a website uses the WebOTP API, GMSCore or Chrome will show its own UI to
-  // fill the OTP. `wrapped_callback` prevents that an SMS OTP is delivered in
-  // case the WebOTP API was used.
-  GetOtpSuggestionsCallback wrapped_callback = base::BindOnce(
-      [](base::WeakPtr<OtpManagerImpl> self,
-         OtpManagerImpl::GetOtpSuggestionsCallback callback,
-         std::vector<std::string> suggestions) {
-        if (!self || self->IsOtpDeliveryBlocked()) {
-          suggestions.clear();
-        }
-        std::move(callback).Run(std::move(suggestions));
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-
-  if (!sms_otp_retrieval_in_progress_) {
-    FilterExpiredOtps(otp_suggestions_);
-    std::move(wrapped_callback).Run(OtpsToSuggestionStrings(otp_suggestions_));
-  } else {
-    last_pending_get_suggestions_callback_ = std::move(wrapped_callback);
+  // TODO(crbug.com/415273270) This is just a hack to prepopulate the OTPs in
+  // case no real backend is triggered. The feature definition should migrate to
+  // autofill.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kDebugUiForOtps)) {
+    std::move(callback).Run({"Identified OTP field."});
+    return;
   }
+
+  last_pending_get_suggestions_callback_ = std::move(callback);
+
+  // This queries OTPs from the backend and calls `OnOneTimeTokenReceived` to
+  // deliver the OTP to `last_pending_get_suggestions_callback_`.
+  GetRecentOtpsAndRenewSubscription();
+}
+
+void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
+  if (!one_time_token_services_) {
+    return;
+  }
+
+  one_time_token_services_->GetRecentOneTimeTokens(base::BindRepeating(
+      &OtpManagerImpl::OnOneTimeTokenReceived, weak_ptr_factory_.GetWeakPtr()));
+
+  if (subscription_.IsAlive()) {
+    subscription_.SetExpirationTime(base::Time::Now() + kSubscriptionDuration);
+    return;
+  }
+
+  subscription_ = one_time_token_services_->Subscribe(
+      base::Time::Now() + kSubscriptionDuration,
+      base::BindRepeating(&OtpManagerImpl::OnOneTimeTokenReceived,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OtpManagerImpl::OnFieldTypesDetermined(
@@ -81,17 +75,7 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     FormGlobalId form_id,
     AutofillManager::Observer::FieldTypeSource source) {
   // On non-android platforms and in tests the backend may be not initialized.
-  if (!sms_otp_backend_) {
-    return;
-  }
-  // The first time an OTP field is detected, Chrome sends a request that is
-  // valid for 5 minutes. Therefore, we don't send multiple requests. There is
-  // no concept of failing to retrieve OTPs (having no OTP permission is
-  // currently out of scope). We don't try again after 5 minutes because the OTP
-  // is probably too old by that time.
-  // TODO(crbug.com/415273270) This will be replaced by a subscription
-  // mechanism.
-  if (sms_otp_retrieval_was_ever_started_) {
+  if (!one_time_token_services_) {
     return;
   }
 
@@ -108,40 +92,38 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     return;
   }
 
-  StartOtpRetrieval();
+  GetRecentOtpsAndRenewSubscription();
 }
 
-void OtpManagerImpl::StartOtpRetrieval() {
-  sms_otp_retrieval_was_ever_started_ = true;
-  sms_otp_retrieval_in_progress_ = true;
-  sms_otp_backend_->RetrieveSmsOtp(base::BindOnce(
-      &OtpManagerImpl::OnOtpRetrievalComplete, weak_ptr_factory_.GetWeakPtr()));
-}
+void OtpManagerImpl::OnOneTimeTokenReceived(
+    OneTimeTokenSource backend_type,
+    std::variant<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
+  // TODO(crbug.com/415272524): Record metrics on how often the retrieval
+  // succeeds or fails, in combination with the OTP source.
+  if (std::holds_alternative<OneTimeTokenRetrievalError>(token_or_error)) {
+    if (!last_pending_get_suggestions_callback_.is_null()) {
+      std::move(last_pending_get_suggestions_callback_).Run({});
+    }
+    return;
+  }
 
-void OtpManagerImpl::OnOtpRetrievalComplete(
-    const one_time_tokens::OtpFetchReply& reply) {
-  sms_otp_retrieval_in_progress_ = false;
-  if (reply.otp_value.has_value() && !reply.otp_value->value().empty()) {
-    // If the same token was retrieved before, remove it.
-    std::erase_if(otp_suggestions_,
-                  [&reply](const one_time_tokens::OneTimeToken& token) {
-                    return token.value() == reply.otp_value.value().value();
-                  });
-    otp_suggestions_.push_back(reply.otp_value.value());
+  const OneTimeToken& token = std::get<OneTimeToken>(token_or_error);
 
+  std::vector<std::string> suggestions;
+  if (!token.value().empty()) {
+    suggestions.emplace_back(token.value());
+  }
+
+  if (IsOtpDeliveryBlocked()) {
+    suggestions.clear();
+  }
+
+  if (!last_pending_get_suggestions_callback_.is_null()) {
     if (owner_->GetMetricState().has_value()) {
       owner_->GetMetricState()->otp_form_event_logger.OnOtpAvailable();
     }
+    std::move(last_pending_get_suggestions_callback_).Run(suggestions);
   }
-
-  // Process the last pending callbacks from the UI to provide suggestions.
-  if (last_pending_get_suggestions_callback_.has_value()) {
-    std::move(*last_pending_get_suggestions_callback_)
-        .Run(OtpsToSuggestionStrings(otp_suggestions_));
-  }
-
-  // TODO(crbug.com/415272524): Record metrics on how often the retrieval
-  // succeeds or fails, in combination with the OTP source.
 }
 
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {

@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -162,6 +163,9 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
         std::make_unique<FakeAutofillCrowdsourcingManager>(
             this, version_info::Channel::STABLE));
     set_sms_otp_backend(std::make_unique<FakeSmsOtpBackend>());
+    set_one_time_token_service(
+        std::make_unique<one_time_tokens::OneTimeTokenServiceImpl>(
+            GetSmsOtpBackend()));
   }
   ~OtpTestAutofillClient() override = default;
 

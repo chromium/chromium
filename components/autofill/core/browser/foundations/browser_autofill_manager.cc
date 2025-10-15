@@ -802,9 +802,9 @@ BrowserAutofillManager::MetricsState::~MetricsState() {
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver),
-      otp_manager_(
-          new OtpManagerImpl(*this,
-                             driver->GetAutofillClient().GetSmsOtpBackend())),
+      otp_manager_(new OtpManagerImpl(
+          *this,
+          driver->GetAutofillClient().GetOneTimeTokenService())),
       account_name_email_strike_manager_(
           std::make_unique<AccountNameEmailStrikeManager>(*this)) {}
 
@@ -2643,9 +2643,10 @@ void BrowserAutofillManager::Reset() {
   // The order below is relevant:
   // `credit_card_access_manager_` has a reference to `metrics_`.
   credit_card_access_manager_.reset();
-  // Forget cached OTPs after a navigation.
+  // Forget stored data (e.g. active subscriptions and pending callbacks) after
+  // a navigation.
   otp_manager_ = std::make_unique<OtpManagerImpl>(
-      *this, driver().GetAutofillClient().GetSmsOtpBackend());
+      *this, driver().GetAutofillClient().GetOneTimeTokenService());
   account_name_email_strike_manager_ =
       std::make_unique<AccountNameEmailStrikeManager>(*this);
   metrics_.reset();
