@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+#import "ios/chrome/app/tests_hook.h"
+// clang-format on
+
 #import <os/log.h>
 #import <os/signpost.h>
 
-#import "ios/chrome/app/tests_hook.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
 
 namespace tests_hook {

@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+#import "ios/chrome/app/tests_hook.h"
+// clang-format on
+
 #import <Foundation/Foundation.h>
 
 #import "base/time/time.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/feature_engagement/public/feature_activation.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
-#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 
 namespace tests_hook {

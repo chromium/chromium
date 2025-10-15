@@ -7,6 +7,10 @@
 #pragma allow_unsafe_buffers
 #endif
 
+// clang-format off
+#import "ios/chrome/app/tests_hook.h"
+// clang-format on
+
 #import "base/command_line.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
@@ -35,7 +39,6 @@
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #import "components/sync_device_info/device_info_sync_service.h"
-#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
