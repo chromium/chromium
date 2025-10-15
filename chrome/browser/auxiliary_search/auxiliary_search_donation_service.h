@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/android/application_status_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -55,11 +56,14 @@ class AuxiliarySearchDonationService
   void DonateHistoryEntries(
       std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries,
       const visited_url_ranking::URLVisitsMetadata& metadata);
+  void OnApplicationStateChanged(base::android::ApplicationState state);
 
   raw_ptr<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_;
   raw_ptr<visited_url_ranking::VisitedURLRankingService> ranking_service_;
   std::optional<base::Time> last_donated_history_entry_visit_time_;
+  std::unique_ptr<base::android::ApplicationStatusListener>
+      application_status_listener_;
   base::OneShotTimer donation_timer_;
   base::WeakPtrFactory<AuxiliarySearchDonationService> weak_factory_{this};
 };

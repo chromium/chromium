@@ -4,6 +4,7 @@
 
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
 
+#include "base/android/application_status_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/auxiliary_search/fetch_and_rank_helper.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
@@ -27,7 +28,13 @@ AuxiliarySearchDonationService::AuxiliarySearchDonationService(
         page_content_annotations_service,
     visited_url_ranking::VisitedURLRankingService* ranking_service)
     : page_content_annotations_service_(page_content_annotations_service),
-      ranking_service_(ranking_service) {
+      ranking_service_(ranking_service),
+      application_status_listener_(
+          base::android::ApplicationStatusListener::New(base::BindRepeating(
+              &AuxiliarySearchDonationService::OnApplicationStateChanged,
+              // Listener is destroyed at destructor, and
+              // object will be alive for any callback.
+              base::Unretained(this)))) {
   CHECK(page_content_annotations_service_);
   CHECK(ranking_service_);
   page_content_annotations_service_->AddObserver(
@@ -102,4 +109,12 @@ void AuxiliarySearchDonationService::DonateHistoryEntries(
           ? std::max(*last_donated_history_entry_visit_time_,
                      *metadata.most_recent_timestamp)
           : *metadata.most_recent_timestamp;
+}
+
+void AuxiliarySearchDonationService::OnApplicationStateChanged(
+    base::android::ApplicationState state) {
+  if (state == base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES &&
+      donation_timer_.IsRunning()) {
+    donation_timer_.FireNow();
+  }
 }

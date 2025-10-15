@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/android/application_status_listener.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -250,6 +252,37 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotUpdateBeginTimeOnError) {
   task_environment().FastForwardBy(service.GetDonationDelayForTesting());
 
   EXPECT_EQ(begin_time, fake_visit_time);
+}
+
+TEST_F(AuxiliarySearchDonationServiceTest,
+       PausingApplicationTriggersImmediateDonation) {
+  base::test::TestFuture<base::android::ApplicationState> future;
+  auto listener = base::android::ApplicationStatusListener::New(
+      future.GetRepeatingCallback());
+  AuxiliarySearchDonationService service(page_content_annotations_service(),
+                                         mock_ranking_service());
+  service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
+
+  EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(1);
+
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES);
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(AuxiliarySearchDonationServiceTest,
+       PausingApplicationDoesNothingIfTheresNoAnnotation) {
+  base::test::TestFuture<base::android::ApplicationState> future;
+  auto listener = base::android::ApplicationStatusListener::New(
+      future.GetRepeatingCallback());
+  AuxiliarySearchDonationService service(page_content_annotations_service(),
+                                         mock_ranking_service());
+
+  EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(0);
+
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES);
+  EXPECT_TRUE(future.Wait());
 }
 
 }  // namespace
