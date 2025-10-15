@@ -996,7 +996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.ChildAccountStatusDuration" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2026-11-12">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -1071,9 +1071,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.SlowestLoadPoint" enum="LoadPoint"
-    expires_after="2025-03-01">
+    expires_after="2026-11-12">
   <owner>triploblastic@chromium.org</owner>
-  <owner>chrome-signin-team@google.org</owner>
+  <owner>chrome-signin-mobile-team@google.org</owner>
   <summary>
     Slowest loading point among native, policy and child account status in the
     signin mobile FRE. Not emitted for the light-weight FRE. Android chrome
