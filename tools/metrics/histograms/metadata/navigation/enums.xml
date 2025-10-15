@@ -1926,6 +1926,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Not aligned with the default search provider origin"/>
   <int value="9" label="Running in Picture-in-Picture window"/>
   <int value="10" label="Running in Isolated Web App"/>
+  <int value="11" label="Running in Kiosk Session"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/preloading/prerender/prerender_manager.h:PrewarmDecision) -->

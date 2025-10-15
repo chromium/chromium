@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -21,6 +22,12 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -346,5 +353,34 @@ TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {
       prerender_helper().GetHostForUrl(prewarm_url);
   EXPECT_EQ(prerender_host_id, content::FrameTreeNodeId());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrerenderManagerPrewarmTest, StartPrewarmInKioskSessionForKioskMode) {
+  base::HistogramTester histogram_tester;
+
+  // Set up Kiosk user session.
+  auto* user_manager = new ash::FakeChromeUserManager();
+  user_manager::ScopedUserManager enabler{
+      std::unique_ptr<user_manager::UserManager>(user_manager)};
+  const AccountId account_id =
+      AccountId::FromUserEmail("test-kiosk-app@localhost");
+  user_manager->AddKioskWebAppUser(account_id);
+  user_manager->LoginUser(account_id);
+
+  const GURL prewarm_url(features::kPrewarmUrl.Get());
+  ASSERT_TRUE(prewarm_url.is_valid());
+
+  // Prerender the prewarm page.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  EXPECT_FALSE(prerender_manager()->MaybeStartPrewarmSearchResult());
+
+  // Verify that the correct decision was logged.
+  // PrewarmDecision is a private enum, so we use its integer value.
+  // kInKioskSession = 11.
+  histogram_tester.ExpectUniqueSample("Prerender.Experimental.PrewarmDecision",
+                                      /*kInKioskSession=*/11, 1);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
