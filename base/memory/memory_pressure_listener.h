@@ -14,7 +14,6 @@
 #include <variant>
 
 #include "base/base_export.h"
-// TODO(pmonette): Fix IWYU issues, and remove this include.
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/memory_pressure_level.h"
@@ -82,12 +81,11 @@ enum class MemoryPressureListenerTag {
   kMax,
 };
 
-// To start listening, derive from MemoryPressureListener, and use
-// MemoryPressureListenerRegistration to register your class with the global
-// registry. To stop listening, simply delete the registration object, which
-// will ensure that `OnMemoryPressure()` will no longer be invoked. The
-// implementation guarantees that the notification will always be received on
-// the thread that created the listener.
+// To start listening, create a new instance of
+// MemoryPressureListenerRegistration, passing a callback to a function that
+// takes a MemoryPressureLevel parameter. To stop listening, simply delete the
+// registration object. The implementation guarantees that the callback will
+// always be called on the thread that created the listener.
 //
 // If the registration can't be done on the main thread of the process, then
 // AsyncMemoryPressureListenerRegistration must be used, and notifications will
@@ -98,22 +96,20 @@ enum class MemoryPressureListenerTag {
 // it'll potentially kill the app, and then later the app will have to be
 // cold-started.
 //
-// Example usage:
+// Example:
 //
-// class ExampleMemoryPressureListener : public MemoryPressureListener {
-//  public:
-//   ExampleMemoryPressureListener()
-//       : memory_pressure_listener_registration_(tag, this) {}
-//   ~ExampleMemoryPressureListener() override;
+//    void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) {
+//       ...
+//    }
 //
-//   // MemoryPressureListener:
-//   void OnMemoryPressure(MemoryPressureLevel level) override {
-//     // Do something with `level`.
-//   }
+//    // Start listening.
+//    auto listener = std::make_unique<MemoryPressureListenerRegistration>(
+//        base::BindRepeating(&OnMemoryPressure));
 //
-//  private:
-//   MemoryPressureListenerRegistration memory_pressure_listener_registration_;
-// };
+//    ...
+//
+//    // Stop listening.
+//    listener.reset();
 
 class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
  public:
@@ -145,6 +141,15 @@ class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
 // eventually be removed.
 class BASE_EXPORT SyncMemoryPressureListenerRegistration {
  public:
+  using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
+
+  // Constructor using a callback.
+  // DEPRECATED. Use the MemoryPressureListener interface.
+  SyncMemoryPressureListenerRegistration(
+      MemoryPressureListenerTag tag,
+      MemoryPressureCallback memory_pressure_callback);
+
+  // Constructor using the MemoryPressureListener interface.
   SyncMemoryPressureListenerRegistration(
       MemoryPressureListenerTag,
       MemoryPressureListener* memory_pressure_listener);
@@ -163,7 +168,7 @@ class BASE_EXPORT SyncMemoryPressureListenerRegistration {
  private:
   MemoryPressureListenerTag tag_;
 
-  raw_ptr<MemoryPressureListener> memory_pressure_listener_
+  MemoryPressureCallback memory_pressure_callback_
       GUARDED_BY_CONTEXT(thread_checker_);
 
   THREAD_CHECKER(thread_checker_);
@@ -173,6 +178,16 @@ class BASE_EXPORT SyncMemoryPressureListenerRegistration {
 // and don't need to be called synchronously.
 class BASE_EXPORT AsyncMemoryPressureListenerRegistration {
  public:
+  using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
+
+  // Constructor using a callback.
+  // DEPRECATED. Use the MemoryPressureListener interface.
+  AsyncMemoryPressureListenerRegistration(
+      const base::Location& creation_location,
+      MemoryPressureListenerTag tag,
+      MemoryPressureCallback memory_pressure_callback);
+
+  // Constructor using the MemoryPressureListener interface.
   AsyncMemoryPressureListenerRegistration(
       const base::Location& creation_location,
       MemoryPressureListenerTag tag,
@@ -190,7 +205,7 @@ class BASE_EXPORT AsyncMemoryPressureListenerRegistration {
 
   void Notify(MemoryPressureLevel memory_pressure_level);
 
-  raw_ptr<MemoryPressureListener> memory_pressure_listener_
+  MemoryPressureCallback memory_pressure_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Handle to the main thread's task runner. This is cached because it might no
@@ -214,6 +229,16 @@ class BASE_EXPORT AsyncMemoryPressureListenerRegistration {
 // Note: In the future, this will be always called synchronously.
 class BASE_EXPORT MemoryPressureListenerRegistration {
  public:
+  using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
+
+  // Constructor using a callback.
+  // DEPRECATED. Use the MemoryPressureListener interface.
+  MemoryPressureListenerRegistration(
+      const Location& creation_location,
+      MemoryPressureListenerTag tag,
+      MemoryPressureCallback memory_pressure_callback);
+
+  // Constructor using the MemoryPressureListener interface.
   MemoryPressureListenerRegistration(
       const Location& creation_location,
       MemoryPressureListenerTag tag,
