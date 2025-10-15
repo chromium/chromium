@@ -10,7 +10,7 @@ export function getHtml(this: SearchboxMatchElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="container" aria-hidden="true">
-  <div id="focus-indicator"></div>
+  <div id="focus-indicator" class="${this.getFocusIndicatorCssClass_()}"></div>
   <cr-searchbox-icon id="icon" .match="${this.match}"></cr-searchbox-icon>
   <div id="text-container">
     <span id="tail-suggest-prefix" ?hidden="${!this.tailSuggestPrefix_}">
@@ -30,6 +30,7 @@ export function getHtml(this: SearchboxMatchElement) {
     ${this.match.keywordChipHint ? html`
       <div id="actions-focus-border">
         <cr-searchbox-action id="keyword"
+            class="${this.getKeywordCssClass_()}"
             hint="${this.match.keywordChipHint}"
             icon-path="//resources/images/icon_search.svg"
             aria-label="${this.match.keywordChipA11y}"
@@ -42,6 +43,7 @@ export function getHtml(this: SearchboxMatchElement) {
     ${this.match.actions.map((item, index) => html`
       <div id="actions-focus-border">
         <cr-searchbox-action id="action"
+            class="${this.getActionCssClass_(index)}"
             hint="${item.hint}"
             suggestion-contents="${item.suggestionContents}"
             icon-path="${item.iconPath}"
@@ -52,7 +54,9 @@ export function getHtml(this: SearchboxMatchElement) {
       </div>
     `)}
   </div>
-  <cr-icon-button id="remove" class="action-icon icon-clear" tabindex="3"
+  <cr-icon-button id="remove"
+      class="action-icon icon-clear ${this.getRemoveCssClass_()}"
+      tabindex="3"
       aria-label="${this.removeButtonAriaLabel_}"
       title="${this.removeButtonTitle_}"
       ?hidden="${!this.match.supportsDeletion}"

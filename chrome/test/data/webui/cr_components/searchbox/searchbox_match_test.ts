@@ -166,12 +166,12 @@ suite('CrComponentsRealboxMatchTest', () => {
     await microtasksFinished();
 
     // When a match is selected.
-    let selection = {
+    matchEl.selection = {
       line: 0,
       state: SelectionLineState.kNormal,
       actionIndex: 0,
     };
-    matchEl.updateSelection(selection);
+    await microtasksFinished();
     assertFalse(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
     assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
@@ -182,12 +182,12 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertFalse(!!matchEl.shadowRoot.querySelector('#remove.selected'));
 
     // When a match is unselected.
-    selection = {
+    matchEl.selection = {
       line: 1,
       state: SelectionLineState.kNormal,
       actionIndex: 0,
     };
-    matchEl.updateSelection(selection);
+    await microtasksFinished();
     assertFalse(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
     assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
@@ -198,12 +198,12 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertFalse(!!matchEl.$.remove.classList.contains('selected'));
 
     // When the keyword chip is selected.
-    selection = {
+    matchEl.selection = {
       line: 0,
       state: SelectionLineState.kKeywordMode,
       actionIndex: 0,
     };
-    matchEl.updateSelection(selection);
+    await microtasksFinished();
     assertTrue(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
     assertTrue(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
@@ -214,12 +214,12 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertFalse(!!matchEl.shadowRoot.querySelector('#remove.selected'));
 
     // When the 1st action chip is selected.
-    selection = {
+    matchEl.selection = {
       line: 0,
       state: SelectionLineState.kFocusedButtonAction,
       actionIndex: 0,
     };
-    matchEl.updateSelection(selection);
+    await microtasksFinished();
     assertTrue(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
     assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
@@ -230,12 +230,12 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertFalse(!!matchEl.shadowRoot.querySelector('#remove.selected'));
 
     // When the 2nd action chip is selected.
-    selection = {
+    matchEl.selection = {
       line: 0,
       state: SelectionLineState.kFocusedButtonAction,
       actionIndex: 1,
     };
-    matchEl.updateSelection(selection);
+    await microtasksFinished();
     assertTrue(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
     assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
@@ -246,12 +246,12 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertFalse(!!matchEl.shadowRoot.querySelector('#remove.selected'));
 
     // When the remove button is selected.
-    selection = {
+    matchEl.selection = {
       line: 0,
       state: SelectionLineState.kFocusedButtonRemoveSuggestion,
       actionIndex: 0,
     };
-    matchEl.updateSelection(selection);
+    await microtasksFinished();
     assertTrue(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
     assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
