@@ -438,7 +438,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool HasFocus() override;
   void SetFocus(bool focus) override;
   void FlushInputProcessedCallback() override;
-  void CancelCompositionForPepper() override;
+  void CancelComposition() override;
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
   bool PinchGestureActiveInMainFrame() override;

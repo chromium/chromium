@@ -278,7 +278,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void ImeFinishComposingText(bool keep_selection);
   bool IsForProvisionalFrame();
   void FlushInputProcessedCallback();
-  void CancelCompositionForPepper();
+  void CancelComposition();
 
   void RequestPresentationAfterScrollAnimationEnd(
       mojom::blink::Widget::ForceRedrawCallback callback);

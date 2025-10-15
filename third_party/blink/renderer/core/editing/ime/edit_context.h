@@ -271,9 +271,11 @@ class CORE_EXPORT EditContext final : public EventTarget,
 
   bool HasValidCompositionBounds() const;
 
+  // Notify browser process to cancel the ongoing composition.
+  void CancelComposition();
   // Delete the characters in the existing composition range and end the
   // composition.
-  void CancelComposition();
+  void OnCancelComposition();
 
   void ClearCompositionState();
 

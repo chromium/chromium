@@ -2043,6 +2043,11 @@
       status: {"Android": "stable"},
     },
     {
+      // See https://crbug.com/379170477
+      name: "EditContextHandleTextOrSelectionUpdateDuringComposition",
+      status: "test",
+    },
+    {
       name: "EditEmojiUnicode11",
       status: "stable",
     },

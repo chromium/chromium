@@ -162,7 +162,7 @@ class WebWidget {
   virtual void FlushInputProcessedCallback() = 0;
 
   // Cancel the current composition.
-  virtual void CancelCompositionForPepper() = 0;
+  virtual void CancelComposition() = 0;
 
   // Requests the selection bounds be updated.
   virtual void UpdateSelectionBounds() = 0;

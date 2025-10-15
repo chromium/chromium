@@ -1622,7 +1622,7 @@ void WidgetBase::FlushInputProcessedCallback() {
   widget_input_handler_manager_->InvokeInputProcessedCallback();
 }
 
-void WidgetBase::CancelCompositionForPepper() {
+void WidgetBase::CancelComposition() {
   if (mojom::blink::WidgetInputHandlerHost* host =
           widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
     host->ImeCancelComposition();

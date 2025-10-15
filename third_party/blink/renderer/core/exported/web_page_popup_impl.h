@@ -190,7 +190,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void UpdateSelectionBounds() override;
   void ShowVirtualKeyboard() override;
   void FlushInputProcessedCallback() override;
-  void CancelCompositionForPepper() override;
+  void CancelComposition() override;
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
   const display::ScreenInfo& GetScreenInfo() override;

@@ -514,8 +514,8 @@ void WebPagePopupImpl::FlushInputProcessedCallback() {
   widget_base_->FlushInputProcessedCallback();
 }
 
-void WebPagePopupImpl::CancelCompositionForPepper() {
-  widget_base_->CancelCompositionForPepper();
+void WebPagePopupImpl::CancelComposition() {
+  widget_base_->CancelComposition();
 }
 
 void WebPagePopupImpl::ApplyVisualProperties(
