@@ -140,7 +140,7 @@ class CORE_EXPORT ObjectPaintProperties
     // Effects
     kFirstEffect = 13,
     kElementCaptureEffect = kFirstEffect,
-    kViewTransitionSubframeRootEffect = 14,
+    kViewTransitionScopeRootEffect = 14,
     kViewTransitionEffect = 15,
     kEffect = 16,
     kFilter = 17,
@@ -278,10 +278,10 @@ class CORE_EXPORT ObjectPaintProperties
   // follows:
   // [ ElementCaptureEffect ]
   // |     Isolated group to force an element to be painted separately.
-  // +-[ ViewTransitionSubframeRoot ]
-  //   |   Provides the root stacking context for a local subframe with an
-  //   |   active ViewTransition. This is used to implement the view transition
-  //  /    layer stacking context:
+  // +-[ ViewTransitionScopeRoot ]
+  //   |   Provides the root stacking context for an active view transition on
+  //   |   an element or a local subframe document. This is used to implement
+  //  /    the view transition layer stacking context:
   // | https://drafts.csswg.org/css-view-transitions-1/#view-transition-layer
   // +-[ ViewTransitionEffect ]
   //   |   Provides the stacking context to paint all content for a Document,
@@ -317,8 +317,8 @@ class CORE_EXPORT ObjectPaintProperties
   //       containment, It is the deepest child of any effect tree on the
   //       contain: paint element.
   ADD_EFFECT(ElementCaptureEffect, NodeId::kElementCaptureEffect)
-  ADD_EFFECT(ViewTransitionSubframeRootEffect,
-             NodeId::kViewTransitionSubframeRootEffect)
+  ADD_EFFECT(ViewTransitionScopeRootEffect,
+             NodeId::kViewTransitionScopeRootEffect)
   ADD_EFFECT(ViewTransitionEffect, NodeId::kViewTransitionEffect)
   ADD_EFFECT(Effect, NodeId::kEffect)
   ADD_EFFECT(Filter, NodeId::kFilter)
