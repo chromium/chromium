@@ -141,6 +141,8 @@ optimization_guide::proto::AutofillAiPromptType GetPromptType(
       return optimization_guide::proto::AUTOFILL_AI_PROMPT_TYPE_SAVE_ENTITY;
     case AutofillClient::AutofillAiPromptTypes::kUpdate:
       return optimization_guide::proto::AUTOFILL_AI_PROMPT_TYPE_UPDATE_ENTITY;
+    case AutofillClient::AutofillAiPromptTypes::kMigrate:
+      return optimization_guide::proto::AUTOFILL_AI_PROMPT_TYPE_MIGRATE_ON_SAVE;
   }
 }
 

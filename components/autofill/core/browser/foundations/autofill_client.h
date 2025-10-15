@@ -254,10 +254,7 @@ class AutofillClient {
 
   // The types of prompts that AutofillAi can show to the user after a form
   // submission.
-  enum class AutofillAiPromptTypes {
-    kSave,
-    kUpdate,
-  };
+  enum class AutofillAiPromptTypes { kSave, kUpdate, kMigrate };
 
   // Specifies the type of the address save prompt.
   enum class SaveAddressBubbleType {

@@ -398,7 +398,11 @@ void AutofillAiManager::HandleUpstreamEntityPrompt(
     const EntityInstance& upstream_entity,
     EntityInstance::EntityId local_entity,
     AutofillClient::EntitySaveOrUpdatePromptResult result) {
-  // TODO(crbug.com/441742849): Handle logging.
+  // TODO(crbug.com/445679087): Rename OnSaveOrUpdatePromptResult to OnPromptResult()
+  logger_.OnSaveOrUpdatePromptResult(
+      AutofillClient::AutofillAiPromptTypes::kMigrate, upstream_entity.type(),
+      upstream_entity.record_type(), form_session_id, domain, result,
+      ukm_source_id);
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForSaveAttempt(form_url, upstream_entity);
