@@ -61,6 +61,13 @@ class ShelfTest : public AshTestBase {
     test_ = std::make_unique<ShelfViewTestAPI>(shelf_view_);
   }
 
+  void TearDown() override {
+    test_.reset();
+    shelf_model_ = nullptr;
+    shelf_view_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   ShelfView* shelf_view() { return shelf_view_; }
   ShelfModel* shelf_model() { return shelf_model_; }
 
@@ -74,8 +81,8 @@ class ShelfTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_ = nullptr;
-  raw_ptr<ShelfModel, DanglingUntriaged> shelf_model_ = nullptr;
+  raw_ptr<ShelfView> shelf_view_ = nullptr;
+  raw_ptr<ShelfModel> shelf_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_;
 };
 
