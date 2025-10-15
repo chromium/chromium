@@ -1,0 +1,11 @@
+This is a wdspec test.
+[FAIL] test_set_and_reset_globally[True]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
+[FAIL] test_set_and_reset_globally[False]
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
+[ERROR] test_set_and_reset_globally_and_per_user_context[True-new]
+  setup error: webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
+[ERROR] test_set_and_reset_globally_and_per_user_context[False-new]
+  setup error: webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
+Harness: the test ran to completion.
+

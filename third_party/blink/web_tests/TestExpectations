@@ -2983,7 +2983,6 @@ crbug.com/448461169 external/wpt/css/css-animations/animation-name-in-shadow-par
 crbug.com/448461169 external/wpt/css/css-animations/animation-name-in-shadow-part.html [ Failure ]
 crbug.com/448461186 external/wpt/html/semantics/popovers/popover-alignment-002.html [ Failure ]
 external/wpt/notifications/event-onclose.https.html [ Timeout ]
-crbug.com/448458570 external/wpt/webdriver/tests/bidi/browser/set_download_behavior/download_behavior_allowed.py [ Failure ]
 crbug.com/448458570 external/wpt/webdriver/tests/bidi/network/get_data/charset.py [ Failure ]
 crbug.com/448472314 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/align-dialog-002.html [ Failure ]
 crbug.com/448472314 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-chained-003.html [ Failure ]

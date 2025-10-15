@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_allow_and_reset_no_destination_folder
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "downloadBehavior".)
-Harness: the test ran to completion.
-
