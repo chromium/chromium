@@ -221,8 +221,7 @@ class VideoCaptureBrowserTest
         &mock_controller_event_handler_, std::nullopt,
         base::BindOnce(
             &VideoCaptureBrowserTest::OnConnectClientToControllerAnswer,
-            base::Unretained(this), std::move(continuation)),
-        /*browser_context=*/nullptr);
+            base::Unretained(this), std::move(continuation)));
   }
 
   void OnConnectClientToControllerAnswer(

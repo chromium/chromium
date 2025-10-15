@@ -33,7 +33,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/desktop_media_id.h"
-#include "content/public/common/content_client.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -428,8 +427,7 @@ void VideoCaptureManager::ConnectClient(
     VideoCaptureControllerID client_id,
     VideoCaptureControllerEventHandler* client_handler,
     std::optional<url::Origin> origin,
-    DoneCB done_cb,
-    BrowserContext* browser_context) {
+    DoneCB done_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureManager::ConnectClient");

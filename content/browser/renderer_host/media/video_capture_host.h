@@ -18,7 +18,6 @@
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,13 +51,12 @@ class CONTENT_EXPORT VideoCaptureHost
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver);
 
   // Interface for notifying RenderFrameHost instance about active video
-  // capture stream changes and getting its ID.
+  // capture stream changes.
   class CONTENT_EXPORT RenderFrameHostDelegate {
    public:
     virtual ~RenderFrameHostDelegate();
     virtual void NotifyStreamAdded() = 0;
     virtual void NotifyStreamRemoved() = 0;
-    virtual GlobalRenderFrameHostId GetRenderFrameHostId() const = 0;
   };
 
  private:
@@ -136,8 +134,7 @@ class CONTENT_EXPORT VideoCaptureHost
   void ConnectClient(const base::UnguessableToken session_id,
                      const media::VideoCaptureParams& params,
                      VideoCaptureControllerID controller_id,
-                     VideoCaptureManager::DoneCB done_cb,
-                     BrowserContext* browser_context);
+                     VideoCaptureManager::DoneCB done_cb);
 
   class RenderFrameHostDelegateImpl;
   std::unique_ptr<RenderFrameHostDelegate> render_frame_host_delegate_;

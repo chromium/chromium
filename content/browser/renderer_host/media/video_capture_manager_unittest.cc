@@ -335,8 +335,7 @@ class VideoCaptureManagerTest : public testing::Test {
     vcm_->ConnectClient(
         session_id, params, client_id, frame_observer_.get(), std::nullopt,
         base::BindOnce(&VideoCaptureManagerTest::OnGotControllerCallback,
-                       base::Unretained(this), client_id, expect_success),
-        /*browser_context=*/&browser_context_);
+                       base::Unretained(this), client_id, expect_success));
     base::RunLoop().RunUntilIdle();
     return client_id;
   }
