@@ -3596,19 +3596,6 @@ chromium-metrics-reviews@google.com.
   <summary>The time spent to load a library MediaFoundation CDM.</summary>
 </histogram>
 
-<!-- Widevine in hardware secure mode only -->
-
-<histogram
-    name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.Initialize"
-    enum="Hresult" expires_after="2026-04-12">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    HRESULT of MediaFoundationCdm initialization when using Widevine in hardware
-    secure mode. Only reported on failures.
-  </summary>
-</histogram>
-
 <histogram
     name="Media.EME.MediaFoundationCdm.{KeySystem}.HardwareSecure.FirstInitialize"
     enum="Hresult" expires_after="2026-03-22">
@@ -3616,8 +3603,20 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     HRESULT of the first (and only the first) MediaFoundationCdm initialization
-    in a MeidaFoundationService process when using {KeySystem} in hardware
+    in a MediaFoundationService process when using {KeySystem} in hardware
     secure mode. Reported on both successes and failures.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationCdm.{KeySystem}.HardwareSecure.Initialize"
+    enum="Hresult" expires_after="2026-01-15">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    HRESULT of MediaFoundationCdm initialization when using {KeySystem} in
+    hardware secure mode. Only reported on failures.
   </summary>
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
