@@ -427,7 +427,6 @@ ci.thin_tester(
             "gpu_common_linux_telemetry_tests",
         ],
         mixins = [
-            "ci_only",
             "linux_nvidia_gtx_1660_stable",
             # TODO(crbug.com/331756538): Specify the puppet_production mixin
             # once testing is moved to Ubuntu 22.
