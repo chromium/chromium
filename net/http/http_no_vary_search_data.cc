@@ -77,7 +77,53 @@ std::string_view ExtractBaseUrl(const GURL& url) {
   return view.substr(0, end_of_base);
 }
 
+std::optional<bool>& GetHttpNoVarySearchDataUseNewAreEquivalentOverride() {
+  static constinit std::optional<bool> override_value;
+  return override_value;
+}
+
+std::optional<bool>& GetHttpNoVarySearchDataAreEquivalentCheckResultOverride() {
+  static constinit std::optional<bool> override_value;
+  return override_value;
+}
+
+bool IsHttpNoVarySearchDataUseNewAreEquivalentEnabled() {
+  if (GetHttpNoVarySearchDataUseNewAreEquivalentOverride().has_value()) {
+    return *GetHttpNoVarySearchDataUseNewAreEquivalentOverride();
+  }
+
+  static const bool kEnabled = base::FeatureList::IsEnabled(
+      features::kHttpNoVarySearchDataUseNewAreEquivalent);
+
+  return kEnabled;
+}
+
+bool IsHttpNoVarySearchDataAreEquivalentCheckResultEnabled() {
+  if (GetHttpNoVarySearchDataAreEquivalentCheckResultOverride().has_value()) {
+    return *GetHttpNoVarySearchDataAreEquivalentCheckResultOverride();
+  }
+
+  static const bool kEnabled =
+      features::kHttpNoVarySearchDataAreEquivalentCheckResult.Get();
+
+  return kEnabled;
+}
+
 }  // namespace
+
+ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting::
+    ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting(
+        bool use_new_implementation,
+        bool check_result) {
+  GetHttpNoVarySearchDataUseNewAreEquivalentOverride() = use_new_implementation;
+  GetHttpNoVarySearchDataAreEquivalentCheckResultOverride() = check_result;
+}
+
+ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting::
+    ~ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting() {
+  GetHttpNoVarySearchDataUseNewAreEquivalentOverride() = std::nullopt;
+  GetHttpNoVarySearchDataAreEquivalentCheckResultOverride() = std::nullopt;
+}
 
 HttpNoVarySearchData::HttpNoVarySearchData() = default;
 HttpNoVarySearchData::HttpNoVarySearchData(const HttpNoVarySearchData&) =
@@ -92,10 +138,9 @@ HttpNoVarySearchData& HttpNoVarySearchData::operator=(HttpNoVarySearchData&&) =
 bool HttpNoVarySearchData::AreEquivalent(const GURL& a, const GURL& b) const {
   CHECK(a.is_valid());
   CHECK(b.is_valid());
-  if (base::FeatureList::IsEnabled(
-          features::kHttpNoVarySearchDataUseNewAreEquivalent)) {
+  if (IsHttpNoVarySearchDataUseNewAreEquivalentEnabled()) {
     const bool result = AreEquivalentNewImpl(a, b);
-    if (features::kHttpNoVarySearchDataAreEquivalentCheckResult.Get()) {
+    if (IsHttpNoVarySearchDataAreEquivalentCheckResultEnabled()) {
       const bool old_result = AreEquivalentOldImpl(a, b);
       if (old_result != result) {
         SCOPED_CRASH_KEY_BOOL("NoVarySearch", "old_result", old_result);

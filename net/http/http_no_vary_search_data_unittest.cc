@@ -870,28 +870,28 @@ enum class AreEquivalentImplementation {
   kNewWithCheck,
 };
 
-// Configures `feature_list` to enable/disable feature
-// "HttpNoVarySearchDataUseNewAreEquivalent" and parameter "check_result"
-// according to `implementation`.
-void ConfigureAreEquivalentImplementation(
-    base::test::ScopedFeatureList& feature_list,
+// Configures the ImplementationOverrideForTesting object to simulate
+// enabling/disabling feature "HttpNoVarySearchDataUseNewAreEquivalent" and
+// parameter "check_result" according to `implementation`.
+std::unique_ptr<
+    ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>
+ConfigureAreEquivalentImplementation(
     AreEquivalentImplementation implementation) {
   switch (implementation) {
     case AreEquivalentImplementation::kOld:
-      feature_list.InitAndDisableFeature(
-          features::kHttpNoVarySearchDataUseNewAreEquivalent);
-      break;
+      return std::make_unique<
+          ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>(
+          false, false);
 
     case AreEquivalentImplementation::kNew:
-      feature_list.InitAndEnableFeature(
-          features::kHttpNoVarySearchDataUseNewAreEquivalent);
-      break;
+      return std::make_unique<
+          ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>(
+          true, false);
 
     case AreEquivalentImplementation::kNewWithCheck:
-      feature_list.InitAndEnableFeatureWithParameters(
-          features::kHttpNoVarySearchDataUseNewAreEquivalent,
-          {{"check_result", "true"}});
-      break;
+      return std::make_unique<
+          ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>(
+          true, true);
   }
 }
 
@@ -900,11 +900,14 @@ class HttpNoVarySearchAreEquivalentTest
       public ::testing::WithParamInterface<AreEquivalentImplementation> {
  public:
   HttpNoVarySearchAreEquivalentTest() {
-    ConfigureAreEquivalentImplementation(feature_list_, GetParam());
+    are_equivalent_implementation_override_ =
+        ConfigureAreEquivalentImplementation(GetParam());
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<
+      ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>
+      are_equivalent_implementation_override_;
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchAreEquivalentTest,
@@ -967,8 +970,8 @@ class HttpNoVarySearchAreEquivalentParameterizedTest
                                                  AreEquivalentImplementation>> {
  protected:
   HttpNoVarySearchAreEquivalentParameterizedTest() {
-    ConfigureAreEquivalentImplementation(feature_list_,
-                                         std::get<1>(GetParam()));
+    are_equivalent_implementation_override_ =
+        ConfigureAreEquivalentImplementation(std::get<1>(GetParam()));
   }
 
   const NoVarySearchCompareTestData& GetTestData() const {
@@ -976,7 +979,9 @@ class HttpNoVarySearchAreEquivalentParameterizedTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<
+      ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>
+      are_equivalent_implementation_override_;
 };
 
 TEST_P(HttpNoVarySearchAreEquivalentParameterizedTest,

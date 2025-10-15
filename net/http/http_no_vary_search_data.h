@@ -143,6 +143,15 @@ struct NET_EXPORT_PRIVATE PickleTraits<HttpNoVarySearchData> {
   static size_t PickleSize(const HttpNoVarySearchData& value);
 };
 
+class
+    NET_EXPORT_PRIVATE ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting {
+ public:
+  ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting(
+      bool use_new_implementation,
+      bool check_result);
+  ~ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting();
+};
+
 }  // namespace net
 
 #endif  // NET_HTTP_HTTP_NO_VARY_SEARCH_DATA_H_
