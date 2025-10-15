@@ -122,7 +122,7 @@ class CORE_EXPORT ViewTransitionSupplement
   // Generates a new ID usable from viz to refer to a snapshot resource.
   viz::ViewTransitionElementResourceId GenerateResourceId(
       const blink::ViewTransitionToken& transition_token,
-      bool for_subframe_snapshot);
+      bool for_scope_snapshot);
 
   // Initializes the sequence such that the next call to GenerateResourceId()
   // will return `next_local_id`. Used to ensure a unique and continuous
