@@ -66,9 +66,6 @@ source_set("actor") {
     "//content/public/browser",
     "//ui/base/unowned_user_data",
   ]
-  if (enable_glic) {
-    public_deps += [ "//chrome/browser/glic" ]
-  }
 }
 
 source_set("impl") {
@@ -170,9 +167,6 @@ source_set("impl") {
     # actor:impl, which could clean up this circular dependency.
     "//chrome/browser/actor/ui:tool_request_variant",
   ]
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
 }
 
 # This target contains only type definitions that may be depended on by other
