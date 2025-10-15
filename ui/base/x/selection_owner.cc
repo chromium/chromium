@@ -142,6 +142,7 @@ void SelectionOwner::OnSelectionRequest(
     if (GetAtomPairArrayProperty(connection_.get(), requestor,
                                  requested_property, &conversions)) {
       std::vector<x11::Atom> conversion_results;
+      conversion_results.reserve(conversions.size() * 2);
       for (const std::pair<x11::Atom, x11::Atom>& conversion : conversions) {
         bool conversion_successful =
             ProcessTarget(conversion.first, requestor, conversion.second);
