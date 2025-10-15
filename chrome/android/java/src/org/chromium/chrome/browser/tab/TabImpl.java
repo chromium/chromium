@@ -1375,27 +1375,50 @@ class TabImpl implements Tab {
 
             RevenueStats.getInstance().tabCreated(this);
 
-            // If there is a frozen WebContents state or a pending lazy load, don't create a new
-            // WebContents. Restoring will be done when showing the tab in the foreground.
-            if (mWebContentsState != null || getPendingLoadParams() != null) {
-                return;
-            }
+            boolean needsInitWebContents = true;
+            boolean createWebContents = webContents == null;
+            if (ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled()) {
+                if (mWebContentsState != null) {
+                    assert webContents == null;
 
-            boolean creatingWebContents = webContents == null;
-            if (creatingWebContents) {
-                webContents =
-                        WebContentsFactory.createWebContents(
-                                mProfile, initiallyHidden, initializeRenderer);
+                    unfreezeContents(/* noRenderer= */ true);
+                    webContents = getWebContents();
+                    needsInitWebContents = false;
+                    assert webContents != null;
+                } else if (getPendingLoadParams() != null) {
+                    assert webContents == null;
+
+                    webContents =
+                            WebContentsFactory.createWebContents(
+                                    mProfile, isHidden(), initializeRenderer);
+                } else if (createWebContents) {
+                    webContents =
+                            WebContentsFactory.createWebContents(
+                                    mProfile, initiallyHidden, initializeRenderer);
+                }
+            } else {
+                // If there is a frozen WebContents state or a pending lazy load, don't create a new
+                // WebContents. Restoring will be done when showing the tab in the foreground.
+                if (mWebContentsState != null || getPendingLoadParams() != null) {
+                    return;
+                }
+                if (createWebContents) {
+                    webContents =
+                            WebContentsFactory.createWebContents(
+                                    mProfile, initiallyHidden, initializeRenderer);
+                }
             }
 
             assumeNonNull(webContents);
-            initWebContents(webContents);
+            if (needsInitWebContents) {
+                initWebContents(webContents);
+            }
             // Avoid an empty title by updating the title here. This could happen if restoring from
             // a WebContents that has no renderer and didn't force a reload. This happens on
             // background tab creation from Recent Tabs (TabRestoreService).
             updateTitle();
 
-            if (!creatingWebContents && webContents.shouldShowLoadingUI()) {
+            if (!createWebContents && webContents.shouldShowLoadingUI()) {
                 didStartPageLoad(webContents.getVisibleUrl());
             }
 
@@ -2227,7 +2250,9 @@ class TabImpl implements Tab {
                     : "crbug/1393848: A frozen tab must have WebContentsState to restore from.";
             // Restore is needed for a tab that is loaded for the first time. WebContents will
             // be restored from a saved state.
-            if ((isFrozen() && mWebContentsState != null && !unfreezeContents())
+            if ((isFrozen()
+                            && mWebContentsState != null
+                            && !unfreezeContents(/* noRenderer= */ false))
                     || !needsReload()) {
                 return;
             }
@@ -2246,18 +2271,20 @@ class TabImpl implements Tab {
     }
 
     /**
-     * Restores the WebContents from its saved state.  This should only be called if the tab is
+     * Restores the WebContents from its saved state. This should only be called if the tab is
      * frozen with a saved TabState, and NOT if it was frozen for a lazy load.
+     *
+     * @param noRenderer Whether or not to create the WebContents without a renderer.
      * @return Whether or not the restoration was successful.
      */
-    private boolean unfreezeContents() {
+    private boolean unfreezeContents(boolean noRenderer) {
         boolean restored = true;
         try {
             TraceEvent.begin("Tab.unfreezeContents");
             assert mWebContentsState != null;
 
             WebContents webContents =
-                    mWebContentsState.restoreWebContents(getProfile(), isHidden());
+                    mWebContentsState.restoreWebContents(getProfile(), isHidden(), noRenderer);
 
             UrlConstantResolver urlConstantResolver =
                     UrlConstantResolverFactory.getForProfile(mProfile);
