@@ -1290,6 +1290,7 @@ component("net") {
 
     deps += [
       ":device_bound_sessions_storage_proto",
+      "//build:branding_buildflags",
       "//components/sqlite_proto",
       "//components/unexportable_keys",
       "//sql",
