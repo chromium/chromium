@@ -878,6 +878,7 @@ void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
   // through creating a tab group and are not in a self-consistent state.
 
   std::vector<ZOrderableTabContainerElement> orderable_children;
+  orderable_children.reserve(children().size());
   for (views::View* child : children()) {
     if (!ZOrderableTabContainerElement::CanOrderView(child)) {
       continue;
