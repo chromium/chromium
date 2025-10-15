@@ -2014,7 +2014,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-choose-from-drive", flag_descriptions::kIOSChooseFromDriveName,
      flag_descriptions::kIOSChooseFromDriveDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSChooseFromDrive)},
-    {"omnibox-mia-zps", flag_descriptions::kOmniboxMiaZps,
+    {"omnibox-mia-zps", flag_descriptions::kOmniboxMiaZpsName,
      flag_descriptions::kOmniboxMiaZpsDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          omnibox_feature_configs::MiaZPS::kOmniboxMiaZPS,
