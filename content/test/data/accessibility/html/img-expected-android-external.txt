@@ -6,3 +6,5 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++Image text:"pipe" contentDescription:"  " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/pipe.jpg"]
 ++++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++Image text:"svg-face" contentDescription:"SVG face" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/svg-face.svg"]
+++++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++ImageButton text:"pipe" contentDescription:"clickable_image" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", clickableScore="200", hasImage="true", roleDescription="graphic", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/pipe.jpg"]

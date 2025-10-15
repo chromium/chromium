@@ -9,3 +9,6 @@ rootWebArea
 ++++++image name='  '
 ++++++staticText name=' '
 ++++++image name='SVG face'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++image name='clickable_image'

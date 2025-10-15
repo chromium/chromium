@@ -712,6 +712,13 @@ bool BrowserAccessibilityAndroid::CanOpenPopup() const {
 const char* BrowserAccessibilityAndroid::GetClassName() const {
   ax::mojom::Role role = GetRole();
 
+  // TODO(crbug.com/447360631): Once auditing role conversions is completed,
+  // consider refactoring this function and `AXRoleToAndroidClassName` for
+  // better readability of type conversions.
+  if (role == ax::mojom::Role::kImage && IsClickable()) {
+    return ui::kAXImageButtonClassname;
+  }
+
   if (IsTextField()) {
     // On Android, contenteditable needs to be handled the same as any
     // other text field.

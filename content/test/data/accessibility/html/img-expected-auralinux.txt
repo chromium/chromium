@@ -6,3 +6,5 @@
 ++++[image] name='  . To get missing image descriptions, open the context menu.'
 ++++[static] name=' '
 ++++[image] name='SVG face'
+++++[static] name=' '
+++++[image] name='clickable_image'
