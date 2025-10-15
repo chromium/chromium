@@ -304,11 +304,9 @@ const CGFloat kBackButtonSize = 24;
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  // TODO(crbug.com/40253248): Record for this VC.
 }
 
 - (void)reportBackUserAction {
-  // TODO(crbug.com/40253248): Record for this VC.
 }
 
 @end
