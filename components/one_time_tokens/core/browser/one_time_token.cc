@@ -21,4 +21,12 @@ OneTimeToken& OneTimeToken::operator=(OneTimeToken&&) = default;
 
 OneTimeToken::~OneTimeToken() = default;
 
+bool OneTimeToken::operator==(const OneTimeToken& other) const {
+  return type_ == other.type_ && value_ == other.value_;
+}
+
+bool OneTimeToken::operator!=(const OneTimeToken& other) const {
+  return !(*this == other);
+}
+
 }  // namespace one_time_tokens

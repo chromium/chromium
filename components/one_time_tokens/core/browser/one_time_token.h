@@ -29,6 +29,11 @@ class OneTimeToken {
     return on_device_arrival_time_;
   }
 
+  // Performs a comparison of OneTimeTokens, ignoring the
+  // `on_device_arrival_time_`.
+  bool operator==(const OneTimeToken& other) const;
+  bool operator!=(const OneTimeToken& other) const;
+
  private:
   OneTimeTokenType type_;
   std::string value_;
