@@ -100,9 +100,9 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
   constexpr VideoPixelFormat kPixelFormat = PIXEL_FORMAT_NV12;
   constexpr gfx::Size kCodedSize(320, 240);
 
-  const std::optional<gfx::BufferFormat> gfx_format =
-      VideoPixelFormatToGfxBufferFormat(kPixelFormat);
-  ASSERT_TRUE(gfx_format) << "Invalid pixel format: " << kPixelFormat;
+  const std::optional<viz::SharedImageFormat> si_format =
+      VideoPixelFormatToSharedImageFormat(kPixelFormat);
+  ASSERT_TRUE(si_format) << "Invalid pixel format: " << kPixelFormat;
 
   scoped_refptr<VideoFrame> video_frame = CreateMockDmaBufVideoFrame(
       kPixelFormat, kCodedSize, gfx::Rect(kCodedSize), kCodedSize);
@@ -112,7 +112,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
   scoped_refptr<gfx::NativePixmapDmaBuf> native_pixmap =
       CreateNativePixmapDmaBuf(video_frame.get());
   ASSERT_TRUE(native_pixmap);
-  EXPECT_EQ(native_pixmap->GetBufferFormat(), *gfx_format);
+  EXPECT_EQ(native_pixmap->GetSharedImageFormat(), *si_format);
   EXPECT_EQ(native_pixmap->GetBufferFormatModifier(),
             video_frame->layout().modifier());
 
