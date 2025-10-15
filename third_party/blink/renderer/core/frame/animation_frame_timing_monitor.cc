@@ -638,6 +638,12 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
     return;
   }
 
+  // The isolate can be null during shutdown. Return early to prevent a crash
+  // when accessing location->Url()
+  if (!script_state->GetIsolate()) {
+    return;
+  }
+
   base::TimeTicks now = base::TimeTicks::Now();
   pending_script_info_ = PendingScriptInfo{
       .invoker_type = resolving ? ScriptTimingInfo::InvokerType::kPromiseResolve
