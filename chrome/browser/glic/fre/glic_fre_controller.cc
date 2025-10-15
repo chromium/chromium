@@ -80,8 +80,20 @@ void GlicFreController::WebUiStateChanged(mojom::FreWebUiState new_state) {
   }
 
   if (new_state == mojom::FreWebUiState::kReady) {
+    // If we are exiting the hold state, log the hold time.
+    if (webui_state_ == mojom::FreWebUiState::kHoldLoading &&
+        hold_loading_timer_) {
+      base::UmaHistogramTimes("Glic.Fre.HoldTime",
+                              hold_loading_timer_->Elapsed());
+      hold_loading_timer_.reset();
+    }
     base::RecordAction(base::UserMetricsAction("Glic.Fre.LoadSuccess"));
     interaction_timer_.emplace();
+  }
+
+  // If we are entering the hold state, start the timer.
+  if (new_state == mojom::FreWebUiState::kHoldLoading) {
+    hold_loading_timer_.emplace();
   }
 
   // UI State has changed
@@ -372,6 +384,8 @@ void GlicFreController::DismissFre(mojom::FreWebUiState panel) {
     presentation_timer_.reset();
     webui_framework_load_timer_.reset();
     web_client_load_timer_.reset();
+    hold_loading_timer_.reset();
+    final_web_client_load_time_.reset();
   }
   fre_view_.reset();
 }
@@ -591,14 +605,17 @@ void GlicFreController::CreateView() {
 
 void GlicFreController::RecordMetricsIfDialogIsShowingAndReady() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!!fre_widget_ && webui_state_ == mojom::FreWebUiState::kReady &&
-      presentation_timer_ && web_client_load_timer_) {
-    base::UmaHistogramMediumTimes("Glic.Fre.WebClientLoadTime",
-                                  web_client_load_timer_->Elapsed());
-    base::UmaHistogramMediumTimes("Glic.FrePresentationTime",
-                                  presentation_timer_->Elapsed());
-    presentation_timer_.reset();
-    web_client_load_timer_.reset();
+  if (!!fre_widget_ && webui_state_ == mojom::FreWebUiState::kReady) {
+    if (presentation_timer_) {
+      base::UmaHistogramMediumTimes("Glic.FrePresentationTime",
+                                    presentation_timer_->Elapsed());
+      presentation_timer_.reset();
+    }
+    if (final_web_client_load_time_) {
+      base::UmaHistogramMediumTimes("Glic.Fre.WebClientLoadTime",
+                                    *final_web_client_load_time_);
+      final_web_client_load_time_.reset();
+    }
   }
 }
 
@@ -611,6 +628,13 @@ void GlicFreController::LogWebUiLoadComplete() {
     // The FRE webclient begins loading as soon as the web ui is loaded
     // successfully.
     web_client_load_timer_.emplace();
+  }
+}
+
+void GlicFreController::LogWebClientLoaded() {
+  if (web_client_load_timer_) {
+    final_web_client_load_time_ = web_client_load_timer_->Elapsed();
+    web_client_load_timer_.reset();
   }
 }
 

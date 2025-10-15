@@ -182,6 +182,9 @@ export class FreAppController {
   }
 
   onContentLoad() {
+    // Immediately signal the C++ side that the content is loaded.
+    freHandler.logWebClientLoaded();
+
     if (this.state === FreWebUiState.kBeginLoading ||
         this.state === FreWebUiState.kFinishLoading) {
       this.setState(FreWebUiState.kReady);
