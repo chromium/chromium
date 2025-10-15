@@ -1,0 +1,35 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
+  padding: 2em;
+}
+
+table {
+  border-collapse: collapse;
+  margin-top: 2em;
+  max-width: 800px;
+  width: 80%;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.75em;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  width: 150px;
+}
+
+td {
+  word-break: break-word;
+}

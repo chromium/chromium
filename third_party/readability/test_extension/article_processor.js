@@ -11,7 +11,7 @@
    * template, renders the final article HTML, and returns it as a string.
    *
    * @param {Document} doc The document to parse.
-   * @returns {Promise<string|null>} A promise that resolves to the fully
+   * @return {Promise<string|null>} A promise that resolves to the fully
    *     rendered HTML string, or null if parsing fails.
    */
   window.ReadabilityExtension.processAndRenderArticle = async function(doc) {

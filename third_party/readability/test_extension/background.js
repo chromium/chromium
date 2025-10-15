@@ -15,20 +15,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // asynchronously, which keeps the message channel open.
   let willRespondAsynchronously = false;
 
-  if (request.command === 'clone-new') {
+  // Commands from the popup to initiate an action.
+  if (request.command === 'clone-page-new') {
     willRespondAsynchronously = true;
     handleClone(request.tabId, sendResponse);
   } else if (request.command === 'check-readerable') {
     willRespondAsynchronously = true;
     handleCheckReaderable(request.tabId, sendResponse);
-  } else if (request.command === 'distill') {
+  } else if (request.command === 'distill-page') {
     willRespondAsynchronously = true;
     handleDistill(request.tabId, /*inNewTab=*/ false, sendResponse);
-  } else if (request.command === 'distill-new') {
+  } else if (request.command === 'distill-page-new') {
     willRespondAsynchronously = true;
     handleDistill(request.tabId, /*inNewTab=*/ true, sendResponse);
-  } else if (request.command === 'show-distilled-new') {
+  } else if (request.command === 'extract-metadata-new') {
+    willRespondAsynchronously = true;
+    handleMetadata(request.tabId, sendResponse);
+  }
+  // Commands from content scripts to display pre-processed data.
+  else if (request.command === 'show-distilled-new') {
     displayDistilledContent(request.data, null);
+  } else if (request.command === 'show-metadata-new') {
+    openMetadataViewerWithData(request.data);
   }
 
   return willRespondAsynchronously;
@@ -94,6 +102,28 @@ function handleDistill(tabId, inNewTab, sendResponse) {
       });
 }
 
+function handleMetadata(tabId, sendResponse) {
+  chrome.scripting.executeScript(
+      {
+        target: {tabId: tabId},
+        files: [
+          'Readability.js', 'metadata_processor.js', 'metadata_extractor.js'
+        ]
+      },
+      (results) => {
+        if (chrome.runtime.lastError || !results || !results[0]) {
+          console.error(
+              chrome.runtime.lastError?.message || 'Script injection failed.');
+        } else {
+          const metadata = results[0].result;
+          if (metadata) {
+            openMetadataViewerWithData(metadata);
+          }
+        }
+        sendResponse({});
+      });
+}
+
 async function openClonedPageWithData(data) {
   // We can't pass the page content directly to the new tab, so we store it
   // in session storage with a temporary ID and pass that ID in the URL.
@@ -119,4 +149,11 @@ async function displayDistilledContent(data, tabId) {
   } else {
     chrome.tabs.update(tabId, {url: viewerUrl});
   }
+}
+
+async function openMetadataViewerWithData(data) {
+  const id = `metadata-${Date.now()}`;
+  await chrome.storage.session.set({[id]: data});
+  const metadataUrl = chrome.runtime.getURL(`metadata.html?id=${id}`);
+  chrome.tabs.create({url: metadataUrl});
 }

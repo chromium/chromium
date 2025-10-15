@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const SESSION_STORAGE_KEY = 'viewerPageData';
+// This page caches its content in sessionStorage to allow for refresh.
+// To see the results of code changes, a new viewer page must be generated.
 
+const SESSION_STORAGE_KEY = 'viewerPageData';
 (async () => {
   const {installTimestamp} =
       await chrome.storage.local.get('installTimestamp');

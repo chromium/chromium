@@ -9,7 +9,7 @@ const SESSION_STORAGE_KEY = 'clonedPageData';
  * On initial load, it fetches from chrome.storage.session using the URL's 'id'
  * parameter, and then caches the data to sessionStorage. On reloads, it
  * retrieves the data directly from sessionStorage.
- * @returns {Promise<object|null>} A promise that resolves to an object
+ * @return {Promise<object|null>} A promise that resolves to an object
  *     containing the {html, styles} of the cloned page, or null on error.
  */
 async function getClonedPageData() {
@@ -54,21 +54,24 @@ function renderClonedPage(html, styles) {
 /******** Event Listeners ********/
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Only respond to messages explicitly targeted at this script.
+  if (request.target !== 'cloned') {
+    return false;
+  }
+
   if (request.command === 'check-readerable') {
-    loadAndRunReaderableCheck((isReaderable) => {
-      sendResponse(isReaderable);
-    });
-    return true;
-  } else if (request.command === 'distill') {
-    loadAndRunReadabilityAndRender((renderedHtml) => {
+    const isReaderable = runCheckReaderable();
+    sendResponse(isReaderable);
+  } else if (request.command === 'distill-page') {
+    runDistillPage().then(renderedHtml => {
       if (renderedHtml) {
         document.documentElement.innerHTML = renderedHtml;
       }
       sendResponse({});
     });
     return true;
-  } else if (request.command === 'distill-new') {
-    loadAndRunReadabilityAndRender((renderedHtml) => {
+  } else if (request.command === 'distill-page-new') {
+    runDistillPage().then(renderedHtml => {
       if (renderedHtml) {
         chrome.runtime.sendMessage(
             {command: 'show-distilled-new', data: {html: renderedHtml}});
@@ -76,60 +79,160 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({});
     });
     return true;
+  } else if (request.command === 'extract-metadata-new') {
+    const article = runExtractMetadata();
+    if (article) {
+      chrome.runtime.sendMessage(
+          {command: 'show-metadata-new', data: article});
+    }
+    sendResponse({});
+  } else if (request.command === 'boxify-dom') {
+    runBoxifyDom();
+    sendResponse({});
+  } else if (request.command === 'visualize-readability') {
+    runVisualizeReadability();
+    sendResponse({});
   }
+  // Signal that the message was not handled.
+  return false;
 });
 
 /**
- * Loads Readability and the processor to get the final rendered HTML.
- * @param {function(string)} callback The function to call with the rendered
- *     HTML.
+ * Runs the isProbablyReaderable() check.
+ * @return {boolean} Whether the page is readerable.
  */
-function loadAndRunReadabilityAndRender(callback) {
-  const run = async () => {
-    const renderedHtml =
-        await window.ReadabilityExtension.processAndRenderArticle(document);
-    callback(renderedHtml);
-  };
-
-  if (typeof Readability !== 'undefined' &&
-      typeof window.ReadabilityExtension.processAndRenderArticle !== 'undefined') {
-    run();
-    return;
-  }
-
-  // The distillation scripts are not pre-loaded in cloned.html for performance.
-  // This fallback dynamically injects them on the first run.
-  const script = document.createElement('script');
-  script.src = chrome.runtime.getURL('Readability.js');
-  script.onload = () => {
-    const processorScript = document.createElement('script');
-    processorScript.src = chrome.runtime.getURL('article_processor.js');
-    processorScript.onload = run;
-    document.head.appendChild(processorScript);
-  };
-  document.head.appendChild(script);
+function runCheckReaderable() {
+  return isProbablyReaderable(document);
 }
 
+/**
+ * Injects a stylesheet to draw a black outline around every element.
+ */
+function runBoxifyDom() {
+  const styleId = 'readability-boxify-style';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `* { outline: 1px solid black !important; }`;
+    document.head.appendChild(style);
+  }
+}
 
 /**
- * Loads and runs the isProbablyReaderable() check.
- * @param {function(boolean)} callback The function to call with the result.
+ * Extracts the article metadata.
+ * @return {object|null} The article metadata object, or null on failure.
  */
-function loadAndRunReaderableCheck(callback) {
-  const run = () => {
-    const isReaderable = isProbablyReaderable(document);
-    callback(isReaderable);
-  };
+function runExtractMetadata() {
+  return window.ReadabilityExtension.extractMetadata(document);
+}
 
-  if (typeof isProbablyReaderable !== 'undefined') {
-    run();
-    return;
+/**
+ * Runs the distillation and rendering process.
+ * @return {Promise<string|null>} A promise that resolves to the rendered HTML,
+ *     or null on failure.
+ */
+function runDistillPage() {
+  return window.ReadabilityExtension.processAndRenderArticle(document);
+}
+
+/**
+ * Runs the full visualization process.
+ */
+function runVisualizeReadability() {
+  const docClone = document.cloneNode(true);
+  const elementMap = new Map();
+  let elementCounter = 0;
+
+  // Tag every element in the cloned document and the original document.
+  docClone.querySelectorAll('*').forEach((element, index) => {
+    const id = `readability-id-${elementCounter++}`;
+    element.setAttribute('data-readability-id', id);
+    // Find the corresponding element in the visible DOM and tag it too.
+    const originalElement = document.querySelectorAll('*')[index];
+    if (originalElement) {
+      originalElement.setAttribute('data-readability-id', id);
+      elementMap.set(id, originalElement);
+    }
+  });
+
+  const article = new Readability(docClone).parse();
+  const survivorIds = new Set();
+
+  if (article && article.content) {
+    const fragment =
+        document.createRange().createContextualFragment(article.content);
+    fragment.querySelectorAll('[data-readability-id]').forEach(
+        element => survivorIds.add(element.dataset.readabilityId));
   }
 
-  const script = document.createElement('script');
-  script.src = chrome.runtime.getURL('Readability-readerable.js');
-  script.onload = run;
-  document.head.appendChild(script);
+  applyVisualizationStyles(elementMap, survivorIds);
+}
+
+/**
+ * Applies CSS classes and styles to the document to visualize the results.
+ * @param {Map<string, Element>} elementMap A map from ID to element in the
+ *     visible DOM.
+ * @param {Set<string>} survivorIds A set of IDs for elements that were kept.
+ */
+function applyVisualizationStyles(elementMap, survivorIds) {
+  const styleId = 'readability-vis-style';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      .readability-kept {
+        background-color: rgba(0, 255, 0, 0.2);
+        outline: 1px solid rgba(0, 255, 0, 0.5);
+      }
+      .readability-discarded {
+        background-color: rgba(255, 0, 0, 0.1);
+        outline: 1px solid rgba(255, 0, 0, 0.3);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Clear any previous visualization classes and styles.
+  document.querySelectorAll('.readability-kept, .readability-discarded')
+      .forEach(el => {
+        el.classList.remove('readability-kept', 'readability-discarded');
+        el.style.opacity = '';
+        el.style.color = '';
+      });
+
+  // First pass: classify all elements as kept or discarded.
+  for (const [id, element] of elementMap.entries()) {
+    if (survivorIds.has(id)) {
+      element.classList.add('readability-kept');
+    } else {
+      element.classList.add('readability-discarded');
+    }
+  }
+
+  // Second pass: refine styling for "leaf" discarded nodes to avoid compounding
+  // opacity issues.
+  const discardedElements = document.querySelectorAll('.readability-discarded');
+  const targetOpacity = 0.5;
+  const fadedTextColor = 'rgba(0, 0, 0, 0.5)';
+
+  discardedElements.forEach(element => {
+    // A "leaf" is a discarded element that contains no "kept" descendants.
+    if (!element.querySelector('.readability-kept')) {
+      const tagName = element.tagName.toLowerCase();
+      if (['img', 'video', 'picture', 'svg', 'canvas'].includes(tagName)) {
+        // For media elements, reduce opacity directly.
+        const currentOpacity =
+            parseFloat(window.getComputedStyle(element).opacity);
+        if (currentOpacity > targetOpacity) {
+          element.style.opacity = targetOpacity;
+        }
+      } else {
+        // For other elements, just fade the text color. This avoids compounding
+        // opacity for nested containers.
+        element.style.color = fadedTextColor;
+      }
+    }
+  });
 }
 
 /******** Main Initialization ********/

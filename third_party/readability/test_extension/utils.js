@@ -7,7 +7,7 @@
  * destructive read: it gets the ID and immediately cleans the URL to remove
  * the query parameter. This is a one-time operation for pages that receive
  * data from a background script.
- * @returns {string|null} The ID found in the URL, or null if not present.
+ * @return {string|null} The ID found in the URL, or null if not present.
  */
 function consumeIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -23,7 +23,7 @@ function consumeIdFromUrl() {
  * from storage.
  *
  * @param {string} id The ID to look up in session storage.
- * @returns {Promise<object|null>} A promise that resolves to the data object
+ * @return {Promise<object|null>} A promise that resolves to the data object
  *     stored in session storage, or null if the data cannot be found.
  */
 async function consumeDataFromChromeStorage(id) {

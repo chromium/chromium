@@ -27,6 +27,9 @@
         "distilledpage_common.css",
         "distilledpage_new.css",
         "dom_distiller_viewer.js",
+        "metadata.css",
+        "metadata.html",
+        "metadata_processor.js",
         "readability_checker.js",
         "utils.js",
         "viewer.html"

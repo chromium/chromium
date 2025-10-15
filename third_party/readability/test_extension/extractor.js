@@ -11,7 +11,7 @@
   /**
    * Converts a relative URL to an absolute URL.
    * @param {string} url The URL to resolve.
-   * @returns {string} The resolved, absolute URL.
+   * @return {string} The resolved, absolute URL.
    */
   function toAbsoluteURL(url) {
     try {
@@ -29,7 +29,7 @@
    * Recursively reads all CSS rules from a stylesheet, handling @import rules.
    * @param {CSSStyleSheet} sheet The stylesheet to read.
    * @param {string} baseUrl The base URL for resolving relative @import paths.
-   * @returns {Promise<string>} A promise that resolves to the aggregated CSS
+   * @return {Promise<string>} A promise that resolves to the aggregated CSS
    *     text.
    */
   async function getCssText(sheet, baseUrl) {
@@ -65,7 +65,7 @@
    * Gathers all stylesheets in the document into a single, aggregated CSS
    * string.
    * @param {Document} doc The document to extract stylesheets from.
-   * @returns {Promise<string>} A promise that resolves to the complete CSS
+   * @return {Promise<string>} A promise that resolves to the complete CSS
    *     text.
    */
   async function aggregateStylesheets(doc) {
@@ -126,7 +126,7 @@
   /**
    * Reconstructs the document's DOCTYPE declaration as a string.
    * @param {Document} doc The document whose DOCTYPE should be reconstructed.
-   * @returns {string} The DOCTYPE as a string.
+   * @return {string} The DOCTYPE as a string.
    */
   function reconstructDoctype(doc) {
     const doctype = doc.doctype;

@@ -11,7 +11,7 @@ const PageMode = {
   ORIGINAL: 'original',
   CLONED: 'cloned',
   VIEWER: 'viewer',
-  // Other modes will be added in subsequent CLs.
+  METADATA: 'metadata',
 };
 
 /**
@@ -22,22 +22,30 @@ const PageMode = {
 const POPUP_CONFIG = {
   [PageMode.ORIGINAL]: {
     buttons: [
-      {text: 'Clone', command: 'clone-new', target: 'runtime'},
-      {text: 'Readerable?', command: 'check-readerable', target: 'runtime'},
-      {text: 'Distill', command: 'distill', target: 'runtime'},
-      {text: 'Distill New', command: 'distill-new', target: 'runtime'},
+      {text: 'Clone', command: 'clone-page-new', target: 'background'},
+      {text: 'Readerable?', command: 'check-readerable', target: 'background'},
+      {text: 'Distill', command: 'distill-page', target: 'background'},
+      {text: 'Distill New', command: 'distill-page-new', target: 'background'},
+      {text: 'Metadata', command: 'extract-metadata-new', target: 'background'},
     ],
   },
   [PageMode.CLONED]: {
     message: 'This is a cloned page.',
     buttons: [
-      {text: 'Readerable?', command: 'check-readerable', target: 'tab'},
-      {text: 'Distill', command: 'distill', target: 'tab'},
-      {text: 'Distill New', command: 'distill-new', target: 'tab'},
+      {text: 'Readerable?', command: 'check-readerable', target: 'cloned'},
+      {text: 'Distill', command: 'distill-page', target: 'cloned'},
+      {text: 'Distill New', command: 'distill-page-new', target: 'cloned'},
+      {text: 'Metadata', command: 'extract-metadata-new', target: 'cloned'},
+      {text: 'Boxify', command: 'boxify-dom', target: 'cloned'},
+      {text: 'Visualize', command: 'visualize-readability', target: 'cloned'},
     ],
   },
   [PageMode.VIEWER]: {
     message: 'This is a distilled page.',
+    buttons: [],
+  },
+  [PageMode.METADATA]: {
+    message: 'This is a metadata page.',
     buttons: [],
   },
 };
@@ -47,7 +55,7 @@ const POPUP_CONFIG = {
  * Creates a button element with the given text and click handler.
  * @param {string} text The text to display on the button.
  * @param {function} onClick The function to call when the button is clicked.
- * @returns {HTMLButtonElement} The created button element.
+ * @return {HTMLButtonElement} The created button element.
  */
 function createButton(text, onClick) {
   const button = document.createElement('button');
@@ -92,10 +100,11 @@ function renderPopup(container, pageMode, tabId) {
     }
 
     const action = () => {
-      if (target === 'runtime') {
-        chrome.runtime.sendMessage({command, tabId}, messageCallback);
-      } else {  // target === 'tab'
-        chrome.tabs.sendMessage(tabId, {command}, messageCallback);
+      const message = {command, target, tabId};
+      if (target === 'background') {
+        chrome.runtime.sendMessage(message, messageCallback);
+      } else {  // target === 'cloned'
+        chrome.tabs.sendMessage(tabId, message, messageCallback);
       }
     };
 
@@ -113,14 +122,16 @@ chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 
   const clonedUrl = chrome.runtime.getURL('cloned.html');
   const viewerUrl = chrome.runtime.getURL('viewer.html');
+  const metadataUrl = chrome.runtime.getURL('metadata.html');
+
   let pageMode = PageMode.ORIGINAL;
   if (tab.url.startsWith(clonedUrl)) {
     pageMode = PageMode.CLONED;
   } else if (tab.url.startsWith(viewerUrl)) {
     pageMode = PageMode.VIEWER;
+  } else if (tab.url.startsWith(metadataUrl)) {
+    pageMode = PageMode.METADATA;
   }
-  // TODO(crrev.com/449799192): Add logic to detect other page modes (e.g.,
-  // metadata).
 
   const container = document.getElementById('popup-content');
   renderPopup(container, pageMode, tab.id);
