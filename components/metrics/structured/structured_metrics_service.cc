@@ -27,10 +27,10 @@ namespace metrics::structured {
 constexpr size_t kMinLogQueueCount = 10;
 
 // Controls the minimum size of all logs that can be stored in bytes.
-constexpr size_t kMinLogQueueSizeBytes = 300 * 1024 * 1024;  // 300 KiB
+constexpr size_t kMinLogQueueSizeBytes = 300 * 1024;  // 300 KiB
 
 // Controls the maximum size of a single log in bytes.
-constexpr size_t kMaxLogSizeBytes = 1024 * 1024 * 1024;  // 1 MiB
+constexpr size_t kMaxLogSizeBytes = 1024 * 1024;  // 1 MiB
 
 // Controls the upload interval.
 constexpr base::TimeDelta kUploadInterval = base::Minutes(10);
