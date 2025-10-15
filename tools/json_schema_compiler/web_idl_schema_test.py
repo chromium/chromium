@@ -1004,15 +1004,28 @@ class WebIdlSchemaTest(unittest.TestCase):
     expected = ['chromeos', 'desktop_android', 'linux', 'mac', 'win']
     self.assertEqual(expected, platforms_schema[0]['platforms'])
 
-  # Tests that an API interface with just chromeos listed in the platforms
-  # extended attribute just has that after processing.
-  def testChromeOSPlatformsOnNamespace(self):
-    platforms_schema = web_idl_schema.Load(
-        'test/web_idl/chromeos_platforms_on_namespace.idl')
-    self.assertEqual(1, len(platforms_schema))
-    self.assertEqual('chromeOSPlatformsAPI', platforms_schema[0]['namespace'])
+  # Tests that an API interface and a function definition with chromeos listed
+  # in the platforms extended attribute has the associated attribute set after
+  # processing.
+  # Note: Platform restrictions should generally be defined using Extension
+  # Features Files (see: chrome/common/extensions/api/_features.md), but for
+  # legacy reasons we have to allow this extended attribute on namespace and
+  # function definitions.
+  def testPlatformsExtendedAttribute(self):
+    idl = web_idl_schema.Load('test/web_idl/platforms_examples.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    self.assertEqual('chromeOSPlatformsAPI', schema['namespace'])
     expected = ['chromeos']
-    self.assertEqual(expected, platforms_schema[0]['platforms'])
+    self.assertEqual(expected, schema['platforms'])
+
+    platforms_function = getFunction(schema, 'chromeOSOnlyFunction')
+    self.assertEqual(expected, platforms_function['platforms'])
+
+    normal_function = getFunction(schema, 'normalFunction')
+    self.assertFalse(hasattr(normal_function, 'platforms'))
+
 
   # Tests that the 'implemented_in' extended attribute on an interface
   # definition is copied into the resulting namespace after processing.

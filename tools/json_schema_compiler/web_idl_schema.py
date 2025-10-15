@@ -618,6 +618,8 @@ class Operation:
       properties['description'] = description_data.description
 
     AddCommonExtendedAttributeProperties(self.node, properties)
+    if platforms := GetExtendedAttributeValue(self.node, 'platforms'):
+      properties['platforms'] = platforms
 
     parameters = []
     arguments_node = self.node.GetOneOf('Arguments')
