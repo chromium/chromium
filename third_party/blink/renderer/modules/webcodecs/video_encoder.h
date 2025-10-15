@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
+#include "media/base/video_decoder_config.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_pool.h"
 #include "media/video/video_encoder_info.h"
@@ -191,16 +192,15 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   // Buffers returned by getAllFrameBuffers()
   HeapVector<Member<VideoEncoderBuffer>> frame_reference_buffers_;
 
-  // The color space corresponding to the last emitted output. Used to update
-  // emitted VideoDecoderConfig when necessary.
-  gfx::ColorSpace last_output_color_space_;
-
   // The transformation corresponding to the last input received by
   // ProcessEncode(). Used to request a key frame.
   std::optional<media::VideoTransformation> first_input_transformation_;
 
   // Latest VideoEncoderInfo reported by encoder
   media::VideoEncoderInfo encoder_info_;
+
+  // The last emitted decoder config.
+  std::optional<media::VideoDecoderConfig> last_decoder_config_;
 };
 
 }  // namespace blink

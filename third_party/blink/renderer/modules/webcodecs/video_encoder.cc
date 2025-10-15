@@ -858,6 +858,8 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kWebCodecsAv1EncodingWithQP);
   }
+  last_decoder_config_.reset();
+  first_output_after_configure_ = true;
   encoder_metrics_provider_->Initialize(
       active_config_->profile, active_config_->options.frame_size,
       is_platform_encoder,
@@ -899,7 +901,11 @@ bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
   return original_config.codec == new_config.codec &&
          original_config.profile == new_config.profile &&
          original_config.level == new_config.level &&
-         original_config.hw_pref == new_config.hw_pref;
+         original_config.hw_pref == new_config.hw_pref &&
+         original_config.options.avc.produce_annexb ==
+             new_config.options.avc.produce_annexb &&
+         original_config.options.hevc.produce_annexb ==
+             new_config.options.hevc.produce_annexb;
 }
 
 const AtomicString& VideoEncoder::InterfaceName() const {
@@ -1524,35 +1530,50 @@ void VideoEncoder::CallOutputCallback(
   gfx::ColorSpace output_color_space = output.color_space.IsValid()
                                            ? output.color_space
                                            : gfx::ColorSpace::CreateREC601();
+  auto video_color_space =
+      media::VideoColorSpace::FromGfxColorSpace(output_color_space);
+  auto encoded_size =
+      output.encoded_size.value_or(active_config->options.frame_size);
 
-  if (first_output_after_configure_ || codec_desc.has_value() ||
-      output_color_space != last_output_color_space_) {
-    first_output_after_configure_ = false;
+  std::vector<uint8_t> extra_data;
+  if (codec_desc.has_value()) {
+    extra_data = std::move(codec_desc.value());
+    codec_desc.reset();
+  } else if (last_decoder_config_.has_value()) {
+    extra_data = last_decoder_config_->extra_data();
+  }
 
-    if (output_color_space != last_output_color_space_) {
-// This should only fail when AndroidVideoEncodeAccelerator is used since it
-// doesn't support color space changes. It's not worth plumbing a signal just
-// for these DCHECKs, so disable them entirely.
-#if !BUILDFLAG(IS_ANDROID)
-      if (active_config->codec == media::VideoCodec::kH264) {
-        DCHECK(active_config->options.avc.produce_annexb ||
-               codec_desc.has_value());
-      }
+  media::VideoDecoderConfig current_decoder_config(
+      active_config->codec, active_config->profile,
+      media::VideoDecoderConfig::AlphaMode::kIsOpaque, video_color_space,
+      output_transform, encoded_size, gfx::Rect(encoded_size),
+      active_config->display_size.value_or(encoded_size), extra_data,
+      media::EncryptionScheme::kUnencrypted);
+
+  // We need to emit new config in the following cases:
+  //  1. We haven't emitted a decoder config yet (first output)
+  //  2. Decoder config has changed.
+  if (!last_decoder_config_.has_value() ||
+      !last_decoder_config_->Matches(current_decoder_config)) {
+#if DCHECK_IS_ON()
+    if (!last_decoder_config_.has_value() ||
+        video_color_space != last_decoder_config_->color_space_info()) {
       DCHECK(output.key_frame)
           << "Encoders should generate a keyframe when "
           << "changing color space."
           << " output_color_space: " << output_color_space.ToString()
           << " last_output_color_space: "
-          << last_output_color_space_.ToString();
-#endif
-      last_output_color_space_ = output_color_space;
-    } else if (active_config->codec == media::VideoCodec::kH264) {
-      DCHECK(active_config->options.avc.produce_annexb ||
-             codec_desc.has_value());
+          << (last_decoder_config_.has_value()
+                  ? last_decoder_config_->color_space_info()
+                        .ToGfxColorSpace()
+                        .ToString()
+                  : std::string("none"));
     }
-
-    auto encoded_size =
-        output.encoded_size.value_or(active_config->options.frame_size);
+    if (active_config->codec == media::VideoCodec::kH264) {
+      DCHECK(active_config->options.avc.produce_annexb ||
+             extra_data.size() > 0u);
+    }
+#endif  // DCHECK_IS_ON()
 
     auto* decoder_config = VideoDecoderConfig::Create();
     decoder_config->setCodec(active_config->codec_string);
@@ -1572,16 +1593,16 @@ void VideoEncoder::CallOutputCallback(
         MakeGarbageCollected<VideoColorSpace>(output_color_space);
     decoder_config->setColorSpace(color_space->toJSON());
 
-    if (codec_desc.has_value()) {
-      auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value());
+    if (extra_data.size() > 0) {
+      auto* desc_array_buf = DOMArrayBuffer::Create(extra_data);
       decoder_config->setDescription(
           MakeGarbageCollected<AllowSharedBufferSource>(desc_array_buf));
     }
     metadata->setDecoderConfig(decoder_config);
+    last_decoder_config_ = current_decoder_config;
   }
 
   encoder_metrics_provider_->IncrementEncodedFrameCount();
-
   TRACE_EVENT_BEGIN1(kCategory, GetTraceNames()->output.c_str(), "timestamp",
                      chunk->timestamp());
 
@@ -1594,7 +1615,7 @@ void VideoEncoder::CallOutputCallback(
 void VideoEncoder::ResetInternal(DOMException* ex) {
   Base::ResetInternal(ex);
   active_encodes_ = 0;
-  last_output_color_space_ = {};
+  last_decoder_config_.reset();
 }
 
 void VideoEncoder::OnNewEncode(InputType* input,
