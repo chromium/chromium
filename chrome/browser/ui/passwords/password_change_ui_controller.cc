@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -129,8 +130,8 @@ std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
     std::u16string email) {
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetBannerImage(
-      ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_WARNING),
-      ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_WARNING_DARK));
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_PASSWORD_CHANGE_WARNING_LOTTIE));
   dialog_builder.SetIcon(
       ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon()));
   dialog_builder.SetTitle(l10n_util::GetStringUTF16(
@@ -169,14 +170,12 @@ std::unique_ptr<ui::DialogModel> CreatePasswordChangeFailedDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback,
     bool use_error_image) {
-  auto image_light = ui::ImageModel::FromResourceId(
-      use_error_image ? IDR_PASSWORD_CHANGE_WARNING
-                      : IDR_PASSWORD_CHANGE_NEUTRAL);
-  auto image_dark = ui::ImageModel::FromResourceId(
-      use_error_image ? IDR_PASSWORD_CHANGE_WARNING_DARK
-                      : IDR_PASSWORD_CHANGE_NEUTRAL_DARK);
+  auto image_model =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          use_error_image ? IDR_PASSWORD_CHANGE_WARNING_LOTTIE
+                          : IDR_PASSWORD_CHANGE_NEUTRAL_LOTTIE);
   return ui::DialogModel::Builder()
-      .SetBannerImage(image_light, image_dark)
+      .SetBannerImage(image_model)
       .SetTitle(l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FAILED_TITLE))
       .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
@@ -215,8 +214,8 @@ std::unique_ptr<ui::DialogModel> CreateOtpDetectedDialog(
     base::OnceClosure cancel_callback) {
   return ui::DialogModel::Builder()
       .SetBannerImage(
-          ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_NEUTRAL),
-          ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_NEUTRAL_DARK))
+          ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+              IDR_PASSWORD_CHANGE_NEUTRAL_LOTTIE))
       .SetTitle(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_OTP_DIALOG_TITLE))
       .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(

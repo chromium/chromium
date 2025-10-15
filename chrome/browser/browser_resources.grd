@@ -46,6 +46,11 @@
 
         <!-- Shopping resources -->
         <structure type="lottie" name="IDR_SHOPPING_DISCOUNTS_AVAILABLE_LOTTIE" file="resources/shopping/discounts_available.json" compress="brotli"/>
+
+        <!-- Automated Password Change resources -->
+        <structure type="lottie" name="IDR_PASSWORD_CHANGE_SUCCESS_LOTTIE" file="resources/automated_password_change/password_change_success.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_PASSWORD_CHANGE_NEUTRAL_LOTTIE" file="resources/automated_password_change/password_change_neutral.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_PASSWORD_CHANGE_WARNING_LOTTIE" file="resources/automated_password_change/password_change_warning.json" compress="brotli"/>
       </if>
     </structures>
     <includes>

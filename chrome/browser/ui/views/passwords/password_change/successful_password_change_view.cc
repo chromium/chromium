@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -243,8 +243,7 @@ ui::ImageModel SuccessfulPasswordChangeView::GetWindowIcon() {
 }
 
 void SuccessfulPasswordChangeView::AddedToWidget() {
-  SetBubbleHeader(IDR_PASSWORD_CHANGE_SUCCESS,
-                  IDR_PASSWORD_CHANGE_SUCCESS_DARK);
+  SetBubbleHeaderLottie(IDR_PASSWORD_CHANGE_SUCCESS_LOTTIE);
 }
 
 BEGIN_METADATA(SuccessfulPasswordChangeView)
