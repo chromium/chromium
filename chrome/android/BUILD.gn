@@ -3108,6 +3108,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/app/send_tab_to_self/SendTabToSelfNotificationReceiver.java",
       "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
       "java/src/org/chromium/chrome/browser/app/tabmodel/TabGroupSyncDepsProvider.java",
+      "java/src/org/chromium/chrome/browser/app/tabmodel/TabStoragePackager.java",
       "java/src/org/chromium/chrome/browser/autofill/AutofillAccessibilityUtils.java",
       "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
       "java/src/org/chromium/chrome/browser/autofill/AutofillFallbackSurfaceLauncher.java",

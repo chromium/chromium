@@ -12,6 +12,7 @@
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/tabs/public/tab_strip_collection.h"
 
 namespace tabs {
 class TabInterface;
@@ -41,6 +42,10 @@ class TabStoragePackager {
  protected:
   virtual std::unique_ptr<Payload> PackageTabGroupTabCollectionData(
       const TabGroupTabCollection* collection,
+      StorageIdMapping& mapping) = 0;
+
+  virtual std::unique_ptr<Payload> PackageTabStripCollectionData(
+      const TabStripCollection* collection,
       StorageIdMapping& mapping) = 0;
 
  private:
