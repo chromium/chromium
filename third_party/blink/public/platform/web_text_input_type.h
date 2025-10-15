@@ -33,6 +33,7 @@
 
 namespace blink {
 
+// LINT.IfChange(BlinkTextInputType)
 enum WebTextInputType {
   // Input caret is not in an editable node, no input method shall be used.
   kWebTextInputTypeNone,
@@ -68,6 +69,7 @@ enum WebTextInputType {
   // for on-screen keyboard.
   kWebTextInputTypeDateTimeField,
 };
+// LINT.ThenChange(//ui/base/ime/text_input_type.h:UiTextInputType)
 
 // Separate on/off flags are defined so that the input mechanism can choose
 // an appropriate default based on other things (like InputType and direct
