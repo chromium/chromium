@@ -11,13 +11,39 @@
 
 namespace device {
 
+// static
+OpenXrCompositionLayer::Type OpenXrCompositionLayer::GetTypeFromMojomData(
+    const mojom::XRLayerSpecificData& layer_specific_data) {
+  switch (layer_specific_data.which()) {
+    case mojom::XRLayerSpecificData::Tag::kProjection:
+      return Type::kProjection;
+    case mojom::XRLayerSpecificData::Tag::kQuad:
+      return Type::kQuad;
+    case mojom::XRLayerSpecificData::Tag::kCylinder:
+      return Type::kCylinder;
+    case mojom::XRLayerSpecificData::Tag::kEquirect:
+      return Type::kEquirect;
+  }
+}
+
 OpenXrCompositionLayer::OpenXrCompositionLayer(
     XrSpace space,
+    mojom::XRCompositionLayerDataPtr layer_data,
     OpenXrGraphicsBinding* graphics_binding,
     std::unique_ptr<GraphicsBindingData> graphics_binding_data)
     : space_(space),
       graphics_binding_(graphics_binding),
-      graphics_binding_data_(std::move(graphics_binding_data)) {}
+      graphics_binding_data_(std::move(graphics_binding_data)),
+      creation_data_(std::move(layer_data)) {
+  type_ = GetTypeFromMojomData(*creation_data_->mutable_data->layer_data);
+
+  // Projection layers will have same size as the base layer, and will
+  // be set later.
+  if (type_ != Type::kProjection) {
+    SetSwapchainImageSize(gfx::Size(read_only_data().texture_width,
+                                    read_only_data().texture_height));
+  }
+}
 
 OpenXrCompositionLayer::~OpenXrCompositionLayer() = default;
 
@@ -154,6 +180,18 @@ OpenXrSwapchainInfo* OpenXrCompositionLayer::GetActiveSwapchainImage() {
 bool OpenXrCompositionLayer::IsUsingSharedImages() const {
   const auto swapchain_info = GetSwapchainImages();
   return ((swapchain_info.size() > 1) && swapchain_info[0].shared_image);
+}
+
+LayerId OpenXrCompositionLayer::GetLayerId() const {
+  return creation_data_->read_only_data->layer_id;
+}
+
+void OpenXrCompositionLayer::UpdateMutableLayerData(
+    XrSpace space,
+    mojom::XRLayerMutableDataPtr data) {
+  CHECK_EQ(type_, GetTypeFromMojomData(*data->layer_data));
+  space_ = space;
+  creation_data_->mutable_data = std::move(data);
 }
 
 void OpenXrCompositionLayer::UpdateActiveSwapchainImageSize(

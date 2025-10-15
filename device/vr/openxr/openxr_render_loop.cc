@@ -24,6 +24,7 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -91,6 +92,7 @@ void OpenXrRenderLoop::ExitPresent(ExitXrPresentReason reason) {
   webxr_has_pose_ = false;
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
+  layer_manager_receiver_.reset();
   submit_client_.reset();
 
   pending_frame_.reset();
@@ -286,6 +288,7 @@ void OpenXrRenderLoop::CleanUp() {
   webxr_has_pose_ = false;
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
+  layer_manager_receiver_.reset();
   overlay_receiver_.reset();
   environment_receiver_.reset();
   StopRuntime();
@@ -383,6 +386,9 @@ void OpenXrRenderLoop::StartRuntimeFinish(
 
   auto session = device::mojom::XRSession::New();
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
+  if (openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
+    session->layer_manager = layer_manager_receiver_.BindNewPipeAndPassRemote();
+  }
   session->submit_frame_sink = std::move(submit_frame_sink);
 
   const auto& enabled_features = openxr_->GetEnabledFeatures();
@@ -418,7 +424,8 @@ void OpenXrRenderLoop::StartRuntimeFinish(
                                                   webxr_visible_);
 }
 
-void OpenXrRenderLoop::MaybeCompositeAndSubmit() {
+void OpenXrRenderLoop::MaybeCompositeAndSubmit(
+    const std::vector<LayerId>& updated_layers) {
   DVLOG(3) << __func__;
   if (!pending_frame_) {
     // There is no outstanding frame, nor frame to composite, but there may be
@@ -449,7 +456,8 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit() {
   // If we submitted, set up the next frame, and send outstanding pose requests.
   if (can_submit) {
     TRACE_EVENT0("xr", "GraphicsBinding Render");
-    copy_successful = graphics_binding_->Render(context_provider_);
+    copy_successful =
+        graphics_binding_->Render(context_provider_, updated_layers);
   } else {
     graphics_binding_->CleanupWithoutSubmit();
   }
@@ -563,14 +571,14 @@ void OpenXrRenderLoop::UpdateLayerBounds(int16_t frame_id,
 
   source_size_ = source_size;
 
-  graphics_binding_->SetBaseLayerTransferSize(source_size);
+  graphics_binding_->SetProjectionLayerTransferSize(source_size);
 
   // if `pending_frame_` exists and still has a `frame_data_`, then we haven't
   // sent the current texture to the page yet, and it will expect to receive the
   // shared image at this new size when it requests it. This can happen if e.g.
   // the overlay got a request in before the page made this call.
   if (pending_frame_ && pending_frame_->frame_data_ && context_provider_) {
-    graphics_binding_->UpdateBaseLayerActiveSwapchainImageSize(
+    graphics_binding_->UpdateProjectionLayerActiveSwapchainImageSize(
         context_provider_->SharedImageInterface());
     graphics_binding_->PopulateSharedImageData(*pending_frame_->frame_data_);
   }
@@ -893,11 +901,13 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
   const GLuint id = gl->CreateGpuFenceCHROMIUM();
   context_provider_->ContextSupport()->GetGpuFence(
       id, base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,
-                         weak_ptr_factory_.GetWeakPtr(), frame_index, id));
+                         weak_ptr_factory_.GetWeakPtr(), frame_index,
+                         std::vector<LayerId>(), id));
 }
 
 void OpenXrRenderLoop::OnWebXrTokenSignaled(
     int16_t frame_index,
+    std::vector<LayerId> updated_layers,
     GLuint id,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("xr", "OpenXrRenderLoop::WaitSyncToken",
@@ -917,7 +927,7 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
   }
 
   MarkFrameSubmitted(frame_index);
-  MaybeCompositeAndSubmit();
+  MaybeCompositeAndSubmit(updated_layers);
 
   // Calling SubmitFrameWithTextureHandle can cause openxr_ and
   // context_provider_ to become nullptr if we decide to stop the runtime.
@@ -1005,6 +1015,80 @@ void OpenXrRenderLoop::UnsubscribeFromHitTest(
   if (hit_test_manager) {
     hit_test_manager->UnsubscribeFromHitTest(subscription_id);
   }
+}
+
+void OpenXrRenderLoop::CreateCompositionLayer(
+    mojom::XRCompositionLayerDataPtr layer_data,
+    CreateCompositionLayerCallback callback) {
+  absl::Cleanup fail_on_exit = [&callback] {
+    if (callback) {
+      std::move(callback).Run(
+          device::mojom::CreateCompositionLayerResult::FAILURE);
+    }
+  };
+
+  if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
+    return;
+  }
+  if (!context_provider_) {
+    return;
+  }
+
+  XrSpace space = openxr_->GetReferenceSpace(
+      layer_data->mutable_data->reference_space_type);
+  if (!graphics_binding_->CreateCompositionLayer(
+          space, std::move(layer_data),
+          context_provider_->SharedImageInterface())) {
+    return;
+  }
+
+  std::move(callback).Run(device::mojom::CreateCompositionLayerResult::SUCCESS);
+}
+
+void OpenXrRenderLoop::UpdateCompositionLayer(
+    const LayerId& layer_id,
+    mojom::XRLayerMutableDataPtr layer_data) {
+  if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
+    layer_manager_receiver_.ReportBadMessage("Layers feature is not enabled.");
+    return;
+  }
+
+  OpenXrCompositionLayer* layer =
+      graphics_binding_->GetCompositionLayer(layer_id);
+
+  if (!layer) {
+    layer_manager_receiver_.ReportBadMessage("Invalid layer id.");
+    return;
+  }
+
+  if (layer->type() !=
+      OpenXrCompositionLayer::GetTypeFromMojomData(*layer_data->layer_data)) {
+    layer_manager_receiver_.ReportBadMessage("Layer type cannot be modified.");
+    return;
+  }
+
+  XrSpace space = openxr_->GetReferenceSpace(layer_data->reference_space_type);
+  layer->UpdateMutableLayerData(space, std::move(layer_data));
+}
+
+void OpenXrRenderLoop::DestroyCompositionLayer(const LayerId& layer_id) {
+  graphics_binding_->DestroyCompositionLayer(
+      layer_id,
+      context_provider_ ? context_provider_->SharedImageInterface() : nullptr);
+}
+
+void OpenXrRenderLoop::SetEnabledCompositionLayers(
+    const std::vector<LayerId>& layer_ids) {
+  if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
+    return;
+  }
+  if (!context_provider_) {
+    return;
+  }
+  graphics_binding_->SetEnabledCompositionLayers(
+      layer_ids, openxr_->session(),
+      openxr_->GetRecommendedSwapchainSampleCount(),
+      context_provider_->SharedImageInterface());
 }
 
 void OpenXrRenderLoop::CreateAnchor(

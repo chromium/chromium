@@ -48,8 +48,6 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
                           OpenXrSwapchainInfo& swap_chain_info,
                           gpu::SharedImageInterface* sii) override;
   void CleanupWithoutSubmit() override;
-  void SetOverlayAndWebXrVisibility(bool overlay_visible,
-                                    bool webxr_visible) override;
   bool SetOverlayTexture(gfx::GpuMemoryBufferHandle texture,
                          const gpu::SyncToken& sync_token,
                          const gfx::RectF& left,
@@ -66,17 +64,15 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   void CreateSharedImages(OpenXrCompositionLayer& layer,
                           gpu::SharedImageInterface* sii) override;
   bool ShouldFlipSubmittedImage(OpenXrCompositionLayer& layer) const override;
-  std::unique_ptr<OpenXrCompositionLayer> CreateProjectionLayer(
-      XrSpace local_space) override;
+  bool SupportsLayers() const override;
+  std::unique_ptr<OpenXrCompositionLayer::GraphicsBindingData>
+  CreateLayerGraphicsBindingData() const override;
 
   bool gl_initialized_ = false;
   bool initialized_ = false;
   XrGraphicsBindingOpenGLESAndroidKHR binding_{
       XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR, nullptr};
   gfx::GpuMemoryBufferHandle overlay_handle_;
-
-  bool webxr_visible_ = true;
-  bool overlay_visible_ = false;
 
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;

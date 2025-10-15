@@ -1442,8 +1442,6 @@ XrResult OpenXrTestHelper::ValidateXrCompositionLayerProjection(
             "XrCompositionLayerProjection type invalid");
   RETURN_IF(projection_layer.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrCompositionLayerProjection next is not nullptr");
-  RETURN_IF(projection_layer.layerFlags != 0, XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerProjection layerflag is not 0");
   RETURN_IF(reference_spaces_.count(projection_layer.space) != 1,
             XR_ERROR_VALIDATION_FAILURE,
             "XrCompositionLayerProjection space is not reference space");

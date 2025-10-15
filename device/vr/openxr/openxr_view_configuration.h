@@ -114,9 +114,6 @@ class OpenXrViewConfiguration {
   const std::vector<XrView>& Views() const;
   void SetViews(std::vector<XrView> views);
 
-  const std::vector<XrCompositionLayerProjectionView>& ProjectionViews() const;
-  XrCompositionLayerProjectionView& GetProjectionView(uint32_t view_index);
-
   bool CanEnableAntiAliasing() const;
 
  private:
@@ -131,7 +128,6 @@ class OpenXrViewConfiguration {
   std::vector<OpenXrViewProperties> properties_;
 
   std::vector<XrView> local_from_view_;
-  std::vector<XrCompositionLayerProjectionView> projection_views_;
 };
 
 }  // namespace device

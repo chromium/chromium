@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_extension_handler_factories.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
+#include "device/vr/openxr/openxr_platform_helper.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 
 namespace device {
@@ -98,6 +99,14 @@ bool OpenXrExtensionEnumeration::ExtensionSupported(
         return UNSAFE_TODO(strcmp(properties.extensionName, extension_name)) ==
                0;
       });
+}
+
+// static
+std::vector<const char*>
+OpenXrExtensionHelper::GetRequiredExtensionsForLayers() {
+  return {XR_KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME,
+          XR_KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME,
+          XR_KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME};
 }
 
 OpenXrExtensionHelper::~OpenXrExtensionHelper() = default;
@@ -192,6 +201,11 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
       return IsExtensionSupported(
           XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);
+    case device::mojom::XRSessionFeature::LAYERS:
+      return std::ranges::all_of(GetRequiredExtensionsForLayers(),
+                                 [this](const char* extension) {
+                                   return IsExtensionSupported(extension);
+                                 });
     default:
       // By default we assume a feature doesn't need to be supported by an
       // extension unless customized above.

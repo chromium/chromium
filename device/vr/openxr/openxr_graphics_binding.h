@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "device/vr/openxr/openxr_composition_layer.h"
 #include "device/vr/openxr/openxr_layers.h"
 #include "device/vr/openxr/openxr_swapchain_info.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -79,11 +80,6 @@ class OpenXrGraphicsBinding {
   // `Render`.
   virtual void CleanupWithoutSubmit() = 0;
 
-  // Sets the layers for each view in the view configuration, which are
-  // submitted back to OpenXR on xrEndFrame. This is where we specify where in
-  // the texture each view is, as well as the properties of the views.
-  void PrepareViewConfigForRender(OpenXrViewConfiguration& view_config);
-
   // Returns the maximum texture size allowed to be created with the current
   // graphics binding. Textures larger than this size may be truncated during
   // cross-process transportation of the textures and result in one viewport
@@ -93,8 +89,7 @@ class OpenXrGraphicsBinding {
 
   // Called to indicate which of Overlay and WebXR content is expected to be
   // composited during calls to `Render`.
-  virtual void SetOverlayAndWebXrVisibility(bool overlay_visible,
-                                            bool webxr_visible) = 0;
+  void SetOverlayAndWebXrVisibility(bool overlay_visible, bool webxr_visible);
 
   // There are three different paths that submitting an image can take. In two
   // of them, we provide the surface/image for the page to draw into. The third
@@ -124,9 +119,6 @@ class OpenXrGraphicsBinding {
                                  const gfx::RectF& left,
                                  const gfx::RectF& right) = 0;
 
-  virtual std::unique_ptr<OpenXrCompositionLayer> CreateProjectionLayer(
-      XrSpace local_space) = 0;
-
   // Will be called when SetSwapchainImageSize is called, even if a change is
   // not made, to allow child classes/concrete implementations to override any
   // state that they may need to override as a result of the swapchain image
@@ -141,6 +133,9 @@ class OpenXrGraphicsBinding {
   virtual void OnSwapchainImageActivated(OpenXrCompositionLayer& layer,
                                          gpu::SharedImageInterface* sii) = 0;
 
+  // Return if the graphics binding supports multiple XR layers.
+  virtual bool SupportsLayers() const = 0;
+
   // Resizes the shared buffer for the given swapchain info if the transfer size
   // has changed.
   virtual void ResizeSharedBuffer(OpenXrCompositionLayer& layer,
@@ -151,9 +146,10 @@ class OpenXrGraphicsBinding {
   // OpenXR. Does not affect the API used for compositing.
   bool IsWebGPUSession() const { return webgpu_session_; }
 
-  // Append any necessary data to the `layer` object to instruct the runtime to
-  // flip the layer if necessary.
-  void MaybeFlipLayer(XrCompositionLayerProjection& layer) const;
+  // If the layer should be flipped, return a pointer to the
+  // XrCompositionLayerImageLayoutFB. Otherwise, return null. The return value
+  // should be set to the "next" field of the XrCompositionLayer* struct.
+  const void* GetFlipLayerLayout() const;
 
   // We check if the base layer is using shared images.
   bool IsUsingSharedImages() const;
@@ -164,10 +160,7 @@ class OpenXrGraphicsBinding {
   // Build an OpenXrLayers object that provides data needed for xrEndFrame
   // (e.g. a list of XrCompositionLayerBaseHeader).
   std::unique_ptr<OpenXrLayers> GetLayersForViewConfig(
-      XrSpace local_space,
-      XrEnvironmentBlendMode blend_mode,
-      const std::vector<XrCompositionLayerProjectionView>& projection_views)
-      const;
+      const OpenXrViewConfiguration& view_config) const;
 
   // A few methods that only operate on the base layer.
 
@@ -185,13 +178,14 @@ class OpenXrGraphicsBinding {
   void CreateBaseLayerSharedImages(gpu::SharedImageInterface* sii);
 
   // Returns the previously set swapchain image size, or 0,0 if one is not set.
-  gfx::Size GetBaseLayerSwapchainImageSize();
+  gfx::Size GetProjectionLayerSwapchainImageSize();
 
   // Sets the size of the swapchain images being used by the system. Does *not*
   // cause a corresponding re-creation of the Swapchain or Shared Images; which
   // should be driven by the caller. If a transfer size has not been specified
   // yet, will also set the transfer size as well.
-  void SetBaseLayerSwapchainImageSize(const gfx::Size& swapchain_image_size);
+  void SetProjectionLayerSwapchainImageSize(
+      const gfx::Size& swapchain_image_size);
 
   // Return if the XrSwapchain is available.
   bool HasBaseLayerColorSwapchain() const;
@@ -200,7 +194,7 @@ class OpenXrGraphicsBinding {
   // our process. This is largely driven by the page and any framebuffer scaling
   // it may apply. When rendering to the SwapchainImage scaling will be
   // performed as necessary.
-  void SetBaseLayerTransferSize(const gfx::Size& transfer_size);
+  void SetProjectionLayerTransferSize(const gfx::Size& transfer_size);
 
   // Performs a server wait on the provided gpu_fence. Returns true if it was
   // able to successfully schedule and perform the wait, and false otherwise.
@@ -208,7 +202,12 @@ class OpenXrGraphicsBinding {
 
   // Updates the active swapchain image size if the transfer size has changed.
   // No-ops if there is currently no active swapchain image.
-  void UpdateBaseLayerActiveSwapchainImageSize(gpu::SharedImageInterface* sii);
+  void UpdateProjectionLayerActiveSwapchainImageSize(
+      gpu::SharedImageInterface* sii);
+
+  // Build XR projection views for the base layer.
+  std::vector<XrCompositionLayerProjectionView> GetBaseLayerProjectionViews(
+      const OpenXrViewConfiguration& view_config) const;
 
   // A few methods that operate on all layers.
 
@@ -224,11 +223,35 @@ class OpenXrGraphicsBinding {
   void PopulateSharedImageData(mojom::XRFrameData& frame_data);
 
   // Causes the GraphicsBinding to render the currently active swapchain image.
-  bool Render(const scoped_refptr<viz::ContextProvider>& context_provider);
+  bool Render(const scoped_refptr<viz::ContextProvider>& context_provider,
+              const std::vector<LayerId>& updated_layers);
+
+  // Create a composition layer. The id is given in layer_data.
+  bool CreateCompositionLayer(
+      XrSpace space,
+      mojom::XRCompositionLayerDataPtr layer_data,
+      gpu::SharedImageInterface* shared_image_interface);
+
+  // Get a composition layer by its layer id. Returns nullptr
+  // if the layer id doesn't exist.
+  OpenXrCompositionLayer* GetCompositionLayer(LayerId layer_id);
+
+  // Destroy a composition layer.
+  void DestroyCompositionLayer(LayerId layer_id,
+                               gpu::SharedImageInterface* sii);
+
+  // Specify the layers that should be rendered and should have shared
+  // images available.
+  void SetEnabledCompositionLayers(const std::vector<LayerId>& layer_ids,
+                                   XrSession session,
+                                   uint32_t swapchain_sample_count,
+                                   gpu::SharedImageInterface* sii);
 
  protected:
   explicit OpenXrGraphicsBinding(
       const OpenXrExtensionEnumeration* extension_enum);
+
+  bool ShouldRenderBaseLayer() const;
 
   // Performs a server wait on the provided gpu_fence. Returns true if it was
   // able to successfully schedule and perform the wait, and false otherwise.
@@ -250,10 +273,30 @@ class OpenXrGraphicsBinding {
   virtual bool ShouldFlipSubmittedImage(
       OpenXrCompositionLayer& layer) const = 0;
 
- private:
+  // Create a graphics binding specific data.
+  virtual std::unique_ptr<OpenXrCompositionLayer::GraphicsBindingData>
+  CreateLayerGraphicsBindingData() const = 0;
+
+  // Called when SetOverlayAndWebXrVisibility is called and the internal flags
+  // have been updated.
+  virtual void OnSetOverlayAndWebXrVisibility() {}
+
+  // Build XR projection views for a projection layer.
+  std::vector<XrCompositionLayerProjectionView> GetProjectionViews(
+      const OpenXrViewConfiguration& view_config,
+      OpenXrCompositionLayer& layer) const;
+
   std::unique_ptr<OpenXrCompositionLayer> base_layer_;
+  // Each client created layer has a unique ID.
+  std::map<LayerId, std::unique_ptr<OpenXrCompositionLayer>> layers_;
+  // This sequence defines which layers should be composed.
+  std::vector<LayerId> layers_sequence_;
+  bool has_custom_projection_layer_ = false;
   bool webgpu_session_ = false;
   bool fb_composition_layer_ext_enabled_ = false;
+  bool webxr_visible_ = true;
+  bool overlay_visible_ = false;
+
   // This will only be valid if `fb_composition_layer_ext_enabled_` is true.
   XrCompositionLayerImageLayoutFB y_flip_layer_layout_;
 };

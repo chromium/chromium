@@ -592,6 +592,11 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         break;
 
       case mojom::XRSessionFeature::LAYERS:
+        // Enabled if the extension check is good and the graphics binding
+        // also supports it.
+        is_enabled = graphics_binding_->SupportsLayers();
+        break;
+
       case mojom::XRSessionFeature::FRONT_FACING:
       case mojom::XRSessionFeature::IMAGE_TRACKING:
       case mojom::XRSessionFeature::CAMERA_ACCESS:
@@ -762,10 +767,10 @@ bool OpenXrApiWrapper::RecomputeSwapchainSizeAndViewports() {
   }
 
   auto swapchain_image_size =
-      graphics_binding_->GetBaseLayerSwapchainImageSize();
+      graphics_binding_->GetProjectionLayerSwapchainImageSize();
   if (swapchain_image_size.width() != static_cast<int>(total_width) ||
       swapchain_image_size.height() != static_cast<int>(total_height)) {
-    graphics_binding_->SetBaseLayerSwapchainImageSize(
+    graphics_binding_->SetProjectionLayerSwapchainImageSize(
         gfx::Size(total_width, total_height));
     return true;
   }
@@ -1030,14 +1035,12 @@ XrResult OpenXrApiWrapper::UpdateViewConfigurations() {
 
   RETURN_IF_XR_FAILED(
       LocateViews(XR_REFERENCE_SPACE_TYPE_LOCAL, primary_view_config_));
-  graphics_binding_->PrepareViewConfigForRender(primary_view_config_);
 
   if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {
     for (auto& view_config : secondary_view_configs_) {
       OpenXrViewConfiguration& config = view_config.second;
       if (config.Active()) {
         RETURN_IF_XR_FAILED(LocateViews(XR_REFERENCE_SPACE_TYPE_LOCAL, config));
-        graphics_binding_->PrepareViewConfigForRender(config);
       }
     }
   }
@@ -1096,20 +1099,21 @@ XrResult OpenXrApiWrapper::EndFrame() {
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
   DCHECK(HasFrameState());
 
-  // Each view configuration has its own layer, which was populated in
-  // GraphicsBinding::PrepareViewConfigForRender. These layers are all put into
-  // XrFrameEndInfo and passed to xrEndFrame.
+  // Get all the XrCompositionLayer* from the base layer or the
+  // layers created by clients. All the projection layers will use
+  // the same view configuration defined by primary_view_config_.
   std::unique_ptr<OpenXrLayers> layers =
-      graphics_binding_->GetLayersForViewConfig(
-          local_space_, blend_mode_, primary_view_config_.ProjectionViews());
+      graphics_binding_->GetLayersForViewConfig(primary_view_config_);
 
   // Gather all the layers for active secondary views.
   if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {
     for (const auto& secondary_view_config : secondary_view_configs_) {
       const OpenXrViewConfiguration& view_config = secondary_view_config.second;
       if (view_config.Active()) {
-        layers->AddSecondaryLayerForType(*graphics_binding_, view_config.Type(),
-                                         view_config.ProjectionViews());
+        layers->AddSecondaryLayerForType(
+            local_space_, view_config.Type(), blend_mode_,
+            graphics_binding_->GetBaseLayerProjectionViews(view_config),
+            graphics_binding_->GetFlipLayerLayout());
       }
     }
   }

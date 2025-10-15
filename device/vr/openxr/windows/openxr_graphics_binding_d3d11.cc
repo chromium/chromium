@@ -11,9 +11,9 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/win/scoped_handle.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
-#include "device/vr/openxr/openxr_composition_layer.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
@@ -349,10 +349,8 @@ void OpenXrGraphicsBindingD3D11::OnSwapchainImageActivated(
                                  ShouldFlipSubmittedImage(layer));
 }
 
-void OpenXrGraphicsBindingD3D11::SetOverlayAndWebXrVisibility(
-    bool overlay_visible,
-    bool webxr_visible) {
-  texture_helper_->SetSourceAndOverlayVisible(webxr_visible, overlay_visible);
+void OpenXrGraphicsBindingD3D11::OnSetOverlayAndWebXrVisibility() {
+  texture_helper_->SetSourceAndOverlayVisible(webxr_visible_, overlay_visible_);
 }
 
 void OpenXrGraphicsBindingD3D11::SetWebXrTexture(
@@ -394,10 +392,13 @@ void OpenXrGraphicsBindingD3D11::ResizeSharedBuffer(
   // TODO(crbug.com/40918787): Current texture size needs to be updated.
 }
 
-std::unique_ptr<OpenXrCompositionLayer>
-OpenXrGraphicsBindingD3D11::CreateProjectionLayer(XrSpace local_space) {
-  return std::make_unique<OpenXrCompositionLayer>(
-      local_space, this, std::make_unique<D3DLayerData>());
+bool OpenXrGraphicsBindingD3D11::SupportsLayers() const {
+  return false;
+}
+
+std::unique_ptr<OpenXrCompositionLayer::GraphicsBindingData>
+OpenXrGraphicsBindingD3D11::CreateLayerGraphicsBindingData() const {
+  return std::make_unique<D3DLayerData>();
 }
 
 }  // namespace device

@@ -158,7 +158,6 @@ void OpenXrViewConfiguration::Initialize(
   viewport_ = gfx::Rect();
   SetProperties(std::move(properties), max_texture_size);
   local_from_view_.resize(properties_.size(), kDefaultView);
-  projection_views_.resize(properties_.size());
 
   initialized_ = true;
 }
@@ -221,17 +220,6 @@ const std::vector<XrView>& OpenXrViewConfiguration::Views() const {
 void OpenXrViewConfiguration::SetViews(std::vector<XrView> views) {
   DCHECK_EQ(views.size(), local_from_view_.size());
   local_from_view_ = std::move(views);
-}
-
-const std::vector<XrCompositionLayerProjectionView>&
-OpenXrViewConfiguration::ProjectionViews() const {
-  return projection_views_;
-}
-
-XrCompositionLayerProjectionView& OpenXrViewConfiguration::GetProjectionView(
-    uint32_t view_index) {
-  DCHECK_LT(view_index, projection_views_.size());
-  return projection_views_[view_index];
 }
 
 bool OpenXrViewConfiguration::CanEnableAntiAliasing() const {

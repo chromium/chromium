@@ -121,6 +121,9 @@ class OpenXrExtensionEnumeration {
 
 class OpenXrExtensionHelper {
  public:
+  // Gets the set of extensions required to support WebXR Layers.
+  static std::vector<const char*> GetRequiredExtensionsForLayers();
+
   OpenXrExtensionHelper(
       XrInstance instance,
       const OpenXrExtensionEnumeration* const extension_enumeration);

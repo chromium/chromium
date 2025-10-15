@@ -39,8 +39,7 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   void OnSwapchainImageActivated(OpenXrCompositionLayer&,
                                  gpu::SharedImageInterface* sii) override;
   void CleanupWithoutSubmit() override;
-  void SetOverlayAndWebXrVisibility(bool overlay_visible,
-                                    bool webxr_visible) override;
+  void OnSetOverlayAndWebXrVisibility() override;
   void SetWebXrTexture(mojo::PlatformHandle texture_handle,
                        const gpu::SyncToken& sync_token,
                        const gfx::RectF& left,
@@ -50,8 +49,6 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
                          const gfx::RectF& left,
                          const gfx::RectF& right) override;
   gfx::Size GetMaxTextureSize() override;
-  std::unique_ptr<OpenXrCompositionLayer> CreateProjectionLayer(
-      XrSpace local_space) override;
 
  protected:
   // OpenXrGraphicsBinding
@@ -63,6 +60,9 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   bool WaitOnFence(OpenXrCompositionLayer& layer,
                    gfx::GpuFence& gpu_fence) override;
   bool ShouldFlipSubmittedImage(OpenXrCompositionLayer& layer) const override;
+  bool SupportsLayers() const override;
+  std::unique_ptr<OpenXrCompositionLayer::GraphicsBindingData>
+  CreateLayerGraphicsBindingData() const override;
 
   bool initialized_ = false;
   std::unique_ptr<D3D11TextureHelper> texture_helper_;

@@ -9,7 +9,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "device/vr/android/xr_image_transport_base.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
-#include "device/vr/openxr/openxr_composition_layer.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -367,12 +366,12 @@ bool OpenXrGraphicsBindingOpenGLES::RenderLayer(
   transform.GetColMajorF(transform_floats);
 
   if (webxr_visible_) {
+    // TODO(crbug.com/446668508): To support opacity.
     renderer_->Draw(swap_chain_info->shared_buffer_texture, transform_floats);
   }
 
-  // We currently assume there is a unique projection layer, so the overlay
-  // is rendered to this projection layer.
-  if (overlay_visible_) {
+  // The overlay is rendred to the base layer, which has an invalid layer id.
+  if (overlay_visible_ && layer.GetLayerId() == kInvalidLayerId) {
     glEnable(GL_FRAMEBUFFER_SRGB_EXT);
     if (webxr_visible_) {
       glEnable(GL_BLEND);
@@ -435,13 +434,6 @@ void OpenXrGraphicsBindingOpenGLES::OnSwapchainImageActivated(
   ResizeSharedBuffer(layer, *swap_chain_info, sii);
 }
 
-void OpenXrGraphicsBindingOpenGLES::SetOverlayAndWebXrVisibility(
-    bool overlay_visible,
-    bool webxr_visible) {
-  overlay_visible_ = overlay_visible;
-  webxr_visible_ = webxr_visible;
-}
-
 bool OpenXrGraphicsBindingOpenGLES::SetOverlayTexture(
     gfx::GpuMemoryBufferHandle texture,
     const gpu::SyncToken& sync_token,
@@ -464,10 +456,13 @@ gfx::Size OpenXrGraphicsBindingOpenGLES::GetMaxTextureSize() {
   return {max_texture_size, max_texture_size};
 }
 
-std::unique_ptr<OpenXrCompositionLayer>
-OpenXrGraphicsBindingOpenGLES::CreateProjectionLayer(XrSpace local_space) {
-  return std::make_unique<OpenXrCompositionLayer>(
-      local_space, this, std::make_unique<OpenGLESLayerData>());
+bool OpenXrGraphicsBindingOpenGLES::SupportsLayers() const {
+  return true;
+}
+
+std::unique_ptr<OpenXrCompositionLayer::GraphicsBindingData>
+OpenXrGraphicsBindingOpenGLES::CreateLayerGraphicsBindingData() const {
+  return std::make_unique<OpenGLESLayerData>();
 }
 
 }  // namespace device
