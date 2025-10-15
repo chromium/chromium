@@ -390,10 +390,9 @@ ui::PageTransition GetTransitionType(ui::PageTransition default_transition,
 // Calculates transition type for the specific document loaded using
 // WebDocumentLoader. Used while loading subresources.
 ui::PageTransition GetTransitionType(blink::WebDocumentLoader* document_loader,
+                                     NavigationState* navigation_state,
                                      bool is_main_frame,
                                      bool is_in_fenced_frame_tree) {
-  NavigationState* navigation_state =
-      DocumentState::FromDocumentLoader(document_loader)->navigation_state();
   ui::PageTransition default_transition =
       navigation_state->IsForSynchronousCommit()
           ? ui::PAGE_TRANSITION_LINK
@@ -3282,8 +3281,8 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
   }
 
   DCHECK_NE(commit_status, blink::mojom::CommitResult::Ok);
-  navigation_state->RunCommitSameDocumentNavigationCallback(commit_status);
-  document_state->clear_navigation_state();
+  document_state->TakeNavigationState()
+      ->RunCommitSameDocumentNavigationCallback(commit_status);
 
   // The browser expects the frame to be loading this navigation. Inform it
   // that the load stopped if needed.
@@ -3974,8 +3973,8 @@ void RenderFrameImpl::DidCommitNavigation(
     media_permission_dispatcher_->OnNavigation();
 
   ui::PageTransition transition =
-      GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame(),
-                        GetWebView()->IsFencedFrameRoot());
+      GetTransitionType(frame_->GetDocumentLoader(), navigation_state,
+                        IsMainFrame(), GetWebView()->IsFencedFrameRoot());
 
   // TODO(crbug.com/40092527): Turn this into a DCHECK for origin equality when
   // the linked bug is fixed. Currently sometimes the browser and renderer
@@ -4004,7 +4003,7 @@ void RenderFrameImpl::DidCommitNavigation(
   }
 
   DidCommitNavigationInternal(
-      commit_type, transition, permissions_policy_header,
+      commit_type, transition, navigation_state, permissions_policy_header,
       document_policy_header,
       should_reset_browser_interface_broker
           ? mojom::DidCommitProvisionalLoadInterfaceParams::New(
@@ -4012,24 +4011,18 @@ void RenderFrameImpl::DidCommitNavigation(
           : nullptr,
       nullptr /* same_document_params */, GetWebFrame()->GetEmbeddingToken());
 
-  // If we end up reusing this WebRequest (for example, due to a #ref click),
-  // we don't want the transition type to persist.  Just clear it.
-  navigation_state->set_transition_type(ui::PAGE_TRANSITION_LINK);
-
   // Check whether we have new encoding name.
   UpdateEncoding(frame_, frame_->View()->PageEncoding().Utf8());
 
   NotifyObserversOfNavigationCommit(transition);
 
-  document_state->clear_navigation_state();
+  std::ignore = document_state->TakeNavigationState();
 
   ResetMembersUsedForDurationOfCommit();
 }
 
 void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
     blink::WebDocumentLoader* document_loader) {
-  DocumentState::FromDocumentLoader(document_loader)
-      ->set_navigation_state(NavigationState::CreateForSynchronousCommit());
   // TODO(crbug.com/40581836): figure out which of the following observer
   // calls are necessary, if any.
   for (auto& observer : observers_)
@@ -4038,8 +4031,10 @@ void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
     observer.ReadyToCommitNavigation(document_loader);
   for (auto& observer : observers_)
     observer.DidCreateNewDocument();
-  ui::PageTransition transition = GetTransitionType(
-      document_loader, IsMainFrame(), GetWebView()->IsFencedFrameRoot());
+  auto navigation_state = NavigationState::CreateForSynchronousCommit();
+  ui::PageTransition transition =
+      GetTransitionType(document_loader, navigation_state.get(), IsMainFrame(),
+                        GetWebView()->IsFencedFrameRoot());
   NotifyObserversOfNavigationCommit(transition);
 }
 
@@ -4173,14 +4168,17 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
   DocumentState* document_state =
       DocumentState::FromDocumentLoader(document_loader);
+  std::unique_ptr<NavigationState> navigation_state;
   if (is_synchronously_committed) {
-    document_state->set_navigation_state(
-        NavigationState::CreateForSynchronousCommit());
+    navigation_state = NavigationState::CreateForSynchronousCommit();
+  } else {
+    navigation_state = document_state->TakeNavigationState();
   }
-  document_state->navigation_state()->set_was_within_same_document(true);
+  navigation_state->set_was_within_same_document(true);
 
-  ui::PageTransition transition = GetTransitionType(
-      document_loader, IsMainFrame(), GetWebView()->IsFencedFrameRoot());
+  ui::PageTransition transition =
+      GetTransitionType(document_loader, navigation_state.get(), IsMainFrame(),
+                        GetWebView()->IsFencedFrameRoot());
   auto same_document_params =
       mojom::DidCommitSameDocumentNavigationParams::New();
   same_document_params->same_document_navigation_type =
@@ -4194,7 +4192,7 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
       screenshot_destination;
 
   DidCommitNavigationInternal(
-      commit_type, transition,
+      commit_type, transition, navigation_state.get(),
       network::ParsedPermissionsPolicy(),   // permissions_policy_header
       blink::DocumentPolicyFeatureState(),  // document_policy_header
       nullptr,                              // interface_params
@@ -4202,15 +4200,8 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
       std::nullopt  // embedding_token
   );
 
-  // If we end up reusing this WebRequest (for example, due to a #ref click),
-  // we don't want the transition type to persist.  Just clear it.
-  document_state->navigation_state()->set_transition_type(
-      ui::PAGE_TRANSITION_LINK);
-
   for (auto& observer : observers_)
     observer.DidFinishSameDocumentNavigation();
-
-  document_state->clear_navigation_state();
 }
 
 void RenderFrameImpl::DidFailAsyncSameDocumentCommit() {
@@ -4221,10 +4212,9 @@ void RenderFrameImpl::DidFailAsyncSameDocumentCommit() {
   // destructor will run the callback instead.
   DocumentState* document_state =
       DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
-  if (NavigationState* navigation_state = document_state->navigation_state()) {
+  if (auto navigation_state = document_state->TakeNavigationState()) {
     navigation_state->RunCommitSameDocumentNavigationCallback(
         blink::mojom::CommitResult::Aborted);
-    document_state->clear_navigation_state();
   }
 }
 
@@ -4899,16 +4889,13 @@ mojom::DidCommitProvisionalLoadParamsPtr
 RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
+    NavigationState* navigation_state,
     const network::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
     const std::optional<base::UnguessableToken>& embedding_token,
     std::optional<blink::PageState> previous_page_state) {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
   const WebURLResponse& response = document_loader->GetWebResponse();
-
-  DocumentState* document_state =
-      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
-  NavigationState* navigation_state = document_state->navigation_state();
 
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->http_status_code = response.HttpStatusCode();
@@ -5024,6 +5011,9 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
       blink::WebStringToGURL(document_loader->Referrer()),
       network::mojom::ReferrerPolicy::kDefault);
 
+  DocumentState* document_state =
+      DocumentState::FromDocumentLoader(document_loader);
+
   if (!frame_->Parent()) {
     // Top-level navigation.
 
@@ -5114,10 +5104,8 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
 }
 
 void RenderFrameImpl::UpdateNavigationHistory(
-    blink::WebHistoryCommitType commit_type) {
-  NavigationState* navigation_state =
-      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader())
-          ->navigation_state();
+    blink::WebHistoryCommitType commit_type,
+    NavigationState* navigation_state) {
   const blink::mojom::CommitNavigationParams& commit_params =
       navigation_state->commit_params();
 
@@ -5155,18 +5143,15 @@ void RenderFrameImpl::NotifyObserversOfNavigationCommit(
 
 void RenderFrameImpl::UpdateStateForCommit(
     blink::WebHistoryCommitType commit_type,
-    ui::PageTransition transition) {
-  DocumentState* document_state =
-      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
-  NavigationState* navigation_state = document_state->navigation_state();
-
+    ui::PageTransition transition,
+    NavigationState* navigation_state) {
   if (!base::FeatureList::IsEnabled(kReducePageStateIpcs)) {
     // We need to update the last committed session history entry with state for
     // the previous page. Do this before updating the current history item.
     SendUpdateState();
   }
 
-  UpdateNavigationHistory(commit_type);
+  UpdateNavigationHistory(commit_type, navigation_state);
 
   if (!frame_->Parent()) {  // Only for top frames.
     RenderThreadImpl* render_thread_impl = RenderThreadImpl::current();
@@ -5200,6 +5185,7 @@ void RenderFrameImpl::UpdateStateForCommit(
 void RenderFrameImpl::DidCommitNavigationInternal(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
+    NavigationState* navigation_state,
     const network::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
@@ -5215,17 +5201,14 @@ void RenderFrameImpl::DidCommitNavigationInternal(
       !GetWebFrame()->GetCurrentHistoryItem().IsNull()) {
     previous_page_state = GetWebFrame()->CurrentHistoryItemToPageState();
   }
-  UpdateStateForCommit(commit_type, transition);
+  UpdateStateForCommit(commit_type, transition, navigation_state);
 
   if (GetBlinkPreferences().renderer_wide_named_frame_lookup)
     GetWebFrame()->SetAllowsCrossBrowsingInstanceFrameLookup();
 
   auto params = MakeDidCommitProvisionalLoadParams(
-      commit_type, transition, permissions_policy_header,
+      commit_type, transition, navigation_state, permissions_policy_header,
       document_policy_header, embedding_token, std::move(previous_page_state));
-  NavigationState* navigation_state =
-      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader())
-          ->navigation_state();
 
   // This invocation must precede any calls to allowScripts(), allowImages(),
   // or allowPlugins() for the new page. This ensures that when these functions

@@ -459,8 +459,7 @@ void NavigateEvent::Abort(ScriptState* script_state,
   CHECK(controller_);
   controller_->abort(script_state, error);
   delayed_load_start_task_handle_.Cancel();
-  if (!defaultPrevented() && intercept_state_ == InterceptState::kIntercepted &&
-      reason != CancelNavigationReason::kNavigateEvent) {
+  if (!defaultPrevented() && intercept_state_ == InterceptState::kIntercepted) {
     DomWindow()->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
   }
 }

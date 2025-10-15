@@ -3857,12 +3857,15 @@ IN_PROC_BROWSER_TEST_F(
                      "}, { once: true });"));
   GURL blocked_url(
       embedded_test_server()->GetURL("foo.com", "/title1.html#blocked"));
+  GURL allowed_url(
+      embedded_test_server()->GetURL("foo.com", "/title1.html#allowed"));
+
+  TestNavigationManager navigation_manager(web_contents(), allowed_url);
   NavigationHandleObserver navigation_observer(web_contents(), blocked_url);
   EXPECT_FALSE(NavigateToURL(shell(), blocked_url));
   EXPECT_TRUE(navigation_observer.is_same_document());
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
-  GURL allowed_url(
-      embedded_test_server()->GetURL("foo.com", "/title1.html#allowed"));
   EXPECT_EQ(allowed_url,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 

@@ -171,6 +171,7 @@ class DocumentState;
 class MediaPermissionDispatcher;
 class MHTMLPartsGenerationDelegateImpl;
 class NavigationClient;
+class NavigationState;
 class RenderAccessibilityManager;
 class RenderFrameObserver;
 
@@ -1058,6 +1059,7 @@ class CONTENT_EXPORT RenderFrameImpl
   mojom::DidCommitProvisionalLoadParamsPtr MakeDidCommitProvisionalLoadParams(
       blink::WebHistoryCommitType commit_type,
       ui::PageTransition transition,
+      NavigationState* navigation_state,
       const network::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header,
       const std::optional<base::UnguessableToken>& embedding_token,
@@ -1067,7 +1069,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // This could result either in the creation of a new entry or a modification
   // of the current entry or nothing. If a new entry was created,
   // returns true, false otherwise.
-  void UpdateNavigationHistory(blink::WebHistoryCommitType commit_type);
+  void UpdateNavigationHistory(blink::WebHistoryCommitType commit_type,
+                               NavigationState* navigation_state);
 
   // Notify render_view_ observers that a commit happened.
   void NotifyObserversOfNavigationCommit(ui::PageTransition transition);
@@ -1075,7 +1078,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // Updates the internal state following a navigation commit. This should be
   // called before notifying the FrameHost of the commit.
   void UpdateStateForCommit(blink::WebHistoryCommitType commit_type,
-                            ui::PageTransition transition);
+                            ui::PageTransition transition,
+                            NavigationState* navigation_state);
 
   // Internal function used by same document navigation as well as cross
   // document navigation that updates the state of the RenderFrameImpl and sends
@@ -1083,6 +1087,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidCommitNavigationInternal(
       blink::WebHistoryCommitType commit_type,
       ui::PageTransition transition,
+      NavigationState* navigation_state,
       const network::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,

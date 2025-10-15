@@ -69,7 +69,9 @@ class CONTENT_EXPORT DocumentState
 
   NavigationState* navigation_state() { return navigation_state_.get(); }
   void set_navigation_state(std::unique_ptr<NavigationState> navigation_state);
-  void clear_navigation_state() { navigation_state_.reset(); }
+  std::unique_ptr<NavigationState> TakeNavigationState() {
+    return std::move(navigation_state_);
+  }
 
  private:
   bool was_load_data_with_base_url_request_ = false;
