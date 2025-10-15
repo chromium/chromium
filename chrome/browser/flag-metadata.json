@@ -6210,6 +6210,15 @@
     "expiry_milestone": 136
   },
   {
+    "name": "ios-synced-set-up",
+    "owners": [
+      "bwwilliams@google.com",
+      "ericekey@google.com",
+      "bling-pandamonium@google.com"
+      ],
+    "expiry_milestone": 147
+  },
+  {
     "name": "ios-tab-group-entry-point-overflow-menu",
     "owners": ["bmcclure@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 147

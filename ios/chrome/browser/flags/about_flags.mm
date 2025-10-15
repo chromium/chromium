@@ -2865,7 +2865,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          "IOSTipsNotificationsAlternativeStrings")},
     {"zero-state-suggestions", flag_descriptions::kZeroStateSuggestionsName,
      flag_descriptions::kZeroStateSuggestionsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kZeroStateSuggestions)}};
+     FEATURE_VALUE_TYPE(kZeroStateSuggestions)},
+    {"ios-synced-set-up", flag_descriptions::kIOSSyncedSetUpName,
+     flag_descriptions::kIOSSyncedSetUpDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSSyncedSetUp)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

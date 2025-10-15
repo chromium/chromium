@@ -1161,3 +1161,9 @@ GetTipsNotificationsAlternativeStringVersion() {
 }
 
 BASE_FEATURE(kImportPasswordsFromSafari, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSSyncedSetUp, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSyncedSetUpEnabled() {
+  return base::FeatureList::IsEnabled(kIOSSyncedSetUp);
+}

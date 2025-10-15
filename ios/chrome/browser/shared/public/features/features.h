@@ -1105,4 +1105,11 @@ enum class TipsNotificationsAlternativeStringVersion {
 TipsNotificationsAlternativeStringVersion
 GetTipsNotificationsAlternativeStringVersion();
 
+// Feature for applying cross device settings through the Synced Set Up
+// experience.
+BASE_DECLARE_FEATURE(kIOSSyncedSetUp);
+
+// Returns true if `kIOSSyncedSetUp` is enabled.
+bool IsSyncedSetUpEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
