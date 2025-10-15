@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SimpleCache.{CacheInstance}IndexNumEntriesOnInit"
+<histogram name="SimpleCache.{CacheInstance}IndexNumEntriesOnInit2"
     units="entries" expires_after="2026-04-05">
   <owner>jkarlin@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>

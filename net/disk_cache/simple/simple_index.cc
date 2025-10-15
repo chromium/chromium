@@ -677,8 +677,8 @@ void SimpleIndex::MergeInitializingSet(
   if (load_result->flush_required)
     WriteToDisk(INDEX_WRITE_REASON_STARTUP_MERGE);
 
-  SIMPLE_CACHE_UMA(CUSTOM_COUNTS, "IndexNumEntriesOnInit", cache_type_,
-                   entries_set_.size(), 0, 100000, 50);
+  SIMPLE_CACHE_UMA(CUSTOM_COUNTS, "IndexNumEntriesOnInit2", cache_type_,
+                   entries_set_.size(), 0, 1000000, 50);
   SIMPLE_CACHE_UMA(
       MEMORY_MEDIUM_MB, "CacheSizeOnInit2", cache_type_,
       static_cast<base::HistogramBase::Sample32>(cache_size_ / kBytesInMiB));
