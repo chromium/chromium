@@ -5,13 +5,18 @@
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_mediator.h"
 #import "ios/chrome/browser/file_upload_panel/ui/constants.h"
 #import "ios/chrome/browser/file_upload_panel/ui/context_menu_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface FileUploadPanelCoordinator () <UIContextMenuInteractionDelegate>
@@ -19,12 +24,26 @@
 @end
 
 @implementation FileUploadPanelCoordinator {
+  FileUploadPanelMediator* _mediator;
   ContextMenuPresenter* _contextMenuPresenter;
 }
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  CHECK(activeWebState);
+  CHECK(!activeWebState->IsBeingDestroyed());
+  ChooseFileTabHelper* chooseFileTabHelper =
+      ChooseFileTabHelper::FromWebState(activeWebState);
+  CHECK(chooseFileTabHelper);
+  ChooseFileController* chooseFileController =
+      chooseFileTabHelper->GetChooseFileController();
+  CHECK(chooseFileController);
+  _mediator = [[FileUploadPanelMediator alloc]
+      initWithChooseFileController:chooseFileController];
+
   // TODO(crbug.com/441659098): Create a mediator to observe the file selection
   // in the model layer. Skip the context menu if it is unnecessary e.g.
   // directly show the camera.
@@ -32,6 +51,9 @@
 }
 
 - (void)stop {
+  [_mediator disconnect];
+  _mediator = nil;
+
   // TODO(crbug.com/441659098): Disconnect the mediator from file selection in
   // the model layer. Hide any other views presented beside the context menu.
   [self hideContextMenu];

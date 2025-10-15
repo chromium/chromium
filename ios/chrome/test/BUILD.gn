@@ -283,6 +283,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/external_files/model:unit_tests",
     "//ios/chrome/browser/favicon/model:unit_tests",
     "//ios/chrome/browser/feature_engagement/model:unit_tests",
+    "//ios/chrome/browser/file_upload_panel/coordinator:unit_tests",
     "//ios/chrome/browser/first_run/ui_bundled/tos:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
     "//ios/chrome/browser/follow/model:unit_tests",

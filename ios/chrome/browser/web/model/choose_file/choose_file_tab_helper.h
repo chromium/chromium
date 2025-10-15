@@ -22,6 +22,9 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
 
   // Start file selection in the current tab using non-null `controller`.
   void StartChoosingFiles(std::unique_ptr<ChooseFileController> controller);
+  // Returns the current ChooseFileController, if any.
+  // Returns `nullptr` if `IsChoosingFiles()` is false.
+  ChooseFileController* GetChooseFileController();
   // Returns whether a file selection is ongoing in the current tab.
   bool IsChoosingFiles() const;
   // Returns the event associated with the current file selection.

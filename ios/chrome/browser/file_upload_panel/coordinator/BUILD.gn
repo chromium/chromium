@@ -6,6 +6,8 @@ source_set("coordinator") {
   sources = [
     "file_upload_panel_coordinator.h",
     "file_upload_panel_coordinator.mm",
+    "file_upload_panel_mediator.h",
+    "file_upload_panel_mediator.mm",
   ]
   deps = [
     "//ios/chrome/app/strings:ios_strings_grit",
@@ -13,8 +15,26 @@ source_set("coordinator") {
     "//ios/chrome/browser/file_upload_panel/ui:context_menu_presenter",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/web/model/choose_file",
+    "//ios/web/public",
     "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "file_upload_panel_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/web/model/choose_file",
+    "//ios/chrome/browser/web/model/choose_file:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
