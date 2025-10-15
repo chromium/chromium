@@ -71,7 +71,8 @@ public class FlyoutPopupSpecCalculator implements SpecCalculator {
         int spaceInDefaultPosition = isPositionToLeft ? spaceLeftOfAnchor : spaceRightOfAnchor;
         int spaceInNonDefaultPosition = isPositionToLeft ? spaceRightOfAnchor : spaceLeftOfAnchor;
         if (spaceInDefaultPosition < idealContentSize.getWidth()
-                && spaceInNonDefaultPosition >= idealContentSize.getWidth()) {
+                && spaceInNonDefaultPosition
+                        >= Math.min(idealContentSize.getWidth(), spaceInDefaultPosition)) {
             isPositionToLeft = !isPositionToLeft;
         }
 
