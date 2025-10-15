@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/lens/lens_url_matcher.h"
@@ -20,6 +19,10 @@
 
 class BrowserWindowInterface;
 class CommandUpdater;
+
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}  // namespace optimization_guide
 
 namespace tabs {
 class TabInterface;

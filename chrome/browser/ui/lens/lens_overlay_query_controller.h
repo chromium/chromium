@@ -17,8 +17,6 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
-#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -50,6 +48,7 @@ class VariationsClient;
 namespace lens {
 
 class LensComposeboxController;
+struct ImageCropAndBitmap;
 
 // Data struct representing content data to be sent to the Lens server.
 struct PageContent {

@@ -30,12 +30,9 @@
 #include "chrome/browser/ui/lens/lens_overlay_languages_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_translate_options.h"
-#include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
-#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
@@ -65,6 +62,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "pdf/mojom/pdf.mojom.h"
@@ -106,9 +104,10 @@ class View;
 class WebView;
 }  // namespace views
 
+class LensSearchController;
 class PrefService;
 class Profile;
-class LensSearchController;
+class SidePanelCoordinator;
 enum class SidePanelEntryHideReason;
 
 extern void* kLensOverlayPreselectionWidgetIdentifier;

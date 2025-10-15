@@ -23,6 +23,7 @@
 #include "chrome/grit/lens_untrusted_resources.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
 #include "components/lens/lens_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
