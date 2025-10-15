@@ -171,8 +171,8 @@ class Buffer final : public ui::GbmBuffer {
   // TODO(reveman): This should not be needed once crbug.com/597932 is fixed,
   // as the size would be queried directly from the underlying bo.
   gfx::Size GetSize() const override { return size_; }
-  gfx::BufferFormat GetBufferFormat() const override {
-    return ui::GetBufferFormatFromFourCCFormat(format_);
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return ui::GetSharedImageFormatFromFourCCFormat(format_);
   }
   bool AreFdsValid() const override {
     if (handle_.planes.empty())
