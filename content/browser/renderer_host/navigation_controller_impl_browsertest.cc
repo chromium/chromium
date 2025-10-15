@@ -21760,6 +21760,81 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       /*actual_navigation_start=*/base::TimeTicks::Now());
 }
 
+// Tests that the JS task that created a navigation can defer the navigation
+// until it ends.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+                       RendererInitiatedJsTaskDefersNavigation) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Navigate to a page with an iframe.
+  GURL url1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  EXPECT_TRUE(NavigateToURL(contents(), url1));
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+
+  GURL child_url = child->current_url();
+  GURL child_url_2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // Now navigate the child frame to another same-site document, but defer its
+  // JS task completion using a synchronous XHR request that we can control.
+  base::HistogramTester histogram_tester;
+  TestNavigationManager nav_manager(contents(), child_url_2);
+  ExecuteScriptAsync(child, R"(
+      location.href = '/title1.html';
+      var request = new XMLHttpRequest();
+      request.open("GET", "/fetch", /*async=*/false);
+      request.send("");
+      var fetch_success = (request.readyState == 4 && request.status == 200);
+    )");
+
+  // The navigation should be able to start.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+  nav_manager.ResumeNavigation();
+  NavigationRequest* request =
+      static_cast<NavigationRequest*>(nav_manager.GetNavigationHandle());
+  EXPECT_EQ(request, child->navigation_request());
+
+  // The navigation should be able to reach the WillProcessResponse stage,
+  // and gets deferred by RendererCancellationThrottle after that. Wait for the
+  // first NavigationThrottle deferral.
+  base::RunLoop run_loop;
+  request->GetNavigationThrottleRegistryForTesting()
+      ->SetFirstDeferralCallbackForTesting(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Check that the deferral is caused by RendererCancellationThrottle.
+  EXPECT_TRUE(request->IsDeferredForTesting());
+  ASSERT_EQ(request->GetNavigationThrottleRegistryForTesting()
+                ->GetDeferringThrottles()
+                .size(),
+            1u);
+  EXPECT_STREQ("RendererCancellationThrottle",
+               (*request->GetNavigationThrottleRegistryForTesting()
+                     ->GetDeferringThrottles()
+                     .begin())
+                   ->GetNameForLogging());
+  EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+
+  // Unblock the JS task in the renderer by sending the response for the sync
+  // XHR request.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(net::HTTP_OK, "foo");
+  fetch_response.Done();
+
+  // The navigation commits successfully, without hitting timeout.
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(nav_manager.was_successful());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.RendererCancellationThrottle.NavigationCancelled", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.RendererCancellationThrottle.NotCancelled.TimeoutIsHit",
+      false, 1);
+}
+
 // Tests that renderer-initiated navigation cancellation from the same JS task
 // that created the navigation can still be triggered after WillProcessResponse,
 // as the browser defers the navigation until the JS task that started it
@@ -21783,6 +21858,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 
   // Now navigate the child frame to another same-site document, but cancel it
   // from the JS task after a synchronous XHR request that we can control.
+  base::HistogramTester histogram_tester;
   TestNavigationManager nav_manager(contents(), child_url_2);
   ExecuteScriptAsync(child, R"(
       location.href = '/title1.html';
@@ -21834,6 +21910,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   EXPECT_FALSE(nav_manager.was_successful());
   EXPECT_EQ(child_url, child->current_url());
   EXPECT_EQ(true, EvalJs(child, "fetch_success"));
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.RendererCancellationThrottle.NavigationCancelled", true, 1);
 }
 
 // Tests that the crash of the renderer that created a navigation will cancel
@@ -21857,6 +21935,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 
   // Now navigate the child frame to another same-site page, but cancel it
   // from the JS task after a synchronous XHR request that we can control.
+  base::HistogramTester histogram_tester;
   TestNavigationManager nav_manager(contents(), child_url_2);
   ExecuteScriptAsync(child, R"(
       location.href = '/title1.html';
@@ -21911,13 +21990,37 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   // the child frame will be gone because the main frame's process crashed.
   if (AreAllSitesIsolatedForTesting())
     EXPECT_EQ(GURL(), child->current_url());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.RendererCancellationThrottle.NavigationCancelled", true, 1);
 }
 
+class RendererCancellationThrottleImprovementsTest
+    : public NavigationControllerBrowserTestNoServer {
+ public:
+  RendererCancellationThrottleImprovementsTest() {
+    // Set the cancellation timeout to a low enough value to wait in the test.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kRendererCancellationThrottleImprovements,
+          {{"timeout", "100ms"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RendererCancellationThrottleImprovementsTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+
 // Tests that if waiting for a renderer-initiated navigation cancellation takes
-// too long, a warning for an unresponsive renderer will be sent.
-IN_PROC_BROWSER_TEST_P(
-    NavigationControllerBrowserTestNoServer,
-    RendererInitiatedCancellationTimeoutWarnsUnresponsiveRenderer) {
+// too long and RendererCancellationThrottleImprovements is enabled, the
+// navigation is resumed.
+IN_PROC_BROWSER_TEST_P(RendererCancellationThrottleImprovementsTest,
+                       RendererInitiatedCancellationTimeout_NavigationResumed) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
 
@@ -21933,13 +22036,9 @@ IN_PROC_BROWSER_TEST_P(
   GURL child_url = child->current_url();
   GURL child_url_2(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
-  // Set the cancellation timeout to a low enough value to wait in the test.
-  RendererCancellationThrottle::SetCancellationTimeoutForTesting(
-      base::Milliseconds(100));
-  UnresponsiveRendererObserver unresponsive_renderer_observer(contents());
-
-  // Now navigate the child frame to another same-site page, but cancel it
-  // from the JS task after a synchronous XHR request that we can control.
+  // Now navigate the child frame to another same-site page, but run a
+  // synchronous XHR request that we can control, to keep the JS task running.
+  base::HistogramTester histogram_tester;
   TestNavigationManager nav_manager(contents(), child_url_2);
   ExecuteScriptAsync(child, R"(
       location.href = '/title1.html';
@@ -21947,11 +22046,9 @@ IN_PROC_BROWSER_TEST_P(
       request.open("GET", "/fetch", /*async=*/false);
       request.send("");
       var fetch_success = (request.readyState == 4 && request.status == 200);
-      window.stop();
     )");
 
-  // The navigation should be able to start, as the synchronous XHR request
-  // hasn't completed, and the navigation hasn't been canceled yet.
+  // The navigation should be able to start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
   nav_manager.ResumeNavigation();
   NavigationRequest* request =
@@ -21961,10 +22058,12 @@ IN_PROC_BROWSER_TEST_P(
   // The navigation should be able to reach the WillProcessResponse stage,
   // and gets deferred by RendererCancellationThrottle after that. Wait for the
   // first NavigationThrottle deferral.
-  base::RunLoop run_loop;
-  request->GetNavigationThrottleRegistryForTesting()
-      ->SetFirstDeferralCallbackForTesting(run_loop.QuitClosure());
-  run_loop.Run();
+  {
+    base::RunLoop run_loop;
+    request->GetNavigationThrottleRegistryForTesting()
+        ->SetFirstDeferralCallbackForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   // Check that the deferral is caused by RendererCancellationThrottle.
   EXPECT_TRUE(request->IsDeferredForTesting());
@@ -21972,24 +22071,34 @@ IN_PROC_BROWSER_TEST_P(
                 ->GetDeferringThrottles()
                 .size(),
             1u);
-  EXPECT_STREQ("RendererCancellationThrottle",
-               (*request->GetNavigationThrottleRegistryForTesting()
-                     ->GetDeferringThrottles()
-                     .begin())
-                   ->GetNameForLogging());
+  auto* throttle = static_cast<RendererCancellationThrottle*>(
+      *request->GetNavigationThrottleRegistryForTesting()
+           ->GetDeferringThrottles()
+           .begin());
+  EXPECT_STREQ("RendererCancellationThrottle", throttle->GetNameForLogging());
+
   EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+  {
+    // Wait for the throttle to hit the timeout.
+    base::RunLoop run_loop;
+    throttle->SetOnTimeoutCallbackForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.RendererCancellationThrottle.NotCancelled.TimeoutIsHit",
+        true, 1);
+  }
 
-  // Verify that we will be notified about the unresponsive renderer.
-  RenderProcessHost* hung_process = unresponsive_renderer_observer.Wait();
-  EXPECT_EQ(hung_process, child->current_frame_host()->GetProcess());
+  // Send the fetch response, getting the renderer out of the busy loop, so that
+  // the navigation can commit.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(net::HTTP_OK, "foo");
+  fetch_response.Done();
 
-  // Verify that the throttle still waits for the renderer-initiated
-  // cancellation.
-  EXPECT_TRUE(request->IsDeferredForTesting());
-
-  // Reset the cancellation timeout to the default value.
-  RendererCancellationThrottle::SetCancellationTimeoutForTesting(
-      base::TimeDelta());
+  // The navigation commits successfully.
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(nav_manager.was_successful());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.RendererCancellationThrottle.NavigationCancelled", false, 1);
 }
 
 // Tests that navigating to a document that was previously sandboxed but later

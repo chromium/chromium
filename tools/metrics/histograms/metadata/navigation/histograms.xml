@@ -2144,6 +2144,63 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Navigation.RendererCancellationThrottle.NavigationCancelled"
+    enum="Boolean" expires_after="2026-07-13">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    When RendererCancellationThrottle defers navigation, this records whether
+    the navigation actually gets cancelled or not.
+
+    Recorded when the RendererCancellationThrottle is destroyed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.RendererCancellationThrottle.NavigationCancelled.TimeUntilCancel"
+    units="ms" expires_after="2026-07-13">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    When RendererCancellationThrottle defers navigation and the navigation
+    actually gets cancelled, records the time it takes from defer start to the
+    cancellation, which causes the RendererCancellationThrottle to be
+    destructed.
+
+    Recorded when the RendererCancellationThrottle is destroyed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.RendererCancellationThrottle.NotCancelled.TimeoutIsHit"
+    enum="Boolean" expires_after="2026-07-13">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    When RendererCancellationThrottle defers navigation and the navigation is
+    not cancelled, this records whether the throttle hits the timeout or not
+    (the JS task that initiates the navigation finishes earlier than the
+    timeout).
+
+    Recorded when either the defer timeout is reached, or when the IPC that
+    indicates that JS task that initiates the navigation finishes is received on
+    the browser side.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.RendererCancellationThrottle.TimeUntilWindowEnd"
+    units="ms" expires_after="2026-07-13">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time from when the RendererCancellationThrottle defers a navigation
+    until it finishes the JS task that initiates the navigation to finish.
+
+    Recorded when the IPC that indicates that JS task that initiates the
+    navigation finishes is received on the browser side.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.RendererCommitDelay.{FrameType}" units="ms"
     expires_after="2026-02-22">
   <owner>cduvall@chromium.org</owner>
