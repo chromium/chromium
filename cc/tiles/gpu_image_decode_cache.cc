@@ -897,7 +897,6 @@ GpuImageDecodeCache::ImageData::ImageData(
     bool needs_mips,
     bool is_bitmap_backed,
     bool can_do_hardware_accelerated_decode,
-    bool do_hardware_accelerated_decode,
     bool speculative_decode,
     base::span<ImageInfo, kAuxImageCount> image_info)
     : paint_image_id(paint_image_id_param),
@@ -910,7 +909,7 @@ GpuImageDecodeCache::ImageData::ImageData(
       gainmap_info(std::move(image_info[kAuxImageIndexGainmap])),
       decode(is_bitmap_backed,
              can_do_hardware_accelerated_decode,
-             do_hardware_accelerated_decode) {
+             /*do_hardware_accelerated_decode=*/false) {
   if (info.yuva.has_value()) {
     // This is the only plane config supported by non-OOP raster.
     DCHECK_EQ(info.yuva->yuvaInfo().planeConfig(),
@@ -2473,8 +2472,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
       draw_image.paint_image().stable_id(), draw_image.target_color_space(),
       CalculateDesiredFilterQuality(draw_image), upload_scale_mip_level,
       needs_mips, is_bitmap_backed, can_do_hardware_accelerated_decode,
-      /*do_hardware_accelerated_decode=*/false, speculative_decode,
-      image_info));
+      speculative_decode, image_info));
 }
 
 void GpuImageDecodeCache::WillAddCacheEntry(const DrawImage& draw_image) {

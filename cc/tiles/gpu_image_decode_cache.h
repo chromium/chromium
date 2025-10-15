@@ -453,7 +453,6 @@ class CC_EXPORT GpuImageDecodeCache
               bool needs_mips,
               bool is_bitmap_backed,
               bool can_do_hardware_accelerated_decode,
-              bool do_hardware_accelerated_decode,
               bool speculative_decode,
               base::span<ImageInfo, kAuxImageCount> image_info);
 
