@@ -104,6 +104,9 @@ void ResetGemini();
 void UpdatePageAttachmentState(
     BWGPageContextAttachmentState bwg_attachment_state);
 
+// Passes the zero-state suggestions to the floaty.
+void SetZeroStateSuggestions(NSArray<NSString*>* suggestions);
+
 // Returns true if a URL is protected.
 bool IsProtectedUrl(std::string url);
 
