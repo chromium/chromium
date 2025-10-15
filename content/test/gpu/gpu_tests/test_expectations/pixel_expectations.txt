@@ -491,7 +491,7 @@ crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
 
 # Failure on Win10 Nvidia bot
 crbug.com/420902568 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MeetEffectsTruckerHat [ Failure ]
-crbug.com/451750216 [ win10 nvidia ] Pixel_Canvas2DRedBoxHdr10 [ Failure ]
+crbug.com/451750216 [ win11 nvidia ] Pixel_Canvas2DRedBoxHdr10 [ Failure ]
 
 # Video tests flakily cause Android Pixel 6 Ganesh to crash.
 crbug.com/421412516 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
