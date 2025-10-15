@@ -211,7 +211,6 @@
 
 - (void)autofillEditProfileMediatorDidFinish:
     (AutofillProfileEditMediator*)mediator {
-  // TODO(crbug.com/40281788): Implement.
 }
 
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country
