@@ -122,7 +122,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
   // external sampler.
   gfx::BufferPlane buffer_plane;
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
-    plane_format = pixmap->GetBufferFormat();
+    plane_format = ToBufferFormat(pixmap->GetSharedImageFormat());
     plane_size = size;
     buffer_plane = gfx::BufferPlane::DEFAULT;
   } else {
