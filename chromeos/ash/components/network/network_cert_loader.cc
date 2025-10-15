@@ -179,6 +179,8 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   net::NSSCertDatabase* nss_database() { return nss_database_; }
 
   // net::CertDatabase::Observer
+  // TODO(crbug.com/390333881): Remove OnTrustStoreChanged when system slot NSS
+  // authority certs are no longer used.
   void OnTrustStoreChanged() override {
     VLOG(1) << "OnTrustStoreChanged";
     LoadCertificates(/*initial_load=*/false);
@@ -760,25 +762,15 @@ void NetworkCertLoader::UpdateCertificates() {
       user_policy_certificate_provider_, false /* device_wide */);
   NetworkCertList device_policy_authorities = GetPolicyProvidedAuthorities(
       device_policy_certificate_provider_, true /* device_wide */);
-  if (user_server_cert_db_cache_->is_or_will_be_initialized()) {
-    // TODO(crbug.com/390333881): is there any reason to include the NSS system
-    // slot in all_authority_certs_? I don't think there is any way for anyone
-    // to have imported authority certs into the system slot so including
-    // system_slot_cert_cache_ here should be unnecessary. Unless I missed
-    // something?
-    all_authority_certs_ = CombineNetworkCertLists(
-        {&system_slot_cert_cache_->authority_certs(),
-         &user_server_cert_db_cache_->authority_certs(),
-         &user_policy_authorities, &device_policy_authorities});
-  } else {
-    // TODO(crbug.com/390333881): remove once ServerCertificateDatabaseService
-    // is fully launched.
-    all_authority_certs_ = CombineNetworkCertLists(
-        {&system_slot_cert_cache_->authority_certs(),
-         &user_public_slot_cert_cache_->authority_certs(),
-         &user_private_slot_cert_cache_->authority_certs(),
-         &user_policy_authorities, &device_policy_authorities});
-  }
+  // TODO(crbug.com/390333881): is there any reason to include the NSS system
+  // slot in all_authority_certs_? I don't think there is any way for anyone
+  // to have imported authority certs into the system slot so including
+  // system_slot_cert_cache_ here should be unnecessary. Unless I missed
+  // something?
+  all_authority_certs_ = CombineNetworkCertLists(
+      {&system_slot_cert_cache_->authority_certs(),
+       &user_server_cert_db_cache_->authority_certs(), &user_policy_authorities,
+       &device_policy_authorities});
 
   all_client_certs_ =
       CombineNetworkCertLists({&system_slot_cert_cache_->client_certs(),
