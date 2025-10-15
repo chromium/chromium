@@ -2692,6 +2692,8 @@ static_library("browser") {
       "android/browsing_data/url_filter_bridge.h",
       "android/chrome_startup_flags.cc",
       "android/chrome_startup_flags.h",
+      "android/collection_save_forwarder_android.cc",
+      "android/collection_save_forwarder_android.h",
       "android/collection_structure_tracker_android.cc",
       "android/collection_structure_tracker_android.h",
       "android/compose_bitmaps_helper.cc",

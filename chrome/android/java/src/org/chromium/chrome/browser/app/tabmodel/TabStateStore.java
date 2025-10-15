@@ -13,6 +13,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.CollectionSaveForwarder;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
@@ -21,14 +22,20 @@ import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageService.LoadedTabState;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObserver;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import org.chromium.components.tabs.TabStripCollection;
 
 /** Orchestrates saving of tabs to the {@link TabStateStorageService}. */
 @NullMarked
@@ -41,9 +48,11 @@ public class TabStateStore implements TabPersistentStore {
     private final TabStateAttributes.Observer mAttributesObserver =
             this::onTabStateDirtinessChanged;
     private final ObserverList<TabPersistentStoreObserver> mObservers = new ObserverList<>();
+    private final Map<Token, CollectionSaveForwarder> mGroupForwarderMap = new HashMap<>();
 
     private @Nullable TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private @Nullable TabMoveObserver mTabMoveObserver;
+    private @Nullable TabGroupModelFilter mFilter;
     private int mRestoredTabCount;
 
     private class InnerRegistrationObserver
@@ -77,6 +86,50 @@ public class TabStateStore implements TabPersistentStore {
         }
     }
 
+    private final TabGroupModelFilterObserver mVisualDataUpdateObserver =
+            new TabGroupModelFilterObserver() {
+                @Override
+                public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+                    Token groupId = destinationTab.getTabGroupId();
+                    assert groupId != null;
+
+                    TabStripCollection collection = filter.getTabModel().getTabStripCollection();
+                    if (collection == null) return;
+
+                    CollectionSaveForwarder forwarder =
+                            CollectionSaveForwarder.createForTabGroup(
+                                    destinationTab.getProfile(),
+                                    groupId,
+                                    collection);
+                    mGroupForwarderMap.put(groupId, forwarder);
+                }
+
+                @Override
+                public void didRemoveTabGroup(
+                        int oldRootId, @Nullable Token oldTabGroupId, int removalReason) {
+                    if (oldTabGroupId == null) return;
+                    CollectionSaveForwarder forwarder = mGroupForwarderMap.remove(oldTabGroupId);
+                    if (forwarder != null) forwarder.destroy();
+                }
+
+                @Override
+                public void didChangeTabGroupCollapsed(
+                        Token tabGroupId, boolean isCollapsed, boolean animate) {
+                    saveTabGroup(tabGroupId);
+                }
+
+                @Override
+                public void didChangeTabGroupColor(
+                        Token tabGroupId, @TabGroupColorId int newColor) {
+                    saveTabGroup(tabGroupId);
+                }
+
+                @Override
+                public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
+                    saveTabGroup(tabGroupId);
+                }
+            };
+
     /**
      * @param tabStateStorageService The {@link TabStateStorageService} to save to.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes in.
@@ -99,6 +152,16 @@ public class TabStateStore implements TabPersistentStore {
                 new InnerRegistrationObserver());
 
         mTabMoveObserver = new TabMoveObserver(mTabModelSelector.getModel(/* incognito= */ false));
+
+        mFilter =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(/* isIncognito= */ false);
+
+        if (mFilter != null) {
+            mFilter.addTabGroupObserver(mVisualDataUpdateObserver);
+        }
+
         // TODO(https://crbug.com/451614469): Watch for incognito as well eventually. But before
         // things are fully functional, do not write any incognito data to avoid regressing on
         // privacy.
@@ -167,6 +230,13 @@ public class TabStateStore implements TabPersistentStore {
         }
         if (mTabMoveObserver != null) {
             mTabMoveObserver.destroy();
+        }
+
+        for (CollectionSaveForwarder forwarder : mGroupForwarderMap.values()) {
+            forwarder.destroy();
+        }
+        if (mFilter != null) {
+            mFilter.removeTabGroupObserver(mVisualDataUpdateObserver);
         }
     }
 
@@ -300,5 +370,11 @@ public class TabStateStore implements TabPersistentStore {
         for (TabPersistentStoreObserver observer : mObservers) {
             observer.onStateLoaded();
         }
+    }
+
+    private void saveTabGroup(Token tabGroupId) {
+        CollectionSaveForwarder forwarder = mGroupForwarderMap.get(tabGroupId);
+        if (forwarder == null) return;
+        forwarder.save();
     }
 }

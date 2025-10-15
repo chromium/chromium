@@ -9,6 +9,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/tab/CollectionSaveForwarder.java",
     "java/src/org/chromium/chrome/browser/tab/CollectionStructureTracker.java",
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/EmptyTabObserver.java",
@@ -140,6 +141,7 @@ android_resources("java_resources") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/tab/CollectionSaveForwarder.java",
     "java/src/org/chromium/chrome/browser/tab/CollectionStructureTracker.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageService.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageServiceFactory.java",
@@ -198,6 +200,7 @@ robolectric_library("junit") {
 source_set("tab") {
   sources = [
     "android_tab_package.h",
+    "collection_save_forwarder.h",
     "collection_storage_observer.h",
     "collection_storage_package.h",
     "collection_structure_tracker.h",
@@ -229,6 +232,7 @@ source_set("tab") {
 source_set("impl") {
   sources = [
     "android_tab_package.cc",
+    "collection_save_forwarder.cc",
     "collection_storage_observer.cc",
     "collection_storage_package.cc",
     "collection_structure_tracker.cc",
