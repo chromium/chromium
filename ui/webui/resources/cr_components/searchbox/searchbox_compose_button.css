@@ -163,7 +163,7 @@
   font-weight: 500;
 }
 
-:host-context([realbox-layout-mode='Tall']) .glow-container {
+:host-context([realbox-layout-mode^='Tall']) .glow-container {
   height: var(--cr-searchbox-icon-size);
   top: var(--cr-searchbox-compose-button-position-top);
   transform: none;

@@ -30,7 +30,10 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
         ?can-show-secondary-side="${this.realboxCanShowSecondarySide}"
         ?compose-button-enabled="${this.composeButtonEnabled}"
-        ?composebox-enabled="${this.composeboxEnabled}">
+        ?composebox-enabled="${this.composeboxEnabled}"
+        realbox-layout-mode="${this.realboxLayoutMode}"
+        ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled}"
+        ?cycling-placeholders="${this.searchboxCyclingPlaceholders}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
       <ntp-composebox id="composebox" ?is_collapsible="false" @close-composebox="${this.closeComposebox_}">

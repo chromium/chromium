@@ -407,16 +407,6 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                          ntp_composebox::FeatureConfig::Get()
                              .config.entry_point()
                              .num_page_load_animations());
-  source->AddString("realboxLayoutMode",
-                    ntp_realbox::IsNtpRealboxNextEnabled(profile)
-                        ? ntp_realbox::RealboxLayoutModeToString(
-                              ntp_realbox::kRealboxLayoutMode.Get())
-                        : "");
-  source->AddBoolean("ntpRealboxNextEnabled",
-                     ntp_realbox::IsNtpRealboxNextEnabled(profile));
-  source->AddBoolean("searchboxCyclingPlaceholders",
-                     ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
-                         ntp_realbox::kCyclingPlaceholders.Get());
 }
 
 std::string SearchboxHandler::AutocompleteIconToResourceName(

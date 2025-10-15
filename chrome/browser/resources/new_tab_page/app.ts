@@ -249,12 +249,26 @@ export class AppElement extends AppElementBase {
       microsoftModuleEnabled_: {type: Boolean},
       microsoftAuthIframePath_: {type: String},
 
+      ntpRealboxNextEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
+
       /**
        * In order to avoid flicker, the promo and modules are hidden until both
        * are loaded. If modules are disabled, the promo is shown as soon as it
        * is loaded.
        */
       promoAndModulesLoaded_: {type: Boolean},
+
+      realboxLayoutMode: {
+        type: String,
+        reflect: true,
+      },
+
+      searchboxCyclingPlaceholders: {
+        type: Boolean,
+      },
 
       showComposebox_: {
         type: Boolean,
@@ -346,6 +360,12 @@ export class AppElement extends AppElementBase {
   accessor composeboxEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposebox');
   protected accessor isFooterVisible_: boolean = false;
+  accessor ntpRealboxNextEnabled: boolean =
+      loadTimeData.getBoolean('ntpRealboxNextEnabled');
+  accessor realboxLayoutMode: string =
+      loadTimeData.getString('realboxLayoutMode');
+  accessor searchboxCyclingPlaceholders: boolean =
+      loadTimeData.getBoolean('searchboxCyclingPlaceholders');
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;

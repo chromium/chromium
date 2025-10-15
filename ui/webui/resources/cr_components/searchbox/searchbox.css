@@ -405,69 +405,69 @@ cr-searchbox-icon {
   padding-top: var(--cr-searchbox-dropdown-padding-top);
 }
 
-:host([realbox-layout-mode='Tall']) {
+:host([realbox-layout-mode^='Tall']) {
   --cr-searchbox-compose-button-position-top: 12px;
   --cr-searchbox-dropdown-padding-top: 60px;
   --cr-searchbox-height: 108px;
   --cr-searchbox-input-padding-top_: 22px;
 }
 
-:host([realbox-layout-mode='Tall'][has-context-files_]) {
+:host([realbox-layout-mode^='Tall'][has-context-files_]) {
   --cr-searchbox-dropdown-padding-top: 48px;
 }
 
 @media (forced-colors: active) {
-  :host([realbox-layout-mode='Tall']) .dropdownContainer {
+  :host([realbox-layout-mode^='Tall']) .dropdownContainer {
     border: 1px solid ActiveBorder;
   }
 }
 
-:host([realbox-layout-mode='Tall']) #inputWrapper {
+:host([realbox-layout-mode^='Tall']) #inputWrapper {
   background-color: var(--color-searchbox-background);
   border-radius: var(--cr-searchbox-border-radius);
 }
 
-:host([realbox-layout-mode='Tall']) input {
+:host([realbox-layout-mode^='Tall']) input {
   height: 48px;
   padding-top: var(--cr-searchbox-input-padding-top_);
 }
 
-:host([realbox-layout-mode='Tall']:not([dropdown-is-visible])) input {
+:host([realbox-layout-mode^='Tall']:not([dropdown-is-visible])) input {
   padding-inline-start: 24px;
 }
 
-:host([realbox-layout-mode='Tall']:not([dropdown-is-visible])) cr-searchbox-icon,
-:host([realbox-layout-mode='Tall'][dropdown-is-visible]) .searchbox-icon-button-container {
+:host([realbox-layout-mode^='Tall']:not([dropdown-is-visible])) cr-searchbox-icon,
+:host([realbox-layout-mode^='Tall'][dropdown-is-visible]) .searchbox-icon-button-container {
   display: none;
 }
 
-:host([realbox-layout-mode='Tall']) .searchbox-icon-button {
+:host([realbox-layout-mode^='Tall']) .searchbox-icon-button {
   bottom: 12px;
   height: var(--cr-searchbox-icon-size);
   padding: 8px 12px;
 }
 
-:host([realbox-layout-mode='Tall'][has-context-files_]) #voiceSearchButton,
-:host([realbox-layout-mode='Tall'][has-context-files_]) #lensSearchButton {
+:host([realbox-layout-mode^='Tall'][has-context-files_]) #voiceSearchButton,
+:host([realbox-layout-mode^='Tall'][has-context-files_]) #lensSearchButton {
   display: none;
 }
 
-:host([realbox-layout-mode='Tall'][dropdown-is-visible]) cr-searchbox-icon {
+:host([realbox-layout-mode^='Tall'][dropdown-is-visible]) cr-searchbox-icon {
   height: 24px;
   inset-inline-start: 12px;
   top: var(--cr-searchbox-input-padding-top_);
 }
 
-:host([realbox-layout-mode='Tall'][compose-button-enabled]) #lensSearchButton {
+:host([realbox-layout-mode^='Tall'][compose-button-enabled]) #lensSearchButton {
   inset-inline-end: calc(12px + var(--cr-searchbox-icon-spacing));
 }
 
-:host([realbox-layout-mode='Tall'][searchbox-lens-search-enabled_]) #voiceSearchButton,
-:host([realbox-layout-mode='Tall'][searchbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
+:host([realbox-layout-mode^='Tall'][searchbox-lens-search-enabled_]) #voiceSearchButton,
+:host([realbox-layout-mode^='Tall'][searchbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
   inset-inline-end: calc(12px + var(--cr-searchbox-icon-size) + var(--cr-searchbox-icon-spacing));
 }
 
-:host-context([realbox-layout-mode='Tall']) #composeButton {
+:host-context([realbox-layout-mode^='Tall']) #composeButton {
   --cr-button-height: 36px;
 }
 
@@ -501,6 +501,6 @@ cr-searchbox-icon {
   padding-top: 12px;
 }
 
-:host-context([realbox-layout-mode='Tall']) #errorScrim {
+:host-context([realbox-layout-mode^='Tall']) #errorScrim {
   border-radius: inherit;
 }

@@ -230,20 +230,24 @@ const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpRealboxNext,
 
 const base::FeatureParam<RealboxLayoutMode>::Option
     kRealboxLayoutModeOptions[] = {
-        {RealboxLayoutMode::kTall, kRealboxLayoutModeTall},
+        {RealboxLayoutMode::kTallBottomContext,
+         kRealboxLayoutModeTallBottomContext},
+        {RealboxLayoutMode::kTallTopContext, kRealboxLayoutModeTallTopContext},
         {RealboxLayoutMode::kCompact, kRealboxLayoutModeCompact}};
 
 const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode(
     &kNtpRealboxNext,
     "RealboxLayoutMode",
-    RealboxLayoutMode::kTall,
+    RealboxLayoutMode::kTallBottomContext,
     &kRealboxLayoutModeOptions);
 
 std::string_view RealboxLayoutModeToString(
     RealboxLayoutMode realbox_layout_mode) {
   switch (realbox_layout_mode) {
-    case RealboxLayoutMode::kTall:
-      return kRealboxLayoutModeTall;
+    case RealboxLayoutMode::kTallBottomContext:
+      return kRealboxLayoutModeTallBottomContext;
+    case RealboxLayoutMode::kTallTopContext:
+      return kRealboxLayoutModeTallTopContext;
     case RealboxLayoutMode::kCompact:
       return kRealboxLayoutModeCompact;
     default:
