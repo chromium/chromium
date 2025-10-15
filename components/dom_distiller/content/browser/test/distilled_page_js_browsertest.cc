@@ -79,7 +79,13 @@ IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, AddClassesToYTIFramesTest) {
   LoadAndExecuteTestScript("add_classes_to_yt_iframes.js");
 }
 
-IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, ImageClassifierTest) {
+// Fails on Fuchsia ASAN.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ImageClassifierTest DISABLED_ImageClassifierTest
+#else
+#define MAYBE_ImageClassifierTest ImageClassifierTest
+#endif
+IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, MAYBE_ImageClassifierTest) {
   LoadAndExecuteTestScript("image_classifier_tester.js");
 }
 
