@@ -138,7 +138,8 @@ class SyncPromoIdentityPillManager : public signin::IdentityManager::Observer {
   AccountInfo GetSignedInAccountInfo() const;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
-  SigninPrefs signin_prefs_;
+  // Only nullptr after the `identity_manager_` starts shutting down.
+  std::unique_ptr<SigninPrefs> signin_prefs_;
 
   const int max_shown_count_ = 0;
   const int max_used_count_ = 0;
