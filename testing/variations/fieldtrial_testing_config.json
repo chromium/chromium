@@ -18834,26 +18834,6 @@
             ]
         }
     ],
-    "PreconnectBookmarkBarTrigger": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "PrefetchEnabled_PreconnectEnabled",
-                    "enable_features": [
-                        "BookmarkTriggerForPreconnect",
-                        "BookmarkTriggerForPrefetch"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreconnectCreateNewTab": [
         {
             "platforms": [
