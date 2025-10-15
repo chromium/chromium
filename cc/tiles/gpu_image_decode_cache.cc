@@ -684,11 +684,9 @@ void GpuImageDecodeCache::DecodedAuxImageData::ResetData() {
 
 GpuImageDecodeCache::DecodedImageData::DecodedImageData(
     bool is_bitmap_backed,
-    bool can_do_hardware_accelerated_decode,
-    bool do_hardware_accelerated_decode)
+    bool can_do_hardware_accelerated_decode)
     : is_bitmap_backed_(is_bitmap_backed),
-      can_do_hardware_accelerated_decode_(can_do_hardware_accelerated_decode),
-      do_hardware_accelerated_decode_(do_hardware_accelerated_decode) {
+      can_do_hardware_accelerated_decode_(can_do_hardware_accelerated_decode) {
   for (const auto& aux_image_data : aux_image_data_) {
     aux_image_data.ValidateImagesMatchPixmaps();
   }
@@ -816,14 +814,6 @@ void GpuImageDecodeCache::DecodedImageData::ResetData() {
 }
 
 void GpuImageDecodeCache::DecodedImageData::ReportUsageStats() const {
-  if (do_hardware_accelerated_decode_) {
-    // When doing hardware decode acceleration, we don't want to record usage
-    // stats for the decode data. The reason is that the decode is done in the
-    // GPU process and the decoded result stays there. On the renderer side, we
-    // don't use or lock the decoded data, so reporting this status would
-    // incorrectly distort the software decoding statistics.
-    return;
-  }
   UMA_HISTOGRAM_ENUMERATION("Renderer4.GpuImageDecodeState",
                             static_cast<ImageUsageState>(UsageState()),
                             IMAGE_USAGE_STATE_COUNT);
@@ -907,9 +897,7 @@ GpuImageDecodeCache::ImageData::ImageData(
       is_bitmap_backed(is_bitmap_backed),
       info(std::move(image_info[kAuxImageIndexDefault])),
       gainmap_info(std::move(image_info[kAuxImageIndexGainmap])),
-      decode(is_bitmap_backed,
-             can_do_hardware_accelerated_decode,
-             /*do_hardware_accelerated_decode=*/false) {
+      decode(is_bitmap_backed, can_do_hardware_accelerated_decode) {
   if (info.yuva.has_value()) {
     // This is the only plane config supported by non-OOP raster.
     DCHECK_EQ(info.yuva->yuvaInfo().planeConfig(),

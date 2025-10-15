@@ -321,8 +321,7 @@ class CC_EXPORT GpuImageDecodeCache
   // Stores the CPU-side decoded bits of an image and supporting fields.
   struct DecodedImageData : public ImageDataBase {
     explicit DecodedImageData(bool is_bitmap_backed,
-                              bool can_do_hardware_accelerated_decode,
-                              bool do_hardware_accelerated_decode);
+                              bool can_do_hardware_accelerated_decode);
     ~DecodedImageData();
 
     bool Lock();
@@ -366,9 +365,7 @@ class CC_EXPORT GpuImageDecodeCache
       return can_do_hardware_accelerated_decode_;
     }
 
-    bool do_hardware_accelerated_decode() const {
-      return do_hardware_accelerated_decode_;
-    }
+    bool do_hardware_accelerated_decode() const { return false; }
 
     // Test-only functions.
     sk_sp<SkImage> ImageForTesting() const {
@@ -401,12 +398,6 @@ class CC_EXPORT GpuImageDecodeCache
     // though they're possibly prevented from doing so because of a disabled
     // feature flag.
     bool can_do_hardware_accelerated_decode_;
-
-    // |do_hardware_accelerated_decode_| keeps track of images that should go
-    // through hardware decode acceleration. Currently, this path is intended
-    // only for Chrome OS and only for some JPEG images (see
-    // https://crbug.com/868400).
-    bool do_hardware_accelerated_decode_;
   };
 
   // Stores the GPU-side image and supporting fields.
