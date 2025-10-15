@@ -634,13 +634,10 @@ void RelaunchApp() {
       selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  if (@available(iOS 17, *)) {
-    // Tab group is only available on iOS 17+ on iPad.
-    [[EarlGrey selectElementWithMatcher:
-                   ContextMenuItemWithAccessibilityLabelId(
-                       IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
+  [[EarlGrey selectElementWithMatcher:
+                 ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE)]
@@ -818,10 +815,6 @@ void RelaunchApp() {
 // exists in the tab grid, the option `Open in group` will become a submenu,
 // tapping it will result in listing all the existing tab groups.
 - (void)testContextMenuOpenInGroup {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey

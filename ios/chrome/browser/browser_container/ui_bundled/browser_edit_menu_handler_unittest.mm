@@ -198,45 +198,6 @@ NSMutableArray* GetExpectedMenu() {
       @"0:m:com.apple.menu.share",
       @"1:c:share:"
     ]];
-  } else if (@available(iOS 17, *)) {
-    return [NSMutableArray arrayWithArray:@[
-      @"0:m:com.apple.menu.standard-edit",
-      @"1:c:cut:",
-      @"1:c:copy:",
-      @"1:c:paste:",
-      @"1:c:delete:",
-      @"1:c:select:",
-      @"1:c:selectAll:",
-      @"0:m:com.apple.menu.replace",
-      @"1:c:_promptForReplace:",
-      @"1:c:_transliterateChinese:",
-      @"1:c:_insertDrawing:",
-      @"1:m:com.apple.menu.autofill",
-      @"2:m:com.apple.menu.insert-from-external-sources",
-      @"2:c:captureTextFromCamera:",
-      @"0:m:com.apple.menu.open",
-      @"0:m:com.apple.menu.format",
-      @"1:m:com.apple.menu.text-style",
-      @"2:c:toggleBoldface:",
-      @"2:c:toggleItalics:",
-      @"2:c:toggleUnderline:",
-      @"1:m:com.apple.menu.writing-direction",
-      @"2:c:makeTextWritingDirectionRightToLeft:",
-      @"2:c:makeTextWritingDirectionLeftToRight:",
-      @"1:c:_showTextFormattingOptions:",
-      @"0:m:com.apple.menu.lookup",
-      @"1:c:_findSelected:",
-      @"1:c:_define:",
-      @"1:c:_translate:",
-      @"0:m:com.apple.menu.learn",
-      @"1:c:_addShortcut:",
-      @"0:m:com.apple.command.speech",
-      @"1:c:_accessibilitySpeak:",
-      @"1:c:_accessibilitySpeakLanguageSelection:",
-      @"1:c:_accessibilityPauseSpeaking:",
-      @"0:m:com.apple.menu.share",
-      @"1:c:_share:"
-    ]];
   }
   NSMutableArray* expectedMenuDescription = [NSMutableArray arrayWithArray:@[
     @"0:m:com.apple.menu.standard-edit",
@@ -250,7 +211,9 @@ NSMutableArray* GetExpectedMenu() {
     @"1:c:_promptForReplace:",
     @"1:c:_transliterateChinese:",
     @"1:c:_insertDrawing:",
-    @"1:c:captureTextFromCamera:",
+    @"1:m:com.apple.menu.autofill",
+    @"2:m:com.apple.menu.insert-from-external-sources",
+    @"2:c:captureTextFromCamera:",
     @"0:m:com.apple.menu.open",
     @"0:m:com.apple.menu.format",
     @"1:m:com.apple.menu.text-style",
@@ -260,6 +223,7 @@ NSMutableArray* GetExpectedMenu() {
     @"1:m:com.apple.menu.writing-direction",
     @"2:c:makeTextWritingDirectionRightToLeft:",
     @"2:c:makeTextWritingDirectionLeftToRight:",
+    @"1:c:_showTextFormattingOptions:",
     @"0:m:com.apple.menu.lookup",
     @"1:c:_findSelected:",
     @"1:c:_define:",
@@ -273,6 +237,7 @@ NSMutableArray* GetExpectedMenu() {
     @"0:m:com.apple.menu.share",
     @"1:c:_share:"
   ]];
+
   return expectedMenuDescription;
 }
 
