@@ -248,8 +248,9 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
   EXPECT_EQ(2, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
 
+// TODO(crbug.com/413293448): Flaky test
 IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
-                       PreconnectOnlyInForeground) {
+                       DISABLED_PreconnectOnlyInForeground) {
   constexpr char16_t kShortName[] = u"test";
   constexpr char kSearchURL[] = "/anchors_different_area.html?q={searchTerms}";
   TemplateURLService* model =
