@@ -334,7 +334,8 @@ chromium-metrics-reviews@google.com.
     enabled explicitly by the user on the Accessibility Page Zoom setting, 2)
     enabled automatically if the user has an Android OS-wide default font size,
     3) disabled explicitly by the user on the Accessibility Page Zoom setting.
-    Recorded each time the app menu is opened.
+    4) enabled by default for large form factor users. Recorded each time the
+    app menu is opened.
   </summary>
 </histogram>
 
