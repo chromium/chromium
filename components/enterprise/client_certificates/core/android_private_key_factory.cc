@@ -23,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "components/enterprise/client_certificates/core/android_private_key.h"
 #include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/metrics_util.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "net/ssl/ssl_private_key.h"
@@ -53,6 +54,9 @@ scoped_refptr<AndroidPrivateKey> CreateOrLoadKeyFromKeyStore(
   if (!bk) {
     return nullptr;
   }
+
+  // Record the security level of the key.
+  RecordClankKeySecurityLevel(bk->GetSecurityLevel());
 
   return base::MakeRefCounted<AndroidPrivateKey>(std::move(bk));
 }

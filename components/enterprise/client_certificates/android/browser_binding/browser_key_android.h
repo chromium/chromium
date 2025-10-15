@@ -30,6 +30,7 @@ class BrowserKeyAndroid : public BrowserKey {
   scoped_refptr<net::SSLPrivateKey> GetSSLPrivateKey() const override;
   std::optional<std::vector<uint8_t>> Sign(
       const std::vector<uint8_t>& data) const override;
+  SecurityLevel GetSecurityLevel() const override;
 
  private:
   jni_zero::ScopedJavaGlobalRef<jobject> impl_;

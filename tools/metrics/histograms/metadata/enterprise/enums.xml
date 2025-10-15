@@ -72,6 +72,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Invalid Upload URL"/>
 </enum>
 
+<enum name="ClankClientCertificatesBrowserKeySecurityLevel">
+  <summary>
+    The security level of a private key created for client certificate
+    provisioning on Android.
+  </summary>
+  <int value="0" label="OSSoftware"/>
+  <int value="1" label="Trusted Environment"/>
+  <int value="2" label="StrongBox"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
 <enum name="CwsPromotionBannerEvent">
   <summary>
     User interaction events with the enterprise promotion banner on the Chrome

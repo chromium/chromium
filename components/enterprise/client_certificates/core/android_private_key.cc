@@ -55,4 +55,8 @@ base::Value::Dict AndroidPrivateKey::ToDict() const {
   return BuildSerializedPrivateKey(wrapped);
 }
 
+BrowserKey::SecurityLevel AndroidPrivateKey::GetSecurityLevel() const {
+  return key_->GetSecurityLevel();
+}
+
 }  // namespace client_certificates

@@ -29,6 +29,9 @@ class AndroidPrivateKey : public PrivateKey {
   client_certificates_pb::PrivateKey ToProto() const override;
   base::Value::Dict ToDict() const override;
 
+  // Returns the security level of the key.
+  BrowserKey::SecurityLevel GetSecurityLevel() const;
+
  private:
   friend class base::RefCountedThreadSafe<BrowserKeyAndroid>;
   friend class base::RefCountedThreadSafe<BrowserKey>;

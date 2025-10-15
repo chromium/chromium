@@ -4,6 +4,12 @@
 
 package org.chromium.components.enterprise.client_certificates;
 
+import android.os.Build;
+import android.security.keystore.KeyInfo;
+import android.security.keystore.KeyProperties;
+
+import androidx.annotation.IntDef;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -11,17 +17,48 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 
 @NullMarked
 public class BrowserKey {
     /** The logging tag for this class. */
     public static final String TAG = "TrustedAccess_BK";
+
+    /** The security level of the browser key. */
+    /**
+     * Has to match the SecurityLevel enum in
+     * client_certificates/android/browser_binding/browser_key.h
+     */
+    @IntDef({
+        SecurityLevel.OS_SOFTWARE,
+        SecurityLevel.TRUSTED_ENVIRONMENT,
+        SecurityLevel.STRONGBOX,
+        SecurityLevel.UNKNOWN
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SecurityLevel {
+        /** The key is not secured by hardware. */
+        int OS_SOFTWARE = 0;
+
+        /** The key is secured by a Trusted Execution Environment (TEE). */
+        int TRUSTED_ENVIRONMENT = 1;
+
+        /** The key is secured by a StrongBox. */
+        int STRONGBOX = 2;
+
+        /** The key security is unknown. */
+        int UNKNOWN = 3;
+    }
 
     public static final String KEYSTORE_ALIAS_PREFIX = "ta_bk_";
 
@@ -91,5 +128,49 @@ public class BrowserKey {
     @JniType("std::vector<uint8_t>")
     byte @Nullable [] getPublicKeyAsSPKI() {
         return mKeyPair.getPublic().getEncoded();
+    }
+
+    @CalledByNative
+    public @SecurityLevel int getSecurityLevel() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return SecurityLevel.OS_SOFTWARE;
+        }
+
+        try {
+            KeyFactory factory =
+                    KeyFactory.getInstance(
+                            mKeyPair.getPrivate().getAlgorithm(),
+                            BrowserKeyStore.ANDROID_KEY_STORE);
+            KeyInfo keyInfo = factory.getKeySpec(mKeyPair.getPrivate(), KeyInfo.class);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                switch (keyInfo.getSecurityLevel()) {
+                    case KeyProperties.SECURITY_LEVEL_STRONGBOX:
+                        return SecurityLevel.STRONGBOX;
+                    case KeyProperties.SECURITY_LEVEL_TRUSTED_ENVIRONMENT:
+                    case KeyProperties.SECURITY_LEVEL_UNKNOWN_SECURE:
+                        return SecurityLevel.TRUSTED_ENVIRONMENT;
+                    case KeyProperties.SECURITY_LEVEL_UNKNOWN:
+                        return SecurityLevel.UNKNOWN;
+                    default:
+                        return SecurityLevel.OS_SOFTWARE;
+                }
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                    && BrowserKeyStore.getDeviceSupportsHardwareKeys()) {
+                return SecurityLevel.STRONGBOX;
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && keyInfo.isInsideSecureHardware()) {
+                return SecurityLevel.TRUSTED_ENVIRONMENT;
+            }
+
+            return SecurityLevel.OS_SOFTWARE;
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchProviderException e) {
+            Log.e(TAG, "Could not get key info.", e);
+            return SecurityLevel.UNKNOWN;
+        }
     }
 }

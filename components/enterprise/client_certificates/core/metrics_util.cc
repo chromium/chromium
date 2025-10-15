@@ -124,4 +124,13 @@ void LogLevelDBInitStatus(leveldb_proto::Enums::InitStatus status,
       status);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void RecordClankKeySecurityLevel(BrowserKey::SecurityLevel security_level) {
+  static constexpr char kClankKeySecurityLevelHistogram[] =
+      "Enterprise.ClientCertificates.ClankKeySecurityLevel";
+  base::UmaHistogramEnumeration(kClankKeySecurityLevelHistogram,
+                                security_level);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace client_certificates

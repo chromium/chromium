@@ -18,6 +18,17 @@ namespace client_certificates {
 
 class BrowserKey {
  public:
+  // Mirrors the SecurityLevel IntDef in BrowserKey.java.
+  // has to match the SecurityLevel enum in
+  // tools/metrics/histograms/metadata/enterprise/enums.xml
+  enum class SecurityLevel {
+    kOSSoftware = 0,
+    kTrustedEnvironment = 1,
+    kStrongbox = 2,
+    kUnknown = 3,
+    kMaxValue = kUnknown,
+  };
+
   BrowserKey() = default;
   BrowserKey(const BrowserKey&) = delete;
   BrowserKey& operator=(const BrowserKey&) = delete;
@@ -39,6 +50,9 @@ class BrowserKey {
   // returns the signature.
   virtual std::optional<std::vector<uint8_t>> Sign(
       const std::vector<uint8_t>& data) const = 0;
+
+  // Returns the security level of the key.
+  virtual SecurityLevel GetSecurityLevel() const = 0;
 };
 
 }  // namespace client_certificates

@@ -39,6 +39,14 @@ TEST(AndroidPrivateKeyTest, SupportedCreateKey) {
   auto private_key =
       base::MakeRefCounted<AndroidPrivateKey>(std::move(android_key));
 
+  if (bk_key_store->GetDeviceSupportsHardwareKeys()) {
+    EXPECT_EQ(private_key->GetSecurityLevel(),
+              BrowserKey::SecurityLevel::kStrongbox);
+  } else {
+    EXPECT_NE(private_key->GetSecurityLevel(),
+              BrowserKey::SecurityLevel::kStrongbox);
+  }
+
   auto spki_bytes = private_key->GetSubjectPublicKeyInfo();
   EXPECT_GT(spki_bytes.size(), 0U);
   EXPECT_EQ(private_key->GetAlgorithm(),

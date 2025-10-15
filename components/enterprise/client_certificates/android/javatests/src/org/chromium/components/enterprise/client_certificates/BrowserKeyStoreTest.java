@@ -4,6 +4,7 @@
 
 package org.chromium.components.enterprise.client_certificates;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -162,5 +163,26 @@ public class BrowserKeyStoreTest {
         assertNotNull(bkAfter);
         // The key pair should be different after deletion.
         assertFalse(Arrays.equals(bk.getPublicKeyAsSPKI(), bkAfter.getPublicKeyAsSPKI()));
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void testReportsCorrectSecurityLevel() {
+        BrowserKeyStore browserKeyStore = BrowserKeyStore.getInstance();
+        BrowserKey bk =
+                browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, ALLOWED_ALGORITHMS);
+        assertNotNull(bk);
+
+        if (isStrongBoxAvailable()) {
+            assertEquals(BrowserKey.SecurityLevel.STRONGBOX, bk.getSecurityLevel());
+        } else {
+            // On devices without StrongBox, the key could be in a TEE or software-backed.
+            // Emulators will likely be software.
+            int securityLevel = bk.getSecurityLevel();
+            assertTrue(
+                    "Security level was: " + securityLevel,
+                    securityLevel == BrowserKey.SecurityLevel.TRUSTED_ENVIRONMENT
+                            || securityLevel == BrowserKey.SecurityLevel.OS_SOFTWARE);
+        }
     }
 }

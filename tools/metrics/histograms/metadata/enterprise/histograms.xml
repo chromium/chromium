@@ -562,6 +562,18 @@ chromium-metrics-reviews@google.com.
   <token key="UploadScenario" variants="ClientCertificateUploadScenario"/>
 </histogram>
 
+<histogram name="Enterprise.ClientCertificates.ClankKeySecurityLevel"
+    enum="ClankClientCertificatesBrowserKeySecurityLevel"
+    expires_after="2026-02-10">
+  <owner>eliashomsi@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the security level of a private key created for client certificate
+    provisioning on Android. This indicates if the key is software-backed,
+    hardware-backed in a TEE, or secured by a StrongBox.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.CloudExtensionRequestUpdated"
     enum="EnterpriseCloudExtensionRequestListUpdate" expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>

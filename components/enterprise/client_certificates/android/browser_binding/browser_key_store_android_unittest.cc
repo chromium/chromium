@@ -65,6 +65,7 @@ TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenSupportsStrongBox) {
   auto signature = bk->Sign(std::vector<uint8_t>{1, 2, 3});
   EXPECT_TRUE(signature.has_value());
   EXPECT_FALSE(signature.value().empty());
+  EXPECT_EQ(bk->GetSecurityLevel(), BrowserKey::SecurityLevel::kStrongbox);
 
   // Clean up by removing the bk.
   if (bk) {
@@ -92,6 +93,7 @@ TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenNoStrongBoxSupport) {
   auto signature = bk->Sign(std::vector<uint8_t>{1, 2, 3});
   EXPECT_TRUE(signature.has_value());
   EXPECT_FALSE(signature.value().empty());
+  EXPECT_NE(bk->GetSecurityLevel(), BrowserKey::SecurityLevel::kStrongbox);
 
   // Clean up by removing the bk.
   if (bk) {
