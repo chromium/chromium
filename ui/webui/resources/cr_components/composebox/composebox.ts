@@ -578,6 +578,7 @@ export class ComposeboxElement extends I18nMixinLit
     // Else, keep the composebox expanded.
     this.expanded_ = !this.isCollapsible;
     this.pageHandler_.focusChanged(false);
+    this.fire('composebox-focus-out');
   }
 
   protected handleScroll_() {

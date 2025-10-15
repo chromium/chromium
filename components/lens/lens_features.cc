@@ -109,8 +109,7 @@ BASE_FEATURE(kLensSearchZeroStateCsb, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensVideoCitations, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensUpdatedFeedbackEntrypoint,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensUpdatedFeedbackEntrypoint, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kLensUpdatedFeedbackToastTimeoutMs{
     &kLensUpdatedFeedbackEntrypoint, "feedback-toast-timeout-ms", 3000};
