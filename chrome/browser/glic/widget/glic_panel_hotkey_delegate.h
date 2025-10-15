@@ -11,8 +11,6 @@
 
 namespace glic {
 
-class GlicWindowControllerInterface;
-
 // Manages hotkeys that are active only when the Glic window itself has focus.
 // This class acts as a delegate for a LocalHotkeyManager instance, configuring
 // it with the set of hotkeys relevant to the Glic window (like Escape to close)
@@ -21,7 +19,7 @@ class GlicWindowControllerInterface;
 class GlicPanelHotkeyDelegate : public LocalHotkeyManager::Delegate {
  public:
   explicit GlicPanelHotkeyDelegate(
-      base::WeakPtr<GlicWindowControllerInterface> window_controller);
+      base::WeakPtr<LocalHotkeyManager::Panel> panel);
   ~GlicPanelHotkeyDelegate() override;
 
   // LocalHotkeyManager::Delegate:
@@ -39,12 +37,12 @@ class GlicPanelHotkeyDelegate : public LocalHotkeyManager::Delegate {
   }
 
  private:
-  base::WeakPtr<GlicWindowControllerInterface> window_controller_;
+  base::WeakPtr<LocalHotkeyManager::Panel> panel_;
   base::WeakPtrFactory<GlicPanelHotkeyDelegate> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<LocalHotkeyManager> MakeGlicWindowHotkeyManager(
-    base::WeakPtr<GlicWindowControllerInterface> window_controller);
+    base::WeakPtr<LocalHotkeyManager::Panel> panel);
 
 }  // namespace glic
 

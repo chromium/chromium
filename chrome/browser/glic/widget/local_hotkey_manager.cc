@@ -85,10 +85,9 @@ static_assert(
     "kHotkeyToPrefMap. Check definitions.");
 }  // namespace
 
-LocalHotkeyManager::LocalHotkeyManager(
-    base::WeakPtr<GlicWindowControllerInterface> window_controller,
-    std::unique_ptr<Delegate> delegate)
-    : window_controller_(window_controller), delegate_(std::move(delegate)) {
+LocalHotkeyManager::LocalHotkeyManager(base::WeakPtr<Panel> panel,
+                                       std::unique_ptr<Delegate> delegate)
+    : panel_(panel), delegate_(std::move(delegate)) {
   CHECK(delegate_);
   CHECK(g_browser_process);
   pref_registrar_.Init(g_browser_process->local_state());
@@ -174,7 +173,7 @@ void LocalHotkeyManager::InitializeAccelerators() {
 
 bool LocalHotkeyManager::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-  if (!window_controller_ || !delegate_) {
+  if (!panel_ || !delegate_) {
     return false;
   }
   auto hotkey = GetHotkeyEnum(accelerator);
@@ -182,11 +181,11 @@ bool LocalHotkeyManager::AcceleratorPressed(
 }
 
 bool LocalHotkeyManager::CanHandleAccelerators() const {
-  if (!window_controller_) {
+  if (!panel_) {
     return false;
   }
 
-  return window_controller_->IsShowing();
+  return panel_->IsShowing();
 }
 
 std::vector<ui::Accelerator> LocalHotkeyManager::GetAccelerators(

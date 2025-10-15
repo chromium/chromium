@@ -10,9 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
+#include "chrome/browser/glic/test_support/mock_local_hotkey_panel.h"
 #include "chrome/browser/glic/widget/glic_view.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,24 +42,24 @@ class GlicPanelHotkeyDelegateTest : public testing::Test {
  public:
   void SetUp() override {
     testing::Test::SetUp();
-    mock_controller_ = std::make_unique<MockGlicWindowController>();
+    mock_panel_ = std::make_unique<MockLocalHotkeyPanel>();
     mock_glic_view_ = std::make_unique<MockGlicView>();
-    ON_CALL(*mock_controller_, GetGlicViewAsView())
+    ON_CALL(*mock_panel_, GetView())
         .WillByDefault(testing::Return(mock_glic_view_->GetWeakPtr()));
-    ON_CALL(*mock_controller_, IsActive()).WillByDefault(testing::Return(true));
-    delegate_ = std::make_unique<GlicPanelHotkeyDelegate>(
-        mock_controller_->GetWeakPtr());
+    ON_CALL(*mock_panel_, IsActive()).WillByDefault(testing::Return(true));
+    delegate_ =
+        std::make_unique<GlicPanelHotkeyDelegate>(mock_panel_->GetWeakPtr());
   }
 
   void TearDown() override {
     delegate_.reset();
     mock_glic_view_.reset();
-    mock_controller_.reset();
+    mock_panel_.reset();
     testing::Test::TearDown();
   }
 
  protected:
-  std::unique_ptr<MockGlicWindowController> mock_controller_;
+  std::unique_ptr<MockLocalHotkeyPanel> mock_panel_;
   std::unique_ptr<MockGlicView> mock_glic_view_;
   std::unique_ptr<GlicPanelHotkeyDelegate> delegate_;
   base::UserActionTester user_action_tester_;
@@ -81,14 +80,13 @@ TEST_F(GlicPanelHotkeyDelegateTest, GetSupportedHotkeys) {
 }
 
 TEST_F(GlicPanelHotkeyDelegateTest, AcceleratorPressedClose) {
-  EXPECT_CALL(*mock_controller_, Close()).Times(1);
+  EXPECT_CALL(*mock_panel_, Close()).Times(1);
   EXPECT_TRUE(
       delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kClose));
 }
 
 TEST_F(GlicPanelHotkeyDelegateTest, AcceleratorPressedFocusToggle) {
-  EXPECT_CALL(*mock_controller_, ActivateBrowser())
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_panel_, ActivateBrowser()).WillOnce(testing::Return(true));
   EXPECT_TRUE(
       delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kFocusToggle));
   EXPECT_EQ(1, user_action_tester_.GetActionCount("Glic.FocusHotKey"));
@@ -96,8 +94,7 @@ TEST_F(GlicPanelHotkeyDelegateTest, AcceleratorPressedFocusToggle) {
 
 TEST_F(GlicPanelHotkeyDelegateTest,
        AcceleratorPressedFocusToggleNoBrowserToActivate) {
-  EXPECT_CALL(*mock_controller_, ActivateBrowser())
-      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*mock_panel_, ActivateBrowser()).WillOnce(testing::Return(false));
   EXPECT_FALSE(
       delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kFocusToggle));
   EXPECT_EQ(0, user_action_tester_.GetActionCount("Glic.FocusHotKey"));
@@ -105,8 +102,7 @@ TEST_F(GlicPanelHotkeyDelegateTest,
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(GlicPanelHotkeyDelegateTest, AcceleratorPressedTitleBarContextMenu) {
-  EXPECT_CALL(*mock_controller_, ShowTitleBarContextMenuAt(gfx::Point()))
-      .Times(1);
+  EXPECT_CALL(*mock_panel_, ShowTitleBarContextMenuAt(gfx::Point())).Times(1);
   EXPECT_TRUE(delegate_->AcceleratorPressed(
       LocalHotkeyManager::Hotkey::kTitleBarContextMenu));
 }
@@ -126,7 +122,7 @@ TEST_F(GlicPanelHotkeyDelegateTest, CreateScopedHotkeyRegistration) {
 }
 
 TEST_F(GlicPanelHotkeyDelegateTest, MakeGlicWindowHotkeyManager) {
-  auto manager = MakeGlicWindowHotkeyManager(mock_controller_->GetWeakPtr());
+  auto manager = MakeGlicWindowHotkeyManager(mock_panel_->GetWeakPtr());
   EXPECT_TRUE(manager);
 }
 

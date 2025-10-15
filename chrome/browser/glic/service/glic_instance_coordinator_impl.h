@@ -101,7 +101,6 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   void Reload(content::RenderFrameHost* render_frame_host) override;
   base::WeakPtr<GlicInstanceCoordinatorImpl> GetWeakPtr();
 
-  base::WeakPtr<views::View> GetGlicViewAsView() override;
   GlicWidget* GetGlicWidget() const override;
   gfx::NativeWindow GetHostNativeWindow() override;
 

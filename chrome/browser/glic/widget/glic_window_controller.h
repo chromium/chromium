@@ -126,8 +126,6 @@ class GlicWindowController {
   // which is currently visible).
   virtual void Reload(content::RenderFrameHost* render_frame_host) = 0;
 
-  virtual base::WeakPtr<views::View> GetGlicViewAsView() = 0;
-
   // Returns the widget that backs the glic window.
   virtual GlicWidget* GetGlicWidget() const = 0;
 

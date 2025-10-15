@@ -149,7 +149,8 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
   } else {
     previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
   }
-  application_hotkey_manager_ = MakeApplicationHotkeyManager(GetWeakPtr());
+  application_hotkey_manager_ =
+      MakeApplicationHotkeyManager(weak_ptr_factory_.GetWeakPtr());
   host_.SetDelegate(this);
   host_observation_.Observe(&host());
 }
@@ -518,7 +519,8 @@ bool GlicWindowControllerImpl::BeforeViewCreated(
   host().CreateContents(/*initially_hidden=*/false);
   host().NotifyWindowIntentToShow();
 
-  glic_panel_hotkey_manager_ = MakeGlicWindowHotkeyManager(GetWeakPtr());
+  glic_panel_hotkey_manager_ =
+      MakeGlicWindowHotkeyManager(weak_ptr_factory_.GetWeakPtr());
   return true;
 }
 
@@ -754,7 +756,7 @@ GlicView* GlicWindowControllerImpl::GetGlicView() const {
   return nullptr;
 }
 
-base::WeakPtr<views::View> GlicWindowControllerImpl::GetGlicViewAsView() {
+base::WeakPtr<views::View> GlicWindowControllerImpl::GetView() {
   if (auto* view = GetGlicView()) {
     return view->GetWeakPtr();
   }

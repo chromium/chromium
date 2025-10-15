@@ -59,8 +59,8 @@ class GlicPanelScopedHotkeyRegistration
 }  // namespace
 
 GlicPanelHotkeyDelegate::GlicPanelHotkeyDelegate(
-    base::WeakPtr<GlicWindowControllerInterface> window_controller)
-    : window_controller_(window_controller) {}
+    base::WeakPtr<LocalHotkeyManager::Panel> panel)
+    : panel_(panel) {}
 
 GlicPanelHotkeyDelegate::~GlicPanelHotkeyDelegate() = default;
 
@@ -71,23 +71,23 @@ GlicPanelHotkeyDelegate::GetSupportedHotkeys() const {
 
 bool GlicPanelHotkeyDelegate::AcceleratorPressed(
     LocalHotkeyManager::Hotkey hotkey) {
-  if (!window_controller_ || !window_controller_->IsActive()) {
+  if (!panel_ || !panel_->IsActive()) {
     return false;
   }
 
   switch (hotkey) {
     case LocalHotkeyManager::Hotkey::kClose:
-      window_controller_->Close();
+      panel_->Close();
       return true;
     case glic::LocalHotkeyManager::Hotkey::kFocusToggle:
-      if (window_controller_->ActivateBrowser()) {
+      if (panel_->ActivateBrowser()) {
         base::RecordAction(base::UserMetricsAction("Glic.FocusHotKey"));
         return true;
       }
       return false;
 #if BUILDFLAG(IS_WIN)
     case LocalHotkeyManager::Hotkey::kTitleBarContextMenu:
-      window_controller_->ShowTitleBarContextMenuAt(gfx::Point());
+      panel_->ShowTitleBarContextMenuAt(gfx::Point());
       return true;
 #endif  //  BUILDFLAG(IS_WIN)
 
@@ -101,16 +101,15 @@ std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
 GlicPanelHotkeyDelegate::CreateScopedHotkeyRegistration(
     ui::Accelerator accelerator,
     base::WeakPtr<ui::AcceleratorTarget> target) {
-  CHECK(window_controller_);
-  return std::make_unique<GlicPanelScopedHotkeyRegistration>(
-      accelerator, window_controller_->GetGlicViewAsView());
+  CHECK(panel_);
+  return std::make_unique<GlicPanelScopedHotkeyRegistration>(accelerator,
+                                                             panel_->GetView());
 }
 
 std::unique_ptr<LocalHotkeyManager> MakeGlicWindowHotkeyManager(
-    base::WeakPtr<GlicWindowControllerInterface> window_controller) {
+    base::WeakPtr<LocalHotkeyManager::Panel> panel) {
   return std::make_unique<LocalHotkeyManager>(
-      window_controller,
-      std::make_unique<GlicPanelHotkeyDelegate>(window_controller));
+      panel, std::make_unique<GlicPanelHotkeyDelegate>(panel));
 }
 
 }  // namespace glic

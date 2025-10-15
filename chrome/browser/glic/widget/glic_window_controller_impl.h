@@ -63,7 +63,8 @@ class GlicWindowControllerImpl
       public Host::Observer,
       public web_modal::WebContentsModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost,
-      public GlicWindowEventObserver::Delegate {
+      public GlicWindowEventObserver::Delegate,
+      public LocalHotkeyManager::Panel {
  public:
   GlicWindowControllerImpl(const GlicWindowControllerImpl&) = delete;
   GlicWindowControllerImpl& operator=(const GlicWindowControllerImpl&) = delete;
@@ -114,7 +115,7 @@ class GlicWindowControllerImpl
   //    work area size, possibly resize the window.
   void OnDragComplete() override;
 
-  base::WeakPtr<views::View> GetGlicViewAsView() override;
+  base::WeakPtr<views::View> GetView() override;
   GlicWidget* GetGlicWidget() const override;
   gfx::NativeWindow GetHostNativeWindow() override;
 

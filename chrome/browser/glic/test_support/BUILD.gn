@@ -21,6 +21,8 @@ source_set("test_support") {
     "interactive_test_util.h",
     "mock_glic_window_controller.cc",
     "mock_glic_window_controller.h",
+    "mock_local_hotkey_panel.cc",
+    "mock_local_hotkey_panel.h",
     "non_interactive_glic_test.cc",
     "non_interactive_glic_test.h",
   ]

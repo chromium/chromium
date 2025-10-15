@@ -261,12 +261,6 @@ GlicInstanceCoordinatorImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-base::WeakPtr<views::View> GlicInstanceCoordinatorImpl::GetGlicViewAsView() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 GlicWidget* GlicInstanceCoordinatorImpl::GetGlicWidget() const {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();

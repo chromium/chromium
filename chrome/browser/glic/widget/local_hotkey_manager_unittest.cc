@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
+#include "chrome/browser/glic/test_support/mock_local_hotkey_panel.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -118,17 +118,17 @@ class LocalHotkeyManagerTest : public testing::Test {
   LocalHotkeyManagerTest() = default;
 
   void SetUp() override {
-    mock_controller_ = std::make_unique<MockGlicWindowController>();
+    mock_panel_ = std::make_unique<MockLocalHotkeyPanel>();
     auto fake_delegate = std::make_unique<FakeLocalHotkeyDelegate>();
     fake_delegate_ = fake_delegate.get();  // Keep a raw pointer for access
 
-    manager_ = std::make_unique<LocalHotkeyManager>(
-        mock_controller_->GetWeakPtr(), std::move(fake_delegate));
+    manager_ = std::make_unique<LocalHotkeyManager>(mock_panel_->GetWeakPtr(),
+                                                    std::move(fake_delegate));
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<MockGlicWindowController> mock_controller_;
+  std::unique_ptr<MockLocalHotkeyPanel> mock_panel_;
   std::unique_ptr<LocalHotkeyManager> manager_;
   raw_ptr<FakeLocalHotkeyDelegate> fake_delegate_;
 };
@@ -169,10 +169,10 @@ TEST_F(LocalHotkeyManagerTest, AcceleratorPressedCallsDelegate) {
 }
 
 TEST_F(LocalHotkeyManagerTest, CanHandleAcceleratorsDependsOnController) {
-  EXPECT_CALL(*mock_controller_, IsShowing()).WillOnce(testing::Return(false));
+  EXPECT_CALL(*mock_panel_, IsShowing()).WillOnce(testing::Return(false));
   EXPECT_FALSE(manager_->CanHandleAccelerators());
 
-  EXPECT_CALL(*mock_controller_, IsShowing()).WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_panel_, IsShowing()).WillOnce(testing::Return(true));
   EXPECT_TRUE(manager_->CanHandleAccelerators());
 }
 

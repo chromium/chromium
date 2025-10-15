@@ -89,8 +89,8 @@ class ApplicationScopedHotkeyRegistration
 }  // namespace
 
 ApplicationHotkeyDelegate::ApplicationHotkeyDelegate(
-    base::WeakPtr<GlicWindowControllerInterface> window_controller)
-    : window_controller_(window_controller) {}
+    base::WeakPtr<LocalHotkeyManager::Panel> panel)
+    : panel_(panel) {}
 
 ApplicationHotkeyDelegate::~ApplicationHotkeyDelegate() = default;
 
@@ -109,13 +109,13 @@ ApplicationHotkeyDelegate::CreateScopedHotkeyRegistration(
 
 bool ApplicationHotkeyDelegate::AcceleratorPressed(
     LocalHotkeyManager::Hotkey hotkey) {
-  if (!window_controller_) {
+  if (!panel_) {
     return false;
   }
 
   switch (hotkey) {
     case LocalHotkeyManager::Hotkey::kFocusToggle:
-      window_controller_->FocusIfOpen();
+      panel_->FocusIfOpen();
       base::RecordAction(base::UserMetricsAction("Glic.FocusHotKey"));
       return true;
     default:
@@ -125,10 +125,9 @@ bool ApplicationHotkeyDelegate::AcceleratorPressed(
 }
 
 std::unique_ptr<LocalHotkeyManager> MakeApplicationHotkeyManager(
-    base::WeakPtr<GlicWindowControllerInterface> window_controller) {
+    base::WeakPtr<LocalHotkeyManager::Panel> panel) {
   auto hotkey_manager = std::make_unique<LocalHotkeyManager>(
-      window_controller,
-      std::make_unique<ApplicationHotkeyDelegate>(window_controller));
+      panel, std::make_unique<ApplicationHotkeyDelegate>(panel));
   hotkey_manager->InitializeAccelerators();
   return hotkey_manager;
 }

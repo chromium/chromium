@@ -67,7 +67,6 @@ class MockGlicWindowController
               (content::RenderFrameHost * render_frame_host),
               (override));
   MOCK_METHOD(bool, IsWarmed, (), (const, override));
-  MOCK_METHOD(base::WeakPtr<views::View>, GetGlicViewAsView, (), (override));
   MOCK_METHOD(GlicWidget*, GetGlicWidget, (), (const, override));
   MOCK_METHOD(gfx::NativeWindow, GetHostNativeWindow, (), (override));
   MOCK_METHOD(Browser*, attached_browser, (), (override));
