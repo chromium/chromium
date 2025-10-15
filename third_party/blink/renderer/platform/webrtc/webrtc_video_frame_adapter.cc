@@ -762,13 +762,16 @@ void WebRtcVideoFrameAdapter::OnFramePrepared(
     return;
   }
 
-  base::AutoLock auto_lock(adapted_frames_lock_);
-  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> adapted_webrtc_frame =
-      ConvertToWebRtcVideoFrameBuffer(converted_frame, shared_resources_);
+  {
+    // Must not hold the lock while the callback is executed.
+    base::AutoLock auto_lock(adapted_frames_lock_);
+    webrtc::scoped_refptr<webrtc::VideoFrameBuffer> adapted_webrtc_frame =
+        ConvertToWebRtcVideoFrameBuffer(converted_frame, shared_resources_);
 
-  adapted_frames_.push_back(AdaptedFrame(
-      ScaledBufferSize(visible_rect, converted_frame->natural_size()),
-      converted_frame, adapted_webrtc_frame));
+    adapted_frames_.push_back(AdaptedFrame(
+        ScaledBufferSize(visible_rect, converted_frame->natural_size()),
+        converted_frame, adapted_webrtc_frame));
+  }
   handler->OnFramePrepared(frame_identifier);
 }
 

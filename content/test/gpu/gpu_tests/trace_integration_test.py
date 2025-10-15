@@ -124,6 +124,8 @@ _STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME =\
 
 _MFD3D11VC_CAPTURE_EVENT_NAME = 'CopyTextureToGpuMemoryBuffer'
 _MFD3D11VC_MAP_EVENT_NAME = 'GpuMemoryBufferTrackerWin::DuplicateAsUnsafeRegion'
+_MFD3D11VC_ALTERNATIVE_MAP_EVENT_NAME =\
+    'GpuChannelMessageFilter::CopyToGpuMemoryBufferAsync'
 _MFD3D11VC_PRESENT_EVENT_NAME = 'DXGISharedHandleState::AcquireKeyedMutex'
 
 # Caching events and constants
@@ -1158,6 +1160,7 @@ WHERE
 
     # Make sure that all of the expected events are actually present.
     found_events = {
+        _MFD3D11VC_ALTERNATIVE_MAP_EVENT_NAME: False,
         _MFD3D11VC_CAPTURE_EVENT_NAME: False,
         _MFD3D11VC_MAP_EVENT_NAME: False,
         _MFD3D11VC_PRESENT_EVENT_NAME: False,
@@ -1168,9 +1171,16 @@ SELECT
 FROM
   slices
 """
+
     for row in trace_processor.query(event_query):
       if row.name in found_events:
         found_events[row.name] = True
+
+    # any of the two mapping events is sufficient.
+    if found_events[_MFD3D11VC_ALTERNATIVE_MAP_EVENT_NAME]:
+      found_events[_MFD3D11VC_MAP_EVENT_NAME] = True
+    if found_events[_MFD3D11VC_MAP_EVENT_NAME]:
+      found_events[_MFD3D11VC_ALTERNATIVE_MAP_EVENT_NAME] = True
 
     for event_name, found in found_events.items():
       if not found:
