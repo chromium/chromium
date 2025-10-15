@@ -407,7 +407,7 @@ bool IsDataCollectionModeForScreen2xEnabled() {
 }
 
 BASE_FEATURE(kImmersiveReadAnything, base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsImmersiveReadingAnythingEnabled() {
+bool IsImmersiveReadAnythingEnabled() {
   return base::FeatureList::IsEnabled(::features::kImmersiveReadAnything);
 }
 
