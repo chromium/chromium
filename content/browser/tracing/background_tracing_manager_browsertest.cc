@@ -1025,7 +1025,13 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   EXPECT_FALSE(checker.stats().has_interned_log_messages);
 }
 
-IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ReceiveCallback) {
+// TODO(crbug.com/452421404): Flaky on Linux TSAN bot.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ReceiveCallback DISABLED_ReceiveCallback
+#else
+#define MAYBE_ReceiveCallback ReceiveCallback
+#endif  // BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, MAYBE_ReceiveCallback) {
   TestBackgroundTracingHelper background_tracing_helper;
 
   EXPECT_TRUE(BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
