@@ -20313,7 +20313,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Permission">
-  <owner>timloh@chromium.org</owner>
+  <owner>permissions-dev@chromium.org</owner>
   <summary>
     Metrics for a user's permission actions, logged when a permission prompt is
     resolved or when a permission is revoked. Grouped (microphone+camera)
@@ -20324,12 +20324,26 @@ be describing additional metrics about the same event.
       An enum of type PermissionAction. One of GRANTED, DENIED, DISMISSED or
       IGNORED.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Gesture">
     <summary>
       An enum of type PermissionRequestGestureType, whether the prompt was
       initiated by a user gesture.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="OsPromptScreen" enum="ElementAnchoredBubbleVariant">
     <summary>
@@ -20364,6 +20378,13 @@ be describing additional metrics about the same event.
       Beware that this is not the same as the ContentSettingsType enum (casted
       to int). An enum of type ContentSettingsType.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="PredictionsApiResponse.GrantLikelihood"
       enum="PredictionGrantLikelihood">
