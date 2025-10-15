@@ -102,7 +102,7 @@ void HTMLGeolocationElement::AttributeChanged(
     const AttributeModificationParams& params) {
   // The autolocate and the watch attributes are exclusive to the geolocation
   // element, other attributes will be handled by the HTMLPermissionElement.
-  if (params.name == html_names::kAutolocateAttr) {
+  if (params.name == html_names::kAutolocateAttr && PermissionsGranted()) {
     GetCurrentPosition();
   }
   if (params.name == html_names::kWatchAttr) {
@@ -118,6 +118,26 @@ void HTMLGeolocationElement::AttributeChanged(
     }
   }
   HTMLPermissionElement::AttributeChanged(params);
+}
+
+void HTMLGeolocationElement::DefaultEventHandler(Event& event) {
+  // We consume the click event here if the permission is already granted
+  // and propagate any other events to the parent HTMLPermissionElement.
+  if (event.type() == event_type_names::kDOMActivate && PermissionsGranted()) {
+    GetCurrentPosition();
+    return;
+  }
+  HTMLPermissionElement::DefaultEventHandler(event);
+}
+
+void HTMLGeolocationElement::OnPermissionStatusChange(
+    mojom::blink::PermissionName permission_name,
+    mojom::blink::PermissionStatus status) {
+  // Update the current position once the permission is granted.
+  if (status == mojom::blink::PermissionStatus::GRANTED) {
+    GetCurrentPosition();
+  }
+  HTMLPermissionElement::OnPermissionStatusChange(permission_name, status);
 }
 
 void HTMLGeolocationElement::GetCurrentPosition() {

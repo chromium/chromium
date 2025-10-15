@@ -286,6 +286,10 @@ TEST_F(HTMLGeolocationElementTest, GeolocationTranslateInnerText) {
 
     permission_service()->NotifyPermissionStatusChange(
         PermissionName::GEOLOCATION, MojoPermissionStatus::GRANTED);
+    // Simulate success response
+    task_environment().FastForwardBy(base::Seconds(3));
+    geolocation_element->CurrentPositionCallback(base::ok(nullptr));
+
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     // Text should NOT change to the "allowed" string.
@@ -328,10 +332,10 @@ TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {
   } kTestData[] = {
       {MojoPermissionStatus::ASK, kGeolocationString},
       {MojoPermissionStatus::DENIED, kGeolocationString},
-      {MojoPermissionStatus::GRANTED, kGeolocationString},
+      {MojoPermissionStatus::GRANTED, kUsingLocationString},
       {MojoPermissionStatus::ASK, kPreciseGeolocationString, true},
       {MojoPermissionStatus::DENIED, kPreciseGeolocationString, true},
-      {MojoPermissionStatus::GRANTED, kPreciseGeolocationString, true}};
+      {MojoPermissionStatus::GRANTED, kUsingLocationString, true}};
   for (const auto& data : kTestData) {
     auto* geolocation_element = CreateGeolocationElement(data.precise_location);
     EXPECT_TRUE(base::test::RunUntil([&]() {

@@ -112,6 +112,15 @@ class CORE_EXPORT HTMLPermissionElement
   // blink::HTMLElement:
   void AttributeChanged(const AttributeModificationParams& params) override;
 
+  // blink::Node:
+  void DefaultEventHandler(Event&) override;
+
+  bool PermissionsGranted() const {
+    return aggregated_permission_status_.has_value() &&
+           aggregated_permission_status_ ==
+               mojom::blink::PermissionStatus::GRANTED;
+  }
+
   void setType(const AtomicString& type);
   uint16_t GetTranslatedMessageID(uint16_t message_id,
                                   const AtomicString& language_string);
@@ -370,9 +379,6 @@ class CORE_EXPORT HTMLPermissionElement
   void DidRecalcStyle(const StyleRecalcChange change) override;
   void LangAttributeChanged() override;
 
-  // blink::Node override.
-  void DefaultEventHandler(Event&) override;
-
   // Trigger permissions requesting in browser side by calling mojo
   // PermissionService's API.
   void RequestPageEmbededPermissions();
@@ -529,12 +535,6 @@ class CORE_EXPORT HTMLPermissionElement
     auto it = clicking_disabled_reasons_.find(reason);
     return it != clicking_disabled_reasons_.end() &&
            it->value == base::TimeTicks::Max();
-  }
-
-  bool PermissionsGranted() const {
-    return aggregated_permission_status_.has_value() &&
-           aggregated_permission_status_ ==
-               mojom::blink::PermissionStatus::GRANTED;
   }
 
   IntersectionVisibility IntersectionVisibilityForTesting() const {
