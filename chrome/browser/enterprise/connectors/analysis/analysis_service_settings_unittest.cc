@@ -467,11 +467,12 @@ AnalysisSettings* OnlyDlpAndMalwareEnabledSettings() {
 
 }  // namespace
 
-class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
+class AnalysisServiceSettingsLocalTest
+    : public testing::TestWithParam<TestParam> {
  public:
   GURL url() const { return GURL(GetParam().url); }
   std::string GetSettingsValue() const {
-    const char* verification = is_cloud_ ? "" : R"(
+    static const char* verification = R"(
       "verification": {
         "linux": ["key"],
         "mac": ["key"],
@@ -480,24 +481,13 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
     )";
 
     std::string value = GetParam().settings_value;
-    base::ReplaceFirstSubstringAfterOffset(
-        &value, 0, "%s", is_cloud_ ? "google" : "local_user_agent");
+    base::ReplaceFirstSubstringAfterOffset(&value, 0, "%s", "local_user_agent");
     base::ReplaceFirstSubstringAfterOffset(&value, 0, "%s", verification);
     return value;
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
-    if (GetParam().expected_settings != NoSettings() && is_cloud_) {
-      GURL regionalized_url =
-          GURL(GetServiceProviderConfig()
-                   ->at("google")
-                   .analysis->region_urls[static_cast<size_t>(data_region())]);
-      CloudAnalysisSettings cloud_settings;
-      cloud_settings.analysis_url = regionalized_url;
-      GetParam().expected_settings->cloud_or_local_settings =
-          CloudOrLocalAnalysisSettings(std::move(cloud_settings));
-    }
-    if (GetParam().expected_settings != NoSettings() && !is_cloud_) {
+    if (GetParam().expected_settings != NoSettings()) {
       LocalAnalysisSettings local_settings;
       local_settings.local_path = "path_user";
       local_settings.user_specific = true;
@@ -511,8 +501,9 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
       // so it is expected that the malware tag is absent from final settings
       // even when it is included in the policy.
       GetParam().expected_settings->tags.erase("malware");
-      if (GetParam().expected_settings->tags.empty())
+      if (GetParam().expected_settings->tags.empty()) {
         return NoSettings();
+      }
     }
 
     return GetParam().expected_settings;
@@ -520,59 +511,10 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
   DataRegion data_region() const { return GetParam().data_region; }
 
  protected:
-  bool is_cloud_ = true;
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_P(AnalysisServiceSettingsTest, CloudTest) {
-  auto settings = base::JSONReader::Read(GetSettingsValue(),
-                                         base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(settings.has_value());
-
-  AnalysisServiceSettings service_settings(settings.value(),
-                                           *GetServiceProviderConfig());
-
-  auto analysis_settings =
-      service_settings.GetAnalysisSettings(url(), data_region());
-  ASSERT_EQ((expected_settings() != nullptr), analysis_settings.has_value());
-  if (analysis_settings.has_value()) {
-    ASSERT_EQ(analysis_settings.value().block_until_verdict,
-              expected_settings()->block_until_verdict);
-    ASSERT_EQ(analysis_settings.value().default_action,
-              expected_settings()->default_action);
-    ASSERT_EQ(analysis_settings.value().block_password_protected_files,
-              expected_settings()->block_password_protected_files);
-    ASSERT_EQ(analysis_settings.value().block_large_files,
-              expected_settings()->block_large_files);
-    ASSERT_TRUE(
-        analysis_settings.value().cloud_or_local_settings.is_cloud_analysis());
-    ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.analysis_url(),
-              expected_settings()->cloud_or_local_settings.analysis_url());
-    ASSERT_EQ(analysis_settings.value().minimum_data_size,
-              expected_settings()->minimum_data_size);
-    for (const auto& entry : expected_settings()->tags) {
-      const std::string& tag = entry.first;
-      ASSERT_TRUE(analysis_settings.value().tags.count(entry.first));
-      ASSERT_EQ(analysis_settings.value().tags[tag].custom_message.message,
-                entry.second.custom_message.message);
-      if (!analysis_settings.value()
-               .tags[tag]
-               .custom_message.learn_more_url.is_empty()) {
-        ASSERT_EQ(GetExpectedLearnMoreUrlSpecs().at(tag),
-                  analysis_settings.value()
-                      .tags[tag]
-                      .custom_message.learn_more_url.spec());
-        ASSERT_EQ(GetExpectedLearnMoreUrlSpecs().at(tag),
-                  service_settings.GetLearnMoreUrl(tag).value().spec());
-      }
-      ASSERT_EQ(analysis_settings.value().tags[tag].requires_justification,
-                entry.second.requires_justification);
-    }
-  }
-}
-
-TEST_P(AnalysisServiceSettingsTest, LocalTest) {
-  is_cloud_ = false;
+TEST_P(AnalysisServiceSettingsLocalTest, LocalTest) {
   std::string json_string = GetSettingsValue();
   auto settings =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
@@ -628,9 +570,10 @@ TEST_P(AnalysisServiceSettingsTest, LocalTest) {
   }
 }
 
+// TODO(crbug.com/444237640): Remove redundant test cases.
 INSTANTIATE_TEST_SUITE_P(
     ,
-    AnalysisServiceSettingsTest,
+    AnalysisServiceSettingsLocalTest,
     testing::Values(
         // Validate that the enabled patterns match the expected patterns.
         TestParam(kScan1DotCom,

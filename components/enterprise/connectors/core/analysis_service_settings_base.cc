@@ -174,11 +174,11 @@ void AnalysisServiceSettingsBase::ParseJustificationTags(
 void AnalysisServiceSettingsBase::AddUrlPatternSettings(
     const base::Value::Dict& url_settings_dict,
     bool enabled) {
-  DCHECK(analysis_config_);
+  CHECK(analysis_config_);
   if (enabled) {
-    DCHECK(disabled_patterns_settings_.empty());
+    CHECK(disabled_patterns_settings_.empty());
   } else {
-    DCHECK(!enabled_patterns_settings_.empty());
+    CHECK(!enabled_patterns_settings_.empty());
   }
 
   URLPatternSettings setting;
@@ -221,6 +221,66 @@ void AnalysisServiceSettingsBase::AddUrlPatternSettings(
   }
 }
 
+std::optional<AnalysisSettings>
+AnalysisServiceSettingsBase::GetAnalysisSettings(const GURL& url,
+                                                 DataRegion data_region) const {
+  if (!IsValid()) {
+    return std::nullopt;
+  }
+
+  CHECK(matcher_);
+  auto matches = matcher_->MatchURL(url);
+  if (matches.empty()) {
+    return std::nullopt;
+  }
+
+  auto settings = GetCommonAnalysisSettings(matches);
+  if (!settings.has_value() || is_local_analysis()) {
+    return settings;
+  }
+
+  settings->cloud_or_local_settings =
+      CloudOrLocalAnalysisSettings(GetCloudAnalysisSettings(data_region));
+
+  return settings;
+}
+
+std::optional<AnalysisSettings>
+AnalysisServiceSettingsBase::GetCommonAnalysisSettings(
+    const std::set<base::MatcherStringPattern::ID>& matches) const {
+  CHECK(IsValid());
+
+  auto tags = GetTags(matches);
+  if (tags.empty()) {
+    return std::nullopt;
+  }
+
+  AnalysisSettings settings;
+  settings.block_until_verdict = block_until_verdict_;
+  settings.default_action = default_action_;
+  settings.block_password_protected_files = block_password_protected_files_;
+  settings.block_large_files = block_large_files_;
+  settings.minimum_data_size = minimum_data_size_;
+  settings.tags = std::move(tags);
+
+  return settings;
+}
+
+CloudAnalysisSettings AnalysisServiceSettingsBase::GetCloudAnalysisSettings(
+    DataRegion data_region) const {
+  CHECK(is_cloud_analysis());
+
+  CloudAnalysisSettings cloud_settings;
+  cloud_settings.analysis_url =
+      GetRegionalizedEndpoint(analysis_config_->region_urls, data_region);
+  // We assume all support_tags structs have the same max file size.
+  cloud_settings.max_file_size =
+      analysis_config_->supported_tags[0].max_file_size;
+  CHECK(cloud_settings.analysis_url.is_valid());
+
+  return cloud_settings;
+}
+
 bool AnalysisServiceSettingsBase::IsValid() const {
   // The settings are invalid if no provider was given.
   if (!analysis_config_) {
@@ -248,7 +308,7 @@ std::map<std::string, TagSettings> AnalysisServiceSettingsBase::GetTags(
       enable = false;
     }
 
-    DCHECK(maybe_pattern_setting.has_value());
+    CHECK(maybe_pattern_setting.has_value());
     auto tags = std::move(maybe_pattern_setting.value().tags);
     if (enable) {
       enable_tags.insert(tags.begin(), tags.end());

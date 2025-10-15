@@ -24,6 +24,9 @@ AnalysisSettings NormalSettingsWithTags(
 
 }  // namespace
 
+// The JSON settings strings below typically use two '%s' placeholders.
+// The second '%s' (often on its own line) is for injecting additional JSON
+// fields, such as a "verification" field used in local analysis service tests.
 const char kNormalSettings[] = R"({
   "service_provider": "%s",
   %s

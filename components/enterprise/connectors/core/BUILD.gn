@@ -143,6 +143,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "analysis_service_settings_base_unittest.cc",
     "connectors_manager_base_unittest.cc",
     "connectors_service_base_unittest.cc",
     "enterprise_connectors_policy_handler_unittest.cc",

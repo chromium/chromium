@@ -19,7 +19,6 @@ namespace enterprise_connectors {
 
 // The settings for an analysis service obtained from a connector policy. This
 // class should not be used directly, but rather through its subclasses.
-// TODO(crbug.com/444237640): Add unit tests for this class.
 class AnalysisServiceSettingsBase {
  public:
   AnalysisServiceSettingsBase(const AnalysisServiceSettingsBase&) = delete;
@@ -29,6 +28,14 @@ class AnalysisServiceSettingsBase {
   AnalysisServiceSettingsBase& operator=(AnalysisServiceSettingsBase&&);
 
   virtual ~AnalysisServiceSettingsBase();
+
+  // Returns the analysis settings that apply to the given `url` and
+  // `data_region`. Includes cloud analysis settings if the service is
+  // configured for cloud analysis. Returns `std::nullopt` if the settings are
+  // invalid or no analysis should take place.
+  virtual std::optional<AnalysisSettings> GetAnalysisSettings(
+      const GURL& url,
+      DataRegion data_region) const;
 
   // Get the block_until_verdict setting if the settings are valid.
   bool ShouldBlockUntilVerdict() const;
@@ -85,10 +92,16 @@ class AnalysisServiceSettingsBase {
   // false, then GetAnalysisSettings will always return std::nullopt.
   bool IsValid() const;
 
+  // Returns the common analysis settings with tags for specified matches.
+  std::optional<AnalysisSettings> GetCommonAnalysisSettings(
+      const std::set<base::MatcherStringPattern::ID>& matches) const;
+
   // Return tags found in |enabled_patterns_settings| corresponding to the
   // matches while excluding the ones in |disable_patterns_settings|.
   std::map<std::string, TagSettings> GetTags(
       const std::set<base::MatcherStringPattern::ID>& matches) const;
+
+  CloudAnalysisSettings GetCloudAnalysisSettings(DataRegion data_region) const;
 
   // The next available ID for a settings pattern (e.g. URL,
   // source/destination). This is used to generate unique IDs for patterns as

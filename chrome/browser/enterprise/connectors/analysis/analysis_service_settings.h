@@ -43,11 +43,11 @@ class AnalysisServiceSettings : public AnalysisServiceSettingsBase {
   AnalysisServiceSettings& operator=(AnalysisServiceSettings&&);
   ~AnalysisServiceSettings() override;
 
-  // Get the settings to apply to a specific analysis. std::nullopt implies no
-  // analysis should take place.
+  // This method extends the result of the base class's GetAnalysisSettings with
+  // local analysis settings if applicable.
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
-      DataRegion data_region) const;
+      DataRegion data_region) const override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::optional<AnalysisSettings> GetAnalysisSettings(
@@ -58,15 +58,12 @@ class AnalysisServiceSettings : public AnalysisServiceSettingsBase {
 #endif
 
  private:
+  LocalAnalysisSettings GetLocalAnalysisSettings() const;
+
   // Helper methods for parsing the raw policy settings input
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   void ParseVerificationSignatures(const base::Value::Dict& settings_dict);
 #endif
-
-  // Returns the analysis settings with the specified tags.
-  AnalysisSettings GetAnalysisSettingsWithTags(
-      std::map<std::string, TagSettings> tags,
-      DataRegion data_region) const;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void ParseSourceDestinationPatternSettings(

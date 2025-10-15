@@ -73,65 +73,37 @@ void AnalysisServiceSettings::ParseVerificationSignatures(
 }
 #endif
 
-AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
-    std::map<std::string, TagSettings> tags,
-    DataRegion data_region) const {
-  DCHECK(IsValid());
-
-  AnalysisSettings settings;
-
-  settings.block_until_verdict = block_until_verdict_;
-  settings.default_action = default_action_;
-  settings.block_password_protected_files = block_password_protected_files_;
-  settings.block_large_files = block_large_files_;
-  if (is_cloud_analysis()) {
-    CloudAnalysisSettings cloud_settings;
-    cloud_settings.analysis_url =
-        GetRegionalizedEndpoint(analysis_config_->region_urls, data_region);
-    // We assume all support_tags structs have the same max file size.
-    cloud_settings.max_file_size =
-        analysis_config_->supported_tags[0].max_file_size;
-    DCHECK(cloud_settings.analysis_url.is_valid());
-    settings.cloud_or_local_settings =
-        CloudOrLocalAnalysisSettings(std::move(cloud_settings));
-  } else {
-    DCHECK(is_local_analysis());
-    LocalAnalysisSettings local_settings;
-    local_settings.local_path = analysis_config_->local_path;
-    local_settings.user_specific = analysis_config_->user_specific;
-    local_settings.subject_names = analysis_config_->subject_names;
-    // We assume all support_tags structs have the same max file size.
-    local_settings.max_file_size =
-        analysis_config_->supported_tags[0].max_file_size;
-    local_settings.verification_signatures = verification_signatures_;
-
-    settings.cloud_or_local_settings =
-        CloudOrLocalAnalysisSettings(std::move(local_settings));
-  }
-  settings.minimum_data_size = minimum_data_size_;
-  settings.tags = std::move(tags);
-  return settings;
-}
-
 std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     const GURL& url,
     DataRegion data_region) const {
-  if (!IsValid()) {
-    return std::nullopt;
+  auto settings =
+      AnalysisServiceSettingsBase::GetAnalysisSettings(url, data_region);
+  // If this is a cloud analysis (in which case the base class already
+  // initialized the cloud-specific settings), return the settings as is.
+  if (!settings.has_value() || is_cloud_analysis()) {
+    return settings;
   }
 
-  DCHECK(matcher_);
-  auto matches = matcher_->MatchURL(url);
-  if (matches.empty()) {
-    return std::nullopt;
-  }
+  settings->cloud_or_local_settings =
+      CloudOrLocalAnalysisSettings(GetLocalAnalysisSettings());
 
-  auto tags = GetTags(matches);
-  if (tags.empty()) {
-    return std::nullopt;
-  }
+  return settings;
+}
 
-  return GetAnalysisSettingsWithTags(std::move(tags), data_region);
+LocalAnalysisSettings AnalysisServiceSettings::GetLocalAnalysisSettings()
+    const {
+  CHECK(is_local_analysis());
+
+  LocalAnalysisSettings local_settings;
+  local_settings.local_path = analysis_config_->local_path;
+  local_settings.user_specific = analysis_config_->user_specific;
+  local_settings.subject_names = analysis_config_->subject_names;
+  // We assume all support_tags structs have the same max file size.
+  local_settings.max_file_size =
+      analysis_config_->supported_tags[0].max_file_size;
+  local_settings.verification_signatures = verification_signatures_;
+
+  return local_settings;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -144,7 +116,7 @@ std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     return std::nullopt;
   }
 
-  DCHECK(source_destination_matcher_);
+  CHECK(source_destination_matcher_);
 
   auto matches =
       source_destination_matcher_->Match(context, source_url, destination_url);
@@ -152,12 +124,21 @@ std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     return std::nullopt;
   }
 
-  auto tags = GetTags(matches);
-  if (tags.empty()) {
+  auto settings =
+      AnalysisServiceSettingsBase::GetCommonAnalysisSettings(matches);
+  if (!settings.has_value()) {
     return std::nullopt;
   }
 
-  return GetAnalysisSettingsWithTags(std::move(tags), data_region);
+  if (is_cloud_analysis()) {
+    settings->cloud_or_local_settings =
+        CloudOrLocalAnalysisSettings(GetCloudAnalysisSettings(data_region));
+  } else {
+    settings->cloud_or_local_settings =
+        CloudOrLocalAnalysisSettings(GetLocalAnalysisSettings());
+  }
+
+  return settings;
 }
 
 void AnalysisServiceSettings::ParseSourceDestinationPatternSettings(
@@ -189,12 +170,12 @@ void AnalysisServiceSettings::ParseSourceDestinationPatternSettings(
 void AnalysisServiceSettings::AddSourceDestinationSettings(
     const base::Value::Dict& source_destination_settings_value,
     bool enabled) {
-  DCHECK(analysis_config_);
-  DCHECK(source_destination_matcher_);
+  CHECK(analysis_config_);
+  CHECK(source_destination_matcher_);
   if (enabled) {
-    DCHECK(disabled_patterns_settings_.empty());
+    CHECK(disabled_patterns_settings_.empty());
   } else {
-    DCHECK(!enabled_patterns_settings_.empty());
+    CHECK(!enabled_patterns_settings_.empty());
   }
 
   URLPatternSettings setting;
