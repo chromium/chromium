@@ -218,6 +218,11 @@ class HttpStreamPool::AttemptManager
   base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
   GetServiceEndpoint(const IPEndPoint& endpoint);
 
+  // Returns the total number of TCP based attempts. Calculated by adding up all
+  // attempts in `tcp_based_attempt_slots_`, so avoid calling this method from
+  // hot paths.
+  size_t TotalTcpBasedAttemptCount() const;
+
   void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
   void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);
 

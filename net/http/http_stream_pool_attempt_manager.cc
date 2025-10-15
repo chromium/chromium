@@ -518,19 +518,24 @@ void HttpStreamPool::AttemptManager::CancelTcpBasedAttempts(
     return;
   }
 
-  const size_t num_cancels = tcp_based_attempt_slots_.size();
+  const size_t num_cancel_slots = tcp_based_attempt_slots_.size();
+  const size_t num_total_cancel_attempts = TotalTcpBasedAttemptCount();
   const size_t num_total_connecting_before =
       pool()->TotalConnectingStreamCount();
   while (!tcp_based_attempt_slots_.empty()) {
     CancelTcpBasedAttemptSlot(tcp_based_attempt_slots_.begin()->get(), reason);
   }
   CHECK_EQ(pool()->TotalConnectingStreamCount(),
-           num_total_connecting_before - num_cancels);
+           num_total_connecting_before - num_cancel_slots);
 
   base::UmaHistogramCounts100(
-      base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptCancelCount.",
+      base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptSlotCancelCount.",
                     StreamSocketCloseReasonToString(reason)}),
-      num_cancels);
+      num_cancel_slots);
+  base::UmaHistogramCounts100(
+      base::StrCat({"Net.HttpStreamPool.TcpBasedAttemptTotalCancelCount.",
+                    StreamSocketCloseReasonToString(reason)}),
+      num_total_cancel_attempts);
 
   ip_endpoint_state_tracker_.RemoveSlowAttemptingEndpoint();
 
@@ -705,6 +710,19 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
     case CanAttemptResult::kReachedGroupLimit:
       return false;
   }
+}
+
+size_t HttpStreamPool::AttemptManager::TotalTcpBasedAttemptCount() const {
+  size_t num_attempts = 0;
+  for (const auto& slot : tcp_based_attempt_slots_) {
+    if (slot->ipv4_attempt()) {
+      ++num_attempts;
+    }
+    if (slot->ipv6_attempt()) {
+      ++num_attempts;
+    }
+  }
+  return num_attempts;
 }
 
 void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(

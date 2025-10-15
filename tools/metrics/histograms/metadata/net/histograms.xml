@@ -3591,17 +3591,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.TcpBasedAttemptCancelCount.{Reason}"
-    units="attempts" expires_after="2026-03-29">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    The number of in-flight stream attempts when canceling them. Recorded when
-    an HttpStreamPool::AttemptManager cancels in-flight stream attempts.
-  </summary>
-  <token key="Reason" variants="StreamSocketCloseReason"/>
-</histogram>
-
 <histogram
     name="Net.HttpStreamPool.TcpBasedAttemptCanceledInitialAttemptState.{Reason}"
     enum="HttpStreamPoolInitialAttemptState" expires_after="2025-12-02">
@@ -3659,6 +3648,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptSlotCancelCount.{Reason}"
+    units="attempts" expires_after="2025-12-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The number of TcpBasedAttemptSlots when an HttpStreamPool::AttemptManager
+    cancels them. Recorded when an HttpStreamPool::AttemptManager cancels
+    TcpBasedAttemptSlots.
+  </summary>
+  <token key="Reason" variants="StreamSocketCloseReason"/>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.TcpBasedAttemptSSLConfigWaitTime2"
     units="ms" expires_after="2025-12-02">
   <owner>bashi@chromium.org</owner>
@@ -3685,6 +3686,18 @@ chromium-metrics-reviews@google.com.
     <variant name="Success" summary="Attempt succeeded"/>
     <variant name="TimedOut" summary="Attempt timed out"/>
   </token>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.TcpBasedAttemptTotalCancelCount.{Reason}"
+    units="attempts" expires_after="2025-12-02">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The number of all TcpBasedAttempts when an HttpStreamPool::AttemptManager
+    cancels them. Recorded when an HttpStreamPool::AttemptManager cancels all
+    TcpBasedAttempts in TcpBasedAttemptSlots.
+  </summary>
+  <token key="Reason" variants="StreamSocketCloseReason"/>
 </histogram>
 
 <histogram name="Net.HttpStreamPool.{JobType}JobCancelCount.{Reason}"
