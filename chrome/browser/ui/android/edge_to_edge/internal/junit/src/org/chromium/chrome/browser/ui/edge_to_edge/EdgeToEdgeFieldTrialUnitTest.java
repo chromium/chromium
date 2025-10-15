@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowBuild.class)
-@EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
 public class EdgeToEdgeFieldTrialUnitTest {
 
     @Before

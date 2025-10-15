@@ -30,9 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -42,7 +40,6 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @Config(sdk = VERSION_CODES.R, manifest = Config.NONE)
-@Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
 public class EdgeToEdgeControllerCreatorUnitTest {
     private static final int TOP_STATUS_INSET = 150;
     private static final int NAVBAR_INSET = 100;

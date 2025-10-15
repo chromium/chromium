@@ -30,7 +30,6 @@ import org.robolectric.Shadows;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -201,7 +200,6 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testAdaptsColorToBrowserControls_bottomChinConstraint_bottomChinNonScrollable() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
@@ -233,7 +231,6 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testAdaptsColorToBrowserControls_bottomChinConstraint_multipleNonScrollableLayer() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
@@ -265,7 +262,6 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testAdaptsColorToBrowserControls_bottomChinConstraint_bottomChinScrollable() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
@@ -289,7 +285,6 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testAdaptsColorToBrowserControls_bottomChinConstraint_bottomChinOnly() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.isLayerNonScrollable(
@@ -354,7 +349,6 @@ public class BottomAttachedUiObserverTest {
     Tests that when floating snackbar is enabled, we do not add BottomAttachedUiObserver.
     */
     @Test
-    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
     public void testDoesNotAddBottomAttachedUiObserver() {
         verify(mSnackbarManager, never()).addObserver(eq(mBottomAttachedUiObserver));
     }
@@ -395,7 +389,6 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testAdaptsColorToOverlayPanel_doesNotCoverFullWidth_drawingEdgeToEdge() {
         when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(false, false);
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(

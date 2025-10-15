@@ -92,7 +92,6 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSo
         sdk = VERSION_CODES.R,
         manifest = Config.NONE,
         shadows = EdgeToEdgeControllerTest.ShadowEdgeToEdgeControllerFactory.class)
-@EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public class EdgeToEdgeControllerTest {
 
@@ -334,34 +333,6 @@ public class EdgeToEdgeControllerTest {
 
         mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ false);
         assertToNormalExpectations();
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
-    public void drawEdgeToEdge_UpdateWindowInsets_toNormal_BottomChinDisabled() {
-        when(mTab.isNativePage()).thenReturn(false);
-        mTabProvider.set(mTab);
-        verifyInteractions(mTab);
-
-        Mockito.clearInvocations(mEdgeToEdgeManager);
-
-        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ false);
-        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(BOTTOM_INSET));
-
-        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS_LANDSCAPE);
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ true);
-        verify(mOsWrapper)
-                .setPadding(
-                        any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_INSET_LANDSCAPE));
-
-        mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(IME_INSETS_KEYBOARD);
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ true);
-        verify(mOsWrapper)
-                .setPadding(
-                        any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_KEYBOARD_INSET));
-        verify(mEdgeToEdgeManager, never()).setContentFitsWindowInsets(false);
-        verify(mEdgeToEdgeManager, atLeastOnce()).setContentFitsWindowInsets(true);
     }
 
     @Test
