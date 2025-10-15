@@ -47,6 +47,7 @@ namespace blink {
 
 class CoreProbeSink;
 class InspectedFrames;
+class InspectorInspectorAgent;
 class WorkerThread;
 class WorkerThreadDebugger;
 struct WorkerDevToolsParams;
@@ -79,6 +80,7 @@ class WorkerInspectorController final
   void Dispose();
   void FlushProtocolNotifications();
   void WaitForDebuggerIfNeeded();
+  void WorkerScriptLoaded();
 
  private:
   // Thread::TaskObserver implementation.
@@ -103,7 +105,8 @@ class WorkerInspectorController final
   WorkerThread* thread_;
   Member<InspectedFrames> inspected_frames_;
   Member<CoreProbeSink> probe_sink_;
-  int session_count_ = 0;
+  HeapHashMap<Member<DevToolsSession>, Member<InspectorInspectorAgent>>
+      inspector_agents_;
   bool wait_for_debugger_ = false;
 
   // These fields are set up in the constructor and then read

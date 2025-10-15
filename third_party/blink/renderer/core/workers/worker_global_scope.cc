@@ -585,6 +585,9 @@ void WorkerGlobalScope::RunWorkerScript() {
     debugger->ExternalAsyncTaskFinished(*stack_id_);
 
   script_eval_state_ = ScriptEvalState::kEvaluated;
+  if (auto* controller = GetThread()->GetWorkerInspectorController()) {
+    controller->WorkerScriptLoaded();
+  }
   TRACE_EVENT_END("blink.worker", perfetto::Track::FromPointer(this));
 }
 
