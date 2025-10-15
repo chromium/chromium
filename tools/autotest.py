@@ -494,25 +494,28 @@ class TargetCache:
 
 
 def _TestTargetsFromGnRefs(targets):
-  # First apply allowlists:
-  ret = [t for t in targets if '__' not in t]
-  ret = [
-      t for t in ret
+  # Prevent repeated targets.
+  all_test_targets = set()
+
+  # Find "standard" targets (e.g., GTests).
+  standard_targets = [t for t in targets if '__' not in t]
+  standard_targets = [
+      t for t in standard_targets
       if _TEST_TARGET_REGEX.search(t) or t in _TEST_TARGET_ALLOWLIST
   ]
-  if ret:
-    return ret
+  all_test_targets.update(standard_targets)
 
+  # Find targets using internal GN suffixes (e.g., Java APKs).
   _SUBTARGET_SUFFIXES = (
       '__java_binary',  # robolectric_binary()
       '__test_runner_script',  # test() targets
       '__test_apk',  # instrumentation_test_apk() targets
   )
-  ret = []
   for suffix in _SUBTARGET_SUFFIXES:
-    ret.extend(t[:-len(suffix)] for t in targets if t.endswith(suffix))
+    all_test_targets.update(t[:-len(suffix)] for t in targets
+                            if t.endswith(suffix))
 
-  return ret
+  return sorted(list(all_test_targets))
 
 
 def _ParseRefsOutput(output):
