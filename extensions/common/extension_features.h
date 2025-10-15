@@ -287,6 +287,10 @@ BASE_DECLARE_FEATURE(kContentVerifyJobUseJobVersionForHashing);
 // during execution) the error is passed back to the sender.
 BASE_DECLARE_FEATURE(kRuntimeOnMessageWebExtensionPolyfillSupport);
 
+// Enables the shouldShowPromotion API to determine which promotion to show for
+// Chrome Enterprise on CWS.
+BASE_DECLARE_FEATURE(kEnableShouldShowPromotion);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_
