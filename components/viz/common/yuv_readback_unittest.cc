@@ -362,24 +362,22 @@ class YUVReadbackTest : public testing::Test {
     auto run_quit_closure = [](base::OnceClosure quit_closure, bool result) {
       std::move(quit_closure).Run();
     };
-    std::optional<base::span<uint8_t>> maybe_span_y =
+    base::span<uint8_t> span_y =
         output_frame->writable_span(media::VideoFrame::Plane::kY);
-    ASSERT_TRUE(maybe_span_y);
-    std::optional<base::span<uint8_t>> maybe_span_u =
+    ASSERT_FALSE(span_y.empty());
+    base::span<uint8_t> span_u =
         output_frame->writable_span(media::VideoFrame::Plane::kU);
-    ASSERT_TRUE(maybe_span_u);
-    std::optional<base::span<uint8_t>> maybe_span_v =
+    ASSERT_FALSE(span_u.empty());
+    base::span<uint8_t> span_v =
         output_frame->writable_span(media::VideoFrame::Plane::kV);
-    ASSERT_TRUE(maybe_span_v);
+    ASSERT_FALSE(span_v.empty());
 
     yuv_reader->ReadbackYUV(
         src_texture, gfx::Size(xsize, ysize), gfx::Rect(0, 0, xsize, ysize),
-        output_frame->stride(media::VideoFrame::Plane::kY),
-        maybe_span_y.value(),
-        output_frame->stride(media::VideoFrame::Plane::kU),
-        maybe_span_u.value(),
-        output_frame->stride(media::VideoFrame::Plane::kV),
-        maybe_span_v.value(), gfx::Point(xmargin, ymargin),
+        output_frame->stride(media::VideoFrame::Plane::kY), span_y,
+        output_frame->stride(media::VideoFrame::Plane::kU), span_u,
+        output_frame->stride(media::VideoFrame::Plane::kV), span_v,
+        gfx::Point(xmargin, ymargin),
         base::BindOnce(run_quit_closure, run_loop.QuitClosure()));
 
     const gfx::Rect paste_rect(gfx::Point(xmargin, ymargin),

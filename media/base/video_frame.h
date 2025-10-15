@@ -130,9 +130,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
    public:
     virtual ~ScopedMapping() = default;
 
-    // Returns a pointer to the beginning of the plane.
-    virtual uint8_t* Memory(uint32_t plane_index) = 0;
-
     // Returns a span pointing to the plane's memory.
     virtual base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) = 0;
 
@@ -636,11 +633,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     return data_[plane];
   }
 
-  std::optional<base::span<uint8_t>> writable_span(size_t plane) {
-    if (storage_type_ == STORAGE_SHMEM ||
-        storage_type_ == STORAGE_UNOWNED_MEMORY) {
-      return std::nullopt;
-    }
+  base::span<uint8_t> writable_span(size_t plane) {
+    // TODO(crbug.com/40265179): Also CHECK that the storage type isn't
+    // STORAGE_UNOWNED_MEMORY once non-compliant usages are fixed.
+    CHECK_NE(storage_type_, STORAGE_SHMEM);
     auto const_span = data_span(plane);
     // SAFETY: We take data() and size() from another span, which supposedly
     // refers to a valid range in memory.

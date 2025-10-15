@@ -1906,11 +1906,6 @@ class ScopedMappingSIImpl : public VideoFrame::ScopedMapping {
 
   ~ScopedMappingSIImpl() override = default;
 
-  uint8_t* Memory(uint32_t plane_index) override {
-    return static_cast<uint8_t*>(
-        scoped_mapping_->GetMemoryForPlane(plane_index).data());
-  }
-
   base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) override {
     return scoped_mapping_->GetMemoryForPlane(plane_index);
   }
@@ -1934,10 +1929,6 @@ class ScopedMappingGMBImpl : public VideoFrame::ScopedMapping {
   }
 
   ~ScopedMappingGMBImpl() override { gpu_memory_buffer_->Unmap(); }
-
-  uint8_t* Memory(uint32_t plane_index) override {
-    return static_cast<uint8_t*>(gpu_memory_buffer_->memory(plane_index));
-  }
 
   base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) override {
     return gpu_memory_buffer_->memory_span(plane_index);

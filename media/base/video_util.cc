@@ -10,6 +10,7 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -102,45 +103,50 @@ VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
 }
 
 void LetterboxPlane(const gfx::Rect& view_area_in_bytes,
-                    uint8_t* ptr,
+                    base::span<uint8_t> plane_data,
                     int rows,
                     int row_bytes,
                     int stride,
                     int bytes_per_element,
                     uint8_t fill_byte) {
   if (view_area_in_bytes.IsEmpty()) {
-    libyuv::SetPlane(ptr, stride, row_bytes, rows, fill_byte);
+    libyuv::SetPlane(plane_data.data(), stride, row_bytes, rows, fill_byte);
     return;
   }
 
   if (view_area_in_bytes.y() > 0) {
-    libyuv::SetPlane(ptr, stride, row_bytes, view_area_in_bytes.y(), fill_byte);
-    UNSAFE_TODO(ptr += stride * view_area_in_bytes.y());
+    libyuv::SetPlane(plane_data.data(), stride, row_bytes,
+                     view_area_in_bytes.y(), fill_byte);
+    plane_data = plane_data.subspan(
+        static_cast<size_t>(stride * view_area_in_bytes.y()));
   }
 
   if (view_area_in_bytes.width() < row_bytes) {
     if (view_area_in_bytes.x() > 0) {
-      libyuv::SetPlane(ptr, stride, view_area_in_bytes.x(),
+      libyuv::SetPlane(plane_data.data(), stride, view_area_in_bytes.x(),
                        view_area_in_bytes.height(), fill_byte);
     }
     if (view_area_in_bytes.right() < row_bytes) {
-      libyuv::SetPlane(UNSAFE_TODO(ptr + view_area_in_bytes.right()), stride,
-                       row_bytes - view_area_in_bytes.right(),
-                       view_area_in_bytes.height(), fill_byte);
+      libyuv::SetPlane(
+          plane_data.subspan(static_cast<size_t>(view_area_in_bytes.right()))
+              .data(),
+          stride, row_bytes - view_area_in_bytes.right(),
+          view_area_in_bytes.height(), fill_byte);
     }
   }
 
-  UNSAFE_TODO(ptr += stride * view_area_in_bytes.height());
+  plane_data = plane_data.subspan(
+      static_cast<size_t>(stride * view_area_in_bytes.height()));
 
   if (view_area_in_bytes.bottom() < rows) {
-    libyuv::SetPlane(ptr, stride, row_bytes, rows - view_area_in_bytes.bottom(),
-                     fill_byte);
+    libyuv::SetPlane(plane_data.data(), stride, row_bytes,
+                     rows - view_area_in_bytes.bottom(), fill_byte);
   }
 }
 
 void LetterboxPlane(VideoFrame* frame,
                     int plane,
-                    uint8_t* ptr,
+                    base::span<uint8_t> plane_data,
                     const gfx::Rect& view_area_in_pixels,
                     uint8_t fill_byte) {
   const int rows = frame->rows(plane);
@@ -160,7 +166,7 @@ void LetterboxPlane(VideoFrame* frame,
   CHECK_LE(view_area_in_bytes.right(), row_bytes);
   CHECK_LE(view_area_in_bytes.bottom(), rows);
 
-  LetterboxPlane(view_area_in_bytes, ptr, rows, row_bytes, stride,
+  LetterboxPlane(view_area_in_bytes, plane_data, rows, row_bytes, stride,
                  bytes_per_element, fill_byte);
 }
 
@@ -171,15 +177,15 @@ void LetterboxPlane(VideoFrame* frame,
                     int plane,
                     const gfx::Rect& view_area_in_pixels,
                     uint8_t fill_byte) {
-  uint8_t* ptr = nullptr;
+  base::span<uint8_t> plane_data;
   if (frame->IsMappable()) {
-    ptr = frame->writable_data(plane);
+    plane_data = frame->writable_span(plane);
   } else if (scoped_mapping) {
-    ptr = scoped_mapping->Memory(plane);
+    plane_data = scoped_mapping->GetMemoryAsSpan(plane);
   }
-  CHECK(ptr);
+  CHECK(!plane_data.empty());
 
-  LetterboxPlane(frame, plane, ptr, view_area_in_pixels, fill_byte);
+  LetterboxPlane(frame, plane, plane_data, view_area_in_pixels, fill_byte);
 }
 
 void ProcessAsyncMappingResult(
