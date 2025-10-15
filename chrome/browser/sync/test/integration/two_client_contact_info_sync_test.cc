@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -14,9 +13,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/sync/base/features.h"
-#include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,29 +83,10 @@ class AutofillProfilesEqualChecker
 class TwoClientContactInfoSyncTest : public SyncTest {
  public:
   TwoClientContactInfoSyncTest() : SyncTest(TWO_CLIENT) {}
-
-  bool SetupSyncAndHideAccountNameEmailProfile() {
-    if (!SetupSync()) {
-      return false;
-    }
-    HideAccountNameEmailProfile(0);
-    HideAccountNameEmailProfile(1);
-    return true;
-  }
-
-  void HideAccountNameEmailProfile(int profile) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(GetProfile(profile));
-    autofill::test::HideAccountNameEmailProfile(
-        GetProfile(profile)->GetPrefs(),
-        identity_manager->FindExtendedAccountInfo(
-            identity_manager->GetPrimaryAccountInfo(
-                signin::ConsentLevel::kSignin)));
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, SyncAddUpdateDelete) {
-  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
+  ASSERT_TRUE(SetupSync());
   // Add `profile` on client 0 and expect it to appear on client 1.
   AutofillProfile profile = BuildTestAccountProfile();
   GetAddressDataManager(GetProfile(0))->AddProfile(profile);
@@ -152,9 +130,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, DuplicateGUID) {
   }();
   CHECK_EQ(kProfile0.guid(), kProfile1.guid());
   CHECK_NE(kProfile0, kProfile1);
-  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
-  HideAccountNameEmailProfile(0);
-  HideAccountNameEmailProfile(1);
+  ASSERT_TRUE(SetupSync());
 
   // Since `AddProfile()` happens asynchronously, wait for the change to
   // propagate locally.

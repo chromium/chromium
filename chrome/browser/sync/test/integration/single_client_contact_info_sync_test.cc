@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -170,29 +169,12 @@ class SingleClientContactInfoSyncTest : public SyncTest {
   autofill::PersonalDataManager* GetPersonalDataManager() const {
     return contact_info_helper::GetPersonalDataManager(GetProfile(0));
   }
-
-  bool SetupSyncAndHideAccountNameEmailProfile() {
-    if (!SetupSync()) {
-      return false;
-    }
-    HideAccountNameEmailProfile();
-    return true;
-  }
-
-  void HideAccountNameEmailProfile() {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(GetProfile(0));
-    autofill::test::HideAccountNameEmailProfile(
-        GetProfile(0)->GetPrefs(), identity_manager->FindExtendedAccountInfo(
-                                       identity_manager->GetPrimaryAccountInfo(
-                                           signin::ConsentLevel::kSignin)));
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
-  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
+  ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(AddressDataManagerProfileChecker(
                   &GetPersonalDataManager()->address_data_manager(),
                   UnorderedElementsAre(kProfile))
@@ -201,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, UploadProfile) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
-  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
+  ASSERT_TRUE(SetupSync());
   GetPersonalDataManager()->address_data_manager().AddProfile(kProfile);
   EXPECT_TRUE(FakeServerSpecificsChecker(
                   UnorderedElementsAre(
@@ -226,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
   // never uploaded through Autofill, but non-Autofill clients might do so.
   AddSpecificsToServer(AsContactInfoSpecifics(unfinalized_profile),
                        GetFakeServer());
-  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
+  ASSERT_TRUE(SetupSync());
   // Expect that the PersonalDataManager receives the `finalized_profile`. The
   // finalization step happen when reading the profile from AutofillTable.
   EXPECT_TRUE(AddressDataManagerProfileChecker(
@@ -253,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
-  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AddressDataManagerProfileChecker(
                   &GetPersonalDataManager()->address_data_manager(),
                   UnorderedElementsAre(kProfile))
@@ -295,7 +277,7 @@ INSTANTIATE_TEST_SUITE_P(,
 #endif
 IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest,
                        MAYBE_Passphrase) {
-  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("123456");
@@ -319,7 +301,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  HideAccountNameEmailProfile();
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   EXPECT_TRUE(AddressDataManagerProfileChecker(
@@ -343,7 +324,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  HideAccountNameEmailProfile();
   EXPECT_TRUE(AddressDataManagerProfileChecker(
                   &GetPersonalDataManager()->address_data_manager(),
                   UnorderedElementsAre(profile))
@@ -478,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 
   // Turn on Sync.
   ASSERT_TRUE(GetClient(0)->SetupSync());
-  HideAccountNameEmailProfile();
+
   // The toggle is no longer available.
   EXPECT_FALSE(GetPersonalDataManager()
                    ->address_data_manager()
@@ -517,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
           /*creation_time=*/0,
           /*last_modified_time=*/0));
 
-  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   ASSERT_TRUE(AddressDataManagerProfileChecker(
@@ -570,7 +550,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  HideAccountNameEmailProfile();
 
   EXPECT_THAT(
       GetClient(0)->GetLocalDataDescriptionAndWait(syncer::CONTACT_INFO),
@@ -616,7 +595,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  HideAccountNameEmailProfile();
 
   GetSyncService(0)->TriggerLocalDataMigration({syncer::CONTACT_INFO});
 
@@ -669,7 +647,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  HideAccountNameEmailProfile();
 
   GetSyncService(0)->TriggerLocalDataMigrationForItems(
       {{syncer::CONTACT_INFO, {profile1.guid()}}});
@@ -697,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        DisabledForManagedAccounts) {
   // Sign in with a managed account.
   ASSERT_TRUE(SetupSync(SyncTestAccount::kEnterpriseAccount1));
-  HideAccountNameEmailProfile();
+
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
 }
