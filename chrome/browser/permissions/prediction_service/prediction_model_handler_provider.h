@@ -38,7 +38,7 @@ class PredictionModelHandlerProvider
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-  static bool IsAiv4ModelAvailable();
+  static bool IsAIv4FeatureEnabled();
   PredictionModelHandler* GetPredictionModelHandler(RequestType request_type);
   PermissionsAiv3Handler* GetPermissionsAiv3Handler(RequestType request_type);
   PermissionsAiv4Handler* GetPermissionsAiv4Handler(RequestType request_type);

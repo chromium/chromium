@@ -103,7 +103,7 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
                 OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
   }
 
-  if (IsAiv4ModelAvailable()) {
+  if (IsAIv4FeatureEnabled()) {
     VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider init AIv4";
 #if BUILDFLAG(IS_ANDROID)
     download::SchedulingParams scheduling_params;
@@ -231,7 +231,7 @@ void PredictionModelHandlerProvider::set_passage_embedder_for_testing(
   passage_embedder_ = passage_embedder;
 }
 
-bool PredictionModelHandlerProvider::IsAiv4ModelAvailable() {
+bool PredictionModelHandlerProvider::IsAIv4FeatureEnabled() {
   return base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4);
 }
 
