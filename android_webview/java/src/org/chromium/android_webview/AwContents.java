@@ -151,6 +151,7 @@ import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -374,7 +375,7 @@ public class AwContents implements SmartClipProvider {
     private WebContentsInternalsHolder mWebContentsInternalsHolder;
     private NavigationController mNavigationController;
     private final AwContentsClient mContentsClient;
-    private AwNavigationClient mNavigationClient;
+    private final List<AwNavigationListener> mNavigationClients = new ArrayList<>();
     private AwWebContentsObserver mWebContentsObserver;
     private final AwContentsClientBridge mContentsClientBridge;
     private final AwWebContentsDelegateAdapter mWebContentsDelegate;
@@ -3720,12 +3721,8 @@ public class AwContents implements SmartClipProvider {
         return mDisplayModeController.getDisplayMode();
     }
 
-    public AwNavigationClient getNavigationClient() {
-        return mNavigationClient;
-    }
-
-    public void setNavigationClient(AwNavigationClient navigationClient) {
-        mNavigationClient = navigationClient;
+    public List<AwNavigationListener> getNavigationClients() {
+        return mNavigationClients;
     }
 
     // --------------------------------------------------------------------------------------------

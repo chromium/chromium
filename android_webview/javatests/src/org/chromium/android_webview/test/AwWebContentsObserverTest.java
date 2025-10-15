@@ -43,7 +43,7 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
-    private TestAwNavigationClient mNavigationClient;
+    private TestAwNavigationListener mNavigationClient;
     private AwTestContainerView mTestContainerView;
     private AwWebContentsObserver mWebContentsObserver;
     private TestWebServer mWebServer;
@@ -79,9 +79,9 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
     @Before
     public void setUp() throws Exception {
         mContentsClient = new TestAwContentsClient();
-        mNavigationClient = new TestAwNavigationClient();
+        mNavigationClient = new TestAwNavigationListener();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        mTestContainerView.getAwContents().setNavigationClient(mNavigationClient);
+        mTestContainerView.getAwContents().getNavigationClients().add(mNavigationClient);
         mWebServer = TestWebServer.start();
         mUnreachableWebDataUrl = new GURL(AwContentsStatics.getUnreachableWebDataUrl());
         mExampleURL = new GURL("http://www.example.com/");

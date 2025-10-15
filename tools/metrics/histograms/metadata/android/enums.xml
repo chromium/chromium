@@ -704,6 +704,8 @@ chromium-metrics-reviews@google.com.
   <int value="165" label="WebSettingsCompat.getRendererLibraryPrefetchMode"/>
   <int value="166" label="BackForwardCacheSettings.setTimeoutInSec"/>
   <int value="167" label="BackForwardCacheSettings.setMaxPagesInCache"/>
+  <int value="168" label="WebSettingsCompat.addWebNavigationListener"/>
+  <int value="169" label="WebSettingsCompat.removeWebNavigationListener"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

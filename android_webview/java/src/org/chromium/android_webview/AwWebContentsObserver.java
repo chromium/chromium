@@ -144,8 +144,7 @@ public class AwWebContentsObserver extends WebContentsObserver
 
         AwContents awContents = mAwContents.get();
         if (awContents != null) {
-            AwNavigationClient client = awContents.getNavigationClient();
-            if (client != null) {
+            for (AwNavigationListener client : awContents.getNavigationClients()) {
                 client.onPageLoadEventFired(getAwPageFor(page));
             }
         }
@@ -156,8 +155,7 @@ public class AwWebContentsObserver extends WebContentsObserver
             Page page, GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {
         AwContents awContents = mAwContents.get();
         if (awContents != null) {
-            AwNavigationClient client = awContents.getNavigationClient();
-            if (client != null) {
+            for (AwNavigationListener client : awContents.getNavigationClients()) {
                 client.onPageDOMContentLoadedEventFired(getAwPageFor(page));
             }
         }
@@ -167,8 +165,7 @@ public class AwWebContentsObserver extends WebContentsObserver
     public void firstContentfulPaintInPrimaryMainFrame(Page page, long loadTimeUs) {
         AwContents awContents = mAwContents.get();
         if (awContents != null) {
-            AwNavigationClient client = awContents.getNavigationClient();
-            if (client != null) {
+            for (AwNavigationListener client : awContents.getNavigationClients()) {
                 client.onFirstContentfulPaint(getAwPageFor(page), loadTimeUs);
             }
         }
@@ -244,8 +241,7 @@ public class AwWebContentsObserver extends WebContentsObserver
     public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
         AwContents awContents = mAwContents.get();
         if (awContents != null) {
-            AwNavigationClient client = awContents.getNavigationClient();
-            if (client != null) {
+            for (AwNavigationListener client : awContents.getNavigationClients()) {
                 client.onNavigationStarted(getOrUpdateAwNavigationFor(navigation));
             }
         }
@@ -255,9 +251,10 @@ public class AwWebContentsObserver extends WebContentsObserver
     public void didRedirectNavigation(NavigationHandle navigation) {
         AwContents awContents = mAwContents.get();
         if (awContents != null) {
-            AwNavigationClient client = awContents.getNavigationClient();
-            if (client != null && navigation.isInPrimaryMainFrame()) {
-                client.onNavigationRedirected(getOrUpdateAwNavigationFor(navigation));
+            if (navigation.isInPrimaryMainFrame()) {
+                for (AwNavigationListener client : awContents.getNavigationClients()) {
+                    client.onNavigationRedirected(getOrUpdateAwNavigationFor(navigation));
+                }
             }
         }
     }
@@ -293,9 +290,10 @@ public class AwWebContentsObserver extends WebContentsObserver
 
         AwContents awContents = mAwContents.get();
         if (awContents != null) {
-            AwNavigationClient navClient = awContents.getNavigationClient();
-            if (navClient != null && navigation.isInPrimaryMainFrame()) {
-                navClient.onNavigationCompleted(getOrUpdateAwNavigationFor(navigation));
+            if (navigation.isInPrimaryMainFrame()) {
+                for (AwNavigationListener navClient : awContents.getNavigationClients()) {
+                    navClient.onNavigationCompleted(getOrUpdateAwNavigationFor(navigation));
+                }
             }
         }
 
@@ -340,9 +338,10 @@ public class AwWebContentsObserver extends WebContentsObserver
     public void onWillDeletePage(Page page) {
         AwContents awContents = mAwContents.get();
         if (awContents != null) {
-            AwNavigationClient navClient = awContents.getNavigationClient();
-            if (navClient != null && !page.isPrerendering()) {
-                navClient.onPageDeleted(getAwPageFor(page));
+            if (!page.isPrerendering()) {
+                for (AwNavigationListener navClient : awContents.getNavigationClients()) {
+                    navClient.onPageDeleted(getAwPageFor(page));
+                }
             }
         }
     }

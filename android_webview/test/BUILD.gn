@@ -621,7 +621,7 @@ android_library("base_webview_instrumentation_test_java") {
     "//android_webview/javatests/src/org/chromium/android_webview/test/AwActivityTestRule.java",
     "//android_webview/javatests/src/org/chromium/android_webview/test/DisableHardwareAcceleration.java",
     "//android_webview/javatests/src/org/chromium/android_webview/test/TestAwContentsClient.java",
-    "//android_webview/javatests/src/org/chromium/android_webview/test/TestAwNavigationClient.java",
+    "//android_webview/javatests/src/org/chromium/android_webview/test/TestAwNavigationListener.java",
     "//android_webview/javatests/src/org/chromium/android_webview/test/util/AwQuotaManagerBridgeTestUtil.java",
     "//android_webview/javatests/src/org/chromium/android_webview/test/util/AwTestTouchUtils.java",
     "//android_webview/javatests/src/org/chromium/android_webview/test/util/CommonResources.java",

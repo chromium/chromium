@@ -5,12 +5,14 @@
 package org.chromium.android_webview;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.reflect.InvocationHandler;
 
 /** Base-class that an AwContents embedder derives from to receive navigation-related callbacks. */
 @Lifetime.WebView
-public interface AwNavigationClient {
+@NullMarked
+public interface AwNavigationListener {
     /* WebViewNavigationClient */ InvocationHandler getSupportLibInvocationHandler();
 
     void onNavigationStarted(AwNavigation navigation);

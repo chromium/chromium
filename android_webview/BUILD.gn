@@ -497,7 +497,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/AwLayoutSizer.java",
       "java/src/org/chromium/android_webview/AwMediaIntegrityApiStatusConfig.java",
       "java/src/org/chromium/android_webview/AwNavigation.java",
-      "java/src/org/chromium/android_webview/AwNavigationClient.java",
+      "java/src/org/chromium/android_webview/AwNavigationListener.java",
       "java/src/org/chromium/android_webview/AwNavigationParams.java",
       "java/src/org/chromium/android_webview/AwNetLogsConnection.java",
       "java/src/org/chromium/android_webview/AwNetworkChangeNotifierRegistrationPolicy.java",

@@ -7,7 +7,7 @@ package org.chromium.android_webview.test;
 import org.junit.Assert;
 
 import org.chromium.android_webview.AwNavigation;
-import org.chromium.android_webview.AwNavigationClient;
+import org.chromium.android_webview.AwNavigationListener;
 import org.chromium.android_webview.AwPage;
 import org.chromium.build.annotations.Nullable;
 
@@ -15,8 +15,8 @@ import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-/** AwNavigationClient subclass used for testing. */
-public class TestAwNavigationClient implements AwNavigationClient {
+/** AwNavigationListener subclass used for testing. */
+public class TestAwNavigationListener implements AwNavigationListener {
     private final List<AwNavigation> mStartedNavigations = new ArrayList<AwNavigation>();
     private final List<AwNavigation> mRedirectedNavigations = new ArrayList<AwNavigation>();
     private final List<AwNavigation> mCompletedNavigations = new ArrayList<AwNavigation>();
@@ -25,7 +25,7 @@ public class TestAwNavigationClient implements AwNavigationClient {
     private final List<AwPage> mPagesWithDOMContentLoadEventFired = new ArrayList<AwPage>();
     private final List<Long> mFirstContentfulPaintLoadTimes = new ArrayList<Long>();
 
-    public TestAwNavigationClient() {}
+    public TestAwNavigationListener() {}
 
     @Nullable AwNavigation getLastStartedNavigation() {
         if (mStartedNavigations.isEmpty()) {

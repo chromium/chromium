@@ -48,7 +48,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     private String mPage2Url;
 
     private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
-    private final TestAwNavigationClient mNavigationClient = new TestAwNavigationClient();
+    private final TestAwNavigationListener mNavigationClient = new TestAwNavigationListener();
     private CallbackHelper mOnPageLoadFinished;
 
     public NavigateApiTest(AwSettingsMutation param) {
@@ -60,7 +60,7 @@ public class NavigateApiTest extends AwParameterizedTest {
         AwTestContainerView container =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = container.getAwContents();
-        mAwContents.setNavigationClient(mNavigationClient);
+        mAwContents.getNavigationClients().add(mNavigationClient);
 
         mOnPageLoadFinished = mContentsClient.getOnPageFinishedHelper();
 

@@ -73,6 +73,12 @@ public interface WebViewProviderBoundaryInterface {
 
     void saveState(Bundle outState, int maxSize, boolean includeForwardState);
 
+    void addWebViewNavigationListener(
+            Executor executor, /* WebViewNavigationListener */ InvocationHandler listener);
+
+    void removeWebViewNavigationListener(
+            /* WebViewNavigationListener */ InvocationHandler listener);
+
     /* WebViewNavigationClient */ @Nullable InvocationHandler getWebViewNavigationClient();
 
     void setWebViewNavigationClient(

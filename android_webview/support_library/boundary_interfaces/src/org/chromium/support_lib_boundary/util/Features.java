@@ -353,6 +353,18 @@ public class Features {
     public static final String WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE =
             "WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE";
 
+    // WebView.addWebViewNavigationListener
+    // WebView.removeWebViewNavigationListener
+    //
+    // WebViewNavigationListener.onNavigationStarted()
+    // WebViewNavigationListener.onNavigationRedirected()
+    // WebViewNavigationListener.onNavigationCompleted()
+    // WebViewNavigationListener.onPageDeleted()
+    // WebViewNavigationListener.onPageLoadEventFired()
+    // WebViewNavigationListener.onPageDOMContentLoadedEventFired()
+    // WebViewNavigationListener.onFirstContentfulPaint()
+    public static final String WEB_VIEW_NAVIGATION_LISTENER_V1 = "WEB_VIEW_NAVIGATION_LISTENER_V1";
+
     // SupportLibWebViewChromium weakly reference WebView
     public static final String PROVIDER_WEAKLY_REF_WEBVIEW = "PROVIDER_WEAKLY_REF_WEBVIEW";
 

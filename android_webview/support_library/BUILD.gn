@@ -38,6 +38,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewCookieManagerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewNavigationAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewNavigationClientAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibWebViewNavigationListenerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewPageAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererClientAdapter.java",

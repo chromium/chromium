@@ -43,6 +43,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/WebViewCookieManagerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewNavigationBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewNavigationClientBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebViewNavigationListenerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewPageBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewProviderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewProviderFactoryBoundaryInterface.java",

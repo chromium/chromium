@@ -130,6 +130,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_V2 + Features.DEV_SUFFIX,
                 Features.BACK_FORWARD_CACHE_SETTINGS_V2 + Features.DEV_SUFFIX,
+                Features.WEB_VIEW_NAVIGATION_LISTENER_V1,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -307,6 +308,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.GET_RENDERER_LIBRARY_PREFETCH_MODE,
         ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_TIMEOUT_IN_SECONDS,
         ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE,
+        ApiCall.ADD_NAVIGATION_LISTENER,
+        ApiCall.REMOVE_NAVIGATION_LISTENER,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -434,8 +437,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int WEB_STORAGE_DELETE_BROWSING_DATA_FOR_SITE = 118;
         int SET_SPECULATIVE_LOADING_CONFIG = 119;
         int SAVE_STATE = 120;
-        int GET_WEBVIEW_NAVIGATION_CLIENT = 121;
-        int SET_WEBVIEW_NAVIGATION_CLIENT = 122;
+        @Deprecated int GET_WEBVIEW_NAVIGATION_CLIENT = 121;
+        @Deprecated int SET_WEBVIEW_NAVIGATION_CLIENT = 122;
         int NAVIGATION_GET_URL = 123;
         int NAVIGATION_WAS_INITIATED_BY_PAGE = 124;
         int NAVIGATION_IS_SAME_DOCUMENT = 125;
@@ -483,9 +486,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_RENDERER_LIBRARY_PREFETCH_MODE = 165;
         int BACK_FORWARD_CACHE_SETTINGS_SET_TIMEOUT_IN_SECONDS = 166;
         int BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE = 167;
-
+        int ADD_NAVIGATION_LISTENER = 168;
+        int REMOVE_NAVIGATION_LISTENER = 169;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 168;
+        int COUNT = 170;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
