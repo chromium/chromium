@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("@chromium-luci//builders.star", "os")
+load("@chromium-luci//builders.star", "cpu", "os")
 load("@chromium-luci//ci.star", "ci")
 load("@chromium-luci//try.star", "try_")
 load("./ci_constants.star", "ci_constants")
@@ -24,6 +24,8 @@ def _gpu_ci_mac_builder(*, name, **kwargs):
     groups.
     """
     kwargs.setdefault("builderless", True)
+    kwargs.setdefault("cores", None)
+    kwargs.setdefault("cpu", cpu.ARM64)
     kwargs.setdefault("os", os.MAC_ANY)
     return ci.builder(name = name, **kwargs)
 
