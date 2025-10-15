@@ -90,7 +90,7 @@ ${this.realboxLayoutMode === 'TallTopContext' || this.realboxLayoutMode === 'Tal
           @on-context-files-changed="${this.onContextFilesChanged_}"
           @on-file-validation-error="${this.onFileValidationError_}"
           ?show-dropdown="${this.dropdownIsVisible}"
-          ?compact-mode="${this.realboxLayoutMode === 'Compact'}">
+          realbox-layout-mode="${this.realboxLayoutMode}">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"
             role="listbox" .result="${this.result_}"

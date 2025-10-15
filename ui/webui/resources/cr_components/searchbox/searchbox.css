@@ -471,6 +471,14 @@ cr-searchbox-icon {
   --cr-button-height: 36px;
 }
 
+:host-context([realbox-layout-mode^='Tall']) #errorScrim {
+  border-radius: inherit;
+}
+
+:host-context([realbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(carousel-divider) {
+  margin-top: 10px;
+}
+
 :host([realbox-layout-mode='Compact']) {
   --cr-searchbox-dropdown-padding-top: 12px;
   --cr-searchbox-height: 56px;
@@ -499,8 +507,4 @@ cr-searchbox-icon {
 
 :host([realbox-layout-mode='Compact']) cr-searchbox-dropdown::part(dropdown-content) {
   padding-top: 12px;
-}
-
-:host-context([realbox-layout-mode^='Tall']) #errorScrim {
-  border-radius: inherit;
 }

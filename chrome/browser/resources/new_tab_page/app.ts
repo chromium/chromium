@@ -249,7 +249,7 @@ export class AppElement extends AppElementBase {
       microsoftModuleEnabled_: {type: Boolean},
       microsoftAuthIframePath_: {type: String},
 
-      ntpRealboxNextEnabled: {
+      ntpRealboxNextEnabled_: {
         type: Boolean,
         reflect: true,
       },
@@ -261,12 +261,12 @@ export class AppElement extends AppElementBase {
        */
       promoAndModulesLoaded_: {type: Boolean},
 
-      realboxLayoutMode: {
+      realboxLayoutMode_: {
         type: String,
         reflect: true,
       },
 
-      searchboxCyclingPlaceholders: {
+      searchboxCyclingPlaceholders_: {
         type: Boolean,
       },
 
@@ -360,11 +360,11 @@ export class AppElement extends AppElementBase {
   accessor composeboxEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposebox');
   protected accessor isFooterVisible_: boolean = false;
-  accessor ntpRealboxNextEnabled: boolean =
+  protected accessor ntpRealboxNextEnabled_: boolean =
       loadTimeData.getBoolean('ntpRealboxNextEnabled');
-  accessor realboxLayoutMode: string =
+  protected accessor realboxLayoutMode_: string =
       loadTimeData.getString('realboxLayoutMode');
-  accessor searchboxCyclingPlaceholders: boolean =
+  protected accessor searchboxCyclingPlaceholders_: boolean =
       loadTimeData.getBoolean('searchboxCyclingPlaceholders');
 
   private callbackRouter_: PageCallbackRouter;

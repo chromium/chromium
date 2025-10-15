@@ -69,7 +69,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   static override get properties() {
     return {
       showDropdown: {type: Boolean},
-      compactMode: {type: Boolean},
+      realboxLayoutMode: {type: String},
       attachmentFileTypes_: {type: String},
       contextMenuEnabled_: {type: Boolean},
       files_: {type: Object},
@@ -83,11 +83,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
       },
       showContextMenuDescription_: {type: Boolean},
-      showFileCarousel_ : {
+      showFileCarousel_: {
         reflect: true,
         type: Boolean,
       },
-      inDeepSearchMode_ : {
+      inDeepSearchMode_: {
         reflect: true,
         type: Boolean,
       },
@@ -99,7 +99,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   accessor showDropdown: boolean = false;
-  accessor compactMode: boolean = false;
+  accessor realboxLayoutMode: string = '';
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
   protected accessor contextMenuEnabled_: boolean =
