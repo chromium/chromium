@@ -115,7 +115,9 @@ for more details.
 5. Point rust-analyzer to the rust toolchain in Chromium. Otherwise you will
    need to install Rustc in your system, and Chromium uses the nightly
    compiler, so you would need that to match. Add the following to
-   `.vscode/settings.json` in the Chromium checkout:
+   `.vscode/settings.json` in the Chromium checkout (e.g.
+   `chromium/src/.vscode/settings.json`; create the subdirectory and file if
+   they do not already exist):
    ```
    {
       // The rest of the settings...
