@@ -1508,9 +1508,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   if (!raster_context_provider) {
     return false;
   }
-  if (!raster_context_provider->ContextCapabilities().gpu_rasterization) {
-    return false;
-  }
+  CHECK(raster_context_provider->ContextCapabilities().gpu_rasterization);
   gpu::raster::RasterInterface* canvas_ri =
       raster_context_provider->RasterInterface();
   DCHECK(canvas_ri);
