@@ -89,6 +89,8 @@ class PLATFORM_EXPORT MediaPlayerClient : public WebMediaPlayerClient {
 
   virtual void AddTrack(const media::MediaTrack&) = 0;
   virtual void RemoveTrack(const media::MediaTrack&) = 0;
+  virtual void SetTrackState(const media::MediaTrack&,
+                             media::MediaTrack::State) = 0;
 
   virtual void MediaSourceOpened(std::unique_ptr<WebMediaSource>) = 0;
   virtual void RemotePlaybackCompatibilityChanged(const KURL&,

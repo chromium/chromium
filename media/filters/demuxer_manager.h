@@ -65,6 +65,7 @@ class MEDIA_EXPORT DemuxerManager {
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
     virtual void AddTrack(const MediaTrack&) = 0;
     virtual void RemoveTrack(const MediaTrack&) = 0;
+    virtual void SetTrackState(const MediaTrack&, MediaTrack::State) = 0;
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

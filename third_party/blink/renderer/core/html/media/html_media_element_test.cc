@@ -1077,6 +1077,73 @@ TEST_P(HTMLMediaElementTest, TrackChangeSourceDemuxerIsIgnored) {
   testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
 }
 
+TEST_P(HTMLMediaElementTest, SetTrackStateFromDemuxer) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  SetReadyState(HTMLMediaElement::kHaveFutureData);
+
+  ASSERT_EQ(1u, Media()->audioTracks().length());
+  ASSERT_EQ(1u, Media()->videoTracks().length());
+  AudioTrack* audio_track = Media()->audioTracks().AnonymousIndexedGetter(0);
+  VideoTrack* video_track = Media()->videoTracks().AnonymousIndexedGetter(0);
+
+  // Tracks are enabled by default. Let's disable them to test enabling.
+  // Use kScript source to ensure the player is notified and we start from a
+  // known state.
+  EXPECT_CALL(*MockMediaPlayer(),
+              EnabledAudioTracksChanged(testing::Eq(std::nullopt)));
+  audio_track->setEnabled(false);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockMediaPlayer(),
+              SelectedVideoTrackChanged(testing::Eq(std::nullopt)));
+  video_track->setSelected(false);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  ASSERT_FALSE(audio_track->enabled());
+  ASSERT_FALSE(video_track->selected());
+
+  media::MediaTrack audio_media_track = media::MediaTrack::CreateAudioTrack(
+      audio_track->id().Utf8(), media::MediaTrack::AudioKind::kMain, "", "",
+      false, 0);
+  media::MediaTrack video_media_track = media::MediaTrack::CreateVideoTrack(
+      video_track->id().Utf8(), media::MediaTrack::VideoKind::kMain, "", "",
+      false, 0);
+
+  // We expect that EnabledAudioTracksChanged is NOT called for demuxer.
+  EXPECT_CALL(*MockMediaPlayer(), EnabledAudioTracksChanged(_)).Times(0);
+  Media()->SetTrackStateForTesting(audio_media_track,
+                                   media::MediaTrack::State::kActive);
+  test::RunPendingTasks();
+  EXPECT_TRUE(audio_track->enabled());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // We expect that SelectedVideoTrackChanged is NOT called for demuxer.
+  EXPECT_CALL(*MockMediaPlayer(), SelectedVideoTrackChanged(_)).Times(0);
+  Media()->SetTrackStateForTesting(video_media_track,
+                                   media::MediaTrack::State::kActive);
+  test::RunPendingTasks();
+  EXPECT_TRUE(video_track->selected());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Now test deactivation.
+  EXPECT_CALL(*MockMediaPlayer(), EnabledAudioTracksChanged(_)).Times(0);
+  Media()->SetTrackStateForTesting(audio_media_track,
+                                   media::MediaTrack::State::kInactive);
+  test::RunPendingTasks();
+  EXPECT_FALSE(audio_track->enabled());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockMediaPlayer(), SelectedVideoTrackChanged(_)).Times(0);
+  Media()->SetTrackStateForTesting(video_media_track,
+                                   media::MediaTrack::State::kInactive);
+  test::RunPendingTasks();
+  EXPECT_FALSE(video_track->selected());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+}
+
 // Ensure a visibility observer is created for lazy loading.
 TEST_P(HTMLMediaElementTest, VisibilityObserverCreatedForLazyLoad) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));

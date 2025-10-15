@@ -37,6 +37,11 @@ class MEDIA_EXPORT MediaTrack {
     kCommentary
   };
 
+  enum class State : bool {
+    kActive,
+    kInactive,
+  };
+
   using Id = base::StrongAlias<class IdTag, std::string>;
   using Kind = base::StrongAlias<class KindTag, std::string>;
   using Label = base::StrongAlias<class LabelTag, std::string>;

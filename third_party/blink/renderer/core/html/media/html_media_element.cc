@@ -3428,6 +3428,26 @@ void HTMLMediaElement::RemoveTrack(const media::MediaTrack& track) {
   }
 }
 
+void HTMLMediaElement::SetTrackState(const media::MediaTrack& track,
+                                     media::MediaTrack::State state) {
+  auto id = String::FromUTF8(track.track_id().value());
+  bool active = state == media::MediaTrack::State::kActive;
+  switch (track.type()) {
+    case media::MediaTrack::Type::kVideo: {
+      if (auto* impl = videoTracks().getTrackById(id)) {
+        impl->setSelected(active, TrackBase::ChangeSource::kDemuxer);
+      }
+      break;
+    }
+    case media::MediaTrack::Type::kAudio: {
+      if (auto* impl = audioTracks().getTrackById(id)) {
+        impl->setEnabled(active, TrackBase::ChangeSource::kDemuxer);
+      }
+      break;
+    }
+  }
+}
+
 void HTMLMediaElement::ForgetResourceSpecificTracks() {
   audio_tracks_->RemoveAll();
   video_tracks_->RemoveAll();

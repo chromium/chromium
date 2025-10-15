@@ -173,6 +173,8 @@ class MockWebMediaPlayerClient : public MediaPlayerClient {
   MOCK_METHOD1(SetCcLayer, void(cc::Layer*));
   MOCK_METHOD1(AddTrack, void(const media::MediaTrack& track));
   MOCK_METHOD1(RemoveTrack, void(const media::MediaTrack&));
+  MOCK_METHOD2(SetTrackState,
+               void(const media::MediaTrack&, media::MediaTrack::State));
   MOCK_METHOD1(MediaSourceOpened, void(std::unique_ptr<WebMediaSource>));
   MOCK_METHOD2(RemotePlaybackCompatibilityChanged, void(const KURL&, bool));
   MOCK_METHOD0(WasAlwaysMuted, bool());

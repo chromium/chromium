@@ -564,7 +564,9 @@ class WebMediaPlayerMSTest
   void OnFirstFrame(base::TimeTicks, size_t) override {}
 
   void RemoveTrack(const media::MediaTrack&) override {}
-  void AddTrack(const media::MediaTrack& track) override {}
+  void AddTrack(const media::MediaTrack&) override {}
+  void SetTrackState(const media::MediaTrack&,
+                     media::MediaTrack::State) override {}
 
   void MediaSourceOpened(std::unique_ptr<WebMediaSource>) override {}
   void RemotePlaybackCompatibilityChanged(const KURL& url,

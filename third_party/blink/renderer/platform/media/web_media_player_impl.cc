@@ -1668,6 +1668,11 @@ void WebMediaPlayerImpl::RemoveTrack(const media::MediaTrack& track) {
   client_->RemoveTrack(track);
 }
 
+void WebMediaPlayerImpl::SetTrackState(const media::MediaTrack& track,
+                                       media::MediaTrack::State state) {
+  client_->SetTrackState(track, state);
+}
+
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
