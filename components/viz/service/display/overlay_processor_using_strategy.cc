@@ -889,7 +889,6 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
       candidate.strategy->AdjustOutputSurfaceOverlay(primary_plane);
       LogStrategyEnumUMA(candidate.strategy->GetUMAEnum());
       last_successful_strategy_ = candidate.strategy;
-      OnOverlaySwitchUMA(OverlayProposedCandidate::ToProposeKey(candidate));
       if (candidate.candidate.requires_overlay) {
         // Track how much we can downscale successfully.
         float scale_factor = GetMinScaleFactor(candidate.candidate);
@@ -916,7 +915,6 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
   if (proposed_candidates.size() != 0) {
     LogStrategyEnumUMA(OverlayStrategy::kNoStrategyAllFail);
   }
-  OnOverlaySwitchUMA(ProposedCandidateKey());
   return false;
 }
 
@@ -1145,17 +1143,6 @@ void OverlayProcessorUsingStrategy::AssignUnderlayZOrders(
 gfx::Rect OverlayProcessorUsingStrategy::GetOverlayDamageRectForOutputSurface(
     const OverlayCandidate& overlay) const {
   return ToEnclosedRect(overlay.display_rect);
-}
-
-void OverlayProcessorUsingStrategy::OnOverlaySwitchUMA(
-    ProposedCandidateKey overlay_tracking_id) {
-  auto curr_tick = base::TimeTicks::Now();
-  if (!(prev_overlay_tracking_id_ == overlay_tracking_id)) {
-    prev_overlay_tracking_id_ = overlay_tracking_id;
-    UMA_HISTOGRAM_TIMES("Viz.DisplayCompositor.OverlaySwitchInterval",
-                        curr_tick - last_time_interval_switch_overlay_tick_);
-    last_time_interval_switch_overlay_tick_ = curr_tick;
-  }
 }
 
 void OverlayProcessorUsingStrategy::UpdateDownscalingCapabilities(

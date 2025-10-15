@@ -2017,16 +2017,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Viz.DisplayCompositor.OverlaySwitchInterval" units="ms"
-    expires_after="2025-05-03">
-  <owner>petermcneeley@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    The time, in milliseconds, since the change in overlay selection. Recorded
-    every time a frame is rendered by the display compositor.
-  </summary>
-</histogram>
-
 <histogram name="Viz.DisplayCompositor.RootDamageRect.Overlay"
     enum="BooleanOverlayDamageRect" expires_after="2026-04-05">
   <owner>magchen@chromium.org</owner>

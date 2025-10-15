@@ -272,9 +272,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       tracked_candidates_;
 
   // These variables are used only for UMA purposes.
-  void OnOverlaySwitchUMA(ProposedCandidateKey overlay_tracking_key);
-  base::TimeTicks last_time_interval_switch_overlay_tick_;
-  ProposedCandidateKey prev_overlay_tracking_id_;
   uint64_t frame_sequence_number_ = 0;
 
   // These values are used for tracking how much we can downscale with overlays
