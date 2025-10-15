@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_ENTRY_H_
 #define COMPONENTS_PERSISTENT_CACHE_ENTRY_H_
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "components/persistent_cache/entry_metadata.h"
@@ -27,14 +26,19 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Entry {
   Entry& operator=(const Entry&) = delete;
   Entry& operator=(Entry&&) = delete;
 
-  // Returns a span over the entry's contents.
-  virtual base::span<const uint8_t> GetContentSpan() const LIFETIME_BOUND = 0;
+  // Use to acquire a span that is kept valid until this Entry is released. If
+  // looking to immediately copy contents prefer `CopyContentTo` which is
+  // guaranteed to be equally or more performant.
+  virtual base::span<const uint8_t> GetContentSpan() const = 0;
 
-  // Returns the size of the entry's contents in bytes.
+  // Use to copy the content of the entry to `content`.
+  virtual size_t CopyContentTo(base::span<uint8_t> content) const;
+
+  // Use to get the size of the entry's value in bytes.
   virtual size_t GetContentSize() const;
 
-  // Returns the entry's metadata. Partially or completely populated by default
-  // values if the metadata was not supplied on insert.
+  // Use to retrieve metadata tied to the entry. Partially or completely
+  // populated by default values if the metadata was not supplied on insert.
   virtual EntryMetadata GetMetadata() const = 0;
 
  protected:

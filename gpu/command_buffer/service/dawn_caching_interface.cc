@@ -70,11 +70,10 @@ size_t DawnCachingInterface::LoadData(const void* key,
     return 0u;
   }
 
-  size_t bytes_copied = std::min(value_size, entry->GetContentSize());
-  if (bytes_copied > 0) {
-    UNSAFE_TODO(base::span(static_cast<uint8_t*>(value_out), value_size))
-        .first(bytes_copied)
-        .copy_from_nonoverlapping(entry->GetContentSpan().first(bytes_copied));
+  size_t bytes_copied = 0;
+  if (value_size > 0) {
+    bytes_copied = entry->CopyContentTo(
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(value_out), value_size)));
   }
 
   if (memory_cache()) {

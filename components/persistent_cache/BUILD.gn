@@ -19,6 +19,8 @@ component("persistent_cache") {
     "backend_storage.cc",
     "entry.cc",
     "persistent_cache_collection.cc",
+    "sqlite/sqlite_entry_impl.cc",
+    "sqlite/sqlite_entry_impl.h",
   ]
 
   if (is_fuchsia) {
@@ -36,8 +38,6 @@ component("persistent_cache") {
       "sqlite/constants.h",
       "sqlite/sqlite_backend_impl.cc",
       "sqlite/sqlite_backend_impl.h",
-      "sqlite/sqlite_entry_impl.cc",
-      "sqlite/sqlite_entry_impl.h",
       "sqlite/vfs/sandboxed_file.cc",
       "sqlite/vfs/sandboxed_file.h",
       "sqlite/vfs/sqlite_database_vfs_file_set.cc",
@@ -92,6 +92,7 @@ source_set("unit_tests") {
   sources = [
     "backend_storage_unittest.cc",
     "entry_unittest.cc",
+    "sqlite/sqlite_entry_unittest.cc",
   ]
 
   # Cross-process file locks are not available on Fuchsia.

@@ -5,21 +5,12 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_SQLITE_ENTRY_IMPL_H_
 #define COMPONENTS_PERSISTENT_CACHE_SQLITE_SQLITE_ENTRY_IMPL_H_
 
-#include <stdint.h>
-
-#include <memory>
+#include <cstdint>
 
 #include "base/component_export.h"
-#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ref.h"
-#include "base/memory/raw_span.h"
 #include "base/types/pass_key.h"
 #include "components/persistent_cache/entry.h"
-
-namespace sql {
-class Statement;
-}
 
 namespace persistent_cache {
 
@@ -39,9 +30,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteEntryImpl : public Entry {
   // implementation to the backend.
   static std::unique_ptr<SqliteEntryImpl> MakeUnique(
       base::PassKey<SqliteBackendImpl> passkey,
-      SqliteBackendImpl& backend,
-      std::unique_ptr<sql::Statement> statement,
-      base::span<const uint8_t> content,
+      std::string&& content,
       EntryMetadata metadata);
 
  private:
@@ -56,15 +45,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteEntryImpl : public Entry {
   // unwanted copies as much as possible. There is precedent for copies coming
   // from disk caches leading to OOMs and this class tries to avoid the
   // situation.
-  explicit SqliteEntryImpl(SqliteBackendImpl& backend,
-                           std::unique_ptr<sql::Statement> statement,
-                           base::span<const uint8_t> content,
-                           EntryMetadata metadata);
+  explicit SqliteEntryImpl(std::string&& content, EntryMetadata metadata);
 
-  const raw_ref<SqliteBackendImpl> backend_;
-  std::unique_ptr<sql::Statement> statement_;
-  base::raw_span<const uint8_t> content_;
-  const EntryMetadata metadata_;
+  std::string content_;
+  EntryMetadata metadata_;
 };
 
 }  // namespace persistent_cache
