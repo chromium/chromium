@@ -1583,6 +1583,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.RtpTransportCount" units="counts"
+    expires_after="2026-04-13">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Number of RTP transport connections used by a PeerConnection. Recorded every
+    time an offer/answer exchange completes.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.SdpMunging.Outcome"
     enum="SdpMungingOutcome" expires_after="2026-03-01">
   <owner>hta@chromium.org</owner>
