@@ -10171,10 +10171,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the iOS promo bubble button allowing the user to decline.">
             No Thanks
           </message>
+          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_TITLE" desc="The title text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their iOS device.">
+            Reminder Sent to Your <ph name="DEVICE_TYPE">$1<ex>iPad</ex></ph>
+          </message>
+          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_BUTTON" desc="The button text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their phone.">
+            Got It
+          </message>
         </if>
         <if expr="not use_titlecase">
           <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the iOS promo bubble button allowing the user to decline.">
             No thanks
+          </message>
+          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_TITLE" desc="The title text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their iOS device.">
+            Reminder sent to your <ph name="DEVICE_TYPE">$1<ex>iPad</ex></ph>
+          </message>
+          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_REMINDER_CONFIRMATION_BUTTON" desc="The button text for the iOS promo bubble button that confirms the user will recieve a reminder sent to their phone.">
+            Got it
           </message>
         </if>
         <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR" desc="The text inside the iOS promo bubble button allowing the user to accept by getting the app via QR code.">
@@ -10182,6 +10194,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER" desc="The text inside the iOS promo bubble button allowing the user to accept by getting a reminder.">
           Remind me on iOS
+        </message>
+        <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_LENS_FEATURE_NAME" desc="The product name for the Google Lens feature.">
+          Google Lens
+        </message>
+        <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_ENHANCED_BROWSING_FEATURE_NAME" desc="The product name for the Enhanced Safe Browsing feature.">
+          Enhanced Safe Browsing
+        </message>
+        <message name="IDS_IOS_DEVICE_TYPE_IPHONE" desc="The product name 'iPhone'.">
+          iPhone
+        </message>
+        <message name="IDS_IOS_DEVICE_TYPE_IPAD" desc="The product name 'iPad'.">
+          iPad
         </message>
       </if>
 

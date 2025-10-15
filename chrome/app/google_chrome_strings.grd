@@ -2936,6 +2936,12 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_REMINDER" desc="The description for the footer of the iOS desktop password promo bubble.">
           Sign in faster to sites using saved passwords for Chrome on iOS
         </message>
+        <message name="IDS_IOS_DESKTOP_PROMO_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after uses choose to be reminded of the feature on their iOS device. The placeholder will be replaced by the name of the feature.">
+          You'll see a prompt to try <ph name="FEATURE_NAME">%1$s<ex>Google Lens</ex></ph> next time you open Chrome iOS.
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after uses choose to be reminded of the Password Manager on their iOS device.">
+          Next time you open Chrome on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you'll see a prompt to use Google Password Manager.
+        </message>
       </if>
 
       <!--Default Search Engine Reset Notification-->
