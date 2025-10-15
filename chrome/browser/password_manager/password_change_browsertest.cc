@@ -20,6 +20,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
@@ -48,6 +49,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -165,7 +167,9 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     // TODO (crbug.com/439496997): Fix the test to work with this feature flag
     // default value.
     scoped_feature_list_.InitWithFeatures(
-        {password_manager::features::kSubmitWithEnterDuringPasswordChange},
+        // kShowDomNodeIDs is required in order to extract the dom_node_id for
+        // the submission step.
+        {autofill::features::test::kShowDomNodeIDs},
         {password_manager::features::kCheckLoginStateBeforePasswordChange});
   }
 
@@ -266,6 +270,46 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     auto logs_uploader_weak_ptr = logs_uploader->GetWeakPtr();
     optimization_service->SetModelQualityLogsUploaderServiceForTesting(
         std::move(logs_uploader));
+  }
+
+  int GetDomNodeId(const std::string& element_id) {
+    const std::string value_get_script = base::StringPrintf(
+        "var element = document.getElementById('%s');"
+        "var value = element ? Number(element.getAttribute(\"dom-node-id\")) : "
+        "-1;"
+        "value;",
+        element_id.c_str());
+    return content::EvalJs(RenderFrameHost(), value_get_script,
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+        .ExtractInt();
+  }
+
+  void MockSuccessfulSubmitButtonClick(PasswordChangeDelegate* delegate) {
+    SetWebContents(
+        static_cast<PasswordChangeDelegateImpl*>(delegate)->executor());
+
+    base::RunLoop run_loop;
+    MockOptimizationGuideKeyedService* optimization_service =
+        mock_optimization_guide_keyed_service();
+    optimization_guide::OptimizationGuideModelExecutionResultCallback callback;
+    EXPECT_CALL(*optimization_service,
+                ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                                 kPasswordChangeSubmission,
+                             _, _, _))
+        .WillOnce(DoAll(
+            testing::Invoke(&run_loop, &base::RunLoop::Quit),
+            WithArg<3>([&](auto callback) {
+              optimization_guide::proto::PasswordChangeResponse response;
+              response.mutable_submit_form_data()->set_dom_node_id_to_click(
+                  GetDomNodeId("chg_submit_wo_username_button"));
+              auto result =
+                  optimization_guide::OptimizationGuideModelExecutionResult(
+                      optimization_guide::AnyWrapProto(response),
+                      /*execution_info=*/nullptr);
+              std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
+            })));
+    run_loop.Run();
+    SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(0));
   }
 
   void MockPasswordChangeOutcome(
@@ -555,6 +599,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
+  MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
@@ -613,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
       /* submit_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       /*verify_submission_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
@@ -645,6 +690,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
+
+  MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
@@ -691,6 +738,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
+  MockSuccessfulSubmitButtonClick(delegate);
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service(),
       ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
@@ -754,6 +802,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       ->GetPasswordChangeDelegate(WebContents())
       ->StartPasswordChangeFlow();
 
+  MockSuccessfulSubmitButtonClick(
+      password_change_service()->GetPasswordChangeDelegate(WebContents()));
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME,
@@ -807,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
       /* submit_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       /*verify_submission_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS,
@@ -1039,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-
+  MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
@@ -1100,7 +1150,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewPasswordBubbleFromToast) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-
+  MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);

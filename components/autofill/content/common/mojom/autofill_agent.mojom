@@ -174,11 +174,6 @@ interface PasswordAutofillAgent {
                          mojo_base.mojom.String16 new_password)
       => (FormData? form_data);
 
-  // Submits a form based on field id if all conditions for submission with
-  // Enter are satisfied, i.e. the form exists, there is a submit element
-  // inside a form, the submit element is not disabled.
-  SubmitFormWithEnter(FieldRendererId field_id) => (bool success);
-
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);

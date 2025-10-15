@@ -284,14 +284,6 @@ void ContentPasswordManagerDriver::FillChangePasswordForm(
   }
 }
 
-void ContentPasswordManagerDriver::SubmitFormWithEnter(
-    autofill::FieldRendererId field,
-    base::OnceCallback<void(bool)> success_callback) {
-  if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->SubmitFormWithEnter(field, std::move(success_callback));
-  }
-}
-
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password,

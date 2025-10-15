@@ -66,6 +66,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   content::WebContents* executor() { return executor_.get(); }
   PasswordChangeUIController* ui_controller() { return ui_controller_.get(); }
   std::u16string generated_password() { return generated_password_; }
+  ChangePasswordFormFillingSubmissionHelper* submission_verifier() {
+    return submission_verifier_.get();
+  }
+
   void SetCustomUIController(
       std::unique_ptr<PasswordChangeUIController> controller) {
     ui_controller_ = std::move(controller);

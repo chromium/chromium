@@ -309,9 +309,6 @@ class FakePasswordAutofillAgent
       const std::u16string& old_password,
       const std::u16string& new_password,
       FillChangePasswordFormCallback callback) override {}
-  void SubmitFormWithEnter(
-      autofill::FieldRendererId field,
-      base::OnceCallback<void(bool)> success_callback) override {}
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override {}
   void SetLoggingState(bool active) override {

@@ -88,9 +88,6 @@ class ContentPasswordManagerDriver final
       const std::u16string& new_password,
       base::OnceCallback<void(const std::optional<autofill::FormData>&)>
           form_data_callback) override;
-  void SubmitFormWithEnter(
-      autofill::FieldRendererId field,
-      base::OnceCallback<void(bool)> success_callback) override;
   void FillSuggestion(const std::u16string& username,
                       const std::u16string& password,
                       base::OnceCallback<void(bool)> success_callback) override;

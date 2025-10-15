@@ -193,11 +193,6 @@ BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
 // Enables improvements to password change functionality.
 BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
 
-// In the automatic password change flow, Chrome will try to submit the change
-// password form with Enter key at the first place (still with the fall back of
-// calling the model to find the Submit button).
-BASE_DECLARE_FEATURE(kSubmitWithEnterDuringPasswordChange);
-
 #if BUILDFLAG(IS_ANDROID)
 // The feature flag for reloading passwords when the trusted vault encryption
 // state changes.

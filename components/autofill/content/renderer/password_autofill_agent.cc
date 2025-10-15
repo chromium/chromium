@@ -529,13 +529,6 @@ FieldPropertiesFlags GetFieldFlags(AutofillSuggestionTriggerSource source) {
              : FieldPropertiesFlags::kAutofilledOnUserTrigger;
 }
 
-bool IsSubmitElement(WebFormControlElement element) {
-  return element.FormControlTypeForAutofill() ==
-             blink::mojom::FormControlType::kButtonSubmit ||
-         element.FormControlTypeForAutofill() ==
-             blink::mojom::FormControlType::kInputSubmit;
-}
-
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -1043,46 +1036,6 @@ void PasswordAutofillAgent::FillChangePasswordForm(
   }
 
   std::move(callback).Run(*form_data);
-}
-
-void PasswordAutofillAgent::SubmitFormWithEnter(
-    FieldRendererId field,
-    SubmitFormWithEnterCallback callback) {
-  WebFormControlElement form_control =
-      form_util::GetFormControlByRendererId(field);
-  WebInputElement input_element = form_control.DynamicTo<WebInputElement>();
-
-  if (!input_element) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  WebFormElement form = input_element.GetOwningFormForAutofill();
-  // If there is no <form> element with an action attribute owning the input, we
-  // can't guarantee Enter will work.
-  if (!form || form.Action().IsNull() || form.Action().IsEmpty()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  auto form_elements = form.GetFormControlElements();  // nocheck
-  auto submit_element_iter =
-      std::ranges::find_if(form_elements, &IsSubmitElement);
-  // If there is no submit element in the form, we can't guarantee Enter will
-  // work.
-  if (submit_element_iter == form_elements.end()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  // Fail immediately if the element is disabled.
-  if (submit_element_iter->HasAttribute("disabled")) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  input_element.DispatchSimulatedEnter();
-  std::move(callback).Run(true);
 }
 
 void PasswordAutofillAgent::DoPreviewField(WebInputElement input,

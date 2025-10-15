@@ -98,10 +98,6 @@ class ChangePasswordFormFillingSubmissionHelper {
       autofill::FieldRendererId field_id,
       const std::optional<autofill::FormData>& submitted_form);
 
-  void OnSubmitWithEnterResult(
-      base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      bool success);
-
   void OnPageContentReceived(
       std::optional<optimization_guide::AIPageContentResult> content);
 

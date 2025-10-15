@@ -262,37 +262,6 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
            generated_password_);
   form_manager_->UpdateBackupPassword(stored_password_);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSubmitWithEnterDuringPasswordChange)) {
-    driver->SubmitFormWithEnter(
-        field_id,
-        base::BindOnce(
-            &ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult,
-            weak_ptr_factory_.GetWeakPtr(), driver));
-  } else {
-    std::move(capture_annotated_page_content_)
-        .Run(base::BindOnce(
-            &ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
-    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-    bool success) {
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_SUBMIT_WITH_ENTER_RESULT,
-                       success);
-  }
-
-  if (success) {
-    submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
-        web_contents_, logs_uploader_);
-    logs_uploader_->MarkStepSkipped(kSubmitFormFlowStep);
-    return;
-  }
-
-  // Fallback to submission using optimization_guide.
   std::move(capture_annotated_page_content_)
       .Run(base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived,
