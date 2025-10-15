@@ -318,7 +318,11 @@ void OverlayWindowAndroid::OnDismissal(JNIEnv* env) {
 
 void OverlayWindowAndroid::Close() {
   CloseInternal();
-  controller_->OnWindowDestroyed(/*should_pause_video=*/true);
+  // Only pause the video when play/pause button is visible.
+  controller_->OnWindowDestroyed(
+      /*should_pause_video=*/visible_actions_.find(
+          static_cast<int>(media_session::mojom::MediaSessionAction::kPlay)) !=
+      visible_actions_.end());
   // `this` may be destroyed.
 }
 

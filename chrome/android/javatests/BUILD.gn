@@ -838,6 +838,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.media") {
   sources = [
     "src/org/chromium/chrome/browser/media/MediaLauncherActivityTest.java",
     "src/org/chromium/chrome/browser/media/MediaViewerUtilsTest.java",
+    "src/org/chromium/chrome/browser/media/PictureInPictureActivityBrowserTest.java",
     "src/org/chromium/chrome/browser/media/PictureInPictureActivityTest.java",
     "src/org/chromium/chrome/browser/media/ui/AutoplayMutedNotificationTest.java",
     "src/org/chromium/chrome/browser/media/ui/FullscreenVideoPictureInPictureControllerTest.java",
