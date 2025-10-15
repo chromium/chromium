@@ -1641,11 +1641,20 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_CARD_HEADER" desc="Header of the history sync card in the 'Privacy Guide'.">
     Choose whether to sync history
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_AND_TABS_SYNC_CARD_HEADER" desc="Header of the history sync card in the 'Privacy Guide'.">
+    Choose whether to sync history and tabs
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_SETTING_LABEL" desc="Label of the history sync settings toggle in the 'Privacy Guide'.">
     History sync
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_AND_TABS_SYNC_SETTING_LABEL" desc="Label of the history and tabs sync settings toggles in the 'Privacy Guide'.">
+    Sync history and tabs
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_FEATURE_DESCRIPTION1" desc="A part of the feature description of history sync in the 'Privacy guide'.">
     You'll have your history on all your synced devices so you can continue what you were doing
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_AND_TABS_SYNC_FEATURE_DESCRIPTION1" desc="A part of the feature description of history and tabs sync in the 'Privacy guide'.">
+    You’ll have your history and tabs on all your devices so you can continue what you were doing
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_FEATURE_DESCRIPTION2" desc="A part of the feature description of history sync in the 'Privacy guide'.">
     If Google is also your default search engine, you'll see better, contextually relevant suggestions

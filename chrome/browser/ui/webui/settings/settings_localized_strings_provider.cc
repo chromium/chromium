@@ -1718,7 +1718,7 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
       {"searchSuggestPrefDesc", IDS_SETTINGS_SUGGEST_PREF_DESC},
       {"searchAggregatorSuggestPref", IDS_SETTINGS_SEARCH_AGGREGATOR_PREF},
       {"searchAggregatorSuggestPrefDesc",
-        IDS_SETTINGS_SEARCH_AGGREGATOR_PREF_DESC},
+       IDS_SETTINGS_SEARCH_AGGREGATOR_PREF_DESC},
       {"priceEmailNotificationsPref", IDS_PRICE_TRACKING_SETTINGS_TITLE},
       {"priceEmailNotificationsPrefDesc",
        IDS_PRICE_TRACKING_SETTINGS_EMAIL_DESCRIPTION},
@@ -1739,13 +1739,13 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  #if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddLocalizedString(
       "signinAllowedDescription",
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? IDS_SETTINGS_SIGNIN_ALLOWED_DESC_2
           : IDS_SETTINGS_SIGNIN_ALLOWED_DESC);
-  #endif
+#endif
 }
 
 void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
@@ -1787,8 +1787,7 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 #else
   html_source->AddLocalizedString(
       "peopleSignInSyncPagePromptSecondaryWithNoAccount",
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS
           : IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT);
 #endif
@@ -1934,10 +1933,9 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
           : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
   html_source->AddLocalizedString(
       "peopleSignInPromptSecondaryWithNoAccount",
-      base::FeatureList::IsEnabled(
-        syncer::kReplaceSyncPromosWithSignInPromos)
-        ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS
-        : IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT);
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT_WITH_BOOKMARKS
+          : IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT);
   html_source->AddLocalizedString(
       "profileNameAndPicture",
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
@@ -2297,7 +2295,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
                              .spec());
 }
 
-void AddPrivacyGuideStrings(content::WebUIDataSource* html_source) {
+void AddPrivacyGuideStrings(content::WebUIDataSource* html_source,
+                            Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"privacyGuideLabel", IDS_SETTINGS_PRIVACY_GUIDE_LABEL},
       {"privacyGuideSublabel", IDS_SETTINGS_PRIVACY_GUIDE_SUBLABEL},
@@ -2350,10 +2349,16 @@ void AddPrivacyGuideStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_GUIDE_MSBB_PRIVACY_DESCRIPTION2},
       {"privacyGuideHistorySyncCardHeader",
        IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_CARD_HEADER},
+      {"privacyGuideHistoryAndTabsSyncCardHeader",
+       IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_AND_TABS_SYNC_CARD_HEADER},
       {"privacyGuideHistorySyncSettingLabel",
        IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_SETTING_LABEL},
+      {"privacyGuideHistoryAndTabsSyncSettingLabel",
+       IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_AND_TABS_SYNC_SETTING_LABEL},
       {"privacyGuideHistorySyncFeatureDescription1",
        IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_FEATURE_DESCRIPTION1},
+      {"privacyGuideHistoryAndTabsSyncFeatureDescription1",
+       IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_AND_TABS_SYNC_FEATURE_DESCRIPTION1},
       {"privacyGuideHistorySyncFeatureDescription2",
        IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_FEATURE_DESCRIPTION2},
       {"privacyGuideHistorySyncPrivacyDescription1",
@@ -3881,7 +3886,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddOnStartupStrings(html_source);
   AddPeopleStrings(html_source, profile);
   AddPrivacySandboxStrings(html_source, profile);
-  AddPrivacyGuideStrings(html_source);
+  AddPrivacyGuideStrings(html_source, profile);
   AddPrivacyStrings(html_source, profile);
   AddSafetyHubStrings(html_source);
   AddShortcutInputStrings(html_source);

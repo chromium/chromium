@@ -444,4 +444,47 @@ suite('HistorySyncFragment', function() {
       savedTabGroupsSyncedExpected: false,
     });
   });
+
+  test('stringUpdatesOnSyncStateChange', async function() {
+    function getCardHeader() {
+      return fragment.shadowRoot!
+          .querySelector(
+              '.settings-fragment-header-label')!.textContent!.trim();
+    }
+    function getFeatureDescription1() {
+      return fragment.shadowRoot!.querySelector('.icon-bulleted-list li')!
+          .querySelector('.secondary')!.textContent!.trim();
+    }
+
+    // The user is syncing.
+    setSyncStatus({
+      signedInState: SignedInState.SYNCING,
+    });
+    await flushTasks();
+    assertEquals(
+        getCardHeader(),
+        loadTimeData.getString('privacyGuideHistorySyncCardHeader'));
+    assertEquals(
+        fragment.$.historyToggle.label,
+        loadTimeData.getString('privacyGuideHistorySyncSettingLabel'));
+    assertEquals(
+        getFeatureDescription1(),
+        loadTimeData.getString('privacyGuideHistorySyncFeatureDescription1'));
+
+    // The user is signed in non-syncing.
+    setSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+    });
+    await flushTasks();
+    assertEquals(
+        getCardHeader(),
+        loadTimeData.getString('privacyGuideHistoryAndTabsSyncCardHeader'));
+    assertEquals(
+        fragment.$.historyToggle.label,
+        loadTimeData.getString('privacyGuideHistoryAndTabsSyncSettingLabel'));
+    assertEquals(
+        getFeatureDescription1(),
+        loadTimeData.getString(
+            'privacyGuideHistoryAndTabsSyncFeatureDescription1'));
+  });
 });
