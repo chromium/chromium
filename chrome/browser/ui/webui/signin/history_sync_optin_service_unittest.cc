@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -24,7 +25,9 @@ class MockHistorySyncOptinHelperDelegate
  public:
   MOCK_METHOD(void,
               ShowHistorySyncOptinScreen,
-              (Profile*, base::OnceClosure history_optin_completed_closure),
+              (Profile*,
+               HistorySyncOptinHelper::FlowCompletedCallback
+                   history_optin_completed_callback),
               (override));
   MOCK_METHOD(void,
               ShowAccountManagementScreen,
@@ -105,13 +108,13 @@ TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
   auto delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
   auto* delegate_ptr = delegate.get();
 
-  base::OnceClosure captured_closure;
+  HistorySyncOptinHelper::FlowCompletedCallback captured_callback;
   EXPECT_CALL(*delegate_ptr,
               ShowHistorySyncOptinScreen(profile_.get(), testing::_))
       .WillOnce(testing::Invoke(
-          [&](Profile* profile,
-              base::OnceClosure history_optin_completed_closure) {
-            captured_closure = std::move(history_optin_completed_closure);
+          [&](Profile* profile, HistorySyncOptinHelper::FlowCompletedCallback
+                                    history_optin_completed_callback) {
+            captured_callback = std::move(history_optin_completed_callback);
           }));
 
   // Start the first flow.
@@ -123,11 +126,12 @@ TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
   // A second flow cannot be started.
   flow_started = service_->StartHistorySyncOptinFlow(
       account_info, std::make_unique<MockHistorySyncOptinHelperDelegate>(),
-      signin_metrics::AccessPoint::kAccountMenu);
+      signin_metrics::AccessPoint::kSettings);
   EXPECT_FALSE(flow_started);
 
   // Complete the first flow.
-  std::move(captured_closure).Run();
+  std::move(captured_callback.value())
+      .Run(HistorySyncOptinHelper::ScreenChoiceResult::kAccepted);
 
   // After the previous flow finished a new one can be started.
   auto second_delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();

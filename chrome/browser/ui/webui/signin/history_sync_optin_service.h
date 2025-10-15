@@ -25,7 +25,7 @@ class HistorySyncOptinServiceDefaultDelegate
   // HistorySyncOptinHelper::Delegate:
   void ShowHistorySyncOptinScreen(
       Profile* profile,
-      base::OnceClosure history_optin_completed_closure) override;
+      HistorySyncOptinHelper::FlowCompletedCallback callback) override;
   void ShowAccountManagementScreen(
       signin::SigninChoiceCallback on_account_management_screen_closed)
       override;

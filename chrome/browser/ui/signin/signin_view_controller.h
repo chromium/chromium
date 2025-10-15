@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -174,7 +175,8 @@ class SigninViewController {
   // of the `browser_`'s window. Executes the provided callback when the dialog
   // closes.
   void ShowModalHistorySyncOptInDialog(
-      base::OnceClosure history_optin_completed_closure);
+      HistorySyncOptinHelper::FlowCompletedCallback
+          history_optin_completed_callback);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Shows the modal managed user notice dialog as a browser-modal dialog on

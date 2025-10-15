@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -98,11 +99,39 @@ class HistorySyncOptinHelper {
   // `kInBrowser`: The flow is running in a browser window.
   enum class LaunchContext : int { kInProfilePicker = 0, kInBrowser = 1 };
 
+  // Result selected by the user when the history sync screen is shown.
+  enum class ScreenChoiceResult : int {
+    // User accepted history sync.
+    kAccepted = 1,
+    // User decline history sync.
+    kDeclined = 2,
+    // User dismisses the screen without making a choice.
+    kDismissed = 3,
+    // The screen was skipped.
+    kScreenSkipped = 4,
+  };
+
+  // Reason for skipping the history sync optin screen.
+  enum class HistorySyncSkipReason : int {
+    // A managed user rejected management.
+    kManagementRejected = 0,
+    // The user is not signed in the browser.
+    kUserNotSignedIn = 1,
+    // Syncing in general or syncing history is disabled (not sync service
+    // or disabled by a policy).
+    kSyncForbidden = 2,
+    // History is already being synced.
+    kAlreadyOptedIn = 3,
+  };
+
+  using FlowCompletedCallback = base::StrongAlias<
+      class FlowCompletedCallback,
+      base::OnceCallback<void(HistorySyncOptinHelper::ScreenChoiceResult)>>;
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when the HistorySyncOptinHelper completes its flow.
     virtual void OnHistorySyncOptinHelperFlowFinished() {}
-
    protected:
     ~Observer() override = default;
   };
@@ -111,9 +140,8 @@ class HistorySyncOptinHelper {
    public:
     virtual ~Delegate() = default;
     // Displays the history sync optin screen.
-    virtual void ShowHistorySyncOptinScreen(
-        Profile* profile,
-        base::OnceClosure history_optin_completed_closure) = 0;
+    virtual void ShowHistorySyncOptinScreen(Profile* profile,
+                                            FlowCompletedCallback callback) = 0;
     // Displays the account management screen.
     virtual void ShowAccountManagementScreen(
         signin::SigninChoiceCallback on_account_management_screen_closed) = 0;
@@ -130,6 +158,14 @@ class HistorySyncOptinHelper {
       const AccountInfo& account_info,
       Delegate* delegate,
       LaunchContext launch_context,
+      signin_metrics::AccessPoint access_point);
+
+  // Record metrics for the outcome of the flow.
+  static void RecordMetricsForHistorySyncUserChoice(
+      ScreenChoiceResult user_choice,
+      signin_metrics::AccessPoint access_point);
+  static void RecordMetricsForSkippedHistoryScreen(
+      HistorySyncSkipReason skip_reason,
       signin_metrics::AccessPoint access_point);
 
   virtual ~HistorySyncOptinHelper();
@@ -165,9 +201,12 @@ class HistorySyncOptinHelper {
 
   void SetProfile(Profile* profile) { profile_ = profile; }
 
-  void FinishFlowWithoutHistorySyncOptin();
+  void FinishFlowWithoutHistorySyncOptin(HistorySyncSkipReason skip_reason);
 
-  void NotifyFlowFinished(bool is_history_screen_skipped);
+  void NotifyFlowFinishedWithHistorySyncScreenAttempted(
+      ScreenChoiceResult user_choice);
+  void NotifyFlowFinishedWithHistorySyncScreenSkipped(
+      HistorySyncSkipReason skip_reason);
 
   // Accessors.
   Profile* profile() { return profile_.get(); }
@@ -190,6 +229,7 @@ class HistorySyncOptinHelper {
 
   std::unique_ptr<SyncServiceStartupStateObserver> sync_startup_state_observer_;
   signin::Tribool maybe_managed_account_ = signin::Tribool::kUnknown;
+  bool is_history_sync_step_complete_ = false;
   base::WeakPtrFactory<HistorySyncOptinHelper> weak_ptr_factory_{this};
 };
 

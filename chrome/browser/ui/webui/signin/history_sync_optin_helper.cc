@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/sequence_checker_impl.h"
@@ -32,9 +33,16 @@
 #include "components/signin/public/identity_manager/account_state_fetcher.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace {
+constexpr char kHistorySyncOptIntAccessPointHistogramPrefix[] =
+    "Signin.HistorySyncOptIn.";
+constexpr char kHistorySyncOptIntAccessPointActionPrefix[] =
+    "Signin_HistorySync_";
+
 void CheckValidAccessPointForHistoryOptin(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
@@ -125,6 +133,38 @@ void CheckValidAccessPointForHistoryOptin(
       break;
   }
 }
+
+// LINT.IfChange(FlowEventToString)
+std::string_view GetHistorySyncSkipReasonMetricName(
+    HistorySyncOptinHelper::HistorySyncSkipReason skip_reason) {
+  switch (skip_reason) {
+    case HistorySyncOptinHelper::HistorySyncSkipReason::kAlreadyOptedIn:
+      return "AlreadyOptedIn";
+    case HistorySyncOptinHelper::HistorySyncSkipReason::kUserNotSignedIn:
+    case HistorySyncOptinHelper::HistorySyncSkipReason::kSyncForbidden:
+    case HistorySyncOptinHelper::HistorySyncSkipReason::kManagementRejected:
+      return "Skipped";
+  }
+  NOTREACHED();
+}
+
+std::string_view UserChoiceToStringMetric(
+    HistorySyncOptinHelper::ScreenChoiceResult user_choice) {
+  switch (user_choice) {
+    case HistorySyncOptinHelper::ScreenChoiceResult::kAccepted:
+      return "Completed";
+    case HistorySyncOptinHelper::ScreenChoiceResult::kDeclined:
+      return "Declined";
+    case HistorySyncOptinHelper::ScreenChoiceResult::kDismissed:
+      return "Aborted";
+    case HistorySyncOptinHelper::ScreenChoiceResult::kScreenSkipped:
+      // When the screen is skipped the metrics are recorded via a different
+      // method.
+      break;
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/signin/histograms.xml:Signin.HistorySyncOptIn)
 
 bool AccountMayHaveCloudPolicies(Profile* profile,
                                  const AccountInfo& account_info) {
@@ -249,6 +289,34 @@ std::unique_ptr<HistorySyncOptinHelper> HistorySyncOptinHelper::Create(
   }
 }
 
+// static
+void HistorySyncOptinHelper::RecordMetricsForHistorySyncUserChoice(
+    ScreenChoiceResult user_choice,
+    signin_metrics::AccessPoint access_point) {
+  auto user_choice_str = UserChoiceToStringMetric(user_choice);
+  auto histogram_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointHistogramPrefix, user_choice_str});
+  auto action_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointActionPrefix, user_choice_str});
+
+  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+  base::UmaHistogramEnumeration(histogram_name, access_point);
+}
+
+// static
+void HistorySyncOptinHelper::RecordMetricsForSkippedHistoryScreen(
+    HistorySyncSkipReason skip_reason,
+    signin_metrics::AccessPoint access_point) {
+  auto skip_reason_str = GetHistorySyncSkipReasonMetricName(skip_reason);
+  auto histogram_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointHistogramPrefix, skip_reason_str});
+  auto action_name = base::StrCat(
+      {kHistorySyncOptIntAccessPointActionPrefix, skip_reason_str});
+
+  base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+  base::UmaHistogramEnumeration(histogram_name, access_point);
+}
+
 HistorySyncOptinHelper::HistorySyncOptinHelper(
     signin::IdentityManager* identity_manager,
     Profile* profile,
@@ -284,20 +352,37 @@ void HistorySyncOptinHelper::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void HistorySyncOptinHelper::NotifyFlowFinished(bool is_history_screen_skipped) {
+void HistorySyncOptinHelper::NotifyFlowFinishedWithHistorySyncScreenAttempted(
+    ScreenChoiceResult user_choice) {
+  CHECK(!is_history_sync_step_complete_);
+  is_history_sync_step_complete_ = true;
+
+  if (user_choice != ScreenChoiceResult::kScreenSkipped) {
+    RecordMetricsForHistorySyncUserChoice(user_choice, access_point());
+  }
+  // Observer notification must be the last step, as the observer
+  // may delete this helper (see HistorySyncOptinService).
   for (Observer& observer : observers_) {
     observer.OnHistorySyncOptinHelperFlowFinished();
   }
-  if (is_history_screen_skipped) {
-    base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Skipped"));
+}
+
+void HistorySyncOptinHelper::NotifyFlowFinishedWithHistorySyncScreenSkipped(
+    HistorySyncSkipReason skip_reason) {
+  CHECK(!is_history_sync_step_complete_);
+  is_history_sync_step_complete_ = true;
+
+  RecordMetricsForSkippedHistoryScreen(skip_reason, access_point());
+
+  // Observer notification must be the last step, as the observer
+  // may delete this helper (see HistorySyncOptinService).
+  for (Observer& observer : observers_) {
+    observer.OnHistorySyncOptinHelperFlowFinished();
   }
 }
 
 void HistorySyncOptinHelper::StartHistorySyncOptinFlow() {
   account_state_fetcher_->FetchAccountInfo();
-  // TODO(crbug.com/435191375): Add HistorySyncOptIn histograms once the access
-  // point is plumped.
-  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Started"));
 }
 
 void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
@@ -324,14 +409,23 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
       return;
     }
   }
+
   ShowHistorySyncOptinScreen();
 }
 
 void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
-  if (signin_util::ShouldShowHistorySyncOptinScreen(*profile_.get())) {
+  signin_util::ShouldShowHistorySyncOptinResult result =
+      signin_util::ShouldShowHistorySyncOptinScreen(*profile_.get());
+  if (result == signin_util::ShouldShowHistorySyncOptinResult::kShow) {
+    base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Started"));
+    base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Started",
+                                  access_point());
+
     delegate_->ShowHistorySyncOptinScreen(
-        profile(), base::BindOnce(&HistorySyncOptinHelper::NotifyFlowFinished,
-                                  weak_ptr_factory_.GetWeakPtr(), /*is_history_screen_skipped=*/false));
+        profile(), FlowCompletedCallback(base::BindOnce(
+                       &HistorySyncOptinHelper::
+                           NotifyFlowFinishedWithHistorySyncScreenAttempted,
+                       weak_ptr_factory_.GetWeakPtr())));
     return;
   }
 
@@ -343,7 +437,21 @@ void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
   // display the history sync optin screen (i.e. enabling history
   // sync is optional).
   // If sync is disabled just skip the screen.
-  FinishFlowWithoutHistorySyncOptin();
+  HistorySyncSkipReason skip_reason;
+  switch (result) {
+    case signin_util::ShouldShowHistorySyncOptinResult::kShow:
+      NOTREACHED();
+    case signin_util::ShouldShowHistorySyncOptinResult::kSkipUserNotSignedIn:
+      skip_reason = HistorySyncSkipReason::kUserNotSignedIn;
+      break;
+    case signin_util::ShouldShowHistorySyncOptinResult::kSkipSyncForbidden:
+      skip_reason = HistorySyncSkipReason::kSyncForbidden;
+      break;
+    case signin_util::ShouldShowHistorySyncOptinResult::kSkipUserAlreadyOptedIn:
+      skip_reason = HistorySyncSkipReason::kAlreadyOptedIn;
+      break;
+  }
+  FinishFlowWithoutHistorySyncOptin(skip_reason);
 }
 
 signin::Tribool HistorySyncOptinHelper::AccountIsManaged(
@@ -354,9 +462,10 @@ signin::Tribool HistorySyncOptinHelper::AccountIsManaged(
   return signin::Tribool::kUnknown;
 }
 
-void HistorySyncOptinHelper::FinishFlowWithoutHistorySyncOptin() {
+void HistorySyncOptinHelper::FinishFlowWithoutHistorySyncOptin(
+    HistorySyncSkipReason skip_reason) {
   delegate_->FinishFlowWithoutHistorySyncOptin();
-  NotifyFlowFinished(/*is_history_screen_skipped=*/true);
+  NotifyFlowFinishedWithHistorySyncScreenSkipped(skip_reason);
 }
 
 // HistorySyncOptinHelperInBrowser
@@ -411,7 +520,10 @@ void HistorySyncOptinHelperInBrowser::OnManagementAccepted(
     ResumeShowHistorySyncOptinScreenFlow(signin::Tribool::kTrue);
     return;
   }
-  FinishFlowWithoutHistorySyncOptin();
+  // Note, if we need the exact reason we need to modify the disclaimer service
+  // to provide this. However both valid reasons are treated the same so using
+  // the management rejection is sufficient.
+  FinishFlowWithoutHistorySyncOptin(HistorySyncSkipReason::kManagementRejected);
 }
 
 // HistorySyncOptinHelperInProfilePicker
@@ -485,7 +597,8 @@ void HistorySyncOptinHelperInProfilePicker::OnAccountManagementScreenClosed(
       // These cases do not apply in the profile picker flow.
       NOTREACHED();
     case signin::SIGNIN_CHOICE_CANCEL:
-      NotifyFlowFinished(/*is_history_screen_skipped=*/true);
+      NotifyFlowFinishedWithHistorySyncScreenSkipped(
+          HistorySyncSkipReason::kManagementRejected);
       return;
     case signin::SIGNIN_CHOICE_NEW_PROFILE:
       // Mark the user having accepted the management.

@@ -38,9 +38,6 @@ constexpr char kSigninAccountCapabilitiesImmediatelyAvailable[] =
     "Signin.AccountCapabilities.ImmediatelyAvailable";
 constexpr char kSigninSyncButtonsShown[] = "Signin.SyncButtons.Shown";
 constexpr char kSignInSyncButtonsClicked[] = "Signin.SyncButtons.Clicked";
-constexpr char kSigninHistorySyncAborted[] = "Signin_HistorySync_Aborted";
-constexpr char kSigninHistorySyncCompleted[] = "Signin_HistorySync_Completed";
-constexpr char kSigninHistorySyncDeclined[] = "Signin_HistorySync_Declined";
 
 enum class ButtonType : bool { kAccept = true, kReject = false };
 
@@ -112,42 +109,41 @@ HistorySyncOptinHandler::HistorySyncOptinHandler(
     mojo::PendingRemote<history_sync_optin::mojom::Page> page,
     Browser* browser,
     Profile* profile,
-    base::OnceClosure history_optin_completed_closure)
+    HistorySyncOptinHelper::FlowCompletedCallback
+        history_optin_completed_callback)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_(browser ? browser->AsWeakPtr() : nullptr),
       profile_(profile),
-      history_optin_completed_closure_(
-          std::move(history_optin_completed_closure)),
+      history_optin_completed_callback_(
+          std::move(history_optin_completed_callback)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
   CHECK(profile_);
   CHECK(identity_manager_);
 }
 
 HistorySyncOptinHandler::~HistorySyncOptinHandler() {
-  if (history_optin_completed_closure_) {
+  if (history_optin_completed_callback_.value()) {
     // Runs the callback in case the dialog is not dismissed via the buttons,
     // but e.g. using an accelerator or close button.
-    std::move(history_optin_completed_closure_).Run();
-    base::RecordAction(base::UserMetricsAction(kSigninHistorySyncAborted));
+    std::move(history_optin_completed_callback_.value())
+        .Run(HistorySyncOptinHelper::ScreenChoiceResult::kDismissed);
   }
 }
 
 void HistorySyncOptinHandler::Accept() {
   AddHistorySyncConsent();
-  FinishAndCloseDialog();
-  base::RecordAction(base::UserMetricsAction(kSigninHistorySyncCompleted));
   base::UmaHistogramEnumeration(
       kSignInSyncButtonsClicked,
       GetButtonClickedMetricValue(screen_mode_, ButtonType::kAccept));
+  FinishAndCloseDialog(HistorySyncOptinHelper::ScreenChoiceResult::kAccepted);
 }
 
 void HistorySyncOptinHandler::Reject() {
-  FinishAndCloseDialog();
-  base::RecordAction(base::UserMetricsAction(kSigninHistorySyncDeclined));
   base::UmaHistogramEnumeration(
       kSignInSyncButtonsClicked,
       GetButtonClickedMetricValue(screen_mode_, ButtonType::kReject));
+  FinishAndCloseDialog(HistorySyncOptinHelper::ScreenChoiceResult::kDeclined);
 }
 
 void HistorySyncOptinHandler::RequestAccountInfo() {
@@ -193,12 +189,13 @@ void HistorySyncOptinHandler::UpdateDialogHeight(uint32_t height) {
   }
 }
 
-void HistorySyncOptinHandler::FinishAndCloseDialog() {
+void HistorySyncOptinHandler::FinishAndCloseDialog(
+    HistorySyncOptinHelper::ScreenChoiceResult result) {
   if (browser_) {
     browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
   }
-  CHECK(history_optin_completed_closure_);
-  std::move(history_optin_completed_closure_).Run();
+  CHECK(history_optin_completed_callback_.value());
+  std::move(history_optin_completed_callback_.value()).Run(result);
 }
 
 void HistorySyncOptinHandler::AddHistorySyncConsent() {
