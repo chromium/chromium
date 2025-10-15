@@ -37,6 +37,7 @@ class MediaTrayTest : public AshTestBase {
   }
 
   void TearDown() override {
+    media_tray_ = nullptr;
     provider_.reset();
     AshTestBase::TearDown();
   }
@@ -74,7 +75,7 @@ class MediaTrayTest : public AshTestBase {
 
  private:
   std::unique_ptr<MockMediaNotificationProvider> provider_;
-  raw_ptr<MediaTray, DanglingUntriaged> media_tray_;
+  raw_ptr<MediaTray> media_tray_;
 };
 
 TEST_F(MediaTrayTest, MediaTrayVisibilityTest) {
