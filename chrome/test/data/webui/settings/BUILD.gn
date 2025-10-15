@@ -40,6 +40,7 @@ build_webui_tests("build") {
     "clear_browsing_data_test.ts",
     "clear_browsing_data_time_picker_test.ts",
     "collapse_radio_button_test.ts",
+    "collapsible_autofill_settings_card_test.ts",
     "controlled_button_test.ts",
     "controlled_radio_button_test.ts",
     "cookies_page_test.ts",

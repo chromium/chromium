@@ -127,3 +127,4 @@ export {convertDateToWindowsEpoch} from './time.js';
 export {TooltipMixin, TooltipMixinInterface} from './tooltip_mixin.js';
 export {SettingsYourSavedInfoPageElement} from './your_saved_info_page/your_saved_info_page.js';
 export {SettingsYourSavedInfoPageIndexElement} from './your_saved_info_page/your_saved_info_page_index.js';
+export {CollapsibleCardElement} from './your_saved_info_page/collapsible_autofill_settings_card.js';

@@ -9,6 +9,7 @@
  */
 import './account_card_element.js';
 import './category_reference_card.js';
+import './collapsible_autofill_settings_card.js';
 import '/shared/settings/prefs/prefs.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -35,8 +36,8 @@ import type {ChipData} from './category_reference_card.js';
 import {SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 import {getTemplate} from './your_saved_info_page.html.js';
 
-const SettingsYourSavedInfoPageElementBase = WebUiListenerMixin(
-    SettingsViewMixin(PrefsMixin(I18nMixin(PolymerElement))));
+const SettingsYourSavedInfoPageElementBase =
+    WebUiListenerMixin(SettingsViewMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsYourSavedInfoPageElement extends
     SettingsYourSavedInfoPageElementBase {

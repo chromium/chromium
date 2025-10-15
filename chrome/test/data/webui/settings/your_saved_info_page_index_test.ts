@@ -5,7 +5,9 @@
 import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
-import type {SettingsYourSavedInfoPageIndexElement} from 'chrome://settings/settings.js';
+import {AiEnterpriseFeaturePrefName} from 'chrome://settings/lazy_load.js';
+import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
+import type {SettingsPrefsElement, SettingsYourSavedInfoPageIndexElement} from 'chrome://settings/settings.js';
 import {loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -13,6 +15,12 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('YourSavedInfoPageIndex', function() {
   let index: SettingsYourSavedInfoPageIndexElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -23,8 +31,21 @@ suite('YourSavedInfoPageIndex', function() {
     resetRouterForTesting();
 
     index = document.createElement('settings-your-saved-info-page-index');
+
+    settingsPrefs.set(
+        `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
+        ModelExecutionEnterprisePolicyValue.ALLOW);
+    settingsPrefs.set(
+        'prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed.value',
+        ModelExecutionEnterprisePolicyValue.ALLOW);
+    index.prefs = settingsPrefs.prefs!;
+
     document.body.appendChild(index);
     return flushTasks();
+  });
+
+  teardown(function() {
+    CrSettingsPrefs.resetForTesting();
   });
 
   test('Routing', async function() {

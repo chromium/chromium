@@ -414,6 +414,12 @@
   <message name="IDS_SETTINGS_YOUR_SAVED_INFO_DESCRIPTION" desc="Description of the 'Your saved info' page.">
     Manage your autofill info for faster browsing &#x2014; info like passwords, payment methods, addresses, and ID cards
   </message>
+  <message name="IDS_SETTINGS_YOUR_SAVED_INFO_AUTOFILL_SETTINGS_LABEL" desc="Title of the Autofill settings section on 'Your saved info' page.">
+    Autofill settings
+  </message>
+  <message name="IDS_SETTINGS_YOUR_SAVED_INFO_AUTOFILL_SETTINGS_DESCRIPTION" desc="Description of the Autofill settings section on 'Your saved info' page.">
+    Settings that affect how autofill works across different types of info
+  </message>
   <message name="IDS_SETTINGS_RELATED_SERVICES_TITLE" desc="Title of the section allowing the user to access any related google services from the 'Your saved info' page.">
     Related Google services
   </message>

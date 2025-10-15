@@ -4,8 +4,9 @@
 
 import 'chrome://settings/settings.js';
 
-import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import type {SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
+import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
+import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
+import type {SettingsPrefsElement, SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
 import {loadTimeData, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -14,11 +15,26 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
+function setDefaultPrefs(objectToSetup: SettingsPrefsElement) {
+  objectToSetup.set(
+      `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
+      ModelExecutionEnterprisePolicyValue.ALLOW);
+  objectToSetup.set(
+      'prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed.value',
+      ModelExecutionEnterprisePolicyValue.ALLOW);
+}
+
 suite('YourSavedInfoPage', function() {
   let yourSavedInfoPage: SettingsYourSavedInfoPageElement;
   let autofillManager: TestAutofillManager;
   let passwordManager: TestPasswordManagerProxy;
   let paymentsManager: TestPaymentsManager;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(async function() {
     Router.resetInstanceForTesting(new Router(routes));
@@ -34,11 +50,17 @@ suite('YourSavedInfoPage', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
+
+    setDefaultPrefs(settingsPrefs);
+    yourSavedInfoPage.prefs = settingsPrefs.prefs!;
+
     document.body.appendChild(yourSavedInfoPage);
     await flushTasks();
   });
 
-
+  teardown(function() {
+    CrSettingsPrefs.resetForTesting();
+  });
 
   test('TitleExists', function() {
     const yourSavedInfoPageTitleElement =
@@ -121,6 +143,12 @@ suite('RelatedServices', function() {
   let yourSavedInfoPage: SettingsYourSavedInfoPageElement;
   let openWindowProxy: TestOpenWindowProxy;
   let passwordManager: TestPasswordManagerProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     Router.resetInstanceForTesting(new Router(routes));
@@ -133,7 +161,10 @@ suite('RelatedServices', function() {
     PasswordManagerImpl.setInstance(passwordManager);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
+    yourSavedInfoPage =
+        document.createElement('settings-your-saved-info-page');
+    setDefaultPrefs(settingsPrefs);
+    yourSavedInfoPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(yourSavedInfoPage);
   });
 
