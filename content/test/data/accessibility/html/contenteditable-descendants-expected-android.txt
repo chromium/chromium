@@ -5,7 +5,7 @@ android.webkit.WebView focusable focused
 ++++++android.view.View role_description='link' clickable link name='link'
 ++++++++android.widget.TextView name='link'
 ++++++android.widget.TextView interesting name=' and an '
-++++++android.widget.Image role_description='graphic' interesting content_description='Image'
+++++++android.widget.Image interesting content_description='Image'
 ++++++android.widget.TextView interesting name=' and a '
 ++++++android.widget.Button clickable focusable interesting name='Button'
 ++++++android.widget.TextView interesting name='.'

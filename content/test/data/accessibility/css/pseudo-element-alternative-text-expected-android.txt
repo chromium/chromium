@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.widget.Image role_description='graphic' interesting content_description='alternative text'
+++++android.widget.Image interesting content_description='alternative text'
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView interesting name='DOM text'
 ++++android.widget.TextView name=' '

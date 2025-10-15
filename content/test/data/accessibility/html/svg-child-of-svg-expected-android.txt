@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.widget.Image role_description='graphic' interesting content_description='Has two simple children'
+++++android.widget.Image interesting content_description='Has two simple children'
 ++++android.widget.Image role_description='graphic' content_description='Has two focusable children'
 ++++++android.view.View focusable interesting
 ++++++android.view.View focusable interesting

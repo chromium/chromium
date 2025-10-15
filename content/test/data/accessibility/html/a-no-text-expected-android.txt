@@ -1,23 +1,23 @@
 android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest1'
-++++++android.widget.Image role_description='graphic'
+++++++android.widget.Image
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest2'
-++++++android.widget.Image role_description='graphic'
+++++++android.widget.Image
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest3'
-++++++android.widget.Image role_description='graphic'
+++++++android.widget.Image
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest4'
-++++++android.widget.Image role_description='graphic'
+++++++android.widget.Image
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest5'
-++++++android.widget.Image role_description='graphic'
+++++++android.widget.Image
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest6'
-++++++android.widget.Image role_description='graphic'
+++++++android.widget.Image
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest7'
-++++++android.widget.Image role_description='graphic'
+++++++android.widget.Image
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest.8'
-++++++android.widget.Image role_description='graphic'
+++++++android.widget.Image
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest9'
-++++++android.widget.Image role_description='graphic' name='greenbox'
+++++++android.widget.Image name='greenbox'
 ++++android.widget.TextView name=' '
 ++++android.view.View role_description='link' clickable focusable link interesting name='dest10'
-++++++android.widget.Image role_description='graphic' name='greenbox'
+++++++android.widget.Image name='greenbox'

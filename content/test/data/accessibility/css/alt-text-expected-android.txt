@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.TextView interesting name='item1item2'
-++++android.widget.Image role_description='graphic'
+++++android.widget.Image
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView interesting name='Some Text'
 ++android.view.View
@@ -12,7 +12,7 @@ android.webkit.WebView focusable focused
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView interesting name='Some Text'
 ++android.view.View
-++++android.widget.Image role_description='graphic' interesting content_description='star'
+++++android.widget.Image interesting content_description='star'
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView interesting name='Some Text'
 ++android.view.View
@@ -27,6 +27,6 @@ android.webkit.WebView focusable focused
 ++++android.widget.TextView interesting name='Some Text'
 ++android.view.View
 ++++android.widget.TextView interesting name='Some Text'
-++android.widget.Image role_description='graphic' interesting content_description='alt'
+++android.widget.Image interesting content_description='alt'
 ++android.widget.TextView interesting name='DOM Text'
 ++android.widget.TextView interesting name='DOM Text'

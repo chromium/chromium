@@ -27,4 +27,4 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++TextView text:"name: " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++EditText hint:"name:" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300", hint="name:"]
 ++EditText hint:"not editable, img child" clickable editable textSelectionStart:0 textSelectionEnd:0 actions:[CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", hasImage="true", hint="not editable, img child"]
-++++Image actions:[AX_FOCUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic"]
+++++Image actions:[AX_FOCUS] bundle:[chromeRole="image", hasImage="true"]

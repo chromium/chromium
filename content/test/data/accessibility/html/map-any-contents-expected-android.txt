@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.widget.Image role_description='graphic' name='pipe' content_description='pipe'
+++++android.widget.Image name='pipe' content_description='pipe'
 ++++++android.widget.TextView role_description='heading 1' heading interesting name='Headings are allowed in a map'
 ++++++android.view.View role_description='link' clickable focusable link interesting name='fake' content_description='pipe1'
 ++++++android.view.View

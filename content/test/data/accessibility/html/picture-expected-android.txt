@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
-++++android.widget.Image role_description='graphic' name='x'
-++++android.widget.Image role_description='graphic' name=' '
-++++android.widget.Image role_description='graphic'
-++++android.widget.Image role_description='graphic'
-++++android.widget.Image role_description='graphic'
+++++android.widget.Image name='x'
+++++android.widget.Image name=' '
+++++android.widget.Image
+++++android.widget.Image
+++++android.widget.Image
