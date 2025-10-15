@@ -15,14 +15,15 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
 class Profile;
 class TabStripModel;
 
 // Controller responsible for hosting the data sharing bubble per browser.
-class DataSharingBubbleController : public DataSharingUI::Delegate {
+class DataSharingBubbleController : public views::WidgetObserver,
+                                    public DataSharingUI::Delegate {
  public:
   DECLARE_USER_DATA(DataSharingBubbleController);
 
@@ -36,7 +37,7 @@ class DataSharingBubbleController : public DataSharingUI::Delegate {
   DataSharingBubbleController(const DataSharingBubbleController&) = delete;
   DataSharingBubbleController& operator=(const DataSharingBubbleController&) =
       delete;
-  virtual ~DataSharingBubbleController();
+  ~DataSharingBubbleController() override;
 
   static DataSharingBubbleController* From(
       BrowserWindowInterface* browser_window_interface);
@@ -61,6 +62,9 @@ class DataSharingBubbleController : public DataSharingUI::Delegate {
       collaboration::CollaborationControllerDelegate::ResultCallback callback);
 
   void OnUrlReadyToShare(GURL url);
+
+  // views::WidgetObserver
+  void OnWidgetClosing(views::Widget* widget) override;
 
   // DataSharingUI::Delegate
   void ApiInitComplete() override;
@@ -88,8 +92,6 @@ class DataSharingBubbleController : public DataSharingUI::Delegate {
   }
 
  private:
-  void OnWidgetClosing(views::Widget::ClosedReason closed_reason);
-
   void MaybeRunJoinCallback(bool on_close);
 
   Profile* GetProfile();
@@ -97,6 +99,9 @@ class DataSharingBubbleController : public DataSharingUI::Delegate {
   const raw_ref<BrowserWindowInterface> browser_;
   const raw_ref<Profile> profile_;
   const raw_ref<TabStripModel> tab_strip_model_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      bubble_widget_observation_{this};
 
   // Callback to invoke when the widget closes.
   OnCloseCallback on_close_callback_;
