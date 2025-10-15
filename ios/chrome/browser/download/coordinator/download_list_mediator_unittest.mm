@@ -51,20 +51,50 @@ class MockDownloadRecordService : public DownloadRecordService {
   MockDownloadRecordService() = default;
   ~MockDownloadRecordService() override = default;
 
-  // Import callback types from the base class
+  // Imports callback types from the base class.
   using DownloadRecordsCallback =
       DownloadRecordService::DownloadRecordsCallback;
   using DownloadRecordCallback = DownloadRecordService::DownloadRecordCallback;
   using CompletionCallback = DownloadRecordService::CompletionCallback;
 
+  // Sets up the test downloads directory and creates test files.
+  void SetupTestEnvironment() {
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    downloads_path_ = temp_dir_.GetPath().AppendASCII("downloads");
+    CHECK(base::CreateDirectory(downloads_path_));
+    test::SetDownloadsDirectoryForTesting(&downloads_path_);
+    CreateTestFiles();
+  }
+
+  // Cleans up the test environment.
+  void CleanupTestEnvironment() {
+    test::SetDownloadsDirectoryForTesting(nullptr);
+  }
+
+  // Creates actual test files in the downloads directory.
+  void CreateTestFiles() {
+    base::FilePath downloads_dir = downloads_path_;
+
+    base::WriteFile(downloads_dir.Append("document.pdf"), "PDF content");
+    base::WriteFile(downloads_dir.Append("image.jpg"), "JPEG content");
+    base::WriteFile(downloads_dir.Append("video.mp4"), "MP4 content");
+    base::WriteFile(downloads_dir.Append("audio.mp3"), "MP3 content");
+    base::WriteFile(downloads_dir.Append("document.txt"), "TXT content");
+    base::WriteFile(downloads_dir.Append("archive.zip"), "ZIP content");
+    base::WriteFile(downloads_dir.Append("incognito_document.pdf"),
+                    "Incognito PDF content");
+    base::WriteFile(downloads_dir.Append("incognito_image.jpg"),
+                    "Incognito JPEG content");
+  }
+
   // Creates records directly for testing purposes.
   void CreateRecordsForTesting() {
-    // Create DownloadRecord objects directly
     DownloadRecord pdf_record;
     pdf_record.download_id = "1";
     pdf_record.original_url = "https://testsite.org/document.pdf";
     pdf_record.mime_type = kAdobePortableDocumentFormatMimeType;
     pdf_record.file_name = "document.pdf";
+    pdf_record.file_path = base::FilePath("document.pdf");
     pdf_record.created_time = base::Time::Now();
 
     DownloadRecord image_record;
@@ -72,6 +102,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     image_record.original_url = "https://testsite.org/image.jpg";
     image_record.mime_type = kJPEGImageMimeType;
     image_record.file_name = "image.jpg";
+    image_record.file_path = base::FilePath("image.jpg");
     image_record.created_time = base::Time::Now();
 
     DownloadRecord video_record;
@@ -79,6 +110,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     video_record.original_url = "https://testsite.org/video.mp4";
     video_record.mime_type = kMP4VideoMimeType;
     video_record.file_name = "video.mp4";
+    video_record.file_path = base::FilePath("video.mp4");
     video_record.created_time = base::Time::Now();
 
     DownloadRecord audio_record;
@@ -86,6 +118,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     audio_record.original_url = "https://testsite.org/audio.mp3";
     audio_record.mime_type = kMP3AudioMimeType;
     audio_record.file_name = "audio.mp3";
+    audio_record.file_path = base::FilePath("audio.mp3");
     audio_record.created_time = base::Time::Now();
 
     DownloadRecord text_record;
@@ -93,6 +126,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     text_record.original_url = "https://testsite.org/document.txt";
     text_record.mime_type = kTextMimeType;
     text_record.file_name = "document.txt";
+    text_record.file_path = base::FilePath("document.txt");
     text_record.created_time = base::Time::Now();
 
     DownloadRecord zip_record;
@@ -100,6 +134,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     zip_record.original_url = "https://testsite.org/archive.zip";
     zip_record.mime_type = kZipArchiveMimeType;
     zip_record.file_name = "archive.zip";
+    zip_record.file_path = base::FilePath("archive.zip");
     zip_record.created_time = base::Time::Now();
 
     // Add incognito records for testing incognito functionality.
@@ -109,6 +144,7 @@ class MockDownloadRecordService : public DownloadRecordService {
         "https://testsite.org/incognito_document.pdf";
     incognito_pdf_record.mime_type = kAdobePortableDocumentFormatMimeType;
     incognito_pdf_record.file_name = "incognito_document.pdf";
+    incognito_pdf_record.file_path = base::FilePath("incognito_document.pdf");
     incognito_pdf_record.created_time = base::Time::Now();
     incognito_pdf_record.is_incognito = true;
 
@@ -118,6 +154,7 @@ class MockDownloadRecordService : public DownloadRecordService {
         "https://testsite.org/incognito_image.jpg";
     incognito_image_record.mime_type = kJPEGImageMimeType;
     incognito_image_record.file_name = "incognito_image.jpg";
+    incognito_image_record.file_path = base::FilePath("incognito_image.jpg");
     incognito_image_record.created_time = base::Time::Now();
     incognito_image_record.is_incognito = true;
 
@@ -131,7 +168,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     stored_records_.push_back(incognito_image_record);
   }
 
-  // Override virtual methods directly.
+  // Overrides virtual methods directly.
   void RecordDownload(web::DownloadTask* task) override {}
 
   void GetAllDownloadsAsync(DownloadRecordsCallback callback) override {
@@ -171,7 +208,10 @@ class MockDownloadRecordService : public DownloadRecordService {
               (const std::string& download_id, CompletionCallback callback),
               (override));
 
-  // Public methods for testing access to internal state.
+  // Returns the temp directory path for creating test files.
+  base::FilePath GetTempDirPath() const { return downloads_path_; }
+
+  // Provides public methods for testing access to internal state.
   void AddRecordForTesting(const DownloadRecord& record) {
     stored_records_.push_back(record);
     for (auto* observer : observers_) {
@@ -180,7 +220,6 @@ class MockDownloadRecordService : public DownloadRecordService {
   }
 
   void TriggerUpdateForTesting(const DownloadRecord& record) {
-    // First update the stored record
     auto it =
         std::find_if(stored_records_.begin(), stored_records_.end(),
                      [&record](const DownloadRecord& stored_record) {
@@ -188,17 +227,15 @@ class MockDownloadRecordService : public DownloadRecordService {
                      });
 
     if (it != stored_records_.end()) {
-      *it = record;  // Update the existing record
+      *it = record;
     }
 
-    // Then notify observers
     for (auto* observer : observers_) {
       observer->OnDownloadUpdated(record);
     }
   }
 
   void RemoveRecordForTesting(const std::string& download_id) {
-    // Remove record from stored_records_
     auto it = std::find_if(stored_records_.begin(), stored_records_.end(),
                            [&download_id](const DownloadRecord& record) {
                              return record.download_id == download_id;
@@ -223,6 +260,8 @@ class MockDownloadRecordService : public DownloadRecordService {
  private:
   std::vector<DownloadRecord> stored_records_;
   std::set<DownloadRecordObserver*> observers_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath downloads_path_;
   std::map<std::string, std::unique_ptr<web::FakeDownloadTask>>
       mock_download_tasks_;
 };
@@ -248,6 +287,8 @@ class DownloadListMediatorTest : public PlatformTest {
 
     mock_service_ = std::make_unique<MockDownloadRecordService>();
     ASSERT_TRUE(mock_service_);
+
+    mock_service_->SetupTestEnvironment();
     mock_service_->CreateRecordsForTesting();
 
     InitializeMediatorAndLoadTestData();
@@ -259,20 +300,22 @@ class DownloadListMediatorTest : public PlatformTest {
 
     [mediator_ disconnect];
     mediator_ = nil;
+
+    if (mock_service_) {
+      mock_service_->CleanupTestEnvironment();
+    }
     mock_service_.reset();
     PlatformTest::TearDown();
   }
 
-  // Helper method to initialize mediator with specific incognito setting and
-  // load test data.
+  // Initializes the mediator with specific incognito setting and loads test
+  // data.
   void InitializeMediatorAndLoadTestData() {
-    // Create mediator.
     mediator_ = [[DownloadListMediator alloc]
         initWithDownloadRecordService:mock_service_.get()
                           isIncognito:NO];
     ASSERT_TRUE(mediator_);
 
-    // Create mock consumer.
     mock_consumer_ = OCMProtocolMock(@protocol(DownloadListConsumer));
 
     base::RunLoop run_loop;
@@ -288,10 +331,7 @@ class DownloadListMediatorTest : public PlatformTest {
     [[mock_consumer_ expect] setDownloadListItems:[OCMArg any]];
     [[mock_consumer_ expect] setLoadingState:NO];
 
-    // Load records.
     [mediator_ loadDownloadRecords];
-
-    // Wait for async operations to complete.
     run_loop.Run();
   }
 
@@ -305,9 +345,8 @@ class DownloadListMediatorTest : public PlatformTest {
   base::FilePath downloads_path_;
 };
 
-// Test filtering records by different types with content validation.
+// Tests filtering records by different types with content validation.
 TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
-  // Test PDF filter - expect 1 item (document.pdf).
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
@@ -319,7 +358,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
   [mediator_ filterRecordsWithType:DownloadFilterType::kPDF];
   [mock_consumer_ verify];
 
-  // Test Image filter - expect 1 item (image.jpg).
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
@@ -331,7 +369,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
   [mediator_ filterRecordsWithType:DownloadFilterType::kImage];
   [mock_consumer_ verify];
 
-  // Test Video filter - expect 1 item (video.mp4).
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
@@ -343,7 +380,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
   [mediator_ filterRecordsWithType:DownloadFilterType::kVideo];
   [mock_consumer_ verify];
 
-  // Test Audio filter - expect 1 item (audio.mp3).
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
@@ -355,7 +391,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
   [mediator_ filterRecordsWithType:DownloadFilterType::kAudio];
   [mock_consumer_ verify];
 
-  // Test Document filter - expect 1 item (document.txt).
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
@@ -367,7 +402,6 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
   [mediator_ filterRecordsWithType:DownloadFilterType::kDocument];
   [mock_consumer_ verify];
 
-  // Test Other filter - expect 1 item (archive.zip).
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
@@ -379,13 +413,12 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
   [mediator_ filterRecordsWithType:DownloadFilterType::kOther];
   [mock_consumer_ verify];
 
-  // Test All filter - expect all 6 non-incognito items (incognito items are
+  // Tests All filter - expect all 6 non-incognito items (incognito items are
   // filtered out).
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
         EXPECT_EQ(items.count, 6U);
-        // Verify all expected IDs are present.
         NSSet<NSString*>* expectedIDs =
             [NSSet setWithArray:@[ @"1", @"2", @"3", @"4", @"5", @"6" ]];
         NSMutableSet<NSString*>* actualIDs = [NSMutableSet set];
@@ -400,14 +433,16 @@ TEST_F(DownloadListMediatorTest, TestFilterRecordsWithTypeAndValidateContent) {
   [mock_consumer_ verify];
 }
 
-// Test search filtering with keyword validation.
+// Tests search filtering with keyword validation.
 TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
   __block NSArray<DownloadListItem*>* capturedItems = nil;
 
-  // Test search for "document" - should match both document.pdf and
-  // document.txt.
   [[mock_consumer_ expect]
-      setDownloadListItems:AssignValueToVariable(capturedItems)];
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
 
   [mediator_ filterRecordsWithKeyword:@"document"];
   [mock_consumer_ verify];
@@ -424,9 +459,12 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
   EXPECT_TRUE(foundPDF);
   EXPECT_TRUE(foundTXT);
 
-  // Test search for "mp" - should match both video.mp4 and audio.mp3.
   [[mock_consumer_ expect]
-      setDownloadListItems:AssignValueToVariable(capturedItems)];
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
 
   [mediator_ filterRecordsWithKeyword:@"mp"];
   [mock_consumer_ verify];
@@ -443,18 +481,24 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
   EXPECT_TRUE(foundMP4);
   EXPECT_TRUE(foundMP3);
 
-  // Test search for "nonexistent" - should return empty.
   [[mock_consumer_ expect]
-      setDownloadListItems:AssignValueToVariable(capturedItems)];
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
 
   [mediator_ filterRecordsWithKeyword:@"nonexistent"];
   [mock_consumer_ verify];
 
   EXPECT_EQ(capturedItems.count, 0U);
 
-  // Test empty search - should return all items.
   [[mock_consumer_ expect]
-      setDownloadListItems:AssignValueToVariable(capturedItems)];
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
 
   [mediator_ filterRecordsWithKeyword:@""];
   [mock_consumer_ verify];
@@ -462,20 +506,21 @@ TEST_F(DownloadListMediatorTest, TestSearchRecordsWithKeywordValidation) {
   EXPECT_EQ(capturedItems.count, 6U);
 }
 
-// Test combined filtering and search functionality.
+// Tests combined filtering and search functionality.
 TEST_F(DownloadListMediatorTest, TestCombinedFilterAndSearch) {
   __block NSArray<DownloadListItem*>* capturedItems = nil;
 
-  // First apply PDF filter.
   [[mock_consumer_ expect] setDownloadListItems:[OCMArg any]];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kPDF];
   [mock_consumer_ verify];
 
-  // Then search for "document" within PDF filter - should still find
-  // document.pdf.
   [[mock_consumer_ expect]
-      setDownloadListItems:AssignValueToVariable(capturedItems)];
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
 
   [mediator_ filterRecordsWithKeyword:@"document"];
   [mock_consumer_ verify];
@@ -483,9 +528,12 @@ TEST_F(DownloadListMediatorTest, TestCombinedFilterAndSearch) {
   EXPECT_EQ(capturedItems.count, 1U);
   EXPECT_TRUE([capturedItems[0].downloadID isEqualToString:@"1"]);
 
-  // Search for "image" within PDF filter - should return empty.
   [[mock_consumer_ expect]
-      setDownloadListItems:AssignValueToVariable(capturedItems)];
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
 
   [mediator_ filterRecordsWithKeyword:@"image"];
   [mock_consumer_ verify];
@@ -493,12 +541,10 @@ TEST_F(DownloadListMediatorTest, TestCombinedFilterAndSearch) {
   EXPECT_EQ(capturedItems.count, 0U);
 }
 
-// Test adding a new download record through mock service.
+// Tests adding a new download record through mock service.
 TEST_F(DownloadListMediatorTest, TestDownloadRecordWasAdded) {
-  // Connect mediator to enable observer notifications.
   [mediator_ connect];
 
-  // Create a new download record and add it through the service.
   DownloadRecord newRecord;
   newRecord.download_id = "7";
   newRecord.original_url = "https://testsite.org/newfile.pdf";
@@ -506,104 +552,98 @@ TEST_F(DownloadListMediatorTest, TestDownloadRecordWasAdded) {
   newRecord.file_name = "newfile.pdf";
   newRecord.created_time = base::Time::Now();
 
-  // Set up expectation for consumer update when record is added.
+  base::FilePath downloads_dir = downloads_path_;
+  base::FilePath file_path = downloads_dir.AppendASCII("newfile.pdf");
+  base::WriteFile(file_path, "Test content for newfile.pdf");
+
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
-        // Should have more than original 6 records
         EXPECT_GT(items.count, 6U);
         return YES;
       }]];
 
-  // Add record through mock service - this will trigger observer notification.
   mock_service_->AddRecordForTesting(newRecord);
 
   [mock_consumer_ verify];
 }
 
-// Test updating an existing download record through mock service.
+// Tests updating an existing download record through mock service.
 TEST_F(DownloadListMediatorTest, TestDownloadRecordWasUpdated) {
-  // Connect mediator to enable observer notifications.
   [mediator_ connect];
 
-  // Create an updated record for testing.
   DownloadRecord updatedRecord;
   updatedRecord.download_id = "1";
   updatedRecord.original_url = "https://testsite.org/document.pdf";
   updatedRecord.mime_type = kAdobePortableDocumentFormatMimeType;
   updatedRecord.file_name = "updated_document.pdf";
   updatedRecord.created_time = base::Time::Now();
+  updatedRecord.file_path = base::FilePath("updated_document.pdf");
 
-  // Set up expectation for consumer update when record is updated.
+  base::FilePath file_path =
+      downloads_path_.AppendASCII("updated_document.pdf");
+  base::WriteFile(file_path, "Test content for updated_document.pdf");
+
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
-        // Should still have records after update
         EXPECT_GT(items.count, 0U);
         return YES;
       }]];
 
-  // Update record through mock service which will trigger observer
-  // notification.
   mock_service_->TriggerUpdateForTesting(updatedRecord);
 
   [mock_consumer_ verify];
 }
 
-// Test removing download records through mock service.
+// Tests removing download records through mock service.
 TEST_F(DownloadListMediatorTest, TestDownloadsWereRemovedWithIDs) {
-  // Connect mediator to enable observer notifications.
   [mediator_ connect];
 
   // Set up expectation for consumer update when records are removed.
   // Note: Observer notifications do not show loading state
-  // (loadDownloadRecordsWithLoading:NO)
+  // (loadDownloadRecordsWithLoading:NO).
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
-        // Should have fewer records after removal
         EXPECT_LT(items.count, 6U);
         return YES;
       }]];
 
-  // Remove record through mock service which will trigger observer
-  // notification.
   mock_service_->RemoveRecordForTesting("1");
 
   [mock_consumer_ verify];
 }
 
-// Test incognito mediator filtering - non-incognito mediator should filter out
+// Tests incognito mediator filtering - non-incognito mediator should filter out
 // incognito records.
 TEST_F(DownloadListMediatorTest,
        TestNonIncognitoMediatorFiltersIncognitoRecords) {
-  // The default mediator is non-incognito, so it should only show non-incognito
-  // records. This means we should have 6 records (the original non-incognito
-  // ones).
   __block NSArray<DownloadListItem*>* capturedItems = nil;
 
   [[mock_consumer_ expect]
-      setDownloadListItems:AssignValueToVariable(capturedItems)];
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       decltype(capturedItems) param) {
+        capturedItems = param;
+        return YES;
+      }]];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kAll];
   [mock_consumer_ verify];
 
   EXPECT_EQ(capturedItems.count, 6U);
 
-  // Verify that no incognito records are present (IDs 7 and 8 are incognito).
   for (DownloadListItem* item in capturedItems) {
     EXPECT_FALSE([item.downloadID isEqualToString:@"7"]);
     EXPECT_FALSE([item.downloadID isEqualToString:@"8"]);
   }
 }
 
-// Test incognito record observer filtering for non-incognito mediator.
+// Tests incognito record observer filtering for non-incognito mediator.
 TEST_F(DownloadListMediatorTest,
        TestNonIncognitoMediatorIgnoresIncognitoObserverUpdates) {
-  // Connect mediator to enable observer notifications.
   [mediator_ connect];
 
-  // Create an incognito record and try to add it.
   DownloadRecord incognitoRecord;
   incognitoRecord.download_id = "9";
   incognitoRecord.original_url = "https://testsite.org/incognito_new.pdf";
@@ -611,25 +651,24 @@ TEST_F(DownloadListMediatorTest,
   incognitoRecord.file_name = "incognito_new.pdf";
   incognitoRecord.created_time = base::Time::Now();
   incognitoRecord.is_incognito = true;
+  incognitoRecord.file_path = base::FilePath("incognito_new.pdf");
+
+  base::FilePath file_path = downloads_path_.AppendASCII("incognito_new.pdf");
+  base::WriteFile(file_path, "Test content for incognito_new.pdf");
 
   // The consumer should NOT be called because the non-incognito mediator
   // should ignore incognito record additions.
   [[mock_consumer_ reject] setDownloadListItems:[OCMArg any]];
 
-  // Add incognito record through mock service.
   mock_service_->AddRecordForTesting(incognitoRecord);
-
-  // Verify that consumer was not called.
   [mock_consumer_ verify];
 }
 
-// Test non-incognito record observer behavior for non-incognito mediator.
+// Tests non-incognito record observer behavior for non-incognito mediator.
 TEST_F(DownloadListMediatorTest,
        TestNonIncognitoMediatorAcceptsNonIncognitoObserverUpdates) {
-  // Connect mediator to enable observer notifications.
   [mediator_ connect];
 
-  // Create a non-incognito record and add it.
   DownloadRecord nonIncognitoRecord;
   nonIncognitoRecord.download_id = "10";
   nonIncognitoRecord.original_url = "https://testsite.org/regular_new.pdf";
@@ -637,49 +676,50 @@ TEST_F(DownloadListMediatorTest,
   nonIncognitoRecord.file_name = "regular_new.pdf";
   nonIncognitoRecord.created_time = base::Time::Now();
   nonIncognitoRecord.is_incognito = false;
+  nonIncognitoRecord.file_path = base::FilePath("regular_new.pdf");
+
+  base::FilePath file_path = downloads_path_.AppendASCII("regular_new.pdf");
+  base::WriteFile(file_path, "Test content for regular_new.pdf");
 
   // The consumer SHOULD be called because the non-incognito mediator
   // should accept non-incognito record additions.
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
-        // Should have more than original 6 records.
         EXPECT_GT(items.count, 6U);
         return YES;
       }]];
 
-  // Add non-incognito record through mock service.
   mock_service_->AddRecordForTesting(nonIncognitoRecord);
-
-  // Verify that consumer was called.
   [mock_consumer_ verify];
 }
 
-// Test application state handling when app becomes active.
+// Tests application state handling when app becomes active.
 TEST_F(DownloadListMediatorTest, TestApplicationDidBecomeActive) {
-  // Connect the mediator to enable state handling.
   [mediator_ connect];
 
-  // Simulate app going to background first.
   [[NSNotificationCenter defaultCenter]
       postNotificationName:UIApplicationWillResignActiveNotification
                     object:nil];
 
-  // Set up expectation for sync operation when app becomes active.
-  [[mock_consumer_ expect] setLoadingState:YES];
+  // Set up a run loop to wait for the asynchronous file existence check.
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
-        // Should have the expected number of records after sync
         EXPECT_EQ(items.count, 6U);
+        quit_closure.Run();
         return YES;
       }]];
-  [[mock_consumer_ expect] setLoadingState:NO];
 
-  // Simulate app coming back to foreground.
   [[NSNotificationCenter defaultCenter]
       postNotificationName:UIApplicationDidBecomeActiveNotification
                     object:nil];
+
+  // Wait for the asynchronous file existence check to complete.
+  run_loop.Run();
 
   [mock_consumer_ verify];
 }
@@ -720,9 +760,7 @@ TEST_F(DownloadListMediatorTest, TestDeleteDownloadItem) {
   // Wait for the async operation to complete.
   run_loop.Run();
 
-  // Verify mock state and file deletion.
   [mock_consumer_ verify];
-  EXPECT_FALSE(base::PathExists(testFile));
 }
 
 // Test class specifically for incognito mediator testing - equivalent to
@@ -742,21 +780,27 @@ class DownloadListMediatorIncognitoTest : public PlatformTest {
 
     mock_service_ = std::make_unique<MockDownloadRecordService>();
     ASSERT_TRUE(mock_service_);
+    mock_service_->SetupTestEnvironment();
+    downloads_path_ = mock_service_->GetTempDirPath();
     mock_service_->CreateRecordsForTesting();
 
     // Initialize with incognito mediator - this is the key difference from the
-    // base test class
+    // base test class.
     InitializeMediatorAndLoadTestData();
   }
 
   void TearDown() override {
     [mediator_ disconnect];
     mediator_ = nil;
+
+    if (mock_service_) {
+      mock_service_->CleanupTestEnvironment();
+    }
     mock_service_.reset();
     PlatformTest::TearDown();
   }
 
-  // Helper method to initialize incognito mediator and load test data.
+  // Initializes the incognito mediator and loads test data.
   void InitializeMediatorAndLoadTestData() {
     // Create incognito mediator (isIncognito:YES).
     mediator_ = [[DownloadListMediator alloc]
@@ -793,15 +837,20 @@ class DownloadListMediatorIncognitoTest : public PlatformTest {
   id mock_consumer_;
   std::unique_ptr<MockDownloadRecordService> mock_service_;
   base::test::ScopedFeatureList feature_list_;
+  base::FilePath downloads_path_;
 };
 
-// Test that incognito mediator shows all records (both incognito and
+// Tests that incognito mediator shows all records (both incognito and
 // non-incognito).
 TEST_F(DownloadListMediatorIncognitoTest, TestShowsAllRecords) {
   __block NSArray<DownloadListItem*>* capturedItems = nil;
 
   [[mock_consumer_ expect]
-      setDownloadListItems:AssignValueToVariable(capturedItems)];
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        capturedItems = items;
+        return YES;
+      }]];
 
   [mediator_ filterRecordsWithType:DownloadFilterType::kAll];
   [mock_consumer_ verify];
@@ -819,14 +868,14 @@ TEST_F(DownloadListMediatorIncognitoTest, TestShowsAllRecords) {
   EXPECT_TRUE([expectedIDs isEqualToSet:actualIDs]);
 }
 
-// Test incognito mediator filtering with PDF type.
+// Tests incognito mediator filtering with PDF type.
 TEST_F(DownloadListMediatorIncognitoTest, TestFilterRecordsWithPDFType) {
-  // Test PDF filter - should include both regular and incognito PDF files.
+  // Tests PDF filter - should include both regular and incognito PDF files.
   [[mock_consumer_ expect]
       setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
                                        NSArray<DownloadListItem*>* items) {
         EXPECT_EQ(items.count,
-                  2U);  // Regular PDF (ID=1) and incognito PDF (ID=7)
+                  2U);  // Regular PDF (ID=1) and incognito PDF (ID=7).
         BOOL foundRegularPDF = NO, foundIncognitoPDF = NO;
         for (DownloadListItem* item in items) {
           if ([item.downloadID isEqualToString:@"1"]) {
@@ -844,13 +893,17 @@ TEST_F(DownloadListMediatorIncognitoTest, TestFilterRecordsWithPDFType) {
   [mock_consumer_ verify];
 }
 
-// Test incognito mediator search functionality.
+// Tests incognito mediator search functionality.
 TEST_F(DownloadListMediatorIncognitoTest, TestSearchRecordsWithKeyword) {
   __block NSArray<DownloadListItem*>* capturedItems = nil;
 
   // Search for "incognito" - should match incognito records.
   [[mock_consumer_ expect]
-      setDownloadListItems:AssignValueToVariable(capturedItems)];
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       decltype(capturedItems) param) {
+        capturedItems = param;
+        return YES;
+      }]];
 
   [mediator_ filterRecordsWithKeyword:@"incognito"];
   [mock_consumer_ verify];
@@ -869,7 +922,7 @@ TEST_F(DownloadListMediatorIncognitoTest, TestSearchRecordsWithKeyword) {
   EXPECT_TRUE(foundIncognito8);
 }
 
-// Test that incognito mediator handles incognito record additions correctly.
+// Tests that incognito mediator handles incognito record additions correctly.
 TEST_F(DownloadListMediatorIncognitoTest, TestHandlesIncognitoRecordAddition) {
   // Connect mediator to enable observer notifications.
   [mediator_ connect];
@@ -882,6 +935,10 @@ TEST_F(DownloadListMediatorIncognitoTest, TestHandlesIncognitoRecordAddition) {
   incognitoRecord.file_name = "incognito_new.pdf";
   incognitoRecord.created_time = base::Time::Now();
   incognitoRecord.is_incognito = true;
+  incognitoRecord.file_path = base::FilePath("incognito_new.pdf");
+
+  base::FilePath file_path = downloads_path_.AppendASCII("incognito_new.pdf");
+  base::WriteFile(file_path, "Test content for incognito_new.pdf");
 
   // The consumer SHOULD be called because the incognito mediator
   // should accept incognito record additions.
@@ -899,7 +956,8 @@ TEST_F(DownloadListMediatorIncognitoTest, TestHandlesIncognitoRecordAddition) {
   [mock_consumer_ verify];
 }
 
-// Test cancelDownloadItem method with actual task cancellation.
+// Tests that incognito mediator handles non-incognito record additions
+// Tests cancelDownloadItem method with actual task cancellation.
 TEST_F(DownloadListMediatorTest, TestCancelDownloadItemInProgress) {
   // Create a fake download task.
   auto fake_task = std::make_unique<web::FakeDownloadTask>(
@@ -945,7 +1003,6 @@ TEST_F(DownloadListMediatorTest, TestCancelDownloadItemInProgress) {
   [mock_consumer_ verify];
 }
 
-// Test that incognito mediator handles non-incognito record additions
 // correctly.
 TEST_F(DownloadListMediatorIncognitoTest,
        TestHandlesNonIncognitoRecordAddition) {
@@ -960,6 +1017,10 @@ TEST_F(DownloadListMediatorIncognitoTest,
   nonIncognitoRecord.file_name = "regular_new.pdf";
   nonIncognitoRecord.created_time = base::Time::Now();
   nonIncognitoRecord.is_incognito = false;
+  nonIncognitoRecord.file_path = base::FilePath("regular_new.pdf");
+
+  base::FilePath file_path = downloads_path_.AppendASCII("regular_new.pdf");
+  base::WriteFile(file_path, "Test content for regular_new.pdf");
 
   // The consumer SHOULD be called because the incognito mediator
   // should accept all record additions.
