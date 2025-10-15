@@ -1263,12 +1263,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   // Note: ideally this test would only open Glic after the main browser is
   // closed. This however crashes in `OpenGlicWindow()`.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  TrackFloatingGlicInstance();
+  RunTestSequence(OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents));
 
   // Open a new incognito window first so that Chrome doesn't exit, then close
   // the first browser window.

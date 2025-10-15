@@ -11,6 +11,8 @@
 
 #include "base/feature_list.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
@@ -212,7 +214,8 @@ class InteractiveGlicTestMixin : public T {
                 [&]() -> bool {
                   GlicInstance* instance = GetGlicInstanceImpl();
                   if (!instance) {
-                    LOG(ERROR) << "No glic instance for active tab";
+                    LOG(ERROR)
+                        << "No glic instance for " << DescribeGlicTracking();
                     return false;
                   }
                   if (!instance->IsShowing()) {
@@ -304,6 +307,22 @@ class InteractiveGlicTestMixin : public T {
                    WaitForAndInstrumentGlic(instrument_mode));
     Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
     return steps;
+  }
+
+  auto OpenGlicFloatingWindow(GlicInstrumentMode instrument_mode =
+                                  GlicInstrumentMode::kHostAndContents) {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      auto steps = Api::Steps(Api::Do([&]() {
+                                GetInstanceCoordinator().Toggle(
+                                    /*browser=*/nullptr, true,
+                                    mojom::InvocationSource::kOsButton);
+                              }),
+                              WaitForAndInstrumentGlic(instrument_mode));
+      Api::AddDescriptionPrefix(steps, "OpenGlicFloatingWindow");
+      return steps;
+    } else {
+      return OpenGlicWindow(GlicWindowMode::kDetached, instrument_mode);
+    }
   }
 
   // Toggles Glic through one of the entrypoints.
@@ -714,23 +733,25 @@ class InteractiveGlicTestMixin : public T {
 
   // Have all glic instance operations linked to a glic instance with this ID.
   void TrackGlicInstanceWithId(InstanceId id) {
+    ClearGlicTracking();
     tracked_instance_id_ = id;
-    glic_instance_tab_index_ = std::nullopt;
-    glic_instance_tab_handle_ = std::nullopt;
   }
 
   // Track the glic instance at a specific tab index.
   void TrackGlicInstanceWithTabIndex(int index) {
+    ClearGlicTracking();
     glic_instance_tab_index_ = index;
-    tracked_instance_id_ = std::nullopt;
-    glic_instance_tab_handle_ = std::nullopt;
   }
 
   // Track the glic instance at this tab.
   void TrackGlicInstanceWithTabHandle(tabs::TabInterface::Handle handle) {
-    glic_instance_tab_index_ = std::nullopt;
-    tracked_instance_id_ = std::nullopt;
+    ClearGlicTracking();
     glic_instance_tab_handle_ = handle;
+  }
+
+  void TrackFloatingGlicInstance() {
+    ClearGlicTracking();
+    track_floating_glic_instance_ = true;
   }
 
   // Returns the currently tracked glic instance.
@@ -745,6 +766,9 @@ class InteractiveGlicTestMixin : public T {
     }
 
     if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      if (track_floating_glic_instance_) {
+        return GetInstanceCoordinator().FindFloatingInstanceForTesting();
+      }
       if (glic_instance_tab_handle_) {
         if (glic_instance_tab_handle_->Get()) {
           return glic_service()->GetInstanceForTab(
@@ -764,6 +788,32 @@ class InteractiveGlicTestMixin : public T {
   }
 
  private:
+  std::string DescribeGlicTracking() {
+    if (tracked_instance_id_) {
+      return base::StrCat({"Tracking glic instance with id ",
+                           tracked_instance_id_->AsLowercaseString()});
+    } else if (glic_instance_tab_index_) {
+      return base::StrCat({"Tracking glic instance at tab index ",
+                           base::NumberToString(*glic_instance_tab_index_)});
+
+    } else if (glic_instance_tab_handle_) {
+      if (!glic_instance_tab_handle_->Get()) {
+        return "Tracking glic instance with INVALID tab handle";
+      }
+      return "Tracking glic instance with tab handle";
+    } else if (track_floating_glic_instance_) {
+      return "Tracking floating glic instance";
+    }
+    NOTREACHED();
+  }
+
+  void ClearGlicTracking() {
+    tracked_instance_id_ = std::nullopt;
+    glic_instance_tab_index_ = std::nullopt;
+    glic_instance_tab_handle_ = std::nullopt;
+    track_floating_glic_instance_ = false;
+  }
+
   // Because of limitations in the template system, calls to base class methods
   // that are guaranteed by the `requires` clause must still be scoped. These
   // are here for convenience to make the methods above more readable.
@@ -775,6 +825,7 @@ class InteractiveGlicTestMixin : public T {
   std::optional<InstanceId> tracked_instance_id_;
   std::optional<int> glic_instance_tab_index_ = 0;
   std::optional<tabs::TabInterface::Handle> glic_instance_tab_handle_;
+  bool track_floating_glic_instance_ = false;
 
   base::WeakPtr<Browser> active_browser_;
   glic::GlicTestEnvironment glic_test_environment_;

@@ -448,4 +448,15 @@ void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(
   }
 }
 
+GlicInstance* GlicInstanceCoordinatorImpl::FindFloatingInstanceForTesting() {
+  if (!floating_instance_key_.has_value()) {
+    return nullptr;
+  }
+  auto iter = instances_.find(*floating_instance_key_);
+  if (iter == instances_.end()) {
+    return nullptr;
+  }
+  return iter->second.get();
+}
+
 }  // namespace glic

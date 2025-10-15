@@ -119,6 +119,7 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
 
   // Testing support.
   void SetWarmingEnabledForTesting(bool warming_enabled);
+  GlicInstance* FindFloatingInstanceForTesting();
 
  private:
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
