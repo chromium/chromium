@@ -56,15 +56,22 @@ using TreesInVizBreakdown = CompositorFrameReporter::TreesInVizBreakdown;
 using FrameFinalState = FrameInfo::FrameFinalState;
 
 constexpr int kStageTypeCount = static_cast<int>(StageType::kStageTypeCount);
+
+// We need double the VizBreakdown count to accommodate TreesInViz and regular
+// mode
 constexpr int kAllBreakdownCount =
-    static_cast<int>(VizBreakdown::kBreakdownCount) +
+    (static_cast<int>(VizBreakdown::kBreakdownCount) * 2) +
     static_cast<int>(BlinkBreakdown::kBreakdownCount) +
     static_cast<int>(TreesInVizBreakdown::kTreesInVizBreakdownCount);
 
 constexpr int kVizBreakdownInitialIndex = kStageTypeCount;
-constexpr int kBlinkBreakdownInitialIndex =
+// The first set of VizBreakdowns is for normal mode, second set for TreesInViz.
+constexpr int kVizBreakdownForTreesInVizModeInitialIndex =
     kVizBreakdownInitialIndex + static_cast<int>(VizBreakdown::kBreakdownCount);
-constexpr int kTreesInVizBreakdownIndex =
+constexpr int kBlinkBreakdownInitialIndex =
+    kVizBreakdownInitialIndex +
+    (static_cast<int>(VizBreakdown::kBreakdownCount) * 2);
+constexpr int kTreesInVizBreakdownInitialIndex =
     kBlinkBreakdownInitialIndex +
     static_cast<int>(BlinkBreakdown::kBreakdownCount);
 
@@ -1384,6 +1391,55 @@ void CompositorFrameReporter::ReportCompositorLatencyTreesInVizBreakdowns(
   }
 }
 
+// To accommodate TreesInViz and normal modes in parallel, we need to
+// separately bucket the viz breakdowns because histogram exports cache metric
+// names. The viz substage categories are mutually-exclusive.
+//
+// Metric histograms should look something like this:
+//
+// /---------------------\
+// | Stage1              | <- Start with Stage breakdowns
+// | Stage2              |
+// | ...                 |
+// | VizSubstage1        | <- Allocated for Viz substages for normal path,
+// | VizSubstage2        | SubmitCompositorFrameToPresentationCompositorFrame
+// | ...                 |
+// | VizSubstage1        | <- Repeat the substages for breakdowns of
+// | VizSubstage2        | SubmitUpdateDisplayTreeToPresentationCompositorFrame
+// | ---                 |
+// | BlinkSubstage1      | <- Blink substages valid for both modes
+// | BlinkSubstage2      |
+// | ...                 |
+// | TreesInVizSubStage1 | <- TreesInViz cc-specific substages
+// | TreesInVizSubstage2 |
+// \---------------------/
+//
+static int GetSubstageIndex(
+    StageType stage_type,
+    std::optional<VizBreakdown> viz_breakdown,
+    std::optional<BlinkBreakdown> blink_breakdown,
+    std::optional<TreesInVizBreakdown> trees_in_viz_breakdown) {
+  if (blink_breakdown) {
+    return kBlinkBreakdownInitialIndex + static_cast<int>(*blink_breakdown);
+  }
+
+  if (viz_breakdown) {
+    if (stage_type ==
+        StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame) {
+      return kVizBreakdownForTreesInVizModeInitialIndex +
+             static_cast<int>(*viz_breakdown);
+    }
+    return kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown);
+  }
+
+  if (trees_in_viz_breakdown) {
+    return kTreesInVizBreakdownInitialIndex +
+           static_cast<int>(*trees_in_viz_breakdown);
+  }
+
+  return static_cast<int>(stage_type);
+}
+
 void CompositorFrameReporter::ReportCompositorLatencyHistogram(
     FrameSequenceTrackerType frame_sequence_tracker_type,
     StageType stage_type,
@@ -1405,17 +1461,12 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
            StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame));
   const int frame_sequence_tracker_type_index =
       static_cast<int>(frame_sequence_tracker_type);
-  const int stage_type_index =
-      blink_breakdown
-          ? kBlinkBreakdownInitialIndex + static_cast<int>(*blink_breakdown)
-      : viz_breakdown
-          ? kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown)
-      : trees_in_viz_breakdown ? kTreesInVizBreakdownIndex +
-                                     static_cast<int>(*trees_in_viz_breakdown)
-                               : static_cast<int>(stage_type);
+
+  const int stage_type_index = GetSubstageIndex(
+      stage_type, viz_breakdown, blink_breakdown, trees_in_viz_breakdown);
 
   const int histogram_index =
-      stage_type_index * kFrameSequenceTrackerTypeCount +
+      (stage_type_index * kFrameSequenceTrackerTypeCount) +
       frame_sequence_tracker_type_index;
 
   CHECK_LT(stage_type_index, kStagesWithBreakdownCount);

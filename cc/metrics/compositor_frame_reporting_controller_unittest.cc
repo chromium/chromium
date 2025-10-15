@@ -1184,6 +1184,22 @@ TEST_F(TreesInVizClientCompositorFrameReportingControllerTest,
       35 + 2 + 3 + 5 + 6 + 7 + 8 + 9 + 10, 1);
 }
 
+TEST_F(TreesInVizClientCompositorFrameReportingControllerTest,
+       EmitBothBranchesOfHistograms) {
+  base::HistogramTester histogram_tester;
+
+  // This function will simulate stepping through the entire CFRC flow,
+  // with timestamps added to the stages relevant for TreesInViz.
+  // This emits the TreesInViz branch of histograms.
+  SimulatePresentCompositorFrameWithTreesInVizTimingDetails();
+
+  // This emits the normal-path histograms.
+  reporting_controller_.trees_in_viz_client(false);
+  SimulatePresentCompositorFrame();
+
+  // Test should not crash.
+}
+
 // If the presentation of the frame happens before deadline.
 TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame1) {
   base::HistogramTester histogram_tester;
