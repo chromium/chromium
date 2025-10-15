@@ -23,6 +23,7 @@
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/sqlite/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
 
@@ -371,6 +372,54 @@ TEST_P(PersistentCacheTest, ThreadSafeAccess) {
   auto entry = future_entry.Take();
   ASSERT_NE(entry, nullptr);
   EXPECT_EQ(entry->GetContentSpan(), value);
+}
+
+TEST_P(PersistentCacheTest, MultipleLiveEntries) {
+  auto cache = OpenCache();
+  absl::flat_hash_map<std::string, std::unique_ptr<Entry>> entries;
+
+  for (size_t i = 0; i < 20; ++i) {
+    std::string key = base::NumberToString(i);
+    auto value = base::as_byte_span(key);
+    cache->Insert(key, value);
+    // Create an entry where the value is equal to the key.
+    entries[key] = cache->Find(key);
+  }
+
+  // Verify that entries have the expected content.
+  for (auto& [key, entry] : entries) {
+    ASSERT_NE(entry, nullptr);
+    ASSERT_EQ(entry->GetContentSpan(), base::as_byte_span(key));
+  }
+}
+
+TEST_P(PersistentCacheTest, MultipleLiveEntriesWithVaryingLifetime) {
+  static constexpr size_t kNumberOfEntries = 40;
+
+  auto cache = OpenCache();
+  absl::flat_hash_map<std::string, std::unique_ptr<Entry>> entries;
+
+  for (size_t i = 0; i < kNumberOfEntries; ++i) {
+    std::string key = base::NumberToString(i);
+    auto value = base::as_byte_span(key);
+    cache->Insert(key, value);
+    // Create an entry where the value is equal to the key.
+    entries[key] = cache->Find(key);
+
+    // Every other iteration delete an entry that came before.
+    if (i && i % 2 == 0) {
+      entries.erase(base::NumberToString(i / 2));
+    }
+  }
+
+  // Assert that some entries remain to be verified in the next loop.
+  ASSERT_GE(entries.size(), kNumberOfEntries / 2);
+
+  // Verify that entries have the expected content.
+  for (auto& [key, entry] : entries) {
+    ASSERT_NE(entry, nullptr);
+    ASSERT_EQ(entry->GetContentSpan(), base::as_byte_span(key));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
