@@ -151,7 +151,7 @@ class CONTENT_EXPORT SiteInfo {
       const IsolationContext& isolation_context,
       BrowserContext* browser_context,
       bool does_site_request_dedicated_process_for_coop,
-      bool requires_origin_keyed_process_for_oac,
+      bool requires_origin_keyed_process,
       bool is_error_page,
       bool is_sandboxed,
       bool is_pdf);
