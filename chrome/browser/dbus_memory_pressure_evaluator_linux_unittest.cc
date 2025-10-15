@@ -55,7 +55,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
     SetupProxy(portal_proxy_, kXdgPortalService,
                DbusMemoryPressureEvaluatorLinux::kXdgPortalObject);
 
-    ON_CALL(*dbus_proxy_, DoCallMethod)
+    ON_CALL(*dbus_proxy_, CallMethod)
         .WillByDefault(Invoke(
             this, &DbusMemoryPressureEvaluatorLinuxTest::HandleDBusCalls));
 
@@ -106,7 +106,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
 
   void HandleDBusCalls(dbus::MethodCall* method_call,
                        int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* response_callback) {
+                       dbus::ObjectProxy::ResponseCallback response_callback) {
     method_call->SetSerial(123);
     method_call->SetReplySerial(456);
 
@@ -120,14 +120,14 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
       dbus::MessageWriter writer(response.get());
       writer.AppendBool(base::Contains(running_services_, service));
 
-      std::move(*response_callback).Run(response.get());
+      std::move(response_callback).Run(response.get());
     } else if (method_call->GetMember() == "ListActivatableNames") {
       std::unique_ptr<dbus::Response> response =
           dbus::Response::FromMethodCall(method_call);
       dbus::MessageWriter writer(response.get());
       writer.AppendArrayOfStrings({});
 
-      std::move(*response_callback).Run(response.get());
+      std::move(response_callback).Run(response.get());
     } else {
       NOTREACHED() << method_call->GetMember();
     }
@@ -204,9 +204,9 @@ TEST_F(DbusMemoryPressureEvaluatorLinuxTest, PeriodicReset) {
 }
 
 TEST_F(DbusMemoryPressureEvaluatorLinuxTest, PrefersConnectingToLmm) {
-  EXPECT_CALL(*lmm_proxy(), DoConnectToSignal(kLmmInterface, _, _, _)).Times(1);
+  EXPECT_CALL(*lmm_proxy(), ConnectToSignal(kLmmInterface, _, _, _)).Times(1);
   EXPECT_CALL(*portal_proxy(),
-              DoConnectToSignal(kXdgPortalMemoryMonitorInterface, _, _, _))
+              ConnectToSignal(kXdgPortalMemoryMonitorInterface, _, _, _))
       .Times(0);
 
   AddRunningService(kLmmService);
@@ -216,9 +216,9 @@ TEST_F(DbusMemoryPressureEvaluatorLinuxTest, PrefersConnectingToLmm) {
 }
 
 TEST_F(DbusMemoryPressureEvaluatorLinuxTest, FallsBackToPortal) {
-  EXPECT_CALL(*lmm_proxy(), DoConnectToSignal(kLmmInterface, _, _, _)).Times(0);
+  EXPECT_CALL(*lmm_proxy(), ConnectToSignal(kLmmInterface, _, _, _)).Times(0);
   EXPECT_CALL(*portal_proxy(),
-              DoConnectToSignal(kXdgPortalMemoryMonitorInterface, _, _, _))
+              ConnectToSignal(kXdgPortalMemoryMonitorInterface, _, _, _))
       .Times(1);
 
   AddRunningService(kXdgPortalService);

@@ -97,26 +97,27 @@ class MockObjectProxyWithTypedCalls : public dbus::MockObjectProxy {
                                 const dbus::ObjectPath& object_path)
       : dbus::MockObjectProxy(bus, service_name, object_path) {
     // Forward to Call().
-    EXPECT_CALL(*this, DoCallMethodWithErrorResponse(_, _, _))
+    EXPECT_CALL(*this, CallMethodWithErrorResponse(_, _, _))
         .Times(AtLeast(0))
         .WillRepeatedly(
             [this](dbus::MethodCall* method_call, int timeout_ms,
-                   dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+                   dbus::ObjectProxy::ResponseOrErrorCallback callback) {
               dbus::MessageReader reader(method_call);
               auto args = ReadDbusMessage(&reader);
               Call(method_call->GetInterface(), method_call->GetMember(),
-                   std::move(args), callback);
+                   std::move(args), &callback);
             });
 
     // Forward to CallWithoutError().
-    EXPECT_CALL(*this, DoCallMethod(_, _, _))
+    EXPECT_CALL(*this, CallMethod(_, _, _))
         .Times(AtLeast(0))
         .WillRepeatedly([this](dbus::MethodCall* method_call, int timeout_ms,
-                               dbus::ObjectProxy::ResponseCallback* callback) {
+                               dbus::ObjectProxy::ResponseCallback callback) {
           dbus::MessageReader reader(method_call);
           auto args = ReadDbusMessage(&reader);
           CallWithoutError(method_call->GetInterface(),
-                           method_call->GetMember(), std::move(args), callback);
+                           method_call->GetMember(), std::move(args),
+                           &callback);
         });
   }
 
@@ -382,13 +383,13 @@ TEST(FreedesktopSecretKeyProviderTest,
                    FreedesktopSecretKeyProvider::kMethodPrompt, _, _))
       .WillOnce(RespondWith(DbusVoid()));
 
-  EXPECT_CALL(*mock_collection_prompt_proxy, DoConnectToSignal(_, _, _, _))
+  EXPECT_CALL(*mock_collection_prompt_proxy, ConnectToSignal(_, _, _, _))
       .WillOnce([](const std::string& interface_name,
                    const std::string& signal_name,
                    dbus::ObjectProxy::SignalCallback signal_callback,
-                   dbus::ObjectProxy::OnConnectedCallback* on_connected) {
+                   dbus::ObjectProxy::OnConnectedCallback on_connected) {
         // Connected successfully
-        std::move(*on_connected).Run(interface_name, signal_name, true);
+        std::move(on_connected).Run(interface_name, signal_name, true);
 
         // Trigger the signal callback with a non-empty collection path now
         auto signal = dbus::Signal(interface_name, signal_name);
@@ -418,12 +419,12 @@ TEST(FreedesktopSecretKeyProviderTest,
                    FreedesktopSecretKeyProvider::kMethodPrompt, _, _))
       .WillOnce(RespondWith(DbusVoid()));
 
-  EXPECT_CALL(*mock_unlock_prompt_proxy, DoConnectToSignal(_, _, _, _))
+  EXPECT_CALL(*mock_unlock_prompt_proxy, ConnectToSignal(_, _, _, _))
       .WillOnce([](const std::string& interface_name,
                    const std::string& signal_name,
                    dbus::ObjectProxy::SignalCallback signal_callback,
-                   dbus::ObjectProxy::OnConnectedCallback* on_connected) {
-        std::move(*on_connected).Run(interface_name, signal_name, true);
+                   dbus::ObjectProxy::OnConnectedCallback on_connected) {
+        std::move(on_connected).Run(interface_name, signal_name, true);
 
         auto signal = dbus::Signal(interface_name, signal_name);
         dbus::MessageWriter writer(&signal);
@@ -461,12 +462,12 @@ TEST(FreedesktopSecretKeyProviderTest,
                    FreedesktopSecretKeyProvider::kMethodPrompt, _, _))
       .WillOnce(RespondWith(DbusVoid()));
 
-  EXPECT_CALL(*mock_item_prompt_proxy, DoConnectToSignal(_, _, _, _))
+  EXPECT_CALL(*mock_item_prompt_proxy, ConnectToSignal(_, _, _, _))
       .WillOnce([&](const std::string& interface_name,
                     const std::string& signal_name,
                     dbus::ObjectProxy::SignalCallback signal_callback,
-                    dbus::ObjectProxy::OnConnectedCallback* on_connected) {
-        std::move(*on_connected).Run(interface_name, signal_name, true);
+                    dbus::ObjectProxy::OnConnectedCallback on_connected) {
+        std::move(on_connected).Run(interface_name, signal_name, true);
 
         auto signal = dbus::Signal(interface_name, signal_name);
         dbus::MessageWriter writer(&signal);

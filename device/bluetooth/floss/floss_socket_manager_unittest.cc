@@ -58,7 +58,7 @@ class FlossSocketManagerTest : public testing::Test {
 
     // Handle method calls on the object proxy.
     ON_CALL(*sockmgr_proxy_.get(),
-            DoCallMethodWithErrorResponse(
+            CallMethodWithErrorResponse(
                 HasMemberOf(socket_manager::kRegisterCallback), _, _))
         .WillByDefault(
             Invoke(this, &FlossSocketManagerTest::HandleRegisterCallback));
@@ -76,10 +76,10 @@ class FlossSocketManagerTest : public testing::Test {
   void TearDown() override {
     // Expected call to UnregisterCallback when client is destroyed
     EXPECT_CALL(*sockmgr_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(socket_manager::kUnregisterCallback), _, _))
         .WillOnce([this](::dbus::MethodCall* method_call, int timeout_ms,
-                         ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                         ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
           dbus::MessageReader msg(method_call);
           // D-Bus method call should have 1 parameter.
           uint32_t param1;
@@ -103,7 +103,7 @@ class FlossSocketManagerTest : public testing::Test {
     // map.
     EXPECT_CALL(
         *sockmgr_proxy_.get(),
-        DoCallMethodWithErrorResponse(
+        CallMethodWithErrorResponse(
             HasMemberOf(socket_manager::kListenUsingRfcommWithServiceRecord), _,
             _))
         .WillOnce(
@@ -122,10 +122,9 @@ class FlossSocketManagerTest : public testing::Test {
     // Opting not to simply because we have it mocked away...
   }
 
-  void HandleRegisterCallback(
-      ::dbus::MethodCall* method_call,
-      int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+  void HandleRegisterCallback(::dbus::MethodCall* method_call,
+                              int timeout_ms,
+                              ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter msg(response.get());
     FlossDBusClient::WriteAllDBusParams(&msg, callback_id_ctr_);
@@ -133,13 +132,13 @@ class FlossSocketManagerTest : public testing::Test {
     // Increment callback counter for next call.
     callback_id_ctr_++;
 
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void HandleReturnSocketResult(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter msg(response.get());
     FlossSocketManager::SocketResult result = {
@@ -150,19 +149,19 @@ class FlossSocketManagerTest : public testing::Test {
 
     socket_id_ctr_++;
 
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void HandleReturnSuccess(::dbus::MethodCall* method_call,
                            int timeout_ms,
-                           ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                           ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter msg(response.get());
 
     BtifStatus status = BtifStatus::kSuccess;
     FlossDBusClient::WriteAllDBusParams(&msg, status);
 
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void SendOutgoingConnectionResult(
@@ -285,7 +284,7 @@ TEST_F(FlossSocketManagerTest, ListenOnSockets) {
   // Exercise all security paths.
   for (auto kv : l2cap_apis) {
     EXPECT_CALL(*sockmgr_proxy_.get(),
-                DoCallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
+                CallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
         .WillOnce(
             Invoke(this, &FlossSocketManagerTest::HandleReturnSocketResult));
 
@@ -303,7 +302,7 @@ TEST_F(FlossSocketManagerTest, ListenOnSockets) {
   }
   for (auto kv : l2cap_le_apis) {
     EXPECT_CALL(*sockmgr_proxy_.get(),
-                DoCallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
+                CallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
         .WillOnce(
             Invoke(this, &FlossSocketManagerTest::HandleReturnSocketResult));
 
@@ -322,7 +321,7 @@ TEST_F(FlossSocketManagerTest, ListenOnSockets) {
 
   for (auto kv : rfcomm_apis) {
     EXPECT_CALL(*sockmgr_proxy_.get(),
-                DoCallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
+                CallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
         .WillOnce(
             Invoke(this, &FlossSocketManagerTest::HandleReturnSocketResult));
 
@@ -370,7 +369,7 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
 
   for (auto kv : l2cap_apis) {
     EXPECT_CALL(*sockmgr_proxy_.get(),
-                DoCallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
+                CallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
         .WillOnce(
             Invoke(this, &FlossSocketManagerTest::HandleReturnSocketResult));
 
@@ -415,7 +414,7 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
 
   for (auto kv : l2cap_le_apis) {
     EXPECT_CALL(*sockmgr_proxy_.get(),
-                DoCallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
+                CallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
         .WillOnce(
             Invoke(this, &FlossSocketManagerTest::HandleReturnSocketResult));
 
@@ -460,7 +459,7 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
 
   for (auto kv : rfcomm_apis) {
     EXPECT_CALL(*sockmgr_proxy_.get(),
-                DoCallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
+                CallMethodWithErrorResponse(HasMemberOf(kv.first), _, _))
         .WillOnce(
             Invoke(this, &FlossSocketManagerTest::HandleReturnSocketResult));
 
@@ -510,7 +509,7 @@ TEST_F(FlossSocketManagerTest, AcceptAndCloseConnection) {
 
   EXPECT_CALL(
       *sockmgr_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(socket_manager::kAccept), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(socket_manager::kAccept), _, _))
       .WillOnce(Invoke(this, &FlossSocketManagerTest::HandleReturnSuccess));
 
   last_status_ = BtifStatus::kNotReady;
@@ -521,7 +520,7 @@ TEST_F(FlossSocketManagerTest, AcceptAndCloseConnection) {
 
   EXPECT_CALL(
       *sockmgr_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(socket_manager::kClose), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(socket_manager::kClose), _, _))
       .WillOnce(Invoke(this, &FlossSocketManagerTest::HandleReturnSuccess));
 
   last_status_ = BtifStatus::kNotReady;

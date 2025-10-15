@@ -65,8 +65,8 @@ class Modem3gppClientTest : public testing::Test {
     // Set an expectation so mock_proxy's ConnectToSignal() will use
     // OnConnectToSignal() to run the callback.
     EXPECT_CALL(*mock_proxy_.get(),
-                DoConnectToSignal(modemmanager::kModemManager13gppInterface,
-                                  modemmanager::kModem3gppSetCarrierLock, _, _))
+                ConnectToSignal(modemmanager::kModemManager13gppInterface,
+                                modemmanager::kModem3gppSetCarrierLock, _, _))
         .WillRepeatedly(Invoke(this, &Modem3gppClientTest::OnConnectToSignal));
 
     // Set an expectation so mock_bus's GetObjectProxy() for the given
@@ -92,7 +92,7 @@ class Modem3gppClientTest : public testing::Test {
   // Handles SetCarrierLock method call.
   void OnSetCarrierLock(dbus::MethodCall* method_call,
                         int timeout_ms,
-                        dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+                        dbus::ObjectProxy::ResponseOrErrorCallback callback) {
     EXPECT_EQ(modemmanager::kModemManager13gppInterface,
               method_call->GetInterface());
     EXPECT_EQ(modemmanager::kModem3gppSetCarrierLock, method_call->GetMember());
@@ -104,7 +104,7 @@ class Modem3gppClientTest : public testing::Test {
     EXPECT_FALSE(reader.HasMoreData());
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), response_.get(),
+        FROM_HERE, base::BindOnce(std::move(callback), response_.get(),
                                   error_response_.get()));
   }
 
@@ -130,11 +130,11 @@ class Modem3gppClientTest : public testing::Test {
       const std::string& interface_name,
       const std::string& signal_name,
       const dbus::ObjectProxy::SignalCallback& signal_callback,
-      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+      dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
     received_callback_ = signal_callback;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*on_connected_callback), interface_name,
+        base::BindOnce(std::move(on_connected_callback), interface_name,
                        signal_name, /*success=*/true));
   }
 };
@@ -142,7 +142,7 @@ class Modem3gppClientTest : public testing::Test {
 TEST_F(Modem3gppClientTest, SetCarrierLockSuccess) {
   // Set expectations.
   expected_configuration_ = kCarrierLockConfig;
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethodWithErrorResponse(_, _, _))
       .WillOnce(Invoke(this, &Modem3gppClientTest::OnSetCarrierLock));
 
   // Create response.
@@ -172,7 +172,7 @@ TEST_F(Modem3gppClientTest, SetCarrierLockFailure) {
 
   // Set expectations.
   expected_configuration_ = kCarrierLockConfig;
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &Modem3gppClientTest::OnSetCarrierLock));
 
   // Create response.
@@ -195,7 +195,7 @@ TEST_F(Modem3gppClientTest, SetCarrierLockFailure) {
 TEST_F(Modem3gppClientTest, CallSetCarrierLockTwice) {
   // Set expectations.
   expected_configuration_ = kCarrierLockConfig;
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethodWithErrorResponse(_, _, _))
       .WillOnce(Invoke(this, &Modem3gppClientTest::OnSetCarrierLock))
       .WillOnce(Invoke(this, &Modem3gppClientTest::OnSetCarrierLock));
 

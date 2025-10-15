@@ -186,7 +186,7 @@ class FwupdClientTest : public testing::Test {
                 GetObjectProxy(kFwupdServiceName, fwupd_service_path))
         .WillRepeatedly(testing::Return(proxy_.get()));
 
-    EXPECT_CALL(*proxy_, DoConnectToSignal(_, _, _, _))
+    EXPECT_CALL(*proxy_, ConnectToSignal(_, _, _, _))
         .WillRepeatedly(Invoke(this, &FwupdClientTest::ConnectToSignal));
 
     expected_properties_ = std::make_unique<FwupdDbusProperties>(
@@ -220,14 +220,14 @@ class FwupdClientTest : public testing::Test {
 
   void OnMethodCalled(dbus::MethodCall* method_call,
                       int timeout_ms,
-                      dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+                      dbus::ObjectProxy::ResponseOrErrorCallback callback) {
     ASSERT_FALSE(dbus_method_call_simulated_results_.empty());
     MethodCallResult result =
         std::move(dbus_method_call_simulated_results_.front());
     dbus_method_call_simulated_results_.pop_front();
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(&RunResponseOrErrorCallback, std::move(*callback),
+        base::BindOnce(&RunResponseOrErrorCallback, std::move(callback),
                        std::move(result.first), std::move(result.second)));
   }
 
@@ -397,12 +397,12 @@ class FwupdClientTest : public testing::Test {
       const std::string& interface_name,
       const std::string& signal_name,
       dbus::ObjectProxy::SignalCallback signal_callback,
-      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+      dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
     signal_callbacks_[signal_name] = signal_callback;
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*on_connected_callback), interface_name,
+        base::BindOnce(std::move(on_connected_callback), interface_name,
                        signal_name, true /* success */));
   }
 
@@ -464,7 +464,7 @@ TEST_F(FwupdClientTest, RequestDevices) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevices));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
@@ -483,7 +483,7 @@ TEST_F(FwupdClientTest, RequestDevicesFlexEnabled) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevicesWithInternal));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
@@ -507,7 +507,7 @@ TEST_F(FwupdClientTest, RequestDevicesEnrolledFlexEnabled) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevices));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
@@ -536,7 +536,7 @@ TEST_F(FwupdClientTestPolicyEnabled,
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevicesWithInternal));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
@@ -564,7 +564,7 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   RequestUpdatesResponse response;
@@ -587,7 +587,7 @@ TEST_F(FwupdClientTest, RequestUpgradesWithoutPriority) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   RequestUpdatesResponse response;
@@ -615,7 +615,7 @@ TEST_F(FwupdClientTest, TwoChecksumAvailable) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   const std::string checksum = std::string(kFakeSha256ForTesting) +
@@ -643,7 +643,7 @@ TEST_F(FwupdClientTest, TwoChecksumAvailableInverse) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   const std::string checksum = "badbbadbad1ef97238fb24c5e40a979bc544bb2b," +
@@ -671,7 +671,7 @@ TEST_F(FwupdClientTest, MissingChecksum) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   RequestUpdatesResponse response;
@@ -694,7 +694,7 @@ TEST_F(FwupdClientTest, BadFormatChecksum) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   RequestUpdatesResponse response;
@@ -717,7 +717,7 @@ TEST_F(FwupdClientTest, BadFormatChecksumOnlyComma) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   RequestUpdatesResponse response;
@@ -741,7 +741,7 @@ TEST_F(FwupdClientTest, NoTrustedReports) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   RequestUpdatesResponse response;
@@ -766,7 +766,7 @@ TEST_F(FwupdClientTest, NoTrustedReportsFlexEnabled) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   RequestUpdatesResponse response;
@@ -797,7 +797,7 @@ TEST_F(FwupdClientTest, AcceptAnyUriInDevMode) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   std::string fake_location = "http://fakelocation.com/firmware.cab/auth";
@@ -827,7 +827,7 @@ TEST_F(FwupdClientTest, AcceptNoTrustedReportsInDevMode) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   RequestUpdatesResponse response;
@@ -845,7 +845,7 @@ TEST_F(FwupdClientTest, AcceptNoTrustedReportsInDevMode) {
 }
 
 TEST_F(FwupdClientTest, Install) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   auto response = dbus::Response::CreateEmpty();
@@ -904,7 +904,7 @@ TEST_F(FwupdClientTest, NoDescription) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   RequestUpdatesResponse response;
@@ -923,7 +923,7 @@ TEST_F(FwupdClientTest, NoDescription) {
 TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagDisabled) {
   // Fwupd feature flags should not be set if the v2 flag is disabled.
   // To test this, verify that no D-Bus method calls are made.
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _)).Times(0);
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _)).Times(0);
   DisableFeatureFlag(ash::features::kFirmwareUpdateUIV2);
   CallSetFwupdFeatureFlags();
 }
@@ -948,7 +948,7 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
 
   EXPECT_CALL(
       *proxy_,
-      DoCallMethodWithErrorResponse(
+      CallMethodWithErrorResponse(
           testing::AllOf(
               testing::ResultOf("method name",
                                 std::mem_fn(&dbus::MethodCall::GetMember),
@@ -1048,7 +1048,7 @@ TEST_P(FwupdClientTest_DeviceRequest, OnDeviceRequestReceived) {
 }
 
 TEST_F(FwupdClientTest, UpdateMetadata) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
   auto response = dbus::Response::CreateEmpty();

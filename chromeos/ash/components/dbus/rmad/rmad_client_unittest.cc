@@ -66,7 +66,7 @@ class RmadClientTest : public testing::Test {
 
     // Save |client_|'s signal callbacks.
     EXPECT_CALL(*mock_proxy_,
-                DoConnectToSignal(rmad::kRmadInterfaceName, _, _, _))
+                ConnectToSignal(rmad::kRmadInterfaceName, _, _, _))
         .WillRepeatedly(Invoke(this, &RmadClientTest::ConnectToSignal));
 
     // ShutdownAndBlock() will be called in TearDown().
@@ -85,9 +85,9 @@ class RmadClientTest : public testing::Test {
   // Responsible for responding to a rmad API method call.
   void OnCallDbusMethod(dbus::MethodCall* method_call,
                         int timeout_ms,
-                        dbus::ObjectProxy::ResponseCallback* callback) {
+                        dbus::ObjectProxy::ResponseCallback callback) {
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), response_));
+        FROM_HERE, base::BindOnce(std::move(callback), response_));
   }
 
   // Synchronously passes |signal| to |client_|'s handler, simulating the signal
@@ -238,13 +238,13 @@ class RmadClientTest : public testing::Test {
       const std::string& interface_name,
       const std::string& signal_name,
       dbus::ObjectProxy::SignalCallback signal_callback,
-      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+      dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
     CHECK_EQ(interface_name, rmad::kRmadInterfaceName);
     signal_callbacks_[signal_name] = signal_callback;
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*on_connected_callback), interface_name,
+        base::BindOnce(std::move(on_connected_callback), interface_name,
                        signal_name, true /* success */));
   }
 };
@@ -404,8 +404,8 @@ TEST_F(RmadClientTest, GetCurrentState) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetCurrentStateMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kGetCurrentStateMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -422,8 +422,8 @@ TEST_F(RmadClientTest, GetCurrentState) {
 TEST_F(RmadClientTest, GetCurrentState_NullResponse) {
   response_ = nullptr;
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetCurrentStateMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kGetCurrentStateMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -440,8 +440,8 @@ TEST_F(RmadClientTest, GetCurrentState_EmptyResponse) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetCurrentStateMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kGetCurrentStateMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -466,8 +466,8 @@ TEST_F(RmadClientTest, TransitionNextState) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kTransitionNextStateMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kTransitionNextStateMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   rmad::RmadState request;
@@ -489,8 +489,8 @@ TEST_F(RmadClientTest, TransitionNextState) {
 TEST_F(RmadClientTest, TransitionNextState_NullResponse) {
   response_ = nullptr;
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kTransitionNextStateMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kTransitionNextStateMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   rmad::RmadState request;
@@ -510,8 +510,8 @@ TEST_F(RmadClientTest, TransitionNextState_EmptyResponse) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kTransitionNextStateMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kTransitionNextStateMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   rmad::RmadState request;
@@ -538,8 +538,8 @@ TEST_F(RmadClientTest, TransitionPreviousState) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kTransitionPreviousStateMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kTransitionPreviousStateMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -557,8 +557,8 @@ TEST_F(RmadClientTest, TransitionPreviousState) {
 TEST_F(RmadClientTest, TransitionPreviousState_NullResponse) {
   response_ = nullptr;
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kTransitionPreviousStateMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kTransitionPreviousStateMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -575,8 +575,8 @@ TEST_F(RmadClientTest, TransitionPreviousState_EmptyResponse) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kTransitionPreviousStateMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kTransitionPreviousStateMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -597,8 +597,8 @@ TEST_F(RmadClientTest, AbortRma) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kAbortRmaMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kAbortRmaMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -614,8 +614,8 @@ TEST_F(RmadClientTest, AbortRma) {
 TEST_F(RmadClientTest, AbortRma_NullResponse) {
   response_ = nullptr;
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kAbortRmaMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kAbortRmaMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -632,8 +632,8 @@ TEST_F(RmadClientTest, AbortRma_EmptyResponse) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kAbortRmaMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kAbortRmaMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -656,8 +656,8 @@ TEST_F(RmadClientTest, GetLog) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetLogMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kGetLogMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -674,8 +674,8 @@ TEST_F(RmadClientTest, GetLog) {
 TEST_F(RmadClientTest, GetLog_NullResponse) {
   response_ = nullptr;
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetLogMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kGetLogMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -692,8 +692,8 @@ TEST_F(RmadClientTest, GetLog_EmptyResponse) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetLogMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kGetLogMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -716,8 +716,8 @@ TEST_F(RmadClientTest, SaveLog) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kSaveLogMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kSaveLogMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -735,8 +735,8 @@ TEST_F(RmadClientTest, SaveLog) {
 TEST_F(RmadClientTest, SaveLog_NullResponse) {
   response_ = nullptr;
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kSaveLogMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kSaveLogMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -754,8 +754,8 @@ TEST_F(RmadClientTest, SaveLog_EmptyResponse) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kSaveLogMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kSaveLogMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -782,8 +782,8 @@ TEST_F(RmadClientTest, RecordBrowserActionMetric) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kRecordBrowserActionMetricMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kRecordBrowserActionMetricMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -806,8 +806,8 @@ TEST_F(RmadClientTest, RecordBrowserActionMetric_NullResponse) {
   request.set_os_update(false);
 
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kRecordBrowserActionMetricMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kRecordBrowserActionMetricMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -830,8 +830,8 @@ TEST_F(RmadClientTest, RecordBrowserActionMetric_EmptyResponse) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kRecordBrowserActionMetricMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kRecordBrowserActionMetricMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
@@ -855,10 +855,9 @@ TEST_F(RmadClientTest, ExtractExternalDiagnosticsApp) {
                   .AppendProtoAsArrayOfBytes(expected_proto));
 
   response_ = response.get();
-  EXPECT_CALL(
-      *mock_proxy_.get(),
-      DoCallMethod(HasMember(rmad::kExtractExternalDiagnosticsAppMethod),
-                   dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+  EXPECT_CALL(*mock_proxy_.get(),
+              CallMethod(HasMember(rmad::kExtractExternalDiagnosticsAppMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::test::TestFuture<
@@ -881,10 +880,9 @@ TEST_F(RmadClientTest, InstallExtractedDiagnosticsApp) {
                   .AppendProtoAsArrayOfBytes(expected_proto));
 
   response_ = response.get();
-  EXPECT_CALL(
-      *mock_proxy_.get(),
-      DoCallMethod(HasMember(rmad::kInstallExtractedDiagnosticsAppMethod),
-                   dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+  EXPECT_CALL(*mock_proxy_.get(),
+              CallMethod(HasMember(rmad::kInstallExtractedDiagnosticsAppMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::test::TestFuture<
@@ -906,8 +904,8 @@ TEST_F(RmadClientTest, GetInstalledDiagnosticsApp) {
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetInstalledDiagnosticsAppMethod),
-                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+              CallMethod(HasMember(rmad::kGetInstalledDiagnosticsAppMethod),
+                         dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::test::TestFuture<std::optional<rmad::GetInstalledDiagnosticsAppReply>>

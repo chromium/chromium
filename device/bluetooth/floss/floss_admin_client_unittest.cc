@@ -133,10 +133,10 @@ class FlossAdminClientTest : public testing::Test,
 
     // Expected call to RegisterAdminCallback when client is initialized
     EXPECT_CALL(*object_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(admin::kRegisterCallback), _, _))
         .WillOnce([this](::dbus::MethodCall* method_call, int timeout_ms,
-                         ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                         ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
           dbus::MessageReader msg(method_call);
           // D-Bus method call should have 1 parameter.
           dbus::ObjectPath param1;
@@ -147,7 +147,7 @@ class FlossAdminClientTest : public testing::Test,
           auto response = ::dbus::Response::CreateEmpty();
           dbus::MessageWriter writer(response.get());
           writer.AppendUint32(kTestCallbackId);
-          std::move(*cb).Run(response.get(), /*err=*/nullptr);
+          std::move(cb).Run(response.get(), /*err=*/nullptr);
         });
     ASSERT_FALSE(IsClientRegistered());
     client_->Init(bus_.get(), kAdapterInterface, adapter_index_,
@@ -160,10 +160,10 @@ class FlossAdminClientTest : public testing::Test,
 
     // Expected call to UnregisterAdminCallback when client is destroyed
     EXPECT_CALL(*object_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(admin::kUnregisterCallback), _, _))
         .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                     ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                     ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
           dbus::MessageReader msg(method_call);
           // D-Bus method call should have 1 parameter.
           uint32_t param1;
@@ -176,10 +176,10 @@ class FlossAdminClientTest : public testing::Test,
   void TestSetServiceAllowlist() {
     // Expected call to SetAllowedServices
     EXPECT_CALL(*object_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(admin::kSetAllowedServices), _, _))
         .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                     ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                     ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
           dbus::MessageReader reader(method_call);
           dbus::MessageReader array_reader(nullptr);
           base::span<const uint8_t> buf;
@@ -198,7 +198,7 @@ class FlossAdminClientTest : public testing::Test,
           auto response = ::dbus::Response::CreateEmpty();
           dbus::MessageWriter writer(response.get());
           writer.AppendUint32(kTestCallbackId);
-          std::move(*cb).Run(response.get(), /*err=*/nullptr);
+          std::move(cb).Run(response.get(), /*err=*/nullptr);
         });
 
     client_->SetAllowedServices(
@@ -208,10 +208,10 @@ class FlossAdminClientTest : public testing::Test,
   void TestSetSimpleSecurePairingEnabled() {
     // Expected call to SetSimpleSecurePairingEnabled
     EXPECT_CALL(*object_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(admin::kSetSimpleSecurePairingEnabled), _, _))
         .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                     ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                     ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
           dbus::MessageReader reader(method_call);
           bool enable;
 
@@ -222,7 +222,7 @@ class FlossAdminClientTest : public testing::Test,
           auto response = ::dbus::Response::CreateEmpty();
           dbus::MessageWriter writer(response.get());
           writer.AppendUint32(kTestCallbackId);
-          std::move(*cb).Run(response.get(), /*err=*/nullptr);
+          std::move(cb).Run(response.get(), /*err=*/nullptr);
         });
 
     client_->SetSimpleSecurePairingEnabled(

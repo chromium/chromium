@@ -200,14 +200,14 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
                 &FakeExportMethod));
 
   EXPECT_CALL(*advclient_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(advertiser::kRegisterCallback), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         auto response = ::dbus::Response::CreateEmpty();
         ::dbus::MessageWriter msg(response.get());
         FlossDBusClient::WriteAllDBusParams(&msg, kCallbackId1);
-        std::move(*cb).Run(response.get(), nullptr);
+        std::move(cb).Run(response.get(), nullptr);
       });
 
   advclient_->Init(bus_.get(), kGattInterface, adapter_index_, GetCurrVersion(),
@@ -218,15 +218,15 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
 
   // Do StartAdvertisingSet
   EXPECT_CALL(*advclient_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(advertiser::kStartAdvertisingSet), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         auto response = ::dbus::Response::CreateEmpty();
         ::dbus::MessageWriter msg(response.get());
         FlossDBusClient::WriteAllDBusParams(&msg,
                                             static_cast<int32_t>(kRegId1));
-        std::move(*cb).Run(response.get(), nullptr);
+        std::move(cb).Run(response.get(), nullptr);
       });
 
   AdvertisingSetParameters params = {};
@@ -254,12 +254,12 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
 
   // Do SetAdvertisingParameters
   EXPECT_CALL(*advclient_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(advertiser::kSetAdvertisingParameters), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         auto response = ::dbus::Response::CreateEmpty();
-        std::move(*cb).Run(response.get(), nullptr);
+        std::move(cb).Run(response.get(), nullptr);
       });
 
   base::RunLoop run_loop1;
@@ -276,12 +276,12 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
 
   // Do StopAdvertisingSet
   EXPECT_CALL(*advclient_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(advertiser::kStopAdvertisingSet), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         auto response = ::dbus::Response::CreateEmpty();
-        std::move(*cb).Run(response.get(), nullptr);
+        std::move(cb).Run(response.get(), nullptr);
       });
 
   base::RunLoop run_loop2;
@@ -296,10 +296,10 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
 
   // Expected call to UnregisterCallback when client is destroyed
   EXPECT_CALL(*advclient_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(advertiser::kUnregisterCallback), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         dbus::MessageReader msg(method_call);
         // D-Bus method call should have 1 parameter.
         uint32_t param1;

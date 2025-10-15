@@ -72,12 +72,12 @@ class TpmManagerClientTest : public testing::Test {
                                tpm_manager_object_path))
         .WillRepeatedly(Return(proxy_.get()));
 
-    EXPECT_CALL(*proxy_.get(), DoCallMethod(_, _, _))
+    EXPECT_CALL(*proxy_.get(), CallMethod(_, _, _))
         .WillRepeatedly(Invoke(this, &TpmManagerClientTest::OnCallMethod));
 
     EXPECT_CALL(*proxy_,
-                DoConnectToSignal(::tpm_manager::kTpmManagerInterface,
-                                  ::tpm_manager::kOwnershipTakenSignal, _, _))
+                ConnectToSignal(::tpm_manager::kTpmManagerInterface,
+                                ::tpm_manager::kOwnershipTakenSignal, _, _))
         .WillOnce(SaveArg<2>(&ownership_taken_signal_callback_));
     TpmManagerClient::Initialize(bus_.get());
 
@@ -128,7 +128,7 @@ class TpmManagerClientTest : public testing::Test {
   // Handles calls to |proxy_|'s `CallMethod()`.
   void OnCallMethod(dbus::MethodCall* method_call,
                     int timeout_ms,
-                    dbus::ObjectProxy::ResponseCallback* callback) {
+                    dbus::ObjectProxy::ResponseCallback callback) {
     std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
     dbus::MessageWriter writer(response.get());
     if (shall_message_parsing_fail_) {
@@ -159,7 +159,7 @@ class TpmManagerClientTest : public testing::Test {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(RunResponseCallback, std::move(*callback),
+        FROM_HERE, base::BindOnce(RunResponseCallback, std::move(callback),
                                   std::move(response)));
   }
 

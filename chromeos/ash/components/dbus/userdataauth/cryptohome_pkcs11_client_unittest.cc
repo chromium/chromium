@@ -75,7 +75,7 @@ class CryptohomePkcs11ClientTest : public testing::Test {
                                userdataauth_object_path))
         .WillRepeatedly(Return(proxy_.get()));
 
-    EXPECT_CALL(*proxy_.get(), DoCallMethod(_, _, _))
+    EXPECT_CALL(*proxy_.get(), CallMethod(_, _, _))
         .WillRepeatedly(
             Invoke(this, &CryptohomePkcs11ClientTest::OnCallMethod));
 
@@ -113,7 +113,7 @@ class CryptohomePkcs11ClientTest : public testing::Test {
   // Handles calls to |proxy_|'s `CallMethod()`.
   void OnCallMethod(dbus::MethodCall* method_call,
                     int timeout_ms,
-                    dbus::ObjectProxy::ResponseCallback* callback) {
+                    dbus::ObjectProxy::ResponseCallback callback) {
     std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
     dbus::MessageWriter writer(response.get());
     if (shall_message_parsing_fail_) {
@@ -135,7 +135,7 @@ class CryptohomePkcs11ClientTest : public testing::Test {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(RunResponseCallback, std::move(*callback),
+        FROM_HERE, base::BindOnce(RunResponseCallback, std::move(callback),
                                   std::move(response)));
   }
 };

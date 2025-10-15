@@ -156,7 +156,7 @@ class PrintscanmgrClientTest : public testing::Test {
       dbus::Response* response) {
     cups_add_manually_configured_printer_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMember(printscanmgr::kCupsAddManuallyConfiguredPrinter),
                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(
@@ -169,7 +169,7 @@ class PrintscanmgrClientTest : public testing::Test {
   void SetCupsAddAutoConfiguredPrinterExpectation(dbus::Response* response) {
     cups_add_autoconfigured_printer_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMember(printscanmgr::kCupsAddAutoConfiguredPrinter),
                     kAutoconfiguredTimeout.InMilliseconds(), _))
         .WillOnce(Invoke(
@@ -181,8 +181,8 @@ class PrintscanmgrClientTest : public testing::Test {
   void SetCupsRemovePrinterExpectation(dbus::Response* response) {
     cups_remove_printer_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(printscanmgr::kCupsRemovePrinter),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(printscanmgr::kCupsRemovePrinter),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(
             Invoke(this, &PrintscanmgrClientTest::OnCallCupsRemovePrinter));
   }
@@ -192,8 +192,8 @@ class PrintscanmgrClientTest : public testing::Test {
   void SetCupsRetrievePpdExpectation(dbus::Response* response) {
     cups_retrieve_ppd_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(printscanmgr::kCupsRetrievePpd),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                CallMethod(HasMember(printscanmgr::kCupsRetrievePpd),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(this, &PrintscanmgrClientTest::OnCallCupsRetrievePpd));
   }
 
@@ -202,7 +202,7 @@ class PrintscanmgrClientTest : public testing::Test {
   void OnCallCupsAddManuallyConfiguredPrinter(
       dbus::MethodCall* method_call,
       int timeout_ms,
-      dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+      dbus::ObjectProxy::ResponseOrErrorCallback callback) {
     // Verify that the request was created and sent correctly.
     printscanmgr::CupsAddManuallyConfiguredPrinterRequest request;
     ASSERT_TRUE(
@@ -211,7 +211,7 @@ class PrintscanmgrClientTest : public testing::Test {
                 EqualsProto(CreateCupsAddManuallyConfiguredPrinterRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback),
+        base::BindOnce(std::move(callback),
                        cups_add_manually_configured_printer_response_,
                        /*ErrorResponse=*/nullptr));
   }
@@ -220,7 +220,7 @@ class PrintscanmgrClientTest : public testing::Test {
   void OnCallCupsAddAutoConfiguredPrinter(
       dbus::MethodCall* method_call,
       int timeout_ms,
-      dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+      dbus::ObjectProxy::ResponseOrErrorCallback callback) {
     // Verify that the request was created and sent correctly.
     printscanmgr::CupsAddAutoConfiguredPrinterRequest request;
     ASSERT_TRUE(
@@ -228,7 +228,7 @@ class PrintscanmgrClientTest : public testing::Test {
     EXPECT_THAT(request,
                 EqualsProto(CreateCupsAddAutoConfiguredPrinterRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback),
+        FROM_HERE, base::BindOnce(std::move(callback),
                                   cups_add_autoconfigured_printer_response_,
                                   /*ErrorResponse=*/nullptr));
   }
@@ -236,7 +236,7 @@ class PrintscanmgrClientTest : public testing::Test {
   // Responsible for responding to a kCupsRemovePrinter call.
   void OnCallCupsRemovePrinter(dbus::MethodCall* method_call,
                                int timeout_ms,
-                               dbus::ObjectProxy::ResponseCallback* callback) {
+                               dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the request was created and sent correctly.
     printscanmgr::CupsRemovePrinterRequest request;
     ASSERT_TRUE(
@@ -244,13 +244,13 @@ class PrintscanmgrClientTest : public testing::Test {
     EXPECT_THAT(request, EqualsProto(CreateCupsRemovePrinterRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), cups_remove_printer_response_));
+        base::BindOnce(std::move(callback), cups_remove_printer_response_));
   }
 
   // Responsible for responding to a kCupsRetrievePpd call.
   void OnCallCupsRetrievePpd(dbus::MethodCall* method_call,
                              int timeout_ms,
-                             dbus::ObjectProxy::ResponseCallback* callback) {
+                             dbus::ObjectProxy::ResponseCallback callback) {
     // Verify that the request was created and sent correctly.
     printscanmgr::CupsRetrievePpdRequest request;
     ASSERT_TRUE(
@@ -258,7 +258,7 @@ class PrintscanmgrClientTest : public testing::Test {
     EXPECT_THAT(request, EqualsProto(CreateCupsRetrievePpdRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), cups_retrieve_ppd_response_));
+        base::BindOnce(std::move(callback), cups_retrieve_ppd_response_));
   }
 
   // A message loop to emulate asynchronous behavior.

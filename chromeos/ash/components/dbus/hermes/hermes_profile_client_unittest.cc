@@ -61,7 +61,7 @@ TEST_F(HermesProfileClientTest, TestEnableProfile) {
   method_call.SetSerial(123);
   EXPECT_CALL(
       *proxy_.get(),
-      DoCallMethodWithErrorResponse(
+      CallMethodWithErrorResponse(
           hermes_test_utils::MatchMethodName(hermes::profile::kEnable), _, _))
       .Times(2)
       .WillRepeatedly(Invoke(this, &HermesProfileClientTest::OnMethodCalled));
@@ -95,7 +95,7 @@ TEST_F(HermesProfileClientTest, TestDisableProfile) {
   method_call.SetSerial(123);
   EXPECT_CALL(
       *proxy_.get(),
-      DoCallMethodWithErrorResponse(
+      CallMethodWithErrorResponse(
           hermes_test_utils::MatchMethodName(hermes::profile::kDisable), _, _))
       .Times(2)
       .WillRepeatedly(Invoke(this, &HermesProfileClientTest::OnMethodCalled));
@@ -129,7 +129,7 @@ TEST_F(HermesProfileClientTest, TestRenameProfile) {
   method_call.SetSerial(123);
   EXPECT_CALL(
       *proxy_.get(),
-      DoCallMethodWithErrorResponse(
+      CallMethodWithErrorResponse(
           hermes_test_utils::MatchMethodName(hermes::profile::kRename), _, _))
       .Times(2)
       .WillRepeatedly(Invoke(this, &HermesProfileClientTest::OnMethodCalled));

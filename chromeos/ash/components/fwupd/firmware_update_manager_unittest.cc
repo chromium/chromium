@@ -255,7 +255,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
                 GetObjectProxy(kFwupdServiceName, fwupd_service_path))
         .WillRepeatedly(testing::Return(proxy_.get()));
 
-    EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+    EXPECT_CALL(*proxy_, CallMethodWithErrorResponse(_, _, _))
         .WillRepeatedly(
             Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
 
@@ -292,11 +292,11 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
   void OnMethodCalled(dbus::MethodCall* method_call,
                       int timeout_ms,
-                      dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+                      dbus::ObjectProxy::ResponseOrErrorCallback callback) {
     ASSERT_FALSE(dbus_responses_.empty());
     auto response = std::move(dbus_responses_.front());
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(*callback),
+        FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(callback),
                                   std::move(response)));
     dbus_responses_.pop_front();
   }

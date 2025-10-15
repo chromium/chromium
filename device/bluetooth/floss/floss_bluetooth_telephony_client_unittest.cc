@@ -44,7 +44,7 @@ class FlossBluetoothTelephonyClientTest : public testing::Test {
 
     // Handle method calls on the object proxy
     ON_CALL(*bluetooth_telephony_object_proxy_.get(),
-            DoCallMethodWithErrorResponse(
+            CallMethodWithErrorResponse(
                 HasMemberOf(bluetooth_telephony::kSetPhoneOpsEnabled),
                 testing::_, testing::_))
         .WillByDefault(Invoke(
@@ -67,18 +67,18 @@ class FlossBluetoothTelephonyClientTest : public testing::Test {
   void HandleSetPhoneOpsEnabled(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter msg(response.get());
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void TestSetPhoneOpsEnabled() {
     EXPECT_CALL(*bluetooth_telephony_object_proxy_.get(),
-                DoCallMethodWithErrorResponse)
+                CallMethodWithErrorResponse)
         .Times(testing::AnyNumber());
     EXPECT_CALL(*bluetooth_telephony_object_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(bluetooth_telephony::kSetPhoneOpsEnabled),
                     testing::_, testing::_))
         .Times(1);

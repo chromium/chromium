@@ -48,10 +48,10 @@ class CheckForServiceAndStartTest : public testing::Test {
                           bool error = false) {
     EXPECT_CALL(
         *mock_dbus_proxy_,
-        DoCallMethod(MatchMethod(DBUS_INTERFACE_DBUS, "NameHasOwner"), _, _))
+        CallMethod(MatchMethod(DBUS_INTERFACE_DBUS, "NameHasOwner"), _, _))
         .WillOnce([this, service_name, has_owner, error](
                       dbus::MethodCall* method_call, int timeout_ms,
-                      dbus::ObjectProxy::ResponseCallback* callback) {
+                      dbus::ObjectProxy::ResponseCallback callback) {
           dbus::MessageReader reader(method_call);
           std::string received_service_name;
           EXPECT_TRUE(reader.PopString(&received_service_name));
@@ -60,14 +60,14 @@ class CheckForServiceAndStartTest : public testing::Test {
           if (error) {
             // Simulate an error by calling the callback with a null response
             task_environment_.GetMainThreadTaskRunner()->PostTask(
-                FROM_HERE, base::BindOnce(std::move(*callback), nullptr));
+                FROM_HERE, base::BindOnce(std::move(callback), nullptr));
           } else {
             response_ = dbus::Response::CreateEmpty();
             dbus::MessageWriter writer(response_.get());
             writer.AppendBool(has_owner);
             task_environment_.GetMainThreadTaskRunner()->PostTask(
                 FROM_HERE,
-                base::BindOnce(std::move(*callback), response_.get()));
+                base::BindOnce(std::move(callback), response_.get()));
           }
         });
   }
@@ -76,16 +76,16 @@ class CheckForServiceAndStartTest : public testing::Test {
       const std::vector<std::string>& activatable_names) {
     EXPECT_CALL(
         *mock_dbus_proxy_,
-        DoCallMethod(MatchMethod(DBUS_INTERFACE_DBUS, "ListActivatableNames"),
-                     _, _))
+        CallMethod(MatchMethod(DBUS_INTERFACE_DBUS, "ListActivatableNames"), _,
+                   _))
         .WillOnce([this, activatable_names](
                       dbus::MethodCall* method_call, int timeout_ms,
-                      dbus::ObjectProxy::ResponseCallback* callback) {
+                      dbus::ObjectProxy::ResponseCallback callback) {
           response_ = dbus::Response::CreateEmpty();
           dbus::MessageWriter writer(response_.get());
           writer.AppendArrayOfStrings(activatable_names);
           task_environment_.GetMainThreadTaskRunner()->PostTask(
-              FROM_HERE, base::BindOnce(std::move(*callback), response_.get()));
+              FROM_HERE, base::BindOnce(std::move(callback), response_.get()));
         });
   }
 
@@ -93,27 +93,26 @@ class CheckForServiceAndStartTest : public testing::Test {
                                 uint32_t reply_code) {
     EXPECT_CALL(
         *mock_dbus_proxy_,
-        DoCallMethodWithErrorResponse(
+        CallMethodWithErrorResponse(
             MatchMethod(DBUS_INTERFACE_DBUS, "StartServiceByName"), _, _))
-        .WillOnce(
-            [this, service_name, reply_code](
-                dbus::MethodCall* method_call, int timeout_ms,
-                dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
-              dbus::MessageReader reader(method_call);
-              std::string received_service_name;
-              uint32_t flags;
-              EXPECT_TRUE(reader.PopString(&received_service_name));
-              EXPECT_TRUE(reader.PopUint32(&flags));
-              EXPECT_EQ(received_service_name, service_name);
-              EXPECT_EQ(flags, 0U);
+        .WillOnce([this, service_name, reply_code](
+                      dbus::MethodCall* method_call, int timeout_ms,
+                      dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+          dbus::MessageReader reader(method_call);
+          std::string received_service_name;
+          uint32_t flags;
+          EXPECT_TRUE(reader.PopString(&received_service_name));
+          EXPECT_TRUE(reader.PopUint32(&flags));
+          EXPECT_EQ(received_service_name, service_name);
+          EXPECT_EQ(flags, 0U);
 
-              response_ = dbus::Response::CreateEmpty();
-              dbus::MessageWriter writer(response_.get());
-              writer.AppendUint32(reply_code);
-              task_environment_.GetMainThreadTaskRunner()->PostTask(
-                  FROM_HERE, base::BindOnce(std::move(*callback),
-                                            response_.get(), nullptr));
-            });
+          response_ = dbus::Response::CreateEmpty();
+          dbus::MessageWriter writer(response_.get());
+          writer.AppendUint32(reply_code);
+          task_environment_.GetMainThreadTaskRunner()->PostTask(
+              FROM_HERE,
+              base::BindOnce(std::move(callback), response_.get(), nullptr));
+        });
   }
 
   void RunCheckForServiceAndStart(const std::string& service_name,

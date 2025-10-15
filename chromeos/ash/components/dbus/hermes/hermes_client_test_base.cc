@@ -26,13 +26,13 @@ HermesClientTestBase::~HermesClientTestBase() = default;
 void HermesClientTestBase::OnMethodCalled(
     dbus::MethodCall* method_call,
     int timeout_ms,
-    dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
   ASSERT_FALSE(pending_method_call_results_.empty());
   MethodCallResult result = std::move(pending_method_call_results_.front());
   pending_method_call_results_.pop_front();
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&RunResponseOrErrorCallback, std::move(*callback),
+      base::BindOnce(&RunResponseOrErrorCallback, std::move(callback),
                      std::move(result.first), std::move(result.second)));
 }
 

@@ -51,7 +51,7 @@ class GetTvsPowerStatusHandler {
 
   void operator()(dbus::MethodCall* method_call,
                   int timeout_ms,
-                  dbus::ObjectProxy::ResponseCallback* callback) {
+                  dbus::ObjectProxy::ResponseCallback callback) {
     method_call->SetSerial(1);  // arbitrary but needed by FromMethodCall
     std::unique_ptr<dbus::Response> response =
         dbus::Response::FromMethodCall(method_call);
@@ -66,7 +66,7 @@ class GetTvsPowerStatusHandler {
     // Run the response callback asynchronously.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*callback), base::Owned(response.release())));
+        base::BindOnce(std::move(callback), base::Owned(response.release())));
   }
 
  private:
@@ -112,9 +112,9 @@ class CecServiceClientTest : public testing::Test {
 };
 
 TEST_F(CecServiceClientTest, SendStandByTriggersDBusMessage) {
-  EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(
-                  HasMember(cecservice::kSendStandByToAllDevicesMethod), _, _));
+  EXPECT_CALL(
+      *mock_proxy_.get(),
+      CallMethod(HasMember(cecservice::kSendStandByToAllDevicesMethod), _, _));
 
   client_->SendStandBy();
 }
@@ -122,14 +122,14 @@ TEST_F(CecServiceClientTest, SendStandByTriggersDBusMessage) {
 TEST_F(CecServiceClientTest, SendWakeUpTriggersDBusMessage) {
   EXPECT_CALL(
       *mock_proxy_.get(),
-      DoCallMethod(HasMember(cecservice::kSendWakeUpToAllDevicesMethod), _, _));
+      CallMethod(HasMember(cecservice::kSendWakeUpToAllDevicesMethod), _, _));
 
   client_->SendWakeUp();
 }
 
 TEST_F(CecServiceClientTest, QueryPowerStatusSendDBusMessage) {
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _));
+              CallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _));
 
   client_->QueryDisplayCecPowerState(base::DoNothing());
 
@@ -138,7 +138,7 @@ TEST_F(CecServiceClientTest, QueryPowerStatusSendDBusMessage) {
 
 TEST_F(CecServiceClientTest, QueryPowerStatusNoCecDevicesGivesEmptyResponse) {
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _))
+              CallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _))
       .WillOnce(GetTvsPowerStatusHandler({}));
 
   base::MockCallback<CecServiceClient::PowerStateCallback> callback;
@@ -151,7 +151,7 @@ TEST_F(CecServiceClientTest, QueryPowerStatusNoCecDevicesGivesEmptyResponse) {
 
 TEST_F(CecServiceClientTest, QueryPowerStatusOneDeviceIsPropagated) {
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _))
+              CallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _))
       .WillOnce(GetTvsPowerStatusHandler({cecservice::kTvPowerStatusOn}));
 
   base::MockCallback<CecServiceClient::PowerStateCallback> callback;
@@ -176,7 +176,7 @@ TEST_F(CecServiceClientTest, QueryPowerStatusAllStatesCorrectlyHandled) {
   };
 
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _))
+              CallMethod(HasMember(cecservice::kGetTvsPowerStatus), _, _))
       .WillOnce(GetTvsPowerStatusHandler(std::move(power_states)));
 
   base::MockCallback<CecServiceClient::PowerStateCallback> callback;

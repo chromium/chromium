@@ -65,10 +65,10 @@ class OobeConfigurationClientTest : public testing::Test {
     // Set an expectation so mock_proxy's CallMethod() and
     // CallMethodWithErrorResponse() will use OnCallMethod() and
     // OnCallMethodWithErrorResponse() to return responses.
-    EXPECT_CALL(*mock_proxy_.get(), DoCallMethod(_, _, _))
+    EXPECT_CALL(*mock_proxy_.get(), CallMethod(_, _, _))
         .WillRepeatedly(
             Invoke(this, &OobeConfigurationClientTest::OnCallMethod));
-    EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+    EXPECT_CALL(*mock_proxy_.get(), CallMethodWithErrorResponse(_, _, _))
         .WillRepeatedly(Invoke(
             this, &OobeConfigurationClientTest::OnCallMethodWithErrorResponse));
 
@@ -147,13 +147,13 @@ class OobeConfigurationClientTest : public testing::Test {
   // Used to implement the mock oobe config proxy.
   void OnCallMethod(dbus::MethodCall* method_call,
                     int timeout_ms,
-                    dbus::ObjectProxy::ResponseCallback* response) {
+                    dbus::ObjectProxy::ResponseCallback response) {
     EXPECT_EQ(interface_name_, method_call->GetInterface());
     EXPECT_EQ(expected_method_name_, method_call->GetMember());
     dbus::MessageReader reader(method_call);
     argument_checker_.Run(&reader);
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*response), response_.get()));
+        FROM_HERE, base::BindOnce(std::move(response), response_.get()));
   }
 
   // Checks the content of the method call and returns the response and error
@@ -161,13 +161,13 @@ class OobeConfigurationClientTest : public testing::Test {
   void OnCallMethodWithErrorResponse(
       dbus::MethodCall* method_call,
       int timeout_ms,
-      dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+      dbus::ObjectProxy::ResponseOrErrorCallback callback) {
     EXPECT_EQ(interface_name_, method_call->GetInterface());
     EXPECT_EQ(expected_method_name_, method_call->GetMember());
     dbus::MessageReader reader(method_call);
     argument_checker_.Run(&reader);
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), response_.get(),
+        FROM_HERE, base::BindOnce(std::move(callback), response_.get(),
                                   error_response_.get()));
   }
 };

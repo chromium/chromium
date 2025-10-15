@@ -23,7 +23,7 @@ class HermesClientTestBase : public testing::Test {
   // dbus::Bus::CallMethodWithErrorResponse.
   void OnMethodCalled(dbus::MethodCall* method_call,
                       int timeout_ms,
-                      dbus::ObjectProxy::ResponseOrErrorCallback* callback);
+                      dbus::ObjectProxy::ResponseOrErrorCallback callback);
 
  protected:
   HermesClientTestBase();

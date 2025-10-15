@@ -80,12 +80,12 @@ class CallMethodTest : public testing::Test {
   // Helper to set up the expectation for CallMethodWithErrorResponse.
   // It saves the callback provided by CallMethod.
   void ExpectCallMethodWithErrorResponse(const std::string& expected_method) {
-    EXPECT_CALL(*mock_proxy_, DoCallMethodWithErrorResponse(
+    EXPECT_CALL(*mock_proxy_, CallMethodWithErrorResponse(
                                   IsMethodCall(expected_method),
                                   dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
-                      dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
-          response_or_error_callback_ = std::move(*callback);
+                      dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+          response_or_error_callback_ = std::move(callback);
         });
   }
 
@@ -316,11 +316,11 @@ TEST_F(CallMethodTest, ArgumentsPassedCorrectly) {
   const std::string kArgString = "ArgumentValue";
   const uint32_t kArgUint = 99;
 
-  EXPECT_CALL(*mock_proxy_, DoCallMethodWithErrorResponse(
+  EXPECT_CALL(*mock_proxy_, CallMethodWithErrorResponse(
                                 IsMethodCall(kTestMethodSuccess),
                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
-                    dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+                    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
         dbus::MessageReader reader(method_call);
         std::string received_string;
         uint32_t received_uint;
@@ -330,7 +330,7 @@ TEST_F(CallMethodTest, ArgumentsPassedCorrectly) {
         EXPECT_EQ(received_uint, kArgUint);
         EXPECT_FALSE(reader.HasMoreData());
 
-        response_or_error_callback_ = std::move(*callback);
+        response_or_error_callback_ = std::move(callback);
       });
 
   bool success = false;

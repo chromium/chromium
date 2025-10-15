@@ -168,7 +168,7 @@ TEST_F(SessionChapsClientTest, GetSlotList) {
   uint32_t result_code = 33;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kGetSlotListMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -176,9 +176,9 @@ TEST_F(SessionChapsClientTest, GetSlotList) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(out_slots, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<const std::vector<uint64_t>&, uint32_t> waiter;
   client_->GetSlotList(token_present, waiter.GetCallback());
@@ -193,7 +193,7 @@ TEST_F(SessionChapsClientTest, GetMechanismList) {
   uint32_t result_code = 33;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kGetMechanismListMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -201,9 +201,9 @@ TEST_F(SessionChapsClientTest, GetMechanismList) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(out_mechanisms, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<const std::vector<uint64_t>&, uint32_t> waiter;
   client_->GetMechanismList(slot_id, waiter.GetCallback());
@@ -219,7 +219,7 @@ TEST_F(SessionChapsClientTest, OpenSession) {
   uint32_t result_code = 44;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kOpenSessionMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -228,9 +228,9 @@ TEST_F(SessionChapsClientTest, OpenSession) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(out_slot_id, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint32_t> waiter;
   client_->OpenSession(slot_id, flags, waiter.GetCallback());
@@ -244,7 +244,7 @@ TEST_F(SessionChapsClientTest, CloseSession) {
   uint32_t result_code = 22;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kCloseSessionMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -252,9 +252,9 @@ TEST_F(SessionChapsClientTest, CloseSession) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->CloseSession(session_id, waiter.GetCallback());
@@ -269,7 +269,7 @@ TEST_F(SessionChapsClientTest, CreateObject) {
   uint32_t result_code = 44;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kCreateObjectMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -278,9 +278,9 @@ TEST_F(SessionChapsClientTest, CreateObject) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(out_handle, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint32_t> waiter;
   client_->CreateObject(session_id, attributes, waiter.GetCallback());
@@ -295,7 +295,7 @@ TEST_F(SessionChapsClientTest, DestroyObject) {
   uint32_t result_code = 33;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kDestroyObjectMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -304,9 +304,9 @@ TEST_F(SessionChapsClientTest, DestroyObject) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->DestroyObject(session_id, object_handle, waiter.GetCallback());
@@ -322,7 +322,7 @@ TEST_F(SessionChapsClientTest, GetAttributeValue) {
   uint32_t result_code = 55;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kGetAttributeValueMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -332,9 +332,9 @@ TEST_F(SessionChapsClientTest, GetAttributeValue) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(out_attributes, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<const std::vector<uint8_t>&, uint32_t> waiter;
   client_->GetAttributeValue(session_id, object_handle, attributes_query,
@@ -351,7 +351,7 @@ TEST_F(SessionChapsClientTest, SetAttributeValue) {
   uint32_t result_code = 44;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kSetAttributeValueMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -361,9 +361,9 @@ TEST_F(SessionChapsClientTest, SetAttributeValue) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->SetAttributeValue(session_id, object_handle, attributes,
@@ -378,7 +378,7 @@ TEST_F(SessionChapsClientTest, FindObjectsInit) {
   uint32_t result_code = 33;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kFindObjectsInitMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -387,9 +387,9 @@ TEST_F(SessionChapsClientTest, FindObjectsInit) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->FindObjectsInit(session_id, attributes, waiter.GetCallback());
@@ -404,7 +404,7 @@ TEST_F(SessionChapsClientTest, FindObjects) {
   uint32_t result_code = 44;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kFindObjectsMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -413,9 +413,9 @@ TEST_F(SessionChapsClientTest, FindObjects) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(out_handles, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<const std::vector<uint64_t>&, uint32_t> waiter;
   client_->FindObjects(session_id, max_object_count, waiter.GetCallback());
@@ -429,7 +429,7 @@ TEST_F(SessionChapsClientTest, FindObjectsFinal) {
   uint32_t result_code = 22;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kFindObjectsFinalMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -437,9 +437,9 @@ TEST_F(SessionChapsClientTest, FindObjectsFinal) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->FindObjectsFinal(session_id, waiter.GetCallback());
@@ -455,7 +455,7 @@ TEST_F(SessionChapsClientTest, EncryptInit) {
   uint32_t result_code = 55;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kEncryptInitMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -466,9 +466,9 @@ TEST_F(SessionChapsClientTest, EncryptInit) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->EncryptInit(session_id, mechanism_type, mechanism_parameter,
@@ -486,7 +486,7 @@ TEST_F(SessionChapsClientTest, Encrypt) {
   uint32_t result_code = 66;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kEncryptMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -496,9 +496,9 @@ TEST_F(SessionChapsClientTest, Encrypt) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(actual_out_length, out_data, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, const std::vector<uint8_t>&, uint32_t>
       waiter;
@@ -517,7 +517,7 @@ TEST_F(SessionChapsClientTest, DecryptInit) {
   uint32_t result_code = 55;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kDecryptInitMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -528,9 +528,9 @@ TEST_F(SessionChapsClientTest, DecryptInit) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->DecryptInit(session_id, mechanism_type, mechanism_parameter,
@@ -548,7 +548,7 @@ TEST_F(SessionChapsClientTest, Decrypt) {
   uint32_t result_code = 66;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kDecryptMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -558,9 +558,9 @@ TEST_F(SessionChapsClientTest, Decrypt) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(actual_out_length, out_data, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, const std::vector<uint8_t>&, uint32_t>
       waiter;
@@ -579,7 +579,7 @@ TEST_F(SessionChapsClientTest, SignInit) {
   uint32_t result_code = 55;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kSignInitMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -590,9 +590,9 @@ TEST_F(SessionChapsClientTest, SignInit) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint32_t> waiter;
   client_->SignInit(session_id, mechanism_type, mechanism_parameter, key_handle,
@@ -610,7 +610,7 @@ TEST_F(SessionChapsClientTest, Sign) {
   uint32_t result_code = 66;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kSignMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -620,9 +620,9 @@ TEST_F(SessionChapsClientTest, Sign) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(actual_out_length, out_data, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, const std::vector<uint8_t>&, uint32_t>
       waiter;
@@ -644,7 +644,7 @@ TEST_F(SessionChapsClientTest, GenerateKeyPair) {
   uint32_t result_code = 88;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kGenerateKeyPairMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -657,9 +657,9 @@ TEST_F(SessionChapsClientTest, GenerateKeyPair) {
 
     auto response =
         CreateResponse(public_key_handle, private_key_handle, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint64_t, uint32_t> waiter;
   client_->GenerateKeyPair(session_id, mechanism_type, mechanism_parameter,
@@ -683,7 +683,7 @@ TEST_F(SessionChapsClientTest, WrapKey) {
   uint32_t result_code = 99;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kWrapKeyMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -697,9 +697,9 @@ TEST_F(SessionChapsClientTest, WrapKey) {
 
     auto response =
         CreateResponse(actual_out_length, out_wrapped_key, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, const std::vector<uint8_t>&, uint32_t>
       waiter;
@@ -723,7 +723,7 @@ TEST_F(SessionChapsClientTest, UnwrapKey) {
   uint32_t result_code = 88;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kUnwrapKeyMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -736,9 +736,9 @@ TEST_F(SessionChapsClientTest, UnwrapKey) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(out_key_handle, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint32_t> waiter;
   client_->UnwrapKey(session_id, mechanism_type, mechanism_parameter,
@@ -759,7 +759,7 @@ TEST_F(SessionChapsClientTest, DeriveKey) {
   uint32_t result_code = 88;
 
   auto fake_dbus = [&](dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseCallback* callback) {
+                       dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(method_call->GetMember(), chaps::kDeriveKeyMethod);
     dbus::MessageReader reader(method_call);
     EXPECT_EQ(PopByteArray(reader), GetIsolateCredential());
@@ -771,9 +771,9 @@ TEST_F(SessionChapsClientTest, DeriveKey) {
     EXPECT_FALSE(reader.HasMoreData());
 
     auto response = CreateResponse(out_key_handle, result_code);
-    return std::move(*callback).Run(response.get());
+    return std::move(callback).Run(response.get());
   };
-  EXPECT_CALL(*proxy_.get(), DoCallMethod).WillOnce(fake_dbus);
+  EXPECT_CALL(*proxy_.get(), CallMethod).WillOnce(fake_dbus);
 
   base::test::TestFuture<uint64_t, uint32_t> waiter;
   client_->DeriveKey(session_id, mechanism_type, mechanism_parameter,

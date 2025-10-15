@@ -49,7 +49,7 @@ class MockTest : public testing::Test {
 
     // Set an expectation so mock_proxy's CallMethod() will use
     // HandleMockProxyResponseWithMessageLoop() to return responses.
-    EXPECT_CALL(*mock_proxy_.get(), DoCallMethod(_, _, _))
+    EXPECT_CALL(*mock_proxy_.get(), CallMethod(_, _, _))
         .WillRepeatedly(
             Invoke(this, &MockTest::HandleMockProxyResponseWithMessageLoop));
 
@@ -113,13 +113,13 @@ class MockTest : public testing::Test {
   void HandleMockProxyResponseWithMessageLoop(
       MethodCall* method_call,
       int timeout_ms,
-      ObjectProxy::ResponseCallback* response_callback) {
+      ObjectProxy::ResponseCallback response_callback) {
     std::unique_ptr<Response> response =
         CreateMockProxyResponse(method_call, timeout_ms).value_or(nullptr);
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockTest::RunResponseCallback, base::Unretained(this),
-                       std::move(*response_callback), std::move(response)));
+                       std::move(response_callback), std::move(response)));
   }
 
   // Runs the given response callback with the given response.
