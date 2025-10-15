@@ -961,6 +961,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTryQuicByDefault);
 // separate the values with a comma (e.g. "ABCD,EFGH").
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kQuicOptions);
 
+NET_EXPORT BASE_DECLARE_FEATURE(kDnsResponseDiscardPartialQuestions);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

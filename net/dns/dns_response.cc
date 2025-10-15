@@ -17,12 +17,14 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/sys_byteorder.h"
 #include "base/types/optional_util.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_names_util.h"
@@ -486,15 +488,39 @@ bool DnsResponse::InitParseWithoutQuery(size_t nbytes) {
       DnsRecordParser(io_buffer_->first(nbytes), kHeaderSize, num_records);
 
   unsigned qdcount = base::NetToHost16(header()->qdcount);
-  for (unsigned i = 0; i < qdcount; ++i) {
-    std::string dotted_qname;
-    uint16_t qtype;
-    if (!parser_.ReadQuestion(dotted_qname, qtype)) {
-      parser_ = DnsRecordParser();  // Make parser invalid again.
-      return false;
+
+  // TODO(crbug.com/448685357): Remove feature check when launched.
+  if (base::FeatureList::IsEnabled(
+          net::features::kDnsResponseDiscardPartialQuestions)) {
+    std::vector<std::string> parsed_qnames;
+    std::vector<uint16_t> parsed_qtypes;
+    parsed_qnames.reserve(qdcount);
+    parsed_qtypes.reserve(qdcount);
+
+    for (unsigned i = 0; i < qdcount; ++i) {
+      std::string dotted_qname;
+      uint16_t qtype;
+      if (!parser_.ReadQuestion(dotted_qname, qtype)) {
+        parser_ = DnsRecordParser();  // Make parser invalid again.
+        return false;
+      }
+      parsed_qnames.push_back(std::move(dotted_qname));
+      parsed_qtypes.push_back(qtype);
     }
-    dotted_qnames_.push_back(std::move(dotted_qname));
-    qtypes_.push_back(qtype);
+
+    dotted_qnames_ = std::move(parsed_qnames);
+    qtypes_ = std::move(parsed_qtypes);
+  } else {
+    for (unsigned i = 0; i < qdcount; ++i) {
+      std::string dotted_qname;
+      uint16_t qtype;
+      if (!parser_.ReadQuestion(dotted_qname, qtype)) {
+        parser_ = DnsRecordParser();  // Make parser invalid again.
+        return false;
+      }
+      dotted_qnames_.push_back(std::move(dotted_qname));
+      qtypes_.push_back(qtype);
+    }
   }
 
   return true;

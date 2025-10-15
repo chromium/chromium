@@ -866,4 +866,7 @@ BASE_FEATURE_PARAM(std::string,
                    "quic_options",
                    "");
 
+BASE_FEATURE(kDnsResponseDiscardPartialQuestions,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features
