@@ -214,15 +214,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector(testUserData_LocalEditViaBottomSheet)] ||
-      [self
-          isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)] ||
-      [self isRunningTest:@selector
-            (MAYBE_testEditBottomSheetAlertBySwipingDown)]) {
-    config.features_enabled.push_back(
-        kAutofillDynamicallyLoadsFieldsForAddressInput);
-  }
-
   if ([self isRunningTest:@selector(FLAKY_testSaveWithoutBadge)]) {
     config.features_enabled.push_back(kAutofillBadgeRemoval);
   }

@@ -55,9 +55,7 @@ const CGFloat kBackButtonSize = 24;
   BOOL _settingsView;
 
   // Refers to the title of the view controller on top of which the country view
-  // controller is presented. It is set only when
-  // `kAutofillDynamicallyLoadsFieldsForAddressInput` is enabled and for
-  // non-settings view.
+  // controller is presented. It is set only for non-settings view.
   NSString* _previousViewControllerTitle;
 }
 

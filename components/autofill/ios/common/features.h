@@ -29,11 +29,6 @@ BASE_DECLARE_FEATURE(kAutofillCountFormSubmissionInRenderer);
 // prevented.
 BASE_DECLARE_FEATURE(kAutofillDedupeFormSubmission);
 
-// Controls whether to dynamically load the address input fields in the save
-// flow and settings based on the country value.
-// TODO(crbug.com/40281788): Remove once launched.
-BASE_DECLARE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput);
-
 // Fix for XHR form submission detection when autofill across iframes is
 // enabled.
 BASE_DECLARE_FEATURE(kAutofillFixXhrForXframe);

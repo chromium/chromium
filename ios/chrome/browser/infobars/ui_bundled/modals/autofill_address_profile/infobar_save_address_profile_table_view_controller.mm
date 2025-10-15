@@ -12,7 +12,6 @@
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
@@ -264,10 +263,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 }
 
 - (void)showEditAddressProfileModal {
-  if (base::FeatureList::IsEnabled(
-          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
-    [self.saveAddressProfileModalDelegate dismissInfobarModal:self];
-  }
+  [self.saveAddressProfileModalDelegate dismissInfobarModal:self];
   [self.saveAddressProfileModalDelegate showEditView];
 }
 

@@ -25,9 +25,6 @@ BASE_FEATURE(kAutofillCountFormSubmissionInRenderer,
 BASE_FEATURE(kAutofillDedupeFormSubmission, base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_dedupe_form_submission)
 
-BASE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAutofillFixXhrForXframe, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode,
