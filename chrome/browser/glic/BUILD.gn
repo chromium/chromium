@@ -238,6 +238,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/frame/",

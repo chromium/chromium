@@ -18998,6 +18998,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_NON_MILESTONE_UPDATE_TOAST_BODY" desc="Text on a toast notification that is shown when a non milestone update is complete.">
         Chrome was updated
       </message>
+      <message name="IDS_GLIC_SHARE_IMAGE_FAILED_TOAST_BODY" desc="Text on a toast notification that is shown when sharing an image with Gemini fails (when using the 'Create image with Gemini' context menu item)" translateable="false">
+        Could not share image with Gemini. Try again or try another image.
+      </message>
     </if>
 
     <if expr="is_android">

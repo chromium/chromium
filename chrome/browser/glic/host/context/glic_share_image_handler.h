@@ -57,6 +57,9 @@ class GlicShareImageHandler {
                           const std::string& image_extension,
                           std::vector<lens::mojom::LatencyLogPtr> log_data);
 
+  // Attempt to display an error toast
+  void MaybeShowErrorToast(tabs::TabInterface* tab);
+
   // Attempts to send the received context. The glic panel may not be ready,
   // however, and in that case, this function will begin polling for readiness
   // and will cancel after a timeout of 1 minute is exceeded.

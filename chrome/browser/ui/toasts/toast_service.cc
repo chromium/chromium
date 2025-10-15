@@ -297,4 +297,11 @@ void ToastService::RegisterToasts(
       ToastSpecification::Builder(vector_icons::kEmailIcon, IDS_EMAIL_VERIFIED)
           .AddCloseButton()
           .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kGlicShareImageFailed,
+      ToastSpecification::Builder(vector_icons::kInfoRefreshIcon,
+                                  IDS_GLIC_SHARE_IMAGE_FAILED_TOAST_BODY)
+          .AddCloseButton()
+          .Build());
 }  // RegisterToasts() end.
