@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.magic_stack.CirclePagerIndicatorDecoration.getItemPerScreen;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -49,8 +48,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
@@ -80,18 +77,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {HomeModulesCoordinatorUnitTest.ShadowSemanticColorUtils.class})
+@Config(manifest = Config.NONE)
 public class HomeModulesCoordinatorUnitTest {
-    @Implements(SemanticColorUtils.class)
-    static class ShadowSemanticColorUtils {
-        @Implementation
-        public static int getDefaultIconColorSecondary(Context context) {
-            return Color.LTGRAY;
-        }
-    }
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Activity mActivity;
@@ -130,6 +117,7 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        SemanticColorUtils.setDefaultIconColorSecondaryForTesting(Color.LTGRAY);
         when(mModuleDelegateHost.getUiConfig()).thenReturn(mUiConfig);
         when(mActivity.getResources()).thenReturn(mResources);
         when(mResources.getConfiguration()).thenReturn(mConfiguration);

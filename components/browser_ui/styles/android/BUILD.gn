@@ -12,6 +12,7 @@ android_library("java") {
   ]
   deps = [
     ":java_resources",
+    "//base:base_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

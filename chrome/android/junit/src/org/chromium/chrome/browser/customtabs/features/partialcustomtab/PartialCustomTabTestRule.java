@@ -48,8 +48,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -75,14 +73,6 @@ import java.util.function.Supplier;
  * to the Partial Custom Tabs logic.
  */
 public class PartialCustomTabTestRule implements TestRule {
-    @Implements(SemanticColorUtils.class)
-    static class ShadowSemanticColorUtils {
-        @Implementation
-        public static int getDividerLineBgColor(Context context) {
-            return Color.LTGRAY;
-        }
-    }
-
     // Pixel 3 XL metrics
     static final float DENSITY = 1.25f;
     static final int DEVICE_HEIGHT = 2960;
@@ -157,6 +147,7 @@ public class PartialCustomTabTestRule implements TestRule {
     private void setUp() {
         ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
+        SemanticColorUtils.setDividerLineBgColorForTesting(Color.LTGRAY);
         when(mActivity.getWindow()).thenReturn(mWindow);
         when(mActivity.getResources()).thenReturn(mResources);
         when(mActivity.getWindowManager()).thenReturn(mWindowManager);
