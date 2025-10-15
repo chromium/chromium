@@ -802,22 +802,22 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-beta01"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-beta01"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "navigationevent-compose",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "navigationevent-compose-android",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "paging-common",
