@@ -167,7 +167,8 @@ NSString* GetFilterTypeSymbolName(DownloadFilterType filterType) {
           .size;
 
   // Calculate total width including icon, spacing, and padding on both sides.
-  CGFloat horizontalPadding = kDownloadFilterCellHorizontalPadding * 2;
+  CGFloat horizontalPadding =
+      kDownloadFilterCellHorizontalPadding * 2;
   CGFloat cellWidth = ceil(textSize.width) + kDownloadFilterIconSize +
                       kDownloadFilterIconTitleSpacing + horizontalPadding;
 

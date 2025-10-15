@@ -20,7 +20,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
-#import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_observer_bridge.h"
@@ -30,10 +29,6 @@
 #import "ios/web/public/download/download_task.h"
 
 using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
-
-// Type alias for file existence categorization result.
-using CategorizationResult =
-    std::pair<std::vector<DownloadRecord>, std::vector<DownloadRecord>>;
 
 @interface DownloadListMediator () <DownloadRecordObserverDelegate>
 
@@ -137,33 +132,16 @@ using CategorizationResult =
 #pragma mark - DownloadListMutator
 
 - (void)loadDownloadRecords {
-  [self loadDownloadRecordsWithLoading:YES checkFileExistence:YES];
+  [self loadDownloadRecordsWithLoading:YES];
 }
 
 - (void)syncRecordsIfNeeded {
   CHECK(_isReady);
 
-  // Check file existence for all cached records and remove missing ones.
-  if (self.allRecords.empty()) {
-    return;
-  }
+  // Implement logic to sync records with the file system in a future iteration.
 
-  // Directly check file existence since allRecords is already filtered.
-  __weak __typeof__(self) weakSelf = self;
-  [self
-      checkFileExistenceForRecords:self.allRecords
-                 completionHandler:^(std::vector<DownloadRecord> existingFiles,
-                                     std::vector<DownloadRecord> missingFiles) {
-                   __strong __typeof__(weakSelf) strongSelf = weakSelf;
-                   if (!strongSelf) {
-                     return;
-                   }
-
-                   // Update UI with existing files and clean up missing ones.
-                   [strongSelf handleValidatedRecords:std::move(existingFiles)
-                                       invalidRecords:std::move(missingFiles)
-                                          showLoading:NO];
-                 }];
+  // For sync operation, show loading indicator
+  [self loadDownloadRecordsWithLoading:YES];
 }
 
 - (void)filterRecordsWithType:(DownloadFilterType)type {
@@ -292,10 +270,8 @@ using CategorizationResult =
 
 #pragma mark - Private Methods
 
-// Loads download records with optional loading indicator and file existence
-// checking.
-- (void)loadDownloadRecordsWithLoading:(BOOL)showLoading
-                    checkFileExistence:(BOOL)checkFileExistence {
+// Loads download records with optional loading indicator.
+- (void)loadDownloadRecordsWithLoading:(BOOL)showLoading {
   CHECK(_isReady);
 
   if (showLoading) {
@@ -313,16 +289,14 @@ using CategorizationResult =
           return;
         }
         [strongSelf handleDownloadRecordsResult:std::move(records)
-                                    showLoading:showLoading
-                             checkFileExistence:checkFileExistence];
+                                    showLoading:showLoading];
       }));
 }
 
 // Handles the result from GetAllDownloadsAsync by filtering and updating the
 // UI.
 - (void)handleDownloadRecordsResult:(std::vector<DownloadRecord>)records
-                        showLoading:(BOOL)showLoading
-                 checkFileExistence:(BOOL)checkFileExistence {
+                        showLoading:(BOOL)showLoading {
   // Filter incognito records at the data source level.
   // If current session is not incognito, filter out incognito records.
   std::vector<DownloadRecord> filteredByIncognito;
@@ -332,44 +306,7 @@ using CategorizationResult =
     }
   }
 
-  if (checkFileExistence) {
-    // Check file existence and handle accordingly.
-    __weak __typeof__(self) weakSelf = self;
-    [self checkFileExistenceForRecords:filteredByIncognito
-                     completionHandler:^(
-                         std::vector<DownloadRecord> existingFiles,
-                         std::vector<DownloadRecord> missingFiles) {
-                       __strong __typeof__(weakSelf) strongSelf = weakSelf;
-                       if (!strongSelf) {
-                         return;
-                       }
-                       [strongSelf
-                           handleValidatedRecords:std::move(existingFiles)
-                                   invalidRecords:std::move(missingFiles)
-                                      showLoading:showLoading];
-                     }];
-  } else {
-    // Skip file existence checking.
-    [self updateRecordsAndUI:std::move(filteredByIncognito)
-                 showLoading:showLoading];
-  }
-}
-
-// Handles validated records by updating UI and cleaning up invalid ones.
-- (void)handleValidatedRecords:(std::vector<DownloadRecord>)validRecords
-                invalidRecords:(std::vector<DownloadRecord>)invalidRecords
-                   showLoading:(BOOL)showLoading {
-  // Update UI with valid records only.
-  [self updateRecordsAndUI:std::move(validRecords) showLoading:showLoading];
-
-  // Remove invalid records from service in background.
-  [self removeDownloadRecords:invalidRecords];
-}
-
-// Updates records and UI with the given records.
-- (void)updateRecordsAndUI:(std::vector<DownloadRecord>)records
-               showLoading:(BOOL)showLoading {
-  self.allRecords = std::move(records);
+  self.allRecords = std::move(filteredByIncognito);
   std::vector<DownloadRecord> recordsToDisplay =
       [self applyFilterWithTypeAndKeyword:self.allRecords];
 
@@ -406,7 +343,7 @@ using CategorizationResult =
 
 // Updates the consumer with the current download records.
 - (void)updateConsumer {
-  [self loadDownloadRecordsWithLoading:NO checkFileExistence:NO];
+  [self loadDownloadRecordsWithLoading:NO];
 }
 
 // Handles the application did become active notification.
@@ -553,76 +490,6 @@ using CategorizationResult =
 // Invalidates the search cache when filter type changes.
 - (void)invalidateSearchCache {
   self.filteredRecordsCache.clear();
-}
-
-// Categorizes records by file existence.
-- (CategorizationResult)categorizeRecordsByFileExistence:
-    (std::vector<DownloadRecord>)records {
-  std::vector<DownloadRecord> existingFiles;
-  std::vector<DownloadRecord> missingFiles;
-
-  for (const auto& record : records) {
-    // Convert relative path to absolute path and check if file exists.
-    bool fileExists = false;
-    if (!record.file_path.empty()) {
-      base::FilePath absolutePath =
-          ConvertToAbsoluteDownloadPath(record.file_path);
-      fileExists = base::PathExists(absolutePath);
-    }
-
-    if (fileExists) {
-      existingFiles.push_back(record);
-    } else {
-      missingFiles.push_back(record);
-    }
-  }
-
-  return std::make_pair(std::move(existingFiles), std::move(missingFiles));
-}
-
-// Checks file existence for given records asynchronously and returns
-// categorized results.
-- (void)checkFileExistenceForRecords:(const std::vector<DownloadRecord>&)records
-                   completionHandler:
-                       (void (^)(std::vector<DownloadRecord> existingFiles,
-                                 std::vector<DownloadRecord> missingFiles))
-                           completionHandler {
-  __weak __typeof__(self) weakSelf = self;
-
-  // The task to run on a background thread.
-  auto backgroundTask = base::BindOnce(
-      ^(std::vector<DownloadRecord> recordsToCheck) {
-        return [weakSelf categorizeRecordsByFileExistence:recordsToCheck];
-      },
-      std::move(records));
-
-  // The reply to run on the original sequence upon task completion.
-  auto replyCallback = base::BindOnce(^(CategorizationResult result) {
-    __strong __typeof__(weakSelf) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
-    auto [recordsWithFiles, recordsWithoutFiles] = std::move(result);
-    completionHandler(std::move(recordsWithFiles),
-                      std::move(recordsWithoutFiles));
-  });
-
-  // Post the task and its reply.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      std::move(backgroundTask), std::move(replyCallback));
-}
-
-// Removes the given records using the download record service.
-- (void)removeDownloadRecords:(const std::vector<DownloadRecord>&)records {
-  if (!_downloadRecordService) {
-    return;
-  }
-
-  for (const auto& record : records) {
-    _downloadRecordService->RemoveDownloadByIdAsync(record.download_id);
-  }
 }
 
 @end
