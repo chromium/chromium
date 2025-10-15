@@ -43,8 +43,6 @@ source_set("coordinators") {
 
 source_set("internal") {
   sources = [
-    "fullscreen_browser_observer.h",
-    "fullscreen_browser_observer.mm",
     "fullscreen_constants.h",
     "fullscreen_constants.mm",
     "fullscreen_content_adjustment_util.h",
@@ -112,7 +110,6 @@ source_set("ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "fullscreen_browser_observer_unittest.mm",
     "fullscreen_mediator_unittest.mm",
     "fullscreen_model_unittest.mm",
     "fullscreen_ui_updater_unittest.mm",

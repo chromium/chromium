@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_CONTROLLER_IMPL_H_
 #define IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_CONTROLLER_IMPL_H_
 
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_browser_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
@@ -64,9 +63,6 @@ class FullscreenControllerImpl : public FullscreenController {
   FullscreenMediator mediator_;
   // A WebStateListObserver that updates `model_` for WebStateList changes.
   FullscreenWebStateListObserver web_state_list_observer_;
-  // A FullscreenBrowserObserver that resets `web_state_list_` when the Browser
-  // is destroyed.
-  FullscreenBrowserObserver fullscreen_browser_observer_;
   // The bridge used to forward brodcasted UI to `model_`.
   __strong ChromeBroadcastOberverBridge* bridge_ = nil;
   // A helper object that listens for system notifications.
