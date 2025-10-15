@@ -22,4 +22,6 @@ export interface MapperOptions {
   acceptInsecureCerts?: boolean;
   unhandledPromptBehavior?: Session.UserPromptHandler;
   'goog:prerenderingDisabled'?: boolean;
+  // TODO: remove after Puppeteer rolled Chrome to 142 after Oct 28, 2025.
+  'goog:disableNetworkDurableMessages'?: true;
 }

@@ -32,6 +32,7 @@ import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
+import type {ContextConfig} from '../browser/ContextConfig.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -205,6 +206,11 @@ export class CdpTarget {
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
+    const config = this.contextConfigStorage.getActiveConfig(
+      this.topLevelId,
+      this.userContext,
+    );
+
     const results = await Promise.allSettled([
       this.#cdpClient.sendCommand('Page.enable', {
         enableFileChooserOpenedEvent: true,
@@ -237,7 +243,9 @@ export class CdpTarget {
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
       this.#cdpClient
         .sendCommand('Network.enable', {
-          enableDurableMessages: true,
+          // If `googDisableNetworkDurableMessages` flag is set, do not enable durable
+          // messages.
+          enableDurableMessages: config.disableNetworkDurableMessages !== true,
           maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
         })
         .then(() => this.toggleNetworkIfNeeded()),
@@ -247,7 +255,7 @@ export class CdpTarget {
         flatten: true,
       }),
       this.#updateWindowId(),
-      this.#setUserContextConfig(),
+      this.#setUserContextConfig(config),
       this.#initAndEvaluatePreloadScripts(),
       this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
       // Resume tab execution as well if it was paused by the debugger.
@@ -639,13 +647,8 @@ export class CdpTarget {
    * configuration and waits for them to finish. It's important to schedule them
    * in parallel, so that they are enqueued before any page's scripts.
    */
-  async #setUserContextConfig() {
+  async #setUserContextConfig(config: ContextConfig) {
     const promises = [];
-
-    const config = this.contextConfigStorage.getActiveConfig(
-      this.topLevelId,
-      this.userContext,
-    );
 
     promises.push(
       this.#cdpClient

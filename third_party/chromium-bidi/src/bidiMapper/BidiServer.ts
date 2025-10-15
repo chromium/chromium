@@ -137,6 +137,8 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           acceptInsecureCerts: options.acceptInsecureCerts ?? false,
           userPromptHandler: options.unhandledPromptBehavior,
           prerenderingDisabled: options?.['goog:prerenderingDisabled'] ?? false,
+          disableNetworkDurableMessages:
+            options?.['goog:disableNetworkDurableMessages'],
         });
         new CdpTargetManager(
           cdpConnection,
