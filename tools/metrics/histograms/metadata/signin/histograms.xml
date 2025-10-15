@@ -749,15 +749,16 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidGetAccountsTime{AndroidGetAccountsTypes}"
-    units="ms" expires_after="2026-04-12">
+    units="ms" expires_after="2026-08-12">
   <owner>bsazonov@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
     The time it takes to retrieve the list of accounts from the system.
     {AndroidGetAccountsTypes}
   </summary>
   <token key="AndroidGetAccountsTypes">
     <variant name="_AccountManager" summary="Using Android AccountManager API"/>
+    <variant name="_GoogleAuthClient" summary="Using GoogleAuthClient API"/>
     <variant name="_GoogleAuthUtil" summary="Using GoogleAuthUtil API"/>
   </token>
 </histogram>
