@@ -123,3 +123,8 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+#createImage {
+  --iron-icon-height: 18px;
+  --iron-icon-width: 18px;
+}
