@@ -15,6 +15,8 @@ namespace {
 
 constexpr gfx::Size kDefaultSize(100, 100);
 constexpr gfx::Size kOddSize(9, 9);
+constexpr gfx::Size kMaxSize(std::numeric_limits<int>::max(),
+                             std::numeric_limits<int>::max());
 
 class SharedImageFormatTest : public testing::Test {
  public:
@@ -361,27 +363,47 @@ TEST_F(SharedImageFormatTest, SinglePlaneETC1) {
   auto format = SinglePlaneFormat::kETC1;
   EXPECT_EQ(1, format.NumberOfPlanes());
 
-  // 4 bits (not bytes) per pixel.
-  EXPECT_EQ(format.EstimatedSizeInBytes(kDefaultSize), 5000u);
+  // 1 block * 8 bytes = 8 bytes.
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(4, 4)), 8u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(3, 4)), 8u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(3, 2)), 8u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(2, 1)), 8u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(4, 3)), 8u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(2, 3)), 8u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(1, 2)), 8u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(1, 1)), 8u);
 
-  // 5 bytes per row (rounded up) * 9 rows.
-  EXPECT_EQ(format.EstimatedSizeInBytes(kOddSize), 45u);
+  // 6 blocks * 8 bytes = 48.
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(8, 12)), 48u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(7, 12)), 48u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(7, 10)), 48u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(6, 9)), 48u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(8, 11)), 48u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(6, 10)), 48u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(5, 10)), 48u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(gfx::Size(5, 9)), 48u);
+
+  // Largest possible size shouldn't overflow with 64bit size_t but will
+  // overflow with 32 bit size_t.
+  if constexpr (sizeof(size_t) == sizeof(uint64_t)) {
+    EXPECT_EQ(format.EstimatedSizeInBytes(kMaxSize), 0x2000000000000000ul);
+  } else {
+    EXPECT_EQ(format.EstimatedSizeInBytes(kMaxSize), 0u);
+    EXPECT_FALSE(format.MaybeEstimatedSizeInBytes(kMaxSize).has_value());
+  }
 }
 
 TEST_F(SharedImageFormatTest, EstimatedSizeInBytesOverflow) {
   auto format = SinglePlaneFormat::kRGBA_F16;
 
-  constexpr gfx::Size max_size(std::numeric_limits<int>::max(),
-                               std::numeric_limits<int>::max());
-
   // MaybeEstimatedSizeInBytes() will return nullopt on overflow.
-  EXPECT_FALSE(format.MaybeEstimatedSizeInBytes(max_size).has_value());
+  EXPECT_FALSE(format.MaybeEstimatedSizeInBytes(kMaxSize).has_value());
 
   // EstimatedSizeInBytes() will return 0 on overflow.
-  EXPECT_EQ(format.EstimatedSizeInBytes(max_size), 0u);
+  EXPECT_EQ(format.EstimatedSizeInBytes(kMaxSize), 0u);
 
   // VerifySizeInBytes() should return false on overflow.
-  EXPECT_FALSE(format.VerifySizeInBytes(max_size));
+  EXPECT_FALSE(format.VerifySizeInBytes(kMaxSize));
 }
 
 TEST_F(SharedImageFormatTest, PrefersExternalSampler) {

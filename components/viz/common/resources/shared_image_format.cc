@@ -168,6 +168,24 @@ std::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
   if (is_single_plane()) {
     DCHECK_EQ(plane_index, 0);
 
+    if (singleplanar_format() == mojom::SingleplanarFormat::ETC1) {
+      // ETC stores 4x4 blocks. No risk of overflow on alignup as width/height
+      // are positive signed values converted to unsigned.
+      size_t block_width = base::bits::AlignUp<size_t>(size.width(), 4) >> 2;
+      size_t block_height = base::bits::AlignUp<size_t>(size.height(), 4) >> 2;
+
+      // ETC uses 8 bytes per block.
+      base::CheckedNumeric<size_t> estimated_bytes = 8;
+      estimated_bytes *= block_width;
+      estimated_bytes *= block_height;
+
+      if (!estimated_bytes.IsValid()) {
+        return std::nullopt;
+      }
+
+      return estimated_bytes.ValueOrDie();
+    }
+
     base::CheckedNumeric<size_t> bits_per_row = BitsPerPixel();
     bits_per_row *= size.width();
     if (!bits_per_row.IsValid()) {
