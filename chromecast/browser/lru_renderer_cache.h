@@ -30,7 +30,7 @@ class RendererPrelauncherFactory {
 };
 
 // This class maintains a pool of prelaunched (initialized) renderers.
-class LRURendererCache {
+class LRURendererCache : public base::MemoryPressureListener {
  public:
   LRURendererCache(content::BrowserContext* browser_context,
                    size_t max_renderers);
@@ -38,7 +38,7 @@ class LRURendererCache {
   LRURendererCache(const LRURendererCache&) = delete;
   LRURendererCache& operator=(const LRURendererCache&) = delete;
 
-  virtual ~LRURendererCache();
+  ~LRURendererCache() override;
 
   // Returns a pre-launched renderer. Returns nullptr if a cached renderer isn't
   // available (clients should create their own in this case).
@@ -58,7 +58,10 @@ class LRURendererCache {
   void SetFactoryForTesting(RendererPrelauncherFactory* factory);
 
   void StartNextPrelauncher(const GURL& page_url);
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   // Evict pre-launched renderers so that the total number of in-use and cached
   // renderers doesn't exceed |max_renderers_|.
@@ -68,7 +71,7 @@ class LRURendererCache {
   const size_t max_renderers_;
   size_t in_use_count_;
   std::list<std::unique_ptr<RendererPrelauncher>> cache_;
-  std::unique_ptr<base::MemoryPressureListenerRegistration>
+  base::MemoryPressureListenerRegistration
       memory_pressure_listener_registration_;
 
   RendererPrelauncherFactory* factory_for_testing_ = nullptr;

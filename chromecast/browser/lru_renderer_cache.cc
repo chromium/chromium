@@ -14,19 +14,17 @@
 
 namespace chromecast {
 
-LRURendererCache::LRURendererCache(
-    content::BrowserContext* browser_context,
-    size_t max_renderers)
+LRURendererCache::LRURendererCache(content::BrowserContext* browser_context,
+                                   size_t max_renderers)
     : browser_context_(browser_context),
       max_renderers_(max_renderers),
       in_use_count_(0),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kLruRendererCache,
+          this),
       weak_factory_(this) {
   DCHECK(browser_context_);
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::MemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kLruRendererCache,
-          base::BindRepeating(&LRURendererCache::OnMemoryPressure,
-                              weak_factory_.GetWeakPtr()));
 }
 
 LRURendererCache::~LRURendererCache() = default;
