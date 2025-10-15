@@ -104,12 +104,6 @@ class WebStateID;
 // Closes and deletes all tabs in `tabGroupItem`.
 - (void)deleteGroup:(TabGroupItem*)tabGroupItem;
 
-// Leaves the shared group in `tabGroupItem`.
-- (void)leaveSharedGroup:(TabGroupItem*)tabGroupItem;
-
-// Deletes the shared group in `tabGroupItem`.
-- (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem;
-
 // Completes the final removal of the last tab from its shared group. The last
 // tab is temporarily saved until this function is triggered upon user
 // confirmation.
