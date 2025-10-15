@@ -8563,7 +8563,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Add file
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_CONTEXT" desc="The text to display to ask user to add context to their search e.g. pdf or image.">
-        Add tabs and more
+        Add a tab and more
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_CONTEXT_TITLE" desc="The a11y title for a button that allows users to add context to their search e.g. pdf or image.">
         Add a tab or file to your search, and also use a tool
