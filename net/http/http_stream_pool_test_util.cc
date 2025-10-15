@@ -4,6 +4,9 @@
 
 #include "net/http/http_stream_pool_test_util.h"
 
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
@@ -401,7 +404,12 @@ HttpStreamKey GroupIdToHttpStreamKey(
 void WaitForAttemptManagerComplete(
     HttpStreamPool::AttemptManager* attempt_manager) {
   base::RunLoop run_loop;
-  attempt_manager->SetOnCompleteCallbackForTesting(run_loop.QuitClosure());
+  attempt_manager->SetOnCompleteCallbackForTesting(
+      base::BindLambdaForTesting([&]() {
+        // Add an extra PostTask to let any already posted tasks complete.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, run_loop.QuitClosure());
+      }));
   run_loop.Run();
 }
 

@@ -6,6 +6,7 @@
 #define NET_HTTP_HTTP_STREAM_POOL_JOB_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -89,7 +90,10 @@ class HttpStreamPool::Job {
   };
 
   // `delegate` must outlive `this`. For a stream request, `num_streams` must
-  // not be specified. For a preconnect, `num_streams` must be specified.
+  // not be specified. `group` must not be destroyed until either it has
+  // notified the Job of completion, or `this` has informed the Group's
+  // AttemptManager of cancellation. For a preconnect, `num_streams` must be
+  // specified.
   Job(Delegate* delegate,
       JobType type,
       Group* group,
@@ -172,6 +176,8 @@ class HttpStreamPool::Job {
 
   JobType type() const { return type_; }
 
+  bool is_preconnect() const { return type_ != JobType::kRequest; }
+
   const ConnectionAttempts& connection_attempts() const {
     return connection_attempts_;
   }
@@ -179,8 +185,17 @@ class HttpStreamPool::Job {
   base::TimeTicks create_time() const { return create_time_; }
 
  private:
+  // Called when job is cancelled or completes. Sets `result_` (which is
+  // currently nullopt on cancelletation - should it be ERR_ABORTED instead?).
+  // Clears `attempt_manager_`. On cancellation, The AttemptManager must already
+  // have been notified of cancellation.
+  void OnDone(std::optional<int> result);
+
   const raw_ptr<Delegate> delegate_;
   const JobType type_;
+
+  // The AttemptManager associated with `this`. Once `this` has been notified of
+  // success or failure, replaced with nullptr.
   raw_ptr<AttemptManager> attempt_manager_;
 
   const quic::ParsedQuicVersion quic_version_;

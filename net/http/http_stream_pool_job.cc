@@ -5,6 +5,7 @@
 #include "net/http/http_stream_pool_job.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -126,42 +127,10 @@ HttpStreamPool::Job::Job(Delegate* delegate,
 }
 
 HttpStreamPool::Job::~Job() {
-  CHECK(attempt_manager_);
-
-  // Record histograms only when `this` has a result. If `this` doesn't have a
-  // result that means JobController destroyed `this` since another job
-  // completed.
-  if (result_.has_value()) {
-    constexpr std::string_view kCompleteTimeHistogramName =
-        "Net.HttpStreamPool.JobCompleteTime3.";
-    base::TimeDelta complete_time = base::TimeTicks::Now() - create_time_;
-    if (*result_ == OK) {
-      const std::string_view protocol = NegotiatedProtocolToHistogramSuffix(
-          negotiated_protocol_.value_or(NextProto::kProtoUnknown));
-      base::UmaHistogramLongTimes100(
-          base::StrCat({kCompleteTimeHistogramName, protocol}), complete_time);
-    } else {
-      base::UmaHistogramLongTimes100(
-          base::StrCat({kCompleteTimeHistogramName, "Failure"}), complete_time);
-      base::UmaHistogramSparse("Net.HttpStreamPool.JobErrorCode", -*result_);
-    }
+  if (attempt_manager_) {
+    attempt_manager_->OnJobCancelled(this);
+    OnDone(std::nullopt);
   }
-
-  job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, [&] {
-    base::Value::Dict dict;
-    if (result_.has_value()) {
-      // Use "net_error" for the result as the NetLog viewer converts the value
-      // to a human-readable string.
-      dict.Set("net_error", *result_);
-    }
-    if (negotiated_protocol_.has_value()) {
-      dict.Set("negotiated_protocol", NextProtoToString(*negotiated_protocol_));
-    }
-    return dict;
-  });
-
-  // `attempt_manager_` may be deleted after this call.
-  attempt_manager_.ExtractAsDangling()->OnJobComplete(this);
 }
 
 void HttpStreamPool::Job::Start() {
@@ -221,12 +190,12 @@ void HttpStreamPool::Job::OnStreamReady(
     return;
   }
 
-  result_ = OK;
   negotiated_protocol_ = negotiated_protocol;
   attempt_manager_->group()
       ->http_network_session()
       ->proxy_resolution_service()
       ->ReportSuccess(delegate_->proxy_info());
+  OnDone(OK);
   delegate_->OnStreamReady(this, std::move(stream), negotiated_protocol,
                            session_source);
 }
@@ -237,7 +206,7 @@ void HttpStreamPool::Job::OnStreamFailed(
     ResolveErrorInfo resolve_error_info) {
   CHECK(delegate_);
   CHECK(!result_.has_value());
-  result_ = status;
+  OnDone(status);
   delegate_->OnStreamFailed(this, status, net_error_details,
                             resolve_error_info);
 }
@@ -246,21 +215,21 @@ void HttpStreamPool::Job::OnCertificateError(int status,
                                              const SSLInfo& ssl_info) {
   CHECK(delegate_);
   CHECK(!result_.has_value());
-  result_ = status;
+  OnDone(status);
   delegate_->OnCertificateError(this, status, ssl_info);
 }
 
 void HttpStreamPool::Job::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
   CHECK(delegate_);
   CHECK(!result_.has_value());
-  result_ = ERR_SSL_CLIENT_AUTH_CERT_NEEDED;
+  OnDone(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   delegate_->OnNeedsClientAuth(this, cert_info);
 }
 
 void HttpStreamPool::Job::OnPreconnectComplete(int status) {
   CHECK(delegate_);
   CHECK(!result_.has_value());
-  result_ = status;
+  OnDone(status);
   delegate_->OnPreconnectComplete(this, status);
 }
 
@@ -269,6 +238,45 @@ void HttpStreamPool::Job::CallOnPreconnectCompleteLater(int status) {
   TaskRunner(IDLE)->PostTask(
       FROM_HERE, base::BindOnce(&Job::OnPreconnectComplete,
                                 weak_ptr_factory_.GetWeakPtr(), status));
+}
+
+void HttpStreamPool::Job::OnDone(std::optional<int> result) {
+  CHECK(attempt_manager_);
+  attempt_manager_ = nullptr;
+
+  result_ = result;
+
+  // Record histograms only when `this` has a result. If `this` doesn't have a
+  // result that means JobController destroyed `this` since another job
+  // completed.
+  if (result_.has_value()) {
+    constexpr std::string_view kCompleteTimeHistogramName =
+        "Net.HttpStreamPool.JobCompleteTime3.";
+    base::TimeDelta complete_time = base::TimeTicks::Now() - create_time_;
+    if (*result_ == OK) {
+      const std::string_view protocol = NegotiatedProtocolToHistogramSuffix(
+          negotiated_protocol_.value_or(NextProto::kProtoUnknown));
+      base::UmaHistogramLongTimes100(
+          base::StrCat({kCompleteTimeHistogramName, protocol}), complete_time);
+    } else {
+      base::UmaHistogramLongTimes100(
+          base::StrCat({kCompleteTimeHistogramName, "Failure"}), complete_time);
+      base::UmaHistogramSparse("Net.HttpStreamPool.JobErrorCode", -*result_);
+    }
+  }
+
+  job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, [&] {
+    base::Value::Dict dict;
+    if (result_.has_value()) {
+      // Use "net_error" for the result as the NetLog viewer converts the value
+      // to a human-readable string.
+      dict.Set("net_error", *result_);
+    }
+    if (negotiated_protocol_.has_value()) {
+      dict.Set("negotiated_protocol", NextProtoToString(*negotiated_protocol_));
+    }
+    return dict;
+  });
 }
 
 }  // namespace net
