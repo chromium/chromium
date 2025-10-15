@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #32 Test that a WebAssembly code returns a specific result (struct.wast:122)
+  Cannot convert object to primitive value
+Harness: the test ran to completion.
+

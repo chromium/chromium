@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] #10 Test that WebAssembly compilation succeeds (table64.wast:9)
+  assert_equals: expected false but got true
+[FAIL] #33 Test that WebAssembly compilation succeeds (table64.wast:9)
+  assert_true: WebAssembly.compile failed unexpectedly with CompileError: WebAssembly.compile(): initial table size (18446744073709551615 elements) is larger than implementation limit (10000000 elements) @+17 at {loc} expected true got false
+[FAIL] #39 Test that WebAssembly instantiation succeeds (table64.wast:13)
+  assert_true: unexpected instantiation error, observed LinkError: WebAssembly.instantiate(): Import #0 "spectest" "table64": table import requires a WebAssembly.Table \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:201:15)\n    at table64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/table64.wast.js:70:11)\n    at http://web-platform.test:8001/wasm/core/js/memory64/table64.wast.js:78:3 expected true got false
+Harness: the test ran to completion.
+

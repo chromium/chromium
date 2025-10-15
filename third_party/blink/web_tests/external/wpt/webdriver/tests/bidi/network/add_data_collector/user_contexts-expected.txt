@@ -1,7 +1,0 @@
-This is a wdspec test.
-[FAIL] test_user_context
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
-[FAIL] test_multiple_user_context
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
-Harness: the test ran to completion.
-

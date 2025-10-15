@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test that FedCM accounts do not autogrant storage access without permissions policy.
+  assert_false: requestStorageAccess requires a gesture since the 'identity-credentials-get' policy is absent. expected false got true
+[FAIL] Test that FedCM accounts do not autogrant storage access if preventSilentAccess is set.
+  assert_false: requestStorageAccess requires a gesture since the preventSilentAccess flag is true. expected false got true
+Harness: the test ran to completion.
+

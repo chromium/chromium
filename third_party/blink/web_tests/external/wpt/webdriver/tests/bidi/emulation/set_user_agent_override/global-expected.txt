@@ -1,6 +1,4 @@
 This is a wdspec test.
-[FAIL] test_user_agent_set_override_and_reset_globally
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
 [FAIL] test_user_agent_set_override_and_reset_globally_and_per_context
   AssertionError: window.navigator.userAgent should be expected
 [FAIL] test_user_agent_set_override_and_reset_globally_and_per_user_context

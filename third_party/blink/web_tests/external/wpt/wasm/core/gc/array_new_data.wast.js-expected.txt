@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] #10 Test that a WebAssembly code returns a specific result (array_new_data.wast:12)
+  Cannot convert object to primitive value
+[FAIL] #11 Test that a WebAssembly code returns a specific result (array_new_data.wast:13)
+  Cannot convert object to primitive value
+[FAIL] #12 Test that a WebAssembly code returns a specific result (array_new_data.wast:14)
+  Cannot convert object to primitive value
+[FAIL] #13 Test that a WebAssembly code returns a specific result (array_new_data.wast:15)
+  Cannot convert object to primitive value
+Harness: the test ran to completion.
+

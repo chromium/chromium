@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SFrameEncrypterStream interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface object length
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface object name
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface: operation setEncryptionKey(CryptoKey, optional CryptoKeyID)
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameEncrypterStream interface: attribute onerror
+  assert_own_property: self does not have own property "SFrameEncrypterStream" expected property "SFrameEncrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface object length
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface object name
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: operation setEncryptionKey(CryptoKey, optional CryptoKeyID)
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+[FAIL] SFrameDecrypterStream interface: attribute onerror
+  assert_own_property: self does not have own property "SFrameDecrypterStream" expected property "SFrameDecrypterStream" missing
+Harness: the test ran to completion.
+

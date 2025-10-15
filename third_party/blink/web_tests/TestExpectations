@@ -2958,6 +2958,28 @@ external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/download_
 crbug.com/450876665 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/html/browsers/history/the-location-interface/location_replace_session_history.html [ Timeout ]
+external/wpt/navigation-api/navigate-event/replaceState-inside-back-handler-infinite.optional.html [ Timeout ]
+[ Linux ] external/wpt/wasm/core/gc/array.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/gc/array_fill.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/gc/struct.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/memory64/address64.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/memory64/align64.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/memory64/memory_grow64.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/memory64/memory_trap64.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/multi-memory/address0.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/multi-memory/address1.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/multi-memory/imports1.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/multi-memory/imports2.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/multi-memory/memory_trap0.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/multi-memory/memory_trap1.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/multi-memory/traps0.wast.js.html [ Crash ]
+[ Linux ] external/wpt/wasm/core/ref_as_non_null.wast.js.html [ Crash ]
+external/wpt/webdriver/tests/bidi/external/permissions/set_permission/set_permission.py [ Failure ]
+external/wpt/webdriver/tests/bidi/network/set_extra_headers/contexts.py [ Failure ]
+external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers.py [ Failure ]
+external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure ]
+external/wpt/webdriver/tests/bidi/network/set_extra_headers/user_contexts.py [ Failure ]
 crbug.com/451655444 external/wpt/webdriver/tests/bidi/network/get_data/persistence.py [ Failure ]
 crbug.com/451655444 external/wpt/webdriver/tests/bidi/network/set_extra_headers/invalid.py [ Failure ]
 crbug.com/450776558 external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-003.html [ Failure ]
@@ -3394,7 +3416,6 @@ crbug.com/429130576 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backen
 crbug.com/429130576 [ Mac14 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/service/getCharacteristic/characteristic-found.https.window.html [ Crash ]
 crbug.com/429130576 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/service/getCharacteristic/characteristic-found.https.window.html [ Crash ]
 crbug.com/428969818 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/format.py [ Failure ]
-crbug.com/428969818 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]
 crbug.com/428754582 [ Mac13 ] external/wpt/fetch/metadata/generated/window-location.https.sub.html [ Skip Timeout ]
 crbug.com/428769113 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=cross_origin&worker_dip=credentialless&window_dip=credentialless [ Skip Timeout ]
 crbug.com/428769113 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=cross_origin&worker_dip=none&window_dip=credentialless [ Skip Timeout ]
@@ -9210,7 +9231,7 @@ crbug.com/366261815 external/wpt/signed-exchange/subresource/sxg-subresource-hea
 
 # Gardener 2024-10-21
 crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/print/frame_tentative.py [ Failure Pass Timeout ]
-crbug.com/374661016 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure Pass Timeout ]
+crbug.com/374661016 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure Pass Timeout ]  # Randomized context ID
 
 # Gardener 2024-10-29, 2025-01-08, 2025-02-20
 crbug.com/376320405 [ Win10.20h2 ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure Pass ]
@@ -9345,7 +9366,7 @@ crbug.com/379474211 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text
 crbug.com/390068099 [ Mac ] fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Failure Pass ]
 
 # Gardener 2025-01-15
-crbug.com/389960979 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure ]
+crbug.com/389960979 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure ]  # Randomized context ID
 crbug.com/390162925 [ Win10.20h2 ] virtual/gpu-rasterization/images/png-suite/test.html [ Failure ]
 crbug.com/383667702 [ Linux ] external/wpt/html/interaction/focus/the-autofocus-attribute/spin-by-blocking-style-sheet.html [ Failure ]
 

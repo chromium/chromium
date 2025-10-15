@@ -1,11 +1,5 @@
 This is a wdspec test.
-[FAIL] test_user_contexts
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
-[FAIL] test_set_to_default_user_context
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
-[FAIL] test_set_to_multiple_user_contexts
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
 [FAIL] test_set_to_user_context_and_then_to_context
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected boolean, received null in "acceptInsecureCerts". Invalid input in "proxy". Expected object, received null in "unhandledPromptBehavior".)
+  AssertionError: window.navigator.userAgent should be expected
 Harness: the test ran to completion.
 

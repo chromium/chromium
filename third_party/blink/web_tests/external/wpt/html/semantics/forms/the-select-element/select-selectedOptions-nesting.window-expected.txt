@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] <select> containing <option><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select> containing <hr><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select> containing <select><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select><optgroup> containing <option><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select><optgroup> containing <hr><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select><optgroup> containing <select><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select><optgroup> containing <optgroup><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select><div><optgroup><div> containing <option><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select><div><optgroup><div> containing <hr><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select><div><optgroup><div> containing <select><option selected>
+  assert_equals: expected 1 but got 2
+[FAIL] <select><div><optgroup><div> containing <optgroup><option selected>
+  assert_equals: expected 1 but got 2
+Harness: the test ran to completion.
+

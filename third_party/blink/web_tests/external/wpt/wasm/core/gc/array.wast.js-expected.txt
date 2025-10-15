@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #33 Test that a WebAssembly code returns a specific result (array.wast:97)
+  Cannot convert object to primitive value
+[FAIL] #34 Test that a WebAssembly code returns a specific result (array.wast:98)
+  Cannot convert object to primitive value
+[FAIL] #50 Test that a WebAssembly code returns a specific result (array.wast:142)
+  Cannot convert object to primitive value
+[FAIL] #51 Test that a WebAssembly code returns a specific result (array.wast:143)
+  Cannot convert object to primitive value
+[FAIL] #67 Test that a WebAssembly code returns a specific result (array.wast:202)
+  Cannot convert object to primitive value
+[FAIL] #68 Test that a WebAssembly code returns a specific result (array.wast:203)
+  Cannot convert object to primitive value
+[FAIL] #82 Test that a WebAssembly code returns a specific result (array.wast:276)
+  Cannot convert object to primitive value
+[FAIL] #83 Test that a WebAssembly code returns a specific result (array.wast:277)
+  Cannot convert object to primitive value
+Harness: the test ran to completion.
+

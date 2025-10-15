@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SanitizerConfig dataAttributes field.
   assert_false: expected false got true
 [FAIL] SanitizerConfig, normalization: elements: ["div"]
@@ -15,5 +16,23 @@ This is a testharness.js-based test.
   assert_equals: expected "{\\"name\\":\\"bla\\",\\"namespace\\":\\"http://fantasy.org/namespace\\",\\"removeAttributes\\":[]}" but got "{\\"name\\":\\"bla\\",\\"namespace\\":\\"http://fantasy.org/namespace\\"}"
 [FAIL] Test elements addition.
   assert_equals: expected "{\\"name\\":\\"bla\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\",\\"removeAttributes\\":[]}" but got "{\\"name\\":\\"bla\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\"}"
+[FAIL] Both elements and removeElements should not be allowed.
+  assert_throws_js: function "() => {\n    new Sanitizer({ elements: [], removeElements: [] });\n  }" did not throw
+[FAIL] Both attributes and removeAttributes should not be allowed.
+  assert_throws_js: function "() => {\n    new Sanitizer({ attributes: [], removeAttributes: [] });\n  }" did not throw
+[FAIL] config[attributes] and element[attributes] should not intersect.
+  assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: ["title"],\n      elements: [{ name: "div", attributes: ["title"] }],\n    });\n  }" did not throw
+[FAIL] element[removeAttributes] should be a subset of config[attributes]
+  assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: ["class"],\n      elements: [{ name: "div", removeAttributes: ["title"] }],\n    });\n  }" did not throw
+[FAIL] Per-element allow list with a data attribute must not co-exist with config[dataAttributes] set to true.
+  assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: [],\n      dataAttributes: true,\n      elements: [{ name: "div", attributes: ["data-foo"] }],\n    });\n  }" did not throw
+[FAIL] Global attribute allow-list with a data attribute must not co-exist with config[dataAttributes] set to true.
+  assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: [],\n      dataAttributes: true,\n      attributes: ["data-bar"],\n    });\n  }" did not throw
+[FAIL] config[removeAttributes] and element[attributes] should not intersect.
+  assert_throws_js: function "() => {\n    new Sanitizer({\n      removeAttributes: ["class"],\n      elements: [{ name: "div", attributes: ["class"] }],\n    });\n  }" did not throw
+[FAIL] config[removeAttributes] and element[removeAttributes] should not intersect.
+  assert_throws_js: function "() => {\n    new Sanitizer({\n      removeAttributes: ["class"],\n      elements: [{ name: "div", removeAttributes: ["class"] }],\n    });\n  }" did not throw
+[FAIL] Can not use config[dataAttributes] and config[attributes] together.
+  assert_throws_js: function "() => {\n    new Sanitizer({ removeAttributes: [], dataAttributes: true });\n  }" did not throw
 Harness: the test ran to completion.
 

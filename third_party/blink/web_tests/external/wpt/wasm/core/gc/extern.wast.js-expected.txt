@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] #13 Test that a WebAssembly code returns a specific result (extern.wast:47)
+  Cannot convert object to primitive value
+[FAIL] #14 Test that a WebAssembly code returns a specific result (extern.wast:48)
+  Cannot convert object to primitive value
+[FAIL] #19 Test that a WebAssembly code returns a specific result (extern.wast:54)
+  Cannot convert object to primitive value
+[FAIL] #20 Test that a WebAssembly code returns a specific result (extern.wast:55)
+  Cannot convert object to primitive value
+Harness: the test ran to completion.
+
