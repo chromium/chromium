@@ -311,10 +311,10 @@ void WidgetAXManager::Enable() {
   }
   cache_->Init(widget_->GetRootView()->GetViewAccessibility());
 
-  // Schedule a full serialization of the tree starting from the root.
+  // Fully serialize the tree starting from the root immediately.
   pending_data_updates_.insert(
       widget_->GetRootView()->GetViewAccessibility().GetUniqueId());
-  SchedulePendingUpdate();
+  SendPendingUpdate();
 }
 
 void WidgetAXManager::SendPendingUpdate() {

@@ -126,7 +126,6 @@ TEST_F(WidgetAXManagerTest, InitInitializesFullyAXTreeManagerWhenAXOn) {
   EXPECT_TRUE(manager.is_enabled());
   EXPECT_NE(api.ax_tree_manager(), nullptr);
 
-  api.WaitForNextSerialization();
   EXPECT_GT(api.ax_tree_manager()->ax_tree()->size(), 1);
 }
 
@@ -168,7 +167,6 @@ TEST_F(WidgetAXManagerTest, ChildWidget_EnableSerializesFullTree) {
   EXPECT_EQ(child_api.ax_tree_manager(), nullptr);
 
   ui::AXPlatform::GetInstance().NotifyModeAdded(ui::AXMode::kNativeAPIs);
-  child_api.WaitForNextSerialization();
 
   EXPECT_TRUE(child_mgr->is_enabled());
   EXPECT_NE(child_api.ax_tree_manager(), nullptr);
@@ -280,7 +278,6 @@ TEST_F(WidgetAXManagerOffTest, CrashesWhenFlagOff) {
 TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();
-  api.WaitForNextSerialization();
 
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
@@ -326,11 +323,6 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
 TEST_F(WidgetAXManagerTest, OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();
-  api.WaitForNextSerialization();
-
-  // TODO(crbug.com/40672441): Uncomment this line once we serialize the full
-  // tree on Enable().
-  // api.WaitForNextSerialization();
 
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
@@ -441,21 +433,6 @@ TEST_F(WidgetAXManagerTest, UpdatesIgnoredWhenDisabled) {
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before);
 }
 
-TEST_F(WidgetAXManagerTest, SendPendingUpdate_SerializationOnEnable) {
-  WidgetAXManagerTestApi api(manager());
-
-  // On enable, the manager should serialize the root automatically.
-  api.Enable();
-
-  EXPECT_NE(api.ax_tree_manager(), nullptr);
-  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->root()->id(),
-            static_cast<int32_t>(
-                widget()->GetRootView()->GetViewAccessibility().GetUniqueId()));
-
-  // TODO: In a follow-up CL, the root should be serialized on class creation,
-  // not on enable. The rest of the tree should be serialized on enable.
-}
-
 TEST_F(WidgetAXManagerTest,
        SendPendingUpdate_SerializationOnChildAddedAndRemoved) {
   WidgetAXManagerTestApi api(manager());
@@ -465,7 +442,7 @@ TEST_F(WidgetAXManagerTest,
   EXPECT_EQ(api.ax_tree_manager()->ax_tree()->root()->id(),
             static_cast<int32_t>(
                 widget()->GetRootView()->GetViewAccessibility().GetUniqueId()));
-  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->size(), 1);
+  EXPECT_GT(api.ax_tree_manager()->ax_tree()->size(), 1);
 
   // Adding a child view should automatically call OnDataChanged, which in turn
   // should schedule a pending serialization.
@@ -488,9 +465,6 @@ TEST_F(WidgetAXManagerTest, SendPendingUpdate_SendsSerializedUpdates) {
 
   api.Enable();
 
-  // TODO(crbug.com/40672441): Uncomment this line once we serialize the full
-  // tree on Enable(). api.WaitForNextSerialization();
-
   manager()->OnEvent(widget()->GetRootView()->GetViewAccessibility(),
                      ax::mojom::Event::kLoadComplete);
   api.WaitForNextSerialization();
@@ -510,7 +484,6 @@ TEST_F(WidgetAXManagerTest, SendPendingUpdate_SendsSerializedUpdates) {
 TEST_F(WidgetAXManagerTest, SendPendingUpdate_NoSerializeWhenNodeNotInTree) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();
-  api.WaitForNextSerialization();
 
   // This view is not part of the widget.
   auto v = ViewAccessibility::Create(nullptr);
@@ -643,7 +616,6 @@ TEST_F(WidgetAXManagerTest, OnChildAddedAndRemoved_ReserializeOnParent) {
   WidgetAXManagerTestApi api(manager());
 
   api.Enable();
-  api.WaitForNextSerialization();
 
   auto child = ViewAccessibility::Create(nullptr);
   auto parent = ViewAccessibility::Create(nullptr);
