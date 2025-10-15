@@ -190,7 +190,8 @@ class AutofillAiManager {
   // Keeps suggestions details about the five most recent forms the user has
   // interacted with.
   base::LRUCache<FormGlobalId, UserSuggestionInteractionDetails>
-      user_suggestion_interactions_per_form{kSuggestionInteractionCacheMaxSize};
+      user_suggestion_interactions_per_form_{
+          kSuggestionInteractionCacheMaxSize};
 
   base::WeakPtrFactory<AutofillAiManager> weak_ptr_factory_{this};
 };

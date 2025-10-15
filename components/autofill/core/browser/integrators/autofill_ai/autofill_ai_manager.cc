@@ -173,11 +173,11 @@ void AutofillAiManager::OnSuggestionsShown(
     ukm::SourceId ukm_source_id) {
   logger_.OnSuggestionsShown(form, field, suggested_entity_types,
                              ukm_source_id);
-  auto it = user_suggestion_interactions_per_form.Get(form.global_id());
+  auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
   // Do not overwrite cases in which a suggestion was previously accepted.
-  if (it == user_suggestion_interactions_per_form.end() ||
+  if (it == user_suggestion_interactions_per_form_.end() ||
       !it->second.entity_type_accepted) {
-    user_suggestion_interactions_per_form.Put(
+    user_suggestion_interactions_per_form_.Put(
         {form.global_id(),
          {.suggested_entity_types = suggested_entity_types,
           .entity_type_accepted = std::nullopt,
@@ -225,8 +225,8 @@ void AutofillAiManager::OnDidFillSuggestion(
     return;
   }
   entity_manager->RecordEntityUsed(entity.guid(), base::Time::Now());
-  auto it = user_suggestion_interactions_per_form.Get(form.global_id());
-  if (it != user_suggestion_interactions_per_form.end()) {
+  auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
+  if (it != user_suggestion_interactions_per_form_.end()) {
     it->second.entity_type_accepted = entity.type();
   }
 }
@@ -303,8 +303,8 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
   // Importing a form can already lead to a survey, therefore only show the
   // filling hats survey if no save or update prompt is shown.
   if (!form_imported) {
-    auto it = user_suggestion_interactions_per_form.Get(form.global_id());
-    if (it == user_suggestion_interactions_per_form.end()) {
+    auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
+    if (it == user_suggestion_interactions_per_form_.end()) {
       return false;
     }
     const EntityDataManager* entity_manager = client_->GetEntityDataManager();
