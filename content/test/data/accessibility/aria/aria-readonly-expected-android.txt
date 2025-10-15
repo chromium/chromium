@@ -16,7 +16,7 @@ android.webkit.WebView focusable focused
 ++++++android.view.View collection_item focusable interesting content_description='Readonly-false gridcell' row_span=1 column_span=1
 ++++++android.view.View collection_item disabled focusable interesting content_description='Readonly-true gridcell' row_span=1 column_index=1 column_span=1
 ++++++android.view.View collection_item focusable interesting content_description='Readonly not specified gridcell' row_span=1 column_index=2 column_span=1
-++android.widget.CheckBox role_description='checkbox' checkable clickable disabled interesting content_description='Readonly checkbox'
+++android.widget.CheckBox checkable clickable disabled interesting content_description='Readonly checkbox'
 ++android.widget.EditText clickable editable_text focusable interesting hint='Readonly combobox' input_type=1
 ++android.widget.ListView role_description='list box' clickable collection disabled interesting name='Readonly listbox' column_count=1
 ++android.widget.RadioGroup role_description='radio group' disabled interesting name='Readonly radiogroup'

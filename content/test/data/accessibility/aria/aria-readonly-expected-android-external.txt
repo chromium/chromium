@@ -16,7 +16,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++View contentDescription:"Readonly-false gridcell" focusable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="gridCell"]
 ++++++View contentDescription:"Readonly-true gridcell" disabled focusable CollectionItemInfo:[rowIndex=0, colIndex=1] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="gridCell"]
 ++++++View contentDescription:"Readonly not specified gridcell" focusable CollectionItemInfo:[rowIndex=0, colIndex=2] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="gridCell"]
-++CheckBox contentDescription:"Readonly checkbox" checkable clickable disabled actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", roleDescription="checkbox"]
+++CheckBox contentDescription:"Readonly checkbox" checkable clickable disabled actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox"]
 ++EditText hint:"Readonly combobox" canOpenPopUp clickable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="textFieldWithComboBox", clickableScore="300", hint="Readonly combobox"]
 ++ListView text:"Readonly listbox" clickable disabled CollectionInfo:[rows=0, cols=1] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", roleDescription="list box"]
 ++RadioGroup text:"Readonly radiogroup" disabled actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioGroup", roleDescription="radio group"]

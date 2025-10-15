@@ -1,13 +1,13 @@
 android.webkit.WebView focusable focused
-++android.widget.CheckBox role_description='checkbox' checkable clickable focusable interesting content_description='Enabled'
-++android.widget.CheckBox role_description='checkbox' checkable clickable disabled interesting content_description='Disabled'
+++android.widget.CheckBox checkable clickable focusable interesting content_description='Enabled'
+++android.widget.CheckBox checkable clickable disabled interesting content_description='Disabled'
 ++android.widget.Button clickable focusable interesting name='Enabled'
 ++android.widget.Button clickable disabled interesting name='Disabled'
 ++android.view.View
 ++++android.widget.TextView interesting name='Enabled form '
-++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable interesting content_description='Checkbox'
+++++android.widget.CheckBox checkable clickable focusable interesting content_description='Checkbox'
 ++++android.widget.Button clickable focusable interesting name='Button'
 ++android.view.View disabled
 ++++android.widget.TextView interesting name='Disabled form '
-++++android.widget.CheckBox role_description='checkbox' checkable clickable disabled focusable interesting content_description='Checkbox'
+++++android.widget.CheckBox checkable clickable disabled focusable interesting content_description='Checkbox'
 ++++android.widget.Button clickable disabled focusable interesting name='Button'

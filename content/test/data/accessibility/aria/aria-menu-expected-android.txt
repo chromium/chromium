@@ -37,6 +37,6 @@ android.webkit.WebView focusable focused
 ++++android.view.View role_description='splitter'
 ++android.view.View role_description='menu' collection name='Group with non-menuitems' column_count=1
 ++++android.view.View name='Control group'
-++++++android.widget.CheckBox role_description='checkbox' checkable clickable interesting name='Option 1'
+++++++android.widget.CheckBox checkable clickable interesting name='Option 1'
 ++++++android.widget.TextView interesting name='Choice A'
 ++++++android.widget.EditText clickable editable_text has_non_empty_value interesting name='Input field' text_change_added_count=11

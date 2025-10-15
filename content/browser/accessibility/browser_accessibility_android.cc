@@ -1526,6 +1526,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   switch (GetRole()) {
     case ax::mojom::Role::kAudio:
     case ax::mojom::Role::kButton:
+    case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kCode:
     case ax::mojom::Role::kDescriptionList:
     case ax::mojom::Role::kDetails:

@@ -8,8 +8,8 @@ android.webkit.WebView focusable focused interesting name='Action verbs'
 ++android.widget.EditText role_description='search text field' clickable editable_text focusable interesting input_type=1
 ++android.widget.EditText clickable editable_text focusable multiline interesting
 ++android.widget.EditText clickable editable_text focusable multiline interesting
-++android.widget.CheckBox role_description='checkbox' checkable clickable focusable interesting
-++android.widget.CheckBox role_description='checkbox' checkable clickable focusable interesting checked=1
+++android.widget.CheckBox checkable clickable focusable interesting
+++android.widget.CheckBox checkable clickable focusable interesting checked=1
 ++android.widget.RadioButton role_description='radio button' checkable clickable focusable interesting
 ++android.widget.ToggleButton role_description='switch' checkable clickable focusable interesting name='ARIA Switch' state_description='Off'
 ++android.view.View

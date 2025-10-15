@@ -6,7 +6,7 @@ android.webkit.WebView focusable focused
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Button: '
 ++++++android.widget.Button clickable focusable interesting name='Button:'
-++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable interesting name='Checkbox:'
+++++android.widget.CheckBox checkable clickable focusable interesting name='Checkbox:'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Color: '
 ++++++android.widget.Spinner role_description='color picker' clickable focusable interesting name='#000000'
