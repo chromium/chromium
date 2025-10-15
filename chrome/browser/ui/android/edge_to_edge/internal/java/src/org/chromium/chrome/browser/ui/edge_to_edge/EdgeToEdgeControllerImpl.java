@@ -431,8 +431,7 @@ public class EdgeToEdgeControllerImpl
 
                     @Override
                     public void safeAreaConstraintChanged(boolean hasConstraint) {
-                        if (mHasSafeAreaConstraint == hasConstraint
-                                || !EdgeToEdgeUtils.isSafeAreaConstraintEnabled()) {
+                        if (mHasSafeAreaConstraint == hasConstraint) {
                             return;
                         }
 

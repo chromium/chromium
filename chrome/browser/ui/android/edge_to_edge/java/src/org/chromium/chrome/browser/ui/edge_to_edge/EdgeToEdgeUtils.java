@@ -340,7 +340,7 @@ public class EdgeToEdgeUtils {
 
     /** Return whether there's any safe area constraint found for the given tab. */
     static boolean hasSafeAreaConstraintForTab(@Nullable Tab tab) {
-        if (tab == null || !isSafeAreaConstraintEnabled()) return false;
+        if (tab == null) return false;
 
         SafeAreaInsetsTracker safeAreaInsetsTracker =
                 DisplayCutoutController.getSafeAreaInsetsTracker(tab);

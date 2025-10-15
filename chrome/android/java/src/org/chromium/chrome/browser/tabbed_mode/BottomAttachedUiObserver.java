@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -464,22 +463,13 @@ public class BottomAttachedUiObserver
             return;
         }
 
-        boolean useBrowserControlsColor = bottomOffset < mBottomControlsHeight;
-
-        // When bottom chin constraint exists, the chin will have the same coloring mechanism as
-        // the OS navigation bar as if E2E is disabled.
-        if (EdgeToEdgeUtils.isSafeAreaConstraintEnabled()) {
-            boolean hasScrollablePortion =
-                    bottomOffset < mBottomControlsHeight - mBottomControlsMinHeight;
-            boolean chinNotScrollable =
-                    mBottomControlsStacker.isLayerNonScrollable(LayerType.BOTTOM_CHIN);
-            boolean hasOtherNonScrollableLayer =
-                    mBottomControlsStacker.hasMultipleNonScrollableLayer();
-            boolean hasFixedBrowserControlsAttached =
-                    chinNotScrollable && hasOtherNonScrollableLayer;
-
-            useBrowserControlsColor = hasScrollablePortion || hasFixedBrowserControlsAttached;
-        }
+        boolean hasScrollablePortion =
+                bottomOffset < mBottomControlsHeight - mBottomControlsMinHeight;
+        boolean chinNotScrollable =
+                mBottomControlsStacker.isLayerNonScrollable(LayerType.BOTTOM_CHIN);
+        boolean hasOtherNonScrollableLayer = mBottomControlsStacker.hasMultipleNonScrollableLayer();
+        boolean hasFixedBrowserControlsAttached = chinNotScrollable && hasOtherNonScrollableLayer;
+        boolean useBrowserControlsColor = hasScrollablePortion || hasFixedBrowserControlsAttached;
 
         updateUseBottomControlsColor(useBrowserControlsColor);
     }
