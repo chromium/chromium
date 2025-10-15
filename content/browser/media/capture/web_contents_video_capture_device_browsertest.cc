@@ -37,6 +37,10 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gl_switches.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/common/content_features.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window.h"

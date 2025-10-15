@@ -9,22 +9,19 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/bluetooth/bluetooth_device_scanning_prompt_controller.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace content {
 
-namespace {
-
-using RequestCallback =
-    base::OnceCallback<void(blink::mojom::WebBluetoothResult)>;
-
-}
+class WebContentsImpl;
 
 class WebBluetoothServiceImpl::AdvertisementClient {
  public:
+  using RequestCallback =
+      base::OnceCallback<void(blink::mojom::WebBluetoothResult)>;
+
   virtual void SendEvent(
       const blink::mojom::WebBluetoothAdvertisingEvent& event) = 0;
 
@@ -44,8 +41,8 @@ class WebBluetoothServiceImpl::AdvertisementClient {
 
   mojo::AssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
       client_remote_;
-  raw_ptr<WebContentsImpl> web_contents_;
-  raw_ptr<WebBluetoothServiceImpl> service_;
+  const raw_ptr<WebContentsImpl> web_contents_;
+  const raw_ptr<WebBluetoothServiceImpl> service_;
 
  private:
   RequestCallback callback_;

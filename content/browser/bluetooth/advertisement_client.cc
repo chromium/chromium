@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 #include "content/browser/bluetooth/bluetooth_metrics.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 
 namespace content {
 

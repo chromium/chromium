@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
@@ -86,7 +85,7 @@ class CONTENT_EXPORT GeolocationServiceImpl
   void IncrementActivityCount();
   void DecrementActivityCount();
 
-  raw_ptr<device::mojom::GeolocationContext, DanglingUntriaged>
+  const raw_ptr<device::mojom::GeolocationContext, DanglingUntriaged>
       geolocation_context_;
 
   // Used to subscribe to permission status changes.

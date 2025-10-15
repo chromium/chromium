@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
