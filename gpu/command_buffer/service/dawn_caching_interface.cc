@@ -14,6 +14,8 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
+#include "components/persistent_cache/entry.h"
+#include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_preferences.h"
 #include "net/base/io_buffer.h"
@@ -26,28 +28,86 @@ DawnCachingInterface::DawnCachingInterface(
     : memory_cache_backend_(std::move(backend)),
       cache_blob_callback_(std::move(callback)) {}
 
+DawnCachingInterface::DawnCachingInterface(
+    scoped_refptr<detail::DawnMemoryCache> backend,
+    std::unique_ptr<GpuPersistentCache> persistent_cache)
+    : memory_cache_backend_(std::move(backend)),
+      persistent_cache_(std::move(persistent_cache)) {}
+
 DawnCachingInterface::~DawnCachingInterface() = default;
+
+void DawnCachingInterface::InitializePersistentCache(
+    base::File db_file,
+    base::File journal_file,
+    base::UnsafeSharedMemoryRegion shared_lock) {
+  CHECK(persistent_cache_);
+  // TODO(crbug.com/399642827): PersistentCache's sqlite backend has default
+  // in-memory page cache of 2 MB.
+  // See https://www.sqlite.org/pragma.html#pragma_cache_size
+  // Since we have our own memory cache here, we might want to disable the
+  // page cache or at least reduce its max size.
+  persistent_cache_->InitializeCache(std::move(db_file), std::move(journal_file),
+                                     std::move(shared_lock));
+}
 
 size_t DawnCachingInterface::LoadData(const void* key,
                                       size_t key_size,
                                       void* value_out,
                                       size_t value_size) {
-  if (memory_cache() == nullptr) {
+  std::string key_str(static_cast<const char*>(key), key_size);
+  if (memory_cache() != nullptr) {
+    size_t bytes_read =
+        memory_cache()->LoadData(key_str, value_out, value_size);
+    if (bytes_read > 0) {
+      return bytes_read;
+    }
+  }
+
+  if (!persistent_cache_) {
     return 0u;
   }
-  std::string key_str(static_cast<const char*>(key), key_size);
-  return memory_cache()->LoadData(key_str, value_out, value_size);
+
+  std::unique_ptr<persistent_cache::Entry> entry =
+      persistent_cache_->LoadEntry(key_str);
+  if (!entry) {
+    return 0u;
+  }
+
+  size_t bytes_copied = 0;
+  if (value_size > 0) {
+    bytes_copied = entry->CopyContentTo(
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(value_out), value_size)));
+  }
+
+  if (memory_cache()) {
+    memory_cache()->StoreData(key_str, entry->GetContentSpan().data(),
+                              entry->GetContentSize());
+  }
+
+  if (bytes_copied > 0) {
+    return bytes_copied;
+  }
+
+  return entry->GetContentSize();
 }
 
 void DawnCachingInterface::StoreData(const void* key,
                                      size_t key_size,
                                      const void* value,
                                      size_t value_size) {
-  if (memory_cache() == nullptr || value == nullptr || value_size <= 0) {
+  if (value == nullptr || value_size <= 0) {
     return;
   }
+
   std::string key_str(static_cast<const char*>(key), key_size);
-  memory_cache()->StoreData(key_str, value, value_size);
+  if (memory_cache() != nullptr) {
+    memory_cache()->StoreData(key_str, value, value_size);
+  }
+
+  if (persistent_cache_) {
+    persistent_cache_->StoreData(key_str.data(), key_str.size(), value,
+                                 value_size);
+  }
 
   // Send the cache entry to be stored on the host-side if applicable.
   if (cache_blob_callback_) {
@@ -77,25 +137,39 @@ std::unique_ptr<DawnCachingInterface>
 DawnCachingInterfaceFactory::CreateInstance(
     const gpu::GpuDiskCacheHandle& handle,
     DawnCachingInterface::CacheBlobCallback callback) {
+  return base::WrapUnique(new DawnCachingInterface(
+      GetOrCreateMemoryCache(handle), std::move(callback)));
+}
+
+std::unique_ptr<DawnCachingInterface>
+DawnCachingInterfaceFactory::CreateInstance(
+    const gpu::GpuDiskCacheHandle& handle,
+    std::unique_ptr<GpuPersistentCache> persistent_cache) {
+  return base::WrapUnique(new DawnCachingInterface(
+      GetOrCreateMemoryCache(handle), std::move(persistent_cache)));
+}
+
+std::unique_ptr<DawnCachingInterface>
+DawnCachingInterfaceFactory::CreateInstance() {
+  return base::WrapUnique(new DawnCachingInterface(backend_factory_.Run()));
+}
+
+scoped_refptr<detail::DawnMemoryCache>
+DawnCachingInterfaceFactory::GetOrCreateMemoryCache(
+    const gpu::GpuDiskCacheHandle& handle) {
   DCHECK(gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnWebGPU ||
          gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnGraphite);
 
   if (const auto it = backends_.find(handle); it != backends_.end()) {
-    return base::WrapUnique(
-        new DawnCachingInterface(it->second, std::move(callback)));
+    return it->second;
   }
 
   scoped_refptr<detail::DawnMemoryCache> backend = backend_factory_.Run();
   if (backend != nullptr) {
     backends_[handle] = backend;
   }
-  return base::WrapUnique(
-      new DawnCachingInterface(std::move(backend), std::move(callback)));
-}
 
-std::unique_ptr<DawnCachingInterface>
-DawnCachingInterfaceFactory::CreateInstance() {
-  return base::WrapUnique(new DawnCachingInterface(backend_factory_.Run()));
+  return backend;
 }
 
 void DawnCachingInterfaceFactory::ReleaseHandle(

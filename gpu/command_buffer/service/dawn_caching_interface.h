@@ -19,10 +19,14 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "components/persistent_cache/persistent_cache.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 
 namespace gpu {
+
+class GpuPersistentCache;
+
 namespace webgpu {
 
 class DawnCachingInterfaceFactory;
@@ -89,15 +93,9 @@ class GPU_GLES2_EXPORT DawnMemoryCache
 
 }  // namespace detail
 
-// Provides a wrapper class around an in-memory DawnMemoryCache. This class was
-// originally designed to handle both disk and in-memory cache backends, but
-// because it lives on the GPU process and does not have permissions (due to
-// sandbox restrictions) to disk, the disk functionality was removed. Should it
-// become necessary to provide interfaces over a disk level disk_cache::Backend,
-// please refer to the file history for reference. Note that the big difference
-// between in-memory and disk backends are the sync vs async nature of the two
-// respectively. Because we are only handling in-memory backends now, the logic
-// can be simplified to handle everything synchronously.
+// Provides a wrapper class around an in-memory DawnMemoryCache and a disk
+// cache. The disk cache controller can be provided either via a
+// CacheBlobCallback or a GpuPersistentCache pointer.
 class GPU_GLES2_EXPORT DawnCachingInterface
     : public dawn::platform::CachingInterface {
  public:
@@ -107,11 +105,15 @@ class GPU_GLES2_EXPORT DawnCachingInterface
 
   ~DawnCachingInterface() override;
 
+  void InitializePersistentCache(
+      base::File db_file,
+      base::File journal_file,
+      base::UnsafeSharedMemoryRegion shared_lock);
+
   size_t LoadData(const void* key,
                   size_t key_size,
                   void* value_out,
                   size_t value_size) override;
-
   void StoreData(const void* key,
                  size_t key_size,
                  const void* value,
@@ -129,12 +131,21 @@ class GPU_GLES2_EXPORT DawnCachingInterface
   // the factory.
   explicit DawnCachingInterface(scoped_refptr<detail::DawnMemoryCache> backend,
                                 CacheBlobCallback callback = {});
+  explicit DawnCachingInterface(
+      scoped_refptr<detail::DawnMemoryCache> backend,
+      std::unique_ptr<GpuPersistentCache> persistent_cache);
 
   // Caching interface owns a reference to the backend.
   scoped_refptr<detail::DawnMemoryCache> memory_cache_backend_ = nullptr;
 
   // The callback provides ability to store cache entries to persistent disk.
   CacheBlobCallback cache_blob_callback_;
+
+  // The interface that allows storing and loading cache entries directly
+  // to/from disk.
+  // TODO(crbug.com/399642827): Remove the above callback once we migrate
+  // everything to use GpuPersistentCache API.
+  std::unique_ptr<GpuPersistentCache> persistent_cache_;
 };
 
 // Factory class for producing and managing DawnCachingInterfaces.
@@ -158,6 +169,10 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
   std::unique_ptr<DawnCachingInterface> CreateInstance(
       const gpu::GpuDiskCacheHandle& handle,
       DawnCachingInterface::CacheBlobCallback callback = {});
+
+  std::unique_ptr<DawnCachingInterface> CreateInstance(
+      const gpu::GpuDiskCacheHandle& handle,
+      std::unique_ptr<GpuPersistentCache> persistent_cache);
 
   // Returns a pointer to a DawnCachingInterface that owns the in memory
   // backend. This is used for incognito cases where the cache should not be
@@ -184,6 +199,9 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
  private:
+  scoped_refptr<detail::DawnMemoryCache> GetOrCreateMemoryCache(
+      const gpu::GpuDiskCacheHandle& handle);
+
   // Creates a default backend for assignment.
   static scoped_refptr<detail::DawnMemoryCache> CreateDefaultInMemoryBackend();
 

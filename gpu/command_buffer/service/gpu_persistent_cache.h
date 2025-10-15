@@ -18,7 +18,8 @@
 
 namespace persistent_cache {
 class PersistentCache;
-}
+class Entry;
+}  // namespace persistent_cache
 
 namespace gpu {
 
@@ -45,6 +46,8 @@ class GPU_GLES2_EXPORT GpuPersistentCache
                  size_t key_size,
                  const void* value,
                  size_t value_size) override;
+
+  std::unique_ptr<persistent_cache::Entry> LoadEntry(std::string_view key);
 
  private:
   base::Lock lock_;

@@ -51,16 +51,8 @@ size_t GpuPersistentCache::LoadData(const void* key,
                                     size_t key_size,
                                     void* value,
                                     size_t value_size) {
-  TRACE_EVENT0("gpu", "GpuPersistentCache::LoadData");
-  SCOPED_LOCK(lock_);
-  if (!persistent_cache_) {
-    return 0;
-  }
-
   std::string_view key_str(static_cast<const char*>(key), key_size);
-  std::unique_ptr<persistent_cache::Entry> entry =
-      persistent_cache_->Find(key_str);
-
+  std::unique_ptr<persistent_cache::Entry> entry = LoadEntry(key_str);
   if (!entry) {
     return 0;
   }
@@ -71,6 +63,20 @@ size_t GpuPersistentCache::LoadData(const void* key,
   }
 
   return entry->GetContentSize();
+}
+
+std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::LoadEntry(
+    std::string_view key) {
+  SCOPED_LOCK(lock_);
+  TRACE_EVENT1("gpu", "GpuPersistentCache::LoadEntry", "persistent_cache_",
+               !!persistent_cache_);
+
+  if (!persistent_cache_) {
+    return nullptr;
+  }
+
+  return persistent_cache_->Find(key);
+
 }
 
 void GpuPersistentCache::StoreData(const void* key,
