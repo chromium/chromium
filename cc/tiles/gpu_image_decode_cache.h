@@ -365,8 +365,6 @@ class CC_EXPORT GpuImageDecodeCache
       return can_do_hardware_accelerated_decode_;
     }
 
-    bool do_hardware_accelerated_decode() const { return false; }
-
     // Test-only functions.
     sk_sp<SkImage> ImageForTesting() const {
       return aux_image_data_[kAuxImageIndexDefault].images[0];

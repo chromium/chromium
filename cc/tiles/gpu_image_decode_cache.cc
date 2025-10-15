@@ -1699,8 +1699,6 @@ scoped_refptr<TileTask> GpuImageDecodeCache::GetImageDecodeTaskAndRef(
 
   ImageData* image_data = GetImageDataForDrawImage(draw_image, cache_key);
   DCHECK(image_data);
-  if (image_data->decode.do_hardware_accelerated_decode())
-    return nullptr;
 
   // No decode is necessary for bitmap backed images.
   if (image_data->decode.is_locked() || image_data->is_bitmap_backed) {
@@ -2019,11 +2017,6 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     bool needs_decode_for_dark_mode) {
   DCHECK_GT(image_data->decode.ref_count, 0u);
 
-  if (image_data->decode.do_hardware_accelerated_decode()) {
-    // We get here in the case of an at-raster decode.
-    return;
-  }
-
   if (image_data->decode.decode_failure) {
     // We have already tried and failed to decode this image. Don't try again.
     return;
@@ -2218,12 +2211,8 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
     return;
 
   TRACE_EVENT0("cc", "GpuImageDecodeCache::UploadImage");
-  if (!image_data->decode.do_hardware_accelerated_decode()) {
-    // These are not needed for accelerated decodes because there was no decode
-    // task.
-    DCHECK(image_data->decode.is_locked());
-    image_data->decode.mark_used();
-  }
+  DCHECK(image_data->decode.is_locked());
+  image_data->decode.mark_used();
   DCHECK_GT(image_data->decode.ref_count, 0u);
   DCHECK_GT(image_data->upload.ref_count, 0u);
 
@@ -2247,64 +2236,18 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
                            decoded_color_space.get())) {
     target_color_space = nullptr;
   }
-  if (image_data->decode.do_hardware_accelerated_decode()) {
-    UploadImageIfNecessary_TransferCache_HardwareDecode(draw_image, image_data,
-                                                        target_color_space);
-  } else {
-    // Do not color convert images that are YUV or might be tone mapped.
-    if (image_data->info.yuva.has_value() ||
-        draw_image.paint_image().HasGainmapInfo() ||
-        ToneMapUtil::UseGlobalToneMapFilter(decoded_color_space.get())) {
-      target_color_space = nullptr;
-    }
-    const std::optional<gfx::HDRMetadata> hdr_metadata =
-        draw_image.paint_image().GetHDRMetadata();
-
-    UploadImageIfNecessary_TransferCache_SoftwareDecode(
-        draw_image, image_data, decoded_color_space, hdr_metadata,
-        target_color_space);
+  // Do not color convert images that are YUV or might be tone mapped.
+  if (image_data->info.yuva.has_value() ||
+      draw_image.paint_image().HasGainmapInfo() ||
+      ToneMapUtil::UseGlobalToneMapFilter(decoded_color_space.get())) {
+    target_color_space = nullptr;
   }
-}
+  const std::optional<gfx::HDRMetadata> hdr_metadata =
+      draw_image.paint_image().GetHDRMetadata();
 
-void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_HardwareDecode(
-    const DrawImage& draw_image,
-    ImageData* image_data,
-    sk_sp<SkColorSpace> color_space) {
-  DCHECK(image_data->decode.do_hardware_accelerated_decode());
-
-  // The assumption is that scaling is not currently supported for
-  // hardware-accelerated decodes.
-  DCHECK_EQ(0, image_data->upload_scale_mip_level);
-  const gfx::Size output_size =
-      draw_image.paint_image().GetSize(AuxImage::kDefault);
-
-  // Get the encoded data in a contiguous form.
-  sk_sp<SkData> encoded_data =
-      draw_image.paint_image().GetSwSkImage()->refEncodedData();
-  DCHECK(encoded_data);
-  const uint32_t transfer_cache_id = ClientImageTransferCacheEntry::GetNextId();
-  const gpu::SyncToken decode_sync_token =
-      context_->RasterInterface()->ScheduleImageDecode(
-          gfx::SkDataToSpan(encoded_data), output_size, transfer_cache_id,
-          color_space ? gfx::ColorSpace(*color_space) : gfx::ColorSpace(),
-          image_data->needs_mips);
-
-  if (!decode_sync_token.HasData()) {
-    image_data->decode.decode_failure = true;
-    return;
-  }
-
-  image_data->upload.SetTransferCacheId(transfer_cache_id);
-
-  // Note that we wait for the decode sync token here for two reasons:
-  //
-  // 1) To make sure that raster work that depends on the image decode
-  //    happens after the decode completes.
-  //
-  // 2) To protect the transfer cache entry from being unlocked on the
-  //    service side before the decode is completed.
-  context_->RasterInterface()->WaitSyncTokenCHROMIUM(
-      decode_sync_token.GetConstData());
+  UploadImageIfNecessary_TransferCache_SoftwareDecode(
+      draw_image, image_data, decoded_color_space, hdr_metadata,
+      target_color_space);
 }
 
 void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
@@ -2313,8 +2256,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
     sk_sp<SkColorSpace> decoded_color_space,
     const std::optional<gfx::HDRMetadata>& hdr_metadata,
     sk_sp<SkColorSpace> target_color_space) {
-  DCHECK(!image_data->decode.do_hardware_accelerated_decode());
-
   std::array<ClientImageTransferCacheEntry::Image, kAuxImageCount> image;
   bool has_gainmap = false;
 
