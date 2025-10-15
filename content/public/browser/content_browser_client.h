@@ -785,6 +785,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& url);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns true if the given |url| is for the initial WebUI scheme used
+  // by features like the WebUI reload button.
+  virtual bool IsInitialWebUIScheme(const GURL& url);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Allows the embedder to enable access to Isolated Context Web APIs for the
   // given |lock_url| -- the URL to which the renderer process is locked.
   // See [IsolatedContext] IDL attribute for more details.

@@ -7013,6 +7013,17 @@ RenderFrameImpl::CreateScopedClientNavigationThrottler() {
   return client_navigation_throttler_.DeferNavigations();
 }
 
+bool RenderFrameImpl::IsForInitialWebUI() const {
+#if !BUILDFLAG(IS_ANDROID)
+  static const bool is_for_initial_webui =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kRendererForInitialWebUI);
+  return is_for_initial_webui;
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void RenderFrameImpl::ResetMembersUsedForDurationOfCommit() {
   pending_loader_factories_ = nullptr;
   pending_code_cache_host_.reset();
