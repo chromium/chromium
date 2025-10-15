@@ -89,12 +89,6 @@ TEST_F(GeolocationManagerTest, AuthorizationStatusCacheUtilSetAndRetrieve) {
 
 // Tests that the internal CLLocationManager calls its delegate after creation.
 TEST_F(GeolocationManagerTest, LocationUpdatesOnCreation) {
-  if (base::ios::IsRunningOnOrLater(17, 0, 0) &&
-      !base::ios::IsRunningOnOrLater(18, 0, 0)) {
-    // TODO(crbug.com/408138701): Fix this flaky test on iOS 17. No issues on
-    // iOS 18+.
-    return;
-  }
   FakeCLLocationManagerDelegate* delegate =
       [[FakeCLLocationManagerDelegate alloc] init];
   ASSERT_EQ(delegate.delegateCallbackCount, 0);
@@ -111,12 +105,6 @@ TEST_F(GeolocationManagerTest, LocationUpdatesOnCreation) {
 // Tests that GeolocationManager caches its value correctly and prefers to
 // return recent authorization status values over the cached status.
 TEST_F(GeolocationManagerTest, GeolocationManagerCache) {
-  if (base::ios::IsRunningOnOrLater(17, 0, 0) &&
-      !base::ios::IsRunningOnOrLater(18, 0, 0)) {
-    // TODO(crbug.com/408138701): Fix this flaky test on iOS 17. No issues on
-    // iOS 18+.
-    return;
-  }
   ASSERT_FALSE(authorization_status_cache_util::GetAuthorizationStatus());
 
   // Create GeolocationManager so that it will update the cached value.
