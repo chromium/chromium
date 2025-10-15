@@ -666,15 +666,10 @@ using ValuableSyncBridgeDeathTest = ValuableSyncBridgeTest;
 
 // Tests that `EntityInstanceChanged()` crashes on REMOVE change.
 TEST_F(ValuableSyncBridgeDeathTest, EntityInstanceChanged_Remove) {
-  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  EXPECT_CALL(mock_processor(), Put).Times(0);
   const EntityInstance vehicle = GetServerVehicleEntityInstance();
-
-  EXPECT_DEATH_IF_SUPPORTED(
-      {
-        bridge().EntityInstanceChanged(EntityInstanceChange(
-            EntityInstanceChange::REMOVE, vehicle.guid(), vehicle));
-      },
-      ".*");
+  bridge().EntityInstanceChanged(EntityInstanceChange(
+      EntityInstanceChange::REMOVE, vehicle.guid(), std::nullopt));
 }
 
 class ValuableSyncBridgeWithIncrementalUpdates : public ValuableSyncBridge {
