@@ -5,18 +5,14 @@ found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of Chrome DWA metrics
-along with a detailed description for each metric.
-
-Events may be marked with the attribute singular="True" to indicate that
-the event will only occur once per source, and multiple entries will just
-be describing additional metrics about the same event.
+This file is used for testing only, see dwa.xml for configuration used in
+production.
 -->
 
 <dwa-configuration>
 
 <event name="DwaTestMetric">
-  <owner>zhouzj@google.com</owner>
+  <owner>user@example.com</owner>
   <summary>
     A test DWA metric.
   </summary>
