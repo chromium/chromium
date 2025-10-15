@@ -59,8 +59,6 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/forward.h",
     "inspector/protocol/indexed_db.cc",
     "inspector/protocol/indexed_db.h",
-    "inspector/protocol/inspector.cc",
-    "inspector/protocol/inspector.h",
     "inspector/protocol/io.cc",
     "inspector/protocol/io.h",
     "inspector/protocol/layer_tree.cc",
