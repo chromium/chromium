@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Custom
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
 import org.chromium.chrome.browser.customtabs.features.toolbar.ButtonVisibilityRule.ButtonId;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -518,7 +519,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         View indicator = mMenuButton.findViewById(R.id.menu_dot);
         boolean show =
                 buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
-                        || buttonVariant == AdaptiveToolbarButtonVariant.PRICE_INSIGHTS;
+                        || buttonVariant == AdaptiveToolbarButtonVariant.PRICE_INSIGHTS
+                        || (buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE
+                                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+                                        ReaderModeManager.CPA_FALLBACK_MENU_PARAM,
+                                        false));
         indicator.setVisibility(show ? View.VISIBLE : View.GONE);
         if (!show) return;
 
@@ -611,8 +617,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                 R.id.disable_price_tracking_menu_id,
                                 R.string.disable_price_tracking_menu_item);
             }
-            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS -> Pair.create(
-                    R.id.price_insights_menu_id, R.string.price_insights_title);
+            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS ->
+                    Pair.create(R.id.price_insights_menu_id, R.string.price_insights_title);
+            case AdaptiveToolbarButtonVariant.READER_MODE ->
+                    Pair.create(R.id.reader_mode_menu_id, R.string.show_reading_mode_text);
             default -> null;
         };
     }
@@ -997,19 +1005,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     public OneshotSupplier<Boolean> getShowOptionalButton() {
         // If any of the following is already known, set the visibility ahead. Otherwise it will be
         // determined the first time its visibility is examined in #initializeOptionalButton:
-        // 1) if we already have 2 dev buttons
-        // 2) Width constraint hides the optional button.
+        // - if we already have 2 dev buttons
         var optionalButtonVisibility = mOptionalButtonVisibilitySupplier.get();
-        if (optionalButtonVisibility == null) {
-            if (hasMultipleDevButtons()) {
-                mOptionalButtonVisibilitySupplier.set(false);
-            } else {
-                View container = findViewById(R.id.optional_toolbar_button_container);
-                if (container != null) {
-                    mOptionalButtonVisibilitySupplier.set(
-                            container.getVisibility() == View.VISIBLE);
-                }
-            }
+        if (optionalButtonVisibility == null && hasMultipleDevButtons()) {
+            mOptionalButtonVisibilitySupplier.set(false);
         }
         return mOptionalButtonVisibilitySupplier;
     }

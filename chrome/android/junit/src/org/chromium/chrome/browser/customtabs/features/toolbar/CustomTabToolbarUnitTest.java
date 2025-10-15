@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ActivityType.CUSTOM_TAB;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.PRICE_INSIGHTS;
+import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.READER_MODE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.TRANSLATE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.UNKNOWN;
 
@@ -69,6 +70,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskTraits;
@@ -85,6 +87,7 @@ import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -98,6 +101,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult;
@@ -688,7 +692,24 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
-    public void testOptionalButton_notEnabledForWidthConstraint() {
+    public void testOptionalButton_readerMode_notEnabledForWidthConstraint() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+                ReaderModeManager.CPA_FALLBACK_MENU_PARAM,
+                true);
+        testOptionalButton_notEnabledForWidthConstraint(
+                READER_MODE, getDataForReaderModeIconButton());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testOptionalButton_priceInsights_notEnabledForWidthConstraint() {
+        testOptionalButton_notEnabledForWidthConstraint(
+                PRICE_INSIGHTS, getDataForPriceInsightsIconButton());
+    }
+
+    private void testOptionalButton_notEnabledForWidthConstraint(
+            @AdaptiveToolbarButtonVariant int variant, ButtonData buttonData) {
         int urlBarWidth =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
         int buttonWidth =
@@ -696,7 +717,7 @@ public class CustomTabToolbarUnitTest {
         // Set the toolbar width small enough (just a single button and the url bar will fit) to
         // have MTB hidden.
         mToolbar.setToolbarWidthForTesting(urlBarWidth + buttonWidth);
-        mToolbar.updateOptionalButton(getDataForPriceInsightsIconButton());
+        mToolbar.updateOptionalButton(buttonData);
 
         // For MTB hidden due to width constraint, |OptionButtonCoordinator| is instantiated
         // since the button visibility rule needs to be applied after the MTB is added to
@@ -706,7 +727,7 @@ public class CustomTabToolbarUnitTest {
         assertEquals(View.VISIBLE, mToolbar.findViewById(R.id.menu_dot).getVisibility());
         assertEquals(
                 "Fallback UI should be set",
-                PRICE_INSIGHTS,
+                variant,
                 mToolbar.getVariantForFallbackMenuForTesting());
 
         // Tapping non-fallback menu item like 'Translate...' has no effect.
@@ -720,8 +741,8 @@ public class CustomTabToolbarUnitTest {
         // Tapping the matching menu item leads to logging the histogram.
         watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTab.AdaptiveToolbarButton.FallbackUi", PRICE_INSIGHTS);
-        mToolbar.maybeRecordHistogramForAdaptiveToolbarButtonFallbackUi(PRICE_INSIGHTS);
+                        "CustomTab.AdaptiveToolbarButton.FallbackUi", variant);
+        mToolbar.maybeRecordHistogramForAdaptiveToolbarButtonFallbackUi(variant);
         watcher.assertExpected();
         assertEquals(
                 "Fallback UI should be reset",
@@ -800,7 +821,7 @@ public class CustomTabToolbarUnitTest {
         Mockito.doReturn(UrlBarData.forUrl(url)).when(mLocationBarModel).getUrlBarData();
     }
 
-    private ButtonDataImpl getDataForPriceInsightsIconButton() {
+    private ButtonData getDataForPriceInsightsIconButton() {
         Drawable iconDrawable =
                 AppCompatResources.getDrawable(mActivity, R.drawable.ic_trending_down_24dp);
         OnClickListener clickListener = mock(OnClickListener.class);
@@ -817,6 +838,33 @@ public class CustomTabToolbarUnitTest {
                         true,
                         null,
                         /* buttonVariant= */ AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
+                        /* actionChipLabelResId= */ Resources.ID_NULL,
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* hasErrorBadge= */ false);
+        ButtonDataImpl buttonData = new ButtonDataImpl();
+        buttonData.setButtonSpec(buttonSpec);
+        buttonData.setCanShow(true);
+        buttonData.setEnabled(true);
+        return buttonData;
+    }
+
+    private ButtonData getDataForReaderModeIconButton() {
+        Drawable iconDrawable =
+                AppCompatResources.getDrawable(mActivity, R.drawable.ic_mobile_friendly_24dp);
+        OnClickListener clickListener = mock(OnClickListener.class);
+        OnLongClickListener longClickListener = mock(OnLongClickListener.class);
+        String contentDescription = mActivity.getString(R.string.reader_mode_cpa_button_text);
+
+        // Whether a button is static or dynamic is determined by the button variant.
+        ButtonSpec buttonSpec =
+                new ButtonSpec(
+                        iconDrawable,
+                        clickListener,
+                        longClickListener,
+                        contentDescription,
+                        true,
+                        null,
+                        /* buttonVariant= */ READER_MODE,
                         /* actionChipLabelResId= */ Resources.ID_NULL,
                         /* tooltipTextResId= */ Resources.ID_NULL,
                         /* hasErrorBadge= */ false);

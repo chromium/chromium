@@ -1402,8 +1402,6 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidThemeResourceProviderForceLight =
             newBooleanCachedFeatureParam(
                     ANDROID_THEME_RESOURCE_PROVIDER, "force_light_theme", false);
-    public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableOpenInBrowser =
-            newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "open_in_browser", false);
     public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableVoice =
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "voice", false);
     public static final BooleanCachedFeatureParam sCctAdaptiveButtonContextualOnly =
@@ -1786,7 +1784,6 @@ public abstract class ChromeFeatureList {
                     sBatchTabRestoreBatchSize,
                     sCctAdaptiveButtonContextualOnly,
                     sCctAdaptiveButtonDefaultVariant,
-                    sCctAdaptiveButtonEnableOpenInBrowser,
                     sCctAdaptiveButtonEnableVoice,
                     sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs,
                     sCctAutoTranslateAllowAllFirstParties,
