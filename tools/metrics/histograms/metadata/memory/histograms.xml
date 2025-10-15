@@ -1207,6 +1207,10 @@ chromium-metrics-reviews@google.com.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    Note #1: Incorrect metrics were reported for M140; there was no actual
+    regression. Details can be found at crbug.com/450560777 and
+    crrev.com/c/7041925.
   </summary>
 </histogram>
 
@@ -2025,6 +2029,10 @@ chromium-metrics-reviews@google.com.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    Note #1: Incorrect metrics were reported for M140; there was no actual
+    regression. Details can be found at crbug.com/450560777 and
+    crrev.com/c/7041925.
   </summary>
 </histogram>
 
@@ -2200,7 +2208,11 @@ chromium-metrics-reviews@google.com.
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
 
-    Note: Histogram data may be missing for mid-2020 due to expiry.
+    Note #1: Histogram data may be missing for mid-2020 due to expiry.
+
+    Note #2: Incorrect metrics were reported for M140; there was no actual
+    regression. Details can be found at crbug.com/450560777 and
+    crrev.com/c/7041925.
   </summary>
 </histogram>
 
@@ -2688,6 +2700,10 @@ chromium-metrics-reviews@google.com.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    Note #1: Incorrect metrics were reported for M140; there was no actual
+    regression. Details can be found at crbug.com/450560777 and
+    crrev.com/c/7041925.
   </summary>
 </histogram>
 
@@ -3091,6 +3107,10 @@ chromium-metrics-reviews@google.com.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
+
+    Note #1: Incorrect metrics were reported for M140; there was no actual
+    regression. Details can be found at crbug.com/450560777 and
+    crrev.com/c/7041925.
   </summary>
 </histogram>
 
@@ -3502,7 +3522,11 @@ chromium-metrics-reviews@google.com.
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
 
-    Note: Histogram data may be missing between M77 to M87 due to expiry.
+    Note #1: Histogram data may be missing between M77 to M87 due to expiry.
+
+    Note #2: Incorrect metrics were reported for M140; there was no actual
+    regression. Details can be found at crbug.com/450560777 and
+    crrev.com/c/7041925.
   </summary>
   <token key="UtilityProcessType" variants="UtilityProcessType"/>
 </histogram>
