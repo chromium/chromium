@@ -52,7 +52,7 @@ interface FetchStages {
 }
 export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
-  readonly #userContext: Browser.UserContext;
+  readonly userContext: Browser.UserContext;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
   readonly #parentCdpClient: CdpClient;
@@ -147,7 +147,7 @@ export class CdpTarget {
     userContext: Browser.UserContext,
     logger: LoggerFn | undefined,
   ) {
-    this.#userContext = userContext;
+    this.userContext = userContext;
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
@@ -295,7 +295,7 @@ export class CdpTarget {
       BrowsingContextImpl.create(
         frame.id,
         frame.parentId,
-        this.#userContext,
+        this.userContext,
         parentBrowsingContext.cdpTarget,
         this.#eventManager,
         this.#browsingContextStorage,
@@ -644,7 +644,7 @@ export class CdpTarget {
 
     const config = this.contextConfigStorage.getActiveConfig(
       this.topLevelId,
-      this.#userContext,
+      this.userContext,
     );
 
     promises.push(
@@ -744,7 +744,7 @@ export class CdpTarget {
   #ignoreFileDialog(): boolean {
     const config = this.contextConfigStorage.getActiveConfig(
       this.topLevelId,
-      this.#userContext,
+      this.userContext,
     );
 
     return (

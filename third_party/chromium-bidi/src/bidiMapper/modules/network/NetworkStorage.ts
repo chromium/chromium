@@ -351,8 +351,7 @@ export class NetworkStorage {
       request,
       dataType,
       request.cdpTarget.topLevelId,
-      this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
-        .userContext,
+      request.cdpTarget.userContext,
     );
   }
 
