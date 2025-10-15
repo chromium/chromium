@@ -98,10 +98,12 @@ class ComposeboxQueryControllerTest
   ComposeboxQueryControllerTest() = default;
   ~ComposeboxQueryControllerTest() override = default;
 
-  void CreateController(bool send_lns_surface,
-                        bool suppress_lns_surface_param_if_no_image = true,
-                        bool enable_multi_context_input_flow = false,
-                        bool enable_viewport_images = true) {
+  void CreateController(
+      bool send_lns_surface,
+      bool suppress_lns_surface_param_if_no_image = true,
+      bool enable_multi_context_input_flow = false,
+      bool enable_viewport_images = true,
+      bool use_separate_request_ids_for_multi_context_viewport_images = true) {
     // Create the config params.
     auto config_params = std::make_unique<
         ComposeboxQueryController::QueryControllerConfigParams>();
@@ -111,6 +113,8 @@ class ComposeboxQueryControllerTest
     config_params->enable_multi_context_input_flow =
         enable_multi_context_input_flow;
     config_params->enable_viewport_images = enable_viewport_images;
+    config_params->use_separate_request_ids_for_multi_context_viewport_images =
+        use_separate_request_ids_for_multi_context_viewport_images;
 
     // Create the controller.
     controller_ = std::make_unique<TestComposeboxQueryController>(
@@ -806,6 +810,130 @@ TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
 }
 
 #if !BUILDFLAG(IS_IOS)
+TEST_F(
+    ComposeboxQueryControllerTest,
+    UploadPageContextPdfFileWithViewportMultiContextSeparateRequestIdsRequestSuccess) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_multi_context_input_flow=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_multi_context_viewport_images=*/true);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow with multiple context inputs and page
+  // context params.
+  GURL page_url = GURL("https://www.test.com");
+  std::string page_title = "Test Page";
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->page_url = page_url;
+  input_data->page_title = page_title;
+  input_data->pdf_current_page = 1;
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);  // Fill with a solid color
+  input_data->viewport_screenshot = bitmap;
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Get the file and viewport upload requests.
+  std::optional<lens::LensOverlayServerRequest> file_upload_request;
+  std::optional<lens::LensOverlayServerRequest> viewport_upload_request;
+  if (controller()
+          .recent_sent_upload_request(0)
+          ->objects_request()
+          .has_image_data()) {
+    EXPECT_FALSE(controller()
+                     .recent_sent_upload_request(1)
+                     ->objects_request()
+                     .has_image_data());
+    viewport_upload_request = controller().recent_sent_upload_request(0);
+    file_upload_request = controller().recent_sent_upload_request(1);
+  } else {
+    EXPECT_TRUE(controller()
+                    .recent_sent_upload_request(1)
+                    ->objects_request()
+                    .has_image_data());
+    file_upload_request = controller().recent_sent_upload_request(0);
+    viewport_upload_request = controller().recent_sent_upload_request(1);
+  }
+
+  // Validate that the media types specify just the type of context in the
+  // individual upload request, instead of PDF_AND_IMAGE.
+  EXPECT_EQ(file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+  EXPECT_EQ(viewport_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  // Validate that the file upload request and the viewport upload request have
+  // different request ids.
+  EXPECT_NE(file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .uuid(),
+            viewport_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .uuid());
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  GURL aim_url =
+      controller().CreateSearchUrl(std::move(search_url_request_info));
+
+  // Check that the contextual inputs param contains the request ids.
+  lens::LensOverlayContextualInputs contextual_inputs =
+      GetContextualInputsFromUrl(aim_url.spec());
+  EXPECT_EQ(contextual_inputs.inputs_size(), 2);
+
+  // The files may be in any order, so find the corresponding request ids.
+  bool viewport_contextual_input_is_first_file =
+      contextual_inputs.inputs(0).request_id().uuid() ==
+      viewport_upload_request->objects_request()
+          .request_context()
+          .request_id()
+          .uuid();
+  auto viewport_file_request_id_from_cinpts =
+      contextual_inputs.inputs(viewport_contextual_input_is_first_file ? 0 : 1)
+          .request_id();
+  auto pdf_file_request_id_from_cinpts =
+      contextual_inputs.inputs(viewport_contextual_input_is_first_file ? 1 : 0)
+          .request_id();
+
+  // Check that the media types are different and match the expected media
+  // types.
+  EXPECT_EQ(viewport_file_request_id_from_cinpts.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  EXPECT_EQ(pdf_file_request_id_from_cinpts.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+}
+
 TEST_F(ComposeboxQueryControllerTest,
        UploadPageContextPdfFileWithViewportRequestSuccess) {
   // Act: Start the session.

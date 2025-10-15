@@ -33,6 +33,11 @@ extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
 // parameter if there is no image upload. Does nothing if kSendLnsSurfaceParam
 // is false.
 extern const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage;
+// Whether or not to use separate request ids for viewport images if the
+// multi-context input flow is enabled.
+extern const base::FeatureParam<bool>
+    kUseSeparateRequestIdsForMultiContextViewportImages;
+
 // Whether to show zps suggestions under the composebox.
 extern const base::FeatureParam<bool> kShowComposeboxZps;
 // Whether to show typed suggestions under the composebox.
