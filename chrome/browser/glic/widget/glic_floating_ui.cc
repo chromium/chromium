@@ -92,8 +92,7 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
 void GlicFloatingUi::Resize(const gfx::Size& size,
                             base::TimeDelta duration,
                             base::OnceClosure callback) {
-  // TODO: Don't animate while the user is manually resizing the widget.
-  if (glic_window_animator_ && IsShowing()) {
+  if (!user_resizing_ && glic_window_animator_ && IsShowing()) {
     glic_window_animator_->AnimateSize(
         GlicWidget::ClampSize(size, GetGlicWidget()), duration,
         std::move(callback));
@@ -168,7 +167,7 @@ void GlicFloatingUi::Detach() {
 }
 
 void GlicFloatingUi::SetMinimumWidgetSize(const gfx::Size& size) {
-  NOTIMPLEMENTED();
+  GetGlicWidget()->SetMinimumSize(size);
 }
 
 bool GlicFloatingUi::IsShowing() const {
@@ -181,12 +180,14 @@ void GlicFloatingUi::Show() {
   GetGlicView()->UpdateBackgroundColor();
   // TODO: Set up manual resize.
   window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
+  glic_widget_observation_.Observe(GetGlicWidget());
 }
 
 void GlicFloatingUi::Close() {
   window_event_observer_.reset();
   glic_window_animator_.reset();
   glic_widget_.reset();
+  user_resizable_ = false;
   delegate_->WillCloseFor(FloatingEmbedderKey{});
 }
 
@@ -196,6 +197,50 @@ void GlicFloatingUi::ClosePanel() {
 
 void GlicFloatingUi::Focus() {
   NOTIMPLEMENTED();
+}
+
+void GlicFloatingUi::OnWidgetActivationChanged(views::Widget* widget,
+                                               bool active) {
+  NOTIMPLEMENTED();
+}
+
+void GlicFloatingUi::OnWidgetDestroyed(views::Widget* widget) {
+  // This is used to handle the case where the native window is closed
+  // directly (e.g., Windows context menu close on the title bar).
+  // Conceptually this should synchronously call Close(), but the Widget
+  // implementation currently does not support this.
+  if (GetGlicWidget() == widget) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GlicFloatingUi::Close, weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void GlicFloatingUi::OnWidgetBoundsChanged(views::Widget* widget,
+                                           const gfx::Rect& new_bounds) {
+  // TODO(crbug.com/452201326): Handle notifying ModalDialogHostObservers to
+  // update modal positions.
+  NOTIMPLEMENTED();
+}
+
+void GlicFloatingUi::OnWidgetUserResizeStarted() {
+  user_resizing_ = true;
+  if (GlicWebClientAccess* client = delegate_->host().GetPrimaryWebClient()) {
+    client->ManualResizeChanged(true);
+  }
+}
+
+void GlicFloatingUi::OnWidgetUserResizeEnded() {
+  if (GlicWebClientAccess* client = delegate_->host().GetPrimaryWebClient()) {
+    client->ManualResizeChanged(false);
+  }
+
+  if (GetGlicView()) {
+    GetGlicView()->UpdatePrimaryDraggableAreaOnResize();
+  }
+
+  glic_window_animator_->ResetLastTargetSize();
+  user_resizing_ = false;
 }
 
 std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {

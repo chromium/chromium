@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/widget/glic_window_event_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
 
@@ -24,7 +25,8 @@ class GlicView;
 // A stub implementation of GlicUiEmbedder for floating UIs.
 class GlicFloatingUi : public GlicUiEmbedder,
                        public Host::EmbedderDelegate,
-                       public GlicWindowEventObserver::Delegate {
+                       public GlicWindowEventObserver::Delegate,
+                       public views::WidgetObserver {
  public:
   GlicFloatingUi(Profile* profile,
                  BrowserWindowInterface* browser,
@@ -66,6 +68,14 @@ class GlicFloatingUi : public GlicUiEmbedder,
   GlicWindowAnimator* window_animator() override;
   void OnDragComplete() override;
 
+  // views::WidgetObserver implementation, monitoring the glic window widget.
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+  void OnWidgetUserResizeStarted() override;
+  void OnWidgetUserResizeEnded() override;
+
  private:
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
@@ -76,11 +86,15 @@ class GlicFloatingUi : public GlicUiEmbedder,
   // Whether the widget should be user resizable, kept here in case it's
   // specified before the widget is created.
   bool user_resizable_ = true;
-
+  // Whether the user is currently drag-resizing the widget.
+  bool user_resizing_ = false;
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
   std::unique_ptr<GlicWidget> glic_widget_;
   std::unique_ptr<GlicWindowEventObserver> window_event_observer_;
   mojom::PanelState panel_state_;
+  // Observes the glic widget.
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      glic_widget_observation_{this};
 
   raw_ptr<Profile> profile_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
