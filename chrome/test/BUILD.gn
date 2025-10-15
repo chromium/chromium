@@ -11350,6 +11350,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autocomplete",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:interactive_ui_tests",
       "//chrome/browser/autofill:test_support_ui",

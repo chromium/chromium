@@ -48,6 +48,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kShownCountHistoryScopePromo, 0);
   registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsScopePromo, 0);
   registry->RegisterIntegerPref(kFocusedSrpWebCount, 0);
+
+  registry->RegisterIntegerPref(kAimHintLastImpressionDay, 0);
+  registry->RegisterIntegerPref(kAimHintDailyImpressionsCount, 0);
+  registry->RegisterIntegerPref(kAimHintTotalImpressions, 0);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

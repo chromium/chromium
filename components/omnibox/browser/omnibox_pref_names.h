@@ -10,6 +10,21 @@ namespace omnibox {
 // Alphabetical list of preference names specific to the omnibox component.
 // Keep alphabetized, and document each.
 
+// An integer pref to store the last day the AIM hint was shown. The day is
+// represented as the number of days since the Unix epoch.
+inline constexpr char kAimHintLastImpressionDay[] =
+    "omnibox.aim_hint_last_impression_day";
+
+// An integer pref to store the number of times the AIM hint has been shown on
+// the day in kAimHintLastImpressionDay.
+inline constexpr char kAimHintDailyImpressionsCount[] =
+    "omnibox.aim_hint_daily_impressions_count";
+
+// An integer pref to store the total number of times the AIM hint has been
+// shown.
+inline constexpr char kAimHintTotalImpressions[] =
+    "omnibox.aim_hint_total_impressions";
+
 inline constexpr char kAIModeSettings[] = "omnibox.ai_mode_settings";
 
 // LINT.IfChange(TipsPrefNames)

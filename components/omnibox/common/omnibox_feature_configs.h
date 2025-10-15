@@ -180,6 +180,15 @@ struct AiModeOmniboxEntryPoint : Config<AiModeOmniboxEntryPoint> {
 
   // Whether to hide the other (non-AIM) page actions on NTP.
   bool hide_other_page_actions_on_ntp;
+
+  // The maximum number of times the hint can be shown per day.
+  int aim_hint_impression_limit_daily;
+
+  // The maximum number of times the hint can be shown in total.
+  int aim_hint_impression_limit_total;
+
+  // Whether impression limits for the AIM hint are enabled.
+  bool enable_hint_impression_limits;
 };
 
 // A config struct for features related to contextual search in omnibox.

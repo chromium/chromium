@@ -94,6 +94,21 @@ AiModeOmniboxEntryPoint::AiModeOmniboxEntryPoint() {
       base::FeatureParam<bool>(&omnibox::kAiModeOmniboxEntryPoint,
                                "HideOtherPageActionsOnNtp", true)
           .Get();
+
+  aim_hint_impression_limit_daily =
+      base::FeatureParam<int>(&omnibox::kAiModeOmniboxEntryPoint,
+                              "AimHintImpressionLimitDaily", 1)
+          .Get();
+
+  aim_hint_impression_limit_total =
+      base::FeatureParam<int>(&omnibox::kAiModeOmniboxEntryPoint,
+                              "AimHintImpressionLimitTotal", 5)
+          .Get();
+
+  enable_hint_impression_limits =
+      base::FeatureParam<bool>(&omnibox::kAiModeOmniboxEntryPoint,
+                               "EnableHintImpressionLimits", false)
+          .Get();
 }
 
 BASE_FEATURE(ContextualSearch::kContextualSuggestionsAblateOthersWhenPresent,
