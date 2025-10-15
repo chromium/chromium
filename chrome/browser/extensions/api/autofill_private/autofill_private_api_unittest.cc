@@ -409,6 +409,10 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, MAYBE_EntityInstances) {
   ASSERT_TRUE(RunAutofillSubtest("getAllAttributeTypesForEntityTypeName"));
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, TypedEntityInstances) {
+  ASSERT_TRUE(RunAutofillSubtest("testEntityTypeInEntityInstanceWithLabels"));
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
                        GetEmptyPayOverTimeIssuerList) {
   ASSERT_TRUE(RunAutofillSubtest("getEmptyPayOverTimeIssuerList"));

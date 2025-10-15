@@ -275,6 +275,7 @@ declare global {
 
       export interface EntityInstanceWithLabels {
         guid: string;
+        type: EntityType;
         entityInstanceLabel: string;
         entityInstanceSubLabel: string;
         storedInWallet: boolean;

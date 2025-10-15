@@ -41,12 +41,26 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
         chrome.autofillPrivate.EntityInstanceWithLabels[] = [
       {
         guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
+        type: {
+          typeName: 2,
+          typeNameAsString: 'Car',
+          addEntityTypeString: 'Add car',
+          editEntityTypeString: 'Edit car',
+          deleteEntityTypeString: 'Delete car',
+        },
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
         storedInWallet: false,
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
+        type: {
+          typeName: 0,
+          typeNameAsString: 'Passport',
+          addEntityTypeString: 'Add passport',
+          editEntityTypeString: 'Edit passport',
+          deleteEntityTypeString: 'Delete passport',
+        },
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Passport',
         storedInWallet: false,
@@ -220,12 +234,14 @@ suite('AutofillAiSectionUiTest', function() {
         chrome.autofillPrivate.EntityInstanceWithLabels[] = [
       {
         guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
+        type: testEntityTypes[1]!,
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
         storedInWallet: true,
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
+        type: testEntityTypes[0]!,
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Passport',
         storedInWallet: false,
@@ -233,6 +249,7 @@ suite('AutofillAiSectionUiTest', function() {
       {
         // Note that this is the `testEntityInstance` guid.
         guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
+        type: testEntityInstance.type,
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Driver\'s license',
         storedInWallet: false,
@@ -549,18 +566,21 @@ suite('AutofillAiSectionUiTest', function() {
             chrome.autofillPrivate.EntityInstanceWithLabels[] = [
           {
             guid: 'a521fc41-d672-4947-ab39-8bc9d49b08d2',
+            type: testEntityTypes[0]!,
             entityInstanceLabel: 'Tom Clark',
             entityInstanceSubLabel: 'Passport',
             storedInWallet: false,
           },
           {
             guid: 'db56681d-9598-4e37-825c-7977f52fbcee',
+            type: testEntityTypes[1]!,
             entityInstanceLabel: 'Honda',
             entityInstanceSubLabel: 'Car',
             storedInWallet: false,
           },
           {
             guid: '1a89869f-dff2-461a-8ef8-769e0e1c66f7',
+            type: testEntityInstance.type,
             entityInstanceLabel: 'Tom Clark',
             entityInstanceSubLabel: 'Driver\'s license',
             storedInWallet: false,
@@ -648,18 +668,39 @@ suite('AutofillAiSectionLongLabelsUiTest', function() {
         chrome.autofillPrivate.EntityInstanceWithLabels[] = [
       {
         guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
+        type: {
+          typeName: 2,
+          typeNameAsString: 'Car',
+          addEntityTypeString: 'Add car',
+          editEntityTypeString: 'Edit car',
+          deleteEntityTypeString: 'Delete car',
+        },
         entityInstanceLabel: 'A label'.repeat(100),
         entityInstanceSubLabel: 'Car',
         storedInWallet: false,
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
+        type: {
+          typeName: 0,
+          typeNameAsString: 'Passport',
+          addEntityTypeString: 'Add passport',
+          editEntityTypeString: 'Edit passport',
+          deleteEntityTypeString: 'Delete passport',
+        },
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Sublabel'.repeat(100),
         storedInWallet: false,
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
+        type: {
+          typeName: 0,
+          typeNameAsString: 'Passport',
+          addEntityTypeString: 'Add passport',
+          editEntityTypeString: 'Edit passport',
+          deleteEntityTypeString: 'Delete passport',
+        },
         entityInstanceLabel: 'Mark Donald',
         entityInstanceSubLabel: 'Passport',
         storedInWallet: false,

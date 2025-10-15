@@ -18,8 +18,11 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import type {AutofillManagerProxy, PersonalDataChangedListener} from '../autofill_page/autofill_manager_proxy.js';
 import {AutofillManagerImpl} from '../autofill_page/autofill_manager_proxy.js';
+import type {EntityDataManagerProxy, EntityInstancesChangedListener} from '../autofill_page/entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
 import {PaymentsManagerImpl} from '../autofill_page/payments_manager_proxy.js';
 import type {PaymentsManagerProxy} from '../autofill_page/payments_manager_proxy.js';
@@ -73,16 +76,33 @@ export class SettingsYourSavedInfoPageElement extends
       creditCardsCount: Number,
       ibansCount: Number,
       payOverTimeIssuersCount: Number,
+      passportsCount: Number,
+      driversLicensesCount: Number,
+      vehiclesCount: Number,
+      nationalIdCardsCount: Number,
+      knownTravelerNumbersCount: Number,
+      redressNumbersCount: Number,
+      flightReservationsCount: Number,
     };
   }
 
   declare prefs: {[key: string]: any};
+  // The counts are initialized to undefined to indicate that the data is not
+  // yet loaded. 0 means that the user has no items of that type, while
+  // undefined means that we don't know yet.
   declare passwordsCount: number|undefined;
   declare passkeysCount: number|undefined;
   declare addressesCount: number|undefined;
   declare creditCardsCount: number|undefined;
   declare ibansCount: number|undefined;
   declare payOverTimeIssuersCount: number|undefined;
+  declare passportsCount: number|undefined;
+  declare driversLicensesCount: number|undefined;
+  declare vehiclesCount: number|undefined;
+  declare nationalIdCardsCount: number|undefined;
+  declare knownTravelerNumbersCount: number|undefined;
+  declare redressNumbersCount: number|undefined;
+  declare flightReservationsCount: number|undefined;
 
   declare private passwordsCardData_: ChipData[];
   declare private paymentsCardData_: ChipData[];
@@ -92,7 +112,11 @@ export class SettingsYourSavedInfoPageElement extends
       PaymentsManagerImpl.getInstance();
   private autofillManager_: AutofillManagerProxy =
       AutofillManagerImpl.getInstance();
+  private autofillAiEntityManager_: EntityDataManagerProxy =
+      EntityDataManagerProxyImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
+  private onAutofillAiEntitiesChangedListener_: EntityInstancesChangedListener|
+      null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -102,33 +126,34 @@ export class SettingsYourSavedInfoPageElement extends
   private setupDataTypeCounters() {
     // Password and passkey counts.
     const setPasswordCount =
-      (count: { passwordCount: number, passkeyCount: number }) => {
-        this.passwordsCount = count.passwordCount;
-        this.passkeysCount = count.passkeyCount;
-      };
+        (count: {passwordCount: number, passkeyCount: number}) => {
+          this.passwordsCount = count.passwordCount;
+          this.passkeysCount = count.passkeyCount;
+        };
     this.addWebUiListener('password-count-changed', setPasswordCount);
     SavedInfoHandlerImpl.getInstance().getPasswordCount().then(
       setPasswordCount);
 
     // Addresses: Request initial data.
     const setAddressesListener =
-      (addresses: chrome.autofillPrivate.AddressEntry[]) => {
-        this.addressesCount = addresses.length;
-      };
+        (addresses: chrome.autofillPrivate.AddressEntry[]) => {
+          this.addressesCount = addresses.length;
+        };
     this.autofillManager_.getAddressList().then(setAddressesListener);
 
     // Payments: Request initial data.
     const setCreditCardsListener =
-      (creditCards: chrome.autofillPrivate.CreditCardEntry[]) => {
-      this.creditCardsCount = creditCards.length;
-    };
+        (creditCards: chrome.autofillPrivate.CreditCardEntry[]) => {
+          this.creditCardsCount = creditCards.length;
+        };
     const setIbansListener = (ibans: chrome.autofillPrivate.IbanEntry[]) => {
       this.ibansCount = ibans.length;
     };
     const setPayOverTimeListener =
-      (payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[]) => {
-      this.payOverTimeIssuersCount = payOverTimeIssuers.length;
-    };
+        (payOverTimeIssuers:
+             chrome.autofillPrivate.PayOverTimeIssuerEntry[]) => {
+          this.payOverTimeIssuersCount = payOverTimeIssuers.length;
+        };
     this.paymentsManager_.getCreditCardList().then(setCreditCardsListener);
     this.paymentsManager_.getIbanList().then(setIbansListener);
     this.paymentsManager_.getPayOverTimeIssuerList().then(
@@ -136,19 +161,48 @@ export class SettingsYourSavedInfoPageElement extends
 
     // Addresses and Payments: Listen for changes.
     const setPersonalDataListener: PersonalDataChangedListener =
-      (addresses: chrome.autofillPrivate.AddressEntry[],
-        creditCards: chrome.autofillPrivate.CreditCardEntry[],
-        ibans: chrome.autofillPrivate.IbanEntry[],
-        payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
-        _accountInfo?: chrome.autofillPrivate.AccountInfo) => {
-        this.addressesCount = addresses.length;
-        this.creditCardsCount = creditCards.length;
-        this.ibansCount = ibans.length;
-        this.payOverTimeIssuersCount = payOverTimeIssuers.length;
-      };
+        (addresses: chrome.autofillPrivate.AddressEntry[],
+         creditCards: chrome.autofillPrivate.CreditCardEntry[],
+         ibans: chrome.autofillPrivate.IbanEntry[],
+         payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
+         _accountInfo?: chrome.autofillPrivate.AccountInfo) => {
+          this.addressesCount = addresses.length;
+          this.creditCardsCount = creditCards.length;
+          this.ibansCount = ibans.length;
+          this.payOverTimeIssuersCount = payOverTimeIssuers.length;
+        };
     this.setPersonalDataListener_ = setPersonalDataListener;
     this.autofillManager_.setPersonalDataManagerListener(
       setPersonalDataListener);
+
+    // Autofill AI entities.
+    this.onAutofillAiEntitiesChangedListener_ =
+        this.onAutofillAiEntitiesChanged.bind(this);
+    this.autofillAiEntityManager_.addEntityInstancesChangedListener(
+        this.onAutofillAiEntitiesChangedListener_);
+    this.autofillAiEntityManager_.loadEntityInstances().then(
+        this.onAutofillAiEntitiesChangedListener_);
+  }
+
+  private onAutofillAiEntitiesChanged(
+      entities: chrome.autofillPrivate.EntityInstanceWithLabels[]) {
+    const entityCounts = new Map<EntityTypeName, number>();
+    for (const entity of entities) {
+      const newCount = (entityCounts.get(entity.type.typeName) || 0) + 1;
+      entityCounts.set(entity.type.typeName, newCount);
+    }
+    this.passportsCount = entityCounts.get(EntityTypeName.kPassport) ?? 0;
+    this.driversLicensesCount =
+        entityCounts.get(EntityTypeName.kDriversLicense) ?? 0;
+    this.vehiclesCount = entityCounts.get(EntityTypeName.kVehicle) ?? 0;
+    this.nationalIdCardsCount =
+        entityCounts.get(EntityTypeName.kNationalIdCard) ?? 0;
+    this.knownTravelerNumbersCount =
+        entityCounts.get(EntityTypeName.kKnownTravelerNumber) ?? 0;
+    this.redressNumbersCount =
+        entityCounts.get(EntityTypeName.kRedressNumber) ?? 0;
+    this.flightReservationsCount =
+        entityCounts.get(EntityTypeName.kFlightReservation) ?? 0;
   }
 
   override disconnectedCallback() {
@@ -158,6 +212,12 @@ export class SettingsYourSavedInfoPageElement extends
       this.autofillManager_.removePersonalDataManagerListener(
           this.setPersonalDataListener_);
       this.setPersonalDataListener_ = null;
+    }
+
+    if (this.onAutofillAiEntitiesChangedListener_) {
+      this.autofillAiEntityManager_.removeEntityInstancesChangedListener(
+          this.onAutofillAiEntitiesChangedListener_);
+      this.onAutofillAiEntitiesChangedListener_ = null;
     }
   }
 

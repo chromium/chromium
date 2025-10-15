@@ -419,6 +419,9 @@ namespace autofillPrivate {
   dictionary EntityInstanceWithLabels {
     // The guid of the entity instance.
     DOMString guid;
+    // Contains the entity type name and other relevant information about the
+    // entity type.
+    EntityType type;
     // The entity instance label.
     DOMString entityInstanceLabel;
     // The entity instance sublabel.
