@@ -528,6 +528,9 @@ class TabImpl implements Tab {
         if (!isInitialized()) {
             return GURL.emptyGURL();
         }
+        if (mPendingLoadParams != null) {
+            return mUrl != null ? mUrl : new GURL(mPendingLoadParams.getUrl());
+        }
         GURL url = getWebContents() != null ? getWebContents().getVisibleUrl() : GURL.emptyGURL();
 
         // If we have a ContentView, or a NativePage, or the url is not empty, we have a WebContents
@@ -781,6 +784,12 @@ class TabImpl implements Tab {
         if (mWebContents == null) return new LoadUrlResult(TabLoadStatus.PAGE_LOAD_FAILED, null);
 
         if (!fixedUrl.isValid()) return new LoadUrlResult(TabLoadStatus.PAGE_LOAD_FAILED, null);
+
+        // Discard pending load params if they exist. At this point we are navigating to a new URL
+        // programmatically and the pending load never occurred.
+        if (mPendingLoadParams != null) {
+            mPendingLoadParams = null;
+        }
 
         // Record UMA "ShowHistory" here. That way it'll pick up both user
         // typing chrome://history as well as selecting from the drop down menu.
@@ -1822,7 +1831,13 @@ class TabImpl implements Tab {
         // When restoring the tabs, the title will no longer be populated, so request it from the
         // WebContents or NativePage (if present).
         String title = "";
-        if (isNativePage()) {
+        if (mPendingLoadParams != null) {
+            // Ignore updates when there are pending load params.
+            if (!TextUtils.isEmpty(mTitle)) return;
+
+            assumeNonNull(mUrl);
+            title = mUrl.getSpec();
+        } else if (isNativePage()) {
             title = mNativePage.getTitle();
         } else if (getWebContents() != null) {
             title = getWebContents().getTitle();
