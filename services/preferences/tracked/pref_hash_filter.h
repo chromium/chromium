@@ -166,8 +166,15 @@ class PrefHashFilter final : public InterceptablePrefFilter {
 
   // Performs the deferred work of re-validating preferences after the
   // encryptor has been fetched. This is posted from FinalizeFilterOnLoad.
+  // |pref_store_contents_at_load| is a copy of the preference dictionary as
+  //     it was read from disk, before any resets. This is used to validate
+  //     against the original state.
+  // |already_reset_paths| is a set of preference paths that were already
+  //     found to be invalid and were reset during the initial synchronous
+  //     validation pass. These paths will be skipped.
   void DeferredEncryptorRevalidation(
-      base::Value::Dict pref_store_contents_at_load);
+      base::Value::Dict pref_store_contents_at_load,
+      const std::set<std::string>& already_reset_paths);
 
   // Logs the metric of the number of preferences that were reset. Ensures this
   // metric is only logged once per filter instance.

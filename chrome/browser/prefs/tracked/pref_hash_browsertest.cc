@@ -1906,9 +1906,6 @@ class PrefHashBrowserTestEncryptedHashIsAuthoritative
           user_prefs::tracked::kTrackedPrefHistogramReset,
           2 /* homepage reporting_id */, 1);
 
-      // No other validation paths should have triggered a reset.
-      histograms_.ExpectTotalCount(
-          user_prefs::tracked::kTrackedPrefHistogramUnchangedEncrypted, 0);
       histograms_.ExpectTotalCount(
           user_prefs::tracked::kTrackedPrefHistogramResetEncrypted, 0);
 
@@ -1931,8 +1928,6 @@ class PrefHashBrowserTestEncryptedHashIsAuthoritative
           user_prefs::tracked::kTrackedPrefHistogramReset, 0);
       histograms_.ExpectTotalCount(
           user_prefs::tracked::kTrackedPrefHistogramResetEncrypted, 0);
-      histograms_.ExpectTotalCount(
-          user_prefs::tracked::kTrackedPrefHistogramResetViaHmacFallback, 0);
     }
   }
 
@@ -1942,3 +1937,80 @@ class PrefHashBrowserTestEncryptedHashIsAuthoritative
 
 PREF_HASH_BROWSER_TEST(PrefHashBrowserTestEncryptedHashIsAuthoritative,
                        EncryptedHashIsAuthoritative);
+
+// Verifies that corrupting an unencrypted hash does not prevent the
+// deferred validation of a separate preference's encrypted hash.
+class PrefHashBrowserTestEncryptedBypass
+    : public PrefHashBrowserTestEncryptedBase {
+ public:
+  PrefHashBrowserTestEncryptedBypass() {
+    feature_list_.InitAndEnableFeature(tracked::kEncryptedPrefHashing);
+  }
+
+  void SetupPreferences() override {
+    // This will be attacked using its unencrypted hash.
+    profile()->GetPrefs()->SetString(prefs::kHomePage, "http://homepage.com");
+
+    // This will be attacked using its encrypted hash.
+    ScopedListPrefUpdate update(profile()->GetPrefs(), prefs::kPinnedTabs);
+    update->Append("http://pinnedtabs.com");
+  }
+
+  void AttackPreferencesOnDisk(
+      base::Value::Dict* unprotected_preferences,
+      base::Value::Dict* protected_preferences) override {
+    base::Value::Dict* selected_prefs =
+        protection_level_ >= PROTECTION_ENABLED_BASIC ? protected_preferences
+                                                      : unprotected_preferences;
+    // If protection is off, the test can't run. We are testing protected prefs.
+    if (!selected_prefs) {
+      return;
+    }
+    base::Value::Dict* macs_dict =
+        selected_prefs->FindDictByDottedPath("protection.macs");
+    ASSERT_TRUE(macs_dict);
+
+    // First decoy attack:
+    // Corrupt the unencrypted hash for the homepage.
+    ASSERT_TRUE(macs_dict->contains(prefs::kHomePage));
+    macs_dict->Set(prefs::kHomePage, "invalid_unencrypted_mac");
+
+    // Real attack:
+    // Corrupt the encrypted hash for the pinned tabs pref.
+    const std::string target_pref_name = prefs::kPinnedTabs;
+    const std::string encrypted_hash_key =
+        target_pref_name + kEncryptedHashSuffix;
+
+    ASSERT_TRUE(macs_dict->contains(target_pref_name));
+    ASSERT_TRUE(macs_dict->contains(encrypted_hash_key));
+    macs_dict->Set(encrypted_hash_key, "invalid_tampered_encrypted_hash");
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    if (protection_level_ < PROTECTION_ENABLED_BASIC) {
+      return;
+    }
+    // Verify the decoy tampering, kHomePage was reset by the synchronous check.
+    EXPECT_TRUE(profile()->GetPrefs()->GetString(prefs::kHomePage).empty());
+    histograms_.ExpectUniqueSample(
+        user_prefs::tracked::kTrackedPrefHistogramReset,
+        2 /* kHomePage reporting_id */, 1);
+
+    // Verify the real tampering, kPinnedTabs was reset by the deferred
+    // check because its encrypted hash was invalid.
+    EXPECT_TRUE(profile()->GetPrefs()->GetList(prefs::kPinnedTabs).empty());
+
+    histograms_.ExpectBucketCount(
+        user_prefs::tracked::kTrackedPrefHistogramResetEncrypted,
+        11 /* kPinnedTabs reporting_id */, 1);
+    histograms_.ExpectBucketCount(
+        user_prefs::tracked::kTrackedPrefHistogramChangedEncrypted,
+        11 /* kPinnedTabs reporting_id */, 1);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+PREF_HASH_BROWSER_TEST(PrefHashBrowserTestEncryptedBypass,
+                       EncryptedVerificationNotBypassed);

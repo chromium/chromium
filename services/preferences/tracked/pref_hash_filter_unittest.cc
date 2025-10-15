@@ -2010,6 +2010,63 @@ TEST_P(PrefHashFilterTest, MaybeRecordTrackedPreferenceResetCount_LogsOnce) {
   histogram_tester.ExpectUniqueSample("Settings.TrackedPreferenceResets.Count",
                                       0, 1);
 }
+
+TEST_P(PrefHashFilterEncryptedTest, ResetSplitPrefThenDeferredValidation) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+  InitializeAsyncOSCrypt();
+  ResetImpl(true /* enable_encrypted_hashing_feature */,
+            test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterDictionaryPref(kSplitPref);
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  base::Value::Dict tampered_dict;
+  tampered_dict.Set("some_invalid_key", "this_is_the_tampered_value");
+  pref_store_contents_.Set(kSplitPref, std::move(tampered_dict));
+
+  // Configure the mock to report an invalid unencrypted hash.
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, {"some_invalid_key"});
+
+  base::RunLoop run_loop;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(
+      run_loop.QuitClosure());
+
+  // This will trigger the synchronous reset and schedule the deferred task.
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     true /* expected_altered */),
+      std::move(pref_store_contents_));
+
+  // The invalid key should have been immediately removed, leaving an empty
+  // dict.
+  const base::Value::Dict* dict_after_sync_reset =
+      pref_store_contents_.FindDict(kSplitPref);
+  ASSERT_TRUE(dict_after_sync_reset);
+  EXPECT_TRUE(dict_after_sync_reset->empty());
+
+  // Clear the mock's call history, then reconfigure it to report that the
+  // encrypted hash for the same preference is also invalid.
+  mock_pref_hash_store_->ClearTestState();
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+
+  run_loop.Run();
+
+  // The `already_reset_paths` logic should have caused the deferred task to
+  // completely skip re-validating `kSplitPref`. We prove this by asserting
+  // that the mock store's `CheckValue` method was not called.
+  EXPECT_EQ(0u, mock_pref_hash_store_->checked_paths_count());
+
+  const base::Value::Dict* dict_after_async_pass =
+      pref_store_contents_.FindDict(kSplitPref);
+  ASSERT_TRUE(dict_after_async_pass);
+  EXPECT_TRUE(dict_after_async_pass->empty());
+}
 INSTANTIATE_TEST_SUITE_P(PrefHashFilterTestInstance,
                          PrefHashFilterEncryptedTest,
                          testing::Values(EnforcementLevel::NO_ENFORCEMENT,
