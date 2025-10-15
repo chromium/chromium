@@ -257,4 +257,97 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest,
                    .ExtractBool());
 }
 
+// Array accessor on window should not be able to access inner window.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest, WindowIndexedAccessor) {
+  content::WebContents* outer_webcontents = GetOuterWebContents();
+
+  EXPECT_TRUE(
+      EvalJs(outer_webcontents, "window[0] === undefined").ExtractBool());
+}
+
+// Test that postMessage from outer to inner does not work.
+// This is currently disabled as it identifies a security boundary that needs to
+// be fixed. The outer web contents should not be able to postmessage() to the
+// inner web contents. See crbug.com/452082277 for more information.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest,
+                       DISABLED_OuterToInnerPostMessage) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
+  content::WebContents* outer_webcontents = GetOuterWebContents();
+
+  // 1. Prepare the inner to receive postMessage and mark receipt.
+  EXPECT_TRUE(ExecJs(inner_webcontents,
+                     "window.addEventListener('message', (event) => { "
+                     "window.postMessageReceived = true; "
+                     "});"));
+
+  // 2. PostMessage from outer.
+  // chrome://webui-browser has nested shadow-roots that look like:
+  // <root>
+  //   <webui-browser-app>
+  //     <shadow-root>
+  //       <content-region>
+  //         <shadow-root>
+  //           <cr-tab-webview>
+  //             <shadow-root>
+  //               <iframe id="iframe">
+  // Unfortunately, we need to retrieve that iframe through all the shadow-roots
+  // to attempt post messaging.
+  EXPECT_TRUE(
+      ExecJs(outer_webcontents,
+             "const iframe = document.querySelector('webui-browser-app')"
+             ".shadowRoot.querySelector('content-region')"
+             ".shadowRoot.querySelector('cr-tab-webview')"
+             ".shadowRoot.querySelector('#iframe');"
+             "iframe.contentWindow.postMessage('test', '*');"));
+
+  // 3. Verify inner did not receive the postMessage.
+  EXPECT_FALSE(
+      EvalJs(inner_webcontents, "window.hasOwnProperty('postMessageReceived')")
+          .ExtractBool());
+}
+
+// Test PostMessage to '*' from outer does not affect inner.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest, OuterToInnerStarPostMessage) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
+  content::WebContents* outer_webcontents = GetOuterWebContents();
+
+  // 1. Prepare the inner to receive postMessage and mark receipt.
+  EXPECT_TRUE(ExecJs(inner_webcontents,
+                     "window.addEventListener('message', (event) => { "
+                     "window.postMessageReceived = true; "
+                     "});"));
+
+  // 2. PostMessage from outer.
+  EXPECT_TRUE(ExecJs(outer_webcontents, "window.postMessage('test', '*');"));
+
+  // 3. Verify inner did not receive the postMessage.
+  EXPECT_FALSE(
+      EvalJs(inner_webcontents, "window.hasOwnProperty('postMessageReceived')")
+          .ExtractBool());
+}
+
+// Test PostMessage to '*' from inner does not affect outer.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest, InnerToOuterStarPostMessage) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
+  content::WebContents* outer_webcontents = GetOuterWebContents();
+
+  // 1. Prepare the outer to receive postMessage and mark receipt.
+  EXPECT_TRUE(ExecJs(outer_webcontents,
+                     "window.addEventListener('message', (event) => { "
+                     "window.postMessageReceived = true; "
+                     "});"));
+
+  // 2. PostMessage from inner.
+  EXPECT_TRUE(ExecJs(inner_webcontents, "window.postMessage('test', '*');"));
+
+  // 3. Verify outer did not receive the postMessage.
+  EXPECT_FALSE(
+      EvalJs(outer_webcontents, "window.hasOwnProperty('postMessageReceived')")
+          .ExtractBool());
+}
+
+// Not Tested: <window handle>.postMessage() is not tested here because
+// all the ways to get a window handle are covered above including parent, top,
+// opener and frameElement.
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
