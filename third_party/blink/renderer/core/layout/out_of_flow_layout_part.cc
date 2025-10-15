@@ -58,6 +58,8 @@ namespace {
 
 // `margin_box_start`/`margin_box_end` and `imcb_inset_start`/`imcb_inset_end`
 // are relative to the IMCB.
+//
+// Returns true if the margin-box exceeds the IMCB.
 bool CalculateNonOverflowingRangeInOneAxis(
     LayoutUnit margin_box_start,
     LayoutUnit margin_box_end,
@@ -73,14 +75,6 @@ bool CalculateNonOverflowingRangeInOneAxis(
   const LayoutUnit end_available_space = imcb_inset_end - margin_box_end;
 
   if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
-    // Check if our margin-box overflows the IMCB.
-    if (start_available_space < LayoutUnit()) {
-      return false;
-    }
-    if (end_available_space < LayoutUnit()) {
-      return false;
-    }
-
     // Determine how far we can scroll in each direction until the margin-box
     // hits the edge of the container.
     //
@@ -99,7 +93,15 @@ bool CalculateNonOverflowingRangeInOneAxis(
       *out_scroll_min = -end_available_space;
     }
 
-    return true;
+    // Check if our margin-box overflows the IMCB.
+    if (start_available_space < LayoutUnit()) {
+      return true;
+    }
+    if (end_available_space < LayoutUnit()) {
+      return true;
+    }
+
+    return false;
   }
 
   if (has_non_auto_inset_start) {
@@ -108,7 +110,7 @@ bool CalculateNonOverflowingRangeInOneAxis(
     // margin box always move by the same amount on scrolling. Then it overflows
     // if and only if it overflows at the initial scroll location.
     if (start_available_space < 0) {
-      return false;
+      return true;
     }
   } else {
     // Otherwise, the start edge of the scroll-adjusted inset-modified
@@ -120,16 +122,16 @@ bool CalculateNonOverflowingRangeInOneAxis(
   // Calculation for the end edge is symmetric.
   if (has_non_auto_inset_end) {
     if (end_available_space < 0) {
-      return false;
+      return true;
     }
   } else {
     *out_scroll_min = -(position_area_end + end_available_space);
   }
   if (*out_scroll_min && *out_scroll_max &&
       out_scroll_min->value() > out_scroll_max->value()) {
-    return false;
+    return true;
   }
-  return true;
+  return false;
 }
 
 // Helper class to enumerate all the candidate styles to be passed to
@@ -2674,7 +2676,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
         candidate_style, container_writing_direction,
         candidate_writing_direction);
     offset_info.imcb_for_position_order = imcb_for_position_fallback;
-    if (!CalculateNonOverflowingRangeInOneAxis(
+    if (CalculateNonOverflowingRangeInOneAxis(
             node_dimensions.MarginBoxInlineStart(),
             node_dimensions.MarginBoxInlineEnd(),
             imcb_for_position_fallback->inline_start,
@@ -2699,7 +2701,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   std::optional<LayoutUnit> block_scroll_min;
   std::optional<LayoutUnit> block_scroll_max;
   if (try_fit_available_space) {
-    if (!CalculateNonOverflowingRangeInOneAxis(
+    if (CalculateNonOverflowingRangeInOneAxis(
             node_dimensions.MarginBoxBlockStart(),
             node_dimensions.MarginBoxBlockEnd(),
             imcb_for_position_fallback->block_start,
