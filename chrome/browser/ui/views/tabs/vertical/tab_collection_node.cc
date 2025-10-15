@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_strip_api_utilities.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
@@ -72,7 +73,12 @@ std::unique_ptr<views::View> TabCollectionNode::CreateViewForNode(
 }
 
 TabCollectionNode::TabCollectionNode() = default;
+TabCollectionNode::TabCollectionNode(tabs_api::mojom::DataPtr data)
+    : data_(std::move(data)) {}
 
+// TODO(crbug.com/450304539): Get rid of this. Collections should only store
+// add_child_to_node_ and use its parents add_child_to_node_ if need be, instead
+// of storing a copy of it.
 TabCollectionNode::TabCollectionNode(
     CustomAddChildView add_node_to_parent_callback)
     : add_node_to_parent_(std::move(add_node_to_parent_callback)) {}
@@ -81,6 +87,8 @@ TabCollectionNode::~TabCollectionNode() {
   on_will_destroy_callback_list_.Notify();
 }
 
+// TODO(crbug.com/450304539): change to take TabCollectionNode* parent_node,
+// then use parent_node->node_view_ and parent_node->add_child_to_node_.
 void TabCollectionNode::Initialize(
     tabs_api::mojom::ContainerPtr container,
     views::View* parent_view,
@@ -111,6 +119,31 @@ void TabCollectionNode::Initialize(
   }
 }
 
+// TODO(crbug.com/450976282): Consider having a map at the root level, or using
+// path in the API, in order to not have to iterate through the whole collection
+// node structure.
+TabCollectionNode* TabCollectionNode::GetNodeForId(
+    const tabs_api::NodeId& node_id) {
+  if (tabs_api::utils::GetNodeId(*data_) == node_id) {
+    return this;
+  }
+
+  for (const auto& child : children_) {
+    if (TabCollectionNode* node = child->GetNodeForId(node_id)) {
+      return node;
+    }
+  }
+
+  return nullptr;
+}
+
+void TabCollectionNode::AddNewChild(tabs_api::mojom::DataPtr data,
+                                    size_t index) {
+  auto child_node = std::make_unique<TabCollectionNode>(std::move(data));
+  auto child_node_view = child_node->CreateAndSetView();
+  AddChild(std::move(child_node_view), std::move(child_node), index);
+}
+
 std::vector<views::View*> TabCollectionNode::GetDirectChildren() const {
   std::vector<views::View*> child_views;
   child_views.reserve(children_.size());
@@ -118,4 +151,23 @@ std::vector<views::View*> TabCollectionNode::GetDirectChildren() const {
     child_views.push_back(child->node_view_);
   }
   return child_views;
+}
+
+std::unique_ptr<views::View> TabCollectionNode::CreateAndSetView() {
+  auto node_view = CreateViewForNode(this);
+  node_view_ = node_view.get();
+  return node_view;
+}
+
+// TODO(crbug.com/450304539): Actually use the index here, after refactoring
+// add_parent_to_node_/add_child_to_node_.
+void TabCollectionNode::AddChild(std::unique_ptr<views::View> child_node_view,
+                                 std::unique_ptr<TabCollectionNode> child_node,
+                                 size_t index) {
+  if (add_child_to_node_) {
+    add_child_to_node_.Run(std::move(child_node_view));
+  } else {
+    node_view_->AddChildView(std::move(child_node_view));
+  }
+  children_.push_back(std::move(child_node));
 }
