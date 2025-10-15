@@ -165,9 +165,8 @@ bool AppliesToClientVersion(const Study& study,
 }
 
 // Returns true if the study applies to the client's form factor.
-bool AppliesToClientFormFactor(
-    const Study& study,
-    const ClientFilterableState& client_state) {
+bool AppliesToClientFormFactor(const Study& study,
+                               const ClientFilterableState& client_state) {
   return internal::CheckStudyFormFactor(study.filter(),
                                         client_state.form_factor);
 }
@@ -192,7 +191,7 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
     const ClientFilterableState& client_state,
     const VariationsSeed& seed,
     double entropy_limit_in_bits) {
-  SCOPED_CRASH_KEY_STRING32(SR_CRASH_KEY, "seed_version",seed.version());
+  SCOPED_CRASH_KEY_STRING32(SR_CRASH_KEY, "seed_version", seed.version());
   SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "entropy_limit", entropy_limit_in_bits);
 
   std::optional<LayerByIdMap> layer_by_id_map = BuildLayerByIdMap(seed);
