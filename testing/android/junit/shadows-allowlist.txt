@@ -47,7 +47,6 @@
 +org.chromium.components.media_router.caf.CastMediaSource
 +org.chromium.components.stylus_handwriting.DirectWritingSettingsHelper
 +org.chromium.components.url_formatter.UrlFormatter
-+org.chromium.components.user_prefs.UserPrefs
 +org.chromium.content_public.browser.WebContentsStatics
 +org.chromium.gms.ChromiumPlayServicesAvailability
 +org.chromium.ui.InsetsRectProvider$BoundingRectHelper

@@ -9,7 +9,9 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
@@ -20,9 +22,19 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 @JNINamespace("user_prefs")
 @NullMarked
 public class UserPrefs {
+    private static @Nullable PrefService sPrefServiceForTesting;
+
     /** Returns the {@link PrefService} associated with the given {@link BrowserContextHandle}. */
     public static PrefService get(BrowserContextHandle browserContextHandle) {
+        if (sPrefServiceForTesting != null) {
+            return sPrefServiceForTesting;
+        }
         return UserPrefsJni.get().get(browserContextHandle);
+    }
+
+    public static void setPrefServiceForTesting(PrefService prefService) {
+        sPrefServiceForTesting = prefService;
+        ResettersForTesting.register(() -> sPrefServiceForTesting = null);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

@@ -13,6 +13,7 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [ "java/src/org/chromium/components/user_prefs/UserPrefs.java" ]
   deps = [
+    "//base:resetters_java",
     "//build/android:build_java",
     "//components/prefs/android:java",
     "//content/public/android:content_full_java",
