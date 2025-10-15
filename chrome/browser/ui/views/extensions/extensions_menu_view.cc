@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -307,8 +308,10 @@ void ExtensionsMenuView::SortMenuItemsByName() {
 void ExtensionsMenuView::CreateAndInsertNewItem(
     const ToolbarActionsModel::ActionId& id) {
   std::unique_ptr<ExtensionActionViewController> controller =
-      ExtensionActionViewController::Create(id, browser_,
-                                            extensions_container_);
+      ExtensionActionViewController::Create(
+          id, browser_, extensions_container_,
+          std::make_unique<ExtensionActionPlatformDelegateViews>(
+              browser_, extensions_container_));
 
   // The bare `new` is safe here, because InsertMenuItem is guaranteed to
   // be added to the view hierarchy, which takes ownership.

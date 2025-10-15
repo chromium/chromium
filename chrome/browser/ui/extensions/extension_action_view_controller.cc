@@ -138,7 +138,8 @@ std::unique_ptr<ExtensionActionViewController>
 ExtensionActionViewController::Create(
     const extensions::ExtensionId& extension_id,
     BrowserWindowInterface* browser,
-    ExtensionsContainer* extensions_container) {
+    ExtensionsContainer* extensions_container,
+    std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate) {
   DCHECK(browser);
   DCHECK(extensions_container);
 
@@ -155,7 +156,7 @@ ExtensionActionViewController::Create(
   // WrapUnique() because the constructor is private.
   return base::WrapUnique(new ExtensionActionViewController(
       std::move(extension), browser, extension_action, registry,
-      extensions_container));
+      extensions_container, std::move(platform_delegate)));
 }
 
 // static
@@ -176,7 +177,8 @@ ExtensionActionViewController::ExtensionActionViewController(
     BrowserWindowInterface* browser,
     extensions::ExtensionAction* extension_action,
     extensions::ExtensionRegistry* extension_registry,
-    ExtensionsContainer* extensions_container)
+    ExtensionsContainer* extensions_container,
+    std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate)
     : extension_(std::move(extension)),
       browser_(browser),
       profile_(browser->GetProfile()),
@@ -184,9 +186,10 @@ ExtensionActionViewController::ExtensionActionViewController(
       extensions_container_(extensions_container),
       popup_host_(nullptr),
       view_delegate_(nullptr),
-      platform_delegate_(ExtensionActionPlatformDelegate::Create(this)),
+      platform_delegate_(std::move(platform_delegate)),
       icon_factory_(extension_.get(), extension_action, this),
       extension_registry_(extension_registry) {
+  platform_delegate_->AttachToController(this);
   // TODO(crbug.com/448199168): Get rid of the dependency to TabStripModel that
   // is not available on Android.
   browser_->GetTabStripModel()->AddObserver(this);
@@ -197,6 +200,7 @@ ExtensionActionViewController::ExtensionActionViewController(
 
 ExtensionActionViewController::~ExtensionActionViewController() {
   DCHECK(!IsShowingPopup());
+  platform_delegate_->DetachFromController();
 }
 
 std::string ExtensionActionViewController::GetId() const {
@@ -210,7 +214,6 @@ void ExtensionActionViewController::SetDelegate(
     view_delegate_ = delegate;
   } else {
     HidePopup();
-    platform_delegate_.reset();
     view_delegate_ = nullptr;
   }
 }

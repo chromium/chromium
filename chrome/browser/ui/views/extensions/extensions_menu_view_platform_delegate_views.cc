@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
@@ -1013,8 +1014,10 @@ void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
   // controller. However, the current extensions structure depends on this
   // thus a major restructure is needed.
   std::unique_ptr<ExtensionActionViewController> action_controller =
-      ExtensionActionViewController::Create(extension_id, browser_,
-                                            extensions_container_);
+      ExtensionActionViewController::Create(
+          extension_id, browser_, extensions_container_,
+          std::make_unique<ExtensionActionPlatformDelegateViews>(
+              browser_, extensions_container_));
   const extensions::Extension* extension = action_controller->extension();
   Profile* profile = browser_->profile();
   content::WebContents* web_contents = GetActiveWebContents();

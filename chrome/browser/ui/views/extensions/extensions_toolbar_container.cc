@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
+#include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -700,8 +701,10 @@ void ExtensionsToolbarContainer::ReorderAllChildViews() {
 
 void ExtensionsToolbarContainer::CreateActionForId(
     const ToolbarActionsModel::ActionId& action_id) {
-  actions_.push_back(
-      ExtensionActionViewController::Create(action_id, browser_, this));
+  actions_.push_back(ExtensionActionViewController::Create(
+      action_id, browser_, this,
+      std::make_unique<ExtensionActionPlatformDelegateViews>(browser_.get(),
+                                                             this)));
   auto icon = std::make_unique<ToolbarActionView>(actions_.back().get(), this);
   // Set visibility before adding to prevent extraneous animation.
   icon->SetVisible(ToolbarActionsModel::CanShowActionsInToolbar(*browser_) &&

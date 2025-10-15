@@ -58,7 +58,8 @@ class ExtensionActionViewController
   static std::unique_ptr<ExtensionActionViewController> Create(
       const extensions::ExtensionId& extension_id,
       BrowserWindowInterface* browser,
-      ExtensionsContainer* extensions_container);
+      ExtensionsContainer* extensions_container,
+      std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate);
 
   // Returns whether any of `actions` given have access to the `web_contents`.
   static bool AnyActionHasCurrentSiteAccess(
@@ -163,7 +164,8 @@ class ExtensionActionViewController
       BrowserWindowInterface* browser,
       extensions::ExtensionAction* extension_action,
       extensions::ExtensionRegistry* extension_registry,
-      ExtensionsContainer* extensions_container);
+      ExtensionsContainer* extensions_container,
+      std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate);
 
   // Returns the current web contents.
   content::WebContents* GetCurrentWebContents() const;

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
@@ -414,7 +415,10 @@ void WebUIBrowserExtensionsContainer::CreateActionForId(
     const ToolbarActionsModel::ActionId& action_id) {
   auto action_info = std::make_unique<ActionInfo>(
       *this, browser_.get(),
-      ExtensionActionViewController::Create(action_id, &browser_.get(), this));
+      ExtensionActionViewController::Create(
+          action_id, &browser_.get(), this,
+          std::make_unique<ExtensionActionPlatformDelegateViews>(
+              &browser_.get(), this)));
   action_info->controller()->RegisterCommand();
   actions_[action_id] = std::move(action_info);
 }

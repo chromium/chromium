@@ -26,20 +26,26 @@
 
 using extensions::ActionInfo;
 
-// static
-std::unique_ptr<ExtensionActionPlatformDelegate>
-ExtensionActionPlatformDelegate::Create(
-    ExtensionActionViewController* controller) {
-  return std::make_unique<ExtensionActionPlatformDelegateViews>(controller);
-}
-
 ExtensionActionPlatformDelegateViews::ExtensionActionPlatformDelegateViews(
-    ExtensionActionViewController* controller)
-    : controller_(controller) {}
+    BrowserWindowInterface* browser,
+    ExtensionsContainer* extensions_container)
+    : browser_(browser), extensions_container_(extensions_container) {}
 
 ExtensionActionPlatformDelegateViews::~ExtensionActionPlatformDelegateViews() {
   // Should have already unregistered.
   DCHECK(!action_keybinding_);
+}
+
+void ExtensionActionPlatformDelegateViews::AttachToController(
+    ExtensionActionViewController* controller) {
+  CHECK(controller);
+  CHECK(!controller_);
+  controller_ = controller;
+}
+
+void ExtensionActionPlatformDelegateViews::DetachFromController() {
+  CHECK(controller_);
+  controller_ = nullptr;
 }
 
 void ExtensionActionPlatformDelegateViews::RegisterCommand() {
@@ -81,10 +87,10 @@ void ExtensionActionPlatformDelegateViews::ShowPopup(
   // performs the flipping in RTL cases.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
 
-  ExtensionPopup::ShowPopup(
-      controller_->browser()->GetBrowserForMigrationOnly(), std::move(host),
-      GetDelegateViews()->GetReferenceButtonForPopup(), arrow, show_action,
-      std::move(callback));
+  ExtensionPopup::ShowPopup(browser_->GetBrowserForMigrationOnly(),
+                            std::move(host),
+                            GetDelegateViews()->GetReferenceButtonForPopup(),
+                            arrow, show_action, std::move(callback));
 }
 
 bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(

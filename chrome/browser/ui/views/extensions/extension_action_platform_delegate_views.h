@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
 
+class BrowserWindowInterface;
+class ExtensionsContainer;
 class ToolbarActionViewDelegateViews;
 
 // An abstract "View" for an ExtensionAction (Action, BrowserAction, or a
@@ -24,8 +26,9 @@ class ExtensionActionPlatformDelegateViews
     : public ExtensionActionPlatformDelegate,
       public ui::AcceleratorTarget {
  public:
-  explicit ExtensionActionPlatformDelegateViews(
-      ExtensionActionViewController* controller);
+  ExtensionActionPlatformDelegateViews(
+      BrowserWindowInterface* browser,
+      ExtensionsContainer* extensions_container);
 
   ExtensionActionPlatformDelegateViews(
       const ExtensionActionPlatformDelegateViews&) = delete;
@@ -36,12 +39,13 @@ class ExtensionActionPlatformDelegateViews
 
  private:
   // ExtensionActionPlatformDelegate:
+  void AttachToController(ExtensionActionViewController* controller) override;
+  void DetachFromController() override;
   void RegisterCommand() override;
   void UnregisterCommand() override;
   void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                  PopupShowAction show_action,
                  ShowPopupCallback callback) override;
-
 
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -49,8 +53,14 @@ class ExtensionActionPlatformDelegateViews
 
   ToolbarActionViewDelegateViews* GetDelegateViews() const;
 
-  // The owning ExtensionActionViewController.
-  raw_ptr<ExtensionActionViewController> controller_;
+  // The corresponding browser window.
+  const raw_ptr<BrowserWindowInterface> browser_;
+
+  // The corresponding ExtensionsContainer on the toolbar.
+  const raw_ptr<ExtensionsContainer> extensions_container_;
+
+  // The platform-agnostic view model.
+  raw_ptr<ExtensionActionViewController> controller_{nullptr};
 
   // The extension key binding accelerator this extension action is listening
   // for (to show the popup).

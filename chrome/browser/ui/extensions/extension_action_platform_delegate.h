@@ -19,10 +19,14 @@ class ExtensionActionPlatformDelegate {
  public:
   virtual ~ExtensionActionPlatformDelegate() = default;
 
-  // Returns a created ExtensionActionPlatformDelegate. This is defined in the
-  // platform-specific implementation for the class.
-  static std::unique_ptr<ExtensionActionPlatformDelegate> Create(
-      ExtensionActionViewController* controller);
+  // Attaches the delegate to an ExtensionActionViewController. It is called
+  // by the controller on its constructor.
+  virtual void AttachToController(
+      ExtensionActionViewController* controller) = 0;
+
+  // Detaches the delegate from an ExtensionActionViewController. It is called
+  // by the controller on its destructor.
+  virtual void DetachFromController() = 0;
 
   // The following are forwarded from ToolbarActionViewController. See that
   // class for the definitions.
