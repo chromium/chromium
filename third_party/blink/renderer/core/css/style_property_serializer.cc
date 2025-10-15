@@ -672,10 +672,12 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValueForBidirectionalGapRules(ruleBreakShorthand());
     case CSSPropertyID::kRuleColor:
       return GetShorthandValueForBidirectionalGapRules(ruleColorShorthand());
-    case CSSPropertyID::kRuleWidth:
-      return GetShorthandValueForBidirectionalGapRules(ruleWidthShorthand());
+    case CSSPropertyID::kRuleOutset:
+      return GetShorthandValueForBidirectionalGapRules(ruleOutsetShorthand());
     case CSSPropertyID::kRuleStyle:
       return GetShorthandValueForBidirectionalGapRules(ruleStyleShorthand());
+    case CSSPropertyID::kRuleWidth:
+      return GetShorthandValueForBidirectionalGapRules(ruleWidthShorthand());
     case CSSPropertyID::kTextBox:
       return TextBoxValue();
     case CSSPropertyID::kTextEmphasis:

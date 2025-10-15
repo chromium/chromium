@@ -8102,6 +8102,7 @@ Called by update_use_counter_css.py.-->
   <int value="885" label="font-language-override"/>
   <int value="886" label="ruby-overhang"/>
   <int value="887" label="rule-break"/>
+  <int value="888" label="rule-outset"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

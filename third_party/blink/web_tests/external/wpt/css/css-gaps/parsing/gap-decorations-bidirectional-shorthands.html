@@ -24,6 +24,9 @@
 
     column-rule-break: intersection;
     row-rule-break: intersection;
+
+    column-rule-outset: 10px;
+    row-rule-outset: 10px;
   }
 
   #target2 {
@@ -38,6 +41,9 @@
 
     column-rule-break: intersection;
     row-rule-break: spanning-item;
+
+    column-rule-outset: 5px;
+    row-rule-outset: 10px;
   }
 </style>
 <script>
@@ -56,6 +62,9 @@
   test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-break'), 'intersection');
   }, "rule-break shorthand computed from longhand values");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target1')).getPropertyValue('rule-outset'), '10px');
+  }, "rule-outset shorthand computed from longhand values");
 
 
 
@@ -74,6 +83,9 @@
   test(function() {
     assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-break'), '');
   }, "rule-break shorthand cannot be computed from longhand values so expect an empty string");
+  test(function() {
+    assert_equals(window.getComputedStyle(document.getElementById('target2')).getPropertyValue('rule-outset'), '');
+  }, "rule-outset shorthand cannot be computed from longhand values so expect an empty string");
 </script>
 </body>
 </html>
