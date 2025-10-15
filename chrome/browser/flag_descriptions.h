@@ -2255,6 +2255,9 @@ extern const char kStrictOriginIsolationName[];
 extern const char kStrictOriginIsolationDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kSubmenusInAppMenuName[];
+extern const char kSubmenusInAppMenuDescription[];
+
 extern const char kSubmenusTabContextMenuLffTabStripName[];
 extern const char kSubmenusTabContextMenuLffTabStripDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)

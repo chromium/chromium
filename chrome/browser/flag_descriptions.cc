@@ -5537,6 +5537,11 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
+const char kSubmenusInAppMenuName[] = "Enable submenus in App Menu";
+const char kSubmenusInAppMenuDescription[] =
+    "Enables displaying submenus in the app menu, using drilldown or flyout "
+    "depending on conditions.";
+
 const char kSubmenusTabContextMenuLffTabStripName[] =
     "Submenus in LFF Tab Context Menu on LFF Tab Strip";
 const char kSubmenusTabContextMenuLffTabStripDescription[] =

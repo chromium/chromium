@@ -9486,6 +9486,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "submenus-in-app-menu",
+    "owners": [ "massan@google.com", "nya@google.com", "lokeric@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "submenus-tab-context-menu-lff-tab-strip",
     "owners": [ "clank-large-form-factors@google.com", "jhimawan@google.com" ],
     "expiry_milestone": 170
