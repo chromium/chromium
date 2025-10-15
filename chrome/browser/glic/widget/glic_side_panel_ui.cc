@@ -109,8 +109,7 @@ bool GlicSidePanelUi::IsShowing() const {
 }
 
 void GlicSidePanelUi::Focus() {
-  auto* web_contents = delegate_->host().webui_contents();
-  if (web_contents) {
+  if (auto* web_contents = delegate_->host().webui_contents()) {
     web_contents->Focus();
   }
 }

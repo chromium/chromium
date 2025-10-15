@@ -241,7 +241,9 @@ void GlicFloatingUi::ClosePanel() {
 }
 
 void GlicFloatingUi::Focus() {
-  NOTIMPLEMENTED();
+  if (auto* web_contents = delegate_->host().webui_contents()) {
+    web_contents->Focus();
+  }
 }
 
 void GlicFloatingUi::OnWidgetActivationChanged(views::Widget* widget,
