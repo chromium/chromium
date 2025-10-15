@@ -1317,6 +1317,18 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
   return hr;
 }
 
+IFACEMETHODIMP_(ULONG) LegacyAppCommandWebImpl::AddRef() {
+  const ULONG count = IDispatchImpl<IAppCommandWeb>::AddRef();
+  VLOG(2) << __func__ << ": count: " << count;
+  return count;
+}
+
+IFACEMETHODIMP_(ULONG) LegacyAppCommandWebImpl::Release() {
+  const ULONG count = IDispatchImpl<IAppCommandWeb>::Release();
+  VLOG(2) << __func__ << ": count: " << count;
+  return count;
+}
+
 void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
                                        const std::string& app_id,
                                        const std::string& command_id,
