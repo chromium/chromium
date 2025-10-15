@@ -34,12 +34,12 @@ export function getHtml(this: ContextMenuEntrypointElement) {
           <button class="dropdown-item"
               title="${tab.title}" data-index="${index}"
               @pointerenter="${this.onTabPointerenter_}"
-              @click="${this.addTabContext}">
+              @click="${this.addTabContext_}">
             <composebox-tab-favicon .url="${tab.url.url}">
             </composebox-tab-favicon>
             <span class="tab-title">${tab.title}</span>
           </button>
-          ${this.shouldShowTabPreview() ? html`
+          ${this.shouldShowTabPreview_() ? html`
             <img class="tab-preview" .src="${this.tabPreviewUrl_}">
           ` : ''}
         </div>
@@ -47,13 +47,13 @@ export function getHtml(this: ContextMenuEntrypointElement) {
       <hr/>
     `: ''}
     <button id="imageUpload" class="dropdown-item"
-        @click="${this.openImageUpload}">
+        @click="${this.openImageUpload_}">
       <cr-icon icon="composebox:imageUpload"></cr-icon>
       ${this.i18n('addImage')}
     </button>
     <button id="fileUpload" class="dropdown-item"
-        @click="${this.openFileUpload}"
-        ?disabled="${this.inCreateImageMode}">
+        @click="${this.openFileUpload_}"
+        ?disabled="${this.inCreateImageMode_}">
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.i18n('uploadFile')}
     </button>
@@ -61,7 +61,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
     ${this.showDeepSearch_ ?
     html`<button id="deepSearch" class="dropdown-item"
         @click="${this.onDeepSearchClick_}"
-        ?disabled="${this.inCreateImageMode}">
+        ?disabled="${this.inCreateImageMode_}">
       <cr-icon icon="composebox:deepSearch"></cr-icon>
       ${this.i18n('deepSearch')}
     </button>` : ''}

@@ -51,7 +51,7 @@ export class ContextMenuEntrypointElement extends
     return {
       inputsDisabled: {type: Boolean},
       showContextMenuDescription: {type: Boolean},
-      inCreateImageMode: {
+      inCreateImageMode_: {
         reflect: true,
         type: Boolean,
       },
@@ -71,7 +71,7 @@ export class ContextMenuEntrypointElement extends
 
   accessor inputsDisabled: boolean = false;
   accessor showContextMenuDescription: boolean = false;
-  protected accessor inCreateImageMode: boolean = false;
+  protected accessor inCreateImageMode_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor tabPreviewUrl_: string = '';
   protected accessor tabPreviewsEnabled_: boolean =
@@ -103,7 +103,7 @@ export class ContextMenuEntrypointElement extends
       }});
   }
 
-  protected addTabContext(e: Event) {
+  protected addTabContext_(e: Event) {
     e.stopPropagation();
 
     const tabElement = e.currentTarget! as HTMLButtonElement;
@@ -136,16 +136,16 @@ export class ContextMenuEntrypointElement extends
     this.tabPreviewUrl_ = previewDataUrl || '';
   }
 
-  protected shouldShowTabPreview(): boolean {
+  protected shouldShowTabPreview_(): boolean {
     return this.tabPreviewsEnabled_ && this.tabPreviewUrl_ !== '';
   }
 
-  protected openImageUpload() {
+  protected openImageUpload_() {
     this.fire('open-image-upload');
     this.$.menu.close();
   }
 
-  protected openFileUpload() {
+  protected openFileUpload_() {
     this.fire('open-file-upload');
     this.$.menu.close();
   }
@@ -157,8 +157,8 @@ export class ContextMenuEntrypointElement extends
   }
 
   protected onCreateImageClick_() {
-    this.fire('create-image-click',
-        {inCreateImageMode: this.inCreateImageMode});
+    this.fire(
+        'create-image-click', {inCreateImageMode: this.inCreateImageMode_});
     this.$.menu.close();
   }
 }
