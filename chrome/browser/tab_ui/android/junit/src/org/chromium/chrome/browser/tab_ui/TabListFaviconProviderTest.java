@@ -41,10 +41,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Holder;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.ResourceTabFavicon;
@@ -62,7 +60,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link TabListFaviconProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT)
 public class TabListFaviconProviderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

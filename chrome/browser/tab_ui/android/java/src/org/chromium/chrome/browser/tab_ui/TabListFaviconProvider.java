@@ -25,7 +25,6 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -526,9 +525,7 @@ public class TabListFaviconProvider {
                 };
 
         Profile profile = getProfile(isIncognito);
-        if (metadata.isInTabGroup
-                && !isIncognito
-                && ChromeFeatureList.sTabSwitcherForeignFaviconSupport.isEnabled()) {
+        if (metadata.isInTabGroup && !isIncognito) {
             // Case 3: The tab is in a tab group and is not incognito.
             //
             // This approach first checks the local favicon DB and falls back to a proxy service to
