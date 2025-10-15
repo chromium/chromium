@@ -38,7 +38,8 @@ BaseSignalsCollector::BaseSignalsCollector(
 
 BaseSignalsCollector::~BaseSignalsCollector() {
   if (enterprise_signals::features::
-          IsSystemSignalCollectionImprovementEnabled()) {
+          IsSystemSignalCollectionImprovementEnabled() &&
+      system_service_host_) {
     system_service_host_->RemoveObserver(this);
   }
 }
@@ -114,6 +115,10 @@ void BaseSignalsCollector::RunPendingCallback(int callback_id) {
 
 device_signals::mojom::SystemSignalsService*
 BaseSignalsCollector::GetService() {
+  if (!system_service_host_) {
+    return nullptr;
+  }
+
   return system_service_host_->GetService();
 }
 
