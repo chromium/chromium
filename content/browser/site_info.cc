@@ -22,6 +22,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -150,6 +151,7 @@ SiteInfo SiteInfo::CreateForErrorPage(
     bool is_guest,
     bool is_fenced,
     const WebExposedIsolationInfo& web_exposed_isolation_info,
+    WebExposedIsolationLevel web_exposed_isolation_level,
     const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
         cross_origin_isolation_key) {
   AgentClusterKey agent_cluster_key;
@@ -173,7 +175,8 @@ SiteInfo SiteInfo::CreateForErrorPage(
   return SiteInfo(
       agent_cluster_key, GetErrorPageSiteAndLockURL() /* site_url */,
       false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
-      storage_partition_config, web_exposed_isolation_info, is_guest,
+      storage_partition_config, web_exposed_isolation_info,
+      web_exposed_isolation_level, is_guest,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* are_v8_optimizations_disabled */,
       false /* is_pdf */, is_fenced);
@@ -194,6 +197,10 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
       browser_context, GURL());
   bool are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
       browser_context, isolation_context.browsing_instance_id(), url::Origin());
+
+  WebExposedIsolationLevel web_exposed_isolation_level =
+      SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
+          web_exposed_isolation_info);
 
   AgentClusterKey agent_cluster_key;
   if (cross_origin_isolation_key.has_value()) {
@@ -217,7 +224,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
                   /*site_url=*/SiteInstanceImpl::GetDefaultSiteURL(),
                   /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                   storage_partition_config, web_exposed_isolation_info,
-                  isolation_context.is_guest(),
+                  web_exposed_isolation_level, isolation_context.is_guest(),
                   /*does_site_request_dedicated_process_for_coop=*/false,
                   is_jit_disabled, are_v8_optimizations_disabled,
                   /*is_pdf=*/false, isolation_context.is_fenced());
@@ -239,6 +246,7 @@ SiteInfo SiteInfo::CreateForGuest(
       /*site_url=*/GURL(),
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       partition_config, WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated,
       /*is_guest=*/true,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
@@ -335,13 +343,15 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
   WebExposedIsolationInfo web_exposed_isolation_info =
       url_info.web_exposed_isolation_info.value_or(
           WebExposedIsolationInfo::CreateNonIsolated());
+  WebExposedIsolationLevel web_exposed_isolation_level =
+      ComputeWebExposedIsolationLevel(web_exposed_isolation_info, url_info);
 
   if (url_info.url.SchemeIs(kChromeErrorScheme)) {
-    return CreateForErrorPage(storage_partition_config.value(),
-                              /*is_guest=*/isolation_context.is_guest(),
-                              /*is_fenced=*/isolation_context.is_fenced(),
-                              web_exposed_isolation_info,
-                              url_info.cross_origin_isolation_key);
+    return CreateForErrorPage(
+        storage_partition_config.value(),
+        /*is_guest=*/isolation_context.is_guest(),
+        /*is_fenced=*/isolation_context.is_fenced(), web_exposed_isolation_info,
+        web_exposed_isolation_level, url_info.cross_origin_isolation_key);
   }
 
   // If there is a COOP isolation request, propagate it to SiteInfo.
@@ -352,7 +362,8 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
 
   return SiteInfo(agent_cluster_key, site_url, url_info.is_sandboxed,
                   url_info.unique_sandbox_id, storage_partition_config.value(),
-                  web_exposed_isolation_info, isolation_context.is_guest(),
+                  web_exposed_isolation_info, web_exposed_isolation_level,
+                  isolation_context.is_guest(),
                   does_site_request_dedicated_process_for_coop, is_jitless,
                   are_v8_optimizations_disabled, url_info.is_pdf,
                   isolation_context.is_fenced());
@@ -370,6 +381,7 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
                    int unique_sandbox_id,
                    const StoragePartitionConfig storage_partition_config,
                    const WebExposedIsolationInfo& web_exposed_isolation_info,
+                   WebExposedIsolationLevel web_exposed_isolation_level,
                    bool is_guest,
                    bool does_site_request_dedicated_process_for_coop,
                    bool is_jit_disabled,
@@ -382,6 +394,7 @@ SiteInfo::SiteInfo(const AgentClusterKey& agent_cluster_key,
       unique_sandbox_id_(unique_sandbox_id),
       storage_partition_config_(storage_partition_config),
       web_exposed_isolation_info_(web_exposed_isolation_info),
+      web_exposed_isolation_level_(web_exposed_isolation_level),
       is_guest_(is_guest),
       does_site_request_dedicated_process_for_coop_(
           does_site_request_dedicated_process_for_coop),
@@ -406,6 +419,7 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
                UrlInfo::kInvalidUniqueSandboxId,
                StoragePartitionConfig::CreateDefault(browser_context),
                WebExposedIsolationInfo::CreateNonIsolated(),
+               WebExposedIsolationLevel::kNotIsolated,
                /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false,
@@ -421,12 +435,14 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
   // site-isolated due to COOP should still share a SiteInstance with other
   // same-site frames in the BrowsingInstance, even if those frames lack the
   // COOP isolation request.
-  return std::tie(
-      site_info.site_url_.possibly_invalid_spec(), site_info.is_sandboxed_,
-      site_info.unique_sandbox_id_, site_info.storage_partition_config_,
-      site_info.web_exposed_isolation_info_, site_info.is_guest_,
-      site_info.is_jit_disabled_, site_info.are_v8_optimizations_disabled_,
-      site_info.is_pdf_, site_info.is_fenced_, site_info.agent_cluster_key_);
+  return std::tie(site_info.site_url_.possibly_invalid_spec(),
+                  site_info.is_sandboxed_, site_info.unique_sandbox_id_,
+                  site_info.storage_partition_config_,
+                  site_info.web_exposed_isolation_info_,
+                  site_info.web_exposed_isolation_level_, site_info.is_guest_,
+                  site_info.is_jit_disabled_,
+                  site_info.are_v8_optimizations_disabled_, site_info.is_pdf_,
+                  site_info.is_fenced_, site_info.agent_cluster_key_);
 }
 
 SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
@@ -505,6 +521,7 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
       unique_sandbox_id_ == other.unique_sandbox_id_ &&
       storage_partition_config_ == other.storage_partition_config_ &&
       web_exposed_isolation_info_ == other.web_exposed_isolation_info_ &&
+      web_exposed_isolation_level_ == other.web_exposed_isolation_level_ &&
       is_guest_ == other.is_guest_ &&
       does_site_request_dedicated_process_for_coop_ ==
           other.does_site_request_dedicated_process_for_coop_ &&
@@ -534,8 +551,8 @@ auto SiteInfo::MakeProcessLockComparisonKey() const {
   // TODO(ellyjones): Same as above, but about are_v8_optimizations_disabled_
   // (presumably).
   return std::tie(is_sandboxed_, unique_sandbox_id_, is_pdf_, is_guest_,
-                  web_exposed_isolation_info_, storage_partition_config_,
-                  is_fenced_, agent_cluster_key_);
+                  web_exposed_isolation_info_, web_exposed_isolation_level_,
+                  storage_partition_config_, is_fenced_, agent_cluster_key_);
 }
 
 int SiteInfo::ProcessLockCompareTo(const SiteInfo& other) const {
@@ -597,14 +614,10 @@ std::string SiteInfo::GetDebugString() const {
                     web_exposed_isolation_info_.origin().GetDebugString() + "'";
   }
 
-  // This mirrors the check in RenderProcessHostImpl::IsIsolatedApplication().
-  // Keep in sync if changing RenderProcessHostImpl::IsIsolatedApplication().
-  if (web_exposed_isolation_info_.is_isolated_application()) {
-    if (!web_exposed_isolation_info_.origin().IsSameOriginWith(
-            agent_cluster_key_.GetOrigin()) ||
-        is_sandboxed_) {
-      debug_string += ", application isolation not inherited";
-    }
+  if (web_exposed_isolation_info_.is_isolated_application() &&
+      web_exposed_isolation_level_ <
+          WebExposedIsolationLevel::kIsolatedApplication) {
+    debug_string += ", application isolation not inherited";
   }
 
   if (is_guest_) {
@@ -1053,6 +1066,36 @@ GURL SiteInfo::GetSiteForOrigin(const url::Origin& origin) {
       origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   return SchemeAndHostToSite(origin.scheme(),
                              domain.empty() ? origin.host() : domain);
+}
+
+// static
+WebExposedIsolationLevel SiteInfo::ComputeWebExposedIsolationLevel(
+    const WebExposedIsolationInfo& web_exposed_isolation_info,
+    const UrlInfo& url_info) {
+  if (!web_exposed_isolation_info.is_isolated()) {
+    return WebExposedIsolationLevel::kNotIsolated;
+  }
+  if (!web_exposed_isolation_info.is_isolated_application()) {
+    return WebExposedIsolationLevel::kIsolated;
+  }
+  // The "application isolation" level cannot be delegated to processes locked
+  // to other origins. Sandboxed frames are always considered cross-origin.
+  if (url_info.is_sandboxed) {
+    return WebExposedIsolationLevel::kIsolated;
+  }
+  url::Origin origin =
+      GetPossiblyOverriddenOriginFromUrl(url_info.url, url_info.origin);
+  return web_exposed_isolation_info.origin() == origin
+             ? WebExposedIsolationLevel::kIsolatedApplication
+             : WebExposedIsolationLevel::kIsolated;
+}
+
+// static
+WebExposedIsolationLevel SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
+    const WebExposedIsolationInfo& web_exposed_isolation_info) {
+  return web_exposed_isolation_info.is_isolated()
+             ? WebExposedIsolationLevel::kIsolated
+             : WebExposedIsolationLevel::kNotIsolated;
 }
 
 // static

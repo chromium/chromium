@@ -20,6 +20,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -497,72 +498,27 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Returns true if the frame is out of process relative to its parent.
   virtual bool IsCrossProcessSubframe() = 0;
 
-  // Whether the current document in the RenderFrameHost has access to
-  // cross-origin isolated APIs. This is a property of the document and can
-  // change as the frame navigates. This corresponds to the value returned by
-  // `WorkerOrWindowGlobalScope.crossOriginIsolated`, which gates the set of Web
-  // Platform APIs which specify [CrossOriginIsolated] attributes.
+  // Returns the cross-origin isolation capability of this frame.
   //
-  // The requirements for getting access to cross-origin isolated APIs through
-  // the use of COOP and COEP are described here:
-  // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/crossOriginIsolated
+  // Note that this is a property of the document and can change as the frame
+  // navigates.
   //
-  // Even if the page follows this requirements, its ability to access
-  // CrossOriginIsolated APIs can be restricted by the cross-origin isolated
-  // PermissionPolicy. For more info on PermissionPolicy:
-  // https://w3c.github.io/webappsec-permissions-policy/
-  //
-  // The document can also get access to cross-origin isolated APIs through the
-  // use of DocumentIsolationPolicy:
-  // https://wicg.github.io/document-isolation-policy/#dip-dip
-  //
-  // In this case, cross-origin isolated API access is not restricted by the
-  // cross-origin isolated PermissionPolicy.
-  //
-  // Note: since cross-origin isolation is a property of a document, it is
-  // necessary that any API gated behind it uses associated Mojo interfaces to
-  // interact with the renderer process. This ensures proper ordering of the API
-  // calls with the navigation IPCs which ensures that every API calls can check
-  // the appropriate cross-origin isolation status of the document.
-  //
-  // TODO(crbug.com/40615943): Once RenderDocument ships this should be
-  // exposed as an invariant of the document host.
-  virtual bool HasAccessToCrossOriginIsolatedAPIs() = 0;
-
-  // Whether the current document in the RenderFrameHost has access to
-  // Isolated Web Apps APIs. This is a property of the document and can
-  // change as the frame navigates. This grants access to APIs gated on the
-  // [IsolatedContext] IDL attribute in addition to [CrossOriginIsolated].
-  //
-  // For more information on Isolated Web Apps:
-  // https://wicg.github.io/isolated-web-apps/isolated-contexts.html
-  //
-  // Unlike RenderProcessHost::IsIsolatedApplication(), this takes the
-  // currently document's Permissions Policy into account and may return false
-  // while RenderProcessHost::IsIsolatedApplication returns true if the
-  // "cross-origin-isolated" feature is not delegated to this frame. Because of
-  // this, this function should generally be used instead of
-  // RenderProcessHost::IsIsolatedApplicatuon() to make API availability
-  // decisions.
+  // Unlike RenderProcessHost::GetWebExposedIsolationLevel(), this takes the
+  // currently document's Permissions Policy into account and may return a
+  // lower isolation level than RenderProcessHost if the
+  // "cross-origin-isolated" feature is not delegated to this frame. Because
+  // of this, this function should generally be used instead of
+  // RenderProcessHost::GetWebExposedIsolationLevel() when making decisions
+  // based on the isolation level, such as API availability.
   //
   // Note that the embedder can force-enable APIs in processes even if they
   // lack the necessary privilege. This function doesn't account for that; use
   // content::HasIsolatedContextCapability(RenderFrameHost*) to handle this
   // case.
   //
-  // Note that this should only be called once the RenderFrameHost has committed
-  // a navigation, as it requires comparing the committed origin of the
-  // RenderFrameHost with the origin of the Isolated Web App.
-  //
-  // Note: since Isolated Web App API access is a property of a document, it is
-  // necessary that any API gated behind it uses associated Mojo interfaces to
-  // interact with the renderer process. This ensures proper ordering of the API
-  // calls with the navigation IPCs which ensures that every API calls can check
-  // the appropriate Isolated Web App API access status of the document.
-  //
-  // TODO(crbug.com/40615943): Once RenderDocument ships this should be
-  // exposed as an invariant of the document host.
-  virtual bool HasAccessToIsolatedWebAppsAPIs() = 0;
+  // TODO(https://936696): Once RenderDocument ships this should be exposed as
+  // an invariant of the document host.
+  virtual WebExposedIsolationLevel GetWebExposedIsolationLevel() = 0;
 
   // Returns the last committed URL of this RenderFrameHost. This will be empty
   // until the first commit in this RenderFrameHost.

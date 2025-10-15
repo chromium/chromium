@@ -24,6 +24,7 @@
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_id.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "ipc/ipc_listener.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
@@ -709,15 +710,17 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // any RenderViewHosts that are swapped out.
   size_t GetActiveViewCount();
 
-  // Returns whether the process is hosting contexts belonging to an
-  // IsolatedApplication.
+  // Returns the cross-origin isolation mode used by content in this process.
   //
-  // Unlike WebExposedIsolationInfo::is_isolated_application, this is not
-  // guaranteed to be the same for all processes in a BrowsingInstance. Content
-  // that is cross-origin to the Isolated Web App main frame will return false,
-  // as Isolated Web App API access cannot be inherited cross-origin.
+  // Unlike WebExposedIsolationInfo, this is not guaranteed to be the same for
+  // all processes in a BrowsingInstance; frames that are not delegated the
+  // "cross-origin-isolated" permissions policy will have a kNotIsolated
+  // isolation level, even if their WebExposedIsolationInfo is isolated.
+  // Additionally, content that is cross-origin to a kIsolatedApplication main
+  // frame will return kIsolated, as the application isolation level cannot be
+  // inherited cross-origin.
   //
-  // RenderFrameHost::HasAccessToIsolatedWebAppAPIs() should typically be used
+  // RenderFrameHost::GetWebExposedIsolationLevel() should typically be used
   // instead of this function if running in the context a frame so that
   // Permissions Policy can be taken into account. This function should be used
   // in contexts that don't have an associated frame like shared/service
@@ -728,7 +731,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // Note that the embedder can force-enable APIs in frames even if they
   // lack the necessary privilege. This function doesn't account for that;
   // use content::IsIsolatedContext(RenderProcessHost*) to handle this case.
-  bool IsIsolatedApplication();
+  WebExposedIsolationLevel GetWebExposedIsolationLevel();
 
   // Posts |task|, if this RenderProcessHost is ready or when it becomes ready
   // (see RenderProcessHost::IsReady method).  The |task| might not run at all
