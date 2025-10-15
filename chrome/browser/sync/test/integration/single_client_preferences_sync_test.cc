@@ -742,7 +742,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
           GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
           chrome_prefs::kAccountPreferencesPrefix);
   ASSERT_TRUE(file_content.has_value());
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(file_content->empty());
+#else
+  // The only remaining prefs are AccountNameEmail autofill profile related, as
+  // those are not controlled by the toggle.
+  EXPECT_EQ(file_content->size(), 1u);
+  EXPECT_EQ(file_content->FindDict("autofill")->size(), 2u);
+  EXPECT_EQ(file_content->FindDict("autofill")
+                ->FindInt("name_and_email_profile_not_selected_counter")
+                .value(),
+            0);
+  EXPECT_GT(file_content->FindDict("autofill")
+                ->FindString("name_and_email_profile_signature")
+                ->length(),
+            0U);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1263,7 +1278,18 @@ IN_PROC_BROWSER_TEST_F(
   file_content = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
   ASSERT_TRUE(file_content.has_value());
-  EXPECT_TRUE(file_content->empty());
+  // The only remaining prefs are AccountNameEmail autofill profile related, as
+  // those are not controlled by the toggle.
+  EXPECT_EQ(file_content->size(), 1u);
+  EXPECT_EQ(file_content->FindDict("autofill")->size(), 2u);
+  EXPECT_EQ(file_content->FindDict("autofill")
+                ->FindInt("name_and_email_profile_not_selected_counter")
+                .value(),
+            0);
+  EXPECT_GT(file_content->FindDict("autofill")
+                ->FindString("name_and_email_profile_signature")
+                ->length(),
+            0U);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1461,7 +1487,18 @@ IN_PROC_BROWSER_TEST_F(
       GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
       chrome_prefs::kAccountPreferencesPrefix);
   ASSERT_TRUE(file_content.has_value());
-  EXPECT_TRUE(file_content->empty());
+  // The only remaining prefs are AccountNameEmail autofill profile related, as
+  // those are not controlled by the toggle.
+  EXPECT_EQ(file_content->size(), 1u);
+  EXPECT_EQ(file_content->FindDict("autofill")->size(), 2u);
+  EXPECT_EQ(file_content->FindDict("autofill")
+                ->FindInt("name_and_email_profile_not_selected_counter")
+                .value(),
+            0);
+  EXPECT_GT(file_content->FindDict("autofill")
+                ->FindString("name_and_email_profile_signature")
+                ->length(),
+            0U);
 }
 
 IN_PROC_BROWSER_TEST_F(

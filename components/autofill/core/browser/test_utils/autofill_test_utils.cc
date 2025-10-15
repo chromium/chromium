@@ -10,6 +10,7 @@
 #include <string>
 #include <variant>
 
+#include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -724,6 +725,19 @@ CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit() {
 base::flat_set<url::Origin> GetOriginsForMerchantBenefit() {
   return {url::Origin::Create(GURL("http://www.example.com")),
           url::Origin::Create(GURL("http://www.example3.com"))};
+}
+
+void HideAccountNameEmailProfile(PrefService* pref_service, AccountInfo info) {
+  // Sets the `kAutofillNameAndEmailProfileNotSelectedCounter` and
+  // `kAutofillNameAndEmailProfileSignature` prefs in `pref_service`, such that
+  // the kAccountNameEmail profile that matches `info` will be removed.
+  pref_service->SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
+      features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get() + 1);
+  pref_service->SetString(
+      prefs::kAutofillNameAndEmailProfileSignature,
+      base::NumberToString(base::PersistentHash(
+          base::StrCat({info.full_name, "|", info.email}))));
 }
 
 void SetUpCreditCardAndBenefitData(

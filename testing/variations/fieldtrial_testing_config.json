@@ -2714,6 +2714,27 @@
             ]
         }
     ],
+    "AutofillEnableSupportForNameAndEmail": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableSupportForNameAndEmail",
+                        "IPH_AutofillAccountNameEmailSuggestion"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableSupportForParsingWithSharedLabels": [
         {
             "platforms": [
