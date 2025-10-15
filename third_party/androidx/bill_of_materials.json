@@ -1370,11 +1370,6 @@
         "version": "2.1.20"
     },
     {
-        "name": "kotlin-stdlib-common",
-        "group": "org.jetbrains.kotlin",
-        "version": "2.1.20"
-    },
-    {
         "name": "kotlin-stdlib-jdk7",
         "group": "org.jetbrains.kotlin",
         "version": "1.9.0"

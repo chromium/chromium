@@ -133,6 +133,7 @@ if (!limit_android_deps) {
       ":androidx_vectordrawable_vectordrawable_animated_java",
       ":androidx_vectordrawable_vectordrawable_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -315,6 +316,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_process_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -360,7 +362,10 @@ if (!limit_android_deps) {
     supports_android = true
     requires_android = true
     enable_bytecode_checks = false
-    deps = [ ":androidx_collection_collection_java" ]
+    deps = [
+      ":androidx_collection_collection_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -675,6 +680,7 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_customview_customview_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1191,6 +1197,7 @@ if (!limit_android_deps) {
       ":androidx_recyclerview_recyclerview_java",
       ":androidx_slidingpanelayout_slidingpanelayout_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1248,6 +1255,7 @@ if (!limit_android_deps) {
       ":androidx_customview_customview_java",
       ":androidx_customview_customview_poolingcontainer_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1309,6 +1317,7 @@ if (!limit_android_deps) {
       ":androidx_customview_customview_java",
       ":androidx_transition_transition_java",
       ":androidx_window_window_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1514,6 +1523,7 @@ if (!limit_android_deps) {
       ":androidx_tracing_tracing_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/junit",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1534,6 +1544,7 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_dynamicanimation_dynamicanimation_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1590,6 +1601,7 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_fragment_fragment_java",
       ":androidx_recyclerview_recyclerview_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1689,6 +1701,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_runtime_ktx_java",
       ":androidx_lifecycle_lifecycle_viewmodel_ktx_java",
       ":androidx_savedstate_savedstate_ktx_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -2624,8 +2637,10 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/android_deps:*",
     ]
-    deps =
-        [ ":androidx_datastore_datastore_preferences_external_protobuf_java" ]
+    deps = [
+      ":androidx_datastore_datastore_preferences_external_protobuf_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2953,6 +2968,7 @@ if (!limit_android_deps) {
       ":androidx_compose_runtime_runtime_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_lifecycle_lifecycle_runtime_ktx_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -3331,7 +3347,10 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/android_deps:*",
     ]
-    deps = [ ":androidx_paging_paging_common_java" ]
+    deps = [
+      ":androidx_paging_paging_common_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -3476,6 +3495,7 @@ if (!limit_android_deps) {
       ":androidx_compose_runtime_runtime_java",
       ":androidx_core_core_ktx_java",
       ":androidx_savedstate_savedstate_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
