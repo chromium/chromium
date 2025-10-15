@@ -42,6 +42,4 @@ group("all") {
   } else {
     deps = []
   }
-
-  deps += [ "//ios/intents/app:intents" ]
 }
