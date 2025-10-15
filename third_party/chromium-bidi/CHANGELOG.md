@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.3.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.3.0...chromium-bidi-v10.3.1) (2025-10-15)
+
+
+### Bug Fixes
+
+* don't crash on worker's requests ([#3845](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3845)) ([c0edf96](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c0edf9685d001d52e7e70d2fe063528d8f5e1c22))
+
 ## [10.3.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.2.0...chromium-bidi-v10.3.0) (2025-10-14)
 
 
