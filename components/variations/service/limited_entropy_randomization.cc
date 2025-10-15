@@ -175,8 +175,15 @@ bool AppliesToClientFormFactor(
 }  // namespace
 
 double GetGoogleWebEntropyLimitInBits() {
-  // TODO(crbug.com/422222582): Update this to platform-specific launch values.
+#if BUILDFLAG(IS_ANDROID)
+  return 21.0;
+#elif BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN)
+  return 18.0;
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  return 16.0;
+#else
   return 1.0;
+#endif
 }
 
 // TODO(crbug.com/428216544): Refactor, along with variations_layers.cc, to

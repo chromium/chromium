@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version_info/version_info.h"
+#include "build/build_config.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/layer.pb.h"
@@ -175,8 +176,6 @@ VariationsSeed CreateTestSeed(const std::vector<Layer>& layers,
   return seed;
 }
 
-}  // namespace
-
 class LimitedEntropyRandomizationTest : public ::testing::Test {
  public:
   LimitedEntropyRandomizationTest()
@@ -193,6 +192,8 @@ class LimitedEntropyRandomizationTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
   ClientFilterableState client_state_;
 };
+
+}  // namespace
 
 TEST_F(LimitedEntropyRandomizationTest,
        ValidConfiguration_WithValidEntropyUse) {
@@ -796,6 +797,20 @@ TEST_F(LimitedEntropyRandomizationTest,
              form_factor == Study_FormFactor_PHONE);
     histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
   }
+}
+
+TEST(GetGoogleWebEntropyLimitInBits, IsPlatformSpecific) {
+  constexpr double kExpectedEntropyLimitInBits =
+#if BUILDFLAG(IS_ANDROID)
+      21.0;
+#elif BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN)
+      18.0;
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+      16.0;
+#else
+      1.0;
+#endif
+  EXPECT_EQ(GetGoogleWebEntropyLimitInBits(), kExpectedEntropyLimitInBits);
 }
 
 }  // namespace variations
