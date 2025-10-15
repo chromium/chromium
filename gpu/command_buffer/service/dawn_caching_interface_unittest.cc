@@ -108,7 +108,7 @@ TEST_F(DawnCachingInterfaceTest, IncognitoCachesDoNotShare) {
 TEST_F(DawnCachingInterfaceTest, UnableToCreateBackend) {
   // This factory mimics what happens when we are unable to create a backend.
   DawnCachingInterfaceFactory factory(base::BindRepeating(
-      []() -> scoped_refptr<detail::DawnCachingBackend> { return nullptr; }));
+      []() -> scoped_refptr<detail::DawnMemoryCache> { return nullptr; }));
 
   // Without an actual backend, all loads and stores should do nothing.
   {
@@ -153,7 +153,7 @@ TEST_F(DawnCachingInterfaceTest, TestMaxSizeEviction) {
   static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
 
   DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
+    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
   }));
 
   auto interface = factory.CreateInstance();
@@ -182,7 +182,7 @@ TEST_F(DawnCachingInterfaceTest, TestLruEviction) {
   static constexpr size_t kCacheSize = 3u * kKeySize + 3u * kDataSize - 1u;
 
   DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
+    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
   }));
 
   // Even though Key1 was stored first, because we loaded it once, Key2 should
@@ -208,7 +208,7 @@ TEST_F(DawnCachingInterfaceTest, TestVeryLargeEntrySize) {
   static constexpr size_t kCacheSize = kLargeSize - 1u;
 
   DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
+    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
   }));
   auto interface = factory.CreateInstance();
 
@@ -242,7 +242,7 @@ TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
   static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
 
   DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
+    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
   }));
 
   // Pass handles here so that the backends_ are populated.
@@ -269,7 +269,7 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
   static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
 
   DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
+    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
   }));
 
   // Pass handles here so that the backends_ are populated.

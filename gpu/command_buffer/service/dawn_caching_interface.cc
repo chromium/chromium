@@ -21,9 +21,10 @@
 namespace gpu::webgpu {
 
 DawnCachingInterface::DawnCachingInterface(
-    scoped_refptr<detail::DawnCachingBackend> backend,
+    scoped_refptr<detail::DawnMemoryCache> backend,
     CacheBlobCallback callback)
-    : backend_(std::move(backend)), cache_blob_callback_(std::move(callback)) {}
+    : memory_cache_backend_(std::move(backend)),
+      cache_blob_callback_(std::move(callback)) {}
 
 DawnCachingInterface::~DawnCachingInterface() = default;
 
@@ -31,22 +32,22 @@ size_t DawnCachingInterface::LoadData(const void* key,
                                       size_t key_size,
                                       void* value_out,
                                       size_t value_size) {
-  if (backend() == nullptr) {
+  if (memory_cache() == nullptr) {
     return 0u;
   }
   std::string key_str(static_cast<const char*>(key), key_size);
-  return backend()->LoadData(key_str, value_out, value_size);
+  return memory_cache()->LoadData(key_str, value_out, value_size);
 }
 
 void DawnCachingInterface::StoreData(const void* key,
                                      size_t key_size,
                                      const void* value,
                                      size_t value_size) {
-  if (backend() == nullptr || value == nullptr || value_size <= 0) {
+  if (memory_cache() == nullptr || value == nullptr || value_size <= 0) {
     return;
   }
   std::string key_str(static_cast<const char*>(key), key_size);
-  backend()->StoreData(key_str, value, value_size);
+  memory_cache()->StoreData(key_str, value, value_size);
 
   // Send the cache entry to be stored on the host-side if applicable.
   if (cache_blob_callback_) {
@@ -84,7 +85,7 @@ DawnCachingInterfaceFactory::CreateInstance(
         new DawnCachingInterface(it->second, std::move(callback)));
   }
 
-  scoped_refptr<detail::DawnCachingBackend> backend = backend_factory_.Run();
+  scoped_refptr<detail::DawnMemoryCache> backend = backend_factory_.Run();
   if (backend != nullptr) {
     backends_[handle] = backend;
   }
@@ -136,35 +137,35 @@ bool DawnCachingInterfaceFactory::OnMemoryDump(
   return true;
 }
 
-scoped_refptr<detail::DawnCachingBackend>
+scoped_refptr<detail::DawnMemoryCache>
 DawnCachingInterfaceFactory::CreateDefaultInMemoryBackend() {
-  return base::MakeRefCounted<detail::DawnCachingBackend>(
+  return base::MakeRefCounted<detail::DawnMemoryCache>(
       GetDefaultGpuDiskCacheSize());
 }
 
 namespace detail {
 
-DawnCachingBackend::Entry::Entry(const std::string& key,
-                                 const void* value,
-                                 size_t value_size)
+DawnMemoryCache::Entry::Entry(const std::string& key,
+                              const void* value,
+                              size_t value_size)
     : key_(key), data_(static_cast<const char*>(value), value_size) {}
 
-DawnCachingBackend::Entry::~Entry() = default;
+DawnMemoryCache::Entry::~Entry() = default;
 
-const std::string& DawnCachingBackend::Entry::Key() const {
+const std::string& DawnMemoryCache::Entry::Key() const {
   return key_;
 }
 
-size_t DawnCachingBackend::Entry::TotalSize() const {
+size_t DawnMemoryCache::Entry::TotalSize() const {
   return key_.length() + data_.length();
 }
 
-size_t DawnCachingBackend::Entry::DataSize() const {
+size_t DawnMemoryCache::Entry::DataSize() const {
   return data_.length();
 }
 
-size_t DawnCachingBackend::Entry::ReadData(void* value_out,
-                                           size_t value_size) const {
+size_t DawnMemoryCache::Entry::ReadData(void* value_out,
+                                        size_t value_size) const {
   // First handle "peek" case where use is trying to get the size of the entry.
   if (value_out == nullptr && value_size == 0) {
     return DataSize();
@@ -177,28 +178,28 @@ size_t DawnCachingBackend::Entry::ReadData(void* value_out,
   return value_size;
 }
 
-bool operator<(const std::unique_ptr<DawnCachingBackend::Entry>& lhs,
-               const std::unique_ptr<DawnCachingBackend::Entry>& rhs) {
+bool operator<(const std::unique_ptr<DawnMemoryCache::Entry>& lhs,
+               const std::unique_ptr<DawnMemoryCache::Entry>& rhs) {
   return lhs->Key() < rhs->Key();
 }
 
-bool operator<(const std::unique_ptr<DawnCachingBackend::Entry>& lhs,
+bool operator<(const std::unique_ptr<DawnMemoryCache::Entry>& lhs,
                const std::string& rhs) {
   return lhs->Key() < rhs;
 }
 
 bool operator<(const std::string& lhs,
-               const std::unique_ptr<DawnCachingBackend::Entry>& rhs) {
+               const std::unique_ptr<DawnMemoryCache::Entry>& rhs) {
   return lhs < rhs->Key();
 }
 
-DawnCachingBackend::DawnCachingBackend(size_t max_size) : max_size_(max_size) {}
+DawnMemoryCache::DawnMemoryCache(size_t max_size) : max_size_(max_size) {}
 
-DawnCachingBackend::~DawnCachingBackend() = default;
+DawnMemoryCache::~DawnMemoryCache() = default;
 
-size_t DawnCachingBackend::LoadData(const std::string& key,
-                                    void* value_out,
-                                    size_t value_size) {
+size_t DawnMemoryCache::LoadData(const std::string& key,
+                                 void* value_out,
+                                 size_t value_size) {
   // Because we are tracking LRU, even loads modify internal state so mutex is
   // required.
   base::AutoLock lock(mutex_);
@@ -216,9 +217,9 @@ size_t DawnCachingBackend::LoadData(const std::string& key,
   return entry->ReadData(value_out, value_size);
 }
 
-void DawnCachingBackend::StoreData(const std::string& key,
-                                   const void* value,
-                                   size_t value_size) {
+void DawnMemoryCache::StoreData(const std::string& key,
+                                const void* value,
+                                size_t value_size) {
   // Don't need to do anything if we are not storing anything.
   if (value == nullptr || value_size == 0) {
     return;
@@ -255,7 +256,7 @@ void DawnCachingBackend::StoreData(const std::string& key,
   DCHECK(inserted);
 }
 
-void DawnCachingBackend::PurgeMemory(
+void DawnMemoryCache::PurgeMemory(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   base::AutoLock lock(mutex_);
   size_t new_limit = gpu::UpdateShaderCacheSizeOnMemoryPressure(
@@ -266,9 +267,8 @@ void DawnCachingBackend::PurgeMemory(
   }
 }
 
-void DawnCachingBackend::OnMemoryDump(
-    const std::string& dump_name,
-    base::trace_event::ProcessMemoryDump* pmd) {
+void DawnMemoryCache::OnMemoryDump(const std::string& dump_name,
+                                   base::trace_event::ProcessMemoryDump* pmd) {
   base::AutoLock lock(mutex_);
 
   using base::trace_event::MemoryAllocatorDump;
@@ -279,7 +279,7 @@ void DawnCachingBackend::OnMemoryDump(
                   MemoryAllocatorDump::kUnitsObjects, entries_.size());
 }
 
-void DawnCachingBackend::EvictEntry(DawnCachingBackend::Entry* entry) {
+void DawnMemoryCache::EvictEntry(DawnMemoryCache::Entry* entry) {
   // Always remove the entry from the LRU first because removing it from the
   // entry map will cause the entry to be destroyed.
   entry->RemoveFromList();

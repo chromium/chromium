@@ -33,10 +33,10 @@ namespace detail {
 // with a simple LRU eviction algorithm implemented on top. This is the actual
 // backing cache for instances of DawnCachingInterface. The eviction queue is
 // set up so that the entries in the front are the first entries to be deleted.
-class GPU_GLES2_EXPORT DawnCachingBackend
-    : public base::RefCounted<DawnCachingBackend> {
+class GPU_GLES2_EXPORT DawnMemoryCache
+    : public base::RefCounted<DawnMemoryCache> {
  public:
-  explicit DawnCachingBackend(size_t max_size);
+  explicit DawnMemoryCache(size_t max_size);
 
   size_t LoadData(const std::string& key, void* value_out, size_t value_size);
   void StoreData(const std::string& key, const void* value, size_t value_size);
@@ -74,8 +74,8 @@ class GPU_GLES2_EXPORT DawnCachingBackend
   friend bool operator<(const std::string& lhs,
                         const std::unique_ptr<Entry>& rhs);
 
-  friend class base::RefCounted<DawnCachingBackend>;
-  ~DawnCachingBackend();
+  friend class base::RefCounted<DawnMemoryCache>;
+  ~DawnMemoryCache();
 
   void EvictEntry(Entry* entry) EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
@@ -89,8 +89,8 @@ class GPU_GLES2_EXPORT DawnCachingBackend
 
 }  // namespace detail
 
-// Provides a wrapper class around an in-memory DawnCachingBackend. This class
-// was originally designed to handle both disk and in-memory cache backends, but
+// Provides a wrapper class around an in-memory DawnMemoryCache. This class was
+// originally designed to handle both disk and in-memory cache backends, but
 // because it lives on the GPU process and does not have permissions (due to
 // sandbox restrictions) to disk, the disk functionality was removed. Should it
 // become necessary to provide interfaces over a disk level disk_cache::Backend,
@@ -121,16 +121,17 @@ class GPU_GLES2_EXPORT DawnCachingInterface
   friend class DawnCachingInterfaceFactory;
 
   // Simplified accessor to the backend.
-  detail::DawnCachingBackend* backend() { return backend_.get(); }
+  detail::DawnMemoryCache* memory_cache() {
+    return memory_cache_backend_.get();
+  }
 
   // Constructor is private because creation of interfaces should be deferred to
   // the factory.
-  explicit DawnCachingInterface(
-      scoped_refptr<detail::DawnCachingBackend> backend,
-      CacheBlobCallback callback = {});
+  explicit DawnCachingInterface(scoped_refptr<detail::DawnMemoryCache> backend,
+                                CacheBlobCallback callback = {});
 
   // Caching interface owns a reference to the backend.
-  scoped_refptr<detail::DawnCachingBackend> backend_ = nullptr;
+  scoped_refptr<detail::DawnMemoryCache> memory_cache_backend_ = nullptr;
 
   // The callback provides ability to store cache entries to persistent disk.
   CacheBlobCallback cache_blob_callback_;
@@ -145,7 +146,7 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
  public:
   // Factory for backend creation, especially for testing.
   using BackendFactory =
-      base::RepeatingCallback<scoped_refptr<detail::DawnCachingBackend>()>;
+      base::RepeatingCallback<scoped_refptr<detail::DawnMemoryCache>()>;
 
   explicit DawnCachingInterfaceFactory(BackendFactory factory);
   DawnCachingInterfaceFactory();
@@ -184,15 +185,14 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
 
  private:
   // Creates a default backend for assignment.
-  static scoped_refptr<detail::DawnCachingBackend>
-  CreateDefaultInMemoryBackend();
+  static scoped_refptr<detail::DawnMemoryCache> CreateDefaultInMemoryBackend();
 
   // Factory to create backends.
   BackendFactory backend_factory_;
 
   // Map that holds existing backends.
   base::flat_map<gpu::GpuDiskCacheHandle,
-                 scoped_refptr<detail::DawnCachingBackend>>
+                 scoped_refptr<detail::DawnMemoryCache>>
       backends_;
 };
 
