@@ -409,6 +409,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementSetIsNavigationInDomainBrowserTest,
     let a = document.createElement("a");
     a.id = "link";
     a.href = "https://www.example.com";
+    a.draggable = false;
     a.innerHTML = '<div style="width:100vw;height:100vh;">Example<div>';
     document.body.appendChild(a);
     )"));
