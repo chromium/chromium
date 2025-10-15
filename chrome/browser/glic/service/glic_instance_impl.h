@@ -231,6 +231,10 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<ConversationInfo> conversation_info_;
   GlicSharingManagerImpl sharing_manager_;
 
+  // Tracks the last non-hidden panel state kind for the instance. This is
+  // useful for responding to changes in attached/detached state.
+  mojom::PanelState_Kind last_non_hidden_panel_state_kind_;
+
   base::ObserverList<PanelStateObserver> state_observers_;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>

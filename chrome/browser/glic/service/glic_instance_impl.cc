@@ -128,7 +128,8 @@ GlicInstanceImpl::GlicInstanceImpl(
           std::make_unique<GlicEmptyFocusedBrowserManager>(),
           std::make_unique<GlicPinnedTabManager>(profile, this, metrics),
           profile,
-          metrics) {
+          metrics),
+      last_non_hidden_panel_state_kind_(mojom::PanelState_Kind::kAttached) {
   browser_list_observation_.Observe(BrowserList::GetInstance());
   // Start warming the contents.
   host_.SetDelegate(&empty_embedder_delegate_);
@@ -501,6 +502,10 @@ void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
     std::optional<EmbedderKey> new_key) {
   active_embedder_key_ = new_key;
+  if (last_non_hidden_panel_state_kind_ != GetPanelState().kind &&
+      GetPanelState().kind != mojom::PanelState_Kind::kHidden) {
+    last_non_hidden_panel_state_kind_ = GetPanelState().kind;
+  }
   NotifyStateChange();
   NotifyPanelStateChanged();
 }
