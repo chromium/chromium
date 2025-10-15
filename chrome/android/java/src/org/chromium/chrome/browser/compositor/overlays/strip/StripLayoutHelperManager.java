@@ -1780,12 +1780,14 @@ public class StripLayoutHelperManager
         // The tab strip adds to the total height of the top controls regardless of whether or not
         // it is "visible" to the user, i.e. we take its inherent height into account even when
         // scrolled offscreen or obscured, except when hidden by height transition.
+        //
+        // ToolbarManager#getTabStripHeightSupplier can have different state than the current height
+        // store in the instance v.s. the target height it is going for. In order for the
+        // TopControlsStacker to react the the layer height change,  we cannot depend on
+        // getStripVisibilityStateSupplier here.
         // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
-        boolean isHiddenByHeightTransition =
-                (getStripVisibilityStateSupplier().get()
-                                & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION)
-                        != 0;
-        return !isHiddenByHeightTransition
+        boolean isTabStripVisibleAsLayer = mToolbarManager.getTabStripHeightSupplier().get() > 0;
+        return isTabStripVisibleAsLayer
                 ? TopControlVisibility.VISIBLE
                 : TopControlVisibility.HIDDEN;
     }
