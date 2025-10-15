@@ -573,7 +573,13 @@ void WaylandDataDragController::OnDataSourceDropPerformed(
           << " origin=" << !!origin_window_
           << " nested_dispatcher=" << !!nested_dispatcher_;
 
-  HandleDragEnd(DragResult::kCompleted, timestamp);
+  // Treat a "drop performed" event with a `dnd_action` of NONE (0) as a
+  // cancellation (passing `kCancelled`). Per the protocol, `cancelled` event
+  // can be sent after "drop performed", that is what `KWin` does, for example.
+  // See crbug.com/447037092.
+  HandleDragEnd(data_source_->dnd_action() ? DragResult::kCompleted
+                                           : DragResult::kCancelled,
+                timestamp);
 }
 
 void WaylandDataDragController::OnDataSourceSend(WaylandDataSource* source,

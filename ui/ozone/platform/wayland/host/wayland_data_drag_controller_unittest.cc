@@ -497,6 +497,36 @@ MATCHER_P(PointFNear, n, "") {
   return arg.IsWithinDistance(n, 0.01f);
 }
 
+// Tests that if the compositor sends wl_data_source.dnd_drop_performed with
+// DND_ACTION_NONE, the drag controller treats it as a cancelled operation by
+// calling OnDragLeave, and can still handle a subsequent
+// wl_data_source.cancelled event gracefully. Regression test for
+// https://crbug.com/447037092.
+TEST_P(WaylandDataDragControllerTest,
+       DndDropPerformedWithNoneActionThenCancelled) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // Post test task to be performed asynchronously once the dnd-related protocol
+  // objects are ready.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    // Now the server can read the data and give it to our callback.
+    ReadAndCheckData(kMimeTypeUtf8PlainText, kSampleTextForDragAndDrop);
+
+    EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+    SendDndDropPerformed();
+
+    // Emulate server sending an wl_data_source::cancelled event so the drag
+    // loop is finished.
+    EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
+    SendDndCancelled();
+  }));
+
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_NONE);
+
+  // Ensure drag delegate it properly reset when the drag loop quits.
+  EXPECT_FALSE(data_device()->drag_delegate_);
+}
+
 TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
 

@@ -30,12 +30,12 @@ DataSource<T>::DataSource(T* data_source,
   DCHECK(delegate_);
 
   Initialize();
-  VLOG(1) << "DataSoure created:" << this;
+  VLOG(1) << "DataSource created:" << this;
 }
 
 template <typename T>
 DataSource<T>::~DataSource() {
-  VLOG(1) << "DataSoure deleted:" << this;
+  VLOG(1) << "DataSource deleted:" << this;
 }
 
 template <typename T>
