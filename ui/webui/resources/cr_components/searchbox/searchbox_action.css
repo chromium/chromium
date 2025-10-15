@@ -11,7 +11,8 @@
 
 :host {
   --action-height: 28px;
-  border: solid 1px var(--color-searchbox-results-action-chip);
+  --border-width: 1px;
+  border: solid var(--border-width) var(--color-searchbox-results-action-chip);
   border-radius: 8px;
   display: flex;
   height: var(--action-height);
@@ -19,6 +20,7 @@
   outline: none;
   padding-inline-end: 8px;
   padding-inline-start: 8px;
+  position: relative;
 }
 
 :host(:hover) {
@@ -27,8 +29,33 @@
 
 :host(:focus) {
   margin: 2px;
-  border: solid 1px var(--color-searchbox-results-action-chip);
+  border: solid var(--border-width) var(--color-searchbox-results-action-chip);
   box-shadow: none;
+}
+
+:host(.selected:hover) {
+  background-color: var(--color-searchbox-results-button-selected-hover);
+}
+
+:host(:active) #overlay {
+  background-color:
+      var(--color-omnibox-results-button-ink-drop-selected-row-hovered);
+}
+
+:host(.selected:active) #overlay {
+  background-color:
+      var(--color-omnibox-results-button-ink-drop-selected-row-selected);
+}
+
+#overlay {
+  --overlay-inset: calc(var(--border-width) * -1);
+  border-radius: inherit;
+  display: inherit;
+  position: absolute;
+  top: var(--overlay-inset);
+  left: var(--overlay-inset);
+  right: var(--overlay-inset);
+  bottom: var(--overlay-inset);
 }
 
 .contents {
