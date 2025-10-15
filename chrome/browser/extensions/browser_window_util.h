@@ -10,6 +10,7 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserWindowInterface;
+class Profile;
 
 namespace content {
 class WebContents;
@@ -35,6 +36,13 @@ namespace extensions::browser_window_util {
 // nullptr.
 BrowserWindowInterface* GetBrowserForTabContents(
     content::WebContents& tab_contents);
+
+// Returns the last active browser with the given `profile`. If
+// `include_incognito_or_parent` is true, this will also return a browser
+// that crosses the incognito boundary.
+BrowserWindowInterface* GetLastActiveBrowserWithProfile(
+    Profile& profile,
+    bool include_incognito_or_parent);
 
 }  // namespace extensions::browser_window_util
 

@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -117,28 +118,6 @@ void AddMediaStreamSourceConstraints(content::WebContents* target_contents,
   }
 }
 
-// Find the last-active browser that matches a profile this ExtensionFunction
-// can access.  We can't use FindLastActiveWithProfile() because we may want to
-// include incognito profile browsers.
-BrowserWindowInterface* GetLastActiveBrowser(
-    const Profile* profile,
-    const bool match_incognito_profile) {
-  BrowserWindowInterface* target_browser = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        Profile* browser_profile = browser->GetProfile();
-        if (browser_profile == profile ||
-            (match_incognito_profile &&
-             browser_profile->GetOriginalProfile() == profile)) {
-          target_browser = browser;
-          return false;  // stop iterating
-        }
-        return true;  // continue iterating
-      });
-
-  return target_browser;
-}
-
 // Get the id of the allowlisted extension.
 std::string GetAllowlistedExtensionID() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -155,7 +134,8 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const bool match_incognito_profile = include_incognito_information();
   BrowserWindowInterface* target_browser =
-      GetLastActiveBrowser(profile, match_incognito_profile);
+      browser_window_util::GetLastActiveBrowserWithProfile(
+          *profile, match_incognito_profile);
   if (!target_browser) {
     return RespondNow(Error(kFindingTabError));
   }
@@ -250,7 +230,8 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
     Profile* profile = Profile::FromBrowserContext(browser_context());
     const bool match_incognito_profile = include_incognito_information();
     BrowserWindowInterface* target_browser =
-        GetLastActiveBrowser(profile, match_incognito_profile);
+        browser_window_util::GetLastActiveBrowserWithProfile(
+            *profile, match_incognito_profile);
     if (!target_browser) {
       return RespondNow(Error(kFindingTabError));
     }

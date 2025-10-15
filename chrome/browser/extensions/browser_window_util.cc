@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -37,6 +39,24 @@ BrowserWindowInterface* GetBrowserForTabContents(
   }
 
   return nullptr;
+}
+
+BrowserWindowInterface* GetLastActiveBrowserWithProfile(
+    Profile& profile,
+    bool include_incognito_or_parent) {
+  BrowserWindowInterface* last_active_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == &profile ||
+            (include_incognito_or_parent &&
+             profile.IsSameOrParent(browser->GetProfile()))) {
+          last_active_browser = browser;
+          return false;  // Stop iterating.
+        }
+        return true;  // Continue iterating.
+      });
+
+  return last_active_browser;
 }
 
 }  // namespace extensions::browser_window_util

@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -78,27 +79,6 @@ constexpr char kCannotDetermineLanguageOfUnloadedTab[] =
 constexpr char kFrameNotFoundError[] = "No frame with id * in tab *.";
 
 namespace {
-
-// Returns the last active browser with the given `profile`. If
-// `include_incognito_information` is true, this will also return a browser
-// that crosses the incognito boundary.
-BrowserWindowInterface* GetLastActiveBrowserWithProfile(
-    Profile* profile,
-    bool include_incognito_information) {
-  BrowserWindowInterface* last_active_browser = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        if (browser->GetProfile() == profile ||
-            (include_incognito_information &&
-             profile->IsSameOrParent(browser->GetProfile()))) {
-          last_active_browser = browser;
-          return false;  // Stop iterating.
-        }
-        return true;  // Continue iterating.
-      });
-
-  return last_active_browser;
-}
 
 // Returns true if either |boolean| is disengaged, or if |boolean| and
 // |value| are equal. This function is used to check if a tab's parameters match
@@ -796,7 +776,8 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   base::Value::List result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   BrowserWindowInterface* last_active_browser =
-      GetLastActiveBrowserWithProfile(profile, include_incognito_information());
+      browser_window_util::GetLastActiveBrowserWithProfile(
+          *profile, include_incognito_information());
 
   // Note that the current browser is allowed to be null: you can still query
   // the tabs in this case.
