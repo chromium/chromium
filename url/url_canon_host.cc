@@ -201,18 +201,16 @@ using StackBufferW = RawCanonOutputT<char16_t, kTempHostBufferLen>;
 // Scans a host name and fills in the output flags according to what we find.
 // |has_non_ascii| will be true if there are any non-7-bit characters, and
 // |has_escaped| will be true if there is a percent sign.
-template<typename CHAR, typename UCHAR>
-void ScanHostname(const CHAR* spec,
-                  const Component& host,
+template <typename CHAR, typename UCHAR>
+void ScanHostname(std::basic_string_view<CHAR> host,
                   bool* has_non_ascii,
                   bool* has_escaped) {
-  int end = host.end();
   *has_non_ascii = false;
   *has_escaped = false;
-  for (int i = host.begin; i < end; i++) {
-    if (static_cast<UCHAR>(UNSAFE_TODO(spec[i])) >= 0x80) {
+  for (const CHAR ch : host) {
+    if (static_cast<UCHAR>(ch) >= 0x80) {
       *has_non_ascii = true;
-    } else if (UNSAFE_TODO(spec[i]) == '%') {
+    } else if (ch == '%') {
       *has_escaped = true;
     }
   }
@@ -451,23 +449,16 @@ bool DoComplexHost(std::u16string_view host,
 }
 
 template <typename CHAR, typename UCHAR, CanonMode canon_mode>
-bool DoHostSubstring(const CHAR* spec,
-                     const Component& host,
+bool DoHostSubstring(const std::basic_string_view<CHAR> host,
                      CanonOutput* output) {
-  DCHECK(host.is_valid());
-
   bool has_non_ascii, has_escaped;
-  ScanHostname<CHAR, UCHAR>(spec, host, &has_non_ascii, &has_escaped);
+  ScanHostname<CHAR, UCHAR>(host, &has_non_ascii, &has_escaped);
 
   if (has_non_ascii || has_escaped) {
-    return DoComplexHost<canon_mode>(
-        std::basic_string_view<CHAR>(&UNSAFE_TODO(spec[host.begin]),
-                                     static_cast<size_t>(host.len)),
-        has_non_ascii, has_escaped, output);
+    return DoComplexHost<canon_mode>(host, has_non_ascii, has_escaped, output);
   }
 
-  const bool success = DoSimpleHost<canon_mode>(host.as_string_view_on(spec),
-                                                output, &has_non_ascii);
+  const bool success = DoSimpleHost<canon_mode>(host, output, &has_non_ascii);
   DCHECK(!has_non_ascii);
   return success;
 }
@@ -539,14 +530,14 @@ void DoHost(std::basic_string_view<CHAR> spec,
     return;
   }
 
+  std::basic_string_view<CHAR> host_view = host.as_string_view_on(spec.data());
   bool success;
   if constexpr (canon_mode == CanonMode::kSpecialURL ||
                 canon_mode == CanonMode::kFileURL) {
-    success =
-        DoHostSubstring<CHAR, UCHAR, canon_mode>(spec.data(), host, &output);
+    success = DoHostSubstring<CHAR, UCHAR, canon_mode>(host_view, &output);
   } else {
     // URL Standard: https://url.spec.whatwg.org/#concept-opaque-host-parser
-    success = DoOpaqueHost(host.as_string_view_on(spec.data()), output);
+    success = DoOpaqueHost(host_view, output);
   }
 
   if (success) {
@@ -726,17 +717,15 @@ void CanonicalizeFileHostVerbose(std::u16string_view spec,
                                                   host_info);
 }
 
-bool CanonicalizeHostSubstring(const char* spec,
-                               const Component& host,
+bool CanonicalizeHostSubstring(std::string_view host_view,
                                CanonOutput* output) {
-  return DoHostSubstring<char, unsigned char, CanonMode::kSpecialURL>(
-      spec, host, output);
+  return DoHostSubstring<char, unsigned char, CanonMode::kSpecialURL>(host_view,
+                                                                      output);
 }
 
-bool CanonicalizeHostSubstring(const char16_t* spec,
-                               const Component& host,
+bool CanonicalizeHostSubstring(std::u16string_view host_view,
                                CanonOutput* output) {
-  return DoHostSubstring<char16_t, char16_t, CanonMode::kSpecialURL>(spec, host,
+  return DoHostSubstring<char16_t, char16_t, CanonMode::kSpecialURL>(host_view,
                                                                      output);
 }
 

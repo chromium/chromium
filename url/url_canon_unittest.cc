@@ -1231,8 +1231,7 @@ TEST_F(URLCanonTest, CanonicalizeHostSubstring) {
   {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    EXPECT_TRUE(CanonicalizeHostSubstring("M\xc3\x9cNCHEN.com",
-                                          Component(0, 12), &output));
+    EXPECT_TRUE(CanonicalizeHostSubstring("M\xc3\x9cNCHEN.com", &output));
     output.Complete();
     EXPECT_EQ("xn--mnchen-3ya.com", out_str);
   }
@@ -1242,8 +1241,7 @@ TEST_F(URLCanonTest, CanonicalizeHostSubstring) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     EXPECT_FALSE(CanonicalizeHostSubstring(
-        test_utils::TruncateWStringToUTF16(L"\xfdd0zyx.com").c_str(),
-        Component(0, 8), &output));
+        test_utils::TruncateWStringToUTF16(L"\xfdd0zyx.com"), &output));
     output.Complete();
     EXPECT_EQ("%EF%B7%90zyx.com", out_str);
   }
@@ -1252,7 +1250,7 @@ TEST_F(URLCanonTest, CanonicalizeHostSubstring) {
   {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    EXPECT_TRUE(CanonicalizeHostSubstring("", Component(0, 0), &output));
+    EXPECT_TRUE(CanonicalizeHostSubstring("", &output));
     output.Complete();
     EXPECT_EQ(std::string(), out_str);
   }
@@ -1261,8 +1259,7 @@ TEST_F(URLCanonTest, CanonicalizeHostSubstring) {
   {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    EXPECT_TRUE(
-        CanonicalizeHostSubstring("01.02.03.04", Component(0, 11), &output));
+    EXPECT_TRUE(CanonicalizeHostSubstring("01.02.03.04", &output));
     output.Complete();
     EXPECT_EQ("01.02.03.04", out_str);
   }

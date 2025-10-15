@@ -384,12 +384,10 @@ size_t DoPermissiveGetHostRegistryLength(T host,
     mapping.is_canonical = true;
 
     // Try to append the canonicalized version of this component.
-    int current_len = static_cast<int>(current - begin);
-    if (!url::CanonicalizeHostSubstring(
-            host.data(), url::Component(static_cast<int>(begin), current_len),
-            &canon_output)) {
+    T host_view = host.substr(begin, current - begin);
+    if (!url::CanonicalizeHostSubstring(host_view, &canon_output)) {
       // Failed to canonicalize this component; append as-is.
-      AppendInvalidString(host.substr(begin, current_len), &canon_output);
+      AppendInvalidString(host_view, &canon_output);
       mapping.is_canonical = false;
     }
 
@@ -460,10 +458,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
       url::StdStringCanonOutput try_output(&try_string);
 
       if (!url::CanonicalizeHostSubstring(
-              host.data(),
-              url::Component(
-                  current_try,
-                  static_cast<int>(mapping.original_end) - current_try),
+              host.substr(current_try, mapping.original_end - current_try),
               &try_output)) {
         continue;  // Invalid substring, skip.
       }

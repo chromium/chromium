@@ -159,15 +159,12 @@ std::string CanonicalizePatternComponents(const std::string& hostname_pattern) {
       current = hostname_pattern.length();
 
     // Try to append the canonicalized version of this component.
-    int current_len = base::checked_cast<int>(current - begin);
-    if (hostname_pattern.substr(begin, current_len) == "*" ||
-        !url::CanonicalizeHostSubstring(
-            hostname_pattern.data(),
-            url::Component(base::checked_cast<int>(begin), current_len),
-            &canon_output)) {
+    std::string_view hostname =
+        std::string_view(hostname_pattern).substr(begin, current - begin);
+    if (hostname == "*" ||
+        !url::CanonicalizeHostSubstring(hostname, &canon_output)) {
       // Failed to canonicalize this component; append as-is.
-      canon_output.Append(hostname_pattern.substr(begin, current_len).data(),
-                          current_len);
+      canon_output.Append(hostname);
     }
 
     if (current < hostname_pattern.length())

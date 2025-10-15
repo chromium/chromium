@@ -533,12 +533,9 @@ void CanonicalizeFileHostVerbose(std::u16string_view spec,
 // host as valid (because it's designed to be used for substrings) while the
 // full version above will mark empty hosts as broken.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeHostSubstring(const char* spec,
-                               const Component& host,
-                               CanonOutput* output);
+bool CanonicalizeHostSubstring(std::string_view host_view, CanonOutput* output);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeHostSubstring(const char16_t* spec,
-                               const Component& host,
+bool CanonicalizeHostSubstring(std::u16string_view host_view,
                                CanonOutput* output);
 
 // Host in non-special URLs.
