@@ -73,6 +73,18 @@ void OmniboxPopupPresenter::Show() {
     // On Show(), the widget height can not be 0 or else the compositor thinks
     // the webview is hidden and will not calculate its preferred size.
     SetWidgetContentHeight(1);
+
+    // Manually set zoom level, since any zooming is undesirable in the omnibox.
+    auto* zoom_controller =
+        zoom::ZoomController::FromWebContents(GetWebContents());
+    if (!zoom_controller) {
+      // Create ZoomController manually, if not already exists, because it is
+      // not automatically created when the WebUI has not been opened in a tab.
+      zoom_controller =
+          zoom::ZoomController::CreateForWebContents(GetWebContents());
+    }
+    zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_ISOLATED);
+    zoom_controller->SetZoomLevel(0);
   }
 }
 
