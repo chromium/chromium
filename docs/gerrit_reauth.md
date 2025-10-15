@@ -7,12 +7,18 @@ If you use your @google.com account, or a @chromium.org account linked to your
 @google.com account: You already ReAuth during your daily `gcert`, no further
 action is required. Feel free to stop reading now.
 
+If you use a @chromium.org account that isn't linked to your google.com account,
+with a Google-issued security key, on devices managed by Google (e.g. gLinux),
+simply run `git credential-luci reauth`, follow the prompts to complete ReAuth.
+You need to ReAuth every 20 hours (just like `gcert`).
+
 Otherwise, follow this guide to ReAuth locally or remotely.
 
 If you aren't sure if your account is linked, follow
 [the steps here](http://go/chromium-account-support#how-can-i-check-if-my-gerrit-accounts-are-linked).
 
-For more information, see [go/gerrit-reauth](http://go/gerrit-reauth).
+For more information, see this internal doc:
+[go/gerrit-reauth](http://go/gerrit-reauth).
 ***
 
 [TOC]
