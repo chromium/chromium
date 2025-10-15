@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_transport_protocol.h"
 
@@ -22,9 +21,6 @@ namespace device {
 class FidoAuthenticator;
 
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryBase {
-  // TODO(crbug.com/450724407): Remove this macro once the bug gets fixed.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
-
  public:
   // EventStream is an unbuffered pipe that can be passed around and late-bound
   // to the receiver.
@@ -64,9 +60,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryBase {
   virtual ~FidoDiscoveryBase();
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {
-    // TODO(crbug.com/450724407): Remove this macro once the bug gets fixed.
-    ADVANCED_MEMORY_SAFETY_CHECKS();
-
    public:
     virtual ~Observer();
 
