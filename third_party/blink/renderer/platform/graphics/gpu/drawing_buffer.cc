@@ -1727,6 +1727,17 @@ void DrawingBuffer::RestoreAllState() {
 }
 
 bool DrawingBuffer::SupportsNoCopyExportForLowLatency() {
+  if (!SharedGpuContext::IsGpuCompositingEnabled()) {
+    // If SW compositing is being used, the shared GPU context has no raster
+    // interface and hence no way to read back an accelerated SharedImage. In
+    // that case, it is not viable to directly export the DrawingBuffer's
+    // SharedImage to a use case that is external to WebGL; instead, the
+    // internal caller of this method must read back the DrawingBuffer's SI via
+    // the WebGL context and then pass that result back to their external
+    // entrypoint (as e.g. an unaccelerated bitmap or software SI).
+    return false;
+  }
+
   if (!back_color_buffer_) {
     return false;
   }

@@ -1872,8 +1872,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     return nullptr;
   }
 
-  if (SharedGpuContext::IsGpuCompositingEnabled() &&
-      GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
+  if (GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
     auto resource = ExportLowLatencyCanvasResource(source_buffer);
     return resource ? resource->Bitmap() : nullptr;
   }
@@ -1962,8 +1961,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     return nullptr;
   }
 
-  if (SharedGpuContext::IsGpuCompositingEnabled() &&
-      GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
+  if (GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
     return ExportLowLatencyCanvasResource(source_buffer);
   }
 
