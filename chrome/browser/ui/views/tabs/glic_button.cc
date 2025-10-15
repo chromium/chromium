@@ -53,7 +53,7 @@ constexpr int kLabelRightMargin = 8;
 constexpr int kCloseButtonMargin = 6;
 constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
 constexpr ui::ColorId kTextOnHighlight = ui::kColorSysOnPrimary;
-constexpr ui::ColorId kDefaultTextColorV2 = ui::kColorSysOnSurfacePrimary;
+constexpr ui::ColorId kDefaultTextColorV2 = ui::kColorSysOnSurface;
 
 constexpr int kIconSize = 16;
 
