@@ -3,14 +3,22 @@
     display: block;
   }
 </style>
-<settings-toggle-button id="toggleButton" pref="{{pref}}" label="[[label]]"
-    sub-label="[[subLabel]]"
-    numeric-unchecked-values="[[numericUncheckedValues]]">
-  <div slot="more-actions-after">
-    <cr-expand-button id="expandButton" expanded="{{expanded}}">
-    </cr-expand-button>
-  </div>
-</settings-toggle-button>
+<template is="dom-if" if="[[expanded]]" restamp>
+  <settings-toggle-button id="toggleButton" pref="{{pref}}" label="[[label]]"
+      sub-label="[[subLabel]]"
+      numeric-unchecked-values="[[numericUncheckedValues]]">
+    <div slot="more-actions-after">
+      <cr-expand-button id="expandButton" expanded="{{expanded}}">
+      </cr-expand-button>
+    </div>
+  </settings-toggle-button>
+</template>
+<template is="dom-if" if="[[!expanded]]" restamp>
+  <cr-expand-button class="cr-row" id="expandButton" expanded="{{expanded}}">
+    [[label]]
+    <div class="cr-secondary-text">[[subLabel]]</div>
+  </cr-expand-button>
+</template>
 <cr-collapse opened="[[expanded]]">
   <slot name="collapse"></slot>
 </cr-collapse>

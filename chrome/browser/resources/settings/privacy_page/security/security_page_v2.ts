@@ -79,24 +79,14 @@ export class SettingsSecurityPageV2Element extends
         type: Array,
         value: () => [SafeBrowsingSetting.DISABLED],
       },
-
-      safeBrowsingRowExpanded_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   declare private safeBrowsingOff_: SafeBrowsingSetting[];
-  declare private safeBrowsingRowExpanded_: boolean;
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
-  }
-
-  private onSafeBrowsingRowExpanded_() {
-    this.safeBrowsingRowExpanded_ = !this.safeBrowsingRowExpanded_;
   }
 }
 

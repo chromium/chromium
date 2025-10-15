@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import  'chrome://settings/lazy_load.js';
+import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SecurityPageFeatureRowElement} from 'chrome://settings/lazy_load.js';
@@ -11,7 +11,7 @@ import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 
@@ -35,12 +35,21 @@ suite('securityPageFeatureRow', function() {
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
 
-    securityPageFeatureRow = document.createElement('security-page-feature-row');
+    securityPageFeatureRow =
+        document.createElement('security-page-feature-row');
     securityPageFeatureRow.pref = settingsPrefs.get('prefs.test');
 
     document.body.appendChild(securityPageFeatureRow);
     flush();
   });
+
+  function getExpandButton(): HTMLElement|null {
+    return securityPageFeatureRow.shadowRoot!.querySelector('#expandButton');
+  }
+
+  function getToggleButton(): HTMLElement|null {
+    return securityPageFeatureRow.shadowRoot!.querySelector('#toggleButton');
+  }
 
   test('RowClickExpandsAndCollapses', async function() {
     const collapse =
@@ -49,13 +58,13 @@ suite('securityPageFeatureRow', function() {
     assertFalse(collapse.opened);
 
     // Expand the feature row.
-    securityPageFeatureRow.$.expandButton.click();
+    getExpandButton()!.click();
     await microtasksFinished();
     assertTrue(securityPageFeatureRow.expanded);
     assertTrue(collapse.opened);
 
     // Collapse the feature row.
-    securityPageFeatureRow.$.expandButton.click();
+    getExpandButton()!.click();
     await microtasksFinished();
     assertFalse(securityPageFeatureRow.expanded);
     assertFalse(collapse.opened);
@@ -64,14 +73,41 @@ suite('securityPageFeatureRow', function() {
   test('ToggleClickEnablesAndDisablesFeature', async function() {
     assertFalse(securityPageFeatureRow.pref.value);
 
+    // Expand the feature row in order to see the toggle.
+    getExpandButton()!.click();
+    await microtasksFinished();
+    assertTrue(securityPageFeatureRow.expanded);
+
     // Enable the feature.
-    securityPageFeatureRow.$.toggleButton.click();
+    getToggleButton()!.click();
     await microtasksFinished();
     assertTrue(securityPageFeatureRow.pref.value);
 
     // Disable the feature again.
-    securityPageFeatureRow.$.toggleButton.click();
+    getToggleButton()!.click();
     await microtasksFinished();
     assertFalse(securityPageFeatureRow.pref.value);
+  });
+
+  test('RowClickShowsAndHidesToggle', async function() {
+    // Since the row starts off collapsed, the toggle shouldn't be visible.
+    assertFalse(securityPageFeatureRow.expanded);
+    assertFalse(isChildVisible(securityPageFeatureRow, '#toggleButton'));
+
+    // Expand the feature row.
+    getExpandButton()!.click();
+    await microtasksFinished();
+    assertTrue(securityPageFeatureRow.expanded);
+
+    // Check that toggle is visible
+    assertTrue(isChildVisible(securityPageFeatureRow, '#toggleButton'));
+
+    // Collapse the feature row.
+    getExpandButton()!.click();
+    await microtasksFinished();
+    assertFalse(securityPageFeatureRow.expanded);
+
+    // Check that toggle is NOT visible.
+    assertFalse(isChildVisible(securityPageFeatureRow, '#toggleButton'));
   });
 });
