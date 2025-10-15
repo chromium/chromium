@@ -8,7 +8,9 @@
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_utils.h"
+#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits_macros.h"
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT

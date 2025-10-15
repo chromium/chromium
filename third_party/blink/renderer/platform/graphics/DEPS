@@ -8,6 +8,7 @@ include_rules = [
     # Dependencies.
     "+base/memory/post_delayed_memory_reduction_task.h",
     "+base/atomic_sequence_num.h",
+    "+base/task/common/task_annotator.h",
     "+base/task/task_traits.h",
     "+base/threading/sequenced_task_runner_handle.h",
     "+cc",

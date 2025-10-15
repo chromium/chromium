@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message_attachment_set.h"
-#include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_mojo_bootstrap.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

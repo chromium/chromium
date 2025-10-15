@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"

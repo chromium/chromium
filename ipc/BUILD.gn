@@ -35,7 +35,6 @@ component("ipc") {
       "ipc_channel_proxy.h",
       "ipc_listener.cc",
       "ipc_listener.h",
-      "ipc_message_macros.h",
       "ipc_message_pipe_reader.cc",
       "ipc_message_pipe_reader.h",
       "ipc_mojo_bootstrap.cc",

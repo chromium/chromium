@@ -36,6 +36,7 @@ include_rules = [
     "+base/strings/stringprintf.h",
     "+base/strings/sys_string_conversions.h",
     "+base/task/common/lazy_now.h",
+    "+base/task/common/task_annotator.h",
     "+base/task/delay_policy.h",
     "+base/task/delayed_task_handle.h",
     "+base/task/sequence_manager/task_time_observer.h",

@@ -39,8 +39,8 @@
 #include "media/base/media_drm_key_type.h"
 #endif  // BUILDFLAG(ENABLE_MEDIA_DRM_STORAGE)
 
-// Note that this file historically used the same value as
-// ipc/ipc_message_macros.h, and not `COMPONENT_EXPORT(MEDIA)`.
+// Note that this file historically used the default value and
+// not `COMPONENT_EXPORT(MEDIA)`.
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT
 

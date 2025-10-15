@@ -5,7 +5,7 @@
 #ifndef UI_LATENCY_IPC_LATENCY_INFO_PARAM_TRAITS_MACROS_H_
 #define UI_LATENCY_IPC_LATENCY_INFO_PARAM_TRAITS_MACROS_H_
 
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "ui/latency/latency_info.h"
 
 #undef IPC_MESSAGE_EXPORT

@@ -8,7 +8,6 @@
 #include "components/version_info/channel.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
-#include "ipc/ipc_message_macros.h"
 #include "ipc/param_traits_macros.h"
 
 #undef IPC_MESSAGE_EXPORT

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/ipc/common/media_param_traits.h"
+
 #include <stddef.h>
 
 #include <sstream>
 
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
-#include "media/gpu/ipc/common/media_param_traits.h"
+#include "ipc/ipc_message_utils.h"
 
 namespace IPC {
 

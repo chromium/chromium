@@ -10,7 +10,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/common/webplugininfo_param_traits.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "ui/base/page_transition_types.h"
 

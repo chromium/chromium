@@ -9,7 +9,7 @@
 #define UI_GFX_IPC_BUFFER_TYPES_GFX_PARAM_TRAITS_MACROS_H_
 
 #include "build/build_config.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "ui/gfx/buffer_types.h"
 
 #undef IPC_MESSAGE_EXPORT
