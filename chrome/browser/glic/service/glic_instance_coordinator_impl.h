@@ -148,9 +148,6 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
 
   std::map<InstanceId, std::unique_ptr<GlicInstanceImpl>> instances_;
 
-  // The instance ID of the one instance that is currently floating.
-  std::optional<InstanceId> floating_instance_key_;
-
   std::unique_ptr<GlicInstanceImpl> warmed_instance_;
 
   std::unique_ptr<HostManager> host_manager_;

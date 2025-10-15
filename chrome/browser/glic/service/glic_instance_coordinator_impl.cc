@@ -370,14 +370,12 @@ void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
 }
 
 void GlicInstanceCoordinatorImpl::ToggleFloaty(bool prevent_close) {
-  if (!floating_instance_key_.has_value()) {
-    floating_instance_key_ = CreateGlicInstance()->id();
+  auto* floaty_instance = GetInstanceWithFloaty();
+  if (!floaty_instance) {
+    floaty_instance = CreateGlicInstance();
   }
-  auto instance_iter = instances_.find(*floating_instance_key_);
-  CHECK(instance_iter != instances_.end());
-  GlicInstanceImpl* instance = instance_iter->second.get();
-  instance->Toggle(ShowOptions::ForFloating(/*anchor_browser=*/nullptr),
-                   prevent_close);
+  floaty_instance->Toggle(ShowOptions::ForFloating(/*anchor_browser=*/nullptr),
+                          prevent_close);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(
