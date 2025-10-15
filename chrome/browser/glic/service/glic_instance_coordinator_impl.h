@@ -66,6 +66,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
       const ShowOptions& options,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  void OnDetachRequested(GlicInstance* instance,
+                         tabs::TabInterface* tab) override;
 
   // GlicWindowController implementation
   HostManager& host_manager() override;
@@ -117,9 +119,11 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
       content::WebContents* source_glic_web_contents,
       tabs::TabInterface* tab_to_bind) override;
 
+  // Returns a pointer to an instance with a Floaty embedder or nullptr.
+  GlicInstanceImpl* GetInstanceWithFloaty();
+
   // Testing support.
   void SetWarmingEnabledForTesting(bool warming_enabled);
-  GlicInstance* FindFloatingInstanceForTesting();
 
  private:
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);

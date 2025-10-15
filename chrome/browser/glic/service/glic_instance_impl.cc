@@ -186,6 +186,9 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 }
 
 void GlicInstanceImpl::Detach(tabs::TabInterface* tab) {
+  if (coordinator_delegate_) {
+    coordinator_delegate_->OnDetachRequested(this, tab);
+  }
   auto show_options =
       ShowOptions::ForFloating(tab->GetBrowserWindowInterface());
   show_options.focus_on_show = true;

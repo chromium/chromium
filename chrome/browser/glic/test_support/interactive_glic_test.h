@@ -767,7 +767,7 @@ class InteractiveGlicTestMixin : public T {
 
     if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
       if (track_floating_glic_instance_) {
-        return GetInstanceCoordinator().FindFloatingInstanceForTesting();
+        return GetInstanceCoordinator().GetInstanceWithFloaty();
       }
       if (glic_instance_tab_handle_) {
         if (glic_instance_tab_handle_->Get()) {

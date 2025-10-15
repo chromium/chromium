@@ -448,15 +448,19 @@ void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(
   }
 }
 
-GlicInstance* GlicInstanceCoordinatorImpl::FindFloatingInstanceForTesting() {
-  if (!floating_instance_key_.has_value()) {
-    return nullptr;
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceWithFloaty() {
+  for (const auto& [unused, instance] : instances_) {
+    if (instance->GetPanelState().kind == mojom::PanelState_Kind::kDetached) {
+      return instance.get();
+    }
   }
-  auto iter = instances_.find(*floating_instance_key_);
-  if (iter == instances_.end()) {
-    return nullptr;
-  }
-  return iter->second.get();
+  return nullptr;
 }
 
+void GlicInstanceCoordinatorImpl::OnDetachRequested(GlicInstance* instance,
+                                                    tabs::TabInterface* tab) {
+  if (auto* floaty_instance = GetInstanceWithFloaty()) {
+    floaty_instance->Close(FloatingEmbedderKey{});
+  }
+}
 }  // namespace glic
