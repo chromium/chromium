@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
-#import "ios/chrome/browser/follow/model/follow_java_script_feature.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/model/browser_policy_new_tab_page_rewriter.h"
@@ -443,7 +442,6 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
       language::LanguageDetectionJavaScriptFeature::GetInstance());
   features.push_back(translate::TranslateJavaScriptFeature::GetInstance());
   features.push_back(WebPerformanceMetricsJavaScriptFeature::GetInstance());
-  features.push_back(FollowJavaScriptFeature::GetInstance());
   features.push_back(ChooseFileJavaScriptFeature::GetInstance());
 
   features.push_back(

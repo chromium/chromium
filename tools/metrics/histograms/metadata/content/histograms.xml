@@ -1550,25 +1550,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.{Event}"
-    units="follows" expires_after="2025-02-10">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The number of web feeds the user is following. Reported {Event}.
-  </summary>
-  <token key="Event">
-    <variant name="AfterFollow" summary="after a successful follow action"/>
-    <variant name="AfterUnfollow" summary="after a successful unfollow action"/>
-    <variant name="ContentShown"
-        summary="after the Following feed is shown, and some content is
-                 displayed"/>
-    <variant name="NoContentShown"
-        summary="after the Following Feed is shown, and no content is
-                 available for display"/>
-  </token>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowUriResult"
     enum="WebFeedSubscriptionRequestStatus" expires_after="2024-06-30">
   <owner>harringtond@chromium.org</owner>
@@ -1621,17 +1602,6 @@ chromium-metrics-reviews@google.com.
     Reported upon successfully following a web feed. Reported as 'true' if the
     web feed was recommended, even if the user did not see or interact with
     recommendation UI.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended"
-    enum="Boolean" expires_after="2024-06-30">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Whether the followed web feed was recommended by the server.
-
-    Reported upon successfully following a web feed.
   </summary>
 </histogram>
 

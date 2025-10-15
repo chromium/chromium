@@ -116,8 +116,6 @@
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_coordinator.h"
-#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
-#import "ios/chrome/browser/follow/model/followed_web_site.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 #import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
@@ -3375,15 +3373,6 @@ const char kChromeAppStoreUrl[] =
   AccountConsistencyBrowserAgent::CreateForBrowser(self.browser,
                                                    self.viewController);
 
-  CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
-
-  if (FollowBrowserAgent::FromBrowser(self.browser)) {
-    FollowBrowserAgent::FromBrowser(self.browser)
-        ->SetUIProviders(
-            HandlerForProtocol(commandDispatcher, NewTabPageCommands),
-            static_cast<id<SnackbarCommands>>(commandDispatcher), nil);
-  }
-
   ReaderModeBrowserAgent* readerModeBrowserAgent =
       ReaderModeBrowserAgent::FromBrowser(self.browser);
   if (readerModeBrowserAgent) {
@@ -3421,10 +3410,6 @@ const char kChromeAppStoreUrl[] =
   WebStateDelegateBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
 
   SyncErrorBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
-
-  if (FollowBrowserAgent::FromBrowser(self.browser)) {
-    FollowBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
-  }
 
   ReaderModeBrowserAgent* readerModeBrowserAgent =
       ReaderModeBrowserAgent::FromBrowser(self.browser);
@@ -4202,16 +4187,6 @@ const char kChromeAppStoreUrl[] =
 }
 
 #pragma mark - NewTabPageCommands
-
-- (void)openNTPScrolledIntoFeedType:(FeedType)feedType {
-  // Dismiss any presenting modal. Ex. Follow management page.
-  __weak __typeof(self) weakSelf = self;
-  [self.viewController
-      clearPresentedStateWithCompletion:^{
-        [weakSelf scrollToNTPAfterPresentedStateCleared:feedType];
-      }
-                         dismissOmnibox:YES];
-}
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
   // TODO(crbug.com/448683013): remove.

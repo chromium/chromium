@@ -176,7 +176,6 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/follow/model:service_factory",
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/gcm/model/instance_id",
     "//ios/chrome/browser/google/model:google_logo",

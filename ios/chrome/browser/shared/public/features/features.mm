@@ -396,9 +396,6 @@ BASE_FEATURE(kDeprecateFeedHeader, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFeedBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCreateDiscoverFeedServiceEarly,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableFeedAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kContentPushNotificationsExperimentType[] =
@@ -522,10 +519,6 @@ int HoursInactiveForOldUsersUntilShowingDockingPromo() {
 
 bool IsWebChannelsEnabled() {
   return false;
-}
-
-bool IsDiscoverFeedServiceCreatedEarly() {
-  return base::FeatureList::IsEnabled(kCreateDiscoverFeedServiceEarly);
 }
 
 bool IsFeedBackgroundRefreshEnabled() {

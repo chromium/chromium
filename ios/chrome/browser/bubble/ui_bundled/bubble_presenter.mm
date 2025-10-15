@@ -110,7 +110,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* _discoverFeedHeaderMenuTipBubblePresenter;
   BubbleViewControllerPresenter* _homeCustomizationMenuTipBubblePresenter;
   BubbleViewControllerPresenter* _readingListTipBubblePresenter;
-  BubbleViewControllerPresenter* _followWhileBrowsingBubbleTipPresenter;
   BubbleViewControllerPresenter* _defaultPageModeTipBubblePresenter;
   BubbleViewControllerPresenter* _whatsNewBubblePresenter;
   BubbleViewControllerPresenter*
@@ -188,7 +187,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_discoverFeedHeaderMenuTipBubblePresenter dismissAnimated:NO];
   [_homeCustomizationMenuTipBubblePresenter dismissAnimated:NO];
   [_readingListTipBubblePresenter dismissAnimated:NO];
-  [_followWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [_priceNotificationsWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [_whatsNewBubblePresenter dismissAnimated:NO];
   [_lensKeyboardPresenter dismissAnimated:NO];
@@ -285,40 +283,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 
   _homeCustomizationMenuTipBubblePresenter = presenter;
-}
-
-- (void)presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
-            (FeedMetricsRecorder*)recorder
-                                             popupMenuHandler:
-                                                 (id<PopupMenuCommands>)
-                                                     popupMenuHandler {
-  if (![self canPresentBubble]) {
-    return;
-  }
-
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
-  NSString* text = l10n_util::GetNSString(IDS_IOS_FOLLOW_WHILE_BROWSING_IPH);
-  CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
-                                           direction:arrowDirection];
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the tip, then end early to prevent the potential reassignment of the
-  // existing `followWhileBrowsingBubbleTipPresenter` to nil.
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHFollowWhileBrowsingFeature
-                    direction:arrowDirection
-                    alignment:BubbleAlignmentBottomOrTrailing
-                         text:text
-        voiceOverAnnouncement:l10n_util::GetNSString(
-                                  IDS_IOS_FOLLOW_WHILE_BROWSING_IPH)
-                  anchorPoint:toolsMenuAnchor];
-  if (presenter) {
-    [popupMenuHandler notifyIPHBubblePresenting];
-    _followWhileBrowsingBubbleTipPresenter = presenter;
-  }
-  [recorder recordFollowRecommendationIPHShown];
 }
 
 - (void)presentDefaultSiteViewTipBubbleWithSettingsMap:
@@ -1234,13 +1198,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 // Return YES if the bubble should always be presented. Ex. if force present
 // bubble set by system experimental settings.
 - (BOOL)shouldForcePresentBubbleForFeature:(const base::Feature&)feature {
-  // Always present follow IPH if it's triggered by system experimental
-  // settings.
-  if (feature.name == feature_engagement::kIPHFollowWhileBrowsingFeature.name &&
-      experimental_flags::ShouldAlwaysShowFollowIPH()) {
-    return YES;
-  }
-
   return NO;
 }
 

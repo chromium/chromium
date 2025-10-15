@@ -109,15 +109,6 @@ inline constexpr char kDownloadAutoDeletionIPHShown[] =
 inline constexpr char kDownloadAutoDeletionScheduledFiles[] =
     "ios.auto_deletion.scheduled_files";
 
-// Number of times the First Follow UI has been shown.
-inline constexpr char kFirstFollowUIShownCount[] =
-    "follow.first_follow_ui_modal_count";
-
-// Number of times the First Follow UI has been shown with Follow UI Update
-// enabled.
-inline constexpr char kFirstFollowUpdateUIShownCount[] =
-    "follow.first_follow_update_ui_modal_count";
-
 // A dictionary mapping push notification enabled features to their permission
 // to send notifications to the user. This is stored in Profile prefs.
 inline constexpr char kFeaturePushNotificationPermissions[] =

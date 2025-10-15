@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
-#import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -225,12 +224,6 @@
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(_repostFormDelegate);
 
-  FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
-  if (followTabHelper) {
-    followTabHelper->set_help_handler(
-        HandlerForProtocol(_commandDispatcher, HelpCommands));
-  }
-
   DCHECK(_tabInsertionBrowserAgent);
   CaptivePortalTabHelper::GetOrCreateForWebState(webState)
       ->SetTabInsertionBrowserAgent(_tabInsertionBrowserAgent);
@@ -381,11 +374,6 @@
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(nil);
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(nil);
-
-  FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
-  if (followTabHelper) {
-    followTabHelper->set_help_handler(nil);
-  }
 
   CaptivePortalTabHelper::GetOrCreateForWebState(webState)
       ->SetTabInsertionBrowserAgent(nil);

@@ -581,9 +581,6 @@ extern const char kBackgroundRefreshMaxAgeInSeconds[];
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
 
-// Whether the Discover service is created early, alongside the app creation.
-bool IsDiscoverFeedServiceCreatedEarly();
-
 // Whether feed background refresh is enabled.
 bool IsFeedBackgroundRefreshEnabled();
 

@@ -93,10 +93,6 @@ bool ShouldResetNoticeCardOnFeedStart() {
   return [[NSUserDefaults standardUserDefaults] boolForKey:@"ResetNoticeCard"];
 }
 
-bool ShouldResetFirstFollowCount() {
-  return [[NSUserDefaults standardUserDefaults] boolForKey:@"ResetFirstFollow"];
-}
-
 bool ShouldForceContentNotificationsPromo() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"ForceContentNotificationsPromo"];
@@ -117,20 +113,6 @@ bool ShouldIgnoreDeviceLocaleConditions() {
 bool ShouldIgnoreTileAblationConditions() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"IgnoreTileAblationConditions"];
-}
-
-void DidResetFirstFollowCount() {
-  [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"ResetFirstFollow"];
-}
-
-bool ShouldAlwaysShowFirstFollow() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:@"AlwaysShowFirstFollow"];
-}
-
-bool ShouldAlwaysShowFollowIPH() {
-  return
-      [[NSUserDefaults standardUserDefaults] boolForKey:@"AlwaysShowFollowIPH"];
 }
 
 bool IsMemoryDebuggingEnabled() {

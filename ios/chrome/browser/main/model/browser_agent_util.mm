@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/favicon/model/favicon_browser_agent.h"
-#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/infobar_overlay_browser_agent_util.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
@@ -132,10 +131,6 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
 
   if (!browser_is_off_record) {
     IOSChromeTabRestoreBrowserAgent::CreateForBrowser(browser);
-  }
-
-  if (IsWebChannelsEnabled() && !browser_is_off_record) {
-    FollowBrowserAgent::CreateForBrowser(browser);
   }
 
   // PolicyWatcher is non-OTR only.

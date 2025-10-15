@@ -504,28 +504,6 @@ using feed::FeedUserActionType;
   self.engagedWithLatestRefreshedContent = NO;
 }
 
-- (void)recordFollowCount:(NSUInteger)followCount
-             forLogReason:(FollowCountLogReason)logReason {
-  switch (logReason) {
-    case FollowCountLogReasonContentShown:
-      base::UmaHistogramSparse(kFollowCountFollowingContentShown, followCount);
-      break;
-    case FollowCountLogReasonNoContentShown:
-      base::UmaHistogramSparse(kFollowCountFollowingNoContentShown,
-                               followCount);
-      break;
-    case FollowCountLogReasonAfterFollow:
-      base::UmaHistogramSparse(kFollowCountAfterFollow, followCount);
-      break;
-    case FollowCountLogReasonAfterUnfollow:
-      base::UmaHistogramSparse(kFollowCountAfterUnfollow, followCount);
-      break;
-    case FollowCountLogReasonEngaged:
-      // TODO(b/323593501): Report on-feed-engagement follow count.
-      break;
-  }
-}
-
 - (void)recordFeedSettingsOnStartForEnterprisePolicy:(BOOL)enterprisePolicy
                                          feedVisible:(BOOL)feedVisible
                                             signedIn:(BOOL)signedIn
@@ -580,73 +558,6 @@ using feed::FeedUserActionType;
                                                   kTappedUnfollowButton
                                 asInteraction:NO];
   base::RecordAction(base::UserMetricsAction(kUnfollowFromMenu));
-}
-
-- (void)recordFollowConfirmationShownWithType:
-    (FollowConfirmationType)followConfirmationType {
-  base::UmaHistogramEnumeration(kDiscoverFeedUserActionHistogram,
-                                FeedUserActionType::kShowSnackbar);
-  switch (followConfirmationType) {
-    case FollowConfirmationType::kFollowSucceedSnackbarShown:
-      base::UmaHistogramEnumeration(
-          kDiscoverFeedUserActionHistogram,
-          FeedUserActionType::kShowFollowSucceedSnackbar);
-      break;
-    case FollowConfirmationType::kFollowErrorSnackbarShown:
-      base::UmaHistogramEnumeration(
-          kDiscoverFeedUserActionHistogram,
-          FeedUserActionType::kShowFollowFailedSnackbar);
-      break;
-    case FollowConfirmationType::kUnfollowSucceedSnackbarShown:
-      base::UmaHistogramEnumeration(
-          kDiscoverFeedUserActionHistogram,
-          FeedUserActionType::kShowUnfollowSucceedSnackbar);
-      break;
-    case FollowConfirmationType::kUnfollowErrorSnackbarShown:
-      base::UmaHistogramEnumeration(
-          kDiscoverFeedUserActionHistogram,
-          FeedUserActionType::kShowUnfollowFailedSnackbar);
-      break;
-  }
-}
-
-- (void)recordFollowSnackbarTappedWithAction:
-    (FollowSnackbarActionType)followSnackbarActionType {
-  switch (followSnackbarActionType) {
-    case FollowSnackbarActionType::kSnackbarActionGoToFeed:
-      [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                      kTappedGoToFeedOnSnackbar
-                                    asInteraction:NO];
-      base::RecordAction(
-          base::UserMetricsAction(kSnackbarGoToFeedButtonTapped));
-      break;
-    case FollowSnackbarActionType::kSnackbarActionUndo:
-      [self recordDiscoverFeedUserActionHistogram:
-                FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar
-                                    asInteraction:NO];
-      base::RecordAction(base::UserMetricsAction(kSnackbarUndoButtonTapped));
-      break;
-    case FollowSnackbarActionType::kSnackbarActionRetryFollow:
-      [self recordDiscoverFeedUserActionHistogram:
-                FeedUserActionType::kTappedFollowTryAgainOnSnackbar
-                                    asInteraction:NO];
-      base::RecordAction(
-          base::UserMetricsAction(kSnackbarRetryFollowButtonTapped));
-      break;
-    case FollowSnackbarActionType::kSnackbarActionRetryUnfollow:
-      [self recordDiscoverFeedUserActionHistogram:
-                FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar
-                                    asInteraction:NO];
-      base::RecordAction(
-          base::UserMetricsAction(kSnackbarRetryUnfollowButtonTapped));
-      break;
-  }
-}
-
-- (void)recordFollowRecommendationIPHShown {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kFollowRecommendationIPHShown
-                                asInteraction:NO];
 }
 
 - (void)recordShowSignInOnlyUIWithUserId:(BOOL)hasUserId {

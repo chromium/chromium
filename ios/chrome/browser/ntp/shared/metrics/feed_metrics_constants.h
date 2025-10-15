@@ -102,41 +102,6 @@ enum class FollowRequestType {
   kMaxValue = kFollowRequestUnfollow,
 };
 
-// Enum class contains values indicating the type of follow confirmation type.
-// Ex. kFollowSucceedSnackbarShown means a confirmation is shown after the user
-// has successfully followed a website.
-enum class FollowConfirmationType {
-  kFollowSucceedSnackbarShown = 0,
-  kFollowErrorSnackbarShown = 1,
-  kUnfollowSucceedSnackbarShown = 2,
-  kUnfollowErrorSnackbarShown = 3,
-
-  // Change this to match max value.
-  kMaxValue = kUnfollowErrorSnackbarShown,
-};
-
-// Enum class contains values indicating the type of snackbar action button.
-enum class FollowSnackbarActionType {
-  kSnackbarActionGoToFeed = 0,
-  kSnackbarActionUndo = 1,
-  kSnackbarActionRetryFollow = 2,
-  kSnackbarActionRetryUnfollow = 3,
-
-  // Change this to match max value.
-  kMaxValue = kSnackbarActionRetryUnfollow,
-};
-
-// Enum class for the times when we log the user's follow count.
-// To be kept in sync with the ContentSuggestions.Feed.WebFeed.FollowCount
-// variants.
-typedef NS_ENUM(NSInteger, FollowCountLogReason) {
-  FollowCountLogReasonContentShown = 0,
-  FollowCountLogReasonNoContentShown,
-  FollowCountLogReasonAfterFollow,
-  FollowCountLogReasonAfterUnfollow,
-  FollowCountLogReasonEngaged
-};
-
 // Values for the UMA ContentSuggestions.Feed.LoadStreamStatus.LoadMore
 // histogram. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused. This must be kept
@@ -300,16 +265,6 @@ extern const char kDiscoverUniformityFlag[];
 // Histogram name for the Feed settings when the App is being start.
 extern const char kFeedUserSettingsOnStart[];
 
-// Histogram names for logging followed publisher count after certain events.
-// After showing Following feed with content.
-extern const char kFollowCountFollowingContentShown[];
-// After showing Following feed without content.
-extern const char kFollowCountFollowingNoContentShown[];
-// After following a channel.
-extern const char kFollowCountAfterFollow[];
-// After unfollowing a channel.
-extern const char kFollowCountAfterUnfollow[];
-
 // Histogram name for sign-in related UI triggered by Feed entry points.
 extern const char kFeedSignInUI[];
 
@@ -346,10 +301,6 @@ extern const char kDiscoverFeedUserActionPreviewTapped[];
 // User action names for following operations.
 extern const char kFollowRequested[];
 extern const char kUnfollowRequested[];
-extern const char kSnackbarGoToFeedButtonTapped[];
-extern const char kSnackbarUndoButtonTapped[];
-extern const char kSnackbarRetryFollowButtonTapped[];
-extern const char kSnackbarRetryUnfollowButtonTapped[];
 
 // User action name for engaging with feed.
 extern const char kDiscoverFeedUserActionEngaged[];

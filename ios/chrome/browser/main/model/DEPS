@@ -20,7 +20,6 @@ specific_include_rules = {
     "+ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h",
     "+ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h",
     "+ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h",
-    "+ios/chrome/browser/follow/model/follow_browser_agent.h",
     "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
     "+ios/chrome/browser/infobars/model/overlays/browser_agent/infobar_overlay_browser_agent_util.h",
     "+ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h",

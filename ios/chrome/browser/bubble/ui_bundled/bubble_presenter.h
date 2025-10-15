@@ -71,15 +71,6 @@ class DeviceSwitcherResultDispatcher;
 // moment, the configuration and the display history of the bubble, etc.
 - (void)presentHomeCustomizationTipBubble;
 
-// Optionally presents a relevant Follow help bubble while browsing a site.
-// The eligibility can depend on the UI hierarchy at the moment, the
-// configuration and the display history of the bubble, etc.
-- (void)presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
-            (FeedMetricsRecorder*)recorder
-                                             popupMenuHandler:
-                                                 (id<PopupMenuCommands>)
-                                                     popupMenuHandler;
-
 // Optionally presents a help bubble to let the user know that they can change
 // the default mode (Desktop/Mobile) of the websites. The eligibility can depend
 // on the UI hierarchy at the moment, the configuration and the display history

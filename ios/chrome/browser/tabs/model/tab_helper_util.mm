@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
-#import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/model/history_tab_helper.h"
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
@@ -336,10 +335,6 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
     TypedNavigationUpgradeTabHelper::CreateForWebState(
         web_state, HttpsUpgradeServiceFactory::GetForProfile(profile));
-  }
-
-  if (!is_off_the_record) {
-    FollowTabHelper::CreateForWebState(web_state);
   }
 
   if (!for_lens_overlay && !for_reader_mode && !is_off_the_record) {

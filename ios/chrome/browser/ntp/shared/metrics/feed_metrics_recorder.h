@@ -170,10 +170,6 @@ class PrefService;
 // Records that the feed is about to be refreshed.
 - (void)recordFeedWillRefresh;
 
-// Records the user's current follow count after a given event `logReason`.
-- (void)recordFollowCount:(NSUInteger)followCount
-             forLogReason:(FollowCountLogReason)logReason;
-
 // Records the state of the Feed setting based on the `enterprisePolicy` being
 // enabled, `feedVisible`, the user being `signedIn`, user having `waaEnabled`
 // and `spywEnabled`, and the `lastRefreshTime` for the Feed.
@@ -208,22 +204,6 @@ class PrefService;
 
 // Record metrics for when the user tapped "unfollow" from menu entry point.
 - (void)recordUnfollowFromMenu;
-
-// Record metrics for when the follow confirmation snckbar is shown, according
-// to `followConfirmationType`.
-- (void)recordFollowConfirmationShownWithType:
-    (FollowConfirmationType)followConfirmationType;
-
-// Record metrics for when the follow confirmation snckbar action is tapped,
-// according to `followSnackbarActionType`.Ex. the user tapped "GO TO FEED"
-// button on the follow succeed snackbar.
-- (void)recordFollowSnackbarTappedWithAction:
-    (FollowSnackbarActionType)followSnackbarActionType;
-
-// Record metrics for when a Follow Recommendation IPH is shown.
-// A follow Recommendation IPH is a textual bublle that tells users that they
-// are able to follow a website.
-- (void)recordFollowRecommendationIPHShown;
 
 #pragma mark - Sign-in Promo
 

@@ -16,8 +16,6 @@ enum class InProductHelpType : NSInteger {
   kDiscoverFeedMenu,
   /// Home customization menu entrypoint.
   kHomeCustomizationMenu,
-  /// Follow help bubble while browsing a site.
-  kFollowWhileBrowsing,
   /// Help bubble to let the user know that they can change the default mode
   /// (Desktop/Mobile) of the websites.
   kDefaultSiteView,

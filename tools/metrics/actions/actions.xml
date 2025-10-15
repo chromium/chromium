@@ -9744,25 +9744,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ContentSuggestions.Follow.FirstFollow.GotItButtonTapped">
-  <owner>adamta@google.org</owner>
-  <owner>feed@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>tinazwang@chromium.org</owner>
-  <description>
-    The user tapped Got It button on the first follow sheet. iOS only.
-  </description>
-</action>
-
-<action name="ContentSuggestions.Follow.SnackbarGoToFeedButtonTapped">
-  <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>tinazwang@chromium.org</owner>
-  <description>
-    The user tapped GO TO FEED button on the follow succeed snackbar.
-  </description>
-</action>
-
 <action name="ContentSuggestions.NotificationsPreferenceOff">
   <owner>dgn@chromium.org</owner>
   <owner>finkm@chromium.org</owner>

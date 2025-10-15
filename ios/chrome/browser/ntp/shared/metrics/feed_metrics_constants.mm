@@ -76,14 +76,6 @@ const char kDiscoverFeedRefreshTrigger[] =
 const char kDiscoverUniformityFlag[] = "ContentSuggestions.Feed.UniformityFlag";
 const char kFeedUserSettingsOnStart[] =
     "ContentSuggestions.Feed.UserSettingsOnStart";
-const char kFollowCountFollowingContentShown[] =
-    "ContentSuggestions.Feed.WebFeed.FollowCount.ContentShown";
-const char kFollowCountFollowingNoContentShown[] =
-    "ContentSuggestions.Feed.WebFeed.FollowCount.NoContentShown";
-const char kFollowCountAfterFollow[] =
-    "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow";
-const char kFollowCountAfterUnfollow[] =
-    "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow";
 const char kFeedSignInUI[] = "ContentSuggestions.Feed.FeedSignInUI";
 const char kFeedSyncPromo[] = "ContentSuggestions.Feed.FeedSyncPromo";
 const char kFeedHandlingErrorPrefix[] = "IOS.FeedHandlingError.";
@@ -128,14 +120,6 @@ const char kDiscoverFeedUserActionPreviewTapped[] =
     "ContentSuggestions.Feed.CardAction.TapPreview";
 const char kFollowRequested[] = "ContentSuggestions.Follow.FollowRequested";
 const char kUnfollowRequested[] = "ContentSuggestions.Follow.UnfollowRequested";
-const char kSnackbarGoToFeedButtonTapped[] =
-    "ContentSuggestions.Follow.SnackbarGoToFeedButtonTapped";
-const char kSnackbarUndoButtonTapped[] =
-    "ContentSuggestions.Follow.SnackbarUndoButtonTapped";
-const char kSnackbarRetryFollowButtonTapped[] =
-    "ContentSuggestions.Follow.SnackbarRetryFollowButtonTapped";
-const char kSnackbarRetryUnfollowButtonTapped[] =
-    "ContentSuggestions.Follow.SnackbarRetryUnfollowButtonTapped";
 const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
 const char kFeedWillRefresh[] = "ContentSuggestions.Feed.WillRefresh";
 const char kNTPViewHierarchyFixed[] = "NewTabPage.ViewHierarchyFixed";

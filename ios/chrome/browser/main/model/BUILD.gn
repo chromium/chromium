@@ -29,7 +29,6 @@ source_set("model") {
     "//ios/chrome/browser/device_sharing/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
     "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/follow/model:browser_agent",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent:browser_agent_util",
     "//ios/chrome/browser/intelligence/bwg/model:browser_agent",

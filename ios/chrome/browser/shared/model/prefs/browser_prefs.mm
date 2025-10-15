@@ -225,6 +225,13 @@ inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =
 // Preference that represents the sorting order of the Following feed content.
 inline constexpr char kNTPFollowingFeedSortType[] =
     "ios.ntp.following_feed.sort_type";
+// Number of times the First Follow UI has been shown.
+inline constexpr char kFirstFollowUIShownCount[] =
+    "follow.first_follow_ui_modal_count";
+// Number of times the First Follow UI has been shown with Follow UI Update
+// enabled.
+inline constexpr char kFirstFollowUpdateUIShownCount[] =
+    "follow.first_follow_update_ui_modal_count";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -1104,6 +1111,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Use `safety_check::prefs::kSafetyCheckHomeModuleEnabled` instead.
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
+  registry->RegisterIntegerPref(kFirstFollowUIShownCount, 0);
+  registry->RegisterIntegerPref(kFirstFollowUpdateUIShownCount, 0);
 
   // Deprecated 10/2025. Use
   // `ntp_tiles::prefs::kTabResumptionHomeModuleEnabled` instead.
@@ -1319,6 +1328,8 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
       prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, prefs);
   RenameBooleanPref(ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
                     prefs::kHomeCustomizationMostVisitedEnabled, prefs);
+  prefs->ClearPref(kFirstFollowUIShownCount);
+  prefs->ClearPref(kFirstFollowUpdateUIShownCount);
 }
 
 void MigrateObsoleteUserDefault() {

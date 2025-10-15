@@ -2003,9 +2003,6 @@
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE_UNITY" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out and turn off sync?
       </message>
-      <message name="IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE" desc="The title in the Discover and Following feed menu if Following is enabled. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
-        Discover &amp; Following
-      </message>
       <message name="IDS_IOS_DISCOVER_FEED_HEADER_IPH" desc="In-product help that points at the menu icon for the news feed on Chrome's new tab page. This string instructs the user to open the menu for settings that let them control the content that appears on the feed.">
         Control your stories and activity here
       </message>
@@ -2723,12 +2720,6 @@
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE" desc="The title of the welcome screen presented to the user on First Run when on iPhone [iOS only]">
         Built for Your iPhone
-      </message>
-      <message name="IDS_IOS_FOLLOWING_FEED_TITLE" desc="The title in the Following feed header label.">
-        Following
-      </message>
-      <message name="IDS_IOS_FOLLOW_WHILE_BROWSING_IPH" desc="The text of the while browsing follow IPH.">
-        To see updates from this site, follow it here.
       </message>
       <message name="IDS_IOS_GENERIC_PASSKIT_ERROR" desc="Generic error message on failure reading a PassKit object. [Length: 60em] [iOS only]">
         Sorry, your Pass cannot be installed to Passbook at this time.
@@ -6846,23 +6837,8 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_TITLE" desc="Alert title to display an error after a reauthentication, related to IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_MESSAGE [iOS only]">
         Authentication error
       </message>
-      <message name="IDS_IOS_SNACKBAR_ACTION_GO_TO_FEED" desc="The iOS snackbar action when successfully following a web content. [iOS only]">
-        Go to Feed
-      </message>
-      <message name="IDS_IOS_SNACKBAR_ACTION_TRY_AGAIN" desc="The iOS snackbar message when failed to follow/unfollow a web content. [iOS only]">
-        Try again
-      </message>
-      <message name="IDS_IOS_SNACKBAR_ACTION_UNDO" desc="The iOS snackbar action when succeed to unfollow a web content. [iOS only]">
-        Undo
-      </message>
       <message name="IDS_IOS_SNACKBAR_DISMISS_ACTION" desc="The name of the 'Dismiss' accessibility action for a snackbar, which can be activated via the rotor.">
         Dismiss
-      </message>
-      <message name="IDS_IOS_SNACKBAR_MESSAGE_FOLLOW_FAILED" desc="The iOS snackbar message when failed to follow a web content. [iOS only]">
-        Can't follow. Something went wrong.
-      </message>
-      <message name="IDS_IOS_SNACKBAR_MESSAGE_FOLLOW_SUCCEED" desc="The iOS snackbar message when ssucceed to follow a web content. [iOS only]">
-        Following <ph name="CHANNEL_NAME">$1<ex>CNN</ex></ph>
       </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED" desc="The material toast message when incogonito mode is disabled by policy [iOS only].">
         Your organization turned off Incognito mode
@@ -6875,12 +6851,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_OFFLINE" desc="The iOS snackbar message when failed to follow/unfollow a web content because of offline. [iOS only]">
         You're offline. Check your internet connection and try again.
-      </message>
-      <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_FAILED" desc="The iOS snackbar message when failed to unfollow a web content. [iOS only]">
-        Can't unfollow. Something went wrong.
-      </message>
-      <message name="IDS_IOS_SNACKBAR_MESSAGE_UNFOLLOW_SUCCEED" desc="The iOS snackbar message when succeed to unfollow a web content. [iOS only]">
-        Unfollowed <ph name="CHANNEL_NAME">$1<ex>CNN</ex></ph>
       </message>
       <message name="IDS_IOS_SPEECH_RECOGNITION_USAGE_DESCRIPTION" desc="Specifies the reason for sending user data to Apple's speech recognition servers.">
         This will let you use your voice with certain features on websites.

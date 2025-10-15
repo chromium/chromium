@@ -374,10 +374,10 @@ chromium-metrics-reviews@google.com.
              (Deprecated M143)"/>
   <int value="47"
       label="User tapped the Unfollow button on the page overflow menu."/>
-  <int value="48" label="Show Follow Succeed Snackbar."/>
-  <int value="49" label="Show Follow Failed Snackbar."/>
-  <int value="50" label="Show Unfollow Succeed Snackbar."/>
-  <int value="51" label="Show Unfollow Failed Snackbar."/>
+  <int value="48" label="Show Follow Succeed Snackbar. (Deprecated M143)"/>
+  <int value="49" label="Show Follow Failed Snackbar. (Deprecated M143)"/>
+  <int value="50" label="Show Unfollow Succeed Snackbar. (Deprecated M143)"/>
+  <int value="51" label="Show Unfollow Failed Snackbar. (Deprecated M143)"/>
   <int value="52"
       label="User tapped to go to Following feed using the snackbar 'go to
              Following' option."/>
@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
              (Deprecated M143)"/>
   <int value="57"
       label="Show Follow Recommendation IPH telling users that they are able
-             to follow a website."/>
+             to follow a website. (Deprecated M143)"/>
   <int value="58"
       label="User opened the article in a new tab in group from the back of
              card menu."/>

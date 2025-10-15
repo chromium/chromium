@@ -1892,13 +1892,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Returns the appropriate text to update the title for the feed item.
 - (NSString*)feedItemTitle {
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
-  BOOL isSignedIn =
-      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-  return (isSignedIn && IsWebChannelsEnabled())
-             ? l10n_util::GetNSString(IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE)
-             : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
+  return l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
 }
 
 // Decides whether the default browser blue dot promo should be active, and adds

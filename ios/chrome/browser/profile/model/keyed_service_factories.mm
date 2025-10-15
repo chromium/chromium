@@ -66,7 +66,6 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/follow/model/follow_service_factory.h"
 #import "ios/chrome/browser/gcm/model/instance_id/ios_chrome_instance_id_profile_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
@@ -300,7 +299,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
     DownloadRecordServiceFactory::GetInstance();
   }
   ExternalFileRemoverFactory::GetInstance();
-  FollowServiceFactory::GetInstance();
   GeminiPrototypeOmniboxServiceFactory::GetInstance();
   BwgServiceFactory::GetInstance();
   GoogleGroupsManagerFactory::GetInstance();

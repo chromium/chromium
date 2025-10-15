@@ -286,7 +286,6 @@ source_set("web_internal") {
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/flags",
     "//ios/chrome/browser/flags:system_flags",
-    "//ios/chrome/browser/follow/model:javascript_feature",
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/infobars/ui_bundled/coordinators",
     "//ios/chrome/browser/link_to_text/model",

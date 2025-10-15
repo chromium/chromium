@@ -36,16 +36,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Reset First Follow</string>
-			<key>Key</key>
-			<string>ResetFirstFollow</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Always show First Follow</string>
 			<key>Key</key>
 			<string>AlwaysShowFirstFollow</string>
@@ -79,16 +69,6 @@
 			<string>Ignore Tile Ablation Conditions</string>
 			<key>Key</key>
 			<string>IgnoreTileAblationConditions</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Always show Follow IPH</string>
-			<key>Key</key>
-			<string>AlwaysShowFollowIPH</string>
 			<key>DefaultValue</key>
 			<false/>
 		</dict>

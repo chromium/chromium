@@ -127,14 +127,6 @@
       [_presenter presentHomeCustomizationTipBubble];
       break;
     }
-    case InProductHelpType::kFollowWhileBrowsing: {
-      [_presenter presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
-                      DiscoverFeedServiceFactory::GetForProfile(profile)
-                          ->GetFeedMetricsRecorder()
-                                                       popupMenuHandler:
-                                                           popupMenuHandler];
-      break;
-    }
     case InProductHelpType::kDefaultSiteView: {
       [_presenter
           presentDefaultSiteViewTipBubbleWithSettingsMap:
