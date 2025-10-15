@@ -103,8 +103,8 @@ std::vector<uint32_t> GetExpandedHashes(
     const std::vector<feedstore::StreamContentHashList>& hashes_list) {
   std::vector<uint32_t> expanded_hashes;
   for (const feedstore::StreamContentHashList& hash_list : hashes_list)
-    for (const auto& hash : hash_list.hashes())
-      expanded_hashes.push_back(hash);
+    expanded_hashes.insert(expanded_hashes.end(), hash_list.hashes().begin(),
+                           hash_list.hashes().end());
   return expanded_hashes;
 }
 
