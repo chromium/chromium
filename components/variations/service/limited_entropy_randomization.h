@@ -52,8 +52,8 @@ enum class SeedRejectionReason {
   kDanglingLayerMemberReference = 8,
   kEmptyLayerReference = 9,
   kInvalidLayerConfiguration = 10,
-  kActiveLowAndLimitedLayers = 11,
-  kMaxValue = kActiveLowAndLimitedLayers
+  kActiveLowAndLimitedEntropy = 11,
+  kMaxValue = kActiveLowAndLimitedEntropy
 };
 
 // The histogram name for the seed rejection reason.

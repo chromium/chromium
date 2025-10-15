@@ -57,8 +57,8 @@ constexpr int kDanglingLayerMemberReferenceBucket = 8;
 constexpr int kEmptyLayerReferenceBucket = 9;
 // LimitedEntropySeedRejectionReason::kInvalidLayerConfiguration
 [[maybe_unused]] constexpr int kInvalidLayerConfigurationBucket = 10;
-// LimitedEntropySeedRejectionReason::kActiveLowAndLimitedLayers
-constexpr int kActiveLowAndLimitedLayersBucket = 11;
+// LimitedEntropySeedRejectionReason::kActiveLowAndLimitedEntropy
+constexpr int kActiveLowAndLimitedEntropyBucket = 11;
 
 Study::Experiment CreateExperiment(int weight) {
   Study::Experiment experiment;
@@ -553,7 +553,39 @@ TEST_F(LimitedEntropyRandomizationTest,
   EXPECT_FALSE(result.seed_has_active_low_layer.has_value());
   EXPECT_FALSE(result.seed_has_active_limited_layer.has_value());
   histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kActiveLowAndLimitedLayersBucket, 1);
+                                       kActiveLowAndLimitedEntropyBucket, 1);
+}
+
+TEST_F(LimitedEntropyRandomizationTest,
+       SeedRejection_SimultaneousLowAndLimitedStudies) {
+  std::vector<Layer> test_layers;
+  std::vector<Study> test_studies;
+  // Create the LIMITED entropy layer.
+  test_layers.push_back(CreateLayer(
+      kLimitedEntropyLayerId, /*num_slots=*/100,
+      /*entropy_mode=*/Layer::LIMITED,
+      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})}));
+
+  // Create an entropy consuming study that refers to the LIMITED entropy layer.
+  test_studies.push_back(
+      CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
+                      CreateLayerMemberReference(kLimitedEntropyLayerId,
+                                                 {kTestLayerMemberId})));
+
+  // Create an entropy consuming study with no layer reference.
+  test_studies.push_back(
+      CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy()));
+
+  // The seed is rejected because the client will have both low entropy and
+  // limited entropy studies active.
+  auto test_seed = CreateTestSeed(test_layers, test_studies);
+  auto result = SeedHasMisconfiguredEntropy(client_state_, test_seed,
+                                            kEntropyLimit_10bits);
+  EXPECT_TRUE(result.is_misconfigured);
+  EXPECT_FALSE(result.seed_has_active_low_layer.has_value());
+  EXPECT_FALSE(result.seed_has_active_limited_layer.has_value());
+  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
+                                       kActiveLowAndLimitedEntropyBucket, 1);
 }
 
 TEST_F(LimitedEntropyRandomizationTest,

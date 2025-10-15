@@ -174,7 +174,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Empty layer reference"/>
   <int value="10"
       label="Incomplete layer validation (errors found post validation)"/>
-  <int value="11" label="Simultaneously active low and limited layers"/>
+  <int value="11"
+      label="Simultaneously active low and limited entropy systems"/>
 </enum>
 
 <enum name="VariationsLogInvalidValue">

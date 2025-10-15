@@ -196,9 +196,11 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
   // We don't know which layer is the active limited layer for the client's
   // platform and channel. We'll set up the active limited layer and the entropy
   // tracker once we find the first relevant study. We'll also track whether
-  // there's an active low entropy layer.
+  // there's an active low entropy layer and whether there are any legacy,
+  // non-layer-constrained, low-entropy studies.
   const Layer* active_limited_layer = nullptr;
   const Layer* active_low_layer = nullptr;
+  size_t num_legacy_studies = 0;
   std::optional<LimitedLayerEntropyCostTracker> entropy_tracker;
   for (const Study& study : seed.study()) {
     SCOPED_CRASH_KEY_STRING256(SR_CRASH_KEY, "study_name", study.name());
@@ -208,14 +210,6 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
     SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "active_low_layer",
                             active_low_layer ? active_low_layer->id() : 0);
 
-    if (!HasLayerReference(study)) {
-      continue;
-    }
-    const Layer* current_layer = FindLayerForStudy(*layer_by_id_map, study);
-    if (!current_layer) {
-      // Seed rejection reason already logged.
-      return MisconfiguredEntropyResult{.is_misconfigured = true};
-    }
     if (!AppliesToClientPlatform(study, client_state) ||
         !AppliesToClientChannel(study, client_state) ||
         !AppliesToClientVersion(study, client_state) ||
@@ -223,6 +217,18 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
       continue;
     }
 
+    if (!HasLayerReference(study)) {
+      if (ConsumesEntropy(study)) {
+        num_legacy_studies++;
+      }
+      continue;
+    }
+
+    const Layer* current_layer = FindLayerForStudy(*layer_by_id_map, study);
+    if (!current_layer) {
+      // Seed rejection reason already logged.
+      return MisconfiguredEntropyResult{.is_misconfigured = true};
+    }
     // Could this be an active low entropy layer?
     if (IsLowEntropyLayer(*current_layer)) {
       if (ConsumesEntropy(study)) {
@@ -262,14 +268,14 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
       return MisconfiguredEntropyResult{.is_misconfigured = true};
     }
   }
-
-  if (active_low_layer != nullptr && active_limited_layer != nullptr) {
-    // Limited and low entropy layers should not be active at the same time.
+  // Limited and low entropy systems should not be active at the same time.
+  if (active_limited_layer && (active_low_layer || num_legacy_studies > 0)) {
     SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "active_limited_layer",
                             active_limited_layer->id());
     SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "active_low_layer",
-                            active_low_layer->id());
-    LogSeedRejectionReason(SeedRejectionReason::kActiveLowAndLimitedLayers);
+                            active_low_layer ? active_low_layer->id() : 0);
+    SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "legacy_studies", num_legacy_studies);
+    LogSeedRejectionReason(SeedRejectionReason::kActiveLowAndLimitedEntropy);
     return MisconfiguredEntropyResult{.is_misconfigured = true};
   }
 
