@@ -58,8 +58,6 @@ constexpr auto kEnabledByDefaultForDesktopOnly =
 
 // These are the kill switches for the launched history embeddings features.
 BASE_FEATURE(kLaunchedHistoryEmbeddings, kEnabledByDefaultForDesktopOnly);
-BASE_FEATURE(kLaunchedHistoryEmbeddingsAnswers,
-             kEnabledByDefaultForDesktopOnly);
 
 bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile) {
   if (!IsHistoryEmbeddingsFeatureEnabled()) {
@@ -197,10 +195,8 @@ bool IsHistoryEmbeddingsAnswersFeatureEnabled() {
           .has_value()) {
     return base::FeatureList::IsEnabled(kHistoryEmbeddingsAnswers);
   }
-  // Otherwise return true for "us" and "en-US", leaving a Finch hook just in
-  // case.
-  return IsCountryAndLocale("us", "en-US") &&
-         base::FeatureList::IsEnabled(kLaunchedHistoryEmbeddingsAnswers);
+
+  return false;
 }
 
 }  // namespace history_embeddings
