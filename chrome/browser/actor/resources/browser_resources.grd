@@ -10,5 +10,14 @@
     <structures>
       <structure name="IDR_ACTOR_TAB_INDICATOR_SPINNER" file="tab_icon_indicator.json" type="lottie" compress="brotli" />
     </structures>
+
+    <messages>
+      <message name="IDR_ACTOR_CHECK_TASK_NUDGE_LABEL" desc="[Placeholder Description]" translateable="false">
+        Check your task
+      </message>
+      <message name="IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL" desc="[Placeholder Description]" translateable="false">
+        Task complete
+      </message>
+    </messages>
   </release>
 </grit>

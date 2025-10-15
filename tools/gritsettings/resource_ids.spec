@@ -99,9 +99,11 @@
   },
   "chrome/browser/actor/resources/internal/browser_resources.grd": {
     "structures": [2230],
+    "messages": [2235],
   },
   "chrome/browser/actor/resources/browser_resources.grd": {
     "structures": [2230],
+    "messages": [2235],
   },
   "chrome/browser/dev_ui_browser_resources.grd": {
     "includes": [2240],
