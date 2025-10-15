@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/installed_scripts_manager.h"
@@ -165,6 +166,12 @@ scoped_refptr<SecurityOrigin> CreateSecurityOrigin(
 
 FontFaceSet* WorkerGlobalScope::fonts() {
   return FontFaceSetWorker::From(*this);
+}
+
+DOMOrigin* WorkerGlobalScope::GetDOMOrigin(LocalDOMWindow*) const {
+  // No access check is required, as `WorkerGlobalScope` objects are not
+  // accessible cross-origin.
+  return DOMOrigin::Create(GetSecurityOrigin());
 }
 
 WorkerGlobalScope::~WorkerGlobalScope() {

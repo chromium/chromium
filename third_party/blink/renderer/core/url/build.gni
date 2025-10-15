@@ -5,6 +5,7 @@
 blink_core_sources_url = [
   "dom_origin.cc",
   "dom_origin.h",
+  "dom_origin_utils.h",
   "dom_url.cc",
   "dom_url.h",
   "dom_url_utils.cc",

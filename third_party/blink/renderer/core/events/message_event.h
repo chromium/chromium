@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -52,7 +53,7 @@ namespace blink {
 class MessageEventInit;
 class UserActivation;
 
-class CORE_EXPORT MessageEvent final : public Event {
+class CORE_EXPORT MessageEvent final : public Event, public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -159,6 +160,9 @@ class CORE_EXPORT MessageEvent final : public Event {
   MessageEvent(DOMArrayBuffer* data,
                scoped_refptr<const SecurityOrigin> origin);
   ~MessageEvent() override;
+
+  // DOMOriginUtils overrides:
+  DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const override;
 
   // This is exposed to JavaScript, and so accepts a serialized |origin| rather
   // than a `SecurityOrigin`.

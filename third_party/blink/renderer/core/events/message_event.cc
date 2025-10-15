@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -70,6 +71,13 @@ size_t MessageEvent::SizeOfExternalMemoryInBytes() {
     case kDataTypeArrayBuffer:
       return data_as_array_buffer_->ByteLength();
   }
+}
+
+DOMOrigin* MessageEvent::GetDOMOrigin(LocalDOMWindow*) const {
+  // No access check is required, as this object intentionally reveals its
+  // sender's origin cross-origin.
+  return GetSecurityOrigin() ? DOMOrigin::Create(GetSecurityOrigin())
+                             : DOMOrigin::Create();
 }
 
 MessageEvent::MessageEvent() : data_type_(kDataTypeScriptValue) {}

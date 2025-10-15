@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/remote_dom_window.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
@@ -320,6 +321,12 @@ void Location::SetLocation(const String& url,
     frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
 
   dom_window_->GetFrame()->Navigate(request, frame_load_type);
+}
+
+DOMOrigin* Location::GetDOMOrigin(LocalDOMWindow* accessing_window) const {
+  return BindingSecurity::ShouldAllowAccessTo(accessing_window, this)
+             ? DOMOrigin::Create(SecurityOrigin::Create(Url()))
+             : nullptr;
 }
 
 Document* Location::GetDocument() const {

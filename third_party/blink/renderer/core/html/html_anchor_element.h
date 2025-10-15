@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html/rel_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
+#include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils.h"
 #include "third_party/blink/renderer/platform/link_hash.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -47,7 +48,8 @@ class MouseEvent;
 // features that use this class should be audited (to see if the new element
 // should also support these features).
 class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
-                                          public DOMURLUtils {
+                                          public DOMURLUtils,
+                                          public DOMOriginUtils {
  public:
   ~HTMLAnchorElementBase() override;
 
@@ -62,7 +64,12 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
   const AtomicString& GetEffectiveTarget() const;
 
   KURL Url() const final;
+
+  // DOMURLUtils overrides:
   void SetURL(const KURL&) final;
+
+  // DOMOriginUtils overrides:
+  DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const final;
 
   String Input() const final;
 

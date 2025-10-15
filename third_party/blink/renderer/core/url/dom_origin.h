@@ -24,12 +24,13 @@ class CORE_EXPORT DOMOrigin final : public ScriptWrappable {
   // Creates a unique opaque origin:
   static DOMOrigin* Create();
 
+  static DOMOrigin* Create(scoped_refptr<const SecurityOrigin>);
+
   // Parses |value|, throwing an error if it isn't a validly serialized origin:
   static DOMOrigin* Create(const String& value,
                            ExceptionState& exception_state);
 
-  DOMOrigin(base::PassKey<DOMOrigin>,
-            scoped_refptr<const SecurityOrigin> origin);
+  DOMOrigin(base::PassKey<DOMOrigin>, scoped_refptr<const SecurityOrigin>);
   ~DOMOrigin() override;
 
   // Parses |value|, returning `null` if it isn't a validly serialized origin:
@@ -55,8 +56,6 @@ class CORE_EXPORT DOMOrigin final : public ScriptWrappable {
   const SecurityOrigin* GetOriginForTesting() const { return origin_.get(); }
 
  private:
-  static DOMOrigin* Create(scoped_refptr<const SecurityOrigin>);
-
   const scoped_refptr<const SecurityOrigin> origin_;
 };
 
