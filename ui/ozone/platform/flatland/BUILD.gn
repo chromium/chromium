@@ -54,6 +54,7 @@ source_set("flatland") {
 
   deps = [
     "//base",
+    "//components/viz/common/resources:shared_image_format",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
     "//skia",

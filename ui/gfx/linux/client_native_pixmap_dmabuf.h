@@ -32,8 +32,7 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
   // client_native_pixmap_factory_dmabuf.cc.
   static std::unique_ptr<gfx::ClientNativePixmap> ImportFromDmabuf(
       gfx::NativePixmapHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format);
+      const gfx::Size& size);
 
   ClientNativePixmapDmaBuf(const ClientNativePixmapDmaBuf&) = delete;
   ClientNativePixmapDmaBuf& operator=(const ClientNativePixmapDmaBuf&) = delete;

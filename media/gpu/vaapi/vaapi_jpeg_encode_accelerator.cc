@@ -310,7 +310,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory_->ImportFromHandle(
           std::move(output_gmb_handle).native_pixmap_handle(),
-          native_pixmap_size, gfx::BufferFormat::R_8,
+          native_pixmap_size, viz::SinglePlaneFormat::kR_8,
           gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE);
   if (native_pixmap == nullptr) {
     VLOGF(1) << "Failed to create NativePixmap from handle";

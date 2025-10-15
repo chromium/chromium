@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
 // Although, it's compiled for all linux platforms, it does not mean dmabuf
@@ -64,7 +65,7 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
   std::unique_ptr<ClientNativePixmap> ImportFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) override {
     DCHECK(!handle.planes.empty());
     switch (usage) {
@@ -115,7 +116,7 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
           }
         }
         return ClientNativePixmapDmaBuf::ImportFromDmabuf(std::move(handle),
-                                                          size, format);
+                                                          size);
       }
       case gfx::BufferUsage::GPU_READ:
       case gfx::BufferUsage::SCANOUT:
