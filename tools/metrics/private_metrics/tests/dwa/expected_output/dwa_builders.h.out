@@ -1,4 +1,3 @@
-
 // Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
@@ -10,8 +9,7 @@
 
 #include "components/metrics/dwa/dwa_entry_builder_base.h"
 
-namespace dwa {
-namespace builders {
+namespace dwa::builders {
 
 
 class DwaTestMetric final : public ::dwa::internal::DwaEntryBuilderBase {
@@ -48,7 +46,6 @@ class DwaTestMetric final : public ::dwa::internal::DwaEntryBuilderBase {
 };
 
 
-}  // namespace builders
-}  // namespace dwa
+}  // namespace dwa::builders
 
 #endif  // TEST_RELPATH_DWA_BUILDERS_H

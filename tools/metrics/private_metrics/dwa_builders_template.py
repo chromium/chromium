@@ -6,7 +6,7 @@
 import private_metrics_codegen
 
 HEADER = private_metrics_codegen.Template(basename="dwa_builders.h",
-                                          file_template="""
+                                          file_template="""\
 // Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
@@ -18,13 +18,11 @@ HEADER = private_metrics_codegen.Template(basename="dwa_builders.h",
 
 #include "components/metrics/dwa/dwa_entry_builder_base.h"
 
-namespace dwa {{
-namespace builders {{
+namespace dwa::builders {{
 
 {event_code}
 
-}}  // namespace builders
-}}  // namespace dwa
+}}  // namespace dwa::builders
 
 #endif  // {file.guard_path}
 """,
@@ -57,7 +55,7 @@ class {event.name} final : public ::dwa::internal::DwaEntryBuilderBase {{
 
 IMPL = private_metrics_codegen.Template(
     basename="dwa_builders.cc",
-    file_template="""
+    file_template="""\
 // Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
@@ -65,13 +63,11 @@ IMPL = private_metrics_codegen.Template(
 
 #include "base/metrics/metrics_hashes.h"
 
-namespace dwa {{
-namespace builders {{
+namespace dwa::builders {{
 
 {event_code}
 
-}}  // namespace builders
-}}  // namespace dwa
+}}  // namespace dwa::builders
 """,
     event_template="""
 const char {event.name}::kEntryName[] = "{event.raw_name}";
@@ -79,7 +75,7 @@ const uint64_t {event.name}::kEntryNameHash;
 
 {event.name}::{event.name}() :
   ::dwa::internal::DwaEntryBuilderBase(kEntryNameHash) {{
-  {study_code}
+{study_code}
 }}
 
 {event.name}::{event.name}({event.name}&&) = default;

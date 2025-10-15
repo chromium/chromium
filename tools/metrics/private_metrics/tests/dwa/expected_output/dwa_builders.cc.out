@@ -1,4 +1,3 @@
-
 // Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
 // source: dwa.xml
 
@@ -6,8 +5,7 @@
 
 #include "base/metrics/metrics_hashes.h"
 
-namespace dwa {
-namespace builders {
+namespace dwa::builders {
 
 
 const char DwaTestMetric::kEntryName[] = "DwaTestMetric";
@@ -15,7 +13,7 @@ const uint64_t DwaTestMetric::kEntryNameHash;
 
 DwaTestMetric::DwaTestMetric() :
   ::dwa::internal::DwaEntryBuilderBase(kEntryNameHash) {
-  
+
   AddToStudiesOfInterestInternal(kACTStudyName);
 
   AddToStudiesOfInterestInternal(kLegacyStudyName);
@@ -54,5 +52,4 @@ DwaTestMetric& DwaTestMetric::SetLatency(int64_t value) {
 
 
 
-}  // namespace builders
-}  // namespace dwa
+}  // namespace dwa::builders
