@@ -210,6 +210,7 @@ public class SelectActionMenuHelper {
         primaryAssistGroup.addItem(
                 new SelectionMenuItem.Builder(primaryAction.getTitle())
                         .setId(android.R.id.textAssist)
+                        .setGroupId(R.id.select_action_menu_assist_items)
                         .setIcon(
                                 getPrimaryActionIconForClassificationResult(
                                         classificationResult, context))
@@ -254,7 +255,7 @@ public class SelectActionMenuHelper {
             String selectedText) {
         // We have to use android.R.id.textAssist as group id to make framework show icons for
         // menu items if there is selected text.
-        @IdRes int groupId = selectedText.isEmpty() ? Menu.NONE : android.R.id.textAssist;
+        @IdRes int groupId = android.R.id.textAssist;
         SelectionMenuGroup secondaryAssistItems =
                 new SelectionMenuGroup(groupId, GroupItemOrder.SECONDARY_ASSIST_ITEMS);
 
@@ -294,6 +295,7 @@ public class SelectActionMenuHelper {
             SelectionMenuItem item =
                     new SelectionMenuItem.Builder(action.getTitle())
                             .setId(Menu.NONE)
+                            .setGroupId(groupId)
                             .setIcon(icons == null ? null : icons.get(i))
                             .setOrderInCategory(i - startIndex)
                             .setContentDescription(action.getContentDescription())
@@ -347,6 +349,7 @@ public class SelectActionMenuHelper {
             textProcessingItems.addItem(
                     new SelectionMenuItem.Builder(title)
                             .setId(Menu.NONE)
+                            .setGroupId(R.id.select_action_menu_text_processing_items)
                             .setIcon(icon)
                             .setOrderInCategory(i)
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
@@ -424,6 +427,7 @@ public class SelectActionMenuHelper {
     private static SelectionMenuItem.Builder cut(boolean isEnabled) {
         return new SelectionMenuItem.Builder(android.R.string.cut)
                 .setId(R.id.select_action_menu_cut)
+                .setGroupId(R.id.select_action_menu_default_items)
                 .setIconAttr(android.R.attr.actionModeCutDrawable)
                 .setAlphabeticShortcut(ItemKeyShortcuts.CUT)
                 .setOrderInCategory(DefaultItemOrder.CUT)
@@ -436,6 +440,7 @@ public class SelectActionMenuHelper {
     private static SelectionMenuItem.Builder copy(boolean isEnabled) {
         return new SelectionMenuItem.Builder(android.R.string.copy)
                 .setId(R.id.select_action_menu_copy)
+                .setGroupId(R.id.select_action_menu_default_items)
                 .setIconAttr(android.R.attr.actionModeCopyDrawable)
                 .setAlphabeticShortcut(ItemKeyShortcuts.COPY)
                 .setOrderInCategory(DefaultItemOrder.COPY)
@@ -448,6 +453,7 @@ public class SelectActionMenuHelper {
     private static SelectionMenuItem.Builder paste(boolean isEnabled) {
         return new SelectionMenuItem.Builder(android.R.string.paste)
                 .setId(R.id.select_action_menu_paste)
+                .setGroupId(R.id.select_action_menu_default_items)
                 .setIconAttr(android.R.attr.actionModePasteDrawable)
                 .setAlphabeticShortcut(ItemKeyShortcuts.PASTE)
                 .setOrderInCategory(DefaultItemOrder.PASTE)
@@ -463,6 +469,7 @@ public class SelectActionMenuHelper {
         }
         return new SelectionMenuItem.Builder(context.getString(R.string.actionbar_share))
                 .setId(R.id.select_action_menu_share)
+                .setGroupId(R.id.select_action_menu_default_items)
                 .setIconAttr(android.R.attr.actionModeShareDrawable)
                 .setOrderInCategory(DefaultItemOrder.SHARE)
                 .setShowAsActionFlags(
@@ -474,6 +481,7 @@ public class SelectActionMenuHelper {
     private static SelectionMenuItem.Builder selectAll(boolean isEnabled) {
         return new SelectionMenuItem.Builder(android.R.string.selectAll)
                 .setId(R.id.select_action_menu_select_all)
+                .setGroupId(R.id.select_action_menu_default_items)
                 .setIconAttr(android.R.attr.actionModeSelectAllDrawable)
                 .setAlphabeticShortcut(ItemKeyShortcuts.SELECT_ALL)
                 .setOrderInCategory(DefaultItemOrder.SELECT_ALL)
@@ -488,6 +496,7 @@ public class SelectActionMenuHelper {
         SelectionMenuItem.Builder builder =
                 new SelectionMenuItem.Builder(android.R.string.paste_as_plain_text)
                         .setId(R.id.select_action_menu_paste_as_plain_text)
+                        .setGroupId(R.id.select_action_menu_default_items)
                         .setOrderInCategory(DefaultItemOrder.PASTE_AS_PLAIN_TEXT)
                         .setShowAsActionFlags(
                                 MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
@@ -507,6 +516,7 @@ public class SelectActionMenuHelper {
         }
         return new SelectionMenuItem.Builder(context.getString(R.string.actionbar_web_search))
                 .setId(R.id.select_action_menu_web_search)
+                .setGroupId(R.id.select_action_menu_default_items)
                 .setIconAttr(android.R.attr.actionModeWebSearchDrawable)
                 .setOrderInCategory(DefaultItemOrder.WEB_SEARCH)
                 .setShowAsActionFlags(

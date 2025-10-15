@@ -165,6 +165,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
                                             ContextUtils.getApplicationContext()
                                                     .getPackageManager()))
                             .setId(R.id.select_action_menu_translate)
+                            .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
                             .setIcon(null)
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                             .setOrderInCategory(SamsungDefaultItemOrder.TRANSLATE)
@@ -176,6 +177,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
             menuItemBuilders.add(
                     new SelectionMenuItem.Builder(SCAN_TEXT_ID)
                             .setId(SCAN_TEXT_ID)
+                            .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
                             .setOrderInCategory(SamsungDefaultItemOrder.WRITING_TOOLKIT)
                             .setIntent(
@@ -236,6 +238,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         additionalItemBuilderList.add(
                 new SelectionMenuItem.Builder(R.string.actionbar_manage_apps)
                         .setId(R.id.select_action_menu_manage_apps)
+                        .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
                         .setIcon(null)
                         .setOrderInCategory(Menu.CATEGORY_SECONDARY)
                         .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)

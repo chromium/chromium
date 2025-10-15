@@ -36,6 +36,7 @@ public class AutofillSelectionMenuItemHelper {
                                     org.chromium.components.autofill.R.string
                                             .autofill_long_press_passkey_option)
                             .setId(R.id.select_action_menu_passkey_entry)
+                            .setGroupId(R.id.select_action_menu_delegate_items)
                             .setOrderInCategory(Menu.FIRST)
                             .setShowAsActionFlags(
                                     MenuItem.SHOW_AS_ACTION_ALWAYS
@@ -46,6 +47,7 @@ public class AutofillSelectionMenuItemHelper {
             autofillItems.add(
                     new SelectionMenuItem.Builder(mAutofillMenuItemTitle)
                             .setId(android.R.id.autofill)
+                            .setGroupId(R.id.select_action_menu_delegate_items)
                             .setOrderInCategory(Menu.CATEGORY_SECONDARY)
                             .setShowAsActionFlags(
                                     MenuItem.SHOW_AS_ACTION_NEVER

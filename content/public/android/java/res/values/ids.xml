@@ -10,6 +10,7 @@ found in the LICENSE file.
     <item type="id" name="select_action_menu_assist_items" />
     <item type="id" name="select_action_menu_default_items" />
     <item type="id" name="select_action_menu_text_processing_items" />
+    <item type="id" name="select_action_menu_delegate_items" />
 
     <!-- Selection Menu Items -->
     <item type="id" name="select_action_menu_cut" />

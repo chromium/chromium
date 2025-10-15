@@ -31,6 +31,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     private final @StringRes int mTitleRes;
     private final @Nullable CharSequence mTitle;
     public final @IdRes int id;
+    public final @IdRes int groupId;
     public final @Nullable Character alphabeticShortcut;
     public final int orderInCategory;
     public final int showAsActionFlags;
@@ -42,6 +43,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
 
     private SelectionMenuItem(
             @IdRes int id,
+            @IdRes int groupId,
             @AttrRes int iconAttr,
             @Nullable Drawable icon,
             @StringRes int titleRes,
@@ -59,6 +61,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         mTitleRes = titleRes;
         mTitle = title;
         this.id = id;
+        this.groupId = groupId;
         this.alphabeticShortcut = alphabeticShortcut;
         this.orderInCategory = orderInCategory;
         this.showAsActionFlags = showAsActionFlags;
@@ -105,6 +108,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         private final @StringRes int mTitleRes;
         private final @Nullable CharSequence mTitle;
         public @IdRes int mId;
+        private @IdRes int mGroupId;
         private @AttrRes int mIconAttr;
         private @Nullable Drawable mIcon;
         private @Nullable Character mAlphabeticShortcut;
@@ -151,6 +155,19 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         /** The id of the menu item. */
         public Builder setId(@IdRes int id) {
             mId = id;
+            return this;
+        }
+
+        /**
+         * An id to associate the item with where it was populated from. This should usually be one
+         * of the resource identifiers defined in content/public/android/java/res/values/ids.xml.
+         * The groupId is used to identify individual items to handle their clicks appropriately.
+         * Items added by delegates will use SelectionActionMenuDelegate#handleMenuItemClick, text
+         * processing items should be handled by starting the item's intent and default items will
+         * be handled manually based on their item id.
+         */
+        public Builder setGroupId(@IdRes int groupId) {
+            mGroupId = groupId;
             return this;
         }
 
@@ -226,6 +243,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         public SelectionMenuItem build() {
             return new SelectionMenuItem(
                     mId,
+                    mGroupId,
                     mIconAttr,
                     mIcon,
                     mTitleRes,
