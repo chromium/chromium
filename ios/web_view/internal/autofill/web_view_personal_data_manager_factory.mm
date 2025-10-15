@@ -64,16 +64,17 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
       WebViewSyncServiceFactory::GetForBrowserState(browser_state);
 
   PrefService* prefs = browser_state->GetPrefs();
+  autofill::AutofillImageFetcherBase* autofill_image_fetcher = nullptr;
   if (prefs->GetBoolean(ios_web_view::kUseImageFetcherEnabled)) {
-    // TODO(crbug.com/448641522): Create ImageFetcher and pass to
-    // PersonalDataManager.
+    autofill_image_fetcher =
+        WebViewAutofillImageFetcherFactory::GetForBrowserState(browser_state);
   }
   return std::make_unique<autofill::PersonalDataManager>(
       profile_db, account_db, browser_state->GetPrefs(),
       ApplicationContext::GetInstance()->GetLocalState(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       /*history_service=*/nullptr, sync_service, /*strike_database=*/nullptr,
-      /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,
+      autofill_image_fetcher, /*shared_storage_handler=*/nullptr,
       ApplicationContext::GetInstance()->GetApplicationLocale(),
       /*country_code=*/"", /*autofill_optimization_guide=*/nullptr);
 }
