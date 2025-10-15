@@ -193,20 +193,29 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
     }
   }
 
-  _title.hidden = !_configuration.title;
   _title.text = _configuration.title;
+  if (_configuration.attributedTitle) {
+    _title.attributedText = _configuration.attributedTitle;
+  }
+  _title.hidden = !_title.text;
   _title.textColor =
       _configuration.titleColor ?: [UIColor colorNamed:kTextPrimaryColor];
   _title.enabled = !_configuration.textDisabled;
 
-  _subtitle.hidden = !_configuration.subtitle;
   _subtitle.text = _configuration.subtitle;
+  if (_configuration.attributedSubtitle) {
+    _subtitle.attributedText = _configuration.attributedSubtitle;
+  }
+  _subtitle.hidden = !_subtitle.text;
   _subtitle.textColor =
       _configuration.subtitleColor ?: [UIColor colorNamed:kTextSecondaryColor];
   _subtitle.enabled = !_configuration.textDisabled;
 
-  _trailingLabel.hidden = !_configuration.trailingText;
   _trailingLabel.text = _configuration.trailingText;
+  if (_configuration.attributedTrailingText) {
+    _trailingLabel.attributedText = _configuration.attributedTrailingText;
+  }
+  _trailingLabel.hidden = !_trailingLabel.text;
   _trailingLabel.textColor = _configuration.trailingTextColor
                                  ?: [UIColor colorNamed:kTextSecondaryColor];
   _trailingLabel.enabled = !_configuration.textDisabled;

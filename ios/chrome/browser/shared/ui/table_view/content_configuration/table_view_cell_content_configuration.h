@@ -38,20 +38,25 @@
 // Whether the labels should be disabled (change text color). Default NO.
 @property(nonatomic, assign, getter=isTextDisabled) BOOL textDisabled;
 
-// The title of the cell.
+// The title of the cell. `attributedTitle` takes precedence over `title`.
 @property(nonatomic, copy) NSString* title;
+@property(nonatomic, copy) NSAttributedString* attributedTitle;
 @property(nonatomic, strong) UIColor* titleColor;
 // Defaults to 0 (unlimited).
 @property(nonatomic, assign) NSInteger titleNumberOfLines;
 
-// The subtitle of the cell.
+// The subtitle of the cell. `attributedSubtitle` takes precedence over
+// `subtitle`.
 @property(nonatomic, copy) NSString* subtitle;
+@property(nonatomic, copy) NSAttributedString* attributedSubtitle;
 @property(nonatomic, strong) UIColor* subtitleColor;
 // Defaults to 0 (unlimited).
 @property(nonatomic, assign) NSInteger subtitleNumberOfLines;
 
-// The trailing details of the cell.
+// The trailing details of the cell. `attributedTrailingText` takes precedence
+// over `trailingText`.
 @property(nonatomic, copy) NSString* trailingText;
+@property(nonatomic, copy) NSAttributedString* attributedTrailingText;
 @property(nonatomic, strong) UIColor* trailingTextColor;
 // Defaults to 1.
 @property(nonatomic, assign) NSInteger trailingTextNumberOfLines;

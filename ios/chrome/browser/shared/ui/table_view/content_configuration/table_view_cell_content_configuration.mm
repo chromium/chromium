@@ -68,12 +68,15 @@
   copy.trailingConfiguration = [self.trailingConfiguration copyWithZone:zone];
   copy.textDisabled = self.textDisabled;
   copy.title = self.title;
+  copy.attributedTitle = self.attributedTitle;
   copy.titleColor = self.titleColor;
   copy.titleNumberOfLines = self.titleNumberOfLines;
   copy.subtitle = self.subtitle;
+  copy.attributedSubtitle = self.attributedSubtitle;
   copy.subtitleColor = self.subtitleColor;
   copy.subtitleNumberOfLines = self.subtitleNumberOfLines;
   copy.trailingText = self.trailingText;
+  copy.attributedTrailingText = self.attributedTrailingText;
   copy.trailingTextColor = self.trailingTextColor;
   copy.trailingTextNumberOfLines = self.trailingTextNumberOfLines;
   // LINT.ThenChange(table_view_cell_content_configuration.h:Copy)
@@ -85,13 +88,19 @@
 - (NSString*)accessibilityLabel {
   NSMutableArray* parts = [NSMutableArray array];
 
-  if (self.title.length > 0) {
+  if (self.attributedTitle.length > 0) {
+    [parts addObject:self.attributedTitle.string];
+  } else if (self.title.length > 0) {
     [parts addObject:self.title];
   }
-  if (self.subtitle.length > 0) {
+  if (self.attributedSubtitle.length > 0) {
+    [parts addObject:self.attributedSubtitle.string];
+  } else if (self.subtitle.length > 0) {
     [parts addObject:self.subtitle];
   }
-  if (self.trailingText.length > 0) {
+  if (self.attributedTrailingText.length > 0) {
+    [parts addObject:self.attributedTrailingText.string];
+  } else if (self.trailingText.length > 0) {
     [parts addObject:self.trailingText];
   }
 
