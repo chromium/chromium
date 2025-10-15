@@ -444,19 +444,20 @@ export class SearchboxMatchElement extends CrLitElement {
         selection.state !== SelectionLineState.kNormal &&
             selection.line === this.matchIndex);
 
-    this.$.remove.classList.toggle(
-        'selected',
-        selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion &&
-            selection.line === this.matchIndex);
-
-    [...this.shadowRoot.querySelectorAll('cr-searchbox-action')].forEach(
-        (action, index) => {
+    [...this.shadowRoot.querySelectorAll(
+         '#actions-container cr-searchbox-action')]
+        .forEach((action, index) => {
           action.classList.toggle(
               'selected',
               selection.state === SelectionLineState.kFocusedButtonAction &&
                   selection.actionIndex === index &&
                   selection.line === this.matchIndex);
         });
+
+    this.$.remove.classList.toggle(
+        'selected',
+        selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion &&
+            selection.line === this.matchIndex);
   }
 
   private getMatchContents_(): string {
