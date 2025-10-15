@@ -428,7 +428,7 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/i
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
-crbug.com/443182226 [ fuchsia ] conformance/misc/shader-precision-format.html [ Failure ]
+crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/443182226 [ fuchsia ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
 
@@ -482,9 +482,6 @@ crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures
 ## Win / Intel / D3D9
 crbug.com/395934162 [ angle-d3d9 intel-0x4680 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 
-## Test bug
-crbug.com/443182226 [ win nvidia angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/443182226 [ win nvidia angle-vulkan passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
 # Win11 / NVIDIA RTX 4070 Super
 crbug.com/450326413 [ win11 nvidia-0x2783 ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
@@ -633,9 +630,6 @@ crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/con
 # Brya failures
 crbug.com/416483574 [ android android-brya ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
 
-## Test bug
-crbug.com/443182234 [ android android-brya ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/443182234 [ android android-brya ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
 
 ############
