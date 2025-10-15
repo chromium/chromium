@@ -517,7 +517,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
@@ -2540,12 +2539,6 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 #endif
   return false;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-bool ChromeContentBrowserClient::IsInitialWebUIScheme(const GURL& url) {
-  return IsForInitialWebUI(url);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
     content::BrowserContext* browser_context,

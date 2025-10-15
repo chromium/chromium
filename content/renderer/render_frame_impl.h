@@ -644,8 +644,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   base::ScopedClosureRunner CreateScopedClientNavigationThrottler() override;
 
-  bool IsForInitialWebUI() const override;
-
   // Dispatches the current state of selection on the webpage to the browser if
   // it has changed or if the forced flag is passed. The forced flag is used
   // when the browser selection may be out of sync with the renderer due to

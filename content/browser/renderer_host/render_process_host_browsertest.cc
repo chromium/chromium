@@ -2742,47 +2742,6 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   process_b->Cleanup();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// Asserts RenderProcessHosts are configured to reflect the embedder's policy
-// defined by `ContentBrowserClient::IsInitialWebUIScheme()`.
-IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForInitialWebUIAppliedToHosts) {
-  class ForInitialWebUIContentBrowserClient
-      : public ContentBrowserTestContentBrowserClient {
-   public:
-    // ContentBrowserTestContentBrowserClient:
-    bool IsInitialWebUIScheme(const GURL& url) override {
-      return url == GURL("chrome://initial-webui-test-scheme");
-    }
-  };
-  ForInitialWebUIContentBrowserClient content_browser_client;
-
-  const GURL url_a("chrome://initial-webui-test-scheme");
-  const GURL url_b("http://b.com");
-
-  BrowserContext* browser_context =
-      ShellContentBrowserClient::Get()->browser_context();
-  scoped_refptr<SiteInstanceImpl> site_instance_a =
-      SiteInstanceImpl::CreateForTesting(browser_context, url_a);
-  scoped_refptr<SiteInstanceImpl> site_instance_b =
-      SiteInstanceImpl::CreateForTesting(browser_context, url_b);
-
-  RenderProcessHost* process_a = RenderProcessHostImpl::CreateRenderProcessHost(
-      browser_context, site_instance_a.get());
-  RenderProcessHost* process_b = RenderProcessHostImpl::CreateRenderProcessHost(
-      browser_context, site_instance_b.get());
-  process_a->Init();
-  process_b->Init();
-
-  EXPECT_TRUE(
-      static_cast<RenderProcessHostImpl*>(process_a)->IsForInitialWebUI());
-  EXPECT_FALSE(
-      static_cast<RenderProcessHostImpl*>(process_b)->IsForInitialWebUI());
-
-  process_a->Cleanup();
-  process_b->Cleanup();
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 }  // namespace content

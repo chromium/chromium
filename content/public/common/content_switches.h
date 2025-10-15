@@ -176,9 +176,6 @@ CONTENT_EXPORT extern const char kRemoteDebuggingPort[];
 CONTENT_EXPORT extern const char kRemoteAllowOrigins[];
 CONTENT_EXPORT extern const char kRendererClientId[];
 extern const char kRendererCmdPrefix[];
-#if !BUILDFLAG(IS_ANDROID)
-CONTENT_EXPORT extern const char kRendererForInitialWebUI[];
-#endif  // !BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const char kRendererProcess[];
 CONTENT_EXPORT extern const char kRendererProcessLaunchTimeTicks[];
 CONTENT_EXPORT extern const char kRendererProcessLimit[];

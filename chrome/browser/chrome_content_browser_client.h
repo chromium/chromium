@@ -291,9 +291,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldUrlUseApplicationIsolationLevel(
       content::BrowserContext* browser_context,
       const GURL& url) override;
-#if !BUILDFLAG(IS_ANDROID)
-  bool IsInitialWebUIScheme(const GURL& url) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
   bool IsIsolatedContextAllowedForUrl(content::BrowserContext* browser_context,
                                       const GURL& lock_url) override;
   bool IsMultiCaptureAllowed(
