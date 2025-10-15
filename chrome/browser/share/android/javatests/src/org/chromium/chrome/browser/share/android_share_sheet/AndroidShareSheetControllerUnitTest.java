@@ -54,7 +54,6 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.RealObject;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.task.TaskTraits;
@@ -72,7 +71,6 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
-import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowShareImageFileUtils;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
@@ -103,7 +101,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Test for {@link AndroidShareSheetController} and {@link AndroidCustomActionProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowShareImageFileUtils.class, ShadowPostTask.class})
+@Config(shadows = {ShadowPostTask.class})
 public class AndroidShareSheetControllerUnitTest {
     private static final String KEY_CHOOSER_ACTION_ICON = "icon";
     private static final String KEY_CHOOSER_ACTION_NAME = "name";
@@ -158,7 +156,11 @@ public class AndroidShareSheetControllerUnitTest {
         FaviconHelperJni.setInstanceForTesting(mMockFaviconHelperJni);
         doReturn(1L).when(mMockFaviconHelperJni).init();
         mTestWebFavicon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        ShadowShareImageFileUtils.sExpectedWebBitmap = mTestWebFavicon;
+        ShareImageFileUtils.setGenerateTemporaryUriFromBitmapHookForTesting(
+                bitmap ->
+                        mTestWebFavicon.equals(bitmap)
+                                ? TEST_WEB_FAVICON_PREVIEW_URI
+                                : TEST_FALLBACK_FAVICON_PREVIEW_URI);
         setFaviconToFetchForTest(mTestWebFavicon);
         // Set up mMockDomDistillerUrlUtilsJni. Needed for link-to-text sharing.
         DomDistillerUrlUtilsJni.setInstanceForTesting(mMockDomDistillerUrlUtilsJni);
@@ -443,7 +445,11 @@ public class AndroidShareSheetControllerUnitTest {
                 HistogramWatcher.newSingleRecordWatcher("Sharing.PreparePreviewFaviconDuration");
 
         Bitmap testBitmap = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888);
-        ShadowShareImageFileUtils.sExpectedWebBitmap = testBitmap;
+        ShareImageFileUtils.setGenerateTemporaryUriFromBitmapHookForTesting(
+                bitmap ->
+                        testBitmap.equals(bitmap)
+                                ? TEST_WEB_FAVICON_PREVIEW_URI
+                                : TEST_FALLBACK_FAVICON_PREVIEW_URI);
 
         ShareParams params =
                 new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
@@ -460,15 +466,12 @@ public class AndroidShareSheetControllerUnitTest {
                 TEST_WEB_FAVICON_PREVIEW_URI,
                 intent.getClipData().getItemAt(0).getUri());
         watcher.assertExpected();
-
-        ShadowShareImageFileUtils.sExpectedWebBitmap = null;
     }
 
     @Test
     public void shareUrlWithPreviewImageUri() {
         Bitmap testBitmap = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888);
         // This testBitmap is unused since preview URI was set.
-        ShadowShareImageFileUtils.sExpectedWebBitmap = null;
         Uri testUri = Uri.parse("content://test.web.favicon.preview.shareUrlWithPreviewImageUri");
 
         ShareParams params =
@@ -890,22 +893,6 @@ public class AndroidShareSheetControllerUnitTest {
             bundle.putString(KEY_CHOOSER_ACTION_NAME, name);
             bundle.putParcelable(KEY_CHOOSER_ACTION_ACTION, action);
             return bundle;
-        }
-    }
-
-    // Shadow class to bypass actually saving the image as URL for this test.
-    @Implements(ShareImageFileUtils.class)
-    static class ShadowShareImageFileUtils {
-        static @Nullable Bitmap sExpectedWebBitmap;
-
-        @Implementation
-        public static void generateTemporaryUriFromBitmap(
-                String fileName, Bitmap bitmap, Callback<Uri> callback) {
-            if (bitmap != null && bitmap.equals(sExpectedWebBitmap)) {
-                callback.onResult(TEST_WEB_FAVICON_PREVIEW_URI);
-            } else {
-                callback.onResult(TEST_FALLBACK_FAVICON_PREVIEW_URI);
-            }
         }
     }
 

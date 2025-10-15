@@ -26,6 +26,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
@@ -46,11 +47,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Locale;
+import java.util.function.Function;
 
 /** Utility class for file operations for image data. */
 @NullMarked
 public class ShareImageFileUtils {
     private static final String TAG = "share";
+
+    private static @Nullable Function<Bitmap, Uri> sGenerateTemporaryUriFromBitmapHook;
 
     /**
      * Directory name for shared images.
@@ -169,6 +173,11 @@ public class ShareImageFileUtils {
                 fileExtension);
     }
 
+    public static void setGenerateTemporaryUriFromBitmapHookForTesting(Function<Bitmap, Uri> hook) {
+        sGenerateTemporaryUriFromBitmapHook = hook;
+        ResettersForTesting.register(() -> sGenerateTemporaryUriFromBitmapHook = null);
+    }
+
     /**
      * Temporarily saves the bitmap and provides that URI to a callback for sharing.
      *
@@ -178,6 +187,11 @@ public class ShareImageFileUtils {
      */
     public static void generateTemporaryUriFromBitmap(
             String fileName, Bitmap bitmap, Callback<Uri> callback) {
+        if (sGenerateTemporaryUriFromBitmapHook != null) {
+            callback.onResult(sGenerateTemporaryUriFromBitmapHook.apply(bitmap));
+            return;
+        }
+
         OnImageSaveListener listener =
                 new OnImageSaveListener() {
                     @Override

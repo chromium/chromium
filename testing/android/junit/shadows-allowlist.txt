@@ -41,7 +41,6 @@
 +org.chromium.chrome.browser.util.AndroidTaskUtils
 +org.chromium.chrome.browser.webapps.WebApkShareTargetUtil
 +org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider
-+org.chromium.components.browser_ui.share.ShareImageFileUtils
 +org.chromium.components.browser_ui.styles.SemanticColorUtils
 +org.chromium.components.browser_ui.widget.ContextMenuDialog
 +org.chromium.components.embedder_support.util.UrlUtilities
