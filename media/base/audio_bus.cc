@@ -129,6 +129,21 @@ std::unique_ptr<AudioBus> AudioBus::WrapMemory(int channels,
 }
 
 std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
+                                               void* data) {
+  // |data| must be aligned by AudioBus::kChannelAlignment.
+  CHECK(IsAligned(data));
+  const auto memory_size = CalculateMemorySizeInternal(
+      params.channels(), params.frames_per_buffer());
+
+  // Per interface contract, `data` must point to at least `memory_size` bytes.
+  // TODO(crbug.com/373960632): Remove this method and enforce this on the
+  // caller side.
+  UNSAFE_TODO(auto float_span = base::span<float>(
+                  reinterpret_cast<float*>(data), memory_size / sizeof(float)));
+  return WrapMemory(params, float_span);
+}
+
+std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
                                                base::span<uint8_t> data) {
   CHECK(IsAligned(data.data()));
   CHECK_EQ(data.size() % sizeof(float), 0u);
