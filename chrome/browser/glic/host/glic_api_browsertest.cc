@@ -1301,6 +1301,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
+  // TODO(harringtond): This test is flaky in multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   // Note: ideally this test would only open Glic after the main browser is
   // closed. This however crashes in `OpenGlicWindow()`.
