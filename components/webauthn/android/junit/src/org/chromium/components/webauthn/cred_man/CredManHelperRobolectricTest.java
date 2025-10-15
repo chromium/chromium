@@ -50,7 +50,6 @@ import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
-import org.chromium.components.payments.test_support.ShadowWebContentsStatics;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
@@ -62,6 +61,7 @@ import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCre
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.mojo_base.mojom.String16;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -80,8 +80,7 @@ import org.chromium.mojo_base.mojom.String16;
             ShadowGetCredentialRequest.class,
             ShadowGetCredentialRequest.ShadowBuilder.class,
             ShadowGetCredentialResponse.class,
-            ShadowPrepareGetCredentialResponse.class,
-            ShadowWebContentsStatics.class
+            ShadowPrepareGetCredentialResponse.class
         })
 public class CredManHelperRobolectricTest {
     private CredManHelper mCredManHelper;
@@ -117,6 +116,7 @@ public class CredManHelperRobolectricTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
+        WebContentsStatics.setWebContentsForTesting(null);
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.REQUIRED;
