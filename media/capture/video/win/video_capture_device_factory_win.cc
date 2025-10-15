@@ -512,9 +512,9 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
   void UpdateDevicesInfoAvailability(
       std::vector<VideoCaptureDeviceInfo>* devices_info) {
     base::AutoLock lock(cache_lock_);
-    std::set<std::string> device_ids;
+    std::set<std::string_view> device_ids;
     for (auto& info : *devices_info) {
-      device_ids.insert(info.descriptor.device_id);
+      device_ids.emplace(info.descriptor.device_id);
       auto it = availability_cache_.find(info.descriptor.device_id);
       if (it != availability_cache_.end()) {
         info.descriptor.availability = it->second;
