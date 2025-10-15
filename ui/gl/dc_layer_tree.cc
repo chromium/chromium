@@ -1303,16 +1303,6 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
         overlay.overlay_image = std::move(video_image);
         overlay.content_rect = gfx::RectF(overlay.overlay_image->size());
 
-        if (!overlay.overlay_image->dcomp_visual_content()) {
-          // If `PresentToSwapChain` succeeded for but failed to produce content
-          // for us to place in the DComp visual, force a solid color background
-          // to avoid seeing through the video hole punch in the primary plane.
-          //
-          // Note this assumes the video is opaque and that black is a
-          // reasonable fallback color.
-          overlay.background_color = SkColors::kBlack;
-        }
-
         if (overlay_position_adjustment) {
           overlay.transform = overlay_position_adjustment->transform;
           overlay.quad_rect = overlay_position_adjustment->quad_rect;
