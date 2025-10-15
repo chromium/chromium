@@ -16,8 +16,7 @@ found in the LICENSE file.
         android:id="@+id/close_button"
         style="@style/ToolbarButton"
         android:layout_width="@dimen/toolbar_button_width"
-        android:paddingStart="16dp"
-        android:paddingEnd="8dp"
+        android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
         android:layout_gravity="start|center_vertical"
         android:contentDescription="@string/close_tab" />
     <ViewStub
@@ -165,8 +164,7 @@ found in the LICENSE file.
             android:clickable="true"
             android:focusable="true"
             android:layout_width="@dimen/toolbar_button_width"
-            android:paddingStart="8dp"
-            android:paddingEnd="16dp"
+            android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
             android:contentDescription="@string/accessibility_toolbar_btn_menu"
             android:tooltipText="@string/accessibility_toolbar_btn_menu"
             android:background="@null"

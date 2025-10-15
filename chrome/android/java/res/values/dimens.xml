@@ -221,14 +221,8 @@ found in the LICENSE file.
     <dimen name="custom_tabs_drag_handle_padding_bottom">32dp</dimen>
     <dimen name="custom_tabs_drag_handle_padding_side">4dp</dimen>
     <dimen name="custom_tabs_toolbar_maxWidth">60dp</dimen>
-    <dimen name="custom_tabs_toolbar_button_spacer_24">24dp</dimen>
-    <dimen name="custom_tabs_toolbar_button_spacer_16">16dp</dimen>
-    <dimen name="custom_tabs_toolbar_button_spacer_8">8dp</dimen>
     <dimen name="custom_tabs_toolbar_button_horizontal_padding">12dp</dimen>
-    <dimen name="custom_tabs_adaptive_button_fg_padding_start">16dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_height">36dp</dimen>
-    <dimen name="custom_tabs_adaptive_button_bg_padding_start">10dp</dimen>
-    <dimen name="custom_tabs_adaptive_button_bg_padding_end">2dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_horizontal_padding">6dp</dimen>
     <dimen name="custom_tabs_adaptive_button_bg_padding_vert">10dp</dimen>
     <dimen name="custom_tabs_toolbar_vertical_padding">16dp</dimen>
