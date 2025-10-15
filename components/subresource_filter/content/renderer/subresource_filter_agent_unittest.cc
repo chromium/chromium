@@ -244,7 +244,7 @@ class SubresourceFilterAgentTest : public ::testing::Test {
       ASSERT_FALSE(is_ad_frame);
     }
 
-    agent()->ActivateForNextCommittedLoad(GURL(), state.Clone(), ad_evidence);
+    agent()->ActivateForNextCommittedLoad(state.Clone(), ad_evidence);
     agent_as_rfo()->DidCreateNewDocument();
   }
 
@@ -510,7 +510,7 @@ TEST_F(SubresourceFilterAgentTest,
   mojom::ActivationStatePtr state = mojom::ActivationState::New();
   state->activation_level = mojom::ActivationLevel::kEnabled;
   state->measure_performance = true;
-  agent()->ActivateForNextCommittedLoad(GURL(), std::move(state), std::nullopt);
+  agent()->ActivateForNextCommittedLoad(std::move(state), std::nullopt);
   agent_as_rfo()->DidFailProvisionalLoad();
   agent_as_rfo()->DidStartNavigation(GURL(), std::nullopt);
   agent_as_rfo()->ReadyToCommitNavigation(nullptr);

@@ -46,8 +46,6 @@ bool IsFencedFrameRoot(content::RenderFrame* frame) {
 
 namespace subresource_filter {
 
-BASE_FEATURE(kSubresourceFilterPrewarm, base::FEATURE_DISABLED_BY_DEFAULT);
-
 SubresourceFilterAgent::SubresourceFilterAgent(
     content::RenderFrame* render_frame,
     UnverifiedRulesetDealer* ruleset_dealer)
@@ -113,12 +111,12 @@ void SubresourceFilterAgent::Initialize() {
       // determined without the use of the opener frame.
       if (GetInheritedActivationState(render_frame()).activation_level !=
           mojom::ActivationLevel::kDisabled) {
-        ConstructAndSetFilter(GetInheritedActivationStateForNewDocument(), url);
+        ConstructFilter(GetInheritedActivationStateForNewDocument(), url);
       }
     } else {
       // Child frames always have a parent, so the empty initial document can
       // always inherit activation.
-      ConstructAndSetFilter(GetInheritedActivationStateForNewDocument(), url);
+      ConstructFilter(GetInheritedActivationStateForNewDocument(), url);
     }
   }
 }
@@ -232,15 +230,7 @@ mojom::ActivationState SubresourceFilterAgent::GetInheritedActivationState(
 }
 
 void SubresourceFilterAgent::RecordHistogramsOnFilterCreation(
-    const mojom::ActivationState& activation_state,
-    const GURL& url) {
-  // Do not pollute the histograms with uninteresting root frame documents.
-  const bool should_record_histograms = IsSubresourceFilterChild() ||
-                                        url.SchemeIsHTTPOrHTTPS() ||
-                                        url.SchemeIsFile();
-  if (!should_record_histograms) {
-    return;
-  }
+    const mojom::ActivationState& activation_state) {
   // Note: mojom::ActivationLevel used to be called mojom::ActivationState, the
   // legacy name is kept for the histogram.
   mojom::ActivationLevel activation_level = activation_state.activation_level;
@@ -258,7 +248,6 @@ void SubresourceFilterAgent::RecordHistogramsOnFilterCreation(
 
 void SubresourceFilterAgent::ResetInfoForNextDocument() {
   activation_state_for_next_document_ = mojom::ActivationState();
-  filter_for_next_document_.reset();
 }
 
 mojom::SubresourceFilterHost*
@@ -277,7 +266,6 @@ void SubresourceFilterAgent::OnSubresourceFilterAgentRequest(
 }
 
 void SubresourceFilterAgent::ActivateForNextCommittedLoad(
-    const GURL& url,
     mojom::ActivationStatePtr activation_state,
     const std::optional<blink::FrameAdEvidence>& ad_evidence) {
   activation_state_for_next_document_ = *activation_state;
@@ -286,23 +274,6 @@ void SubresourceFilterAgent::ActivateForNextCommittedLoad(
     SetAdEvidence(ad_evidence.value());
   } else {
     CHECK(!ad_evidence.has_value());
-  }
-
-  if (base::FeatureList::IsEnabled(kSubresourceFilterPrewarm)) {
-    bool prewarm = !any_filter_created_;
-    const mojom::ActivationState computed_activation_state =
-        ShouldInheritActivation(url)
-            ? GetInheritedActivationStateForNewDocument()
-            : activation_state_for_next_document_;
-    filter_for_next_document_ = ConstructFilter(computed_activation_state, url);
-    RecordHistogramsOnFilterCreation(computed_activation_state, url);
-
-    // Prewarm the filter if this is the first in the frame. The actual URL
-    // to check is fairly arbitrary, so just use the document URL.
-    if (filter_for_next_document_ && prewarm) {
-      filter_for_next_document_->filter().FindMatchingUrlRule(
-          url, url_pattern_index::proto::ELEMENT_TYPE_SCRIPT);
-    }
   }
 }
 
@@ -329,6 +300,10 @@ void SubresourceFilterAgent::SetAdEvidenceForInitialEmptySubframe() {
 }
 
 void SubresourceFilterAgent::DidCreateNewDocument() {
+  // TODO(csharrison): Use WebURL and WebSecurityOrigin for efficiency here,
+  // which requires changes to the unit tests.
+  const GURL& url = GetDocumentURL();
+
   // A new browser-side host is created for each new page (i.e. new document in
   // a subresource filter root frame) so we have to reset the remote so we
   // re-bind on the next message.
@@ -336,23 +311,21 @@ void SubresourceFilterAgent::DidCreateNewDocument() {
     subresource_filter_host_.reset();
   }
 
-  if (filter_for_next_document_) {
-    filter_for_last_created_document_ = filter_for_next_document_->AsWeakPtr();
-    SetSubresourceFilterForCurrentDocument(
-        std::move(filter_for_next_document_));
-  } else {
-    // TODO(csharrison): Use WebURL and WebSecurityOrigin for efficiency here,
-    // which requires changes to the unit tests.
-    const GURL& url = GetDocumentURL();
-    const mojom::ActivationState activation_state =
-        ShouldInheritActivation(url)
-            ? GetInheritedActivationStateForNewDocument()
-            : activation_state_for_next_document_;
-    ConstructAndSetFilter(activation_state, url);
-    RecordHistogramsOnFilterCreation(activation_state, url);
-  }
+  const mojom::ActivationState activation_state =
+      ShouldInheritActivation(url) ? GetInheritedActivationStateForNewDocument()
+                                   : activation_state_for_next_document_;
 
   ResetInfoForNextDocument();
+
+  // Do not pollute the histograms with uninteresting root frame documents.
+  const bool should_record_histograms = IsSubresourceFilterChild() ||
+                                        url.SchemeIsHTTPOrHTTPS() ||
+                                        url.SchemeIsFile();
+  if (should_record_histograms) {
+    RecordHistogramsOnFilterCreation(activation_state);
+  }
+
+  ConstructFilter(activation_state, url);
 }
 
 const mojom::ActivationState
@@ -361,21 +334,20 @@ SubresourceFilterAgent::GetInheritedActivationStateForNewDocument() {
   return GetInheritedActivationState(render_frame());
 }
 
-std::unique_ptr<WebDocumentSubresourceFilterImpl>
-SubresourceFilterAgent::ConstructFilter(
-    const mojom::ActivationState& activation_state,
+void SubresourceFilterAgent::ConstructFilter(
+    const mojom::ActivationState activation_state,
     const GURL& url) {
   filter_for_last_created_document_.reset();
 
   if (activation_state.activation_level == mojom::ActivationLevel::kDisabled ||
       !ruleset_dealer_->IsRulesetFileAvailable()) {
-    return nullptr;
+    return;
   }
 
   scoped_refptr<const MemoryMappedRuleset> ruleset =
       ruleset_dealer_->GetRuleset();
   if (!ruleset) {
-    return nullptr;
+    return;
   }
 
   base::OnceClosure first_disallowed_load_callback(
@@ -385,18 +357,8 @@ SubresourceFilterAgent::ConstructFilter(
   auto filter = std::make_unique<WebDocumentSubresourceFilterImpl>(
       url::Origin::Create(url), activation_state, std::move(ruleset),
       std::move(first_disallowed_load_callback));
-  any_filter_created_ = true;
-  return filter;
-}
-
-void SubresourceFilterAgent::ConstructAndSetFilter(
-    const mojom::ActivationState& activation_state,
-    const GURL& url) {
-  auto filter = ConstructFilter(activation_state, url);
-  if (filter) {
-    filter_for_last_created_document_ = filter->AsWeakPtr();
-    SetSubresourceFilterForCurrentDocument(std::move(filter));
-  }
+  filter_for_last_created_document_ = filter->AsWeakPtr();
+  SetSubresourceFilterForCurrentDocument(std::move(filter));
 }
 
 void SubresourceFilterAgent::DidFailProvisionalLoad() {

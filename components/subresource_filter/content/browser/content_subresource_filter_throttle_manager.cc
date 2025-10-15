@@ -181,8 +181,7 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
   // We send `ad_evidence_for_navigation` even if the frame is not tagged as an
   // ad. This ensures the renderer's copy is up-to-date, including propagating
   // it on cross-process navigations.
-  agent->ActivateForNextCommittedLoad(navigation_handle->GetURL(),
-                                      activation_state.Clone(),
+  agent->ActivateForNextCommittedLoad(activation_state.Clone(),
                                       ad_evidence_for_navigation);
 }
 
