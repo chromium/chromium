@@ -123,7 +123,7 @@ BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
 BASE_FEATURE(kPrivateStateTokensDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivacySandboxGetPromptFromNoticeService,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivacySandboxActivityTypeStorage,
              base::FEATURE_ENABLED_BY_DEFAULT);
