@@ -112,11 +112,16 @@ TCPDeviceProvider::TCPDeviceProvider(const HostPortSet& targets)
 }
 
 void TCPDeviceProvider::QueryDevices(SerialsCallback callback) {
-  std::vector<std::string> result;
+  std::vector<
+      std::pair<std::string, AndroidDeviceManager::DeviceInfo::ConnectedState>>
+      result;
   for (const net::HostPortPair& target : targets_) {
-    const std::string& host = target.host();
-    if (base::Contains(result, host))
+    const std::pair<std::string,
+                    AndroidDeviceManager::DeviceInfo::ConnectedState>
+        host = {target.host(), AndroidDeviceManager::DeviceInfo::kUnknown};
+    if (base::Contains(result, host)) {
       continue;
+    }
     result.push_back(host);
   }
   std::move(callback).Run(std::move(result));
@@ -126,7 +131,7 @@ void TCPDeviceProvider::QueryDeviceInfo(const std::string& serial,
                                         DeviceInfoCallback callback) {
   AndroidDeviceManager::DeviceInfo device_info;
   device_info.model = kDeviceModel;
-  device_info.connected = true;
+  device_info.connected_state = AndroidDeviceManager::DeviceInfo::kConnected;
 
   for (const net::HostPortPair& target : targets_) {
     if (serial != target.host())

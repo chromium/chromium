@@ -98,6 +98,8 @@ class DevToolsDeviceDiscovery {
     std::string serial() { return serial_; }
     std::string model() { return model_; }
     bool is_connected() { return connected_; }
+    bool is_unauthorized() { return unauthorized_; }
+    bool is_locked() { return locked_; }
     RemoteBrowsers& browsers() { return browsers_; }
     gfx::Size screen_size() { return screen_size_; }
 
@@ -113,6 +115,8 @@ class DevToolsDeviceDiscovery {
     std::string serial_;
     std::string model_;
     bool connected_;
+    bool unauthorized_;
+    bool locked_;
     RemoteBrowsers browsers_;
     gfx::Size screen_size_;
   };

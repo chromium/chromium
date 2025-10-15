@@ -19,7 +19,7 @@ void CompareDeviceInfo(bool* was_run,
                        const DeviceInfo& expected,
                        const DeviceInfo& actual) {
   EXPECT_EQ(expected.model, actual.model);
-  EXPECT_EQ(expected.connected, actual.connected);
+  EXPECT_EQ(expected.connected_state, actual.connected_state);
 
   const BrowserInfo& exp_br_info = expected.browser_info[0];
   const BrowserInfo& act_br_info = actual.browser_info[0];
@@ -84,7 +84,7 @@ TEST_F(CastDeviceProviderTest, ServiceDiscovery) {
 
   DeviceInfo expected;
   expected.model = cast_service_model;  // From metadata::md
-  expected.connected = true;
+  expected.connected_state = DeviceInfo::kConnected;
   expected.browser_info.push_back(exp_browser_info);
 
   bool was_run = false;

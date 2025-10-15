@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
 
 #include <map>
@@ -441,8 +440,22 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDevices(
     const AndroidDeviceManager::Devices& devices) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& device : devices) {
-    device->QueryDeviceInfo(
-        base::BindOnce(&DiscoveryRequest::ReceivedDeviceInfo, this, device));
+    switch (device->connected_state()) {
+      case AndroidDeviceManager::DeviceInfo::kLocked:
+        // We don't expect this state to be reported by AdbDeviceProvider.
+        DCHECK(false);
+        ABSL_FALLTHROUGH_INTENDED;
+      case AndroidDeviceManager::DeviceInfo::kUnauthorized:
+      case AndroidDeviceManager::DeviceInfo::kOffline:
+        DiscoveryRequest::ReceivedDeviceInfo(
+            device, AndroidDeviceManager::DeviceInfo());
+        break;
+      case AndroidDeviceManager::DeviceInfo::kConnected:
+      case AndroidDeviceManager::DeviceInfo::kUnknown:
+        device->QueryDeviceInfo(base::BindOnce(
+            &DiscoveryRequest::ReceivedDeviceInfo, this, device));
+        break;
+    }
   }
 }
 
@@ -450,14 +463,25 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDeviceInfo(
     scoped_refptr<AndroidDeviceManager::Device> device,
     const AndroidDeviceManager::DeviceInfo& device_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  AndroidDeviceManager::DeviceInfo device_info_copy = device_info;
+  if (device_info.connected_state ==
+      AndroidDeviceManager::DeviceInfo::kUnknown) {
+    // If the initial query said it was connected but querying the device for
+    // more information failed, it is offline. Otherwise, replace the connection
+    // state with info from the devices query.
+    device_info_copy.connected_state =
+        device->connected_state() ==
+                AndroidDeviceManager::DeviceInfo::kConnected
+            ? AndroidDeviceManager::DeviceInfo::kOffline
+            : device->connected_state();
+  }
   scoped_refptr<RemoteDevice> remote_device =
-      new RemoteDevice(device->serial(), device_info);
-  complete_devices_.push_back(std::make_pair(device, remote_device));
-  for (auto it = remote_device->browsers().begin();
-       it != remote_device->browsers().end(); ++it) {
+      new RemoteDevice(device->serial(), device_info_copy);
+  complete_devices_.emplace_back(device, remote_device);
+  for (auto & it : remote_device->browsers()) {
     device->SendJsonRequest(
-        (*it)->socket(), kVersionRequest,
-        base::BindOnce(&DiscoveryRequest::ReceivedVersion, this, device, *it));
+        it->socket(), kVersionRequest,
+        base::BindOnce(&DiscoveryRequest::ReceivedVersion, this, device, it));
   }
 }
 
@@ -611,7 +635,14 @@ DevToolsDeviceDiscovery::RemoteDevice::RemoteDevice(
     const AndroidDeviceManager::DeviceInfo& device_info)
     : serial_(serial),
       model_(device_info.model),
-      connected_(device_info.connected),
+      connected_(device_info.connected_state ==
+                 AndroidDeviceManager::DeviceInfo::kConnected),
+      unauthorized_(device_info.connected_state ==
+                        AndroidDeviceManager::DeviceInfo::kUnauthorized ||
+                    device_info.connected_state ==
+                        AndroidDeviceManager::DeviceInfo::kUnknown),
+      locked_(device_info.connected_state ==
+            AndroidDeviceManager::DeviceInfo::kLocked),
       screen_size_(device_info.screen_size) {
   for (auto it = device_info.browser_info.begin();
        it != device_info.browser_info.end(); ++it) {

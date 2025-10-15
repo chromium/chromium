@@ -331,9 +331,10 @@ function populateRemoteTargets(devices) {
 
     deviceSection.querySelector('.device-name').textContent = device.adbModel;
     deviceSection.querySelector('.device-auth').textContent =
-        device.adbConnected ? '' :
+        device.adbConnected ? '' : device.adbUnauthorized ?
                               'Pending authentication: please accept ' +
-            'debugging session on the device.';
+            'debugging session on the device.' : device.adbLocked ?
+            'Device is locked.' : 'Device is not responding.';
 
     const browserList = deviceSection.querySelector('.browsers');
     const newBrowserIds = device.browsers.map(function(b) {

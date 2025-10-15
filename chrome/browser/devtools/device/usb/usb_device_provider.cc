@@ -142,10 +142,11 @@ UsbDeviceProvider::~UsbDeviceProvider() = default;
 
 void UsbDeviceProvider::EnumeratedDevices(SerialsCallback callback,
                                           const AndroidUsbDevices& devices) {
-  std::vector<std::string> result;
+  std::vector<std::pair<std::string, AndroidDeviceManager::DeviceInfo::ConnectedState>> result;
   device_map_.clear();
   for (auto it = devices.begin(); it != devices.end(); ++it) {
-    result.push_back((*it)->serial());
+    result.emplace_back((*it)->serial(),
+                        AndroidDeviceManager::DeviceInfo::kUnknown);
     device_map_[(*it)->serial()] = *it;
     (*it)->InitOnCallerThread();
   }
