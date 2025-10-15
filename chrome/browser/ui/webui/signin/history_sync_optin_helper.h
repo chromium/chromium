@@ -125,6 +125,9 @@ class HistorySyncOptinHelper {
     // Another managed user profile creation is in progress and we cannot
     // provide the management screens.
     kManagementProfileCreationConflict = 4,
+    // The managed user has created a new profile and the current flow is
+    // terminated and resumed in via the helper of the new profile.
+    kResumeFlowInNewManagedProfile = 5,
   };
 
   using FlowCompletedCallback = base::StrongAlias<
@@ -178,6 +181,9 @@ class HistorySyncOptinHelper {
 
   void StartHistorySyncOptinFlow();
 
+  virtual void ResumeShowHistorySyncOptinScreenFlowForManagedAccount(
+      const AccountInfo& account_info) = 0;
+
   AccountStateFetcher* GetAccountStateFetcherForTesting() {
     return account_state_fetcher_.get();
   }
@@ -211,14 +217,14 @@ class HistorySyncOptinHelper {
 
   void ShowHistorySyncOptinScreen();
 
-  void SetProfile(Profile* profile) { profile_ = profile; }
-
   void FinishFlowWithoutHistorySyncOptin(HistorySyncSkipReason skip_reason);
 
   void NotifyFlowFinishedWithHistorySyncScreenAttempted(
       ScreenChoiceResult user_choice);
   void NotifyFlowFinishedWithHistorySyncScreenSkipped(
       HistorySyncSkipReason skip_reason);
+
+  void AwaitSyncStartupAndShowHistorySyncScreen();
 
   // Accessors.
   Profile* profile() { return profile_.get(); }
@@ -228,15 +234,15 @@ class HistorySyncOptinHelper {
     return maybe_managed_account_;
   }
   signin_metrics::AccessPoint access_point() { return access_point_; }
+  signin::Tribool AccountIsManaged(const AccountInfo& account_info);
 
   ManagementStatusState management_status_state_ =
       ManagementStatusState::kManagementDisclaimerNotStarted;
 
  private:
-  signin::Tribool AccountIsManaged(const AccountInfo& account_info);
 
   base::ObserverList<Observer> observers_;
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   const AccountInfo account_info_;
   raw_ptr<Delegate> delegate_;
   std::unique_ptr<AccountStateFetcher> account_state_fetcher_;
@@ -245,6 +251,7 @@ class HistorySyncOptinHelper {
   std::unique_ptr<SyncServiceStartupStateObserver> sync_startup_state_observer_;
   signin::Tribool maybe_managed_account_ = signin::Tribool::kUnknown;
   bool is_history_sync_step_complete_ = false;
+  bool is_history_sync_screen_attempted_ = false;
 
   base::WeakPtrFactory<HistorySyncOptinHelper> weak_ptr_factory_{this};
 };
@@ -259,6 +266,9 @@ class HistorySyncOptinHelperInBrowser : public HistorySyncOptinHelper {
                                   Delegate* delegate,
                                   signin_metrics::AccessPoint access_point);
   ~HistorySyncOptinHelperInBrowser() override;
+
+  void ResumeShowHistorySyncOptinScreenFlowForManagedAccount(
+      const AccountInfo& account_info) override;
 
  private:
   // HistorySyncOptinHelper implementation:
@@ -284,6 +294,9 @@ class HistorySyncOptinHelperInProfilePicker : public HistorySyncOptinHelper {
       Delegate* delegate,
       signin_metrics::AccessPoint access_point);
   ~HistorySyncOptinHelperInProfilePicker() override;
+
+  void ResumeShowHistorySyncOptinScreenFlowForManagedAccount(
+      const AccountInfo& account_info) override;
 
  private:
   // HistorySyncOptinHelper implementation:
