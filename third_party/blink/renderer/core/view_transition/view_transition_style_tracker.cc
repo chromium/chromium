@@ -663,24 +663,21 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
   Vector<AtomicString> containing_group_stack;
 
   PaintLayer* paint_layer = nullptr;
-  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-    if (element_ && element_->parentElement()) {
-      // Element is not detached and not the root document element.
-      if (auto* layout_object = element_->GetLayoutObject()) {
-        paint_layer = layout_object->EnclosingLayer();
-      }
-    } else if (!element_ || element_ == document_->documentElement()) {
-      paint_layer = document_->GetLayoutView()->PaintingLayer();
-    }
-    if (!paint_layer) {
-      return;
-    }
-  } else {
+  TreeScope* tree_scope = nullptr;
+  if (!element_ || element_ == document_->documentElement()) {
     paint_layer = document_->GetLayoutView()->PaintingLayer();
+    tree_scope = document_.Get();
+  } else {
+    if (auto* layout_object = element_->GetLayoutObject()) {
+      paint_layer = layout_object->EnclosingLayer();
+      tree_scope = &element_->GetTreeScope();
+    }
   }
-
+  if (!paint_layer) {
+    return;
+  }
   AddTransitionElementsFromCSSRecursive(
-      paint_layer, document_.Get(), containing_group_stack,
+      paint_layer, tree_scope, containing_group_stack,
       /*nearest_group_with_contain=*/g_null_atom);
 }
 
