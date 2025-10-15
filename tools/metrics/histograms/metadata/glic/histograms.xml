@@ -297,17 +297,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Fre.HoldTime" units="ms" expires_after="2026-10-09">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records the artificial delay time that the Glic FRE is held in the
-    HoldLoading state. This happens when the web client loads faster than the
-    minimum display time for the loading spinner. This metric quantifies the
-    UX-driven delay, separating it from the actual web client load time.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Fre.InteractionTime.Accepted" units="ms"
     expires_after="2026-08-03">
   <owner>birnie@google.com</owner>
@@ -387,9 +376,7 @@ chromium-metrics-reviews@google.com.
   <owner>carlosk@chromium.org</owner>
   <summary>
     Records the time from when the Glic FRE WebUI begins loading the remote
-    content until the content itself is loaded (i.e., the `contentload` event
-    fires). This measures the actual performance of loading the web client,
-    excluding any artificial hold time added for UX purposes.
+    content until the WebUI reports itself as fully loaded and ready.
   </summary>
 </histogram>
 
