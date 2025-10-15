@@ -346,7 +346,7 @@ export class SettingsPrivacyPageIndexElement extends
         viewIds = this.getViewIdsForRoute_(newRoute);
       }
 
-      assert(viewIds !== null);
+      assert(viewIds !== null, `No views found for route ${newRoute.path}`);
       await this.$.viewManager.switchViews(
           viewIds, 'no-animation', 'no-animation');
       this.pendingViewSwitching_.resolve();
