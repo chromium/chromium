@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.app.tabmodel.HeadlessBrowserControlsStateProv
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -29,11 +31,15 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+
+import java.util.Collections;
+import java.util.List;
 
 /** Provides access to, and management of, Tab data for the {@link ChromeItemPickerActivity}. */
 @NullMarked
@@ -49,7 +55,6 @@ public class TabItemPickerCoordinator {
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
 
     public TabItemPickerCoordinator(
-            CallbackController callbackController,
             OneshotSupplier<Profile> profileSupplier,
             int windowId,
             Activity activity,
@@ -57,13 +62,14 @@ public class TabItemPickerCoordinator {
             ViewGroup rootView,
             ViewGroup containerView) {
 
-        mCallbackController = callbackController;
         mProfileSupplier = profileSupplier;
         mWindowId = windowId;
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mRootView = rootView;
         mContainerView = containerView;
+
+        mCallbackController = new CallbackController();
     }
 
     /**
@@ -123,9 +129,17 @@ public class TabItemPickerCoordinator {
     }
 
     private void onTabModelReadyForUi(TabModelSelector selector) {
-        // TODO(https://crbug.com/445714626): Show tab item picker UI once TabListEditorCoordinator
-        // is created.
         mTabListEditorCoordinator = createTabListEditorCoordinator(selector);
+        TabListEditorController controller = mTabListEditorCoordinator.getController();
+        List<Tab> allTabs = TabModelUtils.convertTabListToListOfTabs(selector.getModel(false));
+
+        int currentTabIndex = selector.getModel(/* incognito= */ false).index();
+        RecyclerViewPosition position = new RecyclerViewPosition(currentTabIndex, 0);
+
+        controller.show(
+                allTabs,
+                /* tabGroupSyncIds= */ Collections.emptyList(),
+                /* recyclerViewPosition= */ position);
     }
 
     /** Creates a TabListEditorCoordinator with set configurations for the Tab Picker UI. */
@@ -189,5 +203,6 @@ public class TabItemPickerCoordinator {
         if (mTabListEditorCoordinator != null) {
             mTabListEditorCoordinator.destroy();
         }
+        mCallbackController.destroy();
     }
 }

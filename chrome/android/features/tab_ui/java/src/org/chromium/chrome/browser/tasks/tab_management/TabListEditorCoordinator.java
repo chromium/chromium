@@ -422,7 +422,7 @@ public class TabListEditorCoordinator {
     /**
      * @return {@link TabListEditorController} that can control the TabListEditor.
      */
-    TabListEditorController getController() {
+    public TabListEditorController getController() {
         return mTabListEditorController;
     }
 

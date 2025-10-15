@@ -14,8 +14,10 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Looper;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,18 +29,21 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowDisplay;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+
+import java.util.Collections;
 
 /** Unit tests for TabItemPickerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,18 +60,22 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private ViewGroup mRootView;
     @Mock private ViewGroup mContainerView;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
+    @Mock private android.view.Window mWindow;
+    @Mock private android.view.ViewGroup mDecorView;
+    @Mock private android.content.res.Resources mResources;
+    @Mock private WindowManager mWindowManager;
+    @Mock private TabModel mRegularTabModel;
+
     private OneshotSupplierImpl<Profile> mProfileSupplierImpl;
     private TabItemPickerCoordinator mItemPickerCoordinator;
-    private CallbackController mCallbackController;
     private final int mWindowId = 5;
 
     @Before
     public void setUp() {
-        mCallbackController = new CallbackController();
         mProfileSupplierImpl = new OneshotSupplierImpl<>();
         TabItemPickerCoordinator realCoordinator =
                 new TabItemPickerCoordinator(
-                        mCallbackController,
                         mProfileSupplierImpl,
                         mWindowId,
                         mActivity,
@@ -77,7 +86,22 @@ public class TabItemPickerCoordinatorUnitTest {
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
+        when(mActivity.getWindow()).thenReturn(mWindow);
+        when(mWindow.getDecorView()).thenReturn(mDecorView);
+
+        when(mActivity.getResources()).thenReturn(mResources);
+        when(mResources.getInteger(anyInt())).thenReturn(1);
+
+        when(mActivity.getSystemService(Context.WINDOW_SERVICE)).thenReturn(mWindowManager);
+        when(mWindowManager.getDefaultDisplay()).thenReturn(ShadowDisplay.getDefaultDisplay());
+
+        when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
+        when(mRegularTabModel.index()).thenReturn(0);
+
+        doReturn(Collections.emptyList().iterator()).when(mRegularTabModel).iterator();
+
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabListEditorCoordinator.getController()).thenReturn(mTabListEditorController);
         doReturn(mTabListEditorCoordinator)
                 .when(mItemPickerCoordinator)
                 .createTabListEditorCoordinator(any(TabModelSelector.class));
@@ -86,7 +110,6 @@ public class TabItemPickerCoordinatorUnitTest {
     @After
     public void tearDown() {
         TabWindowManagerSingleton.setTabWindowManagerForTesting(null);
-        mCallbackController.destroy();
     }
 
     @Test
@@ -113,7 +136,6 @@ public class TabItemPickerCoordinatorUnitTest {
         // Mock coordinator with an invalid window ID
         TabItemPickerCoordinator coordinatorWithInvalidId =
                 new TabItemPickerCoordinator(
-                        mCallbackController,
                         mProfileSupplierImpl,
                         TabWindowManager.INVALID_WINDOW_ID,
                         mActivity,
