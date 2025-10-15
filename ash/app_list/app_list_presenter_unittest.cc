@@ -336,6 +336,11 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
     UpdateDisplay("1024x768");
   }
 
+  void TearDown() override {
+    apps_grid_view_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   AppsGridView* GetAppsGridView() {
     if (tablet_mode_param())
       return GetAppListTestHelper()->GetRootPagedAppsGridView();
@@ -537,7 +542,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   const bool tablet_mode_;
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  raw_ptr<AppsGridView, DanglingUntriaged> apps_grid_view_ = nullptr;
+  raw_ptr<AppsGridView> apps_grid_view_ = nullptr;
 };
 
 // Parameterized by tablet/clamshell mode.
@@ -604,6 +609,12 @@ class PopulatedAppListTest : public AshTestBase {
 
     // Fullscreen launcher is used only in tablet mode, so enable tablet mode.
     EnableTabletMode(true);
+  }
+
+  void TearDown() override {
+    app_list_view_ = nullptr;
+    apps_grid_view_ = nullptr;
+    AshTestBase::TearDown();
   }
 
  protected:
@@ -691,9 +702,8 @@ class PopulatedAppListTest : public AshTestBase {
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
-  raw_ptr<AppListView, DanglingUntriaged> app_list_view_ =
-      nullptr;  // Owned by native widget.
-  raw_ptr<PagedAppsGridView, DanglingUntriaged> apps_grid_view_ =
+  raw_ptr<AppListView> app_list_view_ = nullptr;  // Owned by native widget.
+  raw_ptr<PagedAppsGridView> apps_grid_view_ =
       nullptr;  // Owned by |app_list_view_|.
 };
 
