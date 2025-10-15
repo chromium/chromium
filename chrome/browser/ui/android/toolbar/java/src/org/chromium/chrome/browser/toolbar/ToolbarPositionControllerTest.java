@@ -861,12 +861,27 @@ public class ToolbarPositionControllerTest {
     public void testForceBottomForFocusedOmnibox() {
         ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(true);
         boolean prefStateChanged = false;
-        boolean ntpShowing = false;
+        boolean ntpShowing = true;
         boolean tabSwitcherShowing = false;
         boolean isOmniboxFocused = true;
         boolean isFindInPageShowing = false;
         boolean isFormFieldFocusedWithKeyboardVisible = false;
-        boolean doesUserPreferTopToolbar = false;
+        boolean doesUserPreferTopToolbar = true;
+
+        assertEquals(
+                StateTransition.SNAP_TO_BOTTOM,
+                ToolbarPositionController.calculateStateTransition(
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.TOP));
+
+        ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
+        doesUserPreferTopToolbar = false;
 
         assertEquals(
                 StateTransition.SNAP_TO_BOTTOM,

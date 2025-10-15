@@ -589,8 +589,11 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean allowBottomAnchoredFocusedOmnibox =
                 ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled();
         boolean forceBottomForFocusedOmnibox =
-                ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.getValue()
-                        && isOmniboxFocused;
+                isOmniboxFocused
+                        && (ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox
+                                        .getValue()
+                                || (allowBottomAnchoredFocusedOmnibox
+                                        && !doesUserPreferTopToolbar));
         @ControlsPosition int newControlsPosition;
         if (!forceBottomForFocusedOmnibox
                 && (ntpShowing
