@@ -53,10 +53,6 @@ uint64_t FlatlandSysmemNativePixmap::GetBufferFormatModifier() const {
   NOTREACHED();
 }
 
-gfx::BufferFormat FlatlandSysmemNativePixmap::GetBufferFormat() const {
-  return collection_->format();
-}
-
 viz::SharedImageFormat FlatlandSysmemNativePixmap::GetSharedImageFormat()
     const {
   return viz::GetSharedImageFormat(collection_->format());

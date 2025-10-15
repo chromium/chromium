@@ -166,10 +166,6 @@ uint64_t GbmPixmapWayland::GetBufferFormatModifier() const {
   return gbm_bo_->GetFormatModifier();
 }
 
-gfx::BufferFormat GbmPixmapWayland::GetBufferFormat() const {
-  return gbm_bo_->GetBufferFormat();
-}
-
 viz::SharedImageFormat GbmPixmapWayland::GetSharedImageFormat() const {
   return gbm_bo_->GetSharedImageFormat();
 }
