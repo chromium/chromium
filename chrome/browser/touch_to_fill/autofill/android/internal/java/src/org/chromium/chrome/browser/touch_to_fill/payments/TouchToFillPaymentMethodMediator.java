@@ -81,7 +81,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ERROR_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.graphics.drawable.Drawable;
@@ -325,7 +325,7 @@ class TouchToFillPaymentMethodMediator {
         }
 
         if (cardBenefitsTermsAvailable) {
-            sheetItems.add(buildTermsLabel(cardBenefitsTermsAvailable));
+            sheetItems.add(buildCardBenefitTermsLabel());
         }
 
         if (mSuggestions.size() == 1) {
@@ -572,8 +572,7 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(BNPL_ISSUER, createBnplIssuerContextModel(issuerContext)));
         }
 
-        // TODO(crbug.com/438784405): Display terms on the BNPL issuer selection screen.
-
+        sheetItems.add(buildBnplTermsLabel());
         sheetItems.add(buildFooterForBnplSelectionProgress(footerText, /* isInProgress= */ false));
 
         mModel.set(
@@ -944,11 +943,23 @@ class TouchToFillPaymentMethodMediator {
                 .build();
     }
 
-    private ListItem buildTermsLabel(boolean cardBenefitsTermsAvailable) {
+    private ListItem buildCardBenefitTermsLabel() {
         return new ListItem(
                 TERMS_LABEL,
                 new PropertyModel.Builder(TermsLabelProperties.ALL_TERMS_LABEL_KEYS)
-                        .with(CARD_BENEFITS_TERMS_AVAILABLE, cardBenefitsTermsAvailable)
+                        .with(
+                                TERMS_LABEL_TEXT_ID,
+                                R.string.autofill_payment_method_bottom_sheet_benefits_terms_label)
+                        .build());
+    }
+
+    private ListItem buildBnplTermsLabel() {
+        return new ListItem(
+                TERMS_LABEL,
+                new PropertyModel.Builder(TermsLabelProperties.ALL_TERMS_LABEL_KEYS)
+                        .with(
+                                TERMS_LABEL_TEXT_ID,
+                                R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)
                         .build());
     }
 

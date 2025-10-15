@@ -103,7 +103,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.ALL_TERMS_LABEL_KEYS;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.COMPLETE_OPACITY_ALPHA;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.GRAYED_OUT_OPACITY_ALPHA;
@@ -839,7 +839,9 @@ public class TouchToFillPaymentMethodViewTest {
                                     new FillableItemCollectionInfo(
                                             /* position= */ 1, /* total= */ 1));
                     PropertyModel termsLabelModel =
-                            createTermsLabelModel(/* cardBenefitsTermsAvailable= */ true);
+                            createTermsLabelModel(
+                                    R.string
+                                            .autofill_payment_method_bottom_sheet_benefits_terms_label);
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(new ListItem(CREDIT_CARD, cardModel));
@@ -902,7 +904,9 @@ public class TouchToFillPaymentMethodViewTest {
                                     new FillableItemCollectionInfo(
                                             /* position= */ 1, /* total= */ 1));
                     PropertyModel termsLabelModel =
-                            createTermsLabelModel(/* cardBenefitsTermsAvailable= */ true);
+                            createTermsLabelModel(
+                                    R.string
+                                            .autofill_payment_method_bottom_sheet_benefits_terms_label);
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(new ListItem(CREDIT_CARD, cardModel));
@@ -1787,6 +1791,30 @@ public class TouchToFillPaymentMethodViewTest {
         waitForEvent(actionCallback).run();
     }
 
+    @Test
+    @MediumTest
+    public void testBnplTermsLabel() {
+        runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel termsLabelModel =
+                            createTermsLabelModel(
+                                    R.string.autofill_bnpl_issuer_bottom_sheet_terms_label);
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(TERMS_LABEL, termsLabelModel));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView termsLabel =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.touch_to_fill_terms_label);
+        assertThat(
+                termsLabel.getText().toString(),
+                is(getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)));
+    }
+
     private RecyclerView getCreditCardSuggestions() {
         return mTouchToFillPaymentMethodView
                 .getContentView()
@@ -1975,9 +2003,9 @@ public class TouchToFillPaymentMethodViewTest {
                 .build();
     }
 
-    private static PropertyModel createTermsLabelModel(boolean cardBenefitsTermsAvailable) {
+    private static PropertyModel createTermsLabelModel(@StringRes int textId) {
         return new PropertyModel.Builder(ALL_TERMS_LABEL_KEYS)
-                .with(CARD_BENEFITS_TERMS_AVAILABLE, cardBenefitsTermsAvailable)
+                .with(TERMS_LABEL_TEXT_ID, textId)
                 .build();
     }
 

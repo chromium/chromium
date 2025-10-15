@@ -250,9 +250,9 @@ class TouchToFillPaymentMethodProperties {
      * sheet for payments.
      */
     static class TermsLabelProperties {
-        static final PropertyModel.WritableBooleanPropertyKey CARD_BENEFITS_TERMS_AVAILABLE =
-                new PropertyModel.WritableBooleanPropertyKey("card_benefits_terms_available");
-        static final PropertyKey[] ALL_TERMS_LABEL_KEYS = {CARD_BENEFITS_TERMS_AVAILABLE};
+        static final PropertyModel.ReadableIntPropertyKey TERMS_LABEL_TEXT_ID =
+                new PropertyModel.ReadableIntPropertyKey("terms_label_text_id");
+        static final PropertyKey[] ALL_TERMS_LABEL_KEYS = {TERMS_LABEL_TEXT_ID};
 
         private TermsLabelProperties() {}
     }

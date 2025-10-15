@@ -60,7 +60,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.text.SpannableString;
@@ -482,12 +482,9 @@ class TouchToFillPaymentMethodViewBinder {
      * @param propertyKey The {@link PropertyKey} which changed.
      */
     static void bindTermsLabelView(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == CARD_BENEFITS_TERMS_AVAILABLE) {
-            if (model.get(CARD_BENEFITS_TERMS_AVAILABLE)) {
-                TextView termsLabelTextView = view.findViewById(R.id.touch_to_fill_terms_label);
-                termsLabelTextView.setText(
-                        R.string.autofill_payment_method_bottom_sheet_benefits_terms_label);
-            }
+        if (propertyKey == TERMS_LABEL_TEXT_ID) {
+            TextView termsLabelTextView = view.findViewById(R.id.touch_to_fill_terms_label);
+            termsLabelTextView.setText(model.get(TERMS_LABEL_TEXT_ID));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

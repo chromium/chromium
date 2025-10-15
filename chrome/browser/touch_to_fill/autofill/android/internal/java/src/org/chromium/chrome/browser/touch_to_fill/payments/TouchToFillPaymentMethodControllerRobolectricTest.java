@@ -101,12 +101,14 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ERROR_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.app.Activity;
 import android.text.SpannableString;
 import android.text.TextUtils;
+
+import androidx.annotation.StringRes;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -853,6 +855,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_KLARNA_LINKED);
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_ZIP_LINKED);
 
+        assertTermsLabelModelHasExpectedTextId(
+                itemList, R.string.autofill_bnpl_issuer_bottom_sheet_terms_label);
+
         assertFooterModelHasExpectedValues(itemList, BNPL_FOOTER_TEXT);
     }
 
@@ -881,6 +886,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED);
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED);
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_ZIP_UNLINKED);
+
+        assertTermsLabelModelHasExpectedTextId(
+                itemList, R.string.autofill_bnpl_issuer_bottom_sheet_terms_label);
 
         assertFooterModelHasExpectedValues(itemList, BNPL_FOOTER_TEXT);
     }
@@ -913,6 +921,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 itemList, BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW);
         assertBnplIssuerContextModelMatches(
                 itemList, BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH);
+
+        assertTermsLabelModelHasExpectedTextId(
+                itemList, R.string.autofill_bnpl_issuer_bottom_sheet_terms_label);
 
         assertFooterModelHasExpectedValues(itemList, BNPL_FOOTER_TEXT);
     }
@@ -1100,9 +1111,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 List.of(VISA_SUGGESTION_WITH_CARD_BENEFITS), /* shouldShowScanCreditCard= */ true);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        List<PropertyModel> termsLabelModelList = getModelsOfType(itemList, TERMS_LABEL);
-        assertEquals(1, termsLabelModelList.size());
-        assertTrue(termsLabelModelList.get(0).get(CARD_BENEFITS_TERMS_AVAILABLE));
+
+        assertTermsLabelModelHasExpectedTextId(
+                itemList, R.string.autofill_payment_method_bottom_sheet_benefits_terms_label);
     }
 
     @Test
@@ -1925,6 +1936,19 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(footerModel.get().get(FOOTER_TEXT), is(expectedFooterText));
         assertFalse(footerModel.get().get(APPLY_LINK_DEACTIVATED_STYLE));
         assertNotNull(footerModel.get().get(ON_LINK_CLICK_CALLBACK));
+    }
+
+    private static Optional<PropertyModel> getTermsLabelModel(ModelList items) {
+        return StreamSupport.stream(items.spliterator(), false)
+                .filter(item -> item.type == TERMS_LABEL)
+                .findFirst()
+                .map(item -> item.model);
+    }
+
+    private void assertTermsLabelModelHasExpectedTextId(ModelList itemList, @StringRes int textId) {
+        Optional<PropertyModel> termsModel = getTermsLabelModel(itemList);
+        assertTrue(termsModel.isPresent());
+        assertThat(termsModel.get().get(TERMS_LABEL_TEXT_ID), is(textId));
     }
 
     private static Optional<PropertyModel> getIbanModelByAutofillName(ModelList items, Iban iban) {
