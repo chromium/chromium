@@ -93,8 +93,6 @@ class CORE_EXPORT RuleSetGroup {
               other.has_focus_pseudo_class_rules_);
     DCHECK_EQ(has_focus_visible_pseudo_class_rules_,
               other.has_focus_visible_pseudo_class_rules_);
-    DCHECK_EQ(has_active_view_transition_pseudo_rules_,
-              other.has_active_view_transition_pseudo_rules_);
   }
 #endif
 
@@ -131,9 +129,6 @@ class CORE_EXPORT RuleSetGroup {
 
   // Which RuleSets have any :focus-visible pseudo-class rules.
   RuleSetBitmap has_focus_visible_pseudo_class_rules_ = 0;
-
-  // Which RuleSets have any :active-view-transition rules.
-  RuleSetBitmap has_active_view_transition_pseudo_rules_ = 0;
 
   // Whether there are any attribute-bucketed rules that depend on the
   // [style] attribute.
@@ -283,15 +278,6 @@ class CORE_EXPORT MatchRequest {
     return RuleSetIteratorProxy(
         &rule_set_group_,
         rule_set_group_.has_focus_visible_pseudo_class_rules_ & enabled_);
-  }
-  bool HasAnyRuleSetsWithActiveViewTransitionRules() const {
-    return (rule_set_group_.has_active_view_transition_pseudo_rules_ &
-            enabled_) != 0;
-  }
-  RuleSetIteratorProxy RuleSetsWithActiveViewTransitionRules() const {
-    return RuleSetIteratorProxy(
-        &rule_set_group_,
-        rule_set_group_.has_active_view_transition_pseudo_rules_ & enabled_);
   }
   bool NeedStyleSynchronized() const {
     return rule_set_group_.need_style_synchronized_;

@@ -1007,17 +1007,14 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
     }
   }
 
-  if (match_request.HasAnyRuleSetsWithActiveViewTransitionRules()) {
-    if (SelectorChecker::MatchesActiveViewTransitionPseudoClass(element)) {
-      for (const auto bundle :
-           match_request.RuleSetsWithActiveViewTransitionRules()) {
-        if (CollectMatchingRulesForList<stop_at_first_match>(
-                bundle.rule_set->ActiveViewTransitionRules(), match_request,
-                bundle.rule_set, bundle.style_sheet_index, checker,
-                context.context) &&
-            stop_at_first_match) {
-          return true;
-        }
+  if (SelectorChecker::MatchesActiveViewTransitionPseudoClass(element)) {
+    for (const auto bundle : match_request.AllRuleSets()) {
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->ActiveViewTransitionRules(), match_request,
+              bundle.rule_set, bundle.style_sheet_index, checker,
+              context.context) &&
+          stop_at_first_match) {
+        return true;
       }
     }
   }
