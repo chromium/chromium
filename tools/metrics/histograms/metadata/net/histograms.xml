@@ -950,13 +950,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.NoVarySearch.LookupTime{HitOrMiss}{MainFrameOrNot}"
+<histogram
+    name="HttpCache.NoVarySearch.LookupTime{HitOrMiss}{MainFrameOrNot}{BaseUrlMatchedOrNot}"
     units="microseconds" expires_after="2026-04-05">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     The time spent executing net::NoVarySearchCache::Lookup(). This is recorded
     once for every call to the function {HitOrMiss}. {MainFrameOrNot}
+    {BaseUrlMatchedOrNot}
 
     This will be used to evaluate the need for optimization.
 
@@ -972,6 +974,11 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary=""/>
     <variant name=".MainFrame"
         summary="Only logged for main frame navigations."/>
+  </token>
+  <token key="BaseUrlMatchedOrNot">
+    <variant name="" summary=""/>
+    <variant name=".BaseUrlMatched"
+        summary="Only logged when the base URL is matched."/>
   </token>
 </histogram>
 

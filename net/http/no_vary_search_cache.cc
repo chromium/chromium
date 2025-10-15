@@ -356,6 +356,14 @@ NoVarySearchCache::~NoVarySearchCache() {
 
 std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
     const HttpRequestInfo& request) {
+  bool unused;
+  return Lookup(request, /*out_base_url_matched=*/unused);
+}
+
+std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
+    const HttpRequestInfo& request,
+    bool& out_base_url_matched) {
+  out_base_url_matched = false;
   const GURL& url = request.url;
   if (!URLIsAcceptable(url)) {
     return std::nullopt;
@@ -377,6 +385,7 @@ std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
   if (it == map_.end()) {
     return std::nullopt;
   }
+  out_base_url_matched = true;
   // We have a match, so we need to create a real URL now.
   QueryString* best_match = nullptr;
   GURL original_url;
