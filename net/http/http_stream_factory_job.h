@@ -275,7 +275,7 @@ class HttpStreamFactory::Job
     STATE_NONE,
   };
 
-  void OnStreamReadyCallback();
+  void OnStreamReadyCallback(base::TimeTicks stream_ready_time);
   void OnBidirectionalStreamImplReadyCallback();
   void OnWebSocketHandshakeStreamReadyCallback();
   // This callback function is called when a new SPDY session is created.

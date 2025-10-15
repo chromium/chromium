@@ -13,9 +13,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
@@ -426,12 +428,15 @@ bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
   return false;
 }
 
-void HttpStreamFactory::Job::OnStreamReadyCallback() {
+void HttpStreamFactory::Job::OnStreamReadyCallback(
+    base::TimeTicks stream_ready_time) {
   DCHECK(stream_.get());
   DCHECK_NE(job_type_, PRECONNECT);
   DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
   DCHECK(!is_websocket_ || try_websocket_over_http2_);
 
+  base::UmaHistogramTimes("Net.HttpStreamFactory.OnStreamReadyCallbackDelay",
+                          base::TimeTicks::Now() - stream_ready_time);
   MaybeCopyConnectionAttemptsFromHandle();
 
   delegate_->OnStreamReady(this);
@@ -588,8 +593,9 @@ void HttpStreamFactory::Job::RunLoop(int result) {
       } else {
         DCHECK(stream_.get());
         TaskRunner(priority_)->PostTask(
-            FROM_HERE, base::BindOnce(&Job::OnStreamReadyCallback,
-                                      ptr_factory_.GetWeakPtr()));
+            FROM_HERE,
+            base::BindOnce(&Job::OnStreamReadyCallback,
+                           ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
       }
       return;
 

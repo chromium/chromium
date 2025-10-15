@@ -3476,6 +3476,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamFactory.OnStreamReadyCallbackDelay" units="ms"
+    expires_after="2026-01-14">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Record a delay between an HttpStreamFactory::Job gets a successful stream
+    and the job calls the delegate's OnStreamReady(). Recorded when the job gets
+    a successful stream.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.AttemptManagerAliveTime2" units="ms"
     expires_after="2025-12-02">
   <owner>bashi@chromium.org</owner>
