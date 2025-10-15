@@ -20357,6 +20357,11 @@ be describing additional metrics about the same event.
       user to the OS Settings, if applicable.
     </summary>
   </metric>
+  <metric name="PermissionAiRelevanceModel" enum="PermissionAiRelevanceModel">
+    <summary>
+      Version of the AI model used for the permission relevance prediction.
+    </summary>
+  </metric>
   <metric name="PermissionAutoRevocationHistory"
       enum="PermissionAutoRevocationHistory">
     <summary>

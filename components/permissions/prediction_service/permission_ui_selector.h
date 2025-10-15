@@ -110,6 +110,12 @@ class PermissionUiSelector {
   virtual std::optional<PermissionRequestRelevance>
   PermissionRequestRelevanceForUKM();
 
+  // Will return the selector's AI model version, if any is applicable to be
+  // recorded in UKMs. This is specific only to a selector that uses an
+  // on-device AI model to predict permission relevance score.
+  virtual std::optional<permissions::PermissionAiRelevanceModel>
+  PermissionAiRelevanceModelForUKM();
+
   // Will return if the selector's decision was heldback. Currently only the
   // Web Prediction Service selector supports holdbacks.
   virtual std::optional<bool> WasSelectorDecisionHeldback();

@@ -143,6 +143,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="GRANTED_ONCE"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionAiRelevanceModel) -->
+
+<enum name="PermissionAiRelevanceModel">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="AIv3"/>
+  <int value="2" label="AIv4"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionAiRelevanceModel) -->
+
 <enum name="PermissionChangeAction">
   <int value="0" label="Revoked"/>
   <int value="1" label="Reallowed"/>

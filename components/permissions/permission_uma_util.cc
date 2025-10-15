@@ -312,6 +312,8 @@ void RecordPermissionActionUkm(
     std::optional<PermissionUiSelector::PredictionGrantLikelihood>
         predicted_grant_likelihood,
     std::optional<PermissionRequestRelevance> permission_request_relevance,
+    std::optional<permissions::PermissionAiRelevanceModel>
+        permission_ai_relevance_model,
     PredictionRequestFeatures::ActionCounts
         loud_ui_actions_counts_for_request_type,
     PredictionRequestFeatures::ActionCounts loud_ui_actions_counts,
@@ -412,6 +414,11 @@ void RecordPermissionActionUkm(
   if (permission_request_relevance.has_value()) {
     builder.SetPermissionRequestRelevance(
         static_cast<int64_t>(permission_request_relevance.value()));
+  }
+
+  if (permission_ai_relevance_model.has_value()) {
+    builder.SetPermissionAiRelevanceModel(
+        static_cast<int64_t>(permission_ai_relevance_model.value()));
   }
 
   if (prediction_decision_held_back.has_value()) {
@@ -886,6 +893,7 @@ void PermissionUmaUtil::PermissionRevoked(
                          /*render_frame_host*/ nullptr,
                          /*predicted_grant_likelihood=*/std::nullopt,
                          /*permission_request_relevance=*/std::nullopt,
+                         /*permission_ai_relevance_model=*/std::nullopt,
                          /*prediction_decision_held_back=*/std::nullopt);
 }
 
@@ -1017,6 +1025,8 @@ void PermissionUmaUtil::PermissionPromptResolved(
     std::optional<PermissionUiSelector::PredictionGrantLikelihood>
         predicted_grant_likelihood,
     std::optional<PermissionRequestRelevance> permission_request_relevance,
+    std::optional<permissions::PermissionAiRelevanceModel>
+        permission_ai_relevance_model,
     std::optional<bool> prediction_decision_held_back,
     std::optional<permissions::PermissionIgnoredReason> ignored_reason,
     bool did_show_prompt,
@@ -1065,7 +1075,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
         web_contents, web_contents->GetBrowserContext(),
         content::RenderFrameHost::FromID(request->get_requesting_frame_id()),
         predicted_grant_likelihood, permission_request_relevance,
-        prediction_decision_held_back);
+        permission_ai_relevance_model, prediction_decision_held_back);
 
     std::string priorDismissPrefix = base::StrCat(
         {"Permissions.Prompt.", action_string, ".PriorDismissCount2."});
@@ -1329,6 +1339,8 @@ void PermissionUmaUtil::RecordPermissionAction(
     std::optional<PermissionUiSelector::PredictionGrantLikelihood>
         predicted_grant_likelihood,
     std::optional<PermissionRequestRelevance> permission_request_relevance,
+    std::optional<permissions::PermissionAiRelevanceModel>
+        permission_ai_relevance_model,
     std::optional<bool> prediction_decision_held_back) {
   DCHECK(PermissionUtil::IsPermission(permission));
   PermissionDecisionAutoBlocker* autoblocker =
@@ -1392,6 +1404,7 @@ void PermissionUmaUtil::RecordPermissionAction(
           PermissionsClient::Get()->HasPreviouslyAutoRevokedPermission(
               browser_context, requesting_origin, permission),
           predicted_grant_likelihood, permission_request_relevance,
+          permission_ai_relevance_model,
           loud_ui_actions_counts_per_request_type, loud_ui_actions_counts,
           actions_counts_per_request_type, actions_counts,
           prediction_decision_held_back));

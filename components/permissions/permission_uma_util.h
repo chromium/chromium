@@ -683,6 +683,8 @@ class PermissionUmaUtil {
       std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           predicted_grant_likelihood,
       std::optional<PermissionRequestRelevance> permission_request_relevance,
+      std::optional<permissions::PermissionAiRelevanceModel>
+          permission_ai_relevance_model,
       std::optional<bool> prediction_decision_held_back,
       std::optional<permissions::PermissionIgnoredReason> ignored_reason,
       bool did_show_prompt,
@@ -990,6 +992,8 @@ class PermissionUmaUtil {
       std::optional<PermissionUiSelector::PredictionGrantLikelihood>
           predicted_grant_likelihood,
       std::optional<PermissionRequestRelevance> permission_request_relevance,
+      std::optional<permissions::PermissionAiRelevanceModel>
+          permission_ai_relevance_model,
       std::optional<bool> prediction_decision_held_back);
 
   // Records |count| total prior actions for a prompt of type |permission|

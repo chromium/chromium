@@ -574,6 +574,11 @@ class PermissionRequestManager
   // to be recorded in UKM.
   std::optional<PermissionRequestRelevance> permission_request_relevance_;
 
+  // The AI model version used for the permission decision, to be recorded in
+  // UKM.
+  std::optional<permissions::PermissionAiRelevanceModel>
+      permission_ai_relevance_model_;
+
   // Status of the decision made by the Web Permission Prediction Service, if
   // it was held back or not.
   std::optional<bool> was_decision_held_back_;

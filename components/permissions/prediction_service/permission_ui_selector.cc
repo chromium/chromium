@@ -53,6 +53,11 @@ PermissionUiSelector::PermissionRequestRelevanceForUKM() {
   return std::nullopt;
 }
 
+std::optional<permissions::PermissionAiRelevanceModel>
+PermissionUiSelector::PermissionAiRelevanceModelForUKM() {
+  return std::nullopt;
+}
+
 std::optional<bool> PermissionUiSelector::WasSelectorDecisionHeldback() {
   return std::nullopt;
 }

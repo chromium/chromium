@@ -387,6 +387,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
       /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
@@ -724,6 +725,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
       /* ui_reason*/ std::nullopt, variants,
       /*predicted_grant_likelihood*/ std::nullopt,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ true,
       /*did_click_managed*/ false,
@@ -741,6 +743,35 @@ TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
       *ukm_recorder.GetEntryMetric(entry, "OsSystemSettingsScreen"),
       static_cast<int64_t>(ElementAnchoredBubbleVariant::kOsSystemSettings));
 #endif
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest, PermissionAiRelevanceModelUkmTest) {
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  auto* main_frame = primary_main_frame();
+  AddRequest(main_frame,
+             CreateRequest(RequestType::kCameraStream, kTopLevelUrl));
+  const std::optional<permissions::PermissionAiRelevanceModel>
+      test_relvance_model = permissions::PermissionAiRelevanceModel::kAIv4;
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      manager_->Requests(), web_contents(), PermissionAction::GRANTED,
+      /*time_to_decision*/ base::TimeDelta(),
+      PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE,
+      /* ui_reason*/ std::nullopt, /*variants*/ {},
+      /*predicted_grant_likelihood*/ std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ test_relvance_model,
+      /*prediction_decision_held_back*/ std::nullopt,
+      /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ true,
+      /*did_click_managed*/ false,
+      /*did_click_learn_more*/ false);
+
+  const auto entries = ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_EQ(1u, entries.size());
+  const auto* entry = entries.back().get();
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionAiRelevanceModel"),
+            static_cast<int64_t>(test_relvance_model.value()));
 }
 
 TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
@@ -771,6 +802,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
       /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
@@ -939,6 +971,7 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
       /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
@@ -1144,6 +1177,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       PermissionUiSelector::PredictionGrantLikelihood::
           PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
@@ -1170,6 +1204,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       PermissionUiSelector::PredictionGrantLikelihood::
           PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
@@ -1195,6 +1230,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       PermissionUiSelector::PredictionGrantLikelihood::
           PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
@@ -1221,6 +1257,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       PermissionUiSelector::PredictionGrantLikelihood::
           PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
@@ -1246,6 +1283,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       PermissionUiSelector::PredictionGrantLikelihood::
           PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,
@@ -1271,6 +1309,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       PermissionUiSelector::PredictionGrantLikelihood::
           PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt,
       /*did_show_prompt=*/false,

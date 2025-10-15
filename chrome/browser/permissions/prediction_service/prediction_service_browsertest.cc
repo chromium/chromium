@@ -57,10 +57,12 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -585,6 +587,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
                        TestServerSideHoldbackWorkflow) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GeneratePredictionsResponse prediction_service_response =
@@ -608,8 +611,18 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
                            /*expected_relevance=*/std::nullopt,
                            GetParam().prediction_service_likelihood);
 
+  EXPECT_EQ(std::nullopt,
+            permissions_ai_ui_selector()->PermissionAiRelevanceModelForUKM());
+
   histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
                                         false, 1);
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::Permission::kEntryName);
+  ASSERT_FALSE(entries.empty());
+  const auto* entry = entries.back().get();
+  EXPECT_FALSE(ukm_recorder.EntryHasMetric(
+      entry, ukm::builders::Permission::kPermissionAiRelevanceModelName));
 }
 
 IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
@@ -1002,6 +1015,7 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
                        TestAiv3Workflow) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   ASSERT_TRUE(aiv3_model_handler());
 
   const auto& test_case = std::get<0>(GetParam());
@@ -1029,6 +1043,17 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
       /*test_url=*/"test.a", PermissionAction::DISMISSED,
       test_case.should_expect_quiet_ui, test_case.expected_relevance,
       test_case.prediction_service_likelihood);
+
+  EXPECT_EQ(permissions::PermissionAiRelevanceModel::kAIv3,
+            permissions_ai_ui_selector()->PermissionAiRelevanceModelForUKM());
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::Permission::kEntryName);
+  ASSERT_FALSE(entries.empty());
+  const auto* entry = entries.back().get();
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::Permission::kPermissionAiRelevanceModelName,
+      static_cast<int64_t>(permissions::PermissionAiRelevanceModel::kAIv3));
 
   histogram_tester().ExpectBucketCount(
       request_type() == RequestType::kNotifications
@@ -1593,6 +1618,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
                        TestAiv4Workflow) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   ASSERT_TRUE(aiv4_model_handler());
 
   const auto& test_case = std::get<0>(GetParam());
@@ -1621,6 +1647,17 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
       /*test_url=*/"test.a", PermissionAction::DISMISSED,
       test_case.should_expect_quiet_ui, test_case.expected_relevance,
       test_case.prediction_service_likelihood);
+
+  EXPECT_EQ(permissions::PermissionAiRelevanceModel::kAIv4,
+            permissions_ai_ui_selector()->PermissionAiRelevanceModelForUKM());
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::Permission::kEntryName);
+  ASSERT_FALSE(entries.empty());
+  const auto* entry = entries.back().get();
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::Permission::kPermissionAiRelevanceModelName,
+      static_cast<int64_t>(permissions::PermissionAiRelevanceModel::kAIv4));
 
   histogram_tester().ExpectBucketCount(
       request_type() == RequestType::kNotifications

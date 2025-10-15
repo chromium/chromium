@@ -107,6 +107,9 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
   std::optional<permissions::PermissionRequestRelevance>
   PermissionRequestRelevanceForUKM() override;
 
+  std::optional<permissions::PermissionAiRelevanceModel>
+  PermissionAiRelevanceModelForUKM() override;
+
   std::optional<bool> WasSelectorDecisionHeldback() override;
 
   std::optional<permissions::PermissionRequestRelevance>
@@ -261,6 +264,8 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
   std::optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
   std::optional<permissions::PermissionRequestRelevance>
       last_permission_request_relevance_;
+  std::optional<permissions::PermissionAiRelevanceModel>
+      last_permission_ai_relevance_model_;
   std::optional<float> cpss_v1_model_holdback_probability_;
   std::optional<bool> was_decision_held_back_;
 

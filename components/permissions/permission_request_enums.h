@@ -36,6 +36,17 @@ enum class PermissionRequestRelevance {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PermissionAiRelevanceModel)
+enum class PermissionAiRelevanceModel {
+  kUnknown = 0,
+  kAIv3 = 1,
+  kAIv4 = 2,
+  kMaxValue = kAIv4,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionAiRelevanceModel)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(PermissionPredictionSource)
 enum class PermissionPredictionSource {
   kNoCpssModel = 0,
