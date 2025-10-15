@@ -51,10 +51,5 @@ archs_mapping = {
       clang_arch = "x86_64"
       dsym_arch = "x86_64"
     }
-
-    x86 = {
-      clang_arch = "i386"
-      dsym_arch = "i386"
-    }
   }
 }

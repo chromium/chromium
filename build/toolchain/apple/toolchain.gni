@@ -251,18 +251,8 @@ template("single_apple_toolchain") {
         _archs_mapping_os_cpu = _archs_mapping_os[toolchain_args.current_cpu]
         _dsym_arch = _archs_mapping_os_cpu.dsym_arch
       } else {
-        # There are toolchain defined with combination of os and cpu that are
-        # no longer supported. Avoid failing `gn gen` with error in that case
-        # by defining _dsym_arch to some value that will cause a failure if
-        # used at build time.
-        #
-        # TODO(crbug.com/452018499): Remove once the toolchains no longer exist.
         not_needed([ "_archs_mapping_os" ])
-        _dsym_arch =
-            "invalid__this_name_is_longer_than_NAME_MAX_so_that_it_cant_be_us" +
-            "ed__0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx" +
-            "yz_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy" +
-            "z_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+        assert("cpu unsupported ${toolchain_args.current_cpu}")
       }
 
       dsym_output_dir =
