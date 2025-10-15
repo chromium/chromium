@@ -635,8 +635,8 @@ PermissionResult PermissionControllerImpl::GetPermissionResultInternal(
       url::Origin::Create(embedding_origin));
 }
 
-PermissionStatus
-PermissionControllerImpl::GetPermissionStatusForCurrentDocumentInternal(
+PermissionResult
+PermissionControllerImpl::GetPermissionResultForCurrentDocumentInternal(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
@@ -647,22 +647,23 @@ PermissionControllerImpl::GetPermissionStatusForCurrentDocumentInternal(
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
       permission_type);
   if (permission_result) {
-    return permission_result->status;
+    return permission_result.value();
   }
+
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (!delegate) {
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
-  if (VerifyContextOfCurrentDocument(permission_type, render_frame_host)
-          .status == PermissionStatus::DENIED) {
-    return PermissionStatus::DENIED;
+
+  PermissionResult result =
+      VerifyContextOfCurrentDocument(permission_type, render_frame_host);
+  if (result.status == PermissionStatus::DENIED) {
+    return result;
   }
-  return delegate
-      ->GetPermissionResultForCurrentDocument(permission_descriptor,
-                                              render_frame_host,
-                                              should_include_device_status)
-      .status;
+
+  return delegate->GetPermissionResultForCurrentDocument(
+      permission_descriptor, render_frame_host, should_include_device_status);
 }
 
 PermissionStatus PermissionControllerImpl::GetPermissionStatusForWorker(
@@ -704,37 +705,16 @@ PermissionStatus
 PermissionControllerImpl::GetPermissionStatusForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host) {
-  return GetPermissionStatusForCurrentDocumentInternal(permission_descriptor,
-                                                       render_frame_host);
+  return GetPermissionResultForCurrentDocument(permission_descriptor,
+                                               render_frame_host)
+      .status;
 }
 
 PermissionResult
 PermissionControllerImpl::GetPermissionResultForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host) {
-  auto permission_type =
-      blink::PermissionDescriptorToPermissionType(permission_descriptor);
-  std::optional<PermissionResult> permission_result = permission_overrides_.Get(
-      render_frame_host->GetLastCommittedOrigin(),
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
-      permission_type);
-  if (permission_result) {
-    return permission_result.value();
-  }
-
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate) {
-    return PermissionResult(PermissionStatus::DENIED);
-  }
-
-  PermissionResult result =
-      VerifyContextOfCurrentDocument(permission_type, render_frame_host);
-  if (result.status == PermissionStatus::DENIED) {
-    return result;
-  }
-
-  return delegate->GetPermissionResultForCurrentDocument(
+  return GetPermissionResultForCurrentDocumentInternal(
       permission_descriptor, render_frame_host,
       /*should_include_device_status=*/false);
 }
@@ -813,8 +793,10 @@ PermissionStatus PermissionControllerImpl::GetCombinedPermissionAndDeviceStatus(
     const blink::mojom::PermissionDescriptorPtr& permission,
     RenderFrameHost* render_frame_host) {
   CHECK(PermissionUtil::IsDevicePermission(permission));
-  return GetPermissionStatusForCurrentDocumentInternal(
-      permission, render_frame_host, /*should_include_device_status=*/true);
+  return GetPermissionResultForCurrentDocumentInternal(
+             permission, render_frame_host,
+             /*should_include_device_status=*/true)
+      .status;
 }
 
 void PermissionControllerImpl::ResetPermission(PermissionType permission,

@@ -134,7 +134,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       const GURL& requesting_origin,
       const GURL& embedding_origin);
 
-  PermissionStatus GetPermissionStatusForCurrentDocumentInternal(
+  PermissionResult GetPermissionResultForCurrentDocumentInternal(
       const blink::mojom::PermissionDescriptorPtr& permission,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status = false);
