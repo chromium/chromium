@@ -444,6 +444,12 @@ export class SearchboxMatchElement extends CrLitElement {
         selection.state !== SelectionLineState.kNormal &&
             selection.line === this.matchIndex);
 
+    this.shadowRoot.querySelector('#keyword')
+        ?.classList.toggle(
+            'selected',
+            selection.state === SelectionLineState.kKeywordMode &&
+                selection.line === this.matchIndex);
+
     [...this.shadowRoot.querySelectorAll(
          '#actions-container cr-searchbox-action')]
         .forEach((action, index) => {

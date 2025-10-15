@@ -9,8 +9,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './searchbox_action.css.js';
 import {getHtml} from './searchbox_action.html.js';
 
-// Displays an action associated with AutocompleteMatch (i.e. Clear
-// Browsing History, etc.)
+// Displays a UI chip for an `AutocompleteMatch`. E.g. for keywords ('Search
+// YouTube') or actions ('Clear browsing data').
 export class SearchboxActionElement extends CrLitElement {
   static get is() {
     return 'cr-searchbox-action';

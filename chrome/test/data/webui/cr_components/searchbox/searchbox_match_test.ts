@@ -152,8 +152,9 @@ suite('CrComponentsRealboxMatchTest', () => {
   });
 
   test('UpdateSelectionUpdatesClasses', async () => {
-    // Add 2 actions.
+    // Add keyword chip and 2 actions.
     const match = createAutocompleteMatch();
+    match.keywordChipHint = 'keyword';
     match.actions.push({
       hint: 'hint',
       suggestionContents: 'suggestionContents',
@@ -173,6 +174,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.updateSelection(selection);
     assertFalse(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
     assertArrayEquals([false, false], [
       ...matchEl.shadowRoot.querySelectorAll(
           '#actions-container cr-searchbox-action'),
@@ -188,6 +190,23 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.updateSelection(selection);
     assertFalse(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
+    assertArrayEquals([false, false], [
+      ...matchEl.shadowRoot.querySelectorAll(
+          '#actions-container cr-searchbox-action'),
+    ].map(action => action.classList.contains('selected')));
+    assertFalse(!!matchEl.$.remove.classList.contains('selected'));
+
+    // When the keyword chip is selected.
+    selection = {
+      line: 0,
+      state: SelectionLineState.kKeywordMode,
+      actionIndex: 0,
+    };
+    matchEl.updateSelection(selection);
+    assertTrue(
+        !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertTrue(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
     assertArrayEquals([false, false], [
       ...matchEl.shadowRoot.querySelectorAll(
           '#actions-container cr-searchbox-action'),
@@ -203,6 +222,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.updateSelection(selection);
     assertTrue(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
     assertArrayEquals([true, false], [
       ...matchEl.shadowRoot.querySelectorAll(
           '#actions-container cr-searchbox-action'),
@@ -218,6 +238,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.updateSelection(selection);
     assertTrue(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
     assertArrayEquals([false, true], [
       ...matchEl.shadowRoot.querySelectorAll(
           '#actions-container cr-searchbox-action'),
@@ -233,6 +254,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.updateSelection(selection);
     assertTrue(
         !!matchEl.shadowRoot.querySelector('#focus-indicator.selected-within'));
+    assertFalse(!!matchEl.shadowRoot.querySelector('#keyword.selected'));
     assertArrayEquals([false, false], [
       ...matchEl.shadowRoot.querySelectorAll(
           '#actions-container cr-searchbox-action'),

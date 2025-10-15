@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
+#include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
 #include "chrome/grit/new_tab_page_resources.h"
@@ -41,6 +43,7 @@
 #include "searchbox_handler.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/window_open_disposition_utils.h"
 
@@ -101,4 +104,29 @@ void WebuiOmniboxHandler::OnSelectionChanged(
       searchbox::mojom::OmniboxPopupSelection::New(
           selection.line, ConvertLineState(selection.state),
           selection.action_index));
+}
+
+std::optional<searchbox::mojom::AutocompleteMatchPtr>
+WebuiOmniboxHandler::CreateAutocompleteMatch(
+    const AutocompleteMatch& match,
+    size_t line,
+    const OmniboxEditModel* edit_model,
+    bookmarks::BookmarkModel* bookmark_model,
+    const omnibox::GroupConfigMap& suggestion_groups_map,
+    const TemplateURLService* turl_service) const {
+  auto mojom_match = SearchboxHandler::CreateAutocompleteMatch(
+      match, line, edit_model, bookmark_model, suggestion_groups_map,
+      turl_service);
+
+  if (mojom_match && !match.HasInstantKeyword(turl_service) &&
+      edit_model->IsPopupControlPresentOnMatch(
+          OmniboxPopupSelection{line, OmniboxPopupSelection::KEYWORD_MODE})) {
+    const auto names = SelectedKeywordView::GetKeywordLabelNames(
+        match.associated_keyword, turl_service);
+    mojom_match.value()->keyword_chip_hint = base::UTF16ToUTF8(names.full_name);
+    mojom_match.value()->keyword_chip_a11y =
+        l10n_util::GetStringFUTF8(IDS_ACC_KEYWORD_MODE, names.short_name);
+  }
+
+  return mojom_match;
 }

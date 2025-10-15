@@ -55,6 +55,7 @@ source_set("searchbox") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/search",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/webui:webui_util",
     "//components/bookmarks/browser",
     "//components/lens",

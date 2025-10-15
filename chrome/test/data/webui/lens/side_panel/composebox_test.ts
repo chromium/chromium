@@ -82,6 +82,8 @@ suite('Composebox', () => {
       isWeatherAnswerSuggestion: null,
       answer: null,
       tailSuggestCommonPrefix: null,
+      keywordChipHint: '',
+      keywordChipA11y: '',
     };
   }
 

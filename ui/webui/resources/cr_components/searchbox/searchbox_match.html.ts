@@ -26,6 +26,18 @@ export function getHtml(this: SearchboxMatchElement) {
     <span id="separator" class="dim">${this.separatorText_}</span>
     <span id="description" .innerHTML="${this.descriptionHtml_}"></span>
   </div>
+  <div aria-hidden="true">
+    ${this.match.keywordChipHint ? html`
+      <div id="actions-focus-border">
+        <cr-searchbox-action id="keyword"
+            hint="${this.match.keywordChipHint}"
+            icon-path="//resources/images/icon_search.svg"
+            aria-label="${this.match.keywordChipA11y}"
+            tabindex="1">
+        </cr-searchbox-action>
+      </div>
+    ` : ''}
+  </div>
   <div id="actions-container" class="actions container" aria-hidden="true">
     ${this.match.actions.map((item, index) => html`
       <div id="actions-focus-border">
@@ -35,12 +47,12 @@ export function getHtml(this: SearchboxMatchElement) {
             icon-path="${item.iconPath}"
             aria-label="${item.a11yLabel}"
             action-index="${index}"
-            @execute-action="${this.onExecuteAction_}" tabindex="1">
+            @execute-action="${this.onExecuteAction_}" tabindex="2">
         </cr-searchbox-action>
       </div>
     `)}
   </div>
-  <cr-icon-button id="remove" class="action-icon icon-clear" tabindex="2"
+  <cr-icon-button id="remove" class="action-icon icon-clear" tabindex="3"
       aria-label="${this.removeButtonAriaLabel_}"
       title="${this.removeButtonTitle_}"
       ?hidden="${!this.match.supportsDeletion}"
