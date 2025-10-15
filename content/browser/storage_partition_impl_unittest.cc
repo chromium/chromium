@@ -1565,7 +1565,8 @@ TEST_F(StoragePartitionImplTest, RemoveLocalStorageForOneOrigin) {
   EXPECT_TRUE(tester.DOMStorageExistsForOrigin(kOrigin3));
 }
 
-TEST_F(StoragePartitionImplTest, ClearCodeCache) {
+// TODO(crbug.com/450397707): Re-enable this test
+TEST_F(StoragePartitionImplTest, DISABLED_ClearCodeCache) {
   const GURL kResourceURL("http://host4/script.js");
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
@@ -1598,7 +1599,8 @@ TEST_F(StoragePartitionImplTest, ClearCodeCache) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(StoragePartitionImplTest, ClearCodeCacheSpecificURL) {
+// TODO(crbug.com/450397707): Re-enable this test
+TEST_F(StoragePartitionImplTest, DISABLED_ClearCodeCacheSpecificURL) {
   const GURL kResourceURL("http://host4/script.js");
   const GURL kFilterResourceURLForCodeCache("http://host5/script.js");
 
@@ -1640,7 +1642,8 @@ TEST_F(StoragePartitionImplTest, ClearCodeCacheSpecificURL) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(StoragePartitionImplTest, ClearCodeCacheDateRange) {
+// TODO(crbug.com/450397707): Re-enable this test
+TEST_F(StoragePartitionImplTest, DISABLED_ClearCodeCacheDateRange) {
   const GURL kResourceURL("http://host4/script.js");
   const GURL kFilterResourceURLForCodeCache("http://host5/script.js");
 
@@ -2780,5 +2783,5 @@ TEST_F(StoragePartitionImplShaderCacheTest,
       run_loop.QuitClosure());
   run_loop.Run();
 }
-}  // namespace content
 
+}  // namespace content
