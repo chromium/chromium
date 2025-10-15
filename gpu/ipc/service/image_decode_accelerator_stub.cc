@@ -158,9 +158,7 @@ void ImageDecodeAcceleratorStub::ScheduleImageDecode(
 
   base::AutoLock lock(lock_);
   if (!base::FeatureList::IsEnabled(
-          features::kVaapiJpegImageDecodeAcceleration) &&
-      !base::FeatureList::IsEnabled(
-          features::kVaapiWebPImageDecodeAcceleration)) {
+          features::kVaapiJpegImageDecodeAcceleration)) {
     ScheduleSyncTokenRelease(decode_sync_token);
     return;
   }

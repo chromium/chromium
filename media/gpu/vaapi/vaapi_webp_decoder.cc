@@ -89,26 +89,7 @@ SkYUVColorSpace VaapiWebPDecoder::GetYUVColorSpace() const {
 // static
 std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
 VaapiWebPDecoder::GetSupportedProfile() {
-  if (!base::FeatureList::IsEnabled(
-          features::kVaapiWebPImageDecodeAcceleration)) {
-    return std::nullopt;
-  }
-  gpu::ImageDecodeAcceleratorSupportedProfile profile;
-  profile.image_type = gpu::ImageDecodeAcceleratorType::kWebP;
-
-  const bool got_supported_resolutions = VaapiWrapper::GetSupportedResolutions(
-      kWebPVAProfile, VaapiWrapper::CodecMode::kDecode,
-      profile.min_encoded_dimensions, profile.max_encoded_dimensions);
-  if (!got_supported_resolutions) {
-    return std::nullopt;
-  }
-
-  // TODO(andrescj): Ideally, we would advertise support for all the formats
-  // supported by the driver. However, for now, we will only support exposing
-  // YUV 4:2:0 surfaces as DmaBufs.
-  CHECK(VaapiWrapper::GetDecodeSupportedInternalFormats(kWebPVAProfile).yuv420);
-  profile.subsamplings.push_back(gpu::ImageDecodeAcceleratorSubsampling::k420);
-  return profile;
+  return std::nullopt;
 }
 
 VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(

@@ -1042,9 +1042,9 @@ GpuImageDecodeCache::GpuImageDecodeCache(
   allow_accelerated_jpeg_decodes_ =
       context_->ContextSupport()->IsJpegDecodeAccelerationSupported() &&
       base::FeatureList::IsEnabled(features::kVaapiJpegImageDecodeAcceleration);
-  allow_accelerated_webp_decodes_ =
-      context_->ContextSupport()->IsWebPDecodeAccelerationSupported() &&
-      base::FeatureList::IsEnabled(features::kVaapiWebPImageDecodeAcceleration);
+  // TODO(crbug.com/450466845): Remove this ivar and all code depending on it
+  // being true.
+  allow_accelerated_webp_decodes_ = false;
 
   {
     // TODO(crbug.com/40141944): We shouldn't need to lock to get capabilities.

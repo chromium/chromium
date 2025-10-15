@@ -294,7 +294,6 @@ class GpuImageDecodeCacheTest
           std::tuple<SkColorType,
                      bool /* do_yuv_decode */,
                      bool /* allow_accelerated_jpeg_decoding */,
-                     bool /* allow_accelerated_webp_decoding */,
                      bool /* advertise_accelerated_decoding */,
                      bool /* enable_clipped_image_scaling */,
                      bool /* no_discardable_memory */>> {
@@ -304,17 +303,14 @@ class GpuImageDecodeCacheTest
     allow_accelerated_jpeg_decoding_ = std::get<2>(GetParam());
     if (allow_accelerated_jpeg_decoding_)
       enabled_features.push_back(features::kVaapiJpegImageDecodeAcceleration);
-    allow_accelerated_webp_decoding_ = std::get<3>(GetParam());
-    if (allow_accelerated_webp_decoding_)
-      enabled_features.push_back(features::kVaapiWebPImageDecodeAcceleration);
-    no_discardable_memory_ = std::get<6>(GetParam());
+    no_discardable_memory_ = std::get<5>(GetParam());
     if (no_discardable_memory_)
       enabled_features.push_back(
           features::kNoDiscardableMemoryForGpuDecodePath);
     feature_list_.InitWithFeatures(enabled_features,
                                    {} /* disabled_features */);
-    advertise_accelerated_decoding_ = std::get<4>(GetParam());
-    enable_clipped_image_scaling_ = std::get<5>(GetParam());
+    advertise_accelerated_decoding_ = std::get<3>(GetParam());
+    enable_clipped_image_scaling_ = std::get<4>(GetParam());
     if (enable_clipped_image_scaling_) {
       auto* command_line = base::CommandLine::ForCurrentProcess();
       ASSERT_TRUE(command_line != nullptr);
@@ -628,7 +624,6 @@ class GpuImageDecodeCacheTest
   SkColorType color_type_;
   bool do_yuv_decode_;
   bool allow_accelerated_jpeg_decoding_;
-  bool allow_accelerated_webp_decoding_;
   bool advertise_accelerated_decoding_;
   bool enable_clipped_image_scaling_;
   bool no_discardable_memory_;
@@ -4169,7 +4164,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::ValuesIn(test_color_types),
         testing::Bool() /* do_yuv_decode */,
         testing::Values(false) /* allow_accelerated_jpeg_decoding */,
-        testing::Values(false) /* allow_accelerated_webp_decoding */,
         testing::Values(false) /* advertise_accelerated_decoding */,
         testing::Values(false) /* enable_clipped_image_scaling */,
         testing::Values(false) /* no_discardable_memory */));
@@ -4498,7 +4492,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::ValuesIn(test_color_types),
         testing::Bool() /* do_yuv_decode */,
         testing::Values(true) /* allow_accelerated_jpeg_decoding */,
-        testing::Values(true) /* allow_accelerated_webp_decoding */,
         testing::Values(true) /* advertise_accelerated_decoding */,
         testing::Values(false) /* enable_clipped_image_scaling */,
         testing::Bool() /* no_discardable_memory */));
@@ -4589,19 +4582,9 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
   ASSERT_TRUE(webp_task.task);
   EXPECT_EQ(advertise_accelerated_decoding_,
             webp_task.can_do_hardware_accelerated_decode);
-  if (advertise_accelerated_decoding_ && allow_accelerated_webp_decoding_) {
-    ASSERT_TRUE(webp_task.task->dependencies().empty());
-    ASSERT_TRUE(webp_image.GetImageHeaderMetadata());
-    EXPECT_CALL(
-        *raster_implementation(),
-        DoScheduleImageDecode(webp_image.GetImageHeaderMetadata()->image_size,
-                              _, gfx::ColorSpace(), _))
-        .Times(1);
-  } else {
-    ASSERT_EQ(webp_task.task->dependencies().size(), 1u);
-    ASSERT_TRUE(webp_task.task->dependencies()[0]);
-    TestTileTaskRunner::ProcessTask(webp_task.task->dependencies()[0].get());
-  }
+  ASSERT_EQ(webp_task.task->dependencies().size(), 1u);
+  ASSERT_TRUE(webp_task.task->dependencies()[0]);
+  TestTileTaskRunner::ProcessTask(webp_task.task->dependencies()[0].get());
   TestTileTaskRunner::ProcessTask(webp_task.task.get());
   testing::Mock::VerifyAndClearExpectations(raster_implementation());
 
@@ -4641,7 +4624,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(kN32_SkColorType),
                      testing::Bool() /* do_yuv_decode */,
                      testing::Bool() /* allow_accelerated_jpeg_decoding */,
-                     testing::Bool() /* allow_accelerated_webp_decoding */,
                      testing::Bool() /* advertise_accelerated_decoding */,
                      testing::Values(false) /* enable_clipped_image_scaling */,
                      testing::Bool() /* no_discardable_memory */));
@@ -4911,7 +4893,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(kN32_SkColorType),
                      testing::Bool() /* do_yuv_decode */,
                      testing::Bool() /* allow_accelerated_jpeg_decoding */,
-                     testing::Bool() /* allow_accelerated_webp_decoding */,
                      testing::Bool() /* advertise_accelerated_decoding */,
                      testing::Values(false) /* enable_clipped_image_scaling */,
                      testing::Bool() /* no_discardable_memory */));

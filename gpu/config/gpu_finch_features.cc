@@ -161,13 +161,6 @@ BASE_FEATURE(kClearGrShaderDiskCacheOnInvalidPrefix,
 BASE_FEATURE(kVaapiJpegImageDecodeAcceleration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls the decode acceleration of WebP images in Chrome OS using the
-// VA-API.
-// TODO(gildekel): remove or enable by default in Chrome OS once
-// https://crbug.com/877694 is resolved.
-BASE_FEATURE(kVaapiWebPImageDecodeAcceleration,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable Vulkan graphics backend for compositing and rasterization. Defaults to
 // native implementation if --use-vulkan flag is not used. Otherwise
 // --use-vulkan will be followed.

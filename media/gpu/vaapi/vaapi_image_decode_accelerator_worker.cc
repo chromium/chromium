@@ -62,16 +62,6 @@ VaapiImageDecoder* VaapiImageDecodeAcceleratorWorker::GetInitializedDecoder(
       return nullptr;
     }
     return decoders_[gpu::ImageDecodeAcceleratorType::kJpeg].get();
-  } else if (IsLossyWebPImage(encoded_data) &&
-             base::Contains(decoders_,
-                            gpu::ImageDecodeAcceleratorType::kWebP)) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kVaapiWebPImageDecodeAcceleration));
-    if (!decoders_[gpu::ImageDecodeAcceleratorType::kWebP]->Initialize(
-            uma_cb)) {
-      return nullptr;
-    }
-    return decoders_[gpu::ImageDecodeAcceleratorType::kWebP].get();
   }
   return nullptr;
 }
