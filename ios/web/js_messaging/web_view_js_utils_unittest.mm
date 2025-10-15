@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -21,14 +22,15 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 namespace web {
 
 namespace {
-// Mock implementation of `__gCrWeb.message.getExistingFrames` which counts the
+// Mock implementation of `__gCrWeb.getExistingFrames` which counts the
 // number of times the function is called.
 NSString* const kMockGetExistingFramesScript =
-    @"var getExistingFramesCallCount = 0;"
-    @"__gCrWeb = {};"
-    @"__gCrWeb['message'] = {};"
-    @"__gCrWeb.message['getExistingFrames'] = function() {"
-    @"  getExistingFramesCallCount++;"
+    @"const originalGetExistingFrames = __gCrWeb.getExistingFrames;"
+    @"__gCrWeb.getExistingFrames = function() {"
+    @"  __gCrWeb.getExistingFramesCallCount ?  "
+    @"    __gCrWeb.getExistingFramesCallCount++ : "
+    @"    __gCrWeb.getExistingFramesCallCount = 1;"
+    @"  originalGetExistingFrames.call();"
     @"};"
     @"true;";
 
@@ -52,32 +54,16 @@ WKFrameInfo* GetMainFrameWKFrameInfo(WKWebView* web_view) {
   return script_message_handler.lastReceivedScriptMessage.frameInfo;
 }
 
-// Sets up the mock script `kMockGetExistingFramesScript` in the given web view,
-// frame, and content world.
-void SetupMockGetExistingFramesScript(WKWebView* web_view,
-                                      WKFrameInfo* frame_info,
-                                      WKContentWorld* content_world) {
-  __block bool js_execution_complete = false;
-  web::ExecuteJavaScript(web_view, content_world, frame_info,
-                         kMockGetExistingFramesScript,
-                         ^(id block_result, NSError* block_error) {
-                           ASSERT_FALSE(block_error);
-                           js_execution_complete = true;
-                         });
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return js_execution_complete;
-  }));
-}
-
-// Returns the number of times that the mock function setup by
-// `SetupMockGetExistingFramesScript` has been called.
+// Returns the number of times that the mock of the getExistingFrames function
+// setup by `AddUserScriptsForWorld` has been called.
 int GetExistingFramesScriptCallCount(WKWebView* web_view,
                                      WKFrameInfo* frame_info,
                                      WKContentWorld* content_world) {
   __block int function_call_count = -1;
   __block bool js_execution_complete = false;
   web::ExecuteJavaScript(web_view, content_world, frame_info,
-                         @"getExistingFramesCallCount",
+                         @"__gCrWeb.getExistingFramesCallCount ? "
+                         @"__gCrWeb.getExistingFramesCallCount : 0;",
                          ^(id block_result, NSError* block_error) {
                            ASSERT_FALSE(block_error);
                            function_call_count = [block_result intValue];
@@ -512,14 +498,55 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptIsolatedWorld) {
   EXPECT_FALSE([page_world_result boolValue]);
 }
 
-// Tests that __gCrWeb.message.getExistingFrames() is called in the specified
+// Sets up the mock script `kMockGetExistingFramesScript` in the given web view,
+// frame, and content world.
+void SetupMockGetExistingFramesScript(WKWebView* web_view,
+                                      WKFrameInfo* frame_info,
+                                      WKContentWorld* content_world) {
+  __block bool js_execution_complete = false;
+  web::ExecuteJavaScript(web_view, content_world, frame_info,
+                         kMockGetExistingFramesScript,
+                         ^(id block_result, NSError* block_error) {
+                           ASSERT_FALSE(block_error);
+                           js_execution_complete = true;
+                         });
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return js_execution_complete;
+  }));
+}
+
+void AddUserScriptsForWorld(WKUserContentController* user_content_controller,
+                            WKContentWorld* content_world) {
+  WKUserScript* shared_script = [[WKUserScript alloc]
+      initWithSource:web::test::GetPageScript(@"gcrweb")
+      injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+      forMainFrameOnly:NO
+      inContentWorld:content_world];
+  [user_content_controller addUserScript:shared_script];
+}
+
+// Tests that `getExistingFrames` is called in the specified
 // world.
 TEST_F(WebViewJsUtilsTest, RegisterExistingFrames) {
-  WKWebView* web_view = [[WKWebView alloc] init];
+  // Create a configuration and add scripts for both content worlds.
+  WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+  WKUserContentController* user_content_controller =
+      configuration.userContentController;
+
+  AddUserScriptsForWorld(user_content_controller, WKContentWorld.pageWorld);
+  AddUserScriptsForWorld(user_content_controller,
+                         WKContentWorld.defaultClientWorld);
+
+  // Create the WebView and load a page to trigger script injection.
+  WKWebView* web_view = [[WKWebView alloc] initWithFrame:CGRectZero
+                                           configuration:configuration];
+  ASSERT_TRUE(
+      web::test::LoadHtml(web_view, @"<html></html>",
+                          [NSURL URLWithString:@"https://chromium.test/"]));
   WKFrameInfo* frame_info = GetMainFrameWKFrameInfo(web_view);
   ASSERT_TRUE(frame_info);
 
-  // Create mock __gCrWeb.message.getExistingFrames() in both content worlds.
+  // Create mock __gCrWeb.getExistingFrames() in both content worlds.
   SetupMockGetExistingFramesScript(web_view, frame_info,
                                    WKContentWorld.pageWorld);
   SetupMockGetExistingFramesScript(web_view, frame_info,

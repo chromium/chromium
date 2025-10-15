@@ -34,7 +34,7 @@ class ScriptErrorMessageHandlerJavaScriptFeatureTest
     WebTestWithWebState::SetUp();
     OverrideJavaScriptFeatures(
         {ErrorEventListenerJavaScriptFeature::GetInstance(),
-         web::java_script_features::GetMessageJavaScriptFeature(), &feature_});
+         web::java_script_features::GetBaseJavaScriptFeature(), &feature_});
   }
 
   std::optional<ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails>

@@ -65,7 +65,6 @@ class LanguageDetectionJavascriptTest : public web::JavascriptTest {
 
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
     AddUserScript(@"language_detection");
   }
 

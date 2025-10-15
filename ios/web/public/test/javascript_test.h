@@ -33,9 +33,6 @@ class JavascriptTest : public PlatformTest {
   // Adds the script which configures `__gCrWeb.common` to `web_view()`s
   // configuration.
   void AddCommonScript();
-  // Adds the script which configures `__gCrWeb.message` to `web_view()`s
-  // configuration.
-  void AddMessageScript();
 
   // Adds the script with name `script_name` to `web_view()`s configuration.
   void AddUserScript(NSString* script_name);

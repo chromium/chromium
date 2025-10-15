@@ -36,7 +36,6 @@ namespace {
 
 const char kBaseScriptName[] = "gcrweb";
 const char kCommonScriptName[] = "common";
-const char kMessageScriptName[] = "message";
 
 const char kMainFrameDescription[] = "Main frame";
 const char kIframeDescription[] = "Iframe";
@@ -85,7 +84,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
   std::vector<JavaScriptFeature*> features = {
       GetBaseJavaScriptFeature(),
       GetCommonJavaScriptFeature(),
-      GetMessageJavaScriptFeature(),
       ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
       ErrorPageJavaScriptFeature::GetInstance(),
       FindInPageJavaScriptFeature::GetInstance(),
@@ -141,19 +139,6 @@ JavaScriptFeature* GetCommonJavaScriptFeature() {
               JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}),
       std::vector<const JavaScriptFeature*>({GetBaseJavaScriptFeature()}));
   return common_feature.get();
-}
-
-JavaScriptFeature* GetMessageJavaScriptFeature() {
-  // Static storage is ok for `message_feature` as it holds no state.
-  static base::NoDestructor<JavaScriptFeature> message_feature(
-      ContentWorld::kAllContentWorlds,
-      std::vector<JavaScriptFeature::FeatureScript>(
-          {JavaScriptFeature::FeatureScript::CreateWithFilename(
-              kMessageScriptName,
-              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
-              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}),
-      std::vector<const JavaScriptFeature*>({GetCommonJavaScriptFeature()}));
-  return message_feature.get();
 }
 
 }  // namespace java_script_features

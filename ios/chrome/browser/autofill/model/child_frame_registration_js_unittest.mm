@@ -116,7 +116,6 @@ class ChildFrameRegistrationJavascriptTest : public web::JavascriptTest {
 
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
     AddUserScript(@"autofill_form_features");
     AddUserScript(
         base::SysUTF8ToNSString(autofill::kRemoteFrameRegistrationScriptName));

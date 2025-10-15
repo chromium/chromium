@@ -41,7 +41,6 @@ FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
                FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
-              web::java_script_features::GetMessageJavaScriptFeature(),
               // Form extraction logic requires feature flags.
               AutofillFormFeaturesJavaScriptFeature::GetInstance(),
           }) {}

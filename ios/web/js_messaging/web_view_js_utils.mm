@@ -198,7 +198,7 @@ void RegisterExistingFrames(WKWebView* web_view,
                             WKContentWorld* content_world) {
   DCHECK(content_world);
 
-  NSString* script = @"__gCrWeb.message.getExistingFrames();";
+  NSString* script = @"__gCrWeb.getExistingFrames();";
 
   [web_view evaluateJavaScript:script
                        inFrame:nil

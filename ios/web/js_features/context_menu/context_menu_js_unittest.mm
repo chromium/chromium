@@ -215,7 +215,6 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
 
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
     AddUserScript(@"all_frames_context_menu");
     AddUserScript(@"main_frame_context_menu");
   }

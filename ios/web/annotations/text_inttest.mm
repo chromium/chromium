@@ -26,7 +26,6 @@ class AnnotationJsTest : public JavascriptTest {
 
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
     AddUserScript(@"text_tests");
 
     // Start with empty web page.

@@ -52,7 +52,6 @@ class FormJsTest : public web::JavascriptTest {
     web::JavascriptTest::SetUp();
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
     AddUserScript(@"autofill_form_features");
     AddUserScript(@"fill");
     AddUserScript(@"form");

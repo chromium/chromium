@@ -33,8 +33,7 @@ JavaScriptConsoleFeature::JavaScriptConsoleFeature()
               FeatureScript::TargetFrames::kAllFrames,
               FeatureScript::ReinjectionBehavior::
                   kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature(),
-           web::java_script_features::GetMessageJavaScriptFeature()}) {}
+          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
 
 JavaScriptConsoleFeature::~JavaScriptConsoleFeature() = default;
 

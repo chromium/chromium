@@ -98,7 +98,6 @@ PasswordManagerJavaScriptFeature::PasswordManagerJavaScriptFeature()
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
-              web::java_script_features::GetMessageJavaScriptFeature(),
               autofill::FormUtilJavaScriptFeature::GetInstance(),
               autofill::AutofillRendererIDJavaScriptFeature::GetInstance(),
           }) {}
