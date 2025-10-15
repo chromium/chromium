@@ -13,7 +13,8 @@
 
 namespace chromecast {
 
-class MemoryPressureControllerImpl : public mojom::MemoryPressureController {
+class MemoryPressureControllerImpl : public mojom::MemoryPressureController,
+                                     public base::MemoryPressureListener {
  public:
   MemoryPressureControllerImpl();
 
@@ -31,12 +32,13 @@ class MemoryPressureControllerImpl : public mojom::MemoryPressureController {
   void AddObserver(
       mojo::PendingRemote<mojom::MemoryPressureObserver> observer) override;
 
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   mojo::RemoteSet<mojom::MemoryPressureObserver> observers_;
   mojo::ReceiverSet<mojom::MemoryPressureController> receivers_;
 
-  std::unique_ptr<base::MemoryPressureListenerRegistration>
+  base::MemoryPressureListenerRegistration
       memory_pressure_listener_registration_;
 };
 
