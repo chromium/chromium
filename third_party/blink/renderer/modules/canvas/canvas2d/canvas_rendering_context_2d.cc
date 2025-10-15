@@ -85,8 +85,6 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
-#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -111,7 +109,6 @@
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/platform_focus_ring.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -824,58 +821,22 @@ void CanvasRenderingContext2D::DrawElementInternal(
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
 
-  HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
-  DCHECK(canvas_element);
-  canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElementImage);
-
   if (!GetOrCreatePaintCanvas()) {
     return;
   }
 
-  if (!IsDrawElementImageEligible(element, "drawElementImage()",
-                                  exception_state)) {
+  std::optional<cc::PaintRecord> paint_record =
+      GetElementImage(element, "drawElementImage()", exception_state);
+  if (!paint_record) {
     return;
   }
-
-  PaintRecordBuilder builder;
-  LayoutBox* layout_box = element->GetLayoutBox();
-  // All drawn elements should have their own stacking contexts.
-  CHECK(layout_box->HasLayer());
-  CHECK(layout_box->IsStacked());
-  PaintLayer* layer = layout_box->EnclosingLayer();
-
-  auto box_rect =
-      gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->StitchedSize()));
-  // TODO(https://issues.chromium.org/379143301): Figure out the actual painted
-  // rect of the element plus its descendants, and use that instead of the
-  // box's size.
-  OverriddenCullRectScope cull_rect_scope(*layer, CullRect(box_rect),
-                                          /*disable_expansion*/ true);
-
-  PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  paint_layer_painter.Paint(
-      builder.Context(),
-      PaintFlag::kPrivacyPreserving | PaintFlag::kOmitCompositingInfo);
-
-  // Use the drawn element's local property tree state to start drawing, but
-  // then modify this to include effects and clips between the drawn element
-  // and the canvas element. This will exclude transforms above the local
-  // border box state (e.g., css transform is ignored), but will include effects
-  // (e.g., css filter is not ignored).
-  PropertyTreeState property_tree_state = layer->GetLayoutBox()
-                                              ->FirstFragment()
-                                              .LocalBorderBoxProperties()
-                                              .Unalias();
-  const auto& canvas_fragment = canvas_element->GetLayoutBox()->FirstFragment();
-  property_tree_state.SetEffect(canvas_fragment.ContentsEffect().Unalias());
-  property_tree_state.SetClip(canvas_fragment.ContentsClip().Unalias());
-
-  cc::PaintRecord paint_record = builder.EndRecording(property_tree_state);
 
   // The filter needs to be resolved before calling Draw, because it
   // immediately checks IsFilterResolved() and uses a null canvas if not.
   StateGetFilter();
+
+  auto box_rect =
+      gfx::Rect(ToCeiledSize(element->GetLayoutBox()->StitchedSize()));
 
   // TODO(crbug.com/421834883): This code is based on image drawing. Maybe we
   // need a distinct paint_type: kImagePaintType seems to do the right thing
@@ -938,7 +899,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
 
         c->clipRect(SkRect::MakeWH(box_rect.width(), box_rect.height()));
 
-        c->drawPicture(paint_record,
+        c->drawPicture(paint_record.value(),
                        // use a save at the beginning of the record to keep
                        // transforms local:
                        true);

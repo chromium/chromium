@@ -38,7 +38,11 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -166,6 +170,54 @@ bool CanvasRenderingContext::IsDrawElementImageEligible(
   }
 
   return true;
+}
+
+std::optional<cc::PaintRecord> CanvasRenderingContext::GetElementImage(
+    Element* element,
+    const String& func_name,
+    ExceptionState& exception_state) {
+  element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kCanvasDrawElementImage);
+  if (!IsDrawElementImageEligible(element, func_name, exception_state)) {
+    return std::nullopt;
+  }
+
+  PaintRecordBuilder builder;
+  LayoutBox* layout_box = element->GetLayoutBox();
+  // All drawn elements should have their own stacking contexts.
+  CHECK(layout_box->HasLayer());
+  CHECK(layout_box->IsStacked());
+  PaintLayer* layer = layout_box->EnclosingLayer();
+
+  auto box_rect =
+      gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->StitchedSize()));
+  // TODO(https://issues.chromium.org/379143301): Figure out the actual painted
+  // rect of the element plus its descendants, and use that instead of the
+  // box's size.
+  OverriddenCullRectScope cull_rect_scope(*layer, CullRect(box_rect),
+                                          /*disable_expansion*/ true);
+
+  PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
+  paint_layer_painter.Paint(
+      builder.Context(),
+      PaintFlag::kPrivacyPreserving | PaintFlag::kOmitCompositingInfo);
+
+  // Use the drawn element's local property tree state to start drawing, but
+  // then modify this to include effects and clips between the drawn element
+  // and the canvas element. This will exclude transforms above the local
+  // border box state (e.g., css transform is ignored), but will include effects
+  // (e.g., css filter is not ignored).
+  PropertyTreeState property_tree_state = layer->GetLayoutBox()
+                                              ->FirstFragment()
+                                              .LocalBorderBoxProperties()
+                                              .Unalias();
+  HTMLCanvasElement* canvas_element = static_cast<HTMLCanvasElement*>(Host());
+  const auto& canvas_fragment = canvas_element->GetLayoutBox()->FirstFragment();
+  property_tree_state.SetEffect(canvas_fragment.ContentsEffect().Unalias());
+  property_tree_state.SetClip(canvas_fragment.ContentsClip().Unalias());
+
+  cc::PaintRecord paint_record = builder.EndRecording(property_tree_state);
+  return paint_record;
 }
 
 bool CanvasRenderingContext::ConvertHitTestRegionsToHTMLCanvasRegions(

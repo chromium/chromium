@@ -6827,55 +6827,33 @@ void WebGLRenderingContextBase::texElementImage2D(
     Element* element,
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+
   if (isContextLost()) {
     return;
   }
 
-  if (!ValidateTexture2DBinding("texImage2D", target, true)) {
+  if (!ValidateTexture2DBinding("texElementImage2D", target, true)) {
     return;
   }
 
-  canvas()->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElementImage);
-
-  if (!IsDrawElementImageEligible(element, "texElementImage2D()",
-                                  exception_state)) {
+  std::optional<cc::PaintRecord> paint_record =
+      GetElementImage(element, "texElementImage2D()", exception_state);
+  if (!paint_record) {
     return;
   }
-
-  LayoutBox* layout_box = element->GetLayoutBox();
-  PaintLayer* layer = layout_box->EnclosingLayer();
-
-  auto box_rect =
-      gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->StitchedSize()));
-  OverriddenCullRectScope cull_rect_scope(*layer, CullRect(box_rect),
-                                          /*disable_expansion*/ true);
-  PaintRecordBuilder builder;
-
-  PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  paint_layer_painter.Paint(
-      builder.Context(),
-      PaintFlag::kPrivacyPreserving | PaintFlag::kOmitCompositingInfo);
-
-  PropertyTreeState tree_state = layer->GetLayoutObject()
-                                     .FirstFragment()
-                                     .LocalBorderBoxProperties()
-                                     .Unalias();
 
   SkSurfaceProps surface_props;
-
-  int width = box_rect.width();
-  int height = box_rect.height();
-
+  auto box_rect =
+      gfx::Rect(ToCeiledSize(element->GetLayoutBox()->StitchedSize()));
   sk_sp<SkSurface> surface = SkSurfaces::Raster(
-      SkImageInfo::MakeN32Premul(width, height), &surface_props);
+      SkImageInfo::MakeN32Premul(box_rect.width(), box_rect.height()),
+      &surface_props);
   if (!surface) {
     return;
   }
 
-  // TODO(crbug.com/416733209): Update clip offset if there's visual overflow.
   SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
-  builder.EndRecording(skia_paint_canvas, tree_state);
+  skia_paint_canvas.drawPicture(paint_record.value());
 
   scoped_refptr<Image> image_for_render =
       UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());

@@ -358,6 +358,10 @@ class CORE_EXPORT CanvasRenderingContext
                                   const String& func_name,
                                   ExceptionState& exception_state);
 
+  std::optional<cc::PaintRecord> GetElementImage(Element*,
+                                                 const String& func_name,
+                                                 ExceptionState&);
+
   bool ConvertHitTestRegionsToHTMLCanvasRegions(
       const HeapVector<Member<CanvasElementHitTestRegion>>& hit_test_regions,
       VectorOf<ElementHitTestRegion>& result,
