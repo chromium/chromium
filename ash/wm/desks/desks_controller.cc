@@ -64,6 +64,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/utils/haptics_util.h"
@@ -525,6 +526,11 @@ bool DesksController::AreDesksBeingModified() const {
 }
 
 bool DesksController::CanCreateDesks() const {
+  // No new desk should be created during Kiosk Session.
+  if (chromeos::IsKioskSession()) {
+    return false;
+  }
+
   return desks_.size() < desks_util::GetMaxNumberOfDesks();
 }
 

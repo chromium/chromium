@@ -106,10 +106,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
@@ -119,6 +121,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -11382,6 +11386,18 @@ TEST_P(DesksAcceleratorsTest, DeskSwitchScreenshotMetricsRecording) {
                                     2);
   histogram_tester.ExpectBucketCount(kDeskSwitchScreenshotResultHistogramName,
                                      true, 2);
+}
+
+TEST_P(DesksTest, DeskCreationBlockedDuringKioskSession) {
+  // Enter Kiosk session.
+  TestingPrefServiceSimple local_state;
+  user_manager::UserManager::RegisterPrefs(local_state.registry());
+  user_manager::ScopedUserManager user_manager(
+      std::make_unique<user_manager::FakeUserManager>(&local_state));
+  chromeos::SetUpFakeChromeAppKioskSession();
+
+  DesksController* desks_controller = DesksController::Get();
+  ASSERT_FALSE(desks_controller->CanCreateDesks());
 }
 
 // TODO(afakhry): Add more tests:

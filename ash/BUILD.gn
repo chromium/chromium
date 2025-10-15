@@ -4654,6 +4654,7 @@ test("ash_unittests") {
     "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/ash/services/recording:test_support",
+    "//chromeos/components/kiosk:test_support",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/components/sensors",
