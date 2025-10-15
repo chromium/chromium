@@ -864,9 +864,9 @@ struct PanelState {
   enum Kind {
     // The panel is hidden.
     kHidden = 0,
-    // The panel is floating free and detached from any browser window.
+    // The panel is a floating window, detached from any browser window.
     kDetached = 1,
-    // The panel is attached to a browser window.
+    // The panel is a side panel, attached to a browser window.
     kAttached = 2,
   };
 

@@ -987,14 +987,14 @@ export declare interface OpenPanelInfo {
 }
 
 /**
- * A panel can be in one of these three states.
+ * The panel can be in one of these three states.
  */
 export enum PanelStateKind {
-  /** Not shown. This is the initial state. */
+  /** The panel is hidden. */
   HIDDEN = 0,
-  /** A floating window detached from any Chrome window. */
+  /** The panel is a floating window, detached from any browser window. */
   DETACHED = 1,
-  /** Attached to a Chrome window. */
+  /** The panel is a side panel, attached to a browser window. */
   ATTACHED = 2,
 }
 
