@@ -483,18 +483,29 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   UIImageView* sharedImageView =
       [[UIImageView alloc] initWithImage:_sharedImage];
   sharedImageView.backgroundColor = [UIColor clearColor];
-
-  sharedImageView.layer.cornerRadius = kMainViewCornerRadius;
   sharedImageView.contentMode = UIViewContentModeScaleAspectFit;
-  [sharedImageView
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                      forAxis:UILayoutConstraintAxisVertical];
-  [sharedImageView setContentHuggingPriority:UILayoutPriorityRequired
-                                     forAxis:UILayoutConstraintAxisVertical];
+  sharedImageView.layer.cornerRadius = kMainViewCornerRadius;
   sharedImageView.clipsToBounds = YES;
-  sharedImageView.layer.masksToBounds = YES;
   sharedImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  return sharedImageView;
+
+  // The container view will act as a bounding box for the image view.
+  UIView* imageContainerView = [[UIView alloc] init];
+  imageContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [imageContainerView addSubview:sharedImageView];
+
+  // The image view MUST maintain the image's aspect ratio for the corner radius
+  // to look correct.
+  if (_sharedImage.size.height > 0) {
+    CGFloat aspectRatio = _sharedImage.size.width / _sharedImage.size.height;
+    [sharedImageView.widthAnchor
+        constraintEqualToAnchor:sharedImageView.heightAnchor
+                     multiplier:aspectRatio]
+        .active = YES;
+  }
+
+  AddSameConstraints(imageContainerView, sharedImageView);
+
+  return imageContainerView;
 }
 
 - (UIView*)configureSharedTextView {
