@@ -92,6 +92,7 @@ source_set("sharing_message") {
     "//components/sync/service",
     "//components/sync_device_info",
     "//components/sync_preferences",
+    "//components/sync_preferences:features",
     "//components/version_info",
     "//net",
     "//third_party/re2",

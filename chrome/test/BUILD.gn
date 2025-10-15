@@ -8421,6 +8421,7 @@ test("unit_tests") {
       "//components/passage_embeddings",
       "//components/passage_embeddings:test_support",
       "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+      "//components/sync_preferences:features",
       "//components/tab_groups",
       "//components/webapps/isolated_web_apps",
       "//components/webapps/isolated_web_apps/test_support",

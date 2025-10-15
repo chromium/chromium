@@ -5,6 +5,7 @@
 #include "components/sharing_message/features.h"
 
 #include "build/build_config.h"
+#include "components/sync_preferences/features.h"
 
 BASE_FEATURE(kClickToCall, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -16,7 +17,9 @@ const char kMobilePromoOnDesktopNotificationParam[] =
     "mobile_promo_on_desktop_notification";
 
 MobilePromoOnDesktopPromoType MobilePromoOnDesktopTypeEnabled() {
-  if (!base::FeatureList::IsEnabled(kMobilePromoOnDesktop)) {
+  if (!base::FeatureList::IsEnabled(
+          sync_preferences::features::kEnableCrossDevicePrefTracker) ||
+      !base::FeatureList::IsEnabled(kMobilePromoOnDesktop)) {
     return MobilePromoOnDesktopPromoType::kDisabled;
   }
   return static_cast<MobilePromoOnDesktopPromoType>(

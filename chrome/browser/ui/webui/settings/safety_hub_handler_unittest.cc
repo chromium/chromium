@@ -59,6 +59,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sharing_message/features.h"
+#include "components/sync_preferences/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -121,7 +122,8 @@ class SafetyHubHandlerTest : public testing::Test {
           {}},
          {features::kSafetyHubExtensionsUwSTrigger, {}},
          {features::kSafetyHubExtensionsOffStoreTrigger, {}},
-         {kMobilePromoOnDesktop, {{kMobilePromoOnDesktopPromoTypeParam, "2"}}}},
+         {kMobilePromoOnDesktop, {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
+         {sync_preferences::features::kEnableCrossDevicePrefTracker, {}}},
         /*disabled_features=*/{});
   }
 
