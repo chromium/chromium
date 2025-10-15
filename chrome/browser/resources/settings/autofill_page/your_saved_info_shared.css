@@ -13,3 +13,9 @@
   box-shadow: var(--cr-card-shadow);
   margin-top: var(--cr-section-vertical-margin);
 }
+
+.card h2 {
+  align-self: auto;
+  padding-bottom: 0;
+  padding-top: 12px;
+}
