@@ -9,6 +9,8 @@
 #import <memory>
 #import <utility>
 
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/time/time.h"
@@ -90,9 +92,12 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_page = CreateEnterpriseBlockPage(web_state.get(), url);
   } else if (path_without_query == kChromeInterstitialEnterpriseWarn) {
     interstitial_page = CreateEnterpriseWarnPage(web_state.get(), url);
+  } else {
+    // This page is not implemented. It should either be implemented or hidden
+    // from the HTML on iOS as was done in crrev.com/c/3722515.
+    SCOPED_CRASH_KEY_STRING256("Interstitials", "path", path_without_query);
+    base::debug::DumpWithoutCrashing();
   }
-  // TODO(crbug.com/40681491): Update the page HTML when a link for an
-  // unsupported interstitial type is tapped.
 
   // Use the HTML generated from the interstitial page if created
   // successfully.  Otherwise, return the default chrome://interstitials HTML.
