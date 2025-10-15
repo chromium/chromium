@@ -274,18 +274,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_IGNORE_CHECKABLE_ELEMENTS,
                 "Does not extract checkboxes and radio buttons"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING,
-                "When enabled, Autofill will offer support for filling the user's loyalty cards"
-                        + " stored in Google Wallet."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING,
-                "When enabled, Autofill will offer support for filling the user's loyalty cards"
-                        + " stored in Google Wallet."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_EMAIL_OR_LOYALTY_CARDS_FILLING,
-                "When enabled, Autofill will offer support for Autofill suggestions on fields "
-                        + "requesting email or loyalty card values."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                 "Enables Autofill to retrieve the page language for form parsing."),
         Flag.baseFeature(

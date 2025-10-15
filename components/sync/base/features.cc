@@ -13,7 +13,7 @@ BASE_FEATURE(kDeferredSyncStartupCustomDelay,
 
 BASE_FEATURE(kSyncAccountSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAutofillLoyaltyCard, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSyncAutofillLoyaltyCard, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncMoveValuablesToProfileDb, base::FEATURE_DISABLED_BY_DEFAULT);
 

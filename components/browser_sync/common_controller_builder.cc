@@ -801,19 +801,21 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
         base::FeatureList::IsEnabled(syncer::kSyncMoveValuablesToProfileDb)
             ? profile_autofill_web_data_service_.value()
             : account_autofill_web_data_service_.value();
-    controllers.push_back(
-        std::make_unique<autofill::AutofillValuableDataTypeController>(
-            syncer::AUTOFILL_VALUABLE,
-            std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                autofill_web_data_service->GetDBTaskRunner(),
-                base::BindRepeating(
-                    &AutofillLoyaltyCardDelegateFromDataService,
-                    base::RetainedRef(autofill_web_data_service))),
-            std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                autofill_web_data_service->GetDBTaskRunner(),
-                base::BindRepeating(
-                    &AutofillLoyaltyCardDelegateFromDataService,
-                    base::RetainedRef(autofill_web_data_service)))));
+    if (autofill_web_data_service) {
+      controllers.push_back(
+          std::make_unique<autofill::AutofillValuableDataTypeController>(
+              syncer::AUTOFILL_VALUABLE,
+              std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+                  autofill_web_data_service->GetDBTaskRunner(),
+                  base::BindRepeating(
+                      &AutofillLoyaltyCardDelegateFromDataService,
+                      base::RetainedRef(autofill_web_data_service))),
+              std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+                  autofill_web_data_service->GetDBTaskRunner(),
+                  base::BindRepeating(
+                      &AutofillLoyaltyCardDelegateFromDataService,
+                      base::RetainedRef(autofill_web_data_service)))));
+    }
   }
 #endif
 

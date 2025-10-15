@@ -118,8 +118,11 @@ TEST_F(AutofillFieldTest, IsFieldFillable) {
 
 TEST_F(AutofillFieldTest, LoyaltyCardPredictionsIgnoredIfFlagIsDisabled) {
   base::test::ScopedFeatureList feature_;
-  feature_.InitAndDisableFeature(
-      features::kAutofillEnableEmailOrLoyaltyCardsFilling);
+  feature_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          features::kAutofillEnableLoyaltyCardsFilling,
+          features::kAutofillEnableEmailOrLoyaltyCardsFilling});
 
   AutofillField field;
   EXPECT_THAT(field.Type().GetTypes(), ElementsAre(UNKNOWN_TYPE));

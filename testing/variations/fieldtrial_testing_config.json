@@ -2612,28 +2612,6 @@
             ]
         }
     ],
-    "AutofillEnableLoyaltyCardsFilling": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableEmailOrLoyaltyCardsFilling",
-                        "AutofillEnableLoyaltyCardsFilling",
-                        "IPH_AutofillEnableLoyaltyCards",
-                        "SyncAutofillLoyaltyCard"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment": [
         {
             "platforms": [
