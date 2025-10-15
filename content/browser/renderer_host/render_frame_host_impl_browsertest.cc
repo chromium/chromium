@@ -6159,12 +6159,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       CrossOriginIsolationAPIs) {
+                       GetWebExposedIsolationLevel) {
   // Not isolated:
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_FALSE(root_frame_host()->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_FALSE(root_frame_host()->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            root_frame_host()->GetWebExposedIsolationLevel());
 
   // Cross-Origin Isolated:
   EXPECT_TRUE(NavigateToURL(shell(),
@@ -6172,8 +6172,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                                 "/set-header?"
                                 "Cross-Origin-Opener-Policy: same-origin&"
                                 "Cross-Origin-Embedder-Policy: require-corp")));
-  EXPECT_TRUE(root_frame_host()->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_FALSE(root_frame_host()->HasAccessToIsolatedWebAppsAPIs());
+  // Status is kIsolated.
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            root_frame_host()->GetWebExposedIsolationLevel());
 }
 
 // Regression test for https://crbug.com/40864543
@@ -6248,7 +6249,7 @@ class RenderFrameHostImplBrowserTestWithRestrictedApis
 };
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
-                       IsolatedWebAppsAPIs) {
+                       GetWebExposedIsolationLevel) {
   std::string app_host = "app.com";
   IsolatedApplicationContentBrowserClient client(app_host);
 
@@ -6259,9 +6260,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   navigation_observer.Wait();
 
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
-  EXPECT_FALSE(root_frame_host()->GetProcess()->IsIsolatedApplication());
-  EXPECT_FALSE(root_frame_host()->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_FALSE(root_frame_host()->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            root_frame_host()->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            root_frame_host()->GetWebExposedIsolationLevel());
   EXPECT_EQ(false, EvalJs(root_frame_host(), "self.crossOriginIsolated"));
 
   // Cross-Origin Isolated:
@@ -6272,9 +6274,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
                              "Cross-Origin-Embedder-Policy: require-corp&"
                              "Cross-Origin-Resource-Policy: cross-origin");
   EXPECT_TRUE(NavigateToURL(shell(), non_app_url));
-  EXPECT_FALSE(root_frame_host()->GetProcess()->IsIsolatedApplication());
-  EXPECT_TRUE(root_frame_host()->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_FALSE(root_frame_host()->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            root_frame_host()->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            root_frame_host()->GetWebExposedIsolationLevel());
   EXPECT_EQ(true, EvalJs(root_frame_host(), "self.crossOriginIsolated"));
 
   // Permission delegated Cross-Origin Isolated child frame:
@@ -6289,18 +6292,20 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   )";
   EXPECT_TRUE(ExecJs(shell(), JsReplace(create_iframe, non_app_url, "")));
   RenderFrameHost* non_app_child_frame = ChildFrameAt(root_frame_host(), 0);
-  EXPECT_FALSE(non_app_child_frame->GetProcess()->IsIsolatedApplication());
-  EXPECT_TRUE(non_app_child_frame->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_FALSE(non_app_child_frame->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            non_app_child_frame->GetWebExposedIsolationLevel());
   EXPECT_EQ(true, EvalJs(non_app_child_frame, "self.crossOriginIsolated"));
 
   // Non permission delegated Cross-Origin Isolated child frame:
   EXPECT_TRUE(ExecJs(shell(), JsReplace(create_iframe, non_app_url,
                                         "cross-origin-isolated 'none'")));
   non_app_child_frame = ChildFrameAt(root_frame_host(), 1);
-  EXPECT_FALSE(non_app_child_frame->GetProcess()->IsIsolatedApplication());
-  EXPECT_FALSE(non_app_child_frame->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_FALSE(non_app_child_frame->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            non_app_child_frame->GetWebExposedIsolationLevel());
   EXPECT_EQ(false, EvalJs(non_app_child_frame, "self.crossOriginIsolated"));
 
   // Isolated Application:
@@ -6315,48 +6320,53 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
       /*site_instance=*/nullptr, gfx::Size());
   EXPECT_TRUE(NavigateToURL(app_shell, app_url));
   RenderFrameHost* app_frame = app_shell->web_contents()->GetPrimaryMainFrame();
-  EXPECT_TRUE(app_frame->GetProcess()->IsIsolatedApplication());
-  EXPECT_TRUE(app_frame->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_TRUE(app_frame->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
+            app_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
+            app_frame->GetWebExposedIsolationLevel());
   EXPECT_EQ(true, EvalJs(app_frame, "self.crossOriginIsolated"));
 
   // Permission delegated same-origin Isolated Application child frame:
   EXPECT_TRUE(ExecJs(
       app_shell, JsReplace(create_iframe, app_url, "cross-origin-isolated")));
   RenderFrameHost* app_child_frame = ChildFrameAt(app_frame, 0);
-  EXPECT_TRUE(app_child_frame->GetProcess()->IsIsolatedApplication());
-  EXPECT_TRUE(app_child_frame->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_TRUE(app_child_frame->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
+            app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
+            app_child_frame->GetWebExposedIsolationLevel());
   EXPECT_EQ(true, EvalJs(app_child_frame, "self.crossOriginIsolated"));
 
   // Non permission delegated same-origin Isolated Application child frame:
   EXPECT_TRUE(ExecJs(app_shell, JsReplace(create_iframe, app_url,
                                           "cross-origin-isolated 'none'")));
   app_child_frame = ChildFrameAt(app_frame, 1);
-  EXPECT_TRUE(app_child_frame->GetProcess()->IsIsolatedApplication());
-  EXPECT_FALSE(app_child_frame->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_FALSE(app_child_frame->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
+            app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            app_child_frame->GetWebExposedIsolationLevel());
   EXPECT_EQ(false, EvalJs(app_child_frame, "self.crossOriginIsolated"));
 
   // Permission delegated cross-origin Isolated Application child frame:
-  // The frame doesn't have access to IWA APIs despite being delegated the
-  // "cross-origin-isolated" permission because IWA API access can only be
-  // delegated to same-origin child frames.
+  // The frame's WebExposedIsolationLevel isn't "isolated application" despite
+  // being delegated the "cross-origin-isolated" permission because that
+  // isolation level can only be delegated to same-origin child frames.
   EXPECT_TRUE(ExecJs(app_shell, JsReplace(create_iframe, non_app_url,
                                           "cross-origin-isolated")));
   non_app_child_frame = ChildFrameAt(app_frame, 2);
-  EXPECT_FALSE(non_app_child_frame->GetProcess()->IsIsolatedApplication());
-  EXPECT_TRUE(non_app_child_frame->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_FALSE(non_app_child_frame->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            non_app_child_frame->GetWebExposedIsolationLevel());
   EXPECT_EQ(true, EvalJs(non_app_child_frame, "self.crossOriginIsolated"));
 
   // Non permission delegated cross-origin Isolated Application child frame:
   EXPECT_TRUE(ExecJs(app_shell, JsReplace(create_iframe, non_app_url,
                                           "cross-origin-isolated 'none'")));
   non_app_child_frame = ChildFrameAt(app_frame, 3);
-  EXPECT_FALSE(non_app_child_frame->GetProcess()->IsIsolatedApplication());
-  EXPECT_FALSE(non_app_child_frame->HasAccessToCrossOriginIsolatedAPIs());
-  EXPECT_FALSE(non_app_child_frame->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            non_app_child_frame->GetWebExposedIsolationLevel());
   EXPECT_EQ(false, EvalJs(non_app_child_frame, "self.crossOriginIsolated"));
 }
 

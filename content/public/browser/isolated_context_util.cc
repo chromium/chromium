@@ -8,6 +8,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_client.h"
 
 namespace content {
@@ -24,12 +25,14 @@ bool IsIsolatedContextAllowedByEmbedder(RenderProcessHost* process) {
 }  // namespace
 
 bool HasIsolatedContextCapability(RenderFrameHost* frame) {
-  return frame->HasAccessToIsolatedWebAppsAPIs() ||
+  return (frame->GetWebExposedIsolationLevel() ==
+          WebExposedIsolationLevel::kIsolatedApplication) ||
          IsIsolatedContextAllowedByEmbedder(frame->GetProcess());
 }
 
 bool IsIsolatedContext(RenderProcessHost* process) {
-  return process->IsIsolatedApplication() ||
+  return (process->GetWebExposedIsolationLevel() ==
+          WebExposedIsolationLevel::kIsolatedApplication) ||
          IsIsolatedContextAllowedByEmbedder(process);
 }
 

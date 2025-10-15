@@ -35,6 +35,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -146,7 +147,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(),
-        /*is_guest=*/false,
+        WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
         /*is_pdf=*/false, /*is_fenced=*/false));
@@ -176,7 +177,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(),
-        /*is_guest=*/false,
+        WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
         /*is_pdf=*/false, /*is_fenced=*/false));
@@ -1734,7 +1735,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       StoragePartitionConfig::CreateDefault(browser_context),
       WebExposedIsolationInfo::CreateNonIsolated(),
-      /*is_guest=*/false,
+      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
       /*is_pdf=*/false, /*is_fenced=*/false));

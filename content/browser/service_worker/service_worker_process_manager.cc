@@ -22,6 +22,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_client.h"
 #include "url/gurl.h"
 

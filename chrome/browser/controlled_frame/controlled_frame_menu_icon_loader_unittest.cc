@@ -64,9 +64,9 @@ class ControlledFrameMenuIconLoaderTest : public WebAppTest {
 
     web_app::SimulateIsolatedWebAppNavigation(web_contents(), app_origin_url_);
 
-    CHECK(web_contents()
-              ->GetPrimaryMainFrame()
-              ->HasAccessToIsolatedWebAppsAPIs());
+    CHECK_EQ(
+        web_contents()->GetPrimaryMainFrame()->GetWebExposedIsolationLevel(),
+        content::WebExposedIsolationLevel::kIsolatedApplication);
   }
 
   // Creates and returns a menu manager.
