@@ -9,10 +9,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace content {
 
 class NavigationHandle;
+class ProcessSelectionUserData;
 
 // Base class to allow clients to prepare inputs that are needed for selecting a
 // process during a navigation request, optionally deferring the final process
@@ -73,6 +75,15 @@ class CONTENT_EXPORT ProcessSelectionDeferringCondition {
   virtual Result OnWillSelectFinalProcess(base::OnceClosure resume) = 0;
 
   NavigationHandle& navigation_handle() const { return *navigation_handle_; }
+
+  // A convenience method to get the ProcessSelectionUserData instance
+  // associated with this navigation. Implementers of this class can use this
+  // data container to attach any relevant information that needs to be made
+  // available to the process selection logic. See `ProcessSelectionUserData`
+  // for details about defining and retrieving custom data.
+  ProcessSelectionUserData& GetProcessSelectionUserData() {
+    return navigation_handle_->GetProcessSelectionUserData();
+  }
 
  private:
   base::SafeRef<NavigationHandle> navigation_handle_;

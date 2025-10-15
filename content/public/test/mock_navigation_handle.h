@@ -18,6 +18,7 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/process_selection_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/ip_endpoint.h"
@@ -251,6 +252,10 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(std::optional<NavigationDiscardReason>,
               GetNavigationDiscardReason,
               ());
+  MOCK_METHOD(ProcessSelectionUserData&,
+              GetProcessSelectionUserData,
+              (),
+              (override));
 
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(const base::android::JavaRef<jobject>&,

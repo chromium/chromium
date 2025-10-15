@@ -351,6 +351,8 @@ source_set("browser_sources") {
     "process_allocation_context.h",
     "process_selection_deferring_condition.cc",
     "process_selection_deferring_condition.h",
+    "process_selection_user_data.cc",
+    "process_selection_user_data.h",
     "process_visibility_util.h",
     "provision_fetcher_factory.h",
     "provision_fetcher_impl.cc",

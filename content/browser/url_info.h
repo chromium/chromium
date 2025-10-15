@@ -12,6 +12,7 @@
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/process_selection_user_data.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "url/gurl.h"
@@ -169,6 +170,19 @@ struct CONTENT_EXPORT UrlInfo {
   std::optional<AgentClusterKey::CrossOriginIsolationKey>
       cross_origin_isolation_key;
 
+  // The ProcessSelectionUserData to use for process selection. This user data
+  // is populated by ProcessSelectionDeferringConditions to communicate embedder
+  // defined process selection information to the process selection logic.
+  //
+  // This is a SafeRef to an object owned by NavigationRequest, so a UrlInfo
+  // instance must not outlive the NavigationRequest it was created from.
+  // A SafeRef is used instead of a WeakPtr to intentionally cause a crash if
+  // this lifetime assumption is violated. This is because process selection
+  // must always happen during the navigation, so any use of this data after
+  // the NavigationRequest is destroyed is a bug.
+  std::optional<base::SafeRef<ProcessSelectionUserData>>
+      process_selection_user_data;
+
   // Any new UrlInfo fields should be added to UrlInfoInit as well, and the
   // UrlInfo constructor that takes a UrlInfoInit should be updated as well.
 };
@@ -197,6 +211,8 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithCrossOriginIsolationKey(
       const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
           cross_origin_isolation_key);
+  UrlInfoInit& WithProcessSelectionUserData(
+      base::SafeRef<ProcessSelectionUserData> process_selection_user_data);
 
   const std::optional<url::Origin>& origin() { return origin_; }
 
@@ -217,6 +233,8 @@ class CONTENT_EXPORT UrlInfoInit {
   bool is_pdf_ = false;
   std::optional<AgentClusterKey::CrossOriginIsolationKey>
       cross_origin_isolation_key_;
+  std::optional<base::SafeRef<ProcessSelectionUserData>>
+      process_selection_user_data_;
 
   // Any new fields should be added to the UrlInfoInit(UrlInfo) constructor.
 };  // class UrlInfoInit

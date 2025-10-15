@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/process_selection_deferring_condition.h"
+#include "content/public/browser/process_selection_user_data.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/mock_process_selection_deferring_condition_tester.h"
@@ -18,6 +19,21 @@
 namespace content {
 
 namespace {
+
+// A simple ProcessSelectionUserData::Data implementation for testing.
+class ProcessSelectionTestData
+    : public ProcessSelectionUserData::Data<ProcessSelectionTestData> {
+ public:
+  explicit ProcessSelectionTestData(int value) : value_(value) {}
+  int value() const { return value_; }
+
+ private:
+  friend ProcessSelectionUserData::Data<ProcessSelectionTestData>;
+  PROCESS_SELECTION_USER_DATA_KEY_DECL();
+  int value_;
+};
+
+PROCESS_SELECTION_USER_DATA_KEY_IMPL(ProcessSelectionTestData);
 
 class ProcessSelectionDeferringBrowserClient : public TestContentBrowserClient {
  public:
@@ -204,6 +220,39 @@ TEST_F(ProcessSelectionDeferringConditionRunnerTest,
   runner->OnRequestRedirected();
   EXPECT_EQ(condition1.GetOnRequestRedirectedCallCount(), 2);
   EXPECT_EQ(condition2.GetOnRequestRedirectedCallCount(), 2);
+}
+
+TEST_F(ProcessSelectionDeferringConditionRunnerTest,
+       ConditionCanSetProcessSelectionUserData) {
+  // Define a simple `ProcessSelectionDeferringCondition` that sets a value on
+  // its `ProcessSelectionUserData`.
+  class ProcessSelectionDataSettingCondition
+      : public ProcessSelectionDeferringCondition {
+   public:
+    explicit ProcessSelectionDataSettingCondition(
+        NavigationHandle& navigation_handle)
+        : ProcessSelectionDeferringCondition(navigation_handle) {}
+
+    Result OnWillSelectFinalProcess(base::OnceClosure resume) override {
+      ProcessSelectionUserData& user_data = GetProcessSelectionUserData();
+      user_data.SetUserData(ProcessSelectionTestData::UserDataKey(),
+                            std::make_unique<ProcessSelectionTestData>(42));
+      return Result::kProceed;
+    }
+  };
+
+  browser_client()->AddCondition(
+      std::make_unique<ProcessSelectionDataSettingCondition>(
+          *navigation_handle()));
+  auto* runner = CreateRunner();
+  base::MockCallback<base::OnceClosure> callback;
+  EXPECT_CALL(callback, Run());
+  runner->WillSelectFinalProcess(callback.Get());
+
+  const ProcessSelectionTestData* retrieved_data =
+      ProcessSelectionTestData::FromProcessSelectionUserData(
+          navigation_handle()->GetProcessSelectionUserData());
+  EXPECT_EQ(42, retrieved_data->value());
 }
 
 }  // namespace content

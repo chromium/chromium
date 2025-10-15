@@ -31,7 +31,8 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       storage_partition_config(init.storage_partition_config_),
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
       is_pdf(init.is_pdf_),
-      cross_origin_isolation_key(init.cross_origin_isolation_key_) {
+      cross_origin_isolation_key(init.cross_origin_isolation_key_),
+      process_selection_user_data(init.process_selection_user_data_) {
   DCHECK(init.is_sandboxed_ ||
          init.unique_sandbox_id_ == kInvalidUniqueSandboxId);
 }
@@ -120,7 +121,8 @@ UrlInfoInit::UrlInfoInit(const UrlInfo& base)
       storage_partition_config_(base.storage_partition_config),
       web_exposed_isolation_info_(base.web_exposed_isolation_info),
       is_pdf_(base.is_pdf),
-      cross_origin_isolation_key_(base.cross_origin_isolation_key) {}
+      cross_origin_isolation_key_(base.cross_origin_isolation_key),
+      process_selection_user_data_(base.process_selection_user_data) {}
 
 UrlInfoInit::~UrlInfoInit() = default;
 
@@ -177,6 +179,12 @@ UrlInfoInit& UrlInfoInit::WithCrossOriginIsolationKey(
     const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
         cross_origin_isolation_key) {
   cross_origin_isolation_key_ = cross_origin_isolation_key;
+  return *this;
+}
+
+UrlInfoInit& UrlInfoInit::WithProcessSelectionUserData(
+    base::SafeRef<ProcessSelectionUserData> process_selection_user_data) {
+  process_selection_user_data_ = std::move(process_selection_user_data);
   return *this;
 }
 

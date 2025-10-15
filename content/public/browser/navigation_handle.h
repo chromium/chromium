@@ -67,6 +67,7 @@ struct GlobalRequestID;
 class NavigationEntry;
 class NavigationThrottle;
 class NavigationUIData;
+class ProcessSelectionUserData;
 class RenderFrameHost;
 class SiteInstance;
 class WebContents;
@@ -567,6 +568,12 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Whether the new document will be hosted in the same process as the current
   // document or not. Set only when the navigation commits.
   virtual bool IsSameProcess() = 0;
+
+  // Returns a pointer to the ProcessSelectionUserData instance associated with
+  // this navigation. This object is a container for embedder-specific data that
+  // can be populated by a ProcessSelectionDeferringCondition and later used by
+  // the process selection logic.
+  virtual ProcessSelectionUserData& GetProcessSelectionUserData() = 0;
 
   // Returns the NavigationEntry associated with this, which may be null.
   virtual NavigationEntry* GetNavigationEntry() const = 0;

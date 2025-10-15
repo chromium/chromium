@@ -4398,6 +4398,12 @@ UrlInfo NavigationRequest::GetUrlInfo() {
     url_info_init.WithCrossSitePrefetchContamination(true);
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kProcessSelectionDeferringConditions)) {
+    url_info_init.WithProcessSelectionUserData(
+        GetProcessSelectionUserData().GetSafeRef());
+  }
+
   return UrlInfo(url_info_init);
 }
 
@@ -11116,6 +11122,10 @@ NavigationRequest::GetMutableRuntimeFeatureStateContext() {
 const blink::RuntimeFeatureStateContext&
 NavigationRequest::GetRuntimeFeatureStateContext() {
   return runtime_feature_state_context_;
+}
+
+ProcessSelectionUserData& NavigationRequest::GetProcessSelectionUserData() {
+  return process_selection_user_data_;
 }
 
 // The NavigationDownloadPolicy is currently computed by the renderer process.
