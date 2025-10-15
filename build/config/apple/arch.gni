@@ -23,21 +23,9 @@ archs_mapping = {
       dsym_arch = "arm64e"
     }
 
-    arm = {
-      clang_arch = "armv7"
-      dsym_arch = "arm"
-    }
-
-    armv7 = arm
-
     x64 = {
       clang_arch = "x86_64"
       dsym_arch = "x86_64"
-    }
-
-    x86 = {
-      clang_arch = "i386"
-      dsym_arch = "i386"
     }
   }
 
