@@ -74,15 +74,6 @@ class ScopedModelExecutionResponseLogger {
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 };
 
-void RecordSessionUsedRemoteExecutionHistogram(ModelBasedCapabilityKey feature,
-                                               bool is_remote) {
-  base::UmaHistogramBoolean(
-      base::StrCat(
-          {"OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.",
-           GetStringNameForModelExecutionFeature(feature)}),
-      is_remote);
-}
-
 void RecordModelExecutionResultHistogram(ModelBasedCapabilityKey feature,
                                          bool result) {
   base::UmaHistogramBoolean(
@@ -149,8 +140,7 @@ ModelExecutionManager::ModelExecutionManager(
       on_device_model_service_controller_(
           std::move(on_device_model_service_controller)) {}
 
-ModelExecutionManager::~ModelExecutionManager() {
-}
+ModelExecutionManager::~ModelExecutionManager() = default;
 
 void ModelExecutionManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -244,32 +234,14 @@ std::unique_ptr<OptimizationGuideModelExecutor::Session>
 ModelExecutionManager::StartSession(
     ModelBasedCapabilityKey feature,
     const std::optional<SessionConfigParams>& config_params) {
-  SessionConfigParams::ExecutionMode execution_mode =
-      config_params ? config_params->execution_mode
-                    : SessionConfigParams::ExecutionMode::kDefault;
-  ExecuteRemoteFn execute_fn =
-      execution_mode == SessionConfigParams::ExecutionMode::kOnDeviceOnly
-          ? CreateNoOpExecuteRemoteFn()
-          : base::BindRepeating(&ModelExecutionManager::ExecuteModel,
-                                weak_ptr_factory_.GetWeakPtr());
-  if (on_device_model_service_controller_ &&
-      execution_mode != SessionConfigParams::ExecutionMode::kServerOnly) {
-    auto session = on_device_model_service_controller_->CreateSession(
-        feature, execute_fn, optimization_guide_logger_->GetWeakPtr(),
-        config_params);
-    if (session) {
-      RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/false);
-      return session;
-    }
-  }
-
-  if (execution_mode == SessionConfigParams::ExecutionMode::kOnDeviceOnly) {
+  CHECK(config_params && config_params->execution_mode ==
+                             SessionConfigParams::ExecutionMode::kOnDeviceOnly);
+  if (!on_device_model_service_controller_) {
     return nullptr;
   }
-
-  RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
-  return std::make_unique<SessionImpl>(feature, std::nullopt,
-                                       std::move(execute_fn), config_params);
+  return on_device_model_service_controller_->CreateSession(
+      feature, CreateNoOpExecuteRemoteFn(),
+      optimization_guide_logger_->GetWeakPtr(), config_params);
 }
 
 on_device_model::Capabilities ModelExecutionManager::GetOnDeviceCapabilities() {
