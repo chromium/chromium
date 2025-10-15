@@ -205,7 +205,7 @@
     },
 
     // is_protected_feature indicates whether the feature enablement state should
-    // be tracked using a base::Protected<bool> value or just a regular bool
+    // be tracked using a base::ProtectedMemory<bool> value or just a regular bool
     // value.
     is_protected_feature: {
       default: false,
