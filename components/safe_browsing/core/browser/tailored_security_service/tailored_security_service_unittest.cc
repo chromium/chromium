@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -27,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Not;
 
@@ -39,6 +41,7 @@ const char kQueryTailoredSecurityServiceUrl[] =
 
 // A testing tailored security service that does extra checks and creates a
 // TestRequest instead of a normal request.
+class TestRequest;
 class TestingTailoredSecurityService : public TailoredSecurityService {
  public:
   TestingTailoredSecurityService(
@@ -53,7 +56,7 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
                                 /*sync_service=*/sync_service,
                                 prefs),
         url_loader_factory_(url_loader_factory) {}
-  ~TestingTailoredSecurityService() override = default;
+  ~TestingTailoredSecurityService() override;
 
   std::unique_ptr<TailoredSecurityService::Request> CreateRequest(
       const GURL& url,
@@ -89,6 +92,8 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
     current_expected_post_data_ = expected_data;
   }
 
+  void SetNextRequest(std::unique_ptr<TestRequest> request);
+
   void EnsureNoPendingRequestsRemain() {
     EXPECT_EQ(0u, GetNumberOfPendingTailoredSecurityServiceRequests());
   }
@@ -117,6 +122,7 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
   bool expected_tailored_security_service_value_;
   std::string current_expected_post_data_;
   std::map<Request*, std::string> expected_post_data_;
+  std::unique_ptr<TestRequest> next_request_to_return_;
 
   // Whether `MaybeNotifySyncUser` was called.
   bool notify_sync_user_called_;
@@ -130,33 +136,24 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
+TestingTailoredSecurityService::~TestingTailoredSecurityService() = default;
+
 // A testing request class that allows expected values to be filled in.
 class TestRequest : public TailoredSecurityService::Request {
  public:
-  TestRequest(const GURL& url,
-              TailoredSecurityService::CompletionCallback callback,
-              int response_code,
-              const std::string& response_body)
-      : tailored_security_service_(nullptr),
+  TestRequest(
+      const GURL& url,
+      TailoredSecurityService::CompletionCallback callback,
+      int response_code,
+      const std::string& response_body,
+      TestingTailoredSecurityService* tailored_security_service = nullptr)
+      : tailored_security_service_(tailored_security_service),
         url_(url),
         callback_(std::move(callback)),
         response_code_(response_code),
         response_body_(response_body),
         is_pending_(false) {}
 
-  TestRequest(const GURL& url,
-              TailoredSecurityService::CompletionCallback callback,
-              TestingTailoredSecurityService* tailored_security_service)
-      : tailored_security_service_(tailored_security_service),
-        url_(url),
-        callback_(std::move(callback)),
-        response_code_(net::HTTP_OK),
-        is_pending_(false) {
-    response_body_ =
-        std::string("{\"history_recording_enabled\":") +
-        tailored_security_service->GetExpectedTailoredSecurityServiceValue() +
-        ("}");
-  }
 
   ~TestRequest() override = default;
 
@@ -164,8 +161,12 @@ class TestRequest : public TailoredSecurityService::Request {
   bool IsPending() const override { return is_pending_; }
   int GetResponseCode() const override { return response_code_; }
   const std::string& GetResponseBody() const override { return response_body_; }
+  const GURL& url() const { return url_; }
   void SetPostData(const std::string& post_data) override {
     post_data_ = post_data;
+  }
+  void SetCallback(TailoredSecurityService::CompletionCallback callback) {
+    callback_ = std::move(callback);
   }
 
   void Shutdown() override { is_shut_down_ = true; }
@@ -180,8 +181,9 @@ class TestRequest : public TailoredSecurityService::Request {
   void MimicReturnFromFetch() {
     // Mimic a successful fetch and return. We don't actually send out a request
     // in unittests.
-    if (is_shut_down_)
+    if (is_shut_down_) {
       return;
+    }
     EXPECT_EQ(tailored_security_service_->GetExpectedPostData(this),
               post_data_);
     std::move(callback_).Run(this, true);
@@ -198,14 +200,42 @@ class TestRequest : public TailoredSecurityService::Request {
   bool is_shut_down_ = false;
 };
 
+// Overrides the production `CreateRequest` to support two modes of operation
+// for testing:
+//
+// 1.  **Default Mode**: By default, this function constructs a `TestRequest`
+//     that simulates a successful network response (`net::HTTP_OK`). The
+//     response body is a JSON object with the key
+//     `history_recording_enabled` set to the value specified by
+//     `SetExpectedTailoredSecurityServiceValue()`. This mode is suitable for
+//     the majority of tests where you simply need to control the boolean
+//     tailored security setting.
+//
+// 2.  **Custom Request Mode**: For tests that require more control over the
+//     simulated network response (e.g., to test error conditions like non-200
+//     HTTP status codes, or to test malformed response bodies), you can
+//     provide a custom `TestRequest` instance via `SetNextRequest()`. When
+//     `next_request_to_return_` is set, this function will use that request
+//     instead of creating a default one. This allows for fine-grained control
+//     over the entire response.
 std::unique_ptr<TailoredSecurityService::Request>
 TestingTailoredSecurityService::CreateRequest(
     const GURL& url,
     CompletionCallback callback,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
+  if (next_request_to_return_) {
+    CHECK_EQ(expected_url_, next_request_to_return_->url());
+    next_request_to_return_->SetCallback(std::move(callback));
+    expected_post_data_[next_request_to_return_.get()] =
+        current_expected_post_data_;
+    return std::move(next_request_to_return_);
+  }
   EXPECT_EQ(expected_url_, url);
+  std::string response_body = std::string("{\"history_recording_enabled\":") +
+                              GetExpectedTailoredSecurityServiceValue() + "}";
   std::unique_ptr<TailoredSecurityService::Request> request =
-      std::make_unique<TestRequest>(url, std::move(callback), this);
+      std::make_unique<TestRequest>(url, std::move(callback), net::HTTP_OK,
+                                    response_body, this);
   expected_post_data_[request.get()] = current_expected_post_data_;
   return request;
 }
@@ -238,10 +268,16 @@ const std::string& TestingTailoredSecurityService::GetExpectedPostData(
   return expected_post_data_[request];
 }
 
+void TestingTailoredSecurityService::SetNextRequest(
+    std::unique_ptr<TestRequest> request) {
+  next_request_to_return_ = std::move(request);
+}
+
 std::string
 TestingTailoredSecurityService::GetExpectedTailoredSecurityServiceValue() {
-  if (expected_tailored_security_service_value_)
+  if (expected_tailored_security_service_value_) {
     return "true";
+  }
   return "false";
 }
 
@@ -257,8 +293,9 @@ void TestingTailoredSecurityService::MaybeNotifySyncUser(
     base::Time previous_update) {
   notify_sync_user_called_ = true;
   notify_sync_user_called_enabled_ = is_enabled;
-  if (notify_sync_user_callback_)
+  if (notify_sync_user_callback_) {
     std::move(notify_sync_user_callback_).Run();
+  }
 }
 
 }  // namespace
@@ -312,6 +349,15 @@ class TailoredSecurityServiceTest : public testing::Test {
 
   scoped_refptr<network::SharedURLLoaderFactory> URLLoaderFactory() {
     return test_shared_loader_factory_;
+  }
+
+  void SetInitialTailoredSecurityBit(bool is_enabled) {
+    tailored_security_service()->SetExpectedURL(
+        GURL(kQueryTailoredSecurityServiceUrl));
+    tailored_security_service()->SetExpectedTailoredSecurityServiceValue(
+        is_enabled);
+    tailored_security_service()->StartRequest(base::DoNothing());
+    base::RunLoop().RunUntilIdle();
   }
 
  protected:
@@ -587,5 +633,158 @@ TEST_F(TailoredSecurityServiceTest, CanQueryTailoredSecurityForUrl) {
   EXPECT_FALSE(
       CanQueryTailoredSecurityForUrl(GURL("https://google.com.example.com")));
 }
+
+struct TailoredSecurityServiceCallbackTestParams {
+  const char* test_name;
+  // This controls whether kModifiedESBFetchErrorHandling is enabled or
+  // disabled for the test case.
+  bool fix_enabled;
+  // The state of tailored security on the remote server at the start of the
+  // test.
+  bool initial_bit_state;
+  // The HTTP response code returned by the remote server.
+  int http_response_code;
+  // The response body returned by the remote server.
+  const char* response_body;
+  // Whether the completion callback passed to `StartRequest` is expected to be
+  // invoked.
+  bool expect_callback_called;
+  // When `expect_callback_called` is true, this is the expected boolean value
+  // provided as an argument to the callback.
+  bool expected_callback_value;
+};
+
+const TailoredSecurityServiceCallbackTestParams kCallbackTestParams[] = {
+    {"FixDisabled_RequestSucceeds_ReturnsTrue",
+     /*fix_enabled=*/false,
+     /*initial_bit_state=*/false, net::HTTP_OK,
+     /*response_body=*/"{\"history_recording_enabled\": true}",
+     /*expect_callback_called=*/true,
+     /*expected_callback_value=*/true},
+    {"FixDisabled_RequestSucceeds_ReturnsFalse",
+     /*fix_enabled=*/false,
+     /*initial_bit_state=*/false, net::HTTP_OK,
+     /*response_body=*/"{\"history_recording_enabled\": false}",
+     /*expect_callback_called=*/true,
+     /*expected_callback_value=*/false},
+    {"FixDisabled_RequestSucceeds_NoKey",
+     /*fix_enabled=*/false,
+     /*initial_bit_state=*/false, net::HTTP_OK,
+     /*response_body=*/"{}",
+     /*expect_callback_called=*/true,
+     /*expected_callback_value=*/false},
+    {"FixDisabled_RequestFails_InitialTrue",
+     /*fix_enabled=*/false,
+     /*initial_bit_state=*/true, net::HTTP_UNAUTHORIZED,
+     /*response_body=*/"{}",
+     /*expect_callback_called=*/true,
+     /*expected_callback_value=*/false},
+    {"FixDisabled_RequestFails_InitialFalse",
+     /*fix_enabled=*/false,
+     /*initial_bit_state=*/false, net::HTTP_UNAUTHORIZED,
+     /*response_body=*/"{}",
+     /*expect_callback_called=*/true,
+     /*expected_callback_value=*/false},
+    // New comprehensive set for when the fix is enabled.
+    {"FixEnabled_RequestSucceeds_InitialFalse_ValueTrue",
+     /*fix_enabled=*/true,
+     /*initial_bit_state=*/false, net::HTTP_OK,
+     /*response_body=*/"{\"history_recording_enabled\": true}",
+     /*expect_callback_called=*/true,
+     /*expected_callback_value=*/true},
+    {"FixEnabled_RequestSucceeds_InitialFalse_ValueFalse",
+     /*fix_enabled=*/true,
+     /*initial_bit_state=*/false, net::HTTP_OK,
+     /*response_body=*/"{\"history_recording_enabled\": false}",
+     /*expect_callback_called=*/true,
+     /*expected_callback_value=*/false},
+    {"FixEnabled_RequestSucceeds_InitialFalse_NoKey",
+     /*fix_enabled=*/true,
+     /*initial_bit_state=*/false, net::HTTP_OK,
+     /*response_body=*/"{}",
+     /*expect_callback_called=*/false,
+     /*expected_callback_value=*/false},
+    {"FixEnabled_RequestSucceeds_InitialTrue_ValueTrue",
+     /*fix_enabled=*/true,
+     /*initial_bit_state=*/true, net::HTTP_OK,
+     /*response_body=*/"{\"history_recording_enabled\": true}",
+     /*expect_callback_called=*/true,
+     /*expected_callback_value=*/true},
+    {"FixEnabled_RequestSucceeds_InitialTrue_ValueFalse",
+     /*fix_enabled=*/true,
+     /*initial_bit_state=*/true, net::HTTP_OK,
+     /*response_body=*/"{\"history_recording_enabled\": false}",
+     /*expect_callback_called=*/true,
+     /*expected_callback_value=*/false},
+    {"FixEnabled_RequestSucceeds_InitialTrue_NoKey",
+     /*fix_enabled=*/true,
+     /*initial_bit_state=*/true, net::HTTP_OK,
+     /*response_body=*/"{}",
+     /*expect_callback_called=*/false,
+     /*expected_callback_value=*/false},
+    {"FixEnabled_RequestFails_InitialFalse",
+     /*fix_enabled=*/true,
+     /*initial_bit_state=*/false, net::HTTP_UNAUTHORIZED,
+     /*response_body=*/"{}",
+     /*expect_callback_called=*/false,
+     /*expected_callback_value=*/false},
+    {"FixEnabled_RequestFails_InitialTrue",
+     /*fix_enabled=*/true,
+     /*initial_bit_state=*/true, net::HTTP_UNAUTHORIZED,
+     /*response_body=*/"{}",
+     /*expect_callback_called=*/false,
+     /*expected_callback_value=*/false},
+};
+
+class TailoredSecurityServiceCallbackTest
+    : public TailoredSecurityServiceTest,
+      public testing::WithParamInterface<
+          TailoredSecurityServiceCallbackTestParams> {
+ public:
+  TailoredSecurityServiceCallbackTest() = default;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(TailoredSecurityServiceCallbackTest, RunsCallbackWithCorrectValue) {
+  const auto& params = GetParam();
+  scoped_feature_list_.InitWithFeatureState(kModifiedESBFetchErrorHandling,
+                                            params.fix_enabled);
+
+  if (params.initial_bit_state) {
+    SetInitialTailoredSecurityBit(params.initial_bit_state);
+  }
+
+  base::MockOnceCallback<void(bool, base::Time)> callback;
+  tailored_security_service()->SetExpectedURL(
+      GURL(kQueryTailoredSecurityServiceUrl));
+  tailored_security_service()->SetNextRequest(std::make_unique<TestRequest>(
+      GURL(kQueryTailoredSecurityServiceUrl), base::DoNothing(),
+      params.http_response_code, params.response_body,
+      tailored_security_service()));
+
+  if (params.expect_callback_called) {
+    base::RunLoop run_loop;
+    EXPECT_CALL(callback, Run(params.expected_callback_value, ::testing::_))
+        .WillOnce([&](bool, base::Time) { run_loop.Quit(); });
+    tailored_security_service()->StartRequest(callback.Get());
+    run_loop.Run();
+  } else {
+    base::RunLoop run_loop;
+    EXPECT_CALL(callback, Run).Times(0);
+    tailored_security_service()->StartRequest(callback.Get());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TailoredSecurityServiceCallbackTest,
+    testing::ValuesIn(kCallbackTestParams),
+    [](const testing::TestParamInfo<
+        TailoredSecurityServiceCallbackTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace safe_browsing

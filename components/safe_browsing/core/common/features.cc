@@ -255,6 +255,10 @@ constexpr base::FeatureParam<std::string>
                                                  /*default_value=*/""};
 #endif
 
+BASE_FEATURE(kModifiedESBFetchErrorHandling,
+             "ModifiedESBFetchErrorHandling",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNotificationTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationTelemetrySwb, base::FEATURE_DISABLED_BY_DEFAULT);

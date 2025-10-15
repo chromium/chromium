@@ -163,9 +163,10 @@ class RequestImpl : public TailoredSecurityService::Request {
       response_code_ =
           simple_url_loader_->ResponseInfo()->headers->response_code();
     }
+    const int net_error = simple_url_loader_->NetError();
     RecordHttpResponseOrErrorCode(
         "SafeBrowsing.TailoredSecurityService.OAuthTokenNetworkResult",
-        simple_url_loader_->NetError(), response_code_);
+        net_error, response_code_);
     simple_url_loader_.reset();
 
     // If the response code indicates that the token might not be valid,
@@ -459,15 +460,20 @@ void TailoredSecurityService::
       std::move(pending_tailored_security_requests_[request]);
   pending_tailored_security_requests_.erase(request);
 
-  bool is_enabled = is_tailored_security_enabled_;
   base::Time previous_update = last_updated_;
-  if (success) {
-    base::Value::Dict response_value = ReadResponse(request);
-    is_enabled =
-        response_value.FindBool("history_recording_enabled").value_or(false);
-  }
+  base::Value::Dict response_value = ReadResponse(request);
+  std::optional<bool> history_recording_enabled =
+      response_value.FindBool("history_recording_enabled");
 
-  std::move(callback).Run(is_enabled, previous_update);
+  if (!base::FeatureList::IsEnabled(kModifiedESBFetchErrorHandling)) {
+    bool is_enabled = is_tailored_security_enabled_;
+    if (success) {
+      is_enabled = history_recording_enabled.value_or(false);
+    }
+    std::move(callback).Run(is_enabled, previous_update);
+  } else if (success && history_recording_enabled.has_value()) {
+    std::move(callback).Run(*history_recording_enabled, previous_update);
+  }
 }
 
 void TailoredSecurityService::SetTailoredSecurityBitForTesting(

@@ -268,6 +268,17 @@ extern const base::FeatureParam<std::string>
 BASE_DECLARE_FEATURE_PARAM(bool, kMaliciousApkDownloadCheckTelemetryOnly);
 #endif
 
+// TODO(crbug.com/449960661): Remove this flag once the MigrateAccountPrefs
+// feature is launched and the regression of users with ESB enhanced protection
+// is resolved.
+//  When enabled, this feature fixes a flaw in the Tailored Security service's
+//  handling of failed requests for the Enhanced Safe Browsing (ESB) setting.
+//  Previously, a network error would cause the service to incorrectly assume
+//  ESB was disabled. With this fix, the service preserves the last known state
+//  of the ESB bit during a failed request, preventing transient errors from
+//  disabling user protection.
+BASE_DECLARE_FEATURE(kModifiedESBFetchErrorHandling);
+
 // Enable the collection of Notification Telemetry to track potentially abusive
 // notifications.
 BASE_DECLARE_FEATURE(kNotificationTelemetry);
