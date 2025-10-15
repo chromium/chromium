@@ -39,15 +39,24 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
     set_scrim_background_call_count_++;
   }
 
+  // mojom::ActorOverlayPage
+  void SetBorderGlowVisibility(bool is_visible) override {
+    is_border_glow_visible_ = is_visible;
+    set_border_glow_call_count_++;
+  }
+
   // Test accessors
   bool is_scrim_background_visible() { return is_scrim_background_visible_; }
-
   int scrim_background_call_count() { return set_scrim_background_call_count_; }
+  bool is_border_glow_visible() { return is_border_glow_visible_; }
+  int border_glow_call_count() { return set_border_glow_call_count_; }
 
  private:
   mojo::Receiver<mojom::ActorOverlayPage> receiver_{this};
   bool is_scrim_background_visible_ = false;
   int set_scrim_background_call_count_ = 0;
+  bool is_border_glow_visible_ = false;
+  int set_border_glow_call_count_ = 0;
 };
 
 class ActorOverlayHandlerTest : public testing::Test {
@@ -106,6 +115,20 @@ TEST_F(ActorOverlayHandlerTest, SetScrimBackground) {
 
   EXPECT_FALSE(fake_page_.is_scrim_background_visible());
   EXPECT_EQ(fake_page_.scrim_background_call_count(), 2);
+}
+
+TEST_F(ActorOverlayHandlerTest, SetBorderGlowVisibility) {
+  handler_->SetBorderGlowVisibility(true);
+  fake_page_.FlushForTesting();
+
+  EXPECT_TRUE(fake_page_.is_border_glow_visible());
+  EXPECT_EQ(fake_page_.border_glow_call_count(), 1);
+
+  handler_->SetBorderGlowVisibility(false);
+  fake_page_.FlushForTesting();
+
+  EXPECT_FALSE(fake_page_.is_border_glow_visible());
+  EXPECT_EQ(fake_page_.border_glow_call_count(), 2);
 }
 
 }  // namespace

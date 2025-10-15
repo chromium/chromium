@@ -144,6 +144,8 @@ void ActorUiContentsContainerController::UpdateOverlayState(
   } else {
     overlay_->CloseUI();
   }
+
+  overlay_->SetBorderGlowVisibility(state.border_glow_visible);
 }
 
 }  // namespace actor::ui

@@ -31,6 +31,7 @@ class ActorOverlayUI : public ::ui::MojoWebUIController,
       mojo::PendingReceiver<mojom::ActorOverlayPageHandlerFactory> receiver);
 
   void SetOverlayBackground(bool is_visible);
+  void SetBorderGlowVisibility(bool is_visible);
 
   // Checks if the passed in WebContents are associated with the ActorOverlayUI
   // WebUIController.

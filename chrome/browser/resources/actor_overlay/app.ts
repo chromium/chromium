@@ -32,7 +32,8 @@ export class ActorOverlayAppElement extends CrLitElement {
   }
 
   private eventTracker_: EventTracker = new EventTracker();
-  private setScrimBackgroundListenerId_: number|null = null;
+  private setScrimBackgroundListenerId_: number | null = null;
+  private setBorderGlowVisibilityListenerId_: number | null = null;
   private shouldShowCursor_: boolean =
       loadTimeData.getBoolean('isMagicCursorEnabled');
   private isCursorInitialized_: boolean = false;
@@ -48,8 +49,11 @@ export class ActorOverlayAppElement extends CrLitElement {
     });
     this.addEventListener('wheel', this.onWheelEvent_);
     this.setScrimBackgroundListenerId_ =
-        proxy.callbackRouter.setScrimBackground.addListener(
-            this.setScrimBackground.bind(this));
+      proxy.callbackRouter.setScrimBackground.addListener(
+        this.setScrimBackground.bind(this));
+    this.setBorderGlowVisibilityListenerId_ =
+      proxy.callbackRouter.setBorderGlowVisibility.addListener(
+        this.setBorderGlowVisibility.bind(this));
   }
 
   override disconnectedCallback() {
@@ -58,7 +62,10 @@ export class ActorOverlayAppElement extends CrLitElement {
     this.removeEventListener('wheel', this.onWheelEvent_);
     assert(this.setScrimBackgroundListenerId_);
     ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
-        this.setScrimBackgroundListenerId_);
+      this.setScrimBackgroundListenerId_);
+    assert(this.setBorderGlowVisibilityListenerId_);
+    ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
+      this.setBorderGlowVisibilityListenerId_);
   }
 
   // Prevents user scroll gestures (mouse wheel, touchpad) from moving the
@@ -71,6 +78,10 @@ export class ActorOverlayAppElement extends CrLitElement {
   private setScrimBackground(isVisible: boolean) {
     isVisible ? this.classList.add('background-visible') :
                 this.classList.remove('background-visible');
+  }
+
+  private setBorderGlowVisibility(_: boolean) {
+    // TODO(crbug.com/447114657) show the border glow component.
   }
 
   // TODO(crbug.com/422539773): Make function private once it's called via the

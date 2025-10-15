@@ -36,6 +36,9 @@ class ActorOverlayHandler : public mojom::ActorOverlayPageHandler {
   // Forwards the scrim background visibility to WebUI.
   void SetOverlayBackground(bool is_visible);
 
+  // Forwards the border glow visibility to WebUI.
+  void SetBorderGlowVisibility(bool is_visible);
+
  private:
   // Is the user hovering over the actor overlay.
   bool is_hovering_ = false;

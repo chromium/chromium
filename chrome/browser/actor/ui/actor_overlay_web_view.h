@@ -37,6 +37,9 @@ class ActorOverlayWebView : public views::WebView {
   // Forwards the overlay background visibility to WebUI.
   void SetOverlayBackground(bool is_visible);
 
+  // Forwards the border glow visibility to WebUI.
+  void SetBorderGlowVisibility(bool is_visible);
+
  private:
   actor::ui::ActorOverlayUI* GetWebUi();
   // Manages the lifetime of the WebContents input event ignoring state.

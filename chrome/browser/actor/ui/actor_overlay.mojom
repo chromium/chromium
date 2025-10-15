@@ -27,4 +27,7 @@ interface ActorOverlayPage {
   // Notifies the webui if the scrim background should be visible. This is based
   // on if the mouse is hovering over the overlay or the handoff button.
   SetScrimBackground(bool is_visible);
+
+  // Notifies the webui if the border glow should be visible.
+  SetBorderGlowVisibility(bool is_visible);
 };

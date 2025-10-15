@@ -59,6 +59,14 @@ void ActorOverlayUI::SetOverlayBackground(bool is_visible) {
   handler_->SetOverlayBackground(is_visible);
 }
 
+void ActorOverlayUI::SetBorderGlowVisibility(bool is_visible) {
+  if (!handler_) {
+    return;
+  }
+
+  handler_->SetBorderGlowVisibility(is_visible);
+}
+
 bool ActorOverlayUI::IsActorOverlayWebContents(
     content::WebContents* web_contents) {
   if (auto* web_ui = web_contents->GetWebUI()) {

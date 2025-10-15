@@ -34,4 +34,8 @@ void ActorOverlayHandler::SetOverlayBackground(bool is_visible) {
   page_->SetScrimBackground(is_visible);
 }
 
+void ActorOverlayHandler::SetBorderGlowVisibility(bool is_visible) {
+  page_->SetBorderGlowVisibility(is_visible);
+}
+
 }  // namespace actor::ui
