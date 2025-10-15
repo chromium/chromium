@@ -97,20 +97,6 @@ class GlicWindowController {
   // Close the panel but keep the glic WebContents alive in the background.
   virtual void Close() = 0;
 
-  // Activates the browser window that the glic panel is associated with. If
-  // the panel is not attached to a browser, it will attempt to activate the
-  // last active browser. Returns true if a browser was successfully
-  // activated.
-  virtual bool ActivateBrowser() = 0;
-
-  // Displays a context menu when the user right clicks on the title bar.
-  // This is probably Windows only.
-  virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
-
-  // Returns whether the views::Widget associated with the glic window is active
-  // (e.g. will receive keyboard events).
-  virtual bool IsActive() = 0;
-
   // Returns wehether or not the glic window is currently showing detached.
   // When True |GetGlicWidget| will return a valid ptr.
   virtual bool IsDetached() const = 0;
@@ -204,6 +190,8 @@ class GlicWindowControllerInterface : public GlicWindowController,
   virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
   virtual std::unique_ptr<views::View> CreateViewForSidePanel(
       tabs::TabInterface& tab) = 0;
+
+  virtual bool IsActive() = 0;
 };
 
 }  // namespace glic

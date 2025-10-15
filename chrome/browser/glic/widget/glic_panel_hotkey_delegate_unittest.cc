@@ -46,7 +46,7 @@ class GlicPanelHotkeyDelegateTest : public testing::Test {
     mock_glic_view_ = std::make_unique<MockGlicView>();
     ON_CALL(*mock_panel_, GetView())
         .WillByDefault(testing::Return(mock_glic_view_->GetWeakPtr()));
-    ON_CALL(*mock_panel_, IsActive()).WillByDefault(testing::Return(true));
+    ON_CALL(*mock_panel_, HasFocus()).WillByDefault(testing::Return(true));
     delegate_ =
         std::make_unique<GlicPanelHotkeyDelegate>(mock_panel_->GetWeakPtr());
   }

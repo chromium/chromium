@@ -19,7 +19,7 @@ class MockLocalHotkeyPanel
   ~MockLocalHotkeyPanel() override;
 
   MOCK_METHOD(void, FocusIfOpen, (), (override));
-  MOCK_METHOD(bool, IsActive, (), (override));
+  MOCK_METHOD(bool, HasFocus, (), (override));
   MOCK_METHOD(bool, IsShowing, (), (const, override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(bool, ActivateBrowser, (), (override));

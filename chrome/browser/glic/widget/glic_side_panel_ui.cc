@@ -176,7 +176,7 @@ void GlicSidePanelUi::FocusIfOpen() {
   }
 }
 
-bool GlicSidePanelUi::IsActive() {
+bool GlicSidePanelUi::HasFocus() {
   if (!glic_view_) {
     return false;
   }

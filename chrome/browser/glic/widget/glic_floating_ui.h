@@ -80,7 +80,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
 
   // LocalHotkeyManager::Panel:
   void FocusIfOpen() override;
-  bool IsActive() override;
+  bool HasFocus() override;
   bool ActivateBrowser() override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
   base::WeakPtr<views::View> GetView() override;

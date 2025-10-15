@@ -1238,6 +1238,10 @@ bool GlicWindowControllerImpl::IsActive() {
   return IsDetached() && GetGlicWidget()->IsActive();
 }
 
+bool GlicWindowControllerImpl::HasFocus() {
+  return IsActive();
+}
+
 bool GlicWindowControllerImpl::IsShowing() const {
   return !(state_ == State::kClosed);
 }

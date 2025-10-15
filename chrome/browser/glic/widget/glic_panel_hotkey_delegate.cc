@@ -71,7 +71,7 @@ GlicPanelHotkeyDelegate::GetSupportedHotkeys() const {
 
 bool GlicPanelHotkeyDelegate::AcceleratorPressed(
     LocalHotkeyManager::Hotkey hotkey) {
-  if (!panel_ || !panel_->IsActive()) {
+  if (!panel_ || !panel_->HasFocus()) {
     return false;
   }
 

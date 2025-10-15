@@ -85,8 +85,6 @@ class GlicWindowControllerImpl
   void MaybeSetWidgetCanResize() override;
   gfx::Size GetPanelSize() override;
   void Close() override;
-  bool ActivateBrowser() override;
-  void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 
   void AddStateObserver(StateObserver* observer) override;
   void RemoveStateObserver(StateObserver* observer) override;
@@ -159,6 +157,11 @@ class GlicWindowControllerImpl
   // display::DisplayObserver implementation
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+
+  // LocalHotkeyManager::Panel:
+  bool HasFocus() override;
+  bool ActivateBrowser() override;
+  void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 
   HostManager& host_manager() override;
   std::vector<GlicInstance*> GetInstances() override;

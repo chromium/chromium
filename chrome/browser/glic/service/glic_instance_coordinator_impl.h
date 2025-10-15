@@ -81,19 +81,16 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
               mojom::InvocationSource source) override;
-  bool ActivateBrowser() override;
   void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
   void FocusIfOpen() override;
   void Shutdown() override;
   void MaybeSetWidgetCanResize() override;
   void Close() override;
-  void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 
   void AddGlobalStateObserver(StateObserver* observer) override;
   void RemoveGlobalStateObserver(StateObserver* observer) override;
   mojom::PanelState GetGlobalPanelState() override;
 
-  bool IsActive() override;
   bool IsDetached() const override;
   base::CallbackListSubscription AddWindowActivationChangedCallback(
       WindowActivationChangedCallback callback) override;

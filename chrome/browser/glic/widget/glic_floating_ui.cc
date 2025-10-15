@@ -131,14 +131,14 @@ void GlicFloatingUi::OnDragComplete() {
 }
 
 void GlicFloatingUi::FocusIfOpen() {
-  if (!IsShowing() || IsActive()) {
+  if (!IsShowing() || HasFocus()) {
     return;
   }
   GetGlicWidget()->Activate();
   GetGlicView()->GetWebContents()->Focus();
 }
 
-bool GlicFloatingUi::IsActive() {
+bool GlicFloatingUi::HasFocus() {
   return IsShowing() && GetGlicWidget()->IsActive();
 }
 

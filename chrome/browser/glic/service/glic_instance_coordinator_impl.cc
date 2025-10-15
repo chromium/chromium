@@ -175,13 +175,6 @@ void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
   ToggleSidePanel(browser, prevent_close);
 }
 
-bool GlicInstanceCoordinatorImpl::ActivateBrowser() {
-  // TODO(crbug/449179649): This is not called, and should not be called.
-  // Each side panel and floating panel will have it's own instance of
-  // hotkey delegates, which should not call this function.
-  NOTREACHED();
-}
-
 void GlicInstanceCoordinatorImpl::FocusIfOpen() {
   // TODO(crbug/449179649): This is called from
   // BrowserView::FocusInactivePopupForAccessibility(), and needs implemented
@@ -214,13 +207,6 @@ void GlicInstanceCoordinatorImpl::Close() {
   NOTIMPLEMENTED();
 }
 
-void GlicInstanceCoordinatorImpl::ShowTitleBarContextMenuAt(
-    gfx::Point event_loc) {
-  // TODO(crbug/449179649): Used by the hotkey code. May be needed for the
-  // floating panel.
-  NOTIMPLEMENTED();
-}
-
 mojom::PanelState GlicInstanceCoordinatorImpl::GetGlobalPanelState() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
@@ -241,12 +227,6 @@ void GlicInstanceCoordinatorImpl::RemoveGlobalStateObserver(
   // the floating window is showing and one for the state of an individual
   // panel.
   NOTIMPLEMENTED();
-}
-
-bool GlicInstanceCoordinatorImpl::IsActive() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return false;
 }
 
 bool GlicInstanceCoordinatorImpl::IsDetached() const {
