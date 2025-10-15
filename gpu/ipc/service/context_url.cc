@@ -13,7 +13,7 @@ namespace gpu {
 
 // static
 void ContextUrl::SetActiveUrl(const gpu::ContextUrl& active_url) {
-  bool is_chrome = active_url.url().GetScheme() == "chrome";
+  bool is_chrome = active_url.url().scheme() == "chrome";
 
   {
     static crash_reporter::CrashKeyString<128> crash_key(

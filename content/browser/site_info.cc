@@ -50,8 +50,7 @@ WebUIDomains GetWebUIDomains(const GURL& url) {
 // to share a process whilst maintaining independent SiteURLs to allow for
 // WebUIType differentiation.
 bool IsWebUIAndUsesTLDForProcessLockURL(const GURL& url) {
-  if (!base::Contains(URLDataManagerBackend::GetWebUISchemes(),
-                      url.GetScheme())) {
+  if (!base::Contains(URLDataManagerBackend::GetWebUISchemes(), url.scheme())) {
     return false;
   }
 
@@ -501,8 +500,7 @@ bool SiteInfo::IsSamePrincipalWith(const SiteInfo& other) const {
 
 bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
   bool is_match =
-      site_url_ == other.site_url_ &&
-      is_sandboxed_ == other.is_sandboxed_ &&
+      site_url_ == other.site_url_ && is_sandboxed_ == other.is_sandboxed_ &&
       unique_sandbox_id_ == other.unique_sandbox_id_ &&
       storage_partition_config_ == other.storage_partition_config_ &&
       web_exposed_isolation_info_ == other.web_exposed_isolation_info_ &&
@@ -694,7 +692,7 @@ bool SiteInfo::ShouldLockProcessToSite(
   // Most WebUI processes should be locked on all platforms.  The only exception
   // is NTP, handled via the separate callout to the embedder.
   const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
-  if (base::Contains(webui_schemes, site_url_.GetScheme())) {
+  if (base::Contains(webui_schemes, site_url_.scheme())) {
     return GetContentClient()->browser()->DoesWebUIUrlRequireProcessLock(
         site_url_);
   }

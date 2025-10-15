@@ -376,7 +376,7 @@ bool WebRequestPermissions::HideRequest(
       (url.DomainIs("chrome.google.com") &&
        base::StartsWith(url.path(), "/webstore",
                         base::CompareCase::SENSITIVE)) ||
-      url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().GetHost())) {
+      url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host())) {
     return true;
   }
 

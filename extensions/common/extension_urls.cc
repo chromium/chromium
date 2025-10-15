@@ -137,8 +137,8 @@ GURL GetNewWebstoreItemRecommendationsUrl(
 }
 
 bool IsWebstoreDomain(const GURL& url) {
-  return url.DomainIs(GetWebstoreLaunchURL().GetHost()) ||
-         url.DomainIs(GetNewWebstoreLaunchURL().GetHost());
+  return url.DomainIs(GetWebstoreLaunchURL().host()) ||
+         url.DomainIs(GetNewWebstoreLaunchURL().host());
 }
 
 bool IsWebstoreOrigin(const url::Origin& origin) {

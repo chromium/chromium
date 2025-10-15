@@ -326,13 +326,13 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
   }
 
   // Don't include cookies for requests that don't apply to the cookie domain.
-  if (!IsDomainMatch(url.GetHost())) {
+  if (!IsDomainMatch(url.host())) {
     status.AddExclusionReason(
         CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH);
   }
   // Don't include cookies for requests with a url path that does not path
   // match the cookie-path.
-  if (!IsOnPath(url.GetPath())) {
+  if (!IsOnPath(url.path())) {
     status.AddExclusionReason(
         CookieInclusionStatus::ExclusionReason::EXCLUDE_NOT_ON_PATH);
   }
@@ -420,12 +420,12 @@ CookieAccessResult CookieBase::IsSetPermittedInContext(
     access_result = *cookie_access_result;
   }
 
-  if (!base::Contains(cookieable_schemes, source_url.GetScheme())) {
+  if (!base::Contains(cookieable_schemes, source_url.scheme())) {
     access_result.status.AddExclusionReason(
         CookieInclusionStatus::ExclusionReason::EXCLUDE_NONCOOKIEABLE_SCHEME);
   }
 
-  if (!IsDomainMatch(source_url.GetHost())) {
+  if (!IsDomainMatch(source_url.host())) {
     access_result.status.AddExclusionReason(
         CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH);
   }
@@ -543,11 +543,11 @@ CookieAccessResult CookieBase::IsSetPermittedInContext(
   return access_result;
 }
 
-bool CookieBase::IsOnPath(const std::string& url_path) const {
+bool CookieBase::IsOnPath(const std::string_view url_path) const {
   return cookie_util::IsOnPath(path_, url_path);
 }
 
-bool CookieBase::IsDomainMatch(const std::string& host) const {
+bool CookieBase::IsDomainMatch(const std::string_view host) const {
   return cookie_util::IsDomainMatch(domain_, host);
 }
 

@@ -100,7 +100,7 @@ bool IsValidURL(const GURL& url, PortPermission port_permission) {
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kIgnoreGooglePortNumbers);
   return url.is_valid() && url.SchemeIsHTTPOrHTTPS() &&
-         (url.GetPort().empty() || g_ignore_port_numbers ||
+         (!url.has_port() || g_ignore_port_numbers ||
           (port_permission == ALLOW_NON_STANDARD_PORTS));
 }
 
@@ -322,7 +322,7 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
       ".youtubekids.com",
       ".ytimg.com",
   });
-  const std::string host = url.GetHost();
+  const std::string_view host(url.host());
   for (auto* i : kSuffixesToSetHeadersFor) {
     if (base::EndsWith(host, i, base::CompareCase::INSENSITIVE_ASCII)) {
       return true;
