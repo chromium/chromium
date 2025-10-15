@@ -211,6 +211,10 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sOmniboxImprovementForLFFSwitchToTabChip =
             newBooleanParam(sOmniboxImprovementForLFF, "switch_to_tab_chip", false);
 
+    // This parameter enables removing suggestion via "x" button.
+    public static final BooleanCachedFeatureParam sOmniboxImprovementForRemoveSuggestionViaButton =
+            newBooleanParam(sOmniboxImprovementForLFF, "remove_suggestion_via_button", false);
+
     // Omnibox Diagnostics
     private static final CachedFlag sDiagnostics =
             newFlag(OmniboxFeatureList.DIAGNOSTICS, FeatureState.DISABLED);

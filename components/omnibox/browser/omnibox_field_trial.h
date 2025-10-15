@@ -731,6 +731,11 @@ inline constexpr base::FeatureParam<bool>
     kOmniboxImprovementForLFFSwitchToTabChip{
         &omnibox::kOmniboxImprovementForLFF, "switch_to_tab_chip", false};
 
+inline constexpr base::FeatureParam<bool>
+    kOmniboxImprovementForLFFRemoveSuggestionViaButton{
+        &omnibox::kOmniboxImprovementForLFF, "remove_suggestion_via_button",
+        false};
+
 // <-- Omnibox Improvement for Large Form Factors
 #endif
 

@@ -1950,14 +1950,31 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"AIM Toggle Only", kOmniboxAimToggleOnlyParam,
      std::size(kOmniboxAimToggleOnlyParam), nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxImprovementForLFFVariationsAll[] = {
+    {OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name, "true"},
+    {OmniboxFieldTrial::kOmniboxImprovementForLFFRemoveSuggestionViaButton.name,
+     "true"}};
+
 const FeatureEntry::FeatureParam
     kOmniboxImprovementForLFFVariationsSwitchToTabChip[] = {
         {OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name,
          "true"}};
 
+const FeatureEntry::FeatureParam
+    kOmniboxImprovementForLFFVariationsRemoveSuggestionViaButton[] = {
+        {OmniboxFieldTrial::kOmniboxImprovementForLFFRemoveSuggestionViaButton
+             .name,
+         "true"}};
+
 const FeatureEntry::FeatureVariation kOmniboxImprovementForLFFVariations[] = {
+    {"All", kOmniboxImprovementForLFFVariationsAll,
+     std::size(kOmniboxImprovementForLFFVariationsAll), nullptr},
     {"Switch to Tab Chip", kOmniboxImprovementForLFFVariationsSwitchToTabChip,
-     std::size(kOmniboxImprovementForLFFVariationsSwitchToTabChip), nullptr}};
+     std::size(kOmniboxImprovementForLFFVariationsSwitchToTabChip), nullptr},
+    {"Remove Suggestion",
+     kOmniboxImprovementForLFFVariationsRemoveSuggestionViaButton,
+     std::size(kOmniboxImprovementForLFFVariationsRemoveSuggestionViaButton),
+     nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
