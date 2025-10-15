@@ -151,7 +151,7 @@ class PathBuilderMultiRootWindowsTest : public ::testing::Test {
       c_by_d_, c_by_e_, d_by_d_, e_by_e_, f_by_e_;
 
   DeadlineTestingPathBuilderDelegate delegate_;
-  bssl::der::GeneralizedTime time_ = {2017, 3, 1, 0, 0, 0};
+  bssl::der::GeneralizedTime time_ = {2025, 10, 13, 0, 0, 0};
 
   const bssl::InitialExplicitPolicy initial_explicit_policy_ =
       bssl::InitialExplicitPolicy::kFalse;

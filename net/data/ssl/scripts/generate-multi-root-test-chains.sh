@@ -79,8 +79,8 @@ do
   openssl ca \
     -config redundant-ca.cnf \
     -batch \
-    -startdate 160102000000Z \
-    -enddate 260102000000Z \
+    -startdate 251002000000Z \
+    -enddate 351002000000Z \
     -extensions ca_cert \
     -extfile redundant-ca.cnf \
     -selfsign \
@@ -107,8 +107,8 @@ CERTIFICATE=D \
 openssl ca \
   -config redundant-ca.cnf \
   -batch \
-  -startdate 160103000000Z \
-  -enddate 260102000000Z \
+  -startdate 251003000000Z \
+  -enddate 351002000000Z \
   -extensions ca_cert \
   -extfile redundant-ca.cnf \
   -in out/C.csr \
@@ -120,8 +120,8 @@ CERTIFICATE=C \
 openssl ca \
   -config redundant-ca.cnf \
   -batch \
-  -startdate 160104000000Z \
-  -enddate 260102000000Z \
+  -startdate 251004000000Z \
+  -enddate 351002000000Z \
   -extensions ca_cert \
   -extfile redundant-ca.cnf \
   -in out/B.csr \
@@ -133,8 +133,8 @@ CERTIFICATE=E \
 openssl ca \
   -config redundant-ca.cnf \
   -batch \
-  -startdate 160105000000Z \
-  -enddate 260102000000Z \
+  -startdate 251005000000Z \
+  -enddate 351002000000Z \
   -extensions ca_cert \
   -extfile redundant-ca.cnf \
   -in out/C.csr \
@@ -146,8 +146,8 @@ CERTIFICATE=E \
 openssl ca \
   -config redundant-ca.cnf \
   -batch \
-  -startdate 160102000000Z \
-  -enddate 260102000000Z \
+  -startdate 251002000000Z \
+  -enddate 351002000000Z \
   -extensions ca_cert \
   -extfile redundant-ca.cnf \
   -in out/F.csr \
@@ -162,8 +162,8 @@ CERTIFICATE=F \
 openssl ca \
   -config redundant-ca.cnf \
   -batch \
-  -startdate 160105000000Z \
-  -enddate 260102000000Z \
+  -startdate 251005000000Z \
+  -enddate 351002000000Z \
   -extensions ca_cert \
   -extfile redundant-ca.cnf \
   -in out/B.csr \
@@ -208,7 +208,7 @@ cp out/E.pem ../certificates/multi-root-E-by-E.pem
 
 echo "Generating CRLSets"
 # Block D and E by SPKI; invalidates all paths.
-python crlsetutil.py -o ../certificates/multi-root-crlset-D-and-E.raw \
+python3 crlsetutil.py -o ../certificates/multi-root-crlset-D-and-E.raw \
 <<CRLSETDOCBLOCK
 {
   "BlockedBySPKI": [
@@ -219,7 +219,7 @@ python crlsetutil.py -o ../certificates/multi-root-crlset-D-and-E.raw \
 CRLSETDOCBLOCK
 
 # Block E by SPKI.
-python crlsetutil.py -o ../certificates/multi-root-crlset-E.raw \
+python3 crlsetutil.py -o ../certificates/multi-root-crlset-E.raw \
 <<CRLSETDOCBLOCK
 {
   "BlockedBySPKI": [
@@ -229,7 +229,7 @@ python crlsetutil.py -o ../certificates/multi-root-crlset-E.raw \
 CRLSETDOCBLOCK
 
 # Block C-by-D and F-by-E by way of serial number.
-python crlsetutil.py -o ../certificates/multi-root-crlset-CD-and-FE.raw \
+python3 crlsetutil.py -o ../certificates/multi-root-crlset-CD-and-FE.raw \
 <<CRLSETDOCBLOCK
 {
   "BlockedByHash": {
@@ -240,7 +240,7 @@ python crlsetutil.py -o ../certificates/multi-root-crlset-CD-and-FE.raw \
 CRLSETDOCBLOCK
 
 # Block C (all versions) by way of SPKI
-python crlsetutil.py -o ../certificates/multi-root-crlset-C.raw \
+python3 crlsetutil.py -o ../certificates/multi-root-crlset-C.raw \
 <<CRLSETDOCBLOCK
 {
   "BlockedBySPKI": [ "out/C.pem" ]
@@ -248,7 +248,7 @@ python crlsetutil.py -o ../certificates/multi-root-crlset-C.raw \
 CRLSETDOCBLOCK
 
 # Block an unrelated/unissued serial (D, not issued by E) to enable all paths.
-python crlsetutil.py -o ../certificates/multi-root-crlset-unrelated.raw \
+python3 crlsetutil.py -o ../certificates/multi-root-crlset-unrelated.raw \
 <<CRLSETDOCBLOCK
 {
   "BlockedByHash": {
