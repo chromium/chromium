@@ -879,7 +879,7 @@ crbug.com/446941342 [ android android-pixel-10 ] conformance2/extensions/webgl-s
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/glsl3/array-complex-indexing.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/glsl3/loops-with-side-effects.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
-crbug.com/446941342 [ android android-pixel-10 ] conformance2/query/occlusion-query.html [ RetryOnFailure ]
+crbug.com/446941342 [ android android-pixel-10 ] conformance2/query/occlusion-query.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/query/occlusion-query-scissor.html [ RetryOnFailure ]
 crbug.com/40167875 [ android android-pixel-10 ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/rendering/read-draw-when-missing-image.html [ Failure ]
@@ -887,6 +887,7 @@ crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/comp
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/copy-texture-image-same-texture.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/misc/texel-fetch-undefined.html [ Failure ]
+crbug.com/446941342 [ android android-pixel-10 ] conformance2/textures/video/tex-2d-rg8-rg-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/446941342 [ android android-pixel-10 ] deqp/functional/gles3/shaderstruct.html [ Failure ]
 
 ############################
