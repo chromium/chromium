@@ -606,6 +606,7 @@ export class ComposeboxElement extends I18nMixinLit
       }
       return;
     }
+    this.smartComposeInlineHint_ = '';
     e.preventDefault();
 
     // Focus the selected match if focus is currently in the matches.

@@ -1195,6 +1195,44 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
   });
 
+  test('arrow up/down moves clears smart compose', async () => {
+    loadTimeData.overrideValues({composeboxShowTypedSuggest: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    const matches = [
+      createSearchMatch(),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
+    ];
+
+    // Add typed input
+    composeboxElement.$.input.value = 'awesome';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: 'awesome',
+          matches: matches,
+          smartComposeInlineHint: 'compose',
+        }));
+    assertTrue(await areMatchesShowing());
+
+    const smartCompose = $$<HTMLElement>(composeboxElement, '#smartCompose');
+    assertTrue(!!smartCompose);
+
+    const arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+
+    composeboxElement.$.input.dispatchEvent(arrowDownEvent);
+    await microtasksFinished();
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    assertFalse(!!$$<HTMLElement>(composeboxElement, '#smartCompose'));
+  });
+
   test('composebox does not open match when only file present', async () => {
     createComposeboxElement();
 
