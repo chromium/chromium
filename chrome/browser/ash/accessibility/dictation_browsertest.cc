@@ -177,10 +177,10 @@ class DictationTestBase : public AccessibilityFeatureBrowserTest,
                                                   editable_type());
     std::vector<base::test::FeatureRef> enabled_features =
         utils_->GetEnabledFeatures();
-    enabled_features.push_back(
-        ::features::kAccessibilityManifestV3SwitchAccess);
     std::vector<base::test::FeatureRef> disabled_features =
         utils_->GetDisabledFeatures();
+    disabled_features.push_back(
+        ::features::kAccessibilityManifestV3SwitchAccess);
     if (manifest_version() == ManifestVersion::kTwo) {
       disabled_features.push_back(
           ::features::kAccessibilityManifestV3AccessibilityCommon);

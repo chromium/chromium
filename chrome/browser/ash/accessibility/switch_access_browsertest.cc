@@ -22,7 +22,8 @@
 
 namespace ash {
 
-class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
+class SwitchAccessTest : public AccessibilityFeatureBrowserTest,
+                         public ::testing::WithParamInterface<ManifestVersion> {
  protected:
   SwitchAccessTest() = default;
   ~SwitchAccessTest() override = default;
@@ -30,8 +31,16 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
   SwitchAccessTest& operator=(const SwitchAccessTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{::features::kAccessibilityManifestV3SwitchAccess, true}});
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam() == ManifestVersion::kTwo) {
+      disabled_features.push_back(
+          ::features::kAccessibilityManifestV3SwitchAccess);
+    } else if (GetParam() == ManifestVersion::kThree) {
+      enabled_features.push_back(
+          ::features::kAccessibilityManifestV3SwitchAccess);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -96,6 +105,14 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(ManifestV2,
+                         SwitchAccessTest,
+                         ::testing::Values(ManifestVersion::kTwo));
+
+INSTANTIATE_TEST_SUITE_P(ManifestV3,
+                         SwitchAccessTest,
+                         ::testing::Values(ManifestVersion::kThree));
+
 // TODO(crbug.com/431933537): Disabled on MSAN due to a renderer crash. The
 // crash is caused by a use-of-uninitialized-value in
 // blink::CSSParserImpl::ParseStyleSheet when parsing default stylesheets,
@@ -109,7 +126,7 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
 #else
 #define MAYBE_ConsumesKeyEvents ConsumesKeyEvents
 #endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_ConsumesKeyEvents) {
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, MAYBE_ConsumesKeyEvents) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
   AutomationTestUtils test_utils(extension_misc::kSwitchAccessExtensionId);
@@ -153,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_ConsumesKeyEvents) {
 #else
 #define MAYBE_NavigateGroupings NavigateGroupings
 #endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_NavigateGroupings) {
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, MAYBE_NavigateGroupings) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
   // Load a webpage with two groups of controls.
@@ -212,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_NavigateGroupings) {
 #else
 #define MAYBE_NavigateButtonsInTextFieldMenu NavigateButtonsInTextFieldMenu
 #endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_NavigateButtonsInTextFieldMenu) {
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, MAYBE_NavigateButtonsInTextFieldMenu) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
 
@@ -286,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_NavigateButtonsInTextFieldMenu) {
 #else
 #define MAYBE_TypeIntoVirtualKeyboard TypeIntoVirtualKeyboard
 #endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_TypeIntoVirtualKeyboard) {
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, MAYBE_TypeIntoVirtualKeyboard) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
 
@@ -326,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_TypeIntoVirtualKeyboard) {
 #define MAYBE_PointScanClickWhenMouseEventsEnabled \
   PointScanClickWhenMouseEventsEnabled
 #endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest,
                        MAYBE_PointScanClickWhenMouseEventsEnabled) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
@@ -365,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
 #define MAYBE_PointScanClickWhenMouseEventsDisabled \
   PointScanClickWhenMouseEventsDisabled
 #endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest,
                        MAYBE_PointScanClickWhenMouseEventsDisabled) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
