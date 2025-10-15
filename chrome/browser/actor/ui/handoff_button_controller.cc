@@ -41,9 +41,10 @@ namespace {
 // A fixed vertical offset from the top of the window, used when the tab
 // strip is not visible.
 constexpr int kHandoffButtonTopOffset = 8;
-constexpr int kHandoffButtonPreferredHeight = 70;
+constexpr int kHandoffButtonPreferredHeight = 44;
 constexpr float kHandoffButtonShadowMargin = 15.0f;
 constexpr float kHandoffButtonCornerRadius = 48.0f;
+constexpr int kHandoffButtonIconSize = 20;
 
 // A custom BubbleFrameView that paints a gradient border.
 class GradientBubbleFrameView : public views::BubbleFrameView {
@@ -195,15 +196,15 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
   switch (state.controller) {
     case kActor:
       text = TAKE_OVER_TASK_TEXT;
-      // TODO(crbug.com/422541242): Update icon to select_window_2.
-      icon = ImageModel::FromVectorIcon(
-          vector_icons::kSelectWindowChromeRefreshIcon,
-          ::ui::kColorLabelForeground);
+      icon = ImageModel::FromVectorIcon(vector_icons::kPauseIcon,
+                                        ::ui::kColorLabelForeground,
+                                        kHandoffButtonIconSize);
       break;
     case kClient:
       text = GIVE_TASK_BACK_TEXT;
-      icon = ImageModel::FromVectorIcon(kScreensaverAutoIcon,
-                                        ::ui::kColorLabelForeground);
+      icon = ImageModel::FromVectorIcon(vector_icons::kPlayArrowIcon,
+                                        ::ui::kColorLabelForeground,
+                                        kHandoffButtonIconSize);
       break;
   }
 
@@ -317,7 +318,7 @@ gfx::Rect HandoffButtonController::GetHandoffButtonBounds(
   const int y =
       is_tab_strip_visible
           // Vertically center the button on the top edge of the anchor.
-          ? anchor_bounds.y() - preferred_size.height() / 2
+          ? anchor_bounds.y() - preferred_size.height()
           // Position with a fixed offset from the top of the anchor.
           : anchor_bounds.y() - kHandoffButtonTopOffset;
 
