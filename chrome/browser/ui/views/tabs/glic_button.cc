@@ -329,6 +329,20 @@ void GlicButton::StateChanged(ButtonState old_state) {
   UpdateIcon();
 }
 
+void GlicButton::AddedToWidget() {
+  if (!EntrypointVariationsEnabled()) {
+    return TabStripNudgeButton::AddedToWidget();
+  }
+
+  // Both TabStripControlButton and parent LabelButton set up similar logic here
+  // for drawing the button as enabled or disabled when window activation
+  // changes. Use LabelButton's as TabStripControlButton fails to update the
+  // text color when the window goes from inactive to active.
+  // TODO(crbug.com/452116005): Make this behavior configurable on
+  // TabStripControlButton.
+  LabelButton::AddedToWidget();
+}
+
 void GlicButton::SetDropToAttachIndicator(bool indicate) {
   if (indicate) {
     SetBackgroundFrameActiveColorId(ui::kColorSysStateHeaderHover);
@@ -717,6 +731,10 @@ void GlicButton::SetCloseButtonVisible(bool visible) {
 
 gfx::SlideAnimation* GlicButton::GetExpansionAnimationForTesting() {
   return expansion_animation_.get();
+}
+
+bool GlicButton::GetLabelEnabledForTesting() const {
+  return label()->GetEnabled();
 }
 
 BEGIN_METADATA(GlicButton)

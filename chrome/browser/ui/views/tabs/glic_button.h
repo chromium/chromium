@@ -65,6 +65,7 @@ class GlicButton : public TabStripNudgeButton,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void StateChanged(ButtonState old_state) override;
+  void AddedToWidget() override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -94,6 +95,7 @@ class GlicButton : public TabStripNudgeButton,
   void OnAnimationEnded();
 
   gfx::SlideAnimation* GetExpansionAnimationForTesting() override;
+  bool GetLabelEnabledForTesting() const;
 
  private:
   // views::LabelButton:
