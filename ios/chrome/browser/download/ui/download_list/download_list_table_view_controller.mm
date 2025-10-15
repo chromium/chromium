@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_illustrated_empty_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -28,6 +30,11 @@ namespace {
 
 /// Size for the file icon image in the download list cells.
 constexpr CGFloat kFileIconImageSize = 44.0;
+/// Constants for cancel button styling.
+static const CGFloat kCancelButtonIconSize = 30;
+
+NSString* const kCancelButtonPrimaryActionIdentifier =
+    @"kCancelButtonPrimaryActionIdentifier";
 
 }  // namespace
 
@@ -103,8 +110,47 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   UITableViewCell* cell =
       [TableViewCellContentConfiguration dequeueTableViewCell:self.tableView];
   cell.contentConfiguration = configuration;
-
+  [self configureCancelButtonForCell:cell item:item];
   return cell;
+}
+
+/// Configures the cancel button accessory for the given cell and item.
+- (void)configureCancelButtonForCell:(UITableViewCell*)cell
+                                item:(DownloadListItem*)item {
+  if (item.cancelable) {
+    UIButton* cancelButton =
+        base::apple::ObjCCast<UIButton>(cell.accessoryView);
+    if (!cancelButton) {
+      // Create and configure cancel button if it does not exist.
+      cancelButton = SecondaryActionButton();
+      cancelButton.translatesAutoresizingMaskIntoConstraints = YES;
+      UIImage* cancelButtonImage =
+          SymbolWithPalette(DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
+                                                       kCancelButtonIconSize),
+                            @[
+                              [UIColor colorNamed:kGrey600Color],
+                              [UIColor colorNamed:kGrey200Color],
+                            ]);
+      [cancelButton setImage:cancelButtonImage forState:UIControlStateNormal];
+      cancelButton.frame =
+          CGRectMake(0, 0, kCancelButtonIconSize, kCancelButtonIconSize);
+      cancelButton.accessibilityLabel = l10n_util::GetNSString(
+          IDS_IOS_DOWNLOAD_LIST_CANCEL_ACCESSIBILITY_LABEL);
+      cell.accessoryView = cancelButton;
+    }
+    __weak __typeof(self) weakSelf = self;
+    UIAction* primaryAction =
+        [UIAction actionWithTitle:@""
+                            image:nil
+                       identifier:kCancelButtonPrimaryActionIdentifier
+                          handler:^(__kindof UIAction* action) {
+                            [weakSelf.mutator cancelDownloadItem:item];
+                          }];
+    [cancelButton addAction:primaryAction
+           forControlEvents:UIControlEventTouchUpInside];
+  } else {
+    cell.accessoryView = nil;
+  }
 }
 
 #pragma mark - UITableViewDelegate

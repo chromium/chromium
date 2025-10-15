@@ -29,6 +29,9 @@ enum class DownloadFilterType;
 /// Deletes the download item.
 - (void)deleteDownloadItem:(DownloadListItem*)item;
 
+/// Cancels the download item.
+- (void)cancelDownloadItem:(DownloadListItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_LIST_DOWNLOAD_LIST_MUTATOR_H_

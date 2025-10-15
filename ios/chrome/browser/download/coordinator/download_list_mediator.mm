@@ -220,6 +220,15 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
   }
 }
 
+- (void)cancelDownloadItem:(DownloadListItem*)item {
+  web::DownloadTask* downloadTask = _downloadRecordService->GetDownloadTaskById(
+      base::SysNSStringToUTF8(item.downloadID));
+  if (!downloadTask) {
+    return;
+  }
+  downloadTask->Cancel();
+}
+
 #pragma mark - DownloadRecordObserver Methods
 
 - (void)downloadRecordWasAdded:(const DownloadRecord&)record {

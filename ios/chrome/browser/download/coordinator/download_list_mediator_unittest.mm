@@ -30,8 +30,10 @@
 #import "ios/chrome/browser/download/model/download_record_service.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_consumer.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/download/download_task.h"
+#import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -61,51 +63,51 @@ class MockDownloadRecordService : public DownloadRecordService {
     DownloadRecord pdf_record;
     pdf_record.download_id = "1";
     pdf_record.original_url = "https://testsite.org/document.pdf";
-    pdf_record.mime_type = "application/pdf";
+    pdf_record.mime_type = kAdobePortableDocumentFormatMimeType;
     pdf_record.file_name = "document.pdf";
     pdf_record.created_time = base::Time::Now();
 
     DownloadRecord image_record;
     image_record.download_id = "2";
     image_record.original_url = "https://testsite.org/image.jpg";
-    image_record.mime_type = "image/jpeg";
+    image_record.mime_type = kJPEGImageMimeType;
     image_record.file_name = "image.jpg";
     image_record.created_time = base::Time::Now();
 
     DownloadRecord video_record;
     video_record.download_id = "3";
     video_record.original_url = "https://testsite.org/video.mp4";
-    video_record.mime_type = "video/mp4";
+    video_record.mime_type = kMP4VideoMimeType;
     video_record.file_name = "video.mp4";
     video_record.created_time = base::Time::Now();
 
     DownloadRecord audio_record;
     audio_record.download_id = "4";
     audio_record.original_url = "https://testsite.org/audio.mp3";
-    audio_record.mime_type = "audio/mpeg";
+    audio_record.mime_type = kMP3AudioMimeType;
     audio_record.file_name = "audio.mp3";
     audio_record.created_time = base::Time::Now();
 
     DownloadRecord text_record;
     text_record.download_id = "5";
     text_record.original_url = "https://testsite.org/document.txt";
-    text_record.mime_type = "text/plain";
+    text_record.mime_type = kTextMimeType;
     text_record.file_name = "document.txt";
     text_record.created_time = base::Time::Now();
 
     DownloadRecord zip_record;
     zip_record.download_id = "6";
     zip_record.original_url = "https://testsite.org/archive.zip";
-    zip_record.mime_type = "application/zip";
+    zip_record.mime_type = kZipArchiveMimeType;
     zip_record.file_name = "archive.zip";
     zip_record.created_time = base::Time::Now();
 
-    // Add incognito records for testing incognito functionality
+    // Add incognito records for testing incognito functionality.
     DownloadRecord incognito_pdf_record;
     incognito_pdf_record.download_id = "7";
     incognito_pdf_record.original_url =
         "https://testsite.org/incognito_document.pdf";
-    incognito_pdf_record.mime_type = "application/pdf";
+    incognito_pdf_record.mime_type = kAdobePortableDocumentFormatMimeType;
     incognito_pdf_record.file_name = "incognito_document.pdf";
     incognito_pdf_record.created_time = base::Time::Now();
     incognito_pdf_record.is_incognito = true;
@@ -114,7 +116,7 @@ class MockDownloadRecordService : public DownloadRecordService {
     incognito_image_record.download_id = "8";
     incognito_image_record.original_url =
         "https://testsite.org/incognito_image.jpg";
-    incognito_image_record.mime_type = "image/jpeg";
+    incognito_image_record.mime_type = kJPEGImageMimeType;
     incognito_image_record.file_name = "incognito_image.jpg";
     incognito_image_record.created_time = base::Time::Now();
     incognito_image_record.is_incognito = true;
@@ -145,7 +147,11 @@ class MockDownloadRecordService : public DownloadRecordService {
 
   web::DownloadTask* GetDownloadTaskById(
       std::string_view download_id) const override {
-    // For testing purposes, return nullptr as we're not tracking actual tasks.
+    // Return mock task if it exists for the given download_id.
+    auto it = mock_download_tasks_.find(std::string(download_id));
+    if (it != mock_download_tasks_.end()) {
+      return it->second.get();
+    }
     return nullptr;
   }
 
@@ -207,9 +213,18 @@ class MockDownloadRecordService : public DownloadRecordService {
     }
   }
 
+  // Adds a mock download task for testing cancelDownloadItem.
+  void AddMockDownloadTaskForTesting(
+      const std::string& download_id,
+      std::unique_ptr<web::FakeDownloadTask> task) {
+    mock_download_tasks_[download_id] = std::move(task);
+  }
+
  private:
   std::vector<DownloadRecord> stored_records_;
   std::set<DownloadRecordObserver*> observers_;
+  std::map<std::string, std::unique_ptr<web::FakeDownloadTask>>
+      mock_download_tasks_;
 };
 
 }  // namespace
@@ -487,7 +502,7 @@ TEST_F(DownloadListMediatorTest, TestDownloadRecordWasAdded) {
   DownloadRecord newRecord;
   newRecord.download_id = "7";
   newRecord.original_url = "https://testsite.org/newfile.pdf";
-  newRecord.mime_type = "application/pdf";
+  newRecord.mime_type = kAdobePortableDocumentFormatMimeType;
   newRecord.file_name = "newfile.pdf";
   newRecord.created_time = base::Time::Now();
 
@@ -515,7 +530,7 @@ TEST_F(DownloadListMediatorTest, TestDownloadRecordWasUpdated) {
   DownloadRecord updatedRecord;
   updatedRecord.download_id = "1";
   updatedRecord.original_url = "https://testsite.org/document.pdf";
-  updatedRecord.mime_type = "application/pdf";
+  updatedRecord.mime_type = kAdobePortableDocumentFormatMimeType;
   updatedRecord.file_name = "updated_document.pdf";
   updatedRecord.created_time = base::Time::Now();
 
@@ -592,7 +607,7 @@ TEST_F(DownloadListMediatorTest,
   DownloadRecord incognitoRecord;
   incognitoRecord.download_id = "9";
   incognitoRecord.original_url = "https://testsite.org/incognito_new.pdf";
-  incognitoRecord.mime_type = "application/pdf";
+  incognitoRecord.mime_type = kAdobePortableDocumentFormatMimeType;
   incognitoRecord.file_name = "incognito_new.pdf";
   incognitoRecord.created_time = base::Time::Now();
   incognitoRecord.is_incognito = true;
@@ -618,7 +633,7 @@ TEST_F(DownloadListMediatorTest,
   DownloadRecord nonIncognitoRecord;
   nonIncognitoRecord.download_id = "10";
   nonIncognitoRecord.original_url = "https://testsite.org/regular_new.pdf";
-  nonIncognitoRecord.mime_type = "application/pdf";
+  nonIncognitoRecord.mime_type = kAdobePortableDocumentFormatMimeType;
   nonIncognitoRecord.file_name = "regular_new.pdf";
   nonIncognitoRecord.created_time = base::Time::Now();
   nonIncognitoRecord.is_incognito = false;
@@ -863,7 +878,7 @@ TEST_F(DownloadListMediatorIncognitoTest, TestHandlesIncognitoRecordAddition) {
   DownloadRecord incognitoRecord;
   incognitoRecord.download_id = "9";
   incognitoRecord.original_url = "https://testsite.org/incognito_new.pdf";
-  incognitoRecord.mime_type = "application/pdf";
+  incognitoRecord.mime_type = kAdobePortableDocumentFormatMimeType;
   incognitoRecord.file_name = "incognito_new.pdf";
   incognitoRecord.created_time = base::Time::Now();
   incognitoRecord.is_incognito = true;
@@ -884,6 +899,52 @@ TEST_F(DownloadListMediatorIncognitoTest, TestHandlesIncognitoRecordAddition) {
   [mock_consumer_ verify];
 }
 
+// Test cancelDownloadItem method with actual task cancellation.
+TEST_F(DownloadListMediatorTest, TestCancelDownloadItemInProgress) {
+  // Create a fake download task.
+  auto fake_task = std::make_unique<web::FakeDownloadTask>(
+      GURL("https://testsite.org/document.pdf"),
+      kAdobePortableDocumentFormatMimeType);
+  web::FakeDownloadTask* task_ptr = fake_task.get();
+
+  // Set task state to in progress to simulate an active download.
+  task_ptr->SetState(web::DownloadTask::State::kInProgress);
+
+  // Add the mock task to the service.
+  mock_service_->AddMockDownloadTaskForTesting("test_download_1",
+                                               std::move(fake_task));
+
+  // Create a download record with kInProgress state.
+  DownloadRecord inProgressRecord;
+  inProgressRecord.download_id = "test_download_1";
+  inProgressRecord.original_url = "https://testsite.org/document.pdf";
+  inProgressRecord.mime_type = kAdobePortableDocumentFormatMimeType;
+  inProgressRecord.file_name = "document.pdf";
+  inProgressRecord.created_time = base::Time::Now();
+  inProgressRecord.state = web::DownloadTask::State::kInProgress;
+  inProgressRecord.received_bytes = 50;
+  inProgressRecord.total_bytes = 100;
+  inProgressRecord.progress_percent = 50;
+
+  // Create download list item.
+  DownloadListItem* item =
+      [[DownloadListItem alloc] initWithDownloadRecord:inProgressRecord];
+
+  // Verify initial state is kInProgress.
+  EXPECT_EQ(task_ptr->GetState(), web::DownloadTask::State::kInProgress);
+
+  // Call cancelDownloadItem - this should call GetDownloadTaskById and then
+  // Cancel().
+  [mediator_ cancelDownloadItem:item];
+
+  // Verify that Cancel() was called on the task by checking if state changed.
+  // Note: FakeDownloadTask's Cancel() method should set state to kCancelled.
+  EXPECT_EQ(task_ptr->GetState(), web::DownloadTask::State::kCancelled);
+
+  // Verify all mock expectations have been met.
+  [mock_consumer_ verify];
+}
+
 // Test that incognito mediator handles non-incognito record additions
 // correctly.
 TEST_F(DownloadListMediatorIncognitoTest,
@@ -895,7 +956,7 @@ TEST_F(DownloadListMediatorIncognitoTest,
   DownloadRecord nonIncognitoRecord;
   nonIncognitoRecord.download_id = "10";
   nonIncognitoRecord.original_url = "https://testsite.org/regular_new.pdf";
-  nonIncognitoRecord.mime_type = "application/pdf";
+  nonIncognitoRecord.mime_type = kAdobePortableDocumentFormatMimeType;
   nonIncognitoRecord.file_name = "regular_new.pdf";
   nonIncognitoRecord.created_time = base::Time::Now();
   nonIncognitoRecord.is_incognito = false;

@@ -2069,6 +2069,9 @@
       <message name="IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE" desc="Warning message displayed when the user downloads a file while on Incognito.[iOS only]">
           Anyone using this device can see downloaded files
       </message>
+      <message name="IDS_IOS_DOWNLOAD_LIST_CANCEL_ACCESSIBILITY_LABEL" desc="Accessibility label of the button to cancel a download in the Download List screen. [iOS only]">
+          Cancel download
+      </message>
       <message name="IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_MESSAGE" desc="Message shown on the Download List screen when there are no entries, explaining the purpose of the Download List screen.">
           You can access your downloaded files here when available
       </message>

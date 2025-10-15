@@ -158,6 +158,10 @@ NSString* const kStatusTextEmptyString = @"";
   return actions;
 }
 
+- (BOOL)cancelable {
+  return _downloadRecord.state == web::DownloadTask::State::kInProgress;
+}
+
 - (BOOL)isEqualToItem:(DownloadListItem*)item {
   if (self == item) {
     return YES;

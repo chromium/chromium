@@ -195,6 +195,7 @@ NSString* const kShareSymbol = @"square.and.arrow.up";
 NSString* const kXMarkSymbol = @"xmark";
 NSString* const kXMarkSquareSymbol = @"xmark.square";
 NSString* const kXMarkSquareFillSymbol = @"xmark.square.fill";
+NSString* const kXMarkCircleSymbol = @"xmark.circle";
 NSString* const kXMarkCircleFillSymbol = @"xmark.circle.fill";
 NSString* const kPlusSymbol = @"plus";
 NSString* const kSearchSymbol = @"magnifyingglass";

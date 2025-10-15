@@ -43,6 +43,9 @@ typedef NS_OPTIONS(NSUInteger, DownloadListItemAction) {
 /// Returns the available actions for this download item.
 @property(nonatomic, assign, readonly) DownloadListItemAction availableActions;
 
+/// Whether this download item can be canceled.
+@property(nonatomic, assign, readonly) BOOL cancelable;
+
 /// Initializes a download list item with the given download record.
 - (instancetype)initWithDownloadRecord:(const DownloadRecord&)downloadRecord
     NS_DESIGNATED_INITIALIZER;

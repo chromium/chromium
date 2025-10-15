@@ -193,6 +193,7 @@ extern NSString* const kShareSymbol;
 extern NSString* const kXMarkSymbol;
 extern NSString* const kXMarkSquareSymbol;
 extern NSString* const kXMarkSquareFillSymbol;
+extern NSString* const kXMarkCircleSymbol;
 extern NSString* const kXMarkCircleFillSymbol;
 extern NSString* const kPlusSymbol;
 extern NSString* const kSearchSymbol;
