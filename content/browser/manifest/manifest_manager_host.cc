@@ -57,17 +57,6 @@ void ManifestManagerHost::BindObserver(
 
 void ManifestManagerHost::GetManifest(GetManifestCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Do not call into MaybeOverrideManifest in a non primary page since
-  // it checks the url from PreRedirectionURLObserver that works only in
-  // a primary page.
-  // TODO(crbug.com/40214638): Maybe cancel prerendering if it hits this.
-  if (!page().IsPrimary()) {
-    std::move(callback).Run(
-        blink::mojom::ManifestRequestResult::kUnexpectedFailure, GURL(),
-        blink::mojom::Manifest::New());
-    return;
-  }
-
   auto& manifest_manager = GetManifestManager();
   int request_id = callbacks_.Add(
       std::make_unique<GetManifestCallback>(std::move(callback)));

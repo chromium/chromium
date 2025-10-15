@@ -300,6 +300,9 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
   CHECK(web_app_info_);
 
+  GetMutableDebugValue().Set("installable_error_code",
+                             static_cast<int>(error_code));
+
   if (install_params_->require_manifest && !valid_manifest_for_web_app) {
     LOG(WARNING) << "Did not install " << web_app_info_->manifest_id().spec()
                  << " because it didn't have a manifest for web app";
@@ -356,6 +359,8 @@ void ExternalAppResolutionCommand::RetrieveWebAppInfoFromManifest(
   // true, the app needs resources fetched from the manifest and it should also
   // behave like DIY apps.
   construct_options.force_override_name = install_params_->install_as_diy;
+
+  GetMutableDebugValue().Set("manifest_id", opt_manifest->id.spec());
 
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(

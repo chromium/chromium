@@ -895,8 +895,7 @@ class ManifestBrowserPrerenderingTest : public ManifestBrowserTest {
   test::PrerenderTestHelper prerender_helper_;
 };
 
-// Tests that GetManifest() returns an empty manifest if it's requested in
-// prerendering.
+// Manifest fetching & parsing should work during prerendering.
 IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
                        GetManifestInPrerendering) {
   GURL test_url =
@@ -904,16 +903,14 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   {
-    base::RunLoop run_loop;
-    web_contents()->GetPrimaryPage().GetManifest(base::BindLambdaForTesting(
-        [&](blink::mojom::ManifestRequestResult, const GURL& manifest_url,
-            blink::mojom::ManifestPtr manifest) {
-          // Get the manifest on a primary page.
-          EXPECT_FALSE(manifest_url.is_empty());
-          EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
+                           blink::mojom::ManifestPtr>
+        manifest_future;
+    web_contents()->GetPrimaryPage().GetManifest(manifest_future.GetCallback());
+    ASSERT_TRUE(manifest_future.Wait());
+    EXPECT_FALSE(manifest_future.Get<GURL>().is_empty());
+    EXPECT_FALSE(blink::IsEmptyManifest(
+        *manifest_future.Get<blink::mojom::ManifestPtr>()));
   }
 
   GURL prerender_url =
@@ -923,31 +920,28 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
   {
-    base::RunLoop run_loop;
-    prerender_rfh->GetPage().GetManifest(base::BindLambdaForTesting(
-        [&](blink::mojom::ManifestRequestResult, const GURL& manifest_url,
-            blink::mojom::ManifestPtr manifest) {
-          // Ensure that the manifest is empty in prerendering.
-          EXPECT_TRUE(manifest_url.is_empty());
-          EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    // The manifest should be loadable during prerender.
+    base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
+                           blink::mojom::ManifestPtr>
+        manifest_future;
+    prerender_rfh->GetPage().GetManifest(manifest_future.GetCallback());
+    ASSERT_TRUE(manifest_future.Wait());
+    EXPECT_FALSE(manifest_future.Get<GURL>().is_empty());
+    EXPECT_FALSE(blink::IsEmptyManifest(
+        *manifest_future.Get<blink::mojom::ManifestPtr>()));
   }
 
   prerender_helper().NavigatePrimaryPage(prerender_url);
   {
-    base::RunLoop run_loop;
-    prerender_rfh->GetPage().GetManifest(base::BindLambdaForTesting(
-        [&](blink::mojom::ManifestRequestResult, const GURL& manifest_url,
-            blink::mojom::ManifestPtr manifest) {
-          // Ensure that getting the manifest works after prerendering
-          // activation.
-          EXPECT_FALSE(manifest_url.is_empty());
-          EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    // It should still be valid after prerender.
+    base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
+                           blink::mojom::ManifestPtr>
+        manifest_future;
+    prerender_rfh->GetPage().GetManifest(manifest_future.GetCallback());
+    ASSERT_TRUE(manifest_future.Wait());
+    EXPECT_FALSE(manifest_future.Get<GURL>().is_empty());
+    EXPECT_FALSE(blink::IsEmptyManifest(
+        *manifest_future.Get<blink::mojom::ManifestPtr>()));
   }
 }
 
@@ -965,8 +959,7 @@ class ManifestFencedFrameBrowserTest : public ManifestBrowserTest {
   test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
-// Tests that GetManifest() returns an empty manifest if it's requested in
-// a fenced frame.
+// Manifest fetching & parsing should work in a fenced frame.
 IN_PROC_BROWSER_TEST_F(ManifestFencedFrameBrowserTest,
                        GetManifestInFencedFrame) {
   const GURL test_url =
@@ -987,18 +980,17 @@ IN_PROC_BROWSER_TEST_F(ManifestFencedFrameBrowserTest,
                          link.href = '../manifest/sample-manifest.json';
                          document.head.appendChild(link);)"));
 
-  base::RunLoop run_loop;
-  fenced_frame_rfh->GetPage().GetManifest(base::BindLambdaForTesting(
-      [&](blink::mojom::ManifestRequestResult, const GURL& manifest_url,
-          blink::mojom::ManifestPtr manifest) {
-        // Even though `fenced_frame_rfh` has a manifest updated above,
-        // this should get an empty manifest since it's not a primary main
-        // frame.
-        EXPECT_TRUE(manifest_url.is_empty());
-        EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  // Manifest fetches should still work in a fenced frame. It's the caller's
+  // responsibility to be discerning about which frames it gets the manifest
+  // for.
+  base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
+                         blink::mojom::ManifestPtr>
+      manifest_future;
+  fenced_frame_rfh->GetPage().GetManifest(manifest_future.GetCallback());
+  ASSERT_TRUE(manifest_future.Wait());
+  EXPECT_FALSE(manifest_future.Get<GURL>().is_empty());
+  EXPECT_FALSE(blink::IsEmptyManifest(
+      *manifest_future.Get<blink::mojom::ManifestPtr>()));
 }
 
 }  // namespace content

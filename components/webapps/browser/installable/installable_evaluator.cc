@@ -315,6 +315,9 @@ std::vector<InstallableStatusCode> InstallableEvaluator::CheckEligibility(
     content::WebContents* web_contents) const {
   std::vector<InstallableStatusCode> errors;
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
+    // TODO(http://crbug.com/452122299): Have this not fail if the we are in
+    // CrOS + guest mode (either by not adding this error, or filtering it out
+    // later).
     errors.push_back(InstallableStatusCode::IN_INCOGNITO);
   }
   if (!IsContentSecure(web_contents)) {
