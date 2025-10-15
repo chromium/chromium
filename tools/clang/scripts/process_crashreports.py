@@ -83,7 +83,7 @@ def DeleteCrashFiles():
       shutil.rmtree(os.path.join(root, d))
     for f in files:
       if f != '.gitignore':
-        print('removing', f)
+        print('removing', os.path.join(root, f))
         os.remove(os.path.join(root, f))
     del dirs[:]  # Abort os.walk() after one level.
 
