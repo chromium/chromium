@@ -137,6 +137,9 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
     @Override
     public void updateRowIfNeeded() {}
 
+    @Override
+    public void updateSubpageIfNeeded() {}
+
     public void resetCertDecision() {
         PageInfoConnectionSecurityControllerJni.get()
                 .resetCertDecisions(mNativeConnectionSecurityController);

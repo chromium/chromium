@@ -68,4 +68,7 @@ public class PageInfoLocationPermissionController extends PageInfoPreferenceSubp
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @Override
+    public void updateSubpageIfNeeded() {}
 }

@@ -199,6 +199,9 @@ public class PageInfoHistoryController
         mDataIsStale = false;
     }
 
+    @Override
+    public void updateSubpageIfNeeded() {}
+
     // HistoryContentManager.Observer
     @Override
     public void onScrolledCallback(boolean loadedMore) {}

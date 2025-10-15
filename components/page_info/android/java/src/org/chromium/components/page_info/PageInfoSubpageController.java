@@ -29,8 +29,11 @@ public interface PageInfoSubpageController {
     void clearData();
 
     /**
-     * Notifies the subpage that they should update their PageInfoRowView if they have changes
-     * since the last time.
+     * Notifies the subpage that they should update their PageInfoRowView if they have changes since
+     * the last time.
      */
     void updateRowIfNeeded();
+
+    /** Notifies the subpage that it should update it's data since it is potentially stale. */
+    void updateSubpageIfNeeded();
 }

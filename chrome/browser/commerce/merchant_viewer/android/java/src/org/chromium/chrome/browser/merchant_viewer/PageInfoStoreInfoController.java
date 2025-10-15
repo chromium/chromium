@@ -134,4 +134,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @Override
+    public void updateSubpageIfNeeded() {}
 }

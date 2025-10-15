@@ -617,6 +617,7 @@ public class PageInfoController
                         : currentSubpageController.createViewForSubpage(mContainer);
 
         if (subview != null) {
+            currentSubpageController.updateSubpageIfNeeded();
             mContainer.showPage(subview, title, onPreviousPageRemoved);
         }
     }

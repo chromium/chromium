@@ -194,6 +194,9 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     public void updateRowIfNeeded() {}
 
     @Override
+    public void updateSubpageIfNeeded() {}
+
+    @Override
     public void onSubpageRemoved() {
         mSubPage = null;
         removeSubpageFragment();

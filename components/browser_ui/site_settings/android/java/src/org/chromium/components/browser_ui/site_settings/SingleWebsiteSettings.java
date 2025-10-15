@@ -439,8 +439,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     @Override
     public void onResume() {
         super.onResume();
+        refreshSitePermissions();
+    }
 
-        // TODO(crbug.com/418936295): Update location preference.
+    public void refreshSitePermissions() {
+        if (mSite != null) {
+            displaySitePermissions();
+        }
     }
 
     public void setHideNonPermissionPreferences(boolean hide) {
@@ -1371,10 +1376,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
         GeolocationSetting permission = info.getGeolocationSetting(getBrowserContextHandle());
 
-        if (permission.mApproximate == ContentSetting.ALLOW
-                && permission.mApproximate != permission.mPrecise) {
-            mHasApproximateLocationGrant = true;
-        }
+        mHasApproximateLocationGrant =
+                permission.mApproximate == ContentSetting.ALLOW
+                        && permission.mApproximate != permission.mPrecise;
 
         if (setupAppDelegatePreference(
                 preference,

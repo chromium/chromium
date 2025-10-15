@@ -1901,7 +1901,7 @@ public class PageInfoViewTest {
         onViewWaiting(allOf(withText(R.string.website_settings_device_location), isDisplayed()));
 
         // Verify back button press takes you back to the first subpage.
-        controller.exitSubpage();
+        ThreadUtils.runOnUiThreadBlocking(() -> controller.exitSubpage());
         onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
 
         // Verify another back button press takes you back to the main page info view.
