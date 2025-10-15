@@ -17,22 +17,17 @@ enum class ContextualTaskContextSource;
 
 }  // namespace contextual_tasks
 
-class AimEligibilityService;
-
 namespace contextual_tasks {
 
 class ContextualTasksContextControllerImpl
     : public ContextualTasksContextController {
  public:
-  ContextualTasksContextControllerImpl(
-      ContextualTasksService* service,
-      AimEligibilityService* aim_eligibility_service);
+  explicit ContextualTasksContextControllerImpl(
+      ContextualTasksService* service);
   ~ContextualTasksContextControllerImpl() override;
 
-  // ContextualTasksContextController implementation.
-  FeatureEligibility GetFeatureEligibility() override;
-
   // ContextualTasksService implementation.
+  FeatureEligibility GetFeatureEligibility() override;
   ContextualTask CreateTask() override;
   void GetTaskById(const base::Uuid& task_id,
                    base::OnceCallback<void(std::optional<ContextualTask>)>
@@ -69,7 +64,6 @@ class ContextualTasksContextControllerImpl
 
  private:
   raw_ptr<ContextualTasksService> service_;
-  raw_ptr<AimEligibilityService> aim_eligibility_service_;
 };
 
 }  // namespace contextual_tasks

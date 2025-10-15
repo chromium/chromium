@@ -12,23 +12,20 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/core/session_id.h"
 
 namespace contextual_tasks {
 
 ContextualTasksContextControllerImpl::ContextualTasksContextControllerImpl(
-    ContextualTasksService* service,
-    AimEligibilityService* aim_eligibility_service)
-    : service_(service), aim_eligibility_service_(aim_eligibility_service) {}
+    ContextualTasksService* service)
+    : service_(service) {}
 
 ContextualTasksContextControllerImpl::~ContextualTasksContextControllerImpl() =
     default;
 
 FeatureEligibility
 ContextualTasksContextControllerImpl::GetFeatureEligibility() {
-  return {base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks),
-          aim_eligibility_service_->IsAimEligible()};
+  return service_->GetFeatureEligibility();
 }
 
 ContextualTask ContextualTasksContextControllerImpl::CreateTask() {

@@ -8,12 +8,15 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "components/contextual_tasks/internal/composite_context_decorator.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -25,8 +28,10 @@ namespace contextual_tasks {
 ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     version_info::Channel channel,
     syncer::OnceDataTypeStoreFactory data_type_store_factory,
-    std::unique_ptr<CompositeContextDecorator> composite_context_decorator)
-    : composite_context_decorator_(std::move(composite_context_decorator)) {
+    std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
+    AimEligibilityService* aim_eligibility_service)
+    : composite_context_decorator_(std::move(composite_context_decorator)),
+      aim_eligibility_service_(aim_eligibility_service) {
   auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
       syncer::AI_THREAD,
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
@@ -38,6 +43,11 @@ ContextualTasksServiceImpl::~ContextualTasksServiceImpl() {
   for (auto& observer : observers_) {
     observer.OnWillBeDestroyed();
   }
+}
+
+FeatureEligibility ContextualTasksServiceImpl::GetFeatureEligibility() {
+  return {base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks),
+          aim_eligibility_service_->IsAimEligible()};
 }
 
 ContextualTask ContextualTasksServiceImpl::CreateTask() {

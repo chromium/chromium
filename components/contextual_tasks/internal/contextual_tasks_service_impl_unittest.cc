@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
@@ -20,13 +21,34 @@
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/test/data_type_store_test_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
+
+using ::testing::_;
+using ::testing::Return;
+
+class MockAimEligibilityService : public AimEligibilityService {
+ public:
+  explicit MockAimEligibilityService(PrefService* pref_service)
+      : AimEligibilityService(*pref_service, nullptr, nullptr, nullptr) {}
+  MOCK_METHOD(bool, IsAimEligible, (), (const, override));
+
+  // The following methods are marked as pure virtual in AimEligibilityService,
+  // as they are implemented in ChromeAimEligibilityService which is the one
+  // provided by the KeyedService factory. We therefore need to implement them
+  // in this unit test.
+  std::string GetCountryCode() const override { return "US"; }
+  std::string GetLocale() const override { return "en-US"; }
+};
 
 class MockContextualTasksObserver : public ContextualTasksService::Observer {
  public:
@@ -68,10 +90,13 @@ class ContextualTasksServiceImplTest : public testing::Test {
     auto mock_decorator =
         std::make_unique<testing::NiceMock<MockCompositeContextDecorator>>();
     mock_decorator_ = mock_decorator.get();
+    AimEligibilityService::RegisterProfilePrefs(pref_service_.registry());
+    mock_aim_eligibility_service_ =
+        std::make_unique<MockAimEligibilityService>(&pref_service_);
     service_ = std::make_unique<ContextualTasksServiceImpl>(
         version_info::Channel::UNKNOWN,
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-        std::move(mock_decorator));
+        std::move(mock_decorator), mock_aim_eligibility_service_.get());
   }
   ~ContextualTasksServiceImplTest() override = default;
 
@@ -125,6 +150,9 @@ class ContextualTasksServiceImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service_;
   std::unique_ptr<ContextualTasksServiceImpl> service_;
   raw_ptr<testing::NiceMock<MockCompositeContextDecorator>> mock_decorator_;
   testing::NiceMock<MockContextualTasksObserver> observer_;
@@ -717,6 +745,31 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask_NotFound) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   std::unique_ptr<ContextualTaskContext> context = GetContextForTask(task_id);
   EXPECT_FALSE(context.get());
+}
+
+TEST_F(ContextualTasksServiceImplTest, GetFeatureEligibility) {
+  // Test case 1: Feature flag enabled, AIM eligible.
+  feature_list_.InitAndEnableFeature(kContextualTasks);
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(true));
+  EXPECT_TRUE(service_->GetFeatureEligibility().IsEligible());
+
+  // Test case 2: Feature flag enabled, AIM not eligible.
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(false));
+  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
+
+  feature_list_.Reset();
+  // Test case 3: Feature flag disabled, AIM eligible.
+  feature_list_.InitAndDisableFeature(kContextualTasks);
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(true));
+  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
+
+  // Test case 4: Feature flag disabled, AIM not eligible.
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(false));
+  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
 }
 
 }  // namespace contextual_tasks

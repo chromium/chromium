@@ -23,6 +23,8 @@
 #include "components/sync/model/data_type_store.h"
 #include "url/gurl.h"
 
+class AimEligibilityService;
+
 namespace contextual_tasks {
 
 class CompositeContextDecorator;
@@ -34,7 +36,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   ContextualTasksServiceImpl(
       version_info::Channel channel,
       syncer::OnceDataTypeStoreFactory data_type_store_factory,
-      std::unique_ptr<CompositeContextDecorator> composite_context_decorator);
+      std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
+      AimEligibilityService* aim_eligibility_service);
   ~ContextualTasksServiceImpl() override;
 
   ContextualTasksServiceImpl(const ContextualTasksServiceImpl&) = delete;
@@ -42,6 +45,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       delete;
 
   // ContextualTasksService implementation.
+  FeatureEligibility GetFeatureEligibility() override;
   ContextualTask CreateTask() override;
   void GetTaskById(const base::Uuid& task_id,
                    base::OnceCallback<void(std::optional<ContextualTask>)>
@@ -104,6 +108,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   base::ObserverList<ContextualTasksService::Observer> observers_;
 
   std::unique_ptr<AiThreadSyncBridge> ai_thread_sync_bridge_;
+
+  raw_ptr<AimEligibilityService> aim_eligibility_service_;
 
   base::WeakPtrFactory<ContextualTasksServiceImpl> weak_ptr_factory_{this};
 };

@@ -1,5 +1,8 @@
 include_rules = [
+  "+components/prefs",
   "+components/history/core/browser",
+  "+components/omnibox/browser",
   "+components/sync/protocol",
   "+components/sync/test",
+  "+services/network/public/cpp/shared_url_loader_factory.h",
 ]

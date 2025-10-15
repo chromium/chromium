@@ -5,7 +5,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,7 +37,6 @@ ContextualTasksContextControllerFactory::
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(ContextualTasksServiceFactory::GetInstance());
-  DependsOn(AimEligibilityServiceFactory::GetInstance());
 }
 
 ContextualTasksContextControllerFactory::
@@ -57,10 +55,8 @@ ContextualTasksContextControllerFactory::BuildServiceInstanceForBrowserContext(
   if (!contextual_tasks_service) {
     return nullptr;
   }
-  AimEligibilityService* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
   return std::make_unique<ContextualTasksContextControllerImpl>(
-      contextual_tasks_service, aim_eligibility_service);
+      contextual_tasks_service);
 }
 
 }  // namespace contextual_tasks

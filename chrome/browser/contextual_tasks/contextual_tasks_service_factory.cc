@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,6 +46,7 @@ ContextualTasksServiceFactory::ContextualTasksServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
+  DependsOn(AimEligibilityServiceFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
@@ -66,12 +68,15 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
+  AimEligibilityService* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
   return std::make_unique<ContextualTasksServiceImpl>(
       chrome::GetChannel(),
       DataTypeStoreServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context))
           ->GetStoreFactory(),
-      CreateCompositeContextDecorator(favicon_service, history_service));
+      CreateCompositeContextDecorator(favicon_service, history_service),
+      aim_eligibility_service);
 }
 
 }  // namespace contextual_tasks
