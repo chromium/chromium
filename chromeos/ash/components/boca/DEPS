@@ -13,6 +13,8 @@ include_rules = [
   "+google_apis/common",
   "+remoting/client/common/client_status_observer.h",
   "+remoting/client/common/remoting_client.h",
+  "+remoting/proto/audio.pb.h",
+  "+remoting/protocol/audio_stub.h",
   "+remoting/protocol/frame_consumer.h",
   "+third_party/skia/include/core/SkBitmap.h",
   "+third_party/webrtc/modules/desktop_capture/desktop_frame.h",

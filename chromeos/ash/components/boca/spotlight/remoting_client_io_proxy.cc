@@ -7,14 +7,18 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_audio_stream_consumer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
 #include "remoting/client/common/remoting_client.h"
+#include "remoting/proto/audio.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
@@ -60,13 +64,23 @@ void RemotingClientIOProxyImpl::StartCrdClient(
   frame_consumer_ = std::make_unique<SpotlightFrameConsumer>(
       base::BindRepeating(&RemotingClientIOProxyImpl::OnFrameReceived,
                           weak_factory_.GetWeakPtr()));
+
+  // Only consume audio when the Boca Audio for Kiosk flag is enabled.
+  base::WeakPtr<SpotlightAudioStreamConsumer> audio_consumer_ptr = nullptr;
+  if (ash::features::IsBocaAudioForKioskEnabled()) {
+    audio_stream_consumer_ = std::make_unique<SpotlightAudioStreamConsumer>(
+        base::BindRepeating(&RemotingClientIOProxyImpl::OnAudioPacketReceived,
+                            weak_factory_.GetWeakPtr()));
+    audio_consumer_ptr = audio_stream_consumer_->GetWeakPtr();
+  }
+
   remoting_client_ = std::make_unique<remoting::RemotingClient>(
       base::BindPostTask(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindOnce(&RemotingClientIOProxyImpl::HandleCrdSessionEnded,
                          weak_factory_.GetWeakPtr())),
-      frame_consumer_.get(),
-      /*audio_stream_consumer=*/nullptr, shared_url_loader_factory_);
+      frame_consumer_.get(), std::move(audio_consumer_ptr),
+      shared_url_loader_factory_);
 
   VLOG(1) << "[Boca] Starting CRD client for teacher";
   remoting_client_->StartSession(crd_connection_code,
@@ -119,6 +133,12 @@ void RemotingClientIOProxyImpl::OnFrameReceived(
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   frame_received_callback_.Run(std::move(bitmap), std::move(frame));
+}
+
+void RemotingClientIOProxyImpl::OnAudioPacketReceived(
+    std::unique_ptr<remoting::AudioPacket> packet) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/450986461): Send `packet` to a callback.
 }
 
 void RemotingClientIOProxyImpl::ResetRemotingClient(

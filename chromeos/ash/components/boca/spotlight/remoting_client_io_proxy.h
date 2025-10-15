@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace remoting {
+class AudioPacket;
 class RemotingClient;
 }  // namespace remoting
 
@@ -30,6 +31,8 @@ class DesktopFrame;
 }  // namespace webrtc
 
 namespace ash::boca {
+
+class SpotlightAudioStreamConsumer;
 
 class RemotingClientIOProxy {
  public:
@@ -88,9 +91,11 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
   void UpdateState(CrdConnectionState state);
 
   // Receives the frame on the current sequence and forwards it to the
-  // `frame_recieved_callback_`.
+  // `frame_received_callback_`.
   void OnFrameReceived(SkBitmap bitmap,
                        std::unique_ptr<webrtc::DesktopFrame> frame);
+
+  void OnAudioPacketReceived(std::unique_ptr<remoting::AudioPacket> packet);
 
   // Releases the `remoting::RemoteClient` and `SpotlightFrameConsumer` used
   // for a previous session.
@@ -111,6 +116,7 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
   // Callback for `CrdConnectionState` updates.
   SpotlightCrdStateUpdatedCallback status_updated_callback_;
   std::unique_ptr<SpotlightFrameConsumer> frame_consumer_;
+  std::unique_ptr<SpotlightAudioStreamConsumer> audio_stream_consumer_;
   std::unique_ptr<remoting::RemotingClient> remoting_client_;
 
   base::WeakPtrFactory<RemotingClientIOProxyImpl> weak_factory_{this};
