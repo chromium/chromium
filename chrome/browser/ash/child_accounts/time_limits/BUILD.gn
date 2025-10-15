@@ -49,6 +49,7 @@ static_library("time_limits") {
     "//chrome/browser/ash/child_accounts/constants",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/web_applications",
     "//chrome/common",

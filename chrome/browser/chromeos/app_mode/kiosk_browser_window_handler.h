@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
+class BrowserWindowInterface;
+
 namespace chromeos {
 
 class KioskTroubleshootingController;
@@ -85,8 +87,10 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
   bool TriageNewSettingsBrowserWindow(Browser* browser);
   void HandleNewSettingsWindow(Browser* browser, const std::string& url_string);
 
-  void CloseBrowserWindowsIf(base::FunctionRef<bool(const Browser&)> filter);
-  void CloseBrowserAndSetTimer(Browser* browser);
+  void CloseBrowserWindowsIf(
+      base::FunctionRef<bool(const BrowserWindowInterface&)> filter);
+  void CloseBrowserAndSetTimer(
+      BrowserWindowInterface* browser_window_interface);
   void OnCloseBrowserTimeout();
   void CloseAllUnexpectedBrowserWindows();
 
@@ -136,7 +140,7 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
   // confirmed to be closed via `OnBrowserRemoved`. If they did not get closed
   // before the timer fires, we will crash as we consider the kiosk session
   // compromised.
-  std::map<Browser*, base::OneShotTimer> closing_browsers_;
+  std::map<BrowserWindowInterface*, base::OneShotTimer> closing_browsers_;
 
   std::map<Browser*, std::unique_ptr<NavigationWaiter>> url_waiters_;
 

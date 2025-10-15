@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
@@ -705,18 +706,23 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 
   // Check that the UI was correctly open.
   bool is_diagnostic_app_open = false;
-  for (Browser* target_browser : *BrowserList::GetInstance()) {
-    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
-    for (int i = 0; i < target_tab_strip->count(); ++i) {
-      content::WebContents* target_contents =
-          target_tab_strip->GetWebContentsAt(i);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&is_diagnostic_app_open](
+          BrowserWindowInterface* browser_window_interface) {
+        TabStripModel* target_tab_strip =
+            browser_window_interface->GetTabStripModel();
+        for (int i = 0; i < target_tab_strip->count(); ++i) {
+          content::WebContents* const target_contents =
+              target_tab_strip->GetWebContentsAt(i);
 
-      if (target_contents->GetLastCommittedURL() ==
-          GURL(kKeyboardDiagnosticsUrl)) {
-        is_diagnostic_app_open = true;
-      }
-    }
-  }
+          if (target_contents->GetLastCommittedURL() ==
+              GURL(kKeyboardDiagnosticsUrl)) {
+            is_diagnostic_app_open = true;
+            return false;
+          }
+        }
+        return true;
+      });
 
   EXPECT_TRUE(is_diagnostic_app_open);
 }

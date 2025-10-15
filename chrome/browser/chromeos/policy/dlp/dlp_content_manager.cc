@@ -28,6 +28,7 @@
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -516,17 +517,17 @@ DlpContentManager::GetWebContentsInfo() const {
 
 DlpContentManager::DlpContentManager() {
   // Start observing tab strip models for all browsers.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list)
-    browser->tab_strip_model()->AddObserver(this);
-  browser_list->AddObserver(this);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser_window_interface) {
+        // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+        browser_window_interface->GetTabStripModel()->AddObserver(this);
+        return true;
+      });
+  BrowserList::GetInstance()->AddObserver(this);
 }
 
 DlpContentManager::~DlpContentManager() {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  browser_list->RemoveObserver(this);
-  for (Browser* browser : *browser_list)
-    browser->tab_strip_model()->RemoveObserver(this);
+  BrowserList::GetInstance()->RemoveObserver(this);
 }
 
 // static

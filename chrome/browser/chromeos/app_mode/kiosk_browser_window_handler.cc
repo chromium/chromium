@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/navigation_handle.h"
@@ -53,24 +54,27 @@ void MakeWindowResizable(BrowserWindow* window) {
   }
 }
 
-content::WebContents* GetActiveWebContents(const Browser* browser) {
-  return browser->tab_strip_model()->GetActiveWebContents();
+content::WebContents* GetActiveWebContents(
+    const BrowserWindowInterface* browser_window_interface) {
+  return browser_window_interface->GetTabStripModel()->GetActiveWebContents();
 }
 
-std::string GetUrlOfActiveTab(const Browser* browser) {
-  content::WebContents* active_tab = GetActiveWebContents(browser);
+std::string GetUrlOfActiveTab(
+    const BrowserWindowInterface* browser_window_interface) {
+  content::WebContents* active_tab =
+      GetActiveWebContents(browser_window_interface);
   return active_tab ? active_tab->GetVisibleURL().spec() : std::string();
 }
 
-void CloseBrowser(Browser* browser) {
-  // We prefer to use `browser->tab_strip_model()->CloseAllTabs`, because
-  // `browser->window()->Close()` can silently fail if the window is currently
+void CloseBrowser(BrowserWindowInterface* browser_window_interface) {
+  // We prefer to use `CloseAllTabs`, because
+  // `GetWindow()->Close()` can silently fail if the window is currently
   // being dragged. However, `CloseAllTabs` becomes a no-op if no tabs are
-  // present, so we fall back to `browser->window()->Close()` for that case.
-  if (!browser->tab_strip_model()->empty()) {
-    browser->tab_strip_model()->CloseAllTabs();
+  // present, so we fall back to `GetWindow()->Close()` for that case.
+  if (!browser_window_interface->GetTabStripModel()->empty()) {
+    browser_window_interface->GetTabStripModel()->CloseAllTabs();
   } else {
-    browser->window()->Close();
+    browser_window_interface->GetWindow()->Close();
   }
 }
 
@@ -275,13 +279,17 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
 }
 
 void KioskBrowserWindowHandler::CloseAllUnexpectedBrowserWindows() {
-  CloseBrowserWindowsIf([&web_app_name =
-                             web_app_name_](const Browser& browser) {
-    // Do not close the main web app window (if any).
-    bool is_web_app = web_app_name.has_value();
-    bool is_web_app_window = is_web_app && (browser.app_name() == web_app_name);
-    return !is_web_app_window;
-  });
+  CloseBrowserWindowsIf(
+      [&web_app_name = web_app_name_](
+          const BrowserWindowInterface& browser_window_interface) {
+        // Do not close the main web app window (if any).
+        bool is_web_app = web_app_name.has_value();
+        bool is_web_app_window =
+            is_web_app &&
+            (browser_window_interface.GetBrowserForMigrationOnly()
+                 ->app_name() == web_app_name);
+        return !is_web_app_window;
+      });
 }
 
 void KioskBrowserWindowHandler::OnBrowserAdded(Browser* browser) {
@@ -377,25 +385,31 @@ void KioskBrowserWindowHandler::Shutdown() {
 }
 
 void KioskBrowserWindowHandler::CloseBrowserWindowsIf(
-    base::FunctionRef<bool(const Browser&)> filter) {
-  for (Browser* browser : CHECK_DEREF(BrowserList::GetInstance())) {
-    if (filter(*browser)) {
-      LOG(WARNING) << "kiosk: Closing unexpected browser window with url "
-                   << GetUrlOfActiveTab(browser) << " of app "
-                   << browser->app_name();
-      CloseBrowserAndSetTimer(browser);
-    }
-  }
+    base::FunctionRef<bool(const BrowserWindowInterface&)> filter) {
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&filter, this](BrowserWindowInterface* browser_window_interface) {
+        if (filter(*browser_window_interface)) {
+          LOG(WARNING) << "kiosk: Closing unexpected browser window with url "
+                       << GetUrlOfActiveTab(browser_window_interface)
+                       << " of app "
+                       << browser_window_interface->GetBrowserForMigrationOnly()
+                              ->app_name();
+          CloseBrowserAndSetTimer(browser_window_interface);
+        }
+        return true;
+      });
 }
 
-void KioskBrowserWindowHandler::CloseBrowserAndSetTimer(Browser* browser) {
-  closing_browsers_.emplace(std::piecewise_construct, std::make_tuple(browser),
+void KioskBrowserWindowHandler::CloseBrowserAndSetTimer(
+    BrowserWindowInterface* browser_window_interface) {
+  closing_browsers_.emplace(std::piecewise_construct,
+                            std::make_tuple(browser_window_interface),
                             std::make_tuple());
-  closing_browsers_[browser].Start(
+  closing_browsers_[browser_window_interface].Start(
       FROM_HERE, kCloseBrowserTimeout,
       base::BindOnce(&KioskBrowserWindowHandler::OnCloseBrowserTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
-  CloseBrowser(browser);
+  CloseBrowser(browser_window_interface);
 }
 
 void KioskBrowserWindowHandler::OnCloseBrowserTimeout() {

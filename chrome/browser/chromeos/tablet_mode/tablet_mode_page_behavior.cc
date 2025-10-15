@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -83,30 +84,35 @@ void TabletModePageBehavior::SetMobileLikeBehaviorEnabled(bool enabled) {
     tab_strip_tracker_->Init();
   } else {
     // Manually trigger a refresh for the existing webcontents' preferences.
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      TabStripModel* tab_strip_model = browser->tab_strip_model();
-      for (int i = 0; i < tab_strip_model->count(); ++i) {
-        content::WebContents* web_contents =
-            tab_strip_model->GetWebContentsAt(i);
-        DCHECK(web_contents);
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [](BrowserWindowInterface* browser_window_interface) {
+          TabStripModel* const tab_strip_model =
+              browser_window_interface->GetTabStripModel();
+          for (int i = 0; i < tab_strip_model->count(); ++i) {
+            content::WebContents* web_contents =
+                tab_strip_model->GetWebContentsAt(i);
+            DCHECK(web_contents);
 
-        web_contents->NotifyPreferencesChanged();
+            web_contents->NotifyPreferencesChanged();
 
-        // For a tab that is requesting its mobile version site (via
-        // chrome::ToggleRequestTabletSite()), and is not originated from ARC
-        // context, return to its normal version site when exiting tablet mode.
-        content::NavigationController& controller =
-            web_contents->GetController();
-        content::NavigationEntry* entry = controller.GetLastCommittedEntry();
-        if (entry && entry->GetIsOverridingUserAgent() &&
-            !web_contents->GetUserData(
-                arc::ArcWebContentsData::ArcWebContentsData::
-                    kArcTransitionFlag)) {
-          entry->SetIsOverridingUserAgent(false);
-          controller.LoadOriginalRequestURL();
-        }
-      }
-    }
+            // For a tab that is requesting its mobile version site (via
+            // chrome::ToggleRequestTabletSite()), and is not originated from
+            // ARC context, return to its normal version site when exiting
+            // tablet mode.
+            content::NavigationController& controller =
+                web_contents->GetController();
+            content::NavigationEntry* entry =
+                controller.GetLastCommittedEntry();
+            if (entry && entry->GetIsOverridingUserAgent() &&
+                !web_contents->GetUserData(
+                    arc::ArcWebContentsData::ArcWebContentsData::
+                        kArcTransitionFlag)) {
+              entry->SetIsOverridingUserAgent(false);
+              controller.LoadOriginalRequestURL();
+            }
+          }
+          return true;
+        });
     tab_strip_tracker_ = nullptr;
   }
 }

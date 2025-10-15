@@ -245,14 +245,21 @@ void CreateAndSaveWindowInfo(aura::Window* window) {
 }
 
 // Gets the browser whose restore window id is same as `window_id`.
-Browser* GetBrowserForWindowId(int32_t window_id) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->window()->GetNativeWindow()->GetProperty(
-            ::app_restore::kRestoreWindowIdKey) == window_id) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* GetBrowserForWindowId(int32_t window_id) {
+  BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [window_id,
+       &found_browser](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetWindow()
+                ->GetNativeWindow()
+                ->GetProperty(::app_restore::kRestoreWindowIdKey) ==
+            window_id) {
+          found_browser = browser_window_interface;
+          return false;
+        }
+        return true;
+      });
+  return found_browser;
 }
 
 void ClickView(const views::View* view) {
@@ -323,14 +330,9 @@ class FullRestoreAppLaunchHandlerTestBase
   }
 
   aura::Window* FindWebAppWindow() {
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      aura::Window* window = browser->window()->GetNativeWindow();
-      if (window->GetProperty(::app_restore::kRestoreWindowIdKey) ==
-          kWindowId2) {
-        return window;
-      }
-    }
-    return nullptr;
+    BrowserWindowInterface* const app_browser =
+        GetBrowserForWindowId(kWindowId2);
+    return app_browser ? app_browser->GetWindow()->GetNativeWindow() : nullptr;
   }
 
   // Creates and saves an app using `kAppId` and `kWindowId2` as the app ID and
@@ -2617,12 +2619,13 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   ASSERT_TRUE(HasWindowInfo(window_id));
 
   // Get the restored browser for the system web app.
-  Browser* restore_app_browser = GetBrowserForWindowId(window_id);
+  BrowserWindowInterface* const restore_app_browser =
+      GetBrowserForWindowId(window_id);
   ASSERT_TRUE(restore_app_browser);
   ASSERT_NE(browser(), restore_app_browser);
 
   // Get the restore window id.
-  window = restore_app_browser->window()->GetNativeWindow();
+  window = restore_app_browser->GetWindow()->GetNativeWindow();
   int32_t restore_window_id =
       window->GetProperty(::app_restore::kRestoreWindowIdKey);
 
@@ -2693,7 +2696,8 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   SetShouldRestore(app_launch_handler.get());
 
   // Verify the app is not restored because the app is not installed.
-  Browser* restore_app_browser = GetBrowserForWindowId(window_id);
+  BrowserWindowInterface* restore_app_browser =
+      GetBrowserForWindowId(window_id);
   ASSERT_FALSE(restore_app_browser);
 
   // Modify the app readiness to kReady to simulate the app is installed.
@@ -2709,7 +2713,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   ASSERT_NE(browser(), restore_app_browser);
 
   // Get the restore window id.
-  window = restore_app_browser->window()->GetNativeWindow();
+  window = restore_app_browser->GetWindow()->GetNativeWindow();
   int32_t restore_window_id =
       window->GetProperty(::app_restore::kRestoreWindowIdKey);
 
@@ -2776,11 +2780,12 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Get the restored browser for the system web app to verify the app is
   // restored.
-  auto* restore_app_browser = GetBrowserForWindowId(window_id1);
+  BrowserWindowInterface* const restore_app_browser =
+      GetBrowserForWindowId(window_id1);
   ASSERT_TRUE(restore_app_browser);
 
   // Get the restore window id.
-  window1 = restore_app_browser->window()->GetNativeWindow();
+  window1 = restore_app_browser->GetWindow()->GetNativeWindow();
   int32_t restore_window_id =
       window1->GetProperty(::app_restore::kRestoreWindowIdKey);
 
@@ -2850,11 +2855,12 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Get the restored browser for the system web app to verify the app is
   // restored.
-  auto* restore_app_browser = GetBrowserForWindowId(window_id2);
+  BrowserWindowInterface* const restore_app_browser =
+      GetBrowserForWindowId(window_id2);
   ASSERT_TRUE(restore_app_browser);
 
   // Get the restore window id.
-  window2 = restore_app_browser->window()->GetNativeWindow();
+  window2 = restore_app_browser->GetWindow()->GetNativeWindow();
   int32_t restore_window_id =
       window2->GetProperty(::app_restore::kRestoreWindowIdKey);
 
@@ -2893,12 +2899,13 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   SetShouldRestore(app_launch_handler.get());
 
   // Get the restored browser for the system web app.
-  Browser* restore_app_browser = GetBrowserForWindowId(window_id);
+  BrowserWindowInterface* const restore_app_browser =
+      GetBrowserForWindowId(window_id);
   ASSERT_TRUE(restore_app_browser);
   ASSERT_NE(browser(), restore_app_browser);
 
   // Get the restored browser's window.
-  window = restore_app_browser->window()->GetNativeWindow();
+  window = restore_app_browser->GetWindow()->GetNativeWindow();
   ASSERT_EQ(window_id, window->GetProperty(::app_restore::kRestoreWindowIdKey));
 
   // Check that |window|'s properties match the one's we stored.
@@ -2960,17 +2967,20 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   aura::Window* restore_app2_window = nullptr;
 
   // Find the restored app windows in the browser list.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    aura::Window* native_window = browser->window()->GetNativeWindow();
-    if (native_window->GetProperty(::app_restore::kRestoreWindowIdKey) ==
-        app1_id) {
-      restore_app1_window = native_window;
-    }
-    if (native_window->GetProperty(::app_restore::kRestoreWindowIdKey) ==
-        app2_id) {
-      restore_app2_window = native_window;
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser_window_interface) {
+        aura::Window* const native_window =
+            browser_window_interface->GetWindow()->GetNativeWindow();
+        if (native_window->GetProperty(::app_restore::kRestoreWindowIdKey) ==
+            app1_id) {
+          restore_app1_window = native_window;
+        }
+        if (native_window->GetProperty(::app_restore::kRestoreWindowIdKey) ==
+            app2_id) {
+          restore_app2_window = native_window;
+        }
+        return true;
+      });
 
   ASSERT_TRUE(restore_app1_window);
   ASSERT_TRUE(restore_app2_window);

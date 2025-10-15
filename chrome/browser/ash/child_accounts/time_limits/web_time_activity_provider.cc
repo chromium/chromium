@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
@@ -27,7 +29,7 @@ namespace ash::app_time {
 
 namespace {
 
-const Browser* GetBrowserForInstance(
+const BrowserWindowInterface* GetBrowserForInstance(
     const apps::InstanceRegistry& instance_registry,
     const base::UnguessableToken& instance_id) {
   aura::Window* window = nullptr;
@@ -39,40 +41,60 @@ const Browser* GetBrowserForInstance(
     return nullptr;
   }
 
-  BrowserList* list = BrowserList::GetInstance();
-  for (const Browser* browser : *list) {
-    if (browser->window()->GetNativeWindow() == window) {
-      return browser;
-    }
-  }
-  return nullptr;
+  const BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [window,
+       &found_browser](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetWindow()->GetNativeWindow() ==
+            window) {
+          found_browser = browser_window_interface;
+          return false;
+        }
+        return true;
+      });
+  return found_browser;
 }
 
-const Browser* GetBrowserForTabStripModel(const TabStripModel* model) {
-  BrowserList* list = BrowserList::GetInstance();
-  for (const Browser* browser : *list) {
-    if (browser->tab_strip_model() == model) {
-      return browser;
-    }
-  }
+const BrowserWindowInterface* GetBrowserForTabStripModel(
+    const TabStripModel* model) {
+  const BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [model,
+       &found_browser](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetTabStripModel() == model) {
+          found_browser = browser_window_interface;
+          return false;
+        }
+        return true;
+      });
 
-  LOG(WARNING) << "Could not find a browser for the given TabStripModel.";
-  return nullptr;
+  if (!found_browser) {
+    LOG(WARNING) << "Could not find a browser for the given TabStripModel.";
+  }
+  return found_browser;
 }
 
-const Browser* GetBrowserForWebContents(const content::WebContents* contents) {
-  BrowserList* list = BrowserList::GetInstance();
-  for (const Browser* browser : *list) {
-    const auto* tab_strip_model = browser->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->count(); i++) {
-      if (tab_strip_model->GetWebContentsAt(i) == contents) {
-        return browser;
-      }
-    }
-  }
+const BrowserWindowInterface* GetBrowserForWebContents(
+    const content::WebContents* contents) {
+  const BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [contents,
+       &found_browser](BrowserWindowInterface* browser_window_interface) {
+        const auto* const tab_strip_model =
+            browser_window_interface->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); i++) {
+          if (tab_strip_model->GetWebContentsAt(i) == contents) {
+            found_browser = browser_window_interface;
+            return false;
+          }
+        }
+        return true;
+      });
 
-  LOG(WARNING) << "Could not find a browser for the given WebContents.";
-  return nullptr;
+  if (!found_browser) {
+    LOG(WARNING) << "Could not find a browser for the given WebContents.";
+  }
+  return found_browser;
 }
 
 }  // namespace
@@ -111,16 +133,18 @@ void WebTimeActivityProvider::OnWebActivityChanged(
     return;
   }
 
-  const Browser* browser = GetBrowserForWebContents(info.web_contents);
+  const BrowserWindowInterface* const browser_window_interface =
+      GetBrowserForWebContents(info.web_contents);
 
   // The browser window is not active. This may happen when a navigation
   // finishes in the background.
-  if (!base::Contains(active_browsers_, browser)) {
+  if (!base::Contains(active_browsers_, browser_window_interface)) {
     return;
   }
 
   // Navigation finished in a background tab. Return.
-  if (browser->tab_strip_model()->GetActiveWebContents() != info.web_contents) {
+  if (browser_window_interface->GetTabStripModel()->GetActiveWebContents() !=
+      info.web_contents) {
     return;
   }
 
@@ -141,10 +165,11 @@ void WebTimeActivityProvider::OnTabStripModelChanged(
     TabsInserted(change.GetInsert());
   }
 
-  const Browser* browser = GetBrowserForTabStripModel(tab_strip_model);
+  const BrowserWindowInterface* browser_window_interface =
+      GetBrowserForTabStripModel(tab_strip_model);
 
   // If the Browser is not the active browser, simply return.
-  if (!base::Contains(active_browsers_, browser)) {
+  if (!base::Contains(active_browsers_, browser_window_interface)) {
     return;
   }
 
@@ -181,14 +206,15 @@ void WebTimeActivityProvider::OnAppActive(
     return;
   }
 
-  const Browser* browser = GetBrowserForInstance(
-      app_service_wrapper_observation_.GetSource()->GetInstanceRegistry(),
-      instance_id);
-  if (!browser) {
+  const BrowserWindowInterface* browser_window_interface =
+      GetBrowserForInstance(
+          app_service_wrapper_observation_.GetSource()->GetInstanceRegistry(),
+          instance_id);
+  if (!browser_window_interface) {
     return;
   }
 
-  active_browsers_.insert(browser);
+  active_browsers_.insert(browser_window_interface);
   MaybeNotifyStateChange(timestamp);
 }
 
@@ -200,18 +226,19 @@ void WebTimeActivityProvider::OnAppInactive(
     return;
   }
 
-  const Browser* browser = GetBrowserForInstance(
-      app_service_wrapper_observation_.GetSource()->GetInstanceRegistry(),
-      instance_id);
-  if (!browser) {
+  const BrowserWindowInterface* browser_window_interface =
+      GetBrowserForInstance(
+          app_service_wrapper_observation_.GetSource()->GetInstanceRegistry(),
+          instance_id);
+  if (!browser_window_interface) {
     return;
   }
 
-  if (!base::Contains(active_browsers_, browser)) {
+  if (!base::Contains(active_browsers_, browser_window_interface)) {
     return;
   }
 
-  active_browsers_.erase(browser);
+  active_browsers_.erase(browser_window_interface);
   MaybeNotifyStateChange(timestamp);
 }
 
@@ -246,9 +273,10 @@ void WebTimeActivityProvider::MaybeNotifyStateChange(base::Time timestamp) {
 
 ChromeAppActivityState
 WebTimeActivityProvider::CalculateChromeAppActivityState() const {
-  for (const Browser* browser : active_browsers_) {
+  for (const BrowserWindowInterface* browser_window_interface :
+       active_browsers_) {
     const content::WebContents* contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser_window_interface->GetTabStripModel()->GetActiveWebContents();
     if (!contents) {
       continue;
     }

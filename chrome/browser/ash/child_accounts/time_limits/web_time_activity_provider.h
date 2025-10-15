@@ -25,6 +25,7 @@ class UnguessableToken;
 }  // namespace base
 
 class Browser;
+class BrowserWindowInterface;
 
 namespace ash::app_time {
 
@@ -86,7 +87,7 @@ class WebTimeActivityProvider : public WebTimeNavigationObserver::EventListener,
   const raw_ptr<AppTimeController> app_time_controller_;
 
   // A set of active browser instances.
-  std::set<const Browser*> active_browsers_;
+  std::set<const BrowserWindowInterface*> active_browsers_;
 
   // The default chrome app activity state.
   ChromeAppActivityState chrome_app_activity_state_ =
