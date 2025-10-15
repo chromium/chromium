@@ -1061,8 +1061,10 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
   // the old timeline and the new one. We do this by storing the progress using
   // the old current time and the effect end based on the old timeline. Pending
   // spec issue: https://github.com/w3c/csswg-drafts/issues/6452
-  double progress = 0;
-  if (old_current_time && !EffectEnd().is_zero()) {
+  // crbug.com/440368332: safeguard against 0 / infinity, or
+  // +/-infinity / infinity, which are undefined.
+  std::optional<double> progress;
+  if (old_current_time && !EffectEnd().is_zero() && !EffectEnd().is_inf()) {
     progress = old_current_time.value() / EffectEnd();
   }
 
@@ -1097,17 +1099,17 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
 
       case V8AnimationPlayState::Enum::kRunning:
       case V8AnimationPlayState::Enum::kFinished:
-        if (old_current_time) {
+        if (progress) {
           start_time_ = std::nullopt;
-          hold_time_ = progress * EffectEnd();
+          hold_time_ = progress.value() * EffectEnd();
         }
         PlayInternal(AutoRewind::kEnabled, ASSERT_NO_EXCEPTION);
         return;
 
       case V8AnimationPlayState::Enum::kPaused:
-        if (old_current_time) {
+        if (progress) {
           start_time_ = std::nullopt;
-          hold_time_ = progress * EffectEnd();
+          hold_time_ = progress.value() * EffectEnd();
         }
         break;
 
@@ -1116,7 +1118,11 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
     }
   } else if (old_current_time && old_timeline &&
              !old_timeline->IsMonotonicallyIncreasing()) {
-    SetCurrentTimeInternal(progress * EffectEnd());
+    // crbug.com/440368332: avoid undefined if progress is 0 and EffectEnd is
+    // infinite.
+    if (progress) {
+      SetCurrentTimeInternal(progress.value() * EffectEnd());
+    }
   }
 
   // 4. If the start time of animation is resolved, make the animation’s hold
