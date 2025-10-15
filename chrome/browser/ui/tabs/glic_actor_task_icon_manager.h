@@ -83,8 +83,6 @@ class GlicActorTaskIconManager : public KeyedService {
   TaskIconStateChangeCallbackList task_icon_state_change_callback_list_;
 
   ActorTaskIconState current_actor_task_icon_state_;
-  // Determines whether to suppress the task icon text.
-  bool suppress_task_icon_text_ = false;
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_service_;
   raw_ref<glic::GlicWindowController> window_controller_;

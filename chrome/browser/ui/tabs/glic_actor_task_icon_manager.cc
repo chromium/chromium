@@ -66,8 +66,6 @@ void GlicActorTaskIconManager::OnInstanceStateChange(bool is_showing,
 }
 
 void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
-  // Reset suppression every time a new actor task state change occurs.
-  suppress_task_icon_text_ = false;
   current_task_id_ = task_id;
 
   // Get the glic::GlicInstance associated with the task.
@@ -109,21 +107,16 @@ void GlicActorTaskIconManager::UpdateTaskIcon(bool is_showing,
   // If the task isn't inactive, the task icon will always be visible.
   current_actor_task_icon_state_.is_visible = true;
 
-  // If the text hasn't been suppressed, check if it should be suppressed.
-  if (!suppress_task_icon_text_) {
-    suppress_task_icon_text_ =
-        (is_showing && current_view == CurrentView::kActuation);
-  }
-
   // Apply text state change.
-  if (suppress_task_icon_text_) {
-    current_actor_task_icon_state_.text = ActorTaskIconState::Text::kDefault;
-  } else if (!paused_by_actor_tasks.empty()) {
+  if (!paused_by_actor_tasks.empty()) {
     current_actor_task_icon_state_.text =
         ActorTaskIconState::Text::kNeedsAttention;
   } else if (!completed_tasks.empty()) {
     current_actor_task_icon_state_.text =
         ActorTaskIconState::Text::kCompleteTasks;
+  } else {
+    // If no tasks needing attention or completed, reset the icon.
+    current_actor_task_icon_state_.text = ActorTaskIconState::Text::kDefault;
   }
 
   task_icon_state_change_callback_list_.Notify(is_showing, current_view,

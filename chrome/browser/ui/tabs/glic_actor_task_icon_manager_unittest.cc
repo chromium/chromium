@@ -105,30 +105,6 @@ TEST_F(GlicActorTaskIconManagerTest,
             ActorTaskIconState::Text::kDefault);
 }
 
-TEST_F(GlicActorTaskIconManagerTest, SuppressedText_ReturnDefaultText) {
-  TaskId task_id = actor_service()->CreateTaskForTesting();
-  actor_service()->StopTask(task_id, /*success=*/true);
-
-  // Conversation/Open: show text.
-  manager()->UpdateTaskIcon(/*is_showing=*/true, CurrentView::kConversation);
-  EXPECT_TRUE(manager()->GetCurrentActorTaskIconState().is_visible);
-  EXPECT_EQ(manager()->GetCurrentActorTaskIconState().text,
-            ActorTaskIconState::Text::kCompleteTasks);
-
-  // Conversation -> Actuation/Open: Hide text.
-  manager()->UpdateTaskIcon(/*is_showing=*/true, CurrentView::kActuation);
-  EXPECT_TRUE(manager()->GetCurrentActorTaskIconState().is_visible);
-  EXPECT_EQ(manager()->GetCurrentActorTaskIconState().text,
-            ActorTaskIconState::Text::kDefault);
-
-  // Actuation -> Conversation/Open: Since we've already been on the actuation
-  // view we continue to clear the text.
-  manager()->UpdateTaskIcon(/*is_showing=*/true, CurrentView::kConversation);
-  EXPECT_TRUE(manager()->GetCurrentActorTaskIconState().is_visible);
-  EXPECT_EQ(manager()->GetCurrentActorTaskIconState().text,
-            ActorTaskIconState::Text::kDefault);
-}
-
 class GlicActorTaskIconManagerPausedTasksTest
     : public GlicActorTaskIconManagerTest,
       public testing::WithParamInterface<
@@ -165,13 +141,7 @@ TEST_P(GlicActorTaskIconManagerPausedTasksTest, PausedTasks) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     GlicActorTaskIconManagerPausedTasksTest,
-    Values(std::make_tuple(/*is_showing=*/true,
-                           CurrentView::kActuation,
-                           ActorTaskIconState::Text::kDefault),
-           std::make_tuple(/*is_showing=*/false,
-                           CurrentView::kActuation,
-                           ActorTaskIconState::Text::kNeedsAttention),
-           std::make_tuple(/*is_showing=*/false,
+    Values(std::make_tuple(/*is_showing=*/false,
                            CurrentView::kConversation,
                            ActorTaskIconState::Text::kNeedsAttention),
            std::make_tuple(/*is_showing=*/true,
@@ -214,13 +184,7 @@ TEST_P(GlicActorTaskIconManagerCompletedTasksTest, CompletedTasks) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     GlicActorTaskIconManagerCompletedTasksTest,
-    testing::Values(std::make_tuple(/*is_showing=*/true,
-                                    CurrentView::kActuation,
-                                    ActorTaskIconState::Text::kDefault),
-                    std::make_tuple(/*is_showing=*/false,
-                                    CurrentView::kActuation,
-                                    ActorTaskIconState::Text::kCompleteTasks),
-                    std::make_tuple(/*is_showing=*/false,
+    testing::Values(std::make_tuple(/*is_showing=*/false,
                                     CurrentView::kConversation,
                                     ActorTaskIconState::Text::kCompleteTasks),
                     std::make_tuple(/*is_showing=*/true,
