@@ -127,6 +127,8 @@ class QuicHttpStreamPeer {
 
 namespace {
 
+using ::testing::ElementsAre;
+
 // Run QuicSessionPoolTest instances with all values of version.
 struct TestParams {
   quic::ParsedQuicVersion version;
@@ -15012,6 +15014,61 @@ TEST_P(QuicSessionPoolTest, SendPingOnExistingSession) {
   // since `enable_connection_keep_alive` is enabled, and we already have an
   // existing session.
   socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, ConfigureSupportedGroupsAndKeyShares) {
+  SSLContextConfig ssl_config;
+  ssl_config.supported_named_groups = {
+      {.group_id = SSL_GROUP_MLKEM1024, .send_key_share = false},
+      {.group_id = SSL_GROUP_X25519_MLKEM768, .send_key_share = true},
+      {.group_id = SSL_GROUP_X25519, .send_key_share = true},
+  };
+  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+
+  Initialize();
+  std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(
+          pool_.get(), QuicSessionPool::QuicCryptoClientConfigKey());
+
+  EXPECT_THAT(crypto_config_handle->GetConfig()->preferred_groups(),
+              ElementsAre(SSL_GROUP_MLKEM1024, SSL_GROUP_X25519_MLKEM768,
+                          SSL_GROUP_X25519));
+  EXPECT_THAT(crypto_config_handle->GetConfig()->client_key_shares(),
+              ElementsAre(SSL_GROUP_X25519_MLKEM768, SSL_GROUP_X25519));
+}
+
+TEST_P(QuicSessionPoolTest, ConfigureSupportedGroupsWithoutKeyShares) {
+  SSLContextConfig ssl_config;
+  ssl_config.supported_named_groups = {
+      {.group_id = SSL_GROUP_MLKEM1024, .send_key_share = false},
+      {.group_id = SSL_GROUP_X25519_MLKEM768, .send_key_share = false},
+      {.group_id = SSL_GROUP_X25519, .send_key_share = false},
+  };
+  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+
+  Initialize();
+  std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(
+          pool_.get(), QuicSessionPool::QuicCryptoClientConfigKey());
+
+  EXPECT_THAT(crypto_config_handle->GetConfig()->preferred_groups(),
+              ElementsAre(SSL_GROUP_MLKEM1024, SSL_GROUP_X25519_MLKEM768,
+                          SSL_GROUP_X25519));
+  EXPECT_TRUE(crypto_config_handle->GetConfig()->client_key_shares().empty());
+}
+
+TEST_P(QuicSessionPoolTest, ConfigureSSLCompliancePolicy) {
+  SSLContextConfig ssl_config;
+  ssl_config.tls13_cipher_prefer_aes_256 = true;
+  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+
+  Initialize();
+  std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
+      QuicSessionPoolPeer::GetCryptoConfig(
+          pool_.get(), QuicSessionPool::QuicCryptoClientConfigKey());
+
+  EXPECT_EQ(crypto_config_handle->GetConfig()->ssl_compliance_policy(),
+            ssl_compliance_policy_cnsa_202407);
 }
 
 }  // namespace net::test

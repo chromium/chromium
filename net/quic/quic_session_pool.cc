@@ -11,6 +11,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -87,6 +88,7 @@
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -548,12 +550,18 @@ QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
   config_.set_preferred_groups(
       quic_session_pool_->ssl_config_service_->GetSSLContextConfig()
           .GetSupportedGroups());
-  // TODO(crbug.com/445967223): Also set client key shares. This depends on
-  // changes in QUICHE.
-  // TODO(crbug.com/445967223): Also set the SSL compliance policy to prefer
-  // AES-256-GCM iff the SSLContextConfig specifies that. This requires plumbing
-  // in QUICHE.
+  if (std::vector<uint16_t> client_key_shares =
+          quic_session_pool_->ssl_config_service_->GetSSLContextConfig()
+              .GetSupportedGroups(/*key_shares_only=*/true);
+      !client_key_shares.empty()) {
+    config_.set_client_key_shares(std::move(client_key_shares));
+  }
+  if (quic_session_pool_->ssl_config_service_->GetSSLContextConfig()
+          .tls13_cipher_prefer_aes_256) {
+    config_.set_ssl_compliance_policy(ssl_compliance_policy_cnsa_202407);
+  }
 }
+
 QuicSessionPool::QuicCryptoClientConfigOwner::~QuicCryptoClientConfigOwner() {
   DCHECK_EQ(num_refs_, 0);
 }
