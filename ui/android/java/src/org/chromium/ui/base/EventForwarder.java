@@ -538,6 +538,11 @@ public class EventForwarder {
             }
         }
 
+        // New two-finger movements should stop any on-going fling.
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            cancelFling(event.getEventTime(), true);
+        }
+
         EventForwarderJni.get()
                 .onMouseWheelEvent(
                         mNativeEventForwarder,
