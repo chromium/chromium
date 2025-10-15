@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
 #include "build/buildflag.h"
@@ -14,6 +15,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
@@ -156,6 +158,11 @@ int WebAppScope::GetScopeScore(const GURL& url,
   if (base::StartsWith(url.spec(), scope_.spec(),
                        base::CompareCase::SENSITIVE)) {
     score = base::saturated_cast<int>(scope_.spec().length());
+    // A regular scope match is always better than an extended scope match.
+    // Add a large constant to the score to ensure this, as the score is
+    // simply the length of the scope string, which is capped at
+    // url::kMaxURLChars.
+    score = base::ClampAdd(score, url::kMaxURLChars);
   }
 
   // Note: This is considered whether or not extensions are excluded due to
@@ -171,8 +178,6 @@ int WebAppScope::GetScopeScore(const GURL& url,
     return score;
   }
 
-  // TODO(https://crbug.com/294079334): Make extended scope scores always be
-  // less than same-origin scores.
   return std::max(
       score, GetScopeExtensionsScore(app_id_, url, validated_scope_extensions_,
                                      ScoreBehavior::kMaximumScore));

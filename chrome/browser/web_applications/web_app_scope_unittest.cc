@@ -227,6 +227,38 @@ TEST_F(WebAppScopeTest, GetScopeScoreExcludeScopeExtensions) {
             0);
 }
 
+TEST_F(WebAppScopeTest, RegularScopeHasHigherScoreThanExtendedScope) {
+  // App A has a regular scope.
+  const GURL scope_a("https://example.com/app/");
+  webapps::AppId app_id_a = InstallWebAppWithScope(scope_a);
+
+  // App B has an extended scope that is longer than App A's regular scope.
+  const GURL scope_b("https://another.com/");
+  const std::vector<ScopeExtensionInfo> scope_extensions_b = {
+      ScopeExtensionInfo::CreateForScope(
+          GURL("https://example.com/app/longer/"))};
+  webapps::AppId app_id_b =
+      InstallWebAppWithScopeExtensions(scope_b, scope_extensions_b);
+
+  std::optional<WebAppScope> web_app_scope_a =
+      registrar().GetEffectiveScope(app_id_a);
+  ASSERT_TRUE(web_app_scope_a);
+  std::optional<WebAppScope> web_app_scope_b =
+      registrar().GetEffectiveScope(app_id_b);
+  ASSERT_TRUE(web_app_scope_b);
+
+  const GURL url_in_both_scopes("https://example.com/app/longer/page.html");
+
+  int score_a = web_app_scope_a->GetScopeScore(url_in_both_scopes);
+  EXPECT_GT(score_a, 0);
+  int score_b = web_app_scope_b->GetScopeScore(url_in_both_scopes);
+  EXPECT_GT(score_b, 0);
+
+  // score_a should be larger than score_b, even though the match for app b
+  // would have been longer.
+  EXPECT_GT(score_a, score_b);
+}
+
 }  // namespace
 
 }  // namespace web_app

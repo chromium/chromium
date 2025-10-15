@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -88,7 +90,10 @@ class WebAppScopeExtensionsBrowserTest
     unrelated_url_ = unrelated_server_.GetURL("/simple.html");
   }
 
-  void TearDownOnMainThread() override { app_ = nullptr; }
+  void TearDownOnMainThread() override {
+    app_ = nullptr;
+    WebAppNavigationBrowserTest::TearDownOnMainThread();
+  }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
       const net::test_server::HttpRequest& request) {
@@ -107,8 +112,8 @@ class WebAppScopeExtensionsBrowserTest
     return *WebAppProvider::GetForTest(browser()->profile());
   }
 
-  void InstallScopeExtendedWebApp(std::string manifest_file,
-                                  std::string association_file) {
+  webapps::AppId InstallScopeExtendedWebApp(std::string manifest_file,
+                                            std::string association_file) {
     GURL manifest_url = primary_server_.GetURL("/web_apps/manifest.json");
     GURL association_url =
         secondary_server_.GetURL("/.well-known/web-app-origin-association");
@@ -129,9 +134,10 @@ class WebAppScopeExtensionsBrowserTest
     EXPECT_THAT(
         apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id),
         base::test::HasValue());
+    return app_id;
   }
 
-  bool WebAppCapturesUrl(const GURL& url) {
+  std::optional<webapps::AppId> GetCapturingAppId(const GURL& url) {
     CHECK_NE(url, unrelated_url_);
     NavigateViaLinkClickToURLAndWait(browser(), unrelated_url_);
 
@@ -150,15 +156,25 @@ class WebAppScopeExtensionsBrowserTest
     // will change.
     if (browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL() ==
         url) {
-      return false;
+      return std::nullopt;
     }
 
     Browser* app_browser = browser_created_observer.Wait();
+    if (!app_browser->app_controller()) {
+      chrome::CloseWindow(app_browser);
+      return std::nullopt;
+    }
+
     EXPECT_EQ(
         app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
         url);
+    webapps::AppId captured_app_id = app_browser->app_controller()->app_id();
     chrome::CloseWindow(app_browser);
-    return true;
+    return captured_app_id;
+  }
+
+  bool WebAppCapturesUrl(const GURL& url) {
+    return GetCapturingAppId(url).has_value();
   }
 
  protected:
@@ -346,6 +362,76 @@ IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
       WebAppCapturesUrl(primary_server_.GetURL("/web_apps/basic.html")));
   EXPECT_FALSE(
       WebAppCapturesUrl(secondary_server_.GetURL("/web_apps/basic.html")));
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
+                       PrimaryScopeTakesPriorityOverExtendedScope) {
+  // Install App A (regular scope on secondary_server_, no extended scope).
+  GURL app_a_manifest_url =
+      secondary_server_.GetURL("/web_apps/app_a.webmanifest");
+  GURL app_a_page_url = secondary_server_.GetURL("/web_apps/page1.html");
+  url_overrides_[app_a_manifest_url] =
+      base::ReplaceStringPlaceholders(R"({
+          "name": "App A",
+          "start_url": "$1",
+          "scope": "/web_apps/"
+        })",
+                                      {app_a_page_url.GetPath()}, nullptr);
+  webapps::AppId app_a_id = InstallWebAppFromPage(
+      browser(), secondary_server_.GetURL(
+                     "/web_apps/get_manifest.html?app_a.webmanifest"));
+  ASSERT_THAT(
+      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_a_id),
+      base::test::HasValue());
+
+  // Install App B (regular scope on primary_server_, extended scope on
+  // secondary_server_).
+  const GURL app_b_page_url = primary_server_.GetURL("/index.html");
+  webapps::AppId app_b_id = InstallScopeExtendedWebApp(
+      /*manifest_file=*/base::ReplaceStringPlaceholders(
+          R"({
+            "name": "App B",
+            "start_url": "$1",
+            "scope": "/",
+            "scope_extensions": [{ "type": "origin", "origin": "$2" }]
+          })",
+          {app_b_page_url.GetPath(), secondary_origin_.Serialize()}, nullptr),
+      /*association_file=*/base::ReplaceStringPlaceholders(
+          R"({ "$1": { "scope": "/web_apps/longer/" } })",
+          {app_b_page_url.spec()}, nullptr));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // On Chrome OS enabling link capturing for an app whose scope overlaps in any
+  // way with another apps scope disables capturing for the other app. As such
+  // the scope extensions for app B will have disabled the link capturing for
+  // app A.
+  EXPECT_EQ(std::nullopt, GetCapturingAppId(app_a_page_url));
+  EXPECT_EQ(app_b_id, GetCapturingAppId(app_b_page_url));
+
+  // Re-enable link capturing for app A, which (on Chrome OS) disables capturing
+  // for app B.
+  ASSERT_THAT(
+      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_a_id),
+      base::test::HasValue());
+  EXPECT_EQ(app_a_id, GetCapturingAppId(app_a_page_url));
+  EXPECT_EQ(std::nullopt, GetCapturingAppId(app_b_page_url));
+#else
+  // On other platforms we only disable link capturing for other apps when the
+  // primary scopes of the two apps are identical, ignoring extended scopes, so
+  // links should still be captured by app A.
+  EXPECT_EQ(app_a_id, GetCapturingAppId(app_a_page_url));
+  EXPECT_EQ(app_b_id, GetCapturingAppId(app_b_page_url));
+#endif
+
+  GURL target_url = secondary_server_.GetURL("/web_apps/longer/page.html");
+  url_overrides_[target_url] = R"(<html></html>)";
+  EXPECT_EQ(app_a_id, GetCapturingAppId(target_url));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // After uninstalling app A, links should be captured by app B.
+  UninstallWebApp(app_a_id);
+  EXPECT_EQ(app_b_id, GetCapturingAppId(target_url));
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(
