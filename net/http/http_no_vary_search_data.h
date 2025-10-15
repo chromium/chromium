@@ -65,7 +65,17 @@ class NET_EXPORT_PRIVATE HttpNoVarySearchData {
   // HttpNoVarySearchData objects can be used as a key in a map.
   std::strong_ordering operator<=>(const HttpNoVarySearchData& rhs) const;
 
+  // Returns true if urls `a` and `b` have the same base URL and their queries
+  // are equivalent according to the rules stored in this class.
   bool AreEquivalent(const GURL& a, const GURL& b) const;
+
+  // Returns a canonicalized version of the query part of `url` based on the
+  // rules stored in this class. This has the
+  // property that `AreEquivalent(a, b)` is true if and only if
+  // `RemoveQueryAndFragment(a) == RemoveQueryAndFragment(b)` and
+  // `CanonicalizeQuery(a) == CanonicalizeQuery(b)`. The return value is a
+  // UTF-8 string (not necessarily ASCII) and may end in significant whitespace.
+  std::string CanonicalizeQuery(const GURL& url) const;
 
   const base::flat_set<std::string>& no_vary_params() const;
   const base::flat_set<std::string>& vary_params() const;

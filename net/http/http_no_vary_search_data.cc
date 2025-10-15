@@ -122,6 +122,13 @@ bool HttpNoVarySearchData::AreEquivalent(const GURL& a, const GURL& b) const {
   return AreEquivalentOldImpl(a, b);
 }
 
+std::string HttpNoVarySearchData::CanonicalizeQuery(const GURL& url) const {
+  UrlSearchParamsView search_params(url);
+  ApplyNoVarySearchRulesToParams(*this, search_params);
+
+  return search_params.SerializeAsUtf8();
+}
+
 // static
 HttpNoVarySearchData HttpNoVarySearchData::CreateFromNoVaryParams(
     const std::vector<std::string>& no_vary_params,

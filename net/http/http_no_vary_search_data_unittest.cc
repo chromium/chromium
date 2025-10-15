@@ -799,6 +799,12 @@ struct NoVarySearchCompareTestData {
   const bool expected_match;
 };
 
+HttpNoVarySearchData CreateFromRawHeaders(std::string_view raw_headers) {
+  const std::string headers = HttpUtil::AssembleRawHeaders(raw_headers);
+  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
+  return HttpNoVarySearchData::ParseFromHeaders(*parsed).value();
+}
+
 TEST(HttpNoVarySearchAreEquivalentTest, CheckUrlEqualityWithSpecialCharacters) {
   // Use special characters in both `keys` and `values`.
   const base::flat_map<std::string, std::string> percent_encoding = {
@@ -814,11 +820,8 @@ TEST(HttpNoVarySearchAreEquivalentTest, CheckUrlEqualityWithSpecialCharacters) {
       "HTTP/1.1 200 OK\r\n"
       R"(No-Vary-Search: params=("c"))"
       "\r\n\r\n";
-  const std::string headers = HttpUtil::AssembleRawHeaders(raw_headers);
-  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
-  const auto no_vary_search_data =
-      HttpNoVarySearchData::ParseFromHeaders(*parsed).value();
+  const auto no_vary_search_data = CreateFromRawHeaders(raw_headers);
 
   for (const auto& [key, value] : percent_encoding) {
     std::string request_url_template =
@@ -842,10 +845,8 @@ TEST(HttpNoVarySearchAreEquivalentTest, CheckUrlEqualityWithSpecialCharacters) {
         "\r\n\r\n";
     base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", key);
 
-    const auto parsed_header = base::MakeRefCounted<HttpResponseHeaders>(
-        HttpUtil::AssembleRawHeaders(header_template));
     const auto no_vary_search_data_special_char =
-        HttpNoVarySearchData::ParseFromHeaders(*parsed_header).value();
+        CreateFromRawHeaders(header_template);
 
     EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
         GURL(request_url_template), GURL(cached_url_template)));
@@ -925,10 +926,8 @@ TEST_P(HttpNoVarySearchAreEquivalentTest,
         "\r\n\r\n";
     base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", value);
 
-    const auto parsed_header = base::MakeRefCounted<HttpResponseHeaders>(
-        HttpUtil::AssembleRawHeaders(header_template));
     const auto no_vary_search_data_special_char =
-        HttpNoVarySearchData::ParseFromHeaders(*parsed_header).value();
+        CreateFromRawHeaders(header_template);
 
     EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
         GURL(request_url_template), GURL(cached_url_template)))
@@ -952,10 +951,8 @@ TEST_P(HttpNoVarySearchAreEquivalentTest,
         "\r\n\r\n";
     base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", value);
 
-    const auto parsed_header = base::MakeRefCounted<HttpResponseHeaders>(
-        HttpUtil::AssembleRawHeaders(header_template));
     const auto no_vary_search_data_special_char =
-        HttpNoVarySearchData::ParseFromHeaders(*parsed_header).value();
+        CreateFromRawHeaders(header_template);
 
     EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
         GURL(request_url_template), GURL(cached_url_template)))
@@ -986,11 +983,7 @@ TEST_P(HttpNoVarySearchAreEquivalentParameterizedTest,
        CheckUrlEqualityByNoVarySearch) {
   const auto& test_data = GetTestData();
 
-  const std::string headers =
-      HttpUtil::AssembleRawHeaders(test_data.raw_headers);
-  const auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  const auto no_vary_search_data =
-      HttpNoVarySearchData::ParseFromHeaders(*parsed).value();
+  const auto no_vary_search_data = CreateFromRawHeaders(test_data.raw_headers);
 
   EXPECT_EQ(no_vary_search_data.AreEquivalent(test_data.request_url,
                                               test_data.cached_url),
@@ -1271,6 +1264,60 @@ void AreEquivalentImplementationsMatch(const std::string& url_suffix_a,
 }
 
 FUZZ_TEST(HttpNoVarySearchTest, AreEquivalentImplementationsMatch);
+
+TEST(HttpNoVarySearchTest, CanonicalizeQuery) {
+  HttpNoVarySearchData data =
+      HttpNoVarySearchData::CreateFromNoVaryParams({"rd"}, false);
+  static constexpr char kInputQuery[] =
+      "q=1&rd=e2f2a976&a&a=+&%61=%62&%c0=%c1&%61=1&a=2&a=5&b=%6&a=%c2%a2&%c2%"
+      "a2";
+  // Because `vary_on_key_order` is false, the canonicalized output is sorted by
+  // key. The original order of values must be preserved.
+  static constexpr char kExpectedOutput[] =
+      "a=&a= "
+      "&a=b&a=1&a=2&a=5&a=\xC2\xA2&b=%256&q=1&\xC2\xA2=&\xEF\xBF\xBD="
+      "\xEF\xBF\xBD";
+  GURL url(base::StrCat({"https://example.com/?", kInputQuery}));
+  EXPECT_EQ(data.CanonicalizeQuery(url), kExpectedOutput);
+}
+
+class HttpNoVarySearchCanonicalizeQueryTest
+    : public testing::TestWithParam<NoVarySearchCompareTestData> {
+ protected:
+  const NoVarySearchCompareTestData& GetTestData() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchCanonicalizeQueryTest,
+                         HttpNoVarySearchCanonicalizeQueryTest,
+                         ValuesIn(no_vary_search_compare_tests));
+
+GURL ExtractBaseUrl(const GURL& url) {
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  return url.ReplaceComponents(replacements);
+}
+
+TEST_P(HttpNoVarySearchCanonicalizeQueryTest, ResultsSameAsAreEquivalent) {
+  const auto& [request_url, cached_url, raw_headers, expected_match] =
+      GetTestData();
+  if (ExtractBaseUrl(request_url) != ExtractBaseUrl(cached_url)) {
+    GTEST_SKIP() << "Differing base URLs are not interesting for this test";
+  }
+
+  const auto no_vary_search_data = CreateFromRawHeaders(raw_headers);
+  if (expected_match) {
+    EXPECT_EQ(no_vary_search_data.CanonicalizeQuery(request_url),
+              no_vary_search_data.CanonicalizeQuery(cached_url))
+        << "request_url = " << request_url << " cached_url = " << cached_url
+        << " headers = " << raw_headers << " match = " << expected_match;
+  } else {
+    EXPECT_NE(no_vary_search_data.CanonicalizeQuery(request_url),
+              no_vary_search_data.CanonicalizeQuery(cached_url))
+        << "request_url = " << request_url << " cached_url = " << cached_url
+        << " headers = " << raw_headers << " match = " << expected_match;
+  }
+}
 
 TEST(HttpNoVarySearchResponseHeadersParseHistogramTest, NoUnrecognizedKeys) {
   base::HistogramTester histogram_tester;
