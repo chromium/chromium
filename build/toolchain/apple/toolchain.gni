@@ -6,6 +6,7 @@
 # some enhancements since the commands on Mac are slightly different than on
 # Linux.
 
+import("//build/config/apple/arch.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
@@ -235,12 +236,43 @@ template("single_apple_toolchain") {
                      rebase_path("//tools/clang/dsymutil/bin/dsymutil",
                                  root_build_dir) + " "
 
+      # All the toolchains are defined in the context of the default toolchain,
+      # this means that the global variable `current_cpu` is not correct, it
+      # will be the one for the default toolchain.
+      #
+      # This means that the code cannot use the variable `dsym_arch` defined in
+      # build/config/apple/symbols.gni since it is defined from `current_cpu`.
+      #
+      # Instead declare another local variable `_dsym_arch` based from the
+      # toolchain `toolchain_args.current_cpu` which will be used when targets
+      # are evaluated in the context of the current toolchain.
+      _archs_mapping_os = archs_mapping[toolchain_args.current_os]
+      if (defined(_archs_mapping_os[toolchain_args.current_cpu])) {
+        _archs_mapping_os_cpu = _archs_mapping_os[toolchain_args.current_cpu]
+        _dsym_arch = _archs_mapping_os_cpu.dsym_arch
+      } else {
+        # There are toolchain defined with combination of os and cpu that are
+        # no longer supported. Avoid failing `gn gen` with error in that case
+        # by defining _dsym_arch to some value that will cause a failure if
+        # used at build time.
+        #
+        # TODO(crbug.com/452018499): Remove once the toolchains no longer exist.
+        not_needed([ "_archs_mapping_os" ])
+        _dsym_arch =
+            "invalid__this_name_is_longer_than_NAME_MAX_so_that_it_cant_be_us" +
+            "ed__0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx" +
+            "yz_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy" +
+            "z_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+      }
+
       dsym_output_dir =
           "{{root_out_dir}}/{{target_output_name}}{{output_extension}}.dSYM"
       dsym_output = [
         "$dsym_output_dir/Contents/Info.plist",
         "$dsym_output_dir/Contents/Resources/DWARF/" +
             "{{target_output_name}}{{output_extension}}",
+        "$dsym_output_dir/Contents/Resources/Relocations/" +
+            "$_dsym_arch/{{target_output_name}}{{output_extension}}.yml",
       ]
     } else {
       dsym_switch = ""

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/apple/arch.gni")
 import("//build/config/apple/mobile_config.gni")
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
@@ -19,17 +20,12 @@ config("compiler") {
   common_flags = []
 
   # CPU architecture.
-  if (current_cpu == "x64") {
-    triplet_cpu = "x86_64"
-  } else if (current_cpu == "x86") {
-    triplet_cpu = "i386"
-  } else if (current_cpu == "arm" || current_cpu == "armv7") {
-    triplet_cpu = "armv7"
-  } else if (current_cpu == "arm64") {
-    triplet_cpu = "arm64"
-  } else if (current_cpu == "arm64e") {
-    triplet_cpu = "arm64e"
+  _archs_mapping_os = archs_mapping[current_os]
+  if (defined(_archs_mapping_os[current_cpu])) {
+    _archs_mapping_os_cpu = _archs_mapping_os[current_cpu]
+    triplet_cpu = _archs_mapping_os_cpu.clang_arch
   } else {
+    notneeded([ "_archs_mapping_os" ])
     assert(false, "unsupported cpu: $current_cpu")
   }
 

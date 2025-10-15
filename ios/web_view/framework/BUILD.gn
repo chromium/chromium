@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/apple/tweak_info_plist.gni")
+import("//build/config/apple/arch.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/web_view/features.gni")
@@ -98,10 +99,15 @@ if (current_toolchain == _framework_toolchain) {
   _copy_targets = []
   _copy_sources = [ "$_output_dir/$_output_name.framework" ]
   if (enable_dsyms) {
+    _archs_mapping_os = archs_mapping.ios
+    _archs_mapping_os_cpu = _archs_mapping_os[current_cpu]
+    _dsym_arch = _archs_mapping_os_cpu.dsym_arch
+
+    _dsym_contents_dir = "$_output_dir/$_output_name.dSYM/Contents"
     _copy_sources += [
-      "$_output_dir/$_output_name.dSYM/Contents/Info.plist",
-      "$_output_dir/$_output_name.dSYM/Contents/Resources/" +
-          "DWARF/$_output_name",
+      "$_dsym_contents_dir/Info.plist",
+      "$_dsym_contents_dir/Resources/DWARF/$_output_name",
+      "$_dsym_contents_dir/Resources/Relocations/$_dsym_arch/$_output_name.yml",
     ]
   }
 
