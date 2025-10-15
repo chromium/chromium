@@ -509,7 +509,7 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
 
   DCHECK(!HasAvailableSpdySession());
 
-  MaybeAttemptTcpBased(/*exclude_ip_endpoint=*/std::nullopt);
+  MaybeAttemptTcpBased();
 }
 
 void HttpStreamPool::AttemptManager::CancelTcpBasedAttempts(
@@ -809,7 +809,7 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptSlow(
   ip_endpoint_state_tracker_.OnEndpointSlow(raw_attempt->ip_endpoint());
 
   // Don't attempt the same IP endpoint.
-  MaybeAttemptTcpBased(/*exclude_ip_endpoint=*/raw_attempt->ip_endpoint());
+  MaybeAttemptTcpBased();
 }
 
 void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
@@ -1282,8 +1282,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
   }
 }
 
-void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
-    std::optional<IPEndPoint> exclude_ip_endpoint) {
+void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased() {
   if (is_shutting_down()) {
     return;
   }
@@ -1305,8 +1304,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
     // implementation.
     CHECK(!HasAvailableSpdySession());
     std::optional<IPEndPoint> ip_endpoint =
-        ip_endpoint_state_tracker_.GetIPEndPointToAttemptTcpBased(
-            exclude_ip_endpoint);
+        ip_endpoint_state_tracker_.GetIPEndPointToAttemptTcpBased();
     if (!ip_endpoint.has_value()) {
       if (service_endpoint_request_finished_ &&
           tcp_based_attempt_slots_.empty()) {

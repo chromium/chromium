@@ -1346,6 +1346,53 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointTimedout) {
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_TIMED_OUT)));
 }
 
+// Test the case where there's a single endpoint that is slow. Unlike the
+// HEv1 path, there is no second connection attempt if the first one takes too
+// long. Should there be?
+TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointSlow) {
+  const ServiceEndpoint service_endpoint =
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint();
+  const AddressList address_list(service_endpoint.ipv4_endpoints.front());
+
+  MockConnectCompleter connect_completer;
+  SequencedSocketData data;
+  data.set_expected_addresses(address_list);
+  data.set_connect_data(MockConnect(&connect_completer));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+  endpoint_request->add_endpoint(service_endpoint);
+
+  StreamRequester requester;
+  HttpStreamRequest* request = requester.RequestStream(pool());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  AttemptManager* manager =
+      pool().GetGroupForTesting(requester.GetStreamKey())->attempt_manager();
+  EXPECT_EQ(manager->TcpBasedAttemptSlotCount(), 1u);
+  EXPECT_FALSE(request->completed());
+
+  // No other attempts should be made, even if the connection attempt is slow.
+  FastForwardBy(2 * HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_EQ(manager->TcpBasedAttemptSlotCount(), 1u);
+  ASSERT_FALSE(request->completed());
+
+  connect_completer.WaitForConnectAndComplete(OK);
+
+  EXPECT_THAT(requester.WaitForResult(), IsOk());
+
+  // There should be no other connection attempts.
+  EXPECT_EQ(manager->TcpBasedAttemptSlotCount(), 0u);
+  ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
+
+  // Reset request so that AttemptManager can complete.
+  requester.ResetRequest();
+
+  WaitForAttemptManagerComplete(requester.associated_attempt_manager().get());
+  ASSERT_FALSE(requester.associated_attempt_manager());
+}
+
 // Tests that when endpoints are slow, other endpoints are attempted.
 TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointsSlow) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =

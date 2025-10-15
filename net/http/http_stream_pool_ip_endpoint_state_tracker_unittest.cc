@@ -99,7 +99,6 @@ TEST_F(HttpStreamPoolIPEndPointStateTrackerTest, GetIPEndPointToAttempt) {
     std::string_view description = "";
     std::vector<std::pair<IPEndPoint, std::optional<IPEndPointState>>>
         endpoint_states;
-    std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt;
     std::optional<IPEndPoint> expected;
   } kTestCases[] = {
       {
@@ -148,14 +147,6 @@ TEST_F(HttpStreamPoolIPEndPointStateTrackerTest, GetIPEndPointToAttempt) {
           }},
           .expected = std::nullopt,
       },
-      {
-          .description = "Exclude an endpoint that is the only endpoint",
-          .endpoint_states = {{
-              {MakeIPEndPoint("2001:db8::1"), IPEndPointState::kSlowAttempting},
-          }},
-          .exclude_ip_endpoint = MakeIPEndPoint("2001:db8::1"),
-          .expected = std::nullopt,
-      },
   };
 
   for (const auto& test_case : kTestCases) {
@@ -196,8 +187,7 @@ TEST_F(HttpStreamPoolIPEndPointStateTrackerTest, GetIPEndPointToAttempt) {
       }
     }
 
-    std::optional<IPEndPoint> actual =
-        tracker.GetIPEndPointToAttemptTcpBased(test_case.exclude_ip_endpoint);
+    std::optional<IPEndPoint> actual = tracker.GetIPEndPointToAttemptTcpBased();
     EXPECT_THAT(actual, test_case.expected);
   }
 }

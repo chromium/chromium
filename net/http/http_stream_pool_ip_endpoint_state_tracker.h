@@ -90,22 +90,20 @@ class HttpStreamPool::IPEndPointStateTracker {
   // Removes all slow attempting endpoints.
   void RemoveSlowAttemptingEndpoint();
 
-  // Returns an IPEndPoint to attempt a connection. If `exclude_ip_endpoint` is
-  // given, exclude the endpoint. Brief summary of the behavior are:
+  // Returns an IPEndPoint to attempt a connection.
+  // Brief summary of the behavior is:
   //  * Try preferred address family first.
   //  * Prioritize unattempted or fast endpoints.
   //  * Fall back to slow but succeeded endpoints.
   //  * Use slow and attempting endpoints as the last option.
   //  * For a slow endpoint, skip the endpoint if there are enough attempts for
   //    the endpoint.
-  std::optional<IPEndPoint> GetIPEndPointToAttemptTcpBased(
-      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt);
+  std::optional<IPEndPoint> GetIPEndPointToAttemptTcpBased();
 
   base::Value::List GetInfoAsValue() const;
 
  private:
   void FindBetterIPEndPoint(const std::vector<IPEndPoint>& ip_endpoints,
-                            std::optional<IPEndPoint> exclude_ip_endpoint,
                             std::optional<IPEndPointState>& current_state,
                             std::optional<IPEndPoint>& current_endpoint);
 

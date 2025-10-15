@@ -63,8 +63,7 @@ void HttpStreamPool::IPEndPointStateTracker::RemoveSlowAttemptingEndpoint() {
 }
 
 std::optional<IPEndPoint>
-HttpStreamPool::IPEndPointStateTracker::GetIPEndPointToAttemptTcpBased(
-    std::optional<IPEndPoint> exclude_ip_endpoint) {
+HttpStreamPool::IPEndPointStateTracker::GetIPEndPointToAttemptTcpBased() {
   // TODO(crbug.com/383824591): Add a trace event to see if this method is
   // time consuming.
 
@@ -90,8 +89,7 @@ HttpStreamPool::IPEndPointStateTracker::GetIPEndPointToAttemptTcpBased(
       const std::vector<IPEndPoint>& ip_endpoints =
           ip_v6 ? service_endpoint.ipv6_endpoints
                 : service_endpoint.ipv4_endpoints;
-      FindBetterIPEndPoint(ip_endpoints, exclude_ip_endpoint, current_state,
-                           current_endpoint);
+      FindBetterIPEndPoint(ip_endpoints, current_state, current_endpoint);
       if (current_endpoint.has_value() && !current_state.has_value()) {
         // This endpoint is fast or no connection attempt has been made to
         // it yet.
@@ -106,15 +104,9 @@ HttpStreamPool::IPEndPointStateTracker::GetIPEndPointToAttemptTcpBased(
 
 void HttpStreamPool::IPEndPointStateTracker::FindBetterIPEndPoint(
     const std::vector<IPEndPoint>& ip_endpoints,
-    std::optional<IPEndPoint> exclude_ip_endpoint,
     std::optional<IPEndPointState>& current_state,
     std::optional<IPEndPoint>& current_endpoint) {
   for (const auto& ip_endpoint : ip_endpoints) {
-    if (exclude_ip_endpoint.has_value() &&
-        ip_endpoint == *exclude_ip_endpoint) {
-      continue;
-    }
-
     auto it = ip_endpoint_states_.find(ip_endpoint);
     if (it == ip_endpoint_states_.end()) {
       // If there is no state for the IP endpoint it means that we haven't tried
