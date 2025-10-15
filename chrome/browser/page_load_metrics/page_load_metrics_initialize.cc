@@ -48,7 +48,6 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -333,11 +332,7 @@ bool PageLoadMetricsEmbedder::IsNonTabWebUI(const GURL& url) {
 }
 
 bool PageLoadMetricsEmbedder::IsInternalWebUI(const GURL& url) {
-  // Include url that are internal WebUI or have URL of which is used to avoid
-  // showing internal WebUI when a user does not have kInternalOnlyUisEnabled
-  // set. That URL does not return true from content::IsInternalWebUI.
-  return content::IsInternalWebUI(url) ||
-         url.host() == chrome::kChromeUIInternalDebugPagesDisabledHost;
+  return content::IsInternalWebUI(url);
 }
 
 bool PageLoadMetricsEmbedder::ShouldObserveScheme(std::string_view scheme) {

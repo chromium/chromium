@@ -18,6 +18,14 @@ generate_allowlist_from_histograms_file("webui_url_hashes") {
   allow_list_name = "WebUIUrlHashes"
 }
 
+generate_allowlist_from_histograms_file("webui_hosts") {
+  namespace = "webui_metrics"
+  input_xml_file = "//tools/metrics/histograms/metadata/page/histograms.xml"
+  output_file = "webui_hosts.h"
+  tag = "variant"
+  allow_list_name = "WebUIHost"
+}
+
 source_set("configs") {
   sources = [
     "chrome_untrusted_web_ui_configs.cc",
@@ -132,11 +140,13 @@ source_set("webui") {
     "current_channel_logo.h",
   ]
 
+  sources += get_target_outputs(":webui_hosts")
   sources += get_target_outputs(":webui_url_hashes")
 
   public_deps = [ "//content/public/browser" ]
 
   deps = [
+    ":webui_hosts",
     ":webui_url_hashes",
     "//chrome/common",
     "//extensions/buildflags",
