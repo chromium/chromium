@@ -46,7 +46,7 @@ void GlicInactiveFloatingUi::Close() {
   NOTIMPLEMENTED();
 }
 
-views::View* GlicInactiveFloatingUi::GetView() {
+base::WeakPtr<views::View> GlicInactiveFloatingUi::GetView() {
   return nullptr;
 }
 

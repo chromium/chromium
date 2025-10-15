@@ -7,10 +7,14 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
-#include "ui/views/view.h"
+
+namespace views {
+class View;
+}
 
 namespace tabs {
 class TabInterface;
@@ -55,7 +59,7 @@ class GlicUiEmbedder {
   virtual void Focus() = 0;
 
   // Returns the view, if there is one.
-  virtual views::View* GetView() = 0;
+  virtual base::WeakPtr<views::View> GetView() = 0;
 
   // Creates the inactive version of this embedder.
   virtual std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const = 0;

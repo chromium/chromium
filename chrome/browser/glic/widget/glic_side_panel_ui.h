@@ -25,6 +25,8 @@ class TabInterface;
 
 namespace glic {
 
+class GlicView;
+
 // Implementation of GlicUiEmbedder for side panel UIs.
 class GlicSidePanelUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
  public:
@@ -39,7 +41,7 @@ class GlicSidePanelUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
   void Focus() override;
-  views::View* GetView() override;
+  base::WeakPtr<views::View> GetView() override;
   mojom::PanelState GetPanelState() const override;
   gfx::Size GetPanelSize() override;
 
@@ -71,6 +73,7 @@ class GlicSidePanelUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   raw_ptr<Profile> profile_;
   base::WeakPtr<tabs::TabInterface> tab_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
+  base::WeakPtr<GlicView> glic_view_;
 
   base::WeakPtrFactory<GlicSidePanelUi> weak_ptr_factory_{this};
 };

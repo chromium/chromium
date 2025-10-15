@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/widget/glic_window_event_observer.h"
+#include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget_observer.h"
@@ -21,11 +22,13 @@ namespace glic {
 class GlicWindowAnimator;
 class GlicWidget;
 class GlicView;
+class LocalHotkeyManager;
 
 // A stub implementation of GlicUiEmbedder for floating UIs.
 class GlicFloatingUi : public GlicUiEmbedder,
                        public Host::EmbedderDelegate,
                        public GlicWindowEventObserver::Delegate,
+                       public LocalHotkeyManager::Panel,
                        public views::WidgetObserver {
  public:
   GlicFloatingUi(Profile* profile,
@@ -45,7 +48,6 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
   void Focus() override;
-  views::View* GetView() override;
   mojom::PanelState GetPanelState() const override;
   gfx::Size GetPanelSize() override;
 
@@ -76,6 +78,13 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void OnWidgetUserResizeStarted() override;
   void OnWidgetUserResizeEnded() override;
 
+  // LocalHotkeyManager::Panel:
+  void FocusIfOpen() override;
+  bool IsActive() override;
+  bool ActivateBrowser() override;
+  void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
+  base::WeakPtr<views::View> GetView() override;
+
  private:
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
@@ -88,6 +97,8 @@ class GlicFloatingUi : public GlicUiEmbedder,
   bool user_resizable_ = true;
   // Whether the user is currently drag-resizing the widget.
   bool user_resizing_ = false;
+  std::unique_ptr<LocalHotkeyManager> application_hotkey_manager_;
+  std::unique_ptr<LocalHotkeyManager> glic_panel_hotkey_manager_;
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
   std::unique_ptr<GlicWidget> glic_widget_;
   std::unique_ptr<GlicWindowEventObserver> window_event_observer_;

@@ -634,7 +634,7 @@ class InteractiveGlicTestMixin : public T {
       if (!embedder) {
         return nullptr;
       }
-      return embedder->GetView();
+      return embedder->GetView().get();
     }
     return GetWindowControllerImpl().GetGlicViewForTesting();
   }
@@ -645,7 +645,7 @@ class InteractiveGlicTestMixin : public T {
       if (!embedder) {
         return nullptr;
       }
-      auto* view = embedder->GetView();
+      auto* view = embedder->GetView().get();
       if (!view) {
         return nullptr;
       }

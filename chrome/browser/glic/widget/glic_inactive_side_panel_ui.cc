@@ -111,7 +111,7 @@ void GlicInactiveSidePanelUi::Close() {
   glic_side_panel_coordinator->Close();
 }
 
-views::View* GlicInactiveSidePanelUi::GetView() {
+base::WeakPtr<views::View> GlicInactiveSidePanelUi::GetView() {
   return nullptr;
 }
 

@@ -8,14 +8,22 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui.h"
+#include "chrome/browser/glic/widget/glic_panel_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/views/widget/widget_delegate.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/display/win/screen_win.h"
+#include "ui/views/win/hwnd_util.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace glic {
 
@@ -30,6 +38,10 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
                                gfx::Rect initial_bounds,
                                GlicUiEmbedder::Delegate& delegate)
     : profile_(profile), delegate_(delegate) {
+  application_hotkey_manager_ =
+      MakeApplicationHotkeyManager(weak_ptr_factory_.GetWeakPtr());
+  glic_panel_hotkey_manager_ =
+      MakeGlicWindowHotkeyManager(weak_ptr_factory_.GetWeakPtr());
   CreateAndSetupWidget(initial_bounds);
   panel_state_.kind = mojom::PanelState_Kind::kDetached;
   PictureInPictureOcclusionTracker* tracker =
@@ -70,8 +82,9 @@ GlicView* GlicFloatingUi::GetGlicView() const {
 }
 
 void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
-  glic_widget_ =
-      GlicWidget::Create(profile_, initial_bounds, nullptr, user_resizable_);
+  glic_widget_ = GlicWidget::Create(profile_, initial_bounds,
+                                    glic_panel_hotkey_manager_->GetWeakPtr(),
+                                    user_resizable_);
   // TODO: Setup Hotkeys and AccessibilityText.
 
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
@@ -115,6 +128,36 @@ GlicWindowAnimator* GlicFloatingUi::window_animator() {
 
 void GlicFloatingUi::OnDragComplete() {
   NOTIMPLEMENTED();
+}
+
+void GlicFloatingUi::FocusIfOpen() {
+  if (!IsShowing() || IsActive()) {
+    return;
+  }
+  GetGlicWidget()->Activate();
+  GetGlicView()->GetWebContents()->Focus();
+}
+
+bool GlicFloatingUi::IsActive() {
+  return IsShowing() && GetGlicWidget()->IsActive();
+}
+
+bool GlicFloatingUi::ActivateBrowser() {
+  if (auto* const last_active_bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
+    last_active_bwi->GetWindow()->Activate();
+    return true;
+  }
+  return false;
+}
+
+void GlicFloatingUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
+#if BUILDFLAG(IS_WIN)
+  views::View::ConvertPointToScreen(GetGlicView(), &event_loc);
+  event_loc = display::win::GetScreenWin()->DIPToScreenPoint(event_loc);
+  views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(GetGlicView()),
+                                             event_loc);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void GlicFloatingUi::EnableDragResize(bool enabled) {
@@ -178,6 +221,8 @@ void GlicFloatingUi::Show() {
   GetGlicWidget()->Show();
   GetGlicView()->SetWebContents(delegate_->host().webui_contents());
   GetGlicView()->UpdateBackgroundColor();
+  application_hotkey_manager_->InitializeAccelerators();
+  glic_panel_hotkey_manager_->InitializeAccelerators();
   // TODO: Set up manual resize.
   window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
   glic_widget_observation_.Observe(GetGlicWidget());
@@ -247,8 +292,11 @@ std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {
   return GlicInactiveFloatingUi::From(*this);
 }
 
-views::View* GlicFloatingUi::GetView() {
-  return GetGlicView();
+base::WeakPtr<views::View> GlicFloatingUi::GetView() {
+  if (auto* glic_view = GetGlicView()) {
+    return glic_view->GetWeakPtr();
+  }
+  return nullptr;
 }
 
 void GlicFloatingUi::SwitchConversation(

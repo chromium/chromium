@@ -48,6 +48,7 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
       profile, GlicWidget::GetInitialSize(), nullptr);
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
+  glic_view_ = glic_view->GetWeakPtr();
   return glic_view;
 }
 
@@ -62,12 +63,10 @@ mojom::PanelState GlicSidePanelUi::GetPanelState() const {
 }
 
 gfx::Size GlicSidePanelUi::GetPanelSize() {
-  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
-  if (!glic_side_panel_coordinator || !glic_side_panel_coordinator->GetView()) {
+  if (!glic_view_) {
     return {};
   }
-
-  return glic_side_panel_coordinator->GetView()->size();
+  return glic_view_->size();
 }
 
 void GlicSidePanelUi::Resize(const gfx::Size& size,
@@ -162,10 +161,8 @@ std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
       tab_, delegate_->host().webui_contents(), delegate_.get());
 }
 
-views::View* GlicSidePanelUi::GetView() {
-  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
-  return glic_side_panel_coordinator ? glic_side_panel_coordinator->GetView()
-                                     : nullptr;
+base::WeakPtr<views::View> GlicSidePanelUi::GetView() {
+  return glic_view_;
 }
 
 GlicSidePanelCoordinator* GlicSidePanelUi::GetGlicSidePanelCoordinator() const {
