@@ -517,8 +517,9 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandDuplicateSelected) {
 class TabStripModelGlicMultiTabBrowserTest : public TabStripModelBrowserTest {
  public:
   TabStripModelGlicMultiTabBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        glic::mojom::features::kGlicMultiTab);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{glic::mojom::features::kGlicMultiTab, true},
+         {features::kGlicMultiInstance, false}});
   }
 
  protected:
