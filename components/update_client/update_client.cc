@@ -140,6 +140,8 @@ void UpdateClientImpl::CheckForUpdate(
 
 void UpdateClientImpl::RunTask(scoped_refptr<Task> task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Task::Run, task));
   tasks_.insert(task);
@@ -164,6 +166,9 @@ void UpdateClientImpl::OnTaskComplete(Callback callback,
       FROM_HERE, base::BindOnce(std::move(callback), error));
 
   tasks_.erase(task);
+  VLOG(2) << __func__ << ": tasks_.empty(): " << tasks_.empty()
+          << ", task_queue_.empty(): " << task_queue_.empty()
+          << ", error: " << static_cast<int>(error);
 
   if (is_stopped_) {
     return;
@@ -249,6 +254,7 @@ void UpdateClientImpl::SendPing(const CrxComponent& crx_component,
                                 PingParams ping_params,
                                 Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
 
   RunTask(base::MakeRefCounted<TaskSendPing>(
       update_engine_.get(), crx_component, ping_params,
