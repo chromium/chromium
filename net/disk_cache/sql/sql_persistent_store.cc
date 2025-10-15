@@ -723,7 +723,12 @@ void Backend::DatabaseErrorCallback(int error, sql::Statement* statement) {
   TRACE_EVENT("disk_cache", "SqlBackend.Error", "error", error);
   sql::UmaHistogramSqliteResult(base::StrCat({kHistogramPrefix, "SqliteError"}),
                                 error);
-  if (sql::IsErrorCatastrophic(error) && db_.is_open()) {
+  // For the HTTP Cache, a kFullDisk error is not recoverable and freeing up
+  // disk space is the best course of action. So, we treat it as a catastrophic
+  // error to raze the database.
+  if ((sql::IsErrorCatastrophic(error) ||
+       error == static_cast<int>(sql::SqliteErrorCode::kFullDisk)) &&
+      db_.is_open()) {
     // Normally this will poison the database, causing any subsequent operations
     // to silently fail without any side effects. However, if RazeAndPoison() is
     // called from the error callback in response to an error raised from within
