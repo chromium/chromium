@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
@@ -292,11 +293,6 @@ std::string GetBase64UrlVariations(Profile* profile) {
 
 constexpr int kThumbnailWidth = 125;
 constexpr int kThumbnailHeight = 200;
-
-std::optional<lens::ImageEncodingOptions> CreateThumbnailEncodingOptions() {
-  return lens::ImageEncodingOptions{.max_height = kThumbnailHeight,
-                                    .max_width = kThumbnailWidth};
-}
 
 }  // namespace
 
@@ -1053,6 +1049,21 @@ void SearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   std::move(callback).Run(std::move(tabs));
 }
 
+std::optional<lens::ImageEncodingOptions>
+SearchboxHandler::CreateTabPreviewEncodingOptions(
+    content::WebContents* web_contents) {
+  float scale_factor = 1.0f;
+  if (content::RenderWidgetHostView* view =
+          web_contents->GetRenderWidgetHostView()) {
+    scale_factor = view->GetDeviceScaleFactor();
+  }
+  const int max_height_pixels =
+      static_cast<int>(kThumbnailHeight * scale_factor);
+  const int max_width_pixels = static_cast<int>(kThumbnailWidth * scale_factor);
+  return lens::ImageEncodingOptions{.max_height = max_height_pixels,
+                                    .max_width = max_width_pixels};
+}
+
 // TODO(crbug.com/447629531): Move the implementation to the
 // ContextualSearchboxHandler and put an empty implementation in the header for
 // this class.
@@ -1068,8 +1079,9 @@ void SearchboxHandler::GetTabPreview(int32_t tab_id,
   lens::TabContextualizationController* tab_context_controller =
       tab->GetTabFeatures()->tab_contextualization_controller();
 
+  content::WebContents* web_contents = tab->GetContents();
   tab_context_controller->CaptureScreenshot(
-      CreateThumbnailEncodingOptions(),
+      CreateTabPreviewEncodingOptions(web_contents),
       base::BindOnce(&SearchboxHandler::OnPreviewReceived,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
