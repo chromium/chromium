@@ -2398,12 +2398,6 @@ void QuicChromiumClientSession::OnNoNewNetwork() {
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
 
-  if (base::FeatureList::IsEnabled(features::kDisableBlackholeOnNoNewNetwork)) {
-    // Turn off the black hole detector since the writer is blocked.
-    // Blackhole will be re-enabled once a packet is sent again.
-    connection()->blackhole_detector().StopDetection(false);
-  }
-
   // Post a task to maybe close the session if the alarm fires.
   task_runner_->PostDelayedTask(
       FROM_HERE,
@@ -3938,11 +3932,6 @@ void QuicChromiumClientSession::Migrate(handles::NetworkHandle network,
   DVLOG(1) << "Force blocking the packet writer";
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
-  if (base::FeatureList::IsEnabled(features::kDisableBlackholeOnNoNewNetwork)) {
-    // Turn off the black hole detector since the writer is blocked.
-    // Blackhole will be re-enabled once a packet is sent again.
-    connection()->blackhole_detector().StopDetection(false);
-  }
   CompletionOnceCallback connect_callback = base::BindOnce(
       &QuicChromiumClientSession::FinishMigrate, weak_factory_.GetWeakPtr(),
       std::move(socket), peer_address, close_session_on_error,

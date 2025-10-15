@@ -8986,21 +8986,6 @@
             ]
         }
     ],
-    "DisableBlackHoleOnNoNewNetwork": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableBlackHoleOnNoNewNetwork"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableBoostPriority": [
         {
             "platforms": [
