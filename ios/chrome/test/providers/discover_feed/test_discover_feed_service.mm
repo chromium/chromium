@@ -29,8 +29,6 @@ void TestDiscoverFeedService::RemoveFeedViewController(
 
 void TestDiscoverFeedService::UpdateTheme() {}
 
-void TestDiscoverFeedService::SetFollowingFeedContentSeen() {}
-
 void TestDiscoverFeedService::UpdateFeedViewVisibilityState(
     UICollectionView* collection_view,
     BrowserViewVisibilityState current_state,

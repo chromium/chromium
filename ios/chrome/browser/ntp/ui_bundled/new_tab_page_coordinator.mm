@@ -534,8 +534,7 @@
           underName:kFeedIPHNamedGuide];
 }
 
-- (void)handleFeedModelOfType:(FeedType)feedType
-                didEndUpdates:(FeedLayoutUpdateType)updateType {
+- (void)handleFeedModelDidEndUpdates:(FeedLayoutUpdateType)updateType {
   DCHECK(self.NTPViewController);
   if (!self.feedViewController) {
     return;

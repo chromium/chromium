@@ -23,7 +23,6 @@ class ChromiumDiscoverFeedService final : public DiscoverFeedService {
   }
   void RemoveFeedViewController(UIViewController* feed_view_controller) final {}
   void UpdateTheme() final {}
-  void SetFollowingFeedContentSeen() final {}
   void UpdateFeedViewVisibilityState(
       UICollectionView* collection_view,
       BrowserViewVisibilityState current_state,

@@ -22,7 +22,6 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
       DiscoverFeedViewControllerConfiguration* configuration) final;
   void RemoveFeedViewController(UIViewController* feed_view_controller) final;
   void UpdateTheme() final;
-  void SetFollowingFeedContentSeen() final;
   void UpdateFeedViewVisibilityState(
       UICollectionView* collection_view,
       BrowserViewVisibilityState current_state,

@@ -18,11 +18,14 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 // feed.
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
 
-// Notifies the new tab page that the `feedType`'s model has completed updates.
-// This can include, initial loading of cards, pagination, card removal, and
-// refreshes.
+// Deprecated. Use `handleFeedModelDidEndUpdates:` instead.
 - (void)handleFeedModelOfType:(FeedType)feedType
                 didEndUpdates:(FeedLayoutUpdateType)updateType;
+
+// Notifies the feed model on the new tab page has completed updates.
+// This can include, initial loading of cards, pagination, card removal, and
+// refreshes.
+- (void)handleFeedModelDidEndUpdates:(FeedLayoutUpdateType)updateType;
 
 // Presents an IPH bubble to highlight the Lens icon in the NTP Fakebox.
 - (void)presentLensIconBubble;

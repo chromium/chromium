@@ -59,9 +59,6 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   // Updates the feed's theme to match the user's theme (light/dark).
   virtual void UpdateTheme() = 0;
 
-  // Informs the service that the Following content has been seen.
-  virtual void SetFollowingFeedContentSeen() = 0;
-
   // Informs the service that Browsing History data was cleread by the user.
   virtual void BrowsingHistoryCleared();
 
@@ -75,6 +72,7 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   virtual UIViewController* NewFollowingFeedViewControllerWithConfiguration(
       DiscoverFeedViewControllerConfiguration* configuration);
   virtual BOOL GetFollowingFeedHasUnseenContent();
+  virtual void SetFollowingFeedContentSeen();
 
  protected:
   void NotifyDiscoverFeedModelRecreated();

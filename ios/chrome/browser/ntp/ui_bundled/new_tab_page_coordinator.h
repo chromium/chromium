@@ -80,10 +80,9 @@ class WebState;
 // Constrains the named layout guide for the feed IPH.
 - (void)constrainNamedGuideForFeedIPH;
 
-// Called when the given `feedType` has completed layout updates of type
+// Called when the feed has completed layout updates of type
 // `updateType`.
-- (void)handleFeedModelOfType:(FeedType)feedType
-                didEndUpdates:(FeedLayoutUpdateType)updateType;
+- (void)handleFeedModelDidEndUpdates:(FeedLayoutUpdateType)updateType;
 
 // Checks if there are any WebStates showing an NTP at this time. If not, then
 // stops the NTP.

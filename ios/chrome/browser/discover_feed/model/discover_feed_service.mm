@@ -20,6 +20,7 @@ DiscoverFeedService::NewFollowingFeedViewControllerWithConfiguration(
 BOOL DiscoverFeedService::GetFollowingFeedHasUnseenContent() {
   return NO;
 }
+void DiscoverFeedService::SetFollowingFeedContentSeen() {}
 
 void DiscoverFeedService::AddObserver(DiscoverFeedObserver* observer) {
   observer_list_.AddObserver(observer);

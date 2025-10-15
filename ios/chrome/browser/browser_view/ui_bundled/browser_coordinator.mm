@@ -4194,7 +4194,12 @@ const char kChromeAppStoreUrl[] =
 
 - (void)handleFeedModelOfType:(FeedType)feedType
                 didEndUpdates:(FeedLayoutUpdateType)updateType {
-  [_NTPCoordinator handleFeedModelOfType:feedType didEndUpdates:updateType];
+  // TODO(crbug.com/448683013): remove.
+  [self handleFeedModelDidEndUpdates:updateType];
+}
+
+- (void)handleFeedModelDidEndUpdates:(FeedLayoutUpdateType)updateType {
+  [_NTPCoordinator handleFeedModelDidEndUpdates:updateType];
 }
 
 - (void)scrollToNTPAfterPresentedStateCleared:(FeedType)feedType {
