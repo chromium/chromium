@@ -547,8 +547,11 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         private static void reselectDraggedSelectedTab(
                 TabModel model, @Nullable StripLayoutTab selectedDraggedTab) {
             if (selectedDraggedTab == null) return;
-            TabModelUtils.setIndex(
-                    model, model.indexOf(model.getTabByIdChecked(selectedDraggedTab.getTabId())));
+            // The original dragged selected tab may have been reparented before we try to reselect
+            // it here. No-op if so.
+            Tab tabToSelect = model.getTabById(selectedDraggedTab.getTabId());
+            if (tabToSelect == null) return;
+            TabModelUtils.setIndex(model, model.indexOf(tabToSelect));
         }
     }
 
