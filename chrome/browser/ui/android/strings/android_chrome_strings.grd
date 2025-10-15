@@ -4669,16 +4669,16 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Open in browser
       </message>
       <message name="IDS_SHOW_READING_MODE_TEXT" desc='Message shown on the reader mode button bar, to invite the user to tap to open a reading mode. Reading mode extracts content and removes clutter from a web page and puts the result in a panel making it easier to read. This is used when "Reader Mode for Accessibility" is available.'>
-        Show Reading Mode
+        Show Reading mode
       </message>
       <message name="IDS_HIDE_READING_MODE_TEXT" desc='Message shown on the reader mode button bar, to invite the user to tap to close reading mode. Returns user to a non-distilled version of the same web page.'>
-        Hide Reading Mode
+        Hide Reading mode
       </message>
       <message name="IDS_READER_MODE_CPA_BUTTON_TEXT" desc="Message shown on the reader mode CPA button, to invite the user to tap to open a reading mode.">
-        Reading Mode
+        Reading mode
       </message>
       <message name="IDS_READER_MODE_MESSAGE_TITLE" desc="Message shown on the reader mode prompt, to invite the user to tap to open a reading mode.">
-        View Reading Mode?
+        View Reading mode?
       </message>
       <message name="IDS_READER_MODE_MESSAGE_BUTTON" desc="The label for the button to open the current page in reader mode.">
         View
@@ -7037,7 +7037,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 
       <!-- Reader mode -->
       <message name="IDS_READER_MODE_BOTTOM_SHEET_TITLE" desc="Title of the Reading Mode bottom sheet. [CHAR_LIMIT=27]">
-        Reading Mode
+        Reading mode
       </message>
       <message name="IDS_READER_MODE_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Content description of the Reading Mode bottom sheet informing the user to swipe up to open the preferences bottom sheet.">
         Reading mode swipe up for preferences

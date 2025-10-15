@@ -65,8 +65,8 @@ public class ReaderModeBottomSheetRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_READER_MODE)
-                    .setRevision(5)
-                    .setDescription("Updated styling and fixed font styles in buttons")
+                    .setRevision(6)
+                    .setDescription("Updated capitalization of bottomsheet title")
                     .build();
 
     private @Captor ArgumentCaptor<ThemeColorProvider.ThemeColorObserver> mThemeColorObserverCaptor;
@@ -158,15 +158,15 @@ public class ReaderModeBottomSheetRenderTest {
 
     public @ColorInt int getThemeColor(@Theme.EnumType int theme) {
         if (mNightModeEnabled) {
-            return Color.parseColor("#BF9A73");
+            return Color.parseColor("#1A1A1A");
         }
         switch (theme) {
             case Theme.LIGHT:
                 return Color.parseColor("#F5F5F5");
             case Theme.SEPIA:
-                return Color.parseColor("#1A1A1A");
-            case Theme.DARK:
                 return Color.parseColor("#BF9A73");
+            case Theme.DARK:
+                return Color.parseColor("#1A1A1A");
             default:
                 throw new AssertionError();
         }

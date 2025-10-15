@@ -167,8 +167,7 @@ public class ReaderModeToolbarButtonControllerTest {
         when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
         when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
-        assertEquals(
-                "Hide Reading Mode",
+        assertEquals("Hide Reading mode",
                 controller.getButtonDataForTesting().getButtonSpec().getContentDescription());
         assertEquals(R.string.hide_reading_mode_text, controller.getButtonDataForTesting().getButtonSpec().getHoverTooltipTextId());
         assertTrue(controller.getButtonDataForTesting().getButtonSpec().isChecked());
@@ -185,8 +184,7 @@ public class ReaderModeToolbarButtonControllerTest {
         when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
         when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
-        assertEquals(
-                "Hide Reading Mode",
+        assertEquals("Hide Reading mode",
                 controller.getButtonDataForTesting().getButtonSpec().getContentDescription());
 
         // Now do the same thing with a null tab.
