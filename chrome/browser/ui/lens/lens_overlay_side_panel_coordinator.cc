@@ -196,7 +196,6 @@ void LensOverlaySidePanelCoordinator::RecordAndShowSidePanelErrorPage() {
 
 void LensOverlaySidePanelCoordinator::SetSidePanelNewTabUrl(const GURL& url) {
   side_panel_new_tab_url_ = lens::RemoveSidePanelURLParameters(url);
-  side_panel_coordinator_->UpdateNewTabButtonState();
 }
 
 void LensOverlaySidePanelCoordinator::OnEntryWillHide(

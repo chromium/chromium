@@ -584,15 +584,6 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
   }
 }
 
-void SidePanelCoordinator::UpdateNewTabButtonState() {
-  if (!current_key()) {
-    return;
-  }
-  if (SidePanelEntry* entry = GetEntryForUniqueKey(*current_key())) {
-    UpdateSidePanelHeader(entry);
-  }
-}
-
 SidePanelEntry* SidePanelCoordinator::GetCurrentSidePanelEntryForTesting() {
   return GetEntryForUniqueKey(*current_key());
 }

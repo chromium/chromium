@@ -60,10 +60,6 @@ class SidePanelCoordinator final
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
 
-  // Re-runs open new tab URL check and sets button state to enabled/disabled
-  // accordingly.
-  void UpdateNewTabButtonState();
-
   // SidePanelUIBase:
   using SidePanelUIBase::Show;
   void Close(bool suppress_animations) override;
