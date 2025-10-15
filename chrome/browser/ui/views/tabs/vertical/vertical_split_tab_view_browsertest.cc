@@ -72,11 +72,8 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
   auto split = root_node.children()[1]->get_view_for_testing()->children()[1];
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
@@ -113,11 +110,8 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
   auto split = root_node.children()[1]->get_view_for_testing()->children()[1];
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
@@ -158,11 +152,8 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
   auto split = root_node.children()[1]->get_view_for_testing()->children()[1];
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =

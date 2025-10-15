@@ -39,13 +39,24 @@ class TabCollectionNodeBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  // Appends a new tab to the end of the tab strip.
+  // Appends a new unpinned tab to the end of the tab strip.
   content::WebContents* AppendTab() {
     std::unique_ptr<content::WebContents> contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(browser()->profile()));
     content::WebContents* raw_contents = contents.get();
     browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+    return raw_contents;
+  }
+
+  // Inserts a new unpinned tab to the specified index in the tab strip.
+  content::WebContents* InsertTab(int index) {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser()->profile()));
+    content::WebContents* raw_contents = contents.get();
+    browser()->tab_strip_model()->InsertWebContentsAt(
+        index, std::move(contents), ADD_INHERIT_OPENER | ADD_ACTIVE);
     return raw_contents;
   }
 
@@ -139,11 +150,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -174,11 +182,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -208,11 +213,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -247,11 +249,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -299,11 +298,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -340,11 +336,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // Root -> Pinned Node, Unpinned Node
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -383,11 +376,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !root_node.children().empty(); }));
@@ -455,11 +445,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -504,10 +491,8 @@ std::unique_ptr<views::View> CreateViewWithMiddleView(
   if (!*middle_view_ptr) {
     *middle_view_ptr = view->AddChildView(std::make_unique<views::View>());
     node->set_add_child_to_node(
-        base::BindRepeating(static_cast<views::View* (
-                                views::View::*)(std::unique_ptr<views::View>)>(
-                                &views::View::AddChildView),
-                            base::Unretained(*middle_view_ptr)));
+        base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+            &views::View::AddChildViewAt, base::Unretained(*middle_view_ptr)));
   }
   return view;
 }
@@ -528,11 +513,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -562,10 +544,9 @@ namespace {
 
 std::unique_ptr<views::View> CreateView(TabCollectionNode* node) {
   auto view = std::make_unique<views::View>();
-  node->set_add_child_to_node(base::BindRepeating(
-      static_cast<views::View* (views::View::*)(std::unique_ptr<views::View>)>(
-          &views::View::AddChildView),
-      base::Unretained(view.get())));
+  node->set_add_child_to_node(
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildViewAt, base::Unretained(view.get())));
   return view;
 }
 
@@ -581,11 +562,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GetDirectChildren) {
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !root_node.children().empty(); }));
@@ -619,11 +597,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !root_node.children().empty(); }));
@@ -665,11 +640,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // Wait for the root node to populate its children.
   ASSERT_TRUE(
@@ -703,11 +675,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabsCreatedEvent) {
           ->GetFeatures()
           .tab_strip_service_feature()
           ->GetTabStripService(),
-      parent_view.get(),
-      base::BindRepeating(static_cast<views::View* (
-                              views::View::*)(std::unique_ptr<views::View>)>(
-                              &views::View::AddChildView),
-                          base::Unretained(parent_view.get())));
+      base::BindRepeating<RootTabCollectionNode::CustomAddToParentView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -740,4 +709,24 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabsCreatedEvent) {
             TabCollectionNode::Type::kTab);
   EXPECT_EQ(unpinned_node->children()[1]->GetType(),
             TabCollectionNode::Type::kTab);
+
+  TabCollectionNode* initial_unpinned_tab_node =
+      unpinned_node->children()[0].get();
+  TabCollectionNode* appended_unpinned_tab_node =
+      unpinned_node->children()[1].get();
+
+  // Insert a tab between the two unpinned tabs.
+  InsertTab(2);
+
+  // The unpinned Node should contain three tabs (the initial one, then the new
+  // one added by InsertTab, then the previous one that was added by AppendTab).
+  ASSERT_EQ(unpinned_node->children().size(), 3u);
+  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0].get(), initial_unpinned_tab_node);
+  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
+            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[2]->GetType(),
+            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[2].get(), appended_unpinned_tab_node);
 }

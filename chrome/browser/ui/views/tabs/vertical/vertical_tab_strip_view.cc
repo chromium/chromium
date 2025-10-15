@@ -50,7 +50,14 @@ VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node) {
   SetScrollViewProperties(unpinned_tabs_scroll_view_);
 
   collection_node->set_add_child_to_node(base::BindRepeating(
-      &VerticalTabStripView::AddScrollViewContents, base::Unretained(this)));
+      // Can't use base::IgnoreArgs here as that can only be used for the
+      // initial parameters, and there doesn't seem to be a helper for swapping
+      // argument order.
+      [](VerticalTabStripView* vertical_tab_strip_view,
+         std::unique_ptr<views::View> view, size_t _) {
+        return vertical_tab_strip_view->AddScrollViewContents(std::move(view));
+      },
+      base::Unretained(this)));
 }
 
 VerticalTabStripView::~VerticalTabStripView() = default;
