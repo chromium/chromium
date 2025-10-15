@@ -162,6 +162,12 @@ constexpr char kHatsSurveyTriggerSafetyHubAndroid[] =
     "safety_hub_android_survey";
 constexpr char kHatsSurveyOrganicTriggerSafetyHubAndroid[] =
     "safety_hub_android_organic_survey";
+constexpr char kHatsSurveyTriggerSigninFirstRun[] = "signin-first-run";
+constexpr char kHatsSurveyTriggerSigninWeb[] = "signin-web";
+constexpr char kHatsSurveyTriggerSigninNtpAvatar[] = "signin-ntp-avatar";
+constexpr char kHatsSurveyTriggerSigninNtpPromo[] = "signin-ntp-promo";
+constexpr char kHatsSurveyTriggerSigninBookmarkPromo[] =
+    "signin-bookmark-promo";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -794,7 +800,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
               kPasswordChangeBreachedPasswordsCount,
           password_manager::features_util::kPasswordChangeSavedPasswordsCount});
 
-#else
+#else  // BUILDFLAG(IS_ANDROID)
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
                               kHatsSurveyTriggerAndroidStartupSurvey);
 
@@ -819,6 +825,29 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                               features::kSafetyHubAndroidOrganicTriggerId.Get(),
                               product_specific_bits_data_fields,
                               product_specific_string_data);
+
+  std::vector<std::string> signin_string_psd_fields{"Channel", "Chrome Version",
+                                                    "Number of Google Accounts",
+                                                    "Sign-in Status"};
+  survey_configs.emplace_back(&switches::kChromeAndroidIdentitySurveyFirstRun,
+                              kHatsSurveyTriggerSigninFirstRun, std::nullopt,
+                              std::vector<std::string>{},
+                              signin_string_psd_fields);
+  survey_configs.emplace_back(
+      &switches::kChromeAndroidIdentitySurveyWeb, kHatsSurveyTriggerSigninWeb,
+      std::nullopt, std::vector<std::string>{}, signin_string_psd_fields);
+  survey_configs.emplace_back(&switches::kChromeAndroidIdentitySurveyNtpAvatar,
+                              kHatsSurveyTriggerSigninNtpAvatar, std::nullopt,
+                              std::vector<std::string>{},
+                              signin_string_psd_fields);
+  survey_configs.emplace_back(&switches::kChromeAndroidIdentitySurveyNtpPromo,
+                              kHatsSurveyTriggerSigninNtpPromo, std::nullopt,
+                              std::vector<std::string>{},
+                              signin_string_psd_fields);
+  survey_configs.emplace_back(
+      &switches::kChromeAndroidIdentitySurveyBookmarkPromo,
+      kHatsSurveyTriggerSigninBookmarkPromo, std::nullopt,
+      std::vector<std::string>{}, signin_string_psd_fields);
 
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 

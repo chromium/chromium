@@ -81,14 +81,19 @@ extern const char kHatsSurveyTriggerWallpaperSearch[];
 extern const char kHatsSurveyTriggerComposeAcceptance[];
 extern const char kHatsSurveyTriggerComposeClose[];
 extern const char kHatsSurveyTriggerComposeNudgeClose[];
-#endif  // BUILDFLAG(ENABLE_COMPOSE)
+#endif  // #if BUILDFLAG(ENABLE_COMPOSE)
 extern const char kHatsSurveyTriggerWhatsNew[];
-#else
+#else  // BUILDFLAG(IS_ANDROID)
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
 extern const char kHatsSurveyTriggerQuickDelete[];
 extern const char kHatsSurveyTriggerClearBrowsingData[];
 extern const char kHatsSurveyTriggerSafetyHubAndroid[];
 extern const char kHatsSurveyOrganicTriggerSafetyHubAndroid[];
+extern const char kHatsSurveyTriggerSigninFirstRun[];
+extern const char kHatsSurveyTriggerSigninWeb[];
+extern const char kHatsSurveyTriggerSigninNtpAvatar[];
+extern const char kHatsSurveyTriggerSigninNtpPromo[];
+extern const char kHatsSurveyTriggerSigninBookmarkPromo[];
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

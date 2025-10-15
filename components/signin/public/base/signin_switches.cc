@@ -94,6 +94,19 @@ BASE_FEATURE(kCacheIdentityListInChrome, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCctSignInPrompt, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kChromeAndroidIdentitySurveyFirstRun,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kChromeAndroidIdentitySurveyWeb,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kChromeAndroidIdentitySurveyNtpAvatar,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kChromeAndroidIdentitySurveyNtpPromo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kChromeAndroidIdentitySurveyBookmarkPromo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kChromeIdentitySurveyAddressBubbleSignin,
              base::FEATURE_DISABLED_BY_DEFAULT);
