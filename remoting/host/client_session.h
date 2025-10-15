@@ -44,6 +44,7 @@
 #include "remoting/protocol/clipboard_filter.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/connection_to_client.h"
+#include "remoting/protocol/coordinate_converter.h"
 #include "remoting/protocol/data_channel_manager.h"
 #include "remoting/protocol/display_size.h"
 #include "remoting/protocol/errors.h"
@@ -301,11 +302,11 @@ class ClientSession : public protocol::HostStub,
   // whenever the screen id associated with the active window changes.
   void OnActiveDisplayChanged(webrtc::ScreenId display);
 
-  // Sets the fallback geometry on `fractional_input_filter_` according to the
+  // Sets the fallback geometry on `coordinate_converter` according to the
   // current display-layout and selected display index. This is only used for
   // single-stream mode, when the client provides fractional-coordinates without
   // any screen_id.
-  void UpdateFractionalFilterFallback();
+  void UpdateCoordinateConverterFallback();
 
   raw_ptr<EventHandler> event_handler_;
 
@@ -320,6 +321,9 @@ class ClientSession : public protocol::HostStub,
 
   // Pending actions to run once the desktop environment has been created.
   std::vector<base::OnceClosure> desktop_environment_ready_callbacks_;
+
+  // Used to convert fractional coordinates to absolute coordinates.
+  protocol::CoordinateConverter coordinate_converter_;
 
   // Tracker used to release pressed keys and buttons when disconnecting.
   protocol::InputEventTracker input_tracker_;

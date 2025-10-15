@@ -7,39 +7,18 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/numerics/safe_conversions.h"
-#include "remoting/base/logging.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting::protocol {
 
-namespace {
-
-// Scales `fraction` (between 0 and 1) to a value between `minimum` and
-// (minimum + size - 1).
-int ScaleAndClamp(float fraction, int minimum, int size) {
-  int scaled = base::ClampRound(fraction * size);
-  scaled = std::clamp(scaled, 0, size - 1);
-  return scaled + minimum;
+FractionalInputFilter::FractionalInputFilter(
+    InputStub* input_stub,
+    const CoordinateConverter* converter)
+    : InputFilter(input_stub), converter_(converter) {
+  DCHECK(converter_);
 }
-
-}  // namespace
-
-FractionalInputFilter::FractionalInputFilter() = default;
-
-FractionalInputFilter::FractionalInputFilter(InputStub* input_stub)
-    : InputFilter(input_stub) {}
 
 FractionalInputFilter::~FractionalInputFilter() = default;
-
-void FractionalInputFilter::set_video_layout(const VideoLayout& layout) {
-  video_layout_ = layout;
-}
-
-void FractionalInputFilter::set_fallback_geometry(
-    webrtc::DesktopRect geometry) {
-  fallback_geometry_ = geometry;
-}
 
 void FractionalInputFilter::InjectMouseEvent(const MouseEvent& event) {
   if (!event.has_fractional_coordinate()) {
@@ -47,12 +26,12 @@ void FractionalInputFilter::InjectMouseEvent(const MouseEvent& event) {
     return;
   }
 
-  int new_x;
-  int new_y;
-  if (ComputeXY(new_x, new_y, event)) {
+  auto result =
+      converter_->ToGlobalAbsoluteCoordinate(event.fractional_coordinate());
+  if (result) {
     MouseEvent new_event(event);
-    new_event.set_x(new_x);
-    new_event.set_y(new_y);
+    new_event.set_x(result->x());
+    new_event.set_y(result->y());
     InputFilter::InjectMouseEvent(new_event);
   }
 }
@@ -66,80 +45,20 @@ void FractionalInputFilter::InjectTouchEvent(const TouchEvent& event) {
   for (TouchEventPoint& touch_point : *(new_event.mutable_touch_points())) {
     // Events with no fractional-coordinates should be passed through unchanged.
     if (touch_point.has_fractional_coordinate()) {
-      int new_x;
-      int new_y;
-      if (!ComputeXY(new_x, new_y, touch_point)) {
+      auto result = converter_->ToGlobalAbsoluteCoordinate(
+          touch_point.fractional_coordinate());
+      if (!result) {
         // A fractional coordinate was found, but the calculation failed, so
         // drop the event completely. ComputeXY() will already log a failure in
         // this case.
         return;
       }
-      touch_point.set_x(new_x);
-      touch_point.set_y(new_y);
+      touch_point.set_x(result->x());
+      touch_point.set_y(result->y());
     }
   }
 
   InputFilter::InjectTouchEvent(new_event);
-}
-
-bool FractionalInputFilter::ComputeXY(int& new_x,
-                                      int& new_y,
-                                      const auto& event) {
-  if (!event.has_fractional_coordinate()) {
-    return false;
-  }
-  const FractionalCoordinate& fractional = event.fractional_coordinate();
-  if (!fractional.has_x() || !fractional.has_y()) {
-    LOG(ERROR) << "Event has incomplete fractional coordinates.";
-    return false;
-  }
-
-  int bounds_x;
-  int bounds_y;
-  int bounds_width;
-  int bounds_height;
-  if (fractional.has_screen_id()) {
-    auto screen_id = fractional.screen_id();
-    VLOG(3) << "screen_id = " << screen_id;
-    auto it = std::ranges::find_if(video_layout_.video_track(),
-                                   [screen_id](const VideoTrackLayout& track) {
-                                     return track.has_screen_id() &&
-                                            track.screen_id() == screen_id;
-                                   });
-    if (it == video_layout_.video_track().end()) {
-      LOG(ERROR) << "screen_id " << screen_id
-                 << " not found in the video layout.";
-      return false;
-    }
-
-    const VideoTrackLayout& monitor = *it;
-
-    DCHECK(monitor.has_position_x());
-    DCHECK(monitor.has_position_y());
-    DCHECK(monitor.has_width());
-    DCHECK(monitor.has_height());
-    bounds_x = monitor.position_x();
-    bounds_y = monitor.position_y();
-    bounds_width = monitor.width();
-    bounds_height = monitor.height();
-  } else {
-    if (fallback_geometry_.is_empty()) {
-      LOG(ERROR)
-          << "Fractional coordinates have no screen_id and no fallback is set.";
-      return false;
-    }
-
-    bounds_x = fallback_geometry_.left();
-    bounds_y = fallback_geometry_.top();
-    bounds_width = fallback_geometry_.width();
-    bounds_height = fallback_geometry_.height();
-  }
-
-  new_x = ScaleAndClamp(fractional.x(), bounds_x, bounds_width);
-  new_y = ScaleAndClamp(fractional.y(), bounds_y, bounds_height);
-  VLOG(3) << "(" << fractional.x() << ", " << fractional.y() << ") -> ("
-          << new_x << ", " << new_y << ")";
-  return true;
 }
 
 }  // namespace remoting::protocol
