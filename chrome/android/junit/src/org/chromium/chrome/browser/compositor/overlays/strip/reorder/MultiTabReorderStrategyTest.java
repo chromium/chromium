@@ -26,7 +26,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -197,12 +196,11 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         verify(mModel).setIndex(eq(2), anyInt());
 
         // Verify the ungrouped tab is merged into the primary tab's group.
-        ArgumentCaptor<List<Tab>> mergeCaptor = ArgumentCaptor.forClass(List.class);
         Tab expectedPrimaryTab = mModel.getTabById(mGroupedTab2.getTabId());
         verify(mTabGroupModelFilter)
                 .mergeListOfTabsToGroup(
-                        mergeCaptor.capture(), eq(expectedPrimaryTab), anyInt(), anyInt());
-        assertEquals("Should merge 2 tabs.", 2, mergeCaptor.getValue().size());
+                        mTabListCaptor.capture(), eq(expectedPrimaryTab), anyInt(), anyInt());
+        assertEquals("Should merge 2 tabs.", 2, mTabListCaptor.getValue().size());
 
         // Verify no reorder operations took place.
         verify(mModel, never()).moveTab(anyInt(), anyInt());
@@ -225,14 +223,13 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         verify(mModel).setIndex(eq(4), anyInt());
 
         // Verify ungroup is called for the selected tabs
-        ArgumentCaptor<List<Tab>> ungroupCaptor = ArgumentCaptor.forClass(List.class);
         verify(mTabGroupModelFilter.getTabUngrouper())
-                .ungroupTabs(ungroupCaptor.capture(), anyBoolean(), anyBoolean(), any());
-        assertEquals("Should ungroup 1 tabs.", 1, ungroupCaptor.getValue().size());
+                .ungroupTabs(mTabListCaptor.capture(), anyBoolean(), anyBoolean(), any());
+        assertEquals("Should ungroup 1 tabs.", 1, mTabListCaptor.getValue().size());
         assertEquals(
                 "Incorrect tab ungrouped.",
                 mGroupedTab1.getTabId(),
-                ungroupCaptor.getValue().get(0).getId());
+                mTabListCaptor.getValue().get(0).getId());
 
         // Verify tabs are gathered. After ungrouping, mGroupedTab1 (model index 1) should move
         // next to mUngroupedTab2 (model index 4), so to index 4.

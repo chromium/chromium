@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -125,6 +126,7 @@ import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -225,6 +227,7 @@ public class StripLayoutHelperTest {
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
     @Captor private ArgumentCaptor<Callback<TabClosureParams>> mTabRemoverCallbackCaptor;
+    @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
 
     private Activity mActivity;
     private Context mContext;
@@ -6504,7 +6507,8 @@ public class StripLayoutHelperTest {
         // Expected model: 0, 1, [2, 3], 4
         verify(mTabUngrouper, times(1))
                 .ungroupTabs(eq(List.of(mModel.getTabAt(4))), eq(true), eq(true), any());
-        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mModel, never()).moveTab(anyInt(), anyInt());
     }
 
@@ -6526,7 +6530,14 @@ public class StripLayoutHelperTest {
         // Verify: Tab 4 has joined the group.
         // Original model: 0, 1, [2, 3], 4
         // Expected model: 0, 1, [2, 3, 4]
-        verify(mTabGroupModelFilter, times(1)).mergeTabsToGroup(4, 3, true);
+        Tab expectedDestinationTab = mModel.getTabById(3);
+        verify(mTabGroupModelFilter, times(1))
+                .mergeListOfTabsToGroup(
+                        mTabListCaptor.capture(),
+                        eq(expectedDestinationTab),
+                        eq(null),
+                        eq(MergeNotificationType.DONT_NOTIFY));
+        assertTrue(mTabListCaptor.getValue().contains(mModel.getTabById(4)));
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
         verify(mModel, never()).moveTab(anyInt(), anyInt());
     }
@@ -6549,7 +6560,14 @@ public class StripLayoutHelperTest {
         // Verify: Tab 1 has joined the group.
         // Original model: 0, 1, [2, 3], 4
         // Expected model: 0, [1, 2, 3], 4
-        verify(mTabGroupModelFilter, times(1)).mergeTabsToGroup(1, 2, true);
+        Tab expectedDestinationTab = mModel.getTabById(2);
+        verify(mTabGroupModelFilter, times(1))
+                .mergeListOfTabsToGroup(
+                        mTabListCaptor.capture(),
+                        eq(expectedDestinationTab),
+                        eq(0),
+                        eq(MergeNotificationType.DONT_NOTIFY));
+        assertTrue(mTabListCaptor.getValue().contains(mModel.getTabById(1)));
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
         verify(mModel, never()).moveTab(anyInt(), anyInt());
     }
@@ -6572,7 +6590,8 @@ public class StripLayoutHelperTest {
         // Verify: Tab 1 has left the group and is now at index 0.
         verify(mTabUngrouper, times(1))
                 .ungroupTabs(eq(List.of(mModel.getTabAt(0))), eq(false), eq(true), any());
-        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mModel, never()).moveTab(anyInt(), anyInt());
     }
 
@@ -6593,7 +6612,8 @@ public class StripLayoutHelperTest {
 
         // Verify: The order within the group has changed.
         verify(mModel, times(1)).moveTab(0, 1);
-        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6615,7 +6635,8 @@ public class StripLayoutHelperTest {
         // Original model: 0, 1, 2, 3, 4
         // Expected model: 0, 2, 1, 3, 4
         verify(mModel, times(1)).moveTab(1, 2);
-        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6638,7 +6659,8 @@ public class StripLayoutHelperTest {
 
         // Verify: The tab order has changed.
         verify(mModel, times(1)).moveTab(0, 2);
-        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -6661,7 +6683,8 @@ public class StripLayoutHelperTest {
 
         // Verify: The tab order has changed.
         verify(mModel, times(1)).moveTab(3, 1);
-        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 

@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -43,8 +42,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-
-import java.util.List;
 
 /** Tests for {@link TabReorderStrategy}. */
 @Config(qualifiers = "sw600dp")
@@ -461,7 +458,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private void verifyMergedToGroup() {
         verify(mModel, never()).moveTab(anyInt(), anyInt());
         verify(mTabUnGrouper, never()).ungroupTabs(anyList(), anyBoolean(), anyBoolean(), any());
-        verify(mTabGroupModelFilter).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(any(), any(), any(), anyInt());
     }
 
     private void verifySuccessfulDrag(float expectedOffset) {
@@ -472,7 +469,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private void verifyFailedDrag(float expectedOffset) {
         verify(mModel, never()).moveTab(anyInt(), anyInt());
         verify(mTabUnGrouper, never()).ungroupTabs(anyList(), anyBoolean(), anyBoolean(), any());
-        verify(mTabGroupModelFilter, never()).mergeTabsToGroup(anyInt(), anyInt());
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), any(), anyInt());
         verify(mAnimationHost, times(1)).startAnimations(anyList(), isNull());
         assertEquals("Unexpected offset.", expectedOffset, mInteractingTab.getOffsetX(), DELTA);
     }
@@ -496,10 +493,9 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void mockMergeToGroup() {
-        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
         doAnswer(
                         invocation -> {
-                            Tab tab = mModel.getTabById(captor.getValue());
+                            Tab tab = mModel.getTabById(mTabCaptor.getValue().getId());
                             assertThat(tab).isNotNull();
                             Token tabGroupId = tab.getTabGroupId();
                             int count = mTabGroupModelFilter.getTabCountForGroup(tabGroupId);
@@ -508,16 +504,14 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
                             return null;
                         })
                 .when(mTabGroupModelFilter)
-                .mergeTabsToGroup(anyInt(), captor.capture(), anyBoolean());
+                .mergeListOfTabsToGroup(any(), mTabCaptor.capture(), any(), anyInt());
     }
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void mockUnGroup() {
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<List<Tab>> captor = ArgumentCaptor.forClass(List.class);
         doAnswer(
                         invocation -> {
-                            Tab tab = captor.getValue().get(0);
+                            Tab tab = mTabListCaptor.getValue().get(0);
                             Token tabGroupId = tab.getTabGroupId();
                             int count = mTabGroupModelFilter.getTabCountForGroup(tabGroupId);
                             when(mTabGroupModelFilter.getTabCountForGroup(tabGroupId))
@@ -525,6 +519,6 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
                             return null;
                         })
                 .when(mTabUnGrouper)
-                .ungroupTabs(captor.capture(), anyBoolean(), anyBoolean(), any());
+                .ungroupTabs(mTabListCaptor.capture(), anyBoolean(), anyBoolean(), any());
     }
 }

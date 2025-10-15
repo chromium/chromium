@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDele
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -222,11 +223,18 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         }
 
         // 2. Merge all tabs in dragged tab group to hovered tab's group at drop index.
+        List<Tab> tabsToMerge = new ArrayList<>();
         for (int tabId : tabIds) {
-            mTabGroupModelFilter.mergeTabsToGroup(
-                    tabId, destinationTabId, /* skipUpdateTabModel= */ true);
-            mModel.moveTab(tabId, dropIndex);
+            // Need to reverse, since the list of tab ids was reversed.
+            tabsToMerge.add(0, mModel.getTabByIdChecked(tabId));
         }
+        List<Tab> destinationTabList = mTabGroupModelFilter.getRelatedTabList(destinationTabId);
+        int mergeIndex = dropIndex - mModel.indexOf(destinationTabList.get(0));
+        mTabGroupModelFilter.mergeListOfTabsToGroup(
+                tabsToMerge,
+                mModel.getTabByIdChecked(destinationTabId),
+                mergeIndex,
+                MergeNotificationType.DONT_NOTIFY);
 
         // 3. Animate bottom indicator. Done after merging the dragged tab group to group,
         // so that the calculated bottom indicator width will be correct.

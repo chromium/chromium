@@ -8,9 +8,12 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.floatThat;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -32,6 +35,7 @@ import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
@@ -379,16 +383,25 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                 mStrategy.getInteractingViewDuringStopForTesting());
 
         // Call
-        List<Integer> list = new ArrayList<>(Arrays.asList(100, 101, 102)); // Arbitrary values.
-        int dropIndex = 1;
+        List<Integer> list = new ArrayList<>(Arrays.asList(TAB_ID1, TAB_ID2));
+        int dropIndex = 3;
         mStrategy.handleDrop(mGroupTitles, list, dropIndex);
 
         // Verify
-        for (Integer tabId : list) {
-            verify(mTabGroupModelFilter).mergeTabsToGroup(tabId, INTERACTING_VIEW_ID, true);
-            verify(mModel).moveTab(tabId, dropIndex);
-            verify(mAnimationHost, times(3)).startAnimations(anyList(), any());
+        Tab expectedPrimaryTab = mModel.getTabByIdChecked(INTERACTING_VIEW_ID);
+        int expectedMergeIndex = 0;
+        verify(mTabGroupModelFilter)
+                .mergeListOfTabsToGroup(
+                        mTabListCaptor.capture(),
+                        eq(expectedPrimaryTab),
+                        eq(expectedMergeIndex),
+                        eq(MergeNotificationType.DONT_NOTIFY));
+        List<Tab> mergedTabs = mTabListCaptor.getValue();
+        assertEquals("Unexpected number of tabs.", list.size(), mergedTabs.size());
+        for (Tab tab : mergedTabs) {
+            assertTrue("Unexpected merged tab.", list.contains(tab.getId()));
         }
+        verify(mAnimationHost, times(3)).startAnimations(anyList(), any());
         assertNull(
                 "mInteractingViewDuringStop should be null",
                 mStrategy.getInteractingViewDuringStopForTesting());
@@ -406,9 +419,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         mStrategy.handleDrop(mGroupTitles, Collections.singletonList(draggedTabId), dropIndex);
 
         // Verify
-        verify(mTabGroupModelFilter, times(0))
-                .mergeTabsToGroup(draggedTabId, INTERACTING_VIEW_ID, true);
-        verify(mModel, times(0)).moveTab(draggedTabId, dropIndex);
+        verify(mTabGroupModelFilter, never())
+                .mergeListOfTabsToGroup(anyList(), any(), anyInt(), anyInt());
         assertNull(
                 "mInteractingViewDuringStop should be null",
                 mStrategy.getInteractingViewDuringStopForTesting());

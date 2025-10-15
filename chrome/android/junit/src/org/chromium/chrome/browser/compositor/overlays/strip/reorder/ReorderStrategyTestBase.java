@@ -14,6 +14,8 @@ import android.graphics.PointF;
 import android.view.View;
 
 import org.junit.Rule;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -88,6 +90,10 @@ public abstract class ReorderStrategyTestBase {
 
     protected StripLayoutTab mInteractingTab;
     protected StripLayoutGroupTitle mInteractingGroupTitle;
+
+    // Captors
+    @Captor ArgumentCaptor<List<Tab>> mTabListCaptor;
+    @Captor ArgumentCaptor<Tab> mTabCaptor;
 
     protected void setup() {
         mActivity = Robolectric.setupActivity(Activity.class);
