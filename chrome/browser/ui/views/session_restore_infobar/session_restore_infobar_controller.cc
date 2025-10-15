@@ -43,7 +43,6 @@ SessionRestoreInfobarController::~SessionRestoreInfobarController() = default;
 
 void SessionRestoreInfobarController::MaybeShowInfoBar(
     Profile& profile,
-    bool was_restarted,
     bool is_post_crash_launch) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -52,9 +51,8 @@ void SessionRestoreInfobarController::MaybeShowInfoBar(
     return;
   }
 
-  model_ = std::make_unique<SessionRestoreInfobarModel>(profile, was_restarted,
+  model_ = std::make_unique<SessionRestoreInfobarModel>(profile,
                                                         is_post_crash_launch);
-
 
   if (InfoBarShownMaxTimes(profile.GetPrefs())) {
     return;
@@ -89,14 +87,10 @@ SessionRestoreInfobarController::GetInfobarMessageType() {
   switch (model_->GetSessionRestoreMessageValue()) {
     case SessionRestoreInfobarModel::SessionRestoreMessageValue::
         ContinueWhereLeftOff:
-      if (model_->IsBrowserRestarting()) {
         return SessionRestoreInfoBarDelegate::InfobarMessageType::
             kTurnOffFromRestart;
-      }
-      return SessionRestoreInfoBarDelegate::InfobarMessageType::kNone;
     case SessionRestoreInfobarModel::SessionRestoreMessageValue::OpenNewTabPage:
-      if (model_->IsDefaultSessionRestorePref() &&
-          model_->IsBrowserRestarting()) {
+      if (model_->IsDefaultSessionRestorePref()) {
         return SessionRestoreInfoBarDelegate::InfobarMessageType::
             kTurnOnSessionRestore;
       }

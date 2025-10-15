@@ -63,18 +63,81 @@ class SessionRestoreInfobarInteractiveTest
  protected:
   bool IsDefaultContinueSession() const { return GetParam(); }
 
-  void CreateInfobar(Browser* browser,
-                     bool was_restarted,
-                     bool is_post_crash_launch) {
+  void CreateInfobar(Browser* browser, bool is_post_crash_launch) {
     auto* controller =
         session_restore_infobar::SessionRestoreInfobarController::From(browser);
-    controller->MaybeShowInfoBar(*browser->profile(), was_restarted,
-                                 is_post_crash_launch);
+    controller->MaybeShowInfoBar(*browser->profile(), is_post_crash_launch);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+class SessionRestoreInfobarDefaultTest : public InteractiveBrowserTest {
+ public:
+  SessionRestoreInfobarDefaultTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSessionRestoreInfobar,
+          {{features::kSetDefaultToContinueSession.name, "false"}}}},
+        {});
+  }
+  ~SessionRestoreInfobarDefaultTest() override = default;
+  SessionRestoreInfobarDefaultTest(const SessionRestoreInfobarDefaultTest&) =
+      delete;
+  SessionRestoreInfobarDefaultTest& operator=(
+      const SessionRestoreInfobarDefaultTest&) = delete;
+
+ protected:
+  void CreateInfobar(Browser* browser, bool is_post_crash_launch) {
+    auto* controller =
+        session_restore_infobar::SessionRestoreInfobarController::From(browser);
+    controller->MaybeShowInfoBar(*browser->profile(), is_post_crash_launch);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class SessionRestoreInfobarDefaultOffTest : public InteractiveBrowserTest {
+ public:
+  SessionRestoreInfobarDefaultOffTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSessionRestoreInfobar,
+          {{features::kSetDefaultToContinueSession.name, "true"}}}},
+        {});
+  }
+  ~SessionRestoreInfobarDefaultOffTest() override = default;
+  SessionRestoreInfobarDefaultOffTest(
+      const SessionRestoreInfobarDefaultOffTest&) = delete;
+  SessionRestoreInfobarDefaultOffTest& operator=(
+      const SessionRestoreInfobarDefaultOffTest&) = delete;
+
+ protected:
+  void CreateInfobar(Browser* browser, bool is_post_crash_launch) {
+    auto* controller =
+        session_restore_infobar::SessionRestoreInfobarController::From(browser);
+    controller->MaybeShowInfoBar(*browser->profile(), is_post_crash_launch);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that the session restore infobar has the correct message value when the
+// browser session is restored.
+IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarDefaultOffTest,
+                       InfobarMessageValueForNewSession) {
+  CreateInfobar(browser(), false);
+
+  RunTestSequence(
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+      CheckView(ConfirmInfoBar::kInfoBarElementId, [](ConfirmInfoBar* infobar) {
+        return static_cast<SessionRestoreInfoBarDelegate*>(infobar->delegate())
+                   ->GetMessageText() ==
+               l10n_util::GetStringUTF16(
+                   IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_RESTART);
+      }));
+}
 
 // Test that the session restore infobar has no value set by the user and the
 // untouched session restore preference shows the correct message.
@@ -84,15 +147,11 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
   RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
 }
 
-// Test that the session restore infobar is shown on browser restart when the
+// Test that the session restore infobar is shown on a new session when the
 // session restore preference is at its default value.
-IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
-                       InfoBarShownOnRestartWithDefaultPref) {
-  if (IsDefaultContinueSession()) {
-    return;
-  }
-
-  CreateInfobar(browser(), true, false);
+IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarDefaultTest,
+                       InfoBarShownOnNewSessionWithDefaultPref) {
+  CreateInfobar(browser(), false);
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       CheckView(ConfirmInfoBar::kInfoBarElementId, [](ConfirmInfoBar* infobar) {
@@ -106,8 +165,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
 // are set to continue where they left off.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                        InfobarShownForSessionRestore) {
-
-  CreateInfobar(browser(), true, false);
+  CreateInfobar(browser(), false);
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId));
 }
 
@@ -117,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                        InfobarNotShownForOtherSettings) {
   browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 4);
 
-  CreateInfobar(browser(), false, false);
+  CreateInfobar(browser(), false);
   RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
 }
 
@@ -130,39 +188,17 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
   host_content_settings_map->SetDefaultContentSetting(
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 
-  CreateInfobar(browser(), true, false);
+  CreateInfobar(browser(), false);
   RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
 }
 
-// Test that the session restore infobar has the correct message value when the
-// browser session is restored.
-IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
-                       InfobarMessageValueForRestart) {
-  if (!IsDefaultContinueSession()) {
-    return;
-  }
-  CreateInfobar(browser(), true, false);
-
-  RunTestSequence(
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
-      CheckView(ConfirmInfoBar::kInfoBarElementId, [](ConfirmInfoBar* infobar) {
-        return static_cast<SessionRestoreInfoBarDelegate*>(infobar->delegate())
-                   ->GetMessageText() ==
-               l10n_util::GetStringUTF16(
-                   IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_RESTART);
-      }));
-}
 
 // Test that the session restore infobar has the correct message value when the
 // browser session is restored and the session restore preference is at its
 // default value.
-IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
-                       InfobarMessageValueForRestartWithDefaultPref) {
-  if (IsDefaultContinueSession()) {
-    return;
-  }
-
-  CreateInfobar(browser(), true, false);
+IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarDefaultTest,
+                       InfobarMessageValueForNewSessionWithDefaultPref) {
+  CreateInfobar(browser(), false);
 
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
@@ -175,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
 
 // Test that the session restore infobar is global and appears on all tabs.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest, InfobarIsGlobal) {
-    CreateInfobar(browser(), true, false);
+  CreateInfobar(browser(), false);
 
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   // Check that the infobar is also shown on new tabs.
@@ -188,7 +224,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest, InfobarIsGlobal) {
 // Test that dismissing one infobar dismisses all other infobars.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                        DismissOneInfobarDismissesAll) {
-    CreateInfobar(browser(), true, false);
+  CreateInfobar(browser(), false);
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   AddInstrumentedTab(kSecondTabContents, GURL("about:blank")),
                   WaitForShow(ConfirmInfoBar::kInfoBarElementId),
@@ -212,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
 // Test that the session restore infobar is dismissed when the pref is changed.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                        InfobarDismissedOnPrefChange) {
-    CreateInfobar(browser(), true, false);
+  CreateInfobar(browser(), false);
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   // Change the pref to open the new tab page.
                   Do([this]() {
@@ -222,47 +258,47 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
 
-// Test that the session restore infobar is shown once on browser restart and
+// Test that the session restore infobar is shown once on a new session and
 // not again when dismissed.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
-                       InfoBarShownOnceOnRestartWithContinueSessionDismiss) {
-  // The infobar should be shown on the first restart.
-  CreateInfobar(browser(), true, false);
+                       InfoBarShownOnceOnNewSessionWithContinueSessionDismiss) {
+  // The infobar should be shown on the first session.
+  CreateInfobar(browser(), false);
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   PressButton(ConfirmInfoBar::kDismissButtonElementId),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 
-  // The infobar should not be shown on the second restart.
-  CreateInfobar(browser(), true, false);
+  // The infobar should not be shown on the second session.
+  CreateInfobar(browser(), false);
   RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
 }
 
-// Test that the session restore infobar is shown on the first browser restart.
+// Test that the session restore infobar is shown on the first new session.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
-                       PRE_PRE_PRE_InfoBarShownThreeTimesOnRestart) {
-  CreateInfobar(browser(), true, false);
+                       PRE_PRE_PRE_InfoBarShownThreeTimesOnNewSession) {
+  CreateInfobar(browser(), false);
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId));
 }
 
-// Test that the session restore infobar is shown on the second browser restart.
+// Test that the session restore infobar is shown on the second new session.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
-                       PRE_PRE_InfoBarShownThreeTimesOnRestart) {
-  CreateInfobar(browser(), true, false);
+                       PRE_PRE_InfoBarShownThreeTimesOnNewSession) {
+  CreateInfobar(browser(), false);
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId));
 }
 
-// Test that the session restore infobar is shown on the third browser restart.
+// Test that the session restore infobar is shown on the third new session.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
-                       PRE_InfoBarShownThreeTimesOnRestart) {
-  CreateInfobar(browser(), true, false);
+                       PRE_InfoBarShownThreeTimesOnNewSession) {
+  CreateInfobar(browser(), false);
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId));
 }
 
-// Test that the session restore infobar is not shown on the fourth browser
-// restart.
+// Test that the session restore infobar is not shown on the fourth new
+// session.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
-                       InfoBarShownThreeTimesOnRestart) {
-  CreateInfobar(browser(), true, false);
+                       InfoBarShownThreeTimesOnNewSession) {
+  CreateInfobar(browser(), false);
   RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
 }
 

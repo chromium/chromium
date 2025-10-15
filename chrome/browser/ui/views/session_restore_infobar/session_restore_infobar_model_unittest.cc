@@ -25,14 +25,13 @@ class SessionRestoreInfobarModelTest : public testing::Test {
 
 TEST_F(SessionRestoreInfobarModelTest, CreateAndAccessModel) {
   TestingProfile profile;
-  auto model =
-      std::make_unique<SessionRestoreInfobarModel>(profile, false, false);
+  auto model = std::make_unique<SessionRestoreInfobarModel>(profile, false);
   EXPECT_TRUE(model);
 }
 
 TEST_F(SessionRestoreInfobarModelTest, GetSessionRestoreMessageValue_Prefs) {
   TestingProfile profile;
-  SessionRestoreInfobarModel model(profile, false, false);
+  SessionRestoreInfobarModel model(profile, false);
 
   // Test case 1: ContinueWhereLeftOff.
   profile.GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
@@ -55,8 +54,7 @@ TEST_F(SessionRestoreInfobarModelTest, GetSessionRestoreMessageValue_Prefs) {
 
 TEST_F(SessionRestoreInfobarModelTest, GetUntouchedSessionRestoreDefaultPref) {
   TestingProfile profile;
-  auto model =
-      std::make_unique<SessionRestoreInfobarModel>(profile, false, false);
+  auto model = std::make_unique<SessionRestoreInfobarModel>(profile, false);
   // Make sure the session restore preference is untouched.
   EXPECT_TRUE(model->IsDefaultSessionRestorePref());
   // Change session restore to default value.
@@ -68,8 +66,7 @@ TEST_F(SessionRestoreInfobarModelTest, GetUntouchedSessionRestoreDefaultPref) {
 TEST_F(SessionRestoreInfobarModelTest,
        GetUntouchedSessionRestoreDefaultPref_SetToDefault) {
   TestingProfile profile;
-  auto model =
-      std::make_unique<SessionRestoreInfobarModel>(profile, false, false);
+  auto model = std::make_unique<SessionRestoreInfobarModel>(profile, false);
   // Make sure the session restore preference is untouched.
   EXPECT_TRUE(model->IsDefaultSessionRestorePref());
 

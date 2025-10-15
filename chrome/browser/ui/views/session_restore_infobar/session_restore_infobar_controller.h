@@ -29,9 +29,7 @@ class SessionRestoreInfobarController {
 
   // Checks if a session restore prompt should be shown for the given profile
   // and browser state. If so, it begins tracking tabs to show the infobar.
-  void MaybeShowInfoBar(Profile& profile,
-                        bool was_restarted,
-                        bool is_post_crash_launch);
+  void MaybeShowInfoBar(Profile& profile, bool is_post_crash_launch);
 
   static SessionRestoreInfobarController* From(BrowserWindowInterface* browser);
 
