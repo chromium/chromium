@@ -30,27 +30,25 @@ class ContextualTasksContextControllerImpl
   ~ContextualTasksContextControllerImpl() override;
 
   // ContextualTasksContextController implementation.
+  FeatureEligibility GetFeatureEligibility() override;
+
+  // ContextualTasksService implementation.
   ContextualTask CreateTask() override;
-  void AssignThreadToTask(const base::Uuid& task_id,
-                          ThreadType thread_type,
-                          const std::string& server_id,
-                          const std::string& conversation_turn_id,
-                          std::optional<std::string> title) override;
+  void GetTaskById(const base::Uuid& task_id,
+                   base::OnceCallback<void(std::optional<ContextualTask>)>
+                       callback) const override;
+  void GetTasks(base::OnceCallback<void(std::vector<ContextualTask>)> callback)
+      const override;
+  void DeleteTask(const base::Uuid& task_id) override;
+  void AddThreadToTask(const base::Uuid& task_id,
+                       const Thread& thread) override;
+  void RemoveThreadFromTask(const base::Uuid& task_id,
+                            ThreadType type,
+                            const std::string& server_id) override;
   void UpdateThreadTurnId(const base::Uuid& task_id,
                           ThreadType thread_type,
                           const std::string& server_id,
                           const std::string& conversation_turn_id) override;
-  void GetTasks(
-      base::OnceCallback<void(std::vector<ContextualTask>)> callback) override;
-  void GetTask(const base::Uuid& task_id,
-               base::OnceCallback<void(std::optional<ContextualTask>)> callback)
-      override;
-  void AssociateTabWithTask(SessionID tab_session_id,
-                            const base::Uuid& task_id) override;
-  void GetSelectedTaskForTab(
-      SessionID tab_session_id,
-      base::OnceCallback<void(std::optional<ContextualTask>)>
-          selected_task_callback) override;
   void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
   void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
   void GetContextForTask(
@@ -58,7 +56,16 @@ class ContextualTasksContextControllerImpl
       const std::set<ContextualTaskContextSource>& sources,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) override;
-  FeatureEligibility GetFeatureEligibility() override;
+  void AttachSessionIdToTask(const base::Uuid& task_id,
+                             SessionID session_id) override;
+  void DetachSessionIdFromTask(const base::Uuid& task_id,
+                               SessionID session_id) override;
+  std::optional<ContextualTask> GetMostRecentContextualTaskForSessionID(
+      SessionID session_id) const override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetAiThreadControllerDelegate() override;
 
  private:
   raw_ptr<ContextualTasksService> service_;

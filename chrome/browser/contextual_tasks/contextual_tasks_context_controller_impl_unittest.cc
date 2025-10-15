@@ -134,15 +134,15 @@ class ContextualTasksContextControllerImplTest : public testing::Test {
   std::optional<ContextualTask> GetTaskById(const base::Uuid& task_id) {
     std::optional<ContextualTask> task;
     base::RunLoop run_loop;
-    controller_->GetTask(task_id,
-                         base::BindOnce(
-                             [](std::optional<ContextualTask>* out_task,
-                                base::OnceClosure quit_closure,
-                                std::optional<ContextualTask> result) {
-                               *out_task = std::move(result);
-                               std::move(quit_closure).Run();
-                             },
-                             &task, run_loop.QuitClosure()));
+    controller_->GetTaskById(task_id,
+                             base::BindOnce(
+                                 [](std::optional<ContextualTask>* out_task,
+                                    base::OnceClosure quit_closure,
+                                    std::optional<ContextualTask> result) {
+                                   *out_task = std::move(result);
+                                   std::move(quit_closure).Run();
+                                 },
+                                 &task, run_loop.QuitClosure()));
     run_loop.Run();
     return task;
   }
@@ -163,23 +163,6 @@ class ContextualTasksContextControllerImplTest : public testing::Test {
             &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result;
-  }
-
-  std::optional<ContextualTask> GetSelectedTaskForTab(
-      SessionID tab_session_id) {
-    std::optional<ContextualTask> task;
-    base::RunLoop run_loop;
-    controller_->GetSelectedTaskForTab(
-        tab_session_id, base::BindOnce(
-                            [](std::optional<ContextualTask>* out_task,
-                               base::OnceClosure quit_closure,
-                               std::optional<ContextualTask> result) {
-                              *out_task = std::move(result);
-                              std::move(quit_closure).Run();
-                            },
-                            &task, run_loop.QuitClosure()));
-    run_loop.Run();
-    return task;
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -212,7 +195,7 @@ TEST_F(ContextualTasksContextControllerImplTest, GetTasks) {
   }
 }
 
-TEST_F(ContextualTasksContextControllerImplTest, GetTask) {
+TEST_F(ContextualTasksContextControllerImplTest, GetTaskById) {
   ContextualTask expected_task(base::Uuid::GenerateRandomV4());
   base::Uuid task_id = expected_task.GetTaskId();
 
@@ -228,7 +211,7 @@ TEST_F(ContextualTasksContextControllerImplTest, GetTask) {
   EXPECT_EQ(task->GetTaskId(), expected_task.GetTaskId());
 }
 
-TEST_F(ContextualTasksContextControllerImplTest, GetTask_NotFound) {
+TEST_F(ContextualTasksContextControllerImplTest, GetTaskById_NotFound) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
 
   EXPECT_CALL(mock_service_, GetTaskById(task_id, _))
@@ -247,40 +230,22 @@ TEST_F(ContextualTasksContextControllerImplTest, CreateTask) {
   EXPECT_EQ(task.GetTaskId(), expected_task.GetTaskId());
 }
 
-TEST_F(ContextualTasksContextControllerImplTest, AssignThreadToTask) {
+TEST_F(ContextualTasksContextControllerImplTest, AddThreadToTask) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ThreadType thread_type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string conversation_turn_id = "conversation_turn_id";
   std::string title = "title";
+  Thread thread(thread_type, server_id, title, conversation_turn_id);
 
   EXPECT_CALL(mock_service_, AddThreadToTask(task_id, _))
-      .WillOnce([&](const base::Uuid&, const Thread& thread) {
-        EXPECT_EQ(thread.type, thread_type);
-        EXPECT_EQ(thread.server_id, server_id);
-        EXPECT_EQ(thread.title, title);
-        EXPECT_EQ(thread.conversation_turn_id, conversation_turn_id);
+      .WillOnce([&](const base::Uuid&, const Thread& passed_thread) {
+        EXPECT_EQ(passed_thread.type, thread_type);
+        EXPECT_EQ(passed_thread.server_id, server_id);
+        EXPECT_EQ(passed_thread.title, title);
+        EXPECT_EQ(passed_thread.conversation_turn_id, conversation_turn_id);
       });
-  controller_->AssignThreadToTask(task_id, thread_type, server_id,
-                                  conversation_turn_id, title);
-}
-
-TEST_F(ContextualTasksContextControllerImplTest,
-       AssignThreadToTask_EmptyTitle) {
-  base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  ThreadType thread_type = ThreadType::kAiMode;
-  std::string server_id = "server_id";
-  std::string conversation_turn_id = "conversation_turn_id";
-
-  EXPECT_CALL(mock_service_, AddThreadToTask(task_id, _))
-      .WillOnce([&](const base::Uuid&, const Thread& thread) {
-        EXPECT_EQ(thread.type, thread_type);
-        EXPECT_EQ(thread.server_id, server_id);
-        EXPECT_TRUE(thread.title.empty());
-        EXPECT_EQ(thread.conversation_turn_id, conversation_turn_id);
-      });
-  controller_->AssignThreadToTask(task_id, thread_type, server_id,
-                                  conversation_turn_id, std::nullopt);
+  controller_->AddThreadToTask(task_id, thread);
 }
 
 TEST_F(ContextualTasksContextControllerImplTest, UpdateThreadTurnId) {
@@ -296,17 +261,18 @@ TEST_F(ContextualTasksContextControllerImplTest, UpdateThreadTurnId) {
                                   conversation_turn_id);
 }
 
-TEST_F(ContextualTasksContextControllerImplTest, AssociateTabWithTask) {
+TEST_F(ContextualTasksContextControllerImplTest, AttachSessionIdToTask) {
   SessionID tab_session_id = SessionID::NewUnique();
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
 
   EXPECT_CALL(mock_service_, AttachSessionIdToTask(task_id, tab_session_id))
       .Times(1);
 
-  controller_->AssociateTabWithTask(tab_session_id, task_id);
+  controller_->AttachSessionIdToTask(task_id, tab_session_id);
 }
 
-TEST_F(ContextualTasksContextControllerImplTest, GetSelectedTaskForTab) {
+TEST_F(ContextualTasksContextControllerImplTest,
+       GetMostRecentContextualTaskForSessionID) {
   SessionID tab_session_id = SessionID::NewUnique();
   ContextualTask expected_task(base::Uuid::GenerateRandomV4());
 
@@ -314,20 +280,22 @@ TEST_F(ContextualTasksContextControllerImplTest, GetSelectedTaskForTab) {
               GetMostRecentContextualTaskForSessionID(tab_session_id))
       .WillOnce(Return(std::make_optional(expected_task)));
 
-  std::optional<ContextualTask> task = GetSelectedTaskForTab(tab_session_id);
+  std::optional<ContextualTask> task =
+      controller_->GetMostRecentContextualTaskForSessionID(tab_session_id);
   ASSERT_TRUE(task.has_value());
   EXPECT_EQ(task->GetTaskId(), expected_task.GetTaskId());
 }
 
 TEST_F(ContextualTasksContextControllerImplTest,
-       GetSelectedTaskForTab_NotFound) {
+       GetMostRecentContextualTaskForSessionID_NotFound) {
   SessionID tab_session_id = SessionID::NewUnique();
 
   EXPECT_CALL(mock_service_,
               GetMostRecentContextualTaskForSessionID(tab_session_id))
       .WillOnce(Return(std::nullopt));
 
-  std::optional<ContextualTask> task = GetSelectedTaskForTab(tab_session_id);
+  std::optional<ContextualTask> task =
+      controller_->GetMostRecentContextualTaskForSessionID(tab_session_id);
   EXPECT_FALSE(task.has_value());
 }
 
