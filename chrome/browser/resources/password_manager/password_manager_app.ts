@@ -161,13 +161,13 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    const narrowQuery = window.matchMedia('(max-width: 1036px)');
+    const narrowQuery = window.matchMedia('(max-width: 1300px)');
     this.narrow_ = narrowQuery.matches;
     this.eventTracker_.add(
         narrowQuery, 'change',
         (e: MediaQueryListEvent) => this.narrow_ = e.matches);
 
-    const collapsedQuery = window.matchMedia('(max-width: 1200px)');
+    const collapsedQuery = window.matchMedia('(max-width: 1605px)');
     this.collapsed_ = collapsedQuery.matches;
     this.eventTracker_.add(
         collapsedQuery, 'change',
@@ -266,7 +266,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     if (this.$.drawer.open && !this.narrow_) {
       this.$.drawer.close();
     }
-    // Window is greater than 980px but less than 1200px.
+    // Window is greater than 1300px but less than 1605px.
     if (!this.narrow_ && this.collapsed_) {
       this.pageTitle_ = this.i18n('passwordManagerString');
     } else {
