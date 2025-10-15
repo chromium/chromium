@@ -127,6 +127,11 @@ class LensOverlaySidePanelCoordinator
     return lens_search_controller_->lens_overlay_controller();
   }
 
+  // Return the LensOverlayQueryController that is part of this tab.
+  LensOverlayQueryController* GetLensOverlayQueryController() {
+    return lens_search_controller_->lens_overlay_query_controller();
+  }
+
   // Return the LensSearchboxController that is part of this tab.
   LensSearchboxController* GetLensSearchboxController() {
     return lens_search_controller_->lens_searchbox_controller();

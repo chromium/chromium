@@ -1381,8 +1381,7 @@ class LensOverlayControllerZeroStateCsbTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {base::test::FeatureRefAndParams(
-            lens::features::kLensSearchZeroStateCsb,
-            {{"zero-state-csb-query", "csb zero state query"}})},
+            lens::features::kLensSearchZeroStateCsb, {})},
         {});
   }
 };
@@ -1391,7 +1390,7 @@ class LensOverlayControllerZeroStateCsbTest
 //  (1) User navigates to a website.
 //  (2) User opens lens overlay and the side panel opens with CSB results.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
-                       OpenLensOverlayOpensCsbResults) {
+                       OpenLensOverlayOpensResults) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
 
@@ -1418,11 +1417,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
                        LensOverlayController::kOverlaySidePanelWebViewId),
                    WaitForWebContentsReady(kOverlaySidePanelWebViewId)),
 
-      // The CSB query in the side panel should say "csb zero state query"
+      // The CSB query in the side panel should be empty.
       InSameContext(CheckSearchboxValue(kOverlaySidePanelWebViewId,
-                                        kPathToSidePanelSearchboxInput,
-                                        "csb zero state query")));
+                                        kPathToSidePanelSearchboxInput, "")));
 }
-
 
 }  // namespace

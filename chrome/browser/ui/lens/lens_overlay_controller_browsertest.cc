@@ -754,6 +754,14 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     return LensSearchController::From(browser()->GetActiveTabInterface());
   }
 
+  lens::LensOverlayQueryController* GetLensOverlayQueryController() {
+    return GetLensSearchController()->lens_overlay_query_controller();
+  }
+
+  lens::LensOverlaySidePanelCoordinator* GetLensOverlaySidePanelCoordinator() {
+    return GetLensSearchController()->lens_overlay_side_panel_coordinator();
+  }
+
   LensOverlayController* GetLensOverlayController() {
     return browser()
         ->tab_strip_model()
@@ -768,8 +776,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
   const std::optional<lens::SearchQuery> GetLoadedSearchQuery() {
-    auto* controller = GetLensOverlayController();
-    return controller->results_side_panel_coordinator()
+    return GetLensOverlaySidePanelCoordinator()
         ->get_loaded_search_query_for_testing();
   }
 
@@ -9460,7 +9467,7 @@ class LensOverlayControllerZeroStateCsbTest
  protected:
   void SetupFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{lens::features::kLensSearchZeroStateCsb, {{"zero-state-csb-query", "test_query"}}}},
+        {{lens::features::kLensSearchZeroStateCsb, {}}},
         /*disabled_features=*/{});
   }
 };
@@ -9478,17 +9485,26 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
 
   // Expect the Lens Overlay results panel to open.
   auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return coordinator->IsSidePanelEntryShowing(
-      SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults)); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return coordinator->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults));
+  }));
   EXPECT_TRUE(content::WaitForLoadStop(
-      controller->GetSidePanelWebContentsForTesting()));
+      GetLensOverlaySidePanelCoordinator()->GetSidePanelWebContents()));
+  // Overlay should stay in off state.
+  ASSERT_EQ(controller->state(), State::kOff);
 
-  auto search_query = GetLoadedSearchQuery();
-  EXPECT_TRUE(search_query);
-  EXPECT_EQ(search_query->search_query_text_, "test_query");
-  EXPECT_EQ(search_query->lens_selection_type_,
-            lens::MULTIMODAL_SUGGEST_TYPEAHEAD);
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          GetLensOverlayQueryController());
+  EXPECT_TRUE(fake_query_controller->last_queried_region());
+  EXPECT_EQ(fake_query_controller->last_queried_region()->box.width(), 1.0);
+  EXPECT_EQ(fake_query_controller->last_queried_region()->box.height(), 1.0);
+  EXPECT_EQ(fake_query_controller->last_queried_region()->box.x(), 0.5);
+  EXPECT_EQ(fake_query_controller->last_queried_region()->box.y(), 0.5);
+  EXPECT_EQ(fake_query_controller->last_queried_region()->rotation, 0.0);
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
+            lens::REGION_SEARCH);
 }
 
 class LensOverlayControllerReinvocationBrowserTest

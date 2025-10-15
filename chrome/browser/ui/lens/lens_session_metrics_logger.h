@@ -108,6 +108,9 @@ class LensSessionMetricsLogger {
   // Returns the time at which the overlay was invoked.
   void GetInvocationTime();
 
+  // Returns the invocation source for the lens session.
+  lens::LensOverlayInvocationSource GetInvocationSource();
+
  private:
   // Invocation source for the lens overlay.
   lens::LensOverlayInvocationSource invocation_source_ =

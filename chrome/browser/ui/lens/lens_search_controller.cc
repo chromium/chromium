@@ -168,20 +168,7 @@ void LensSearchController::OpenLensOverlay(
   }
 
   if (lens::features::IsLensSearchZeroStateCsbEnabled() && IsOff()) {
-    std::string query_text =
-        lens::features::GetZeroStateCsbQuery().empty()
-            ? l10n_util::GetStringUTF8(
-                  IDS_LENS_CONTEXTUAL_SEARCH_ZERO_STATE_QUERY)
-            : lens::features::GetZeroStateCsbQuery();
-    IssueTextSearchRequest(
-        invocation_source,
-        /*query_text=*/query_text,
-        /*additional_query_parameters=*/{},
-        // TODO(crbug.com/432490312): Match type here is likely not ideal.
-        // Investigate removing match type from this function.
-        AutocompleteMatchType::Type::SEARCH_SUGGEST,
-        /*is_zero_prefix_suggestion=*/false,
-        /*suppress_contextualization=*/false);
+    IssueZeroStateRequest(invocation_source);
     return;
   }
 
@@ -237,7 +224,17 @@ void LensSearchController::OpenLensOverlayInCurrentSession() {
     return;
   }
 
-  lens_overlay_controller_->ReshowOverlay();
+  // If the overlay was already initialized, but hidden, reshow the overlay.
+  if (lens_overlay_controller_->state() ==
+      LensOverlayController::State::kHidden) {
+    lens_overlay_controller_->ReshowOverlay();
+    return;
+  }
+
+  // Otherwise, the overlay must be fully closed. Open the overlay as normal.
+  lens_overlay_controller_->ShowUI(
+      lens_session_metrics_logger_->GetInvocationSource(),
+      lens_overlay_query_controller_.get());
 }
 
 void LensSearchController::StartContextualization(
@@ -310,6 +307,31 @@ void LensSearchController::IssueTextSearchRequest(
       query_text, additional_query_parameters,
       lens_overlay_query_controller_.get(), match_type,
       is_zero_prefix_suggestion, invocation_source);
+}
+
+void LensSearchController::IssueZeroStateRequest(
+    lens::LensOverlayInvocationSource invocation_source) {
+  CheckInitialized(initialized_);
+  if (!RunLensEligibilityChecks(
+          invocation_source,
+          base::BindRepeating(&LensSearchController::IssueZeroStateRequest,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              invocation_source))) {
+    return;
+  }
+
+  auto query_start_time = base::Time::Now();
+  if (IsOff()) {
+    StartLensSession(invocation_source);
+  }
+
+  lens_contextualization_controller_->StartContextualization(
+      invocation_source,
+      base::BindOnce(
+          &LensSearchController::OnPageContextUpdatedForZeroStateRequest,
+          weak_ptr_factory_.GetWeakPtr(), invocation_source, query_start_time));
+  // Show the side panel right away so the ghost loader is shown.
+  lens_overlay_side_panel_coordinator()->RegisterEntryAndShow();
 }
 
 void LensSearchController::CloseLensAsync(
@@ -835,5 +857,25 @@ void LensSearchController::WillDetach(tabs::TabInterface* tab,
     case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
       CloseLensSync(lens::LensOverlayDismissalSource::kTabDragNewWindow);
       return;
+  }
+}
+
+void LensSearchController::OnPageContextUpdatedForZeroStateRequest(
+    lens::LensOverlayInvocationSource invocation_source,
+    base::Time query_start_time) {
+  lens_searchbox_controller()->SetSearchboxInputText(std::string());
+  if (lens_search_contextualization_controller()
+          ->GetCurrentPageContextEligibility()) {
+    // Create a region that consists of the entire viewport.
+    auto full_viewport_region = lens::mojom::CenterRotatedBox::New();
+    full_viewport_region->box = gfx::RectF(/*x=*/0.5, /*y=*/0.5, /*width=*/1.0, /*height=*/1.0);
+    full_viewport_region->coordinate_type =
+        lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+
+    lens_overlay_query_controller()->SendRegionSearch(
+        query_start_time, std::move(full_viewport_region),
+        lens::LensOverlaySelectionType::REGION_SEARCH,
+        /*additional_search_query_params=*/std::map<std::string, std::string>(),
+        /*region_bytes=*/std::nullopt);
   }
 }

@@ -280,7 +280,7 @@ void LensSearchContextualizationController::ResetState() {
 void LensSearchContextualizationController::SetPageContent(
     std::vector<lens::PageContent> page_contents,
     lens::MimeType primary_content_type) {
-  page_contents_ = std::move(page_contents);
+  page_contents_ = page_contents;
   primary_content_type_ = primary_content_type;
 }
 

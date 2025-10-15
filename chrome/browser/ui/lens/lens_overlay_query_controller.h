@@ -205,6 +205,11 @@ class LensOverlayQueryController {
     return page_content_endpoint_fetcher_.get() != nullptr;
   }
 
+  // Returns whether the query controller is off.
+  bool IsOff() {
+    return query_controller_state_ == QueryControllerState::kOff;
+  }
+
   uint64_t gen204_id() const { return gen204_id_; }
 
   // Returns the search session id for the current query flow.

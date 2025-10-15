@@ -107,7 +107,7 @@ bool IsSiteTrusted(const GURL& url) {
   return false;
 }
 
-SidePanelUI* GetSidePanelUI(LensOverlayController* controller) {
+SidePanelUI* GetSidePanelUI(LensSearchController* controller) {
   return controller->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->GetFeatures()
@@ -170,7 +170,7 @@ void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
 
   state_ = State::kOpeningSidePanel;
   RegisterEntry();
-  GetSidePanelUI(GetLensOverlayController())
+  GetSidePanelUI(GetLensSearchController())
       ->Show(SidePanelEntry::Id::kLensOverlayResults);
   GetLensOverlayController()->NotifyResultsPanelOpened();
 
@@ -291,7 +291,7 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleContextualMediaLink(
 }
 
 bool LensOverlaySidePanelCoordinator::IsEntryShowing() {
-  auto* side_panel_ui = GetSidePanelUI(GetLensOverlayController());
+  auto* side_panel_ui = GetSidePanelUI(GetLensSearchController());
   if (!side_panel_ui) {
     return false;
   }
@@ -1167,7 +1167,8 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView(
 
 GURL LensOverlaySidePanelCoordinator::GetSidePanelNewTabUrl() {
   return lens::GetSidePanelNewTabUrl(
-      side_panel_new_tab_url_, GetLensOverlayController()->GetVsridForNewTab());
+      side_panel_new_tab_url_,
+      GetLensOverlayQueryController()->GetVsridForNewTab());
 }
 
 void LensOverlaySidePanelCoordinator::ShowToast(std::string message) {
