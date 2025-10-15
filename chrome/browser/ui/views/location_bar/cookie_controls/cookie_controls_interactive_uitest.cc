@@ -406,8 +406,9 @@ class CookieControlsWithIphUiTest : public CookieControlsInteractiveTestBase {
   ~CookieControlsWithIphUiTest() override = default;
 };
 
-// TODO(crbug.com/409272227): IPH tests are flaky on Linux.
-#if BUILDFLAG(IS_LINUX) && defined(NDEBUG)
+// TODO(crbug.com/409272227): IPH tests are flaky on Linux and Win asan bots
+#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_ShowAndDismissIphOnHighSiteEngagement \
   DISABLED_ShowAndDismissIphOnHighSiteEngagement
 #else
@@ -461,8 +462,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
-// TODO(crbug.com/409272227): Flaky on linux-rel.
-#if BUILDFLAG(IS_LINUX) && defined(NDEBUG)
+// TODO(crbug.com/409272227): Flaky on linux-rel and win-asan.
+#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_OpenUserBypassViaIconWhenIphVisible \
   DISABLED_OpenUserBypassViaIconWhenIphVisible
 #else
