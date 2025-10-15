@@ -1149,6 +1149,10 @@ public final class ProductionSupportedFlagList {
                         + " bypassed. If WebView isn't already started up, calling"
                         + " `CookieManager.getInstance()` will trigger WebView startup on the main"
                         + " looper and wait for startup to complete."),
+        Flag.baseFeature(
+                NetworkServiceFeatures.COMPRESSION_DICTIONARY_TTL,
+                "When enabled, adds support an explicit compression dictionary lifetime using the"
+                        + " `ttl` parameter in the `use-as-dictionary` HTTP response header."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
