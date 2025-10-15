@@ -26,6 +26,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.R;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
@@ -163,12 +164,12 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
                                     translateResolveInfo.loadLabel(
                                             ContextUtils.getApplicationContext()
                                                     .getPackageManager()))
-                            .setId(Menu.NONE)
+                            .setId(R.id.select_action_menu_translate)
                             .setIcon(null)
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                             .setOrderInCategory(SamsungDefaultItemOrder.TRANSLATE)
-                            .setClickListener(
-                                    getTranslationActionClickListener(
+                            .setIntent(
+                                    getTranslationActionIntent(
                                             selectedText, translateResolveInfo)));
         }
         if (shouldAddWritingToolkitMenu(selectedText, isSelectionPassword)) {
@@ -233,13 +234,11 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         }
         List<SelectionMenuItem> additionalItemBuilderList = new ArrayList<>();
         additionalItemBuilderList.add(
-                new SelectionMenuItem.Builder(
-                                org.chromium.android_webview.R.string.actionbar_manage_apps)
-                        .setId(Menu.NONE)
+                new SelectionMenuItem.Builder(R.string.actionbar_manage_apps)
+                        .setId(R.id.select_action_menu_manage_apps)
                         .setIcon(null)
                         .setOrderInCategory(Menu.CATEGORY_SECONDARY)
                         .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                        .setClickListener(null)
                         .setIntent(createManageAppsIntent())
                         .build());
         return additionalItemBuilderList;
@@ -255,19 +254,19 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
     }
 
     private static int getMenuItemOrder(@IdRes int id) {
-        if (id == org.chromium.android_webview.R.id.select_action_menu_cut) {
+        if (id == R.id.select_action_menu_cut) {
             return SamsungDefaultItemOrder.CUT;
-        } else if (id == org.chromium.android_webview.R.id.select_action_menu_copy) {
+        } else if (id == R.id.select_action_menu_copy) {
             return SamsungDefaultItemOrder.COPY;
-        } else if (id == org.chromium.android_webview.R.id.select_action_menu_paste) {
+        } else if (id == R.id.select_action_menu_paste) {
             return SamsungDefaultItemOrder.PASTE;
-        } else if (id == org.chromium.android_webview.R.id.select_action_menu_select_all) {
+        } else if (id == R.id.select_action_menu_select_all) {
             return SamsungDefaultItemOrder.SELECT_ALL;
-        } else if (id == org.chromium.android_webview.R.id.select_action_menu_share) {
+        } else if (id == R.id.select_action_menu_share) {
             return SamsungDefaultItemOrder.SHARE;
-        } else if (id == org.chromium.android_webview.R.id.select_action_menu_paste_as_plain_text) {
+        } else if (id == R.id.select_action_menu_paste_as_plain_text) {
             return SamsungDefaultItemOrder.PASTE_AS_PLAIN_TEXT;
-        } else if (id == org.chromium.android_webview.R.id.select_action_menu_web_search) {
+        } else if (id == R.id.select_action_menu_web_search) {
             return SamsungDefaultItemOrder.WEB_SEARCH;
         }
         return -1;
@@ -308,32 +307,39 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
                 && !isSelectionPassword;
     }
 
-    private static View.OnClickListener getTranslationActionClickListener(
-            String selectedText, ResolveInfo info) {
-        return v -> {
-            String textForProcessing =
-                    (selectedText.length() >= MAX_SHARE_QUERY_LENGTH_BYTES)
-                            ? selectedText.substring(0, MAX_SHARE_QUERY_LENGTH_BYTES) + "…"
-                            : selectedText;
-            Intent intent =
-                    createProcessTextIntent()
-                            .setClassName(info.activityInfo.packageName, info.activityInfo.name)
-                            .putExtra(Intent.EXTRA_PROCESS_TEXT, textForProcessing);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        };
+    private static Intent getTranslationActionIntent(String selectedText, ResolveInfo info) {
+        String textForProcessing =
+                (selectedText.length() >= MAX_SHARE_QUERY_LENGTH_BYTES)
+                        ? selectedText.substring(0, MAX_SHARE_QUERY_LENGTH_BYTES) + "…"
+                        : selectedText;
+        Intent intent =
+                createProcessTextIntent()
+                        .setClassName(info.activityInfo.packageName, info.activityInfo.name)
+                        .putExtra(Intent.EXTRA_PROCESS_TEXT, textForProcessing);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
     }
 
     @Override
     public boolean handleMenuItemClick(
             MenuItem item, WebContents webContents, ViewGroup containerView) {
-        if (!isWritingToolKitMenuItem(item)) return false;
-        SelectionPopupController selectionPopupController =
-                SelectionPopupController.fromWebContents(webContents);
-        selectionPopupController.setPreserveSelectionOnNextLossOfFocus(true);
-        Intent intent = item.getIntent();
-        launchWritingToolkit(containerView, intent, selectionPopupController);
-        return true;
+        if ((item.getItemId() == R.id.select_action_menu_translate
+                        || item.getItemId() == R.id.select_action_menu_manage_apps)
+                && item.getIntent() != null) {
+            startActivity(item.getIntent());
+            return true;
+        }
+        if (isWritingToolKitMenuItem(item)) {
+            SelectionPopupController selectionPopupController =
+                    SelectionPopupController.fromWebContents(webContents);
+            selectionPopupController.setPreserveSelectionOnNextLossOfFocus(true);
+            Intent intent = item.getIntent();
+            launchWritingToolkit(containerView, intent, selectionPopupController);
+            return true;
+        }
+
+        // This may be an autofill menu item.
+        return super.handleMenuItemClick(item, webContents, containerView);
     }
 
     private static boolean isWritingToolKitMenuItem(MenuItem item) {

@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.content.R;
 import org.chromium.content_public.browser.SelectionMenuItem;
 
 import java.util.ArrayList;
@@ -31,13 +32,14 @@ public class AutofillSelectionMenuItemHelper {
         List<SelectionMenuItem> autofillItems = new ArrayList<>();
         if (mAutofillProvider.shouldOfferPasskeyEntry()) {
             autofillItems.add(
-                    new SelectionMenuItem.Builder(R.string.autofill_long_press_passkey_option)
-                            .setId(Menu.NONE)
+                    new SelectionMenuItem.Builder(
+                                    org.chromium.components.autofill.R.string
+                                            .autofill_long_press_passkey_option)
+                            .setId(R.id.select_action_menu_passkey_entry)
                             .setOrderInCategory(Menu.FIRST)
                             .setShowAsActionFlags(
                                     MenuItem.SHOW_AS_ACTION_ALWAYS
                                             | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
-                            .setClickListener(v -> mAutofillProvider.triggerPasskeyRequest())
                             .build());
         }
         if (mAutofillMenuItemTitle != 0 && mAutofillProvider.shouldQueryAutofillSuggestion()) {
@@ -48,9 +50,19 @@ public class AutofillSelectionMenuItemHelper {
                             .setShowAsActionFlags(
                                     MenuItem.SHOW_AS_ACTION_NEVER
                                             | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
-                            .setClickListener(v -> mAutofillProvider.queryAutofillSuggestion())
                             .build());
         }
         return autofillItems;
+    }
+
+    public boolean handleMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.select_action_menu_passkey_entry) {
+            mAutofillProvider.triggerPasskeyRequest();
+            return true;
+        } else if (item.getItemId() == android.R.id.autofill) {
+            mAutofillProvider.queryAutofillSuggestion();
+            return true;
+        }
+        return false;
     }
 }
