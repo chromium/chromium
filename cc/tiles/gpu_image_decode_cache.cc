@@ -165,47 +165,6 @@ bool ShouldGenerateMips(const DrawImage& draw_image,
   return false;
 }
 
-// Estimates the byte size of the decoded data for an image that goes through
-// hardware decode acceleration. The actual byte size is only known once the
-// image is decoded in the service side because different drivers have different
-// pixel format and alignment requirements.
-size_t EstimateHardwareDecodedDataSize(
-    const ImageHeaderMetadata* image_metadata) {
-  gfx::Size dimensions = image_metadata->coded_size
-                             ? *(image_metadata->coded_size)
-                             : image_metadata->image_size;
-  base::CheckedNumeric<size_t> y_data_size(dimensions.width());
-  y_data_size *= dimensions.height();
-
-  static_assert(
-      // TODO(andrescj): refactor to instead have a static_assert at the
-      // declaration site of gpu::ImageDecodeAcceleratorSubsampling to make sure
-      // it has the same number of entries as YUVSubsampling.
-      static_cast<int>(gpu::ImageDecodeAcceleratorSubsampling::kMaxValue) == 2,
-      "EstimateHardwareDecodedDataSize() must be adapted to support all "
-      "subsampling factors in ImageDecodeAcceleratorSubsampling");
-  base::CheckedNumeric<size_t> uv_width(dimensions.width());
-  base::CheckedNumeric<size_t> uv_height(dimensions.height());
-  switch (image_metadata->yuv_subsampling) {
-    case YUVSubsampling::k420:
-      uv_width += 1u;
-      uv_width /= 2u;
-      uv_height += 1u;
-      uv_height /= 2u;
-      break;
-    case YUVSubsampling::k422:
-      uv_width += 1u;
-      uv_width /= 2u;
-      break;
-    case YUVSubsampling::k444:
-      break;
-    default:
-      NOTREACHED();
-  }
-  base::CheckedNumeric<size_t> uv_data_size(uv_width * uv_height);
-  return (y_data_size + 2 * uv_data_size).ValueOrDie();
-}
-
 // Draws and scales the provided |draw_image| into the |target_pixmap|. If the
 // draw/scale can be done directly, calls directly into PaintImage::Decode.
 // if not, decodes to a compatible temporary pixmap and then converts that into
@@ -1033,10 +992,6 @@ GpuImageDecodeCache::GpuImageDecodeCache(
   }
 
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
-  // TODO(crbug.com/450466845): Remove these ivars and all code depending on
-  // them being true.
-  allow_accelerated_jpeg_decodes_ = false;
-  allow_accelerated_webp_decodes_ = false;
 
   {
     // TODO(crbug.com/40141944): We shouldn't need to lock to get capabilities.
@@ -2482,7 +2437,6 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
   const ImageHeaderMetadata* image_metadata =
       draw_image.paint_image().GetImageHeaderMetadata();
   bool can_do_hardware_accelerated_decode = false;
-  bool do_hardware_accelerated_decode = false;
   if (allow_hardware_decode && upload_scale_mip_level == 0 && !has_gainmap &&
       context_->ContextSupport()->CanDecodeWithHardwareAcceleration(
           image_metadata)) {
@@ -2493,24 +2447,11 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
               draw_image.paint_image().height());
 
     can_do_hardware_accelerated_decode = true;
-    const bool is_jpeg = (image_metadata->image_type == ImageType::kJPEG);
-    const bool is_webp = (image_metadata->image_type == ImageType::kWEBP);
-    if ((is_jpeg && allow_accelerated_jpeg_decodes_) ||
-        (is_webp && allow_accelerated_webp_decodes_)) {
-      do_hardware_accelerated_decode = true;
-      DCHECK(!is_bitmap_backed);
-    }
-
-    // Override the estimated size if we are doing hardware decode.
-    if (do_hardware_accelerated_decode) {
-      image_info[kAuxImageIndexDefault].size =
-          EstimateHardwareDecodedDataSize(image_metadata);
-    }
   }
 
   // Determine if we will do YUVA decoding for the image and the gainmap, and
   // update `image_info` to reflect that.
-  if (!do_hardware_accelerated_decode && !image_larger_than_max_texture) {
+  if (!image_larger_than_max_texture) {
     auto yuva_info = GetYUVADecodeInfo(draw_image, AuxImage::kDefault,
                                        sk_image_info.dimensions(),
                                        yuva_supported_data_types_);
@@ -2532,7 +2473,8 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
       draw_image.paint_image().stable_id(), draw_image.target_color_space(),
       CalculateDesiredFilterQuality(draw_image), upload_scale_mip_level,
       needs_mips, is_bitmap_backed, can_do_hardware_accelerated_decode,
-      do_hardware_accelerated_decode, speculative_decode, image_info));
+      /*do_hardware_accelerated_decode=*/false, speculative_decode,
+      image_info));
 }
 
 void GpuImageDecodeCache::WillAddCacheEntry(const DrawImage& draw_image) {

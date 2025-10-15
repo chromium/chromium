@@ -731,8 +731,6 @@ class CC_EXPORT GpuImageDecodeCache
   raw_ptr<viz::RasterContextProvider> context_;
   int max_texture_size_ = 0;
   const PaintImage::GeneratorClientId generator_client_id_;
-  bool allow_accelerated_jpeg_decodes_ = false;
-  bool allow_accelerated_webp_decodes_ = false;
   SkYUVAPixmapInfo::SupportedDataTypes yuva_supported_data_types_;
   const bool enable_clipped_image_scaling_;
 
