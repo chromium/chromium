@@ -17,6 +17,11 @@ namespace prefs {
 inline constexpr char kCrossDeviceCrossPlatformPromosIOS16thActiveDay[] =
     "cross_device.cross_platform_promos.ios_16th_active_day";
 
+// Dictionary that stores if the Magic Stack Home Module is enabled across a
+// user's syncing devices.
+inline constexpr char kCrossDeviceMagicStackHomeModuleEnabled[] =
+    "cross_device.home.module.magic_stack.enabled";
+
 // Dictionary that stores if the Most Visited Tiles Home Module is enabled.
 inline constexpr char kCrossDeviceMostVisitedHomeModuleEnabled[] =
     "cross_device.home.module.most_visited.enabled";

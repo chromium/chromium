@@ -15,6 +15,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kCrossDeviceCrossPlatformPromosIOS16thActiveDay,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
+      prefs::kCrossDeviceMagicStackHomeModuleEnabled,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDictionaryPref(
       prefs::kCrossDeviceMostVisitedHomeModuleEnabled,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
