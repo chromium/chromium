@@ -26,8 +26,14 @@ AndroidSmsOtpBackendFactory* AndroidSmsOtpBackendFactory::GetInstance() {
 
 AndroidSmsOtpBackend* AndroidSmsOtpBackendFactory::GetForProfile(
     Profile* profile) {
+  return GetForBrowserContext(profile);
+}
+
+AndroidSmsOtpBackend* AndroidSmsOtpBackendFactory::GetForBrowserContext(
+    content::BrowserContext* browser_context) {
   return static_cast<AndroidSmsOtpBackend*>(
-      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+      GetInstance()->GetServiceForBrowserContext(browser_context,
+                                                 /*create=*/true));
 }
 
 std::unique_ptr<KeyedService>

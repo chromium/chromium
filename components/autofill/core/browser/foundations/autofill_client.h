@@ -40,6 +40,7 @@ class SharedURLLoaderFactory;
 }
 
 namespace one_time_tokens {
+class OneTimeTokenService;
 class SmsOtpBackend;
 }
 
@@ -734,8 +735,13 @@ class AutofillClient {
   // May return null on platforms where OTPs are not supported.
   virtual OtpFieldDetector* GetOtpFieldDetector();
 
+  // TODO(crbug.com/415273270) Remove this once the migration to the
+  // `OneTimeTokenService` is complete.
   // May return null on platforms where no SmsOtpBackend is supported.
   virtual one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const;
+
+  // May return null on platforms where no OneTimeTokenService is supported.
+  virtual one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const;
 
   // Returns true if the primary main frame's document used the WebOTP API. This
   // exists only for the main frame because only the main frame has the

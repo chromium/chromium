@@ -285,6 +285,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   OtpFieldDetector* GetOtpFieldDetector() override;
 
   one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const final;
+  one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const final;
 
  protected:
   explicit ChromeAutofillClient(content::WebContents* web_contents);

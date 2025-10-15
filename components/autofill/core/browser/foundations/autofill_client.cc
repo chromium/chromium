@@ -333,6 +333,11 @@ one_time_tokens::SmsOtpBackend* AutofillClient::GetSmsOtpBackend() const {
   return nullptr;
 }
 
+one_time_tokens::OneTimeTokenService* AutofillClient::GetOneTimeTokenService()
+    const {
+  return nullptr;
+}
+
 bool AutofillClient::DocumentUsedWebOTP() {
   return false;
 }

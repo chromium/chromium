@@ -33,6 +33,7 @@
 #include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
+#include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -1358,6 +1359,19 @@ one_time_tokens::SmsOtpBackend* ChromeAutofillClient::GetSmsOtpBackend() const {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     return AndroidSmsOtpBackendFactory::GetForProfile(profile);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return nullptr;
+}
+
+one_time_tokens::OneTimeTokenService*
+ChromeAutofillClient::GetOneTimeTokenService() const {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kAndroidSmsOtpFilling)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    return OneTimeTokenServiceFactory::GetForProfile(profile);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   return nullptr;

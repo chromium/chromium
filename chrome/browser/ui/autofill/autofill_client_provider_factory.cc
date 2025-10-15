@@ -15,6 +15,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
+#include "chrome/browser/autofill/one_time_token_service_factory.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
@@ -47,6 +48,7 @@ AutofillClientProviderFactory::AutofillClientProviderFactory()
               .Build()) {
 #if BUILDFLAG(IS_ANDROID)
   DependsOn(AndroidSmsOtpBackendFactory::GetInstance());
+  DependsOn(OneTimeTokenServiceFactory::GetInstance());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
