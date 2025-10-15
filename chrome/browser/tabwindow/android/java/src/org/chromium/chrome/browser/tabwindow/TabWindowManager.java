@@ -173,6 +173,15 @@ public interface TabWindowManager {
      */
     @Nullable TabModelSelector getTabModelSelectorById(@WindowId int windowId);
 
+    /**
+     * Finds the Window ID associated with a {@link TabModelSelector}. If it is not associated with
+     * a window, then {@link #INVALID_WINDOW_ID} is returned.
+     *
+     * @param selector The {@link TabModelSelector} to check.
+     */
+    @WindowId
+    int getWindowIdForSelector(TabModelSelector selector);
+
     /** Gets a Collection of all TabModelSelectors. */
     Collection<TabModelSelector> getAllTabModelSelectors();
 

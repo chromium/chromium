@@ -684,6 +684,55 @@ public class TabWindowManagerImplUnitTest {
     }
 
     @Test
+    @Feature({"Multiwindow"})
+    public void testGetWindowIdForSelector() {
+        ActivityController<Activity> activityController0 = createActivity();
+        Activity activity0 = activityController0.get();
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
+                mSubject.requestSelector(
+                        activity0,
+                        mModalDialogManager,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mMultiInstanceManager,
+                        mMismatchedIndicesHandler0,
+                        0);
+
+        TabModelSelector selector0 = assignment0.second;
+        assertEquals(0, mSubject.getWindowIdForSelector(selector0));
+
+        // Test with a selector that is not associated with any window.
+        TabModelSelector unassociatedSelector =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+        assertEquals(INVALID_WINDOW_ID, mSubject.getWindowIdForSelector(unassociatedSelector));
+
+        // Test with multiple selectors.
+        ActivityController<Activity> activityController1 = createActivity();
+        Activity activity1 = activityController1.get();
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
+                mSubject.requestSelector(
+                        activity1,
+                        mModalDialogManager,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mNextTabPolicySupplier,
+                        mMultiInstanceManager,
+                        mMismatchedIndicesHandler1,
+                        1);
+        TabModelSelector selector1 = assignment1.second;
+        assertEquals(0, mSubject.getWindowIdForSelector(selector0));
+        assertEquals(1, mSubject.getWindowIdForSelector(selector1));
+
+        // Test after destroying an activity.
+        destroyActivity(activityController0);
+        assertEquals(INVALID_WINDOW_ID, mSubject.getWindowIdForSelector(selector0));
+        assertEquals(1, mSubject.getWindowIdForSelector(selector1));
+
+        destroyActivity(activityController1);
+    }
+
+    @Test
     @Config(sdk = VERSION_CODES.Q)
     public void testAssertIndicesMismatch() {
         ActivityController<Activity> activityController0 = createActivity();

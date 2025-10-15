@@ -539,6 +539,13 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
+    public @WindowId int getWindowIdForSelector(TabModelSelector selector) {
+        @WindowId Integer windowId = mSelectorsToWindowId.get(selector);
+        if (windowId == null) return INVALID_WINDOW_ID;
+        return windowId;
+    }
+
+    @Override
     public Collection<TabModelSelector> getAllTabModelSelectors() {
         return mWindowIdToSelectors.values();
     }

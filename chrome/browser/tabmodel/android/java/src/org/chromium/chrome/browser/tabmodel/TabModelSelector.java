@@ -9,6 +9,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.List;
@@ -209,10 +210,13 @@ public interface TabModelSelector {
      * onTabModelSelected event have been notified.
      *
      * @param incognitoReauthDialogDelegate A delegate which takes care of triggering an Incognito
-     *         re-authentication.
+     *     re-authentication.
      */
     void setIncognitoReauthDialogDelegate(
             IncognitoTabModelObserver.IncognitoReauthDialogDelegate incognitoReauthDialogDelegate);
+
+    /** Returns the {@link TabModel} for the associated {@link TabStripCollection}. */
+    @Nullable TabModel getTabModelForTabStripCollection(TabStripCollection tabStripCollection);
 
     /** Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector. */
     void destroy();

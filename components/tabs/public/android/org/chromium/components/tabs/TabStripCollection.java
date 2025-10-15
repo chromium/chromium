@@ -29,4 +29,16 @@ public class TabStripCollection {
     private long getNativePtr() {
         return mNativeTabStripCollection;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TabStripCollection that)) return false;
+        return mNativeTabStripCollection == that.mNativeTabStripCollection;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(mNativeTabStripCollection);
+    }
 }

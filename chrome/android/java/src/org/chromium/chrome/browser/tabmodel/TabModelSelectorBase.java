@@ -23,10 +23,12 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /** Implement methods shared across the different model implementations. */
 @NullMarked
@@ -483,5 +485,16 @@ public abstract class TabModelSelectorBase
     public void setIncognitoReauthDialogDelegate(
             IncognitoReauthDialogDelegate incognitoReauthDialogDelegate) {
         mIncognitoReauthDialogDelegate = incognitoReauthDialogDelegate;
+    }
+
+    @Override
+    public @Nullable TabModel getTabModelForTabStripCollection(
+            TabStripCollection tabStripCollection) {
+        for (TabModel tabModel : getModels()) {
+            TabStripCollection modelCollection = tabModel.getTabStripCollection();
+            if (!Objects.equals(modelCollection, tabStripCollection)) continue;
+            return tabModel;
+        }
+        return null;
     }
 }
