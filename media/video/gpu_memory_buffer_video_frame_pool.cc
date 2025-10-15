@@ -47,6 +47,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -60,7 +61,6 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/trace_util.h"
@@ -604,10 +604,8 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
     case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       DCHECK_EQ(video_frame->visible_rect().x() % 2, 0);
       DCHECK_EQ(video_frame->visible_rect().y() % 2, 0);
-      if (!gfx::IsOddWidthMultiPlanarBuffersAllowed()) {
+      if (!viz::IsOddSizeMultiPlanarBuffersAllowed()) {
         width = base::bits::AlignUp(width, size_t{2});
-      }
-      if (!gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
         height = base::bits::AlignUp(height, size_t{2});
       }
       output = gfx::Size(width, height);
@@ -761,11 +759,11 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
   // TODO(https://crbug.com/webrtc/9033): Eliminate odd size video frame input
   // cases as they are not valid.
   if (video_frame->coded_size().width() % 2 &&
-      !gfx::IsOddWidthMultiPlanarBuffersAllowed()) {
+      !viz::IsOddSizeMultiPlanarBuffersAllowed()) {
     passthrough = true;
   }
   if (video_frame->coded_size().height() % 2 &&
-      !gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+      !viz::IsOddSizeMultiPlanarBuffersAllowed()) {
     passthrough = true;
   }
 

@@ -47,22 +47,6 @@ const char kNoXshm[] = "no-xshm";
 }  // namespace switches
 
 namespace features {
-BASE_FEATURE(kOddHeightMultiPlanarBuffers,
-#if BUILDFLAG(IS_APPLE)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-BASE_FEATURE(kOddWidthMultiPlanarBuffers,
-#if BUILDFLAG(IS_APPLE)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 BASE_FEATURE(kUseSmartRefForGPUFenceHandle, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using rounding instead of flooring for coordinate conversions.

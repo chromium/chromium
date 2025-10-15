@@ -71,12 +71,4 @@ const char* BufferFormatToString(BufferFormat format) {
   NOTREACHED() << "Invalid BufferFormat: " << base::to_underlying(format);
 }
 
-bool IsOddHeightMultiPlanarBuffersAllowed() {
-  return base::FeatureList::IsEnabled(features::kOddHeightMultiPlanarBuffers);
-}
-
-bool IsOddWidthMultiPlanarBuffersAllowed() {
-  return base::FeatureList::IsEnabled(features::kOddWidthMultiPlanarBuffers);
-}
-
 }  // namespace gfx

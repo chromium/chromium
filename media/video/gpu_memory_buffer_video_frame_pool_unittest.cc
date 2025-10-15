@@ -15,12 +15,12 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/test/test_context_provider.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/gfx/buffer_format_util.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -307,8 +307,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddSize) {
 
   RunUntilIdle();
 
-  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
-      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+  if (viz::IsOddSizeMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
     EXPECT_TRUE(frame->HasSharedImage());
@@ -403,8 +402,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
 
   RunUntilIdle();
 
-  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
-      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+  if (viz::IsOddSizeMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
     EXPECT_TRUE(frame->HasSharedImage());
@@ -538,8 +536,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
 
   RunUntilIdle();
 
-  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
-      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+  if (viz::IsOddSizeMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
     EXPECT_TRUE(frame->HasSharedImage());
@@ -609,8 +606,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
 
   RunUntilIdle();
 
-  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
-      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+  if (viz::IsOddSizeMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
     EXPECT_TRUE(frame->HasSharedImage());
@@ -714,8 +710,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
 
   RunUntilIdle();
 
-  if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
-      gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+  if (viz::IsOddSizeMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_P010LE, frame->format());
     EXPECT_TRUE(frame->HasSharedImage());

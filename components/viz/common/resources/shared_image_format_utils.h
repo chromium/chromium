@@ -106,6 +106,13 @@ std::optional<size_t> SharedMemorySizeForSharedImageFormat(
     SharedImageFormat format,
     const gfx::Size& size);
 
+// Multiplanar buffer formats (e.g, YUV_420_BIPLANAR, YVU_420, P010) can be
+// tricky when the size of the primary plane is odd, because the subsampled
+// planes will have a size that is not a divisor of the primary plane's size.
+// This returns whether odd size multiplanar formats are supported.
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+bool IsOddSizeMultiPlanarBuffersAllowed();
+
 // Utilities that conceptually belong only on the service side, but are
 // currently used by some clients. Usage is restricted to friended clients.
 class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)

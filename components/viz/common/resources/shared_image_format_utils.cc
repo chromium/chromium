@@ -342,6 +342,14 @@ std::optional<size_t> SharedMemorySizeForSharedImageFormat(
   return buffer_size.ValueOrDie();
 }
 
+bool IsOddSizeMultiPlanarBuffersAllowed() {
+#if BUILDFLAG(IS_APPLE)
+  return true;
+#else
+  return false;
+#endif
+}
+
 // static
 unsigned int
 SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(

@@ -12,7 +12,6 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/vulkan/vulkan_ycbcr_info.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_version_info.h"
 
@@ -204,16 +203,16 @@ bool IsSizeForBufferHandleValid(const gfx::Size& size,
 #if BUILDFLAG(IS_CHROMEOS)
   // Allow odd size for CrOS.
   // TODO(https://crbug.com/1208788, https://crbug.com/1224781): Merge this
-  // with the path that uses gfx::IsOddHeightMultiPlanarBuffersAllowed.
+  // with the path that uses viz::IsOddSizeMultiPlanarBuffersAllowed.
   return true;
 #else
   auto [width_scale, height_scale] = format.GetSubsamplingScale();
   if (size.width() % width_scale &&
-      !gfx::IsOddWidthMultiPlanarBuffersAllowed()) {
+      !viz::IsOddSizeMultiPlanarBuffersAllowed()) {
     return false;
   }
   if (size.height() % height_scale &&
-      !gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
+      !viz::IsOddSizeMultiPlanarBuffersAllowed()) {
     return false;
   }
   return true;
