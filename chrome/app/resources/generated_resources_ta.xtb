@@ -4012,7 +4012,6 @@
 <translation id="3735039640698208086">ஆடியோவை இயக்கும் போது...</translation>
 <translation id="3735740477244556633">இதன்படி வரிசைப்படுத்து</translation>
 <translation id="3735827758948958091">வரம்புள்ள இணைப்பில் இருக்கும்போது <ph name="FILE_NAMES" /> ஃபைலைத் திறக்க முடியாது</translation>
-<translation id="3736575924150462398">பக்கங்கள் அல்லது மேலும் பலவற்றைச் சேருங்கள்</translation>
 <translation id="3737058101969549870">ஏற்கெனவே உள்ள பிரவுசிங் தரவை இந்தப் புதிய சுயவிவரத்தில் இருந்து தனிப்படுத்தி வைக்க வேண்டுமா?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> தரவு 24 மணிநேரத்தில் நீக்கப்படும்</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4642,6 +4641,7 @@
 <translation id="4151503145138736576">காலியாக்க ஆஃப்லைன் சேமிப்பகம் இல்லை</translation>
 <translation id="4152011295694446843">உங்கள் புக்மார்க்குகளை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 தாவல்}other{# தாவல்கள்}}</translation>
+<translation id="4153858337812834972">மிகவும் சமீபத்திய பக்கங்கள்</translation>
 <translation id="4154658846204884961">வால் நட்சத்திரம்</translation>
 <translation id="4154664944169082762">விரல் அச்சுகள்</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - இடது பக்கக் காட்சி</translation>
@@ -7781,6 +7781,7 @@
 <translation id="6391131092053186625">உங்கள் சாதனத்தின் IMEI: <ph name="IMEI_NUMBER" />. சேவையைச் செயல்படுத்த இந்த எண் உதவலாம்.</translation>
 <translation id="6393156038355142111">வலுவான கடவுச்சொல்லைப் பரிந்துரை</translation>
 <translation id="6393550101331051049">பாதுகாப்பற்ற உள்ளடக்கத்தைக் காட்டுவதற்கு அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
+<translation id="6394634179843537518">ஃபைலைச் சேர்</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />கணினியின் தகவல்<ph name="END_LINK1" /> மற்றும் <ph name="BEGIN_LINK2" />அளவீடுகளை<ph name="END_LINK2" /> அனுப்பு</translation>
 <translation id="6397586889873084061">ஆம், எனது தரவைப் பள்ளிக் கணக்கிலிருந்து தனிப்படுத்து (பரிந்துரைக்கப்படுவது)</translation>
 <translation id="6398715114293939307">Google Play Storeரை அகற்று</translation>
@@ -9318,7 +9319,6 @@
 <translation id="747114903913869239">பிழை: நீட்டிப்பை குறி இறக்கம் செய்ய முடியவில்லை</translation>
 <translation id="7471520329163184433">வேகத்தைக் குறை</translation>
 <translation id="747312361841682912">காட்டப்படும் தரவை நீக்கு</translation>
-<translation id="7473555040328423550">பக்கத்தைச் சேர்</translation>
 <translation id="7473891865547856676">வேண்டாம்</translation>
 <translation id="7474043404939621342">கருவிப்பட்டியைப் பிரத்தியேகமாக்கு</translation>
 <translation id="747459581954555080">எல்லாம் மீட்டெடு</translation>
@@ -11896,7 +11896,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" சேர்க்கப்பட்டது</translation>
 <translation id="9215742531438648683">Google Play Storeரை நிறுவல் நீக்கு</translation>
 <translation id="9218430445555521422">இயல்பானதாக அமை</translation>
-<translation id="9218536722110863203">ஃபைலைப் பதிவேற்று</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (ஆதரிக்கப்படாத ஆப்ஸ்)</translation>
 <translation id="9219572436491982747">Chrome AI தொழில்நுட்பத்தை மேம்படுத்துவதற்காக Googleளுக்கு அனுப்பப்படும் தரவு மதிப்பாய்வாளர்களுக்குக் காட்டப்படலாம்</translation>
 <translation id="9219741625496141320">உலாவிய தரவு தானாக நீக்கப்பட்டது</translation>

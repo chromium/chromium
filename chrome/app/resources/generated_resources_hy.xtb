@@ -3997,7 +3997,6 @@
 <translation id="3735039640698208086">Աուդիո նվագարկելիս...</translation>
 <translation id="3735740477244556633">Դասավորել ըստ</translation>
 <translation id="3735827758948958091">Հնարավոր չէ <ph name="FILE_NAMES" /> ֆայլեր վերբեռնել՝ վճարովի թրաֆիկով կապ օգտագործելու դեպքում։</translation>
-<translation id="3736575924150462398">Ավելացրեք ներդիրներ և ավելին</translation>
 <translation id="3737058101969549870">Պահե՞լ այցելությունների գոյություն ունեցող պատմությունը այս նոր պրոֆիլից առանձին</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> սարքի տվյալները 24 ժամ հետո կջնջվեն</translation>
 <translation id="3738924763801731196"><ph name="OID" />՝</translation>
@@ -4627,6 +4626,7 @@
 <translation id="4151503145138736576">Անցանց հիշողությունը դատարկ է</translation>
 <translation id="4152011295694446843">Ձեր էջանիշները կգտնեք այստեղ</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ներդիր}one{# ներդիր}other{# ներդիր}}</translation>
+<translation id="4153858337812834972">Վերջերս օգտագործված ներդիրները</translation>
 <translation id="4154658846204884961">Գիսաստղ</translation>
 <translation id="4154664944169082762">Մատնահետքեր</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />․ ձախ պատուհան</translation>
@@ -7761,6 +7761,7 @@
 <translation id="6391131092053186625">Ձեր սարքի IMEI կոդն է՝ <ph name="IMEI_NUMBER" />։ Դրա միջոցով կարող եք ակտիվացնել ծառայությունը։</translation>
 <translation id="6393156038355142111">Ստեղծել հուսալի գաղտնաբառ…</translation>
 <translation id="6393550101331051049">Թույլատրվում է ցուցադրել վտանգավոր բովանդակություն</translation>
+<translation id="6394634179843537518">Ավելացնել ֆայլ</translation>
 <translation id="6395423953133416962">Ուղարկել <ph name="BEGIN_LINK1" />համակարգի մասին տեղեկությունները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />ցուցանիշների արժեքները<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Այո, պահել իմ տվյալները դպրոցից առանձին (խորհուրդ է տրվում)</translation>
 <translation id="6398715114293939307">Հեռացնել Google Play Խանութը</translation>
@@ -9299,7 +9300,6 @@
 <translation id="747114903913869239">Սխալ՝ չհաջողվեց ապակոդավորել ընդլայնումը</translation>
 <translation id="7471520329163184433">Ավելի դանդաղ</translation>
 <translation id="747312361841682912">Ջնջել ցուցադրված տվյալները</translation>
-<translation id="7473555040328423550">Ավելացնել ներդիր</translation>
 <translation id="7473891865547856676">Ոչ, պետք չէ</translation>
 <translation id="7474043404939621342">Անհատականացնել գործիքագոտին</translation>
 <translation id="747459581954555080">Վերականգնել բոլորը</translation>
@@ -11877,7 +11877,6 @@
 <translation id="9215293857209265904">«<ph name="EXTENSION_NAME" />» ընդլայնումն ավելացվել է</translation>
 <translation id="9215742531438648683">Ապատեղադրել Google Play Խանութը</translation>
 <translation id="9218430445555521422">Սահմանել որպես կանխադրված</translation>
-<translation id="9218536722110863203">Վերբեռնել ֆայլ</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (չաջակցվող հավելված)</translation>
 <translation id="9219572436491982747">Google-ին ուղարկված տվյալները կարող են դիտվել մասնագետների կողմից՝ Chrome AI-ի տեխնոլոգիան բարելավելու նպատակով</translation>
 <translation id="9219741625496141320">Այցելությունների պատմությունն ավտոմատ ջնջվել է</translation>

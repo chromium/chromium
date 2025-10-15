@@ -1386,7 +1386,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1931410639376954712">Instalando <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Posterior a</translation>
 <translation id="1932125073382155239">¿Crear copia de seguridad de tus cosas?</translation>
-<translation id="1933070475689690969">Actividad en las aplicaciones de Gemini</translation>
+<translation id="1933070475689690969">Actividad en las Aplicaciones de Gemini</translation>
 <translation id="1933489278505808700">Tiene permiso para leer y modificar</translation>
 <translation id="1935303383381416800">Pueden ver tu ubicación</translation>
 <translation id="193565226207940518">Herramienta de asistencia</translation>
@@ -2545,7 +2545,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Cuando la precisión de la ubicación está activada, la información sobre las señales inalámbricas, como los puntos de acceso Wi-Fi y las torres de redes móviles, junto con los datos de los sensores del dispositivo, como el acelerómetro y el giroscopio, se usan para estimar con mayor precisión la ubicación del dispositivo, que las aplicaciones y los servicios de Android utilizan para proporcionar funciones basadas en la ubicación. Para ello, Google recopila periódicamente la información de los sensores de dispositivos y señales inalámbricas que hay cerca de este dispositivo para recoger las ubicaciones de las señales inalámbricas.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google usa la información recogida de este dispositivo para mejorar la precisión de la ubicación y los servicios basados en la ubicación, así como para optimizar, proporcionar y mantener en general los servicios de Google. Tratamos esta información según los intereses legítimos de Google y de terceros para satisfacer las necesidades de los usuarios. Esta información no se usa para identificar a nadie.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Puedes desactivar la precisión de la ubicación en cualquier momento en los ajustes de ubicación de este dispositivo en Ajustes &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación &gt; Ajustes de ubicación avanzados. Si este ajuste está desactivado, no se recogerá ningún dato de precisión de la ubicación. En el caso de las aplicaciones y los servicios de Android, solo se usa la dirección IP (si está disponible) para determinar la ubicación de este dispositivo, lo que puede afectar a la disponibilidad y la precisión de las ubicaciones de las aplicaciones y los servicios de Android como Google Maps.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="2729940704980595903">Consulta y gestiona tu actividad en las aplicaciones de Gemini</translation>
+<translation id="2729940704980595903">Consulta y gestiona tu Actividad en las Aplicaciones de Gemini</translation>
 <translation id="2730029791981212295">Creando copia de seguridad de las aplicaciones y archivos de Linux</translation>
 <translation id="2730550884708194161">Información sobre los perfiles de trabajo</translation>
 <translation id="2730596696987224099">Elegir una personalizada</translation>
@@ -4000,7 +4000,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3735039640698208086">Al reproducir el audio...</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3735827758948958091">No se puede abrir <ph name="FILE_NAMES" /> si se tiene una conexión medida</translation>
-<translation id="3736575924150462398">Añade pestañas u otros elementos</translation>
 <translation id="3737058101969549870">¿Mantener los datos de navegación actuales separados de este nuevo perfil?</translation>
 <translation id="3738632186060045350">Se eliminarán los datos del <ph name="DEVICE_TYPE" /> dentro de 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4629,6 +4628,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4151503145138736576">No hay almacenamiento sin conexión que liberar</translation>
 <translation id="4152011295694446843">Aquí verás tus marcadores</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
+<translation id="4153858337812834972">Pestañas más recientes</translation>
 <translation id="4154658846204884961">Cometa</translation>
 <translation id="4154664944169082762">Huellas digitales</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: vista izquierda</translation>
@@ -5814,7 +5814,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5003070249435823986">Usa el gesto para entrar en el modo de desplazamiento y, a continuación, mueve la cabeza en la dirección en la que quieras desplazarte. Vuelve a usar el gesto para salir del modo de desplazamiento.</translation>
 <translation id="5003993274120026347">Siguiente frase</translation>
-<translation id="5005113238422129109">Usa el micrófono para chatear con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las aplicaciones de Gemini (si la opción está activada).</translation>
+<translation id="5005113238422129109">Usa el micrófono para chatear con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las Aplicaciones de Gemini (si la opción está activada).</translation>
 <translation id="5005311809885666699">Guardado desde Chrome</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5006218871145547804">ADB de aplicaciones Android en Crostini</translation>
@@ -7527,7 +7527,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="622484624075952240">Abajo</translation>
 <translation id="622537739776246443">Se eliminará el perfil</translation>
 <translation id="6225475702458870625">Conexión de datos disponible desde tu <ph name="PHONE_NAME" /></translation>
-<translation id="622568138962270592">Actividad en las aplicaciones de Gemini</translation>
+<translation id="622568138962270592">Actividad en las Aplicaciones de Gemini</translation>
 <translation id="6226777517901268232">Archivo de clave privada (opcional)</translation>
 <translation id="6227280783235722609">extensión</translation>
 <translation id="622902691730729894">Desfijar grupo de la barra de marcadores</translation>
@@ -7638,7 +7638,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6291953229176937411">&amp;Mostrar en Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> está desactivada</translation>
 <translation id="6294759976468837022">Velocidad de la búsqueda automática</translation>
-<translation id="6295140892595702619">Usa el micrófono para hablar con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las aplicaciones de Gemini (si la opción está activada). Tus datos no se usan para mejorar modelos de IA generativa.</translation>
+<translation id="6295140892595702619">Usa el micrófono para hablar con Gemini. Cuando le hablas a Gemini, el audio se almacena en Actividad en las Aplicaciones de Gemini (si la opción está activada). Tus datos no se usan para mejorar modelos de IA generativa.</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6295855836753816081">Guardando...</translation>
 <translation id="6296481987471548530">Usa tu ubicación precisa para obtener los resultados de Gemini más precisos, en lugar de una ubicación estimada basada en tu dirección IP. Tus datos no se usan para mejorar modelos de IA generativa.</translation>
@@ -7765,6 +7765,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6391131092053186625">El IMEI de tu dispositivo es <ph name="IMEI_NUMBER" />. Este número se puede usar para activar el servicio.</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
+<translation id="6394634179843537518">Añadir archivo</translation>
 <translation id="6395423953133416962">Enviar <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /> e <ph name="BEGIN_LINK1" />información del sistema<ph name="END_LINK1" /></translation>
 <translation id="6397586889873084061">Sí, mantener mis datos separados de los del centro educativo (recomendado)</translation>
 <translation id="6398715114293939307">Quitar Google Play Store</translation>
@@ -9302,7 +9303,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="747114903913869239">Error: no es posible decodificar la extensión.</translation>
 <translation id="7471520329163184433">Más lenta</translation>
 <translation id="747312361841682912">Eliminar datos mostrados</translation>
-<translation id="7473555040328423550">Añadir pestaña</translation>
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7474043404939621342">Personalizar la barra de herramientas</translation>
 <translation id="747459581954555080">Restaurar todo</translation>
@@ -11880,7 +11880,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" añadida</translation>
 <translation id="9215742531438648683">Desinstalar Google Play Store</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
-<translation id="9218536722110863203">Subir archivo</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplicación no compatible)</translation>
 <translation id="9219572436491982747">Puede que los datos enviados a Google los vean revisores humanos para mejorar la tecnología de IA de Chrome</translation>
 <translation id="9219741625496141320">Los datos de navegación se han eliminado automáticamente</translation>

@@ -4008,7 +4008,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3735039640698208086">При възпроизвеждане на звук...</translation>
 <translation id="3735740477244556633">Сортиране по</translation>
 <translation id="3735827758948958091"><ph name="FILE_NAMES" /> не може да се отвори при използване на връзка с отчитане</translation>
-<translation id="3736575924150462398">Добавяне на раздели или др.</translation>
 <translation id="3737058101969549870">Искате ли съществуващите данни за сърфирането да се съхраняват отделно от този нов потребителски профил?</translation>
 <translation id="3738632186060045350">Данните на устройството ви <ph name="DEVICE_TYPE" /> ще бъдат изтрити след 24 часа</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4639,6 +4638,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4151503145138736576">Няма офлайн хранилище за изчистване</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 раздел}other{# раздела}}</translation>
+<translation id="4153858337812834972">Най-скорошни раздели</translation>
 <translation id="4154658846204884961">Комета</translation>
 <translation id="4154664944169082762">Пръстови отпечатъци</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – ляв изглед</translation>
@@ -7778,6 +7778,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6391131092053186625">IMEI номерът на устройството ви е <ph name="IMEI_NUMBER" />. Той може да се използва за активиране на услугата.</translation>
 <translation id="6393156038355142111">Предложение за надеждна парола</translation>
 <translation id="6393550101331051049">Сайтове с разрешение за показване на незащитено съдържание</translation>
+<translation id="6394634179843537518">Добавяне на файл</translation>
 <translation id="6395423953133416962">Изпращане на <ph name="BEGIN_LINK1" />системна информация<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />показатели<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Да, отделяне на данните ми от училищните (препоръчва се)</translation>
 <translation id="6398715114293939307">Премахване на Google Play Магазин</translation>
@@ -9315,7 +9316,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="747114903913869239">Грешка: Разширението не може да се декодира</translation>
 <translation id="7471520329163184433">По-бавна</translation>
 <translation id="747312361841682912">Изтриване на показаните данни</translation>
-<translation id="7473555040328423550">Добавяне на раздел</translation>
 <translation id="7473891865547856676">Не, благодаря</translation>
 <translation id="7474043404939621342">Персонализиране на лентата с инструменти</translation>
 <translation id="747459581954555080">Възстановяване на всички</translation>
@@ -11893,7 +11893,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9215293857209265904"><ph name="EXTENSION_NAME" /> се добави</translation>
 <translation id="9215742531438648683">Деинсталиране на Google Play Магазин</translation>
 <translation id="9218430445555521422">Задаване като основен избор</translation>
-<translation id="9218536722110863203">Качване на файл</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (неподдържано приложение)</translation>
 <translation id="9219572436491982747">Данните, изпратени до Google, може да бъдат видени от проверяващи лица с цел подобряване на технологията на AI на Chrome</translation>
 <translation id="9219741625496141320">Данните за сърфирането бяха изтрити автоматично</translation>

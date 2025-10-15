@@ -4009,7 +4009,6 @@
 <translation id="3735039640698208086">Аудио тоглуулж байх үед...</translation>
 <translation id="3735740477244556633">Дараахаар эрэмбэлэх</translation>
 <translation id="3735827758948958091">Хязгаартай холболттой байхад <ph name="FILE_NAMES" />-г нээх боломжгүй</translation>
-<translation id="3736575924150462398">Таб эсвэл өөр зүйл нэмэх</translation>
 <translation id="3737058101969549870">Одоо байгаа интернэтээр үзсэн өгөгдлийг энэ шинэ профайлаас тусад нь байлгах уу?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-н өгөгдөл 24 цагийн дараа устана</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4638,6 +4637,7 @@
 <translation id="4151503145138736576">Цэвэрлэх ямар ч офлайн хадгалах сан байхгүй</translation>
 <translation id="4152011295694446843">Та хавчуургуудаа эндээс олох болно</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 цонх}other{# цонх}}</translation>
+<translation id="4153858337812834972">Хамгийн сүүлийн үеийн табууд</translation>
 <translation id="4154658846204884961">Сүүлт од</translation>
 <translation id="4154664944169082762">Хурууны хээ</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - Зүүн талын харагдах байдал</translation>
@@ -7776,6 +7776,7 @@
 <translation id="6391131092053186625">Таны төхөөрөмжийн IMEI нь <ph name="IMEI_NUMBER" /> юм. Энэ дугаарыг үйлчилгээг идэвхжүүлэхэд туслахад ашиглах боломжтой.</translation>
 <translation id="6393156038355142111">Сайн нууц үг санал болгох</translation>
 <translation id="6393550101331051049">Аюултай контент харуулахыг зөвшөөрсөн</translation>
+<translation id="6394634179843537518">Файл нэмэх</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" /> системийн мэдээллийг илгээх <ph name="END_LINK1" /> ба<ph name="BEGIN_LINK2" /> хэмжигдэхүүн <ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Тийм, өгөгдлөө сургуулиас тусад нь байлгана (санал болгосон)</translation>
 <translation id="6398715114293939307">Google Play дэлгүүрийг устгах</translation>
@@ -9312,7 +9313,6 @@
 <translation id="747114903913869239">Алдаа: өргөтгөлийн кодыг тайлах боломжгүй байна</translation>
 <translation id="7471520329163184433">Илүү удаан</translation>
 <translation id="747312361841682912">Үзүүлсэн өгөгдлийг устгах</translation>
-<translation id="7473555040328423550">Таб нэмэх</translation>
 <translation id="7473891865547856676">Үгүй, баярлалаа</translation>
 <translation id="7474043404939621342">Самбараа өөрчлөх</translation>
 <translation id="747459581954555080">Бүгдийг сэргээх</translation>
@@ -11886,7 +11886,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" нэмэгдсэн</translation>
 <translation id="9215742531438648683">Google Play Дэлгүүрийг устгах</translation>
 <translation id="9218430445555521422">Өгөгдмөлөөр тохируулах</translation>
-<translation id="9218536722110863203">Файл байршуулах</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (дэмждэггүй апп)</translation>
 <translation id="9219572436491982747">Google-д илгээсэн өгөгдлийг Chrome-н ХОУ-ы технологийг сайжруулахын тулд хянагч хүмүүс харж магадгүй</translation>
 <translation id="9219741625496141320">Интернэтээр үзсэн өгөгдлийг автоматаар устгасан</translation>

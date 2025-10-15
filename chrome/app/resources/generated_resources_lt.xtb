@@ -4015,7 +4015,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3735039640698208086">Kai leidžiamas garso įrašas...</translation>
 <translation id="3735740477244556633">Rūšiuoti pagal</translation>
 <translation id="3735827758948958091">Negalima atidaryti „<ph name="FILE_NAMES" />“, kai naudojamas apribotas ryšys</translation>
-<translation id="3736575924150462398">Pridėti skirtukų arba daugiau</translation>
 <translation id="3737058101969549870">Esamus naršymo duomenis saugoti atskirai nuo šio naujo profilio?</translation>
 <translation id="3738632186060045350">„<ph name="DEVICE_TYPE" />“ duomenys bus ištrinti po 24 val.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4645,6 +4644,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4151503145138736576">Nėra neprisijungus pasiekiamos saugyklos, kurią būtų galima išvalyti</translation>
 <translation id="4152011295694446843">Čia rasite žymes</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
+<translation id="4153858337812834972">Naujausi skirtukai</translation>
 <translation id="4154658846204884961">Kometa</translation>
 <translation id="4154664944169082762">Pirštų atspaudai</translation>
 <translation id="4156297721709710037">„<ph name="WINDOW_TITLE" />“ – kairysis rodinys</translation>
@@ -7784,6 +7784,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6391131092053186625">Jūsų įrenginio IMEI yra <ph name="IMEI_NUMBER" />. Šį numerį galima naudoti suaktyvinant paslaugą.</translation>
 <translation id="6393156038355142111">Siūlyti sudėtingą slaptažodį</translation>
 <translation id="6393550101331051049">Leidžiama rodyti nesaugų turinį</translation>
+<translation id="6394634179843537518">Pridėti failą</translation>
 <translation id="6395423953133416962">Siųsti <ph name="BEGIN_LINK1" />sistemos informaciją<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />metriką<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Taip, laikyti mano duomenis atskirai nuo mokslo įstaigos (rekomenduojama)</translation>
 <translation id="6398715114293939307">Pašalinti „Google Play“ parduotuvę</translation>
@@ -9327,7 +9328,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="747114903913869239">Klaida: neįmanoma iššifruoti plėtinio</translation>
 <translation id="7471520329163184433">Lėčiau</translation>
 <translation id="747312361841682912">Ištrinti rodomus duomenis</translation>
-<translation id="7473555040328423550">Pridėti skirtuką</translation>
 <translation id="7473891865547856676">Ne, ačiū</translation>
 <translation id="7474043404939621342">Tinkinti įrankių juostą</translation>
 <translation id="747459581954555080">Atkurti viską</translation>
@@ -11908,7 +11908,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="9215293857209265904">Pridėtas „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="9215742531438648683">Pašalinti „Google Play“ parduotuvę</translation>
 <translation id="9218430445555521422">Nustatyti kaip numatytąjį</translation>
-<translation id="9218536722110863203">Įkelti failą</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (nepalaikoma programa)</translation>
 <translation id="9219572436491982747">Duomenis, siunčiamus į „Google“, gali peržiūrėti tikrinantys žmonės, siekiant tobulinti „Chrome“ DI technologijas</translation>
 <translation id="9219741625496141320">Naršymo duomenys ištrinti automatiškai</translation>

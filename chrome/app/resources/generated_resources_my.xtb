@@ -4011,7 +4011,6 @@
 <translation id="3735039640698208086">အသံဖွင့်နေသည့်အခါ...</translation>
 <translation id="3735740477244556633">အောက်ပါအတိုင်းစီရန်</translation>
 <translation id="3735827758948958091">အခပေးဒေတာ ချိတ်ဆက်မှုသုံးနေစဉ် <ph name="FILE_NAMES" /> ဖွင့်၍ မရပါ</translation>
-<translation id="3736575924150462398">တဘ် (သို့) အခြားအရာ ထည့်ပါ</translation>
 <translation id="3737058101969549870">လက်ရှိ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဤပရိုဖိုင်အသစ်နှင့် သီးခြားထားမလား။</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> ဒေတာကို ၂၄ နာရီအတွင်း ဖျက်ပါမည်</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4640,6 +4639,7 @@
 <translation id="4151503145138736576">ရှင်းလင်းရန် အော့ဖ်လိုင်းသိုလှောင်ခန်း မရှိပါ</translation>
 <translation id="4152011295694446843">သင်၏လိပ်စာများကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{တဘ် ၁}other{# တဘ်များ}}</translation>
+<translation id="4153858337812834972">နောက်ဆုံးတဘ်များ</translation>
 <translation id="4154658846204884961">ကြယ်တံခွန်</translation>
 <translation id="4154664944169082762">လက်ဗွေများ</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - ဘယ်ဘက်မြင်ကွင်း</translation>
@@ -7778,6 +7778,7 @@
 <translation id="6391131092053186625">သင့်စက် IMEI မှာ <ph name="IMEI_NUMBER" /> ဖြစ်သည်။ ဝန်ဆောင်မှုစတင်ရာ၌ ကူညီရန် ဤနံပါတ်ကို သုံးနိုင်သည်။</translation>
 <translation id="6393156038355142111">လုံခြုံမှုမြင့်သည့် စကားဝှက် အကြံပြုရန်</translation>
 <translation id="6393550101331051049">ဘေးကင်းမှုမရှိသော အကြောင်းအရာများပြရန် ခွင့်ပြုထားသည်</translation>
+<translation id="6394634179843537518">ဖိုင်ထည့်ရန်</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />စနစ်ဆိုင်ရာ အချက်အလက်များ <ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />တိုင်းထွာချက်များ<ph name="END_LINK2" /> ပို့ရန်</translation>
 <translation id="6397586889873084061">ပြုလုပ်မည်။ ကျွန်ုပ်၏ဒေတာကို ကျောင်းမှ ခွဲခြားထားမည် (အကြံပြုထားသည်)</translation>
 <translation id="6398715114293939307">Google Play Store ကို ဖယ်ရှားရန်</translation>
@@ -9312,7 +9313,6 @@
 <translation id="747114903913869239">မှားယွင်းမှု၊ အိတ်စတန်းရှင်းအား ကုဒ်မဖြုတ်နိုင်ပါ။</translation>
 <translation id="7471520329163184433">ပိုနှေး</translation>
 <translation id="747312361841682912">ပြသထားသောဒေတာကို ဖျက်ရန်</translation>
-<translation id="7473555040328423550">တဘ်ထည့်ရန်</translation>
 <translation id="7473891865547856676">မလိုပါ</translation>
 <translation id="7474043404939621342">သင့်ကိရိယာဘားကို စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="747459581954555080">အားလုံး ပြန်လည်သိုလှောင်</translation>
@@ -11889,7 +11889,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ကို ထည့်ပြီး</translation>
 <translation id="9215742531438648683">Google Play စတိုး ဖယ်ရှားရန်</translation>
 <translation id="9218430445555521422">မူရင်းအဖြစ် သတ်မှတ်ရန်</translation>
-<translation id="9218536722110863203">ဖိုင်အပ်လုဒ်လုပ်ရန်</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (ပံ့ပိုးမထားသော အက်ပ်)</translation>
 <translation id="9219572436491982747">Chrome AI ၏ နည်းပညာ ပိုကောင်းစေရန်အတွက် Google သို့ ပို့ထားသောဒေတာကို ပြန်စစ်သည့် ပုဂ္ဂိုလ်များက မြင်နိုင်သည်</translation>
 <translation id="9219741625496141320">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို အလိုအလျောက် ဖျက်လိုက်သည်</translation>

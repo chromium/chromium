@@ -4012,7 +4012,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3735039640698208086">Apabila memainkan audio...</translation>
 <translation id="3735740477244556633">Isih mengikut</translation>
 <translation id="3735827758948958091">Tidak dapat membuka <ph name="FILE_NAMES" /> semasa disambungkan kepada sambungan bermeter</translation>
-<translation id="3736575924150462398">Tambahkan tab atau lain-lain</translation>
 <translation id="3737058101969549870">Asingkan data semakan imbas sedia ada daripada profil baharu ini?</translation>
 <translation id="3738632186060045350">Data <ph name="DEVICE_TYPE" /> akan dipadamkan dalam masa 24 jam</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4642,6 +4641,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4151503145138736576">Tiada storan luar talian untuk dikosongkan</translation>
 <translation id="4152011295694446843">Anda dapat menemukan penanda halaman anda di sini</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tab}}</translation>
+<translation id="4153858337812834972">Tab terbaharu</translation>
 <translation id="4154658846204884961">Komet</translation>
 <translation id="4154664944169082762">Cap jari</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - Paparan kiri</translation>
@@ -7780,6 +7780,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6391131092053186625">IMEI peranti anda ialah <ph name="IMEI_NUMBER" />. Nombor ini boleh digunakan untuk mengaktifkan perkhidmatan.</translation>
 <translation id="6393156038355142111">Cadangkan kata laluan yang kukuh</translation>
 <translation id="6393550101331051049">Dibenarkan untuk memaparkan kandungan tidak selamat</translation>
+<translation id="6394634179843537518">Tambah fail</translation>
 <translation id="6395423953133416962">Hantar <ph name="BEGIN_LINK1" />maklumat sistem<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Ya, asingkan data saya daripada profil sekolah (disyorkan)</translation>
 <translation id="6398715114293939307">Alih keluar Gedung Google Play</translation>
@@ -9317,7 +9318,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="747114903913869239">Ralat: Tidak dapat menyahkod sambungan</translation>
 <translation id="7471520329163184433">Lebih perlahan</translation>
 <translation id="747312361841682912">Padamkan data yang dipaparkan</translation>
-<translation id="7473555040328423550">Tambahkan tab</translation>
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
 <translation id="7474043404939621342">Sesuaikan bar alat anda</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
@@ -11896,7 +11896,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ditambah</translation>
 <translation id="9215742531438648683">Nyahpasang Gedung Google Play</translation>
 <translation id="9218430445555521422">Tetapkan sebagai lalai</translation>
-<translation id="9218536722110863203">Muat naik fail</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (apl tidak disokong)</translation>
 <translation id="9219572436491982747">Data yang dihantar kepada Google mungkin akan dilihat oleh jurusemak untuk meningkatkan Teknologi AI Chrome</translation>
 <translation id="9219741625496141320">Data semakan imbas telah dipadamkan secara automatik</translation>

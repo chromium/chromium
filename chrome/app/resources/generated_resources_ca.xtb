@@ -3997,7 +3997,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3735039640698208086">En reproduir àudio…</translation>
 <translation id="3735740477244556633">Ordena per</translation>
 <translation id="3735827758948958091">No es pot obrir <ph name="FILE_NAMES" /> mentre s'utilitza una connexió mesurada</translation>
-<translation id="3736575924150462398">Afegeix pestanyes o més</translation>
 <translation id="3737058101969549870">Vols mantenir les dades de navegació existents separades d'aquest perfil nou?</translation>
 <translation id="3738632186060045350">Les dades del dispositiu <ph name="DEVICE_TYPE" /> se suprimiran en un termini de 24 hores</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4626,6 +4625,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4151503145138736576">No hi ha emmagatzematge sense connexió per netejar</translation>
 <translation id="4152011295694446843">Trobaràs les adreces d'interès aquí</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestanya}other{# pestanyes}}</translation>
+<translation id="4153858337812834972">Pestanyes més recents</translation>
 <translation id="4154658846204884961">Cometa</translation>
 <translation id="4154664944169082762">Empremtes</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />. Vista esquerra.</translation>
@@ -7761,6 +7761,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6391131092053186625">L'IMEI del dispositiu és <ph name="IMEI_NUMBER" />. Aquest número es pot utilitzar per activar el servei.</translation>
 <translation id="6393156038355142111">Suggereix una contrasenya segura</translation>
 <translation id="6393550101331051049">Amb permís per mostrar contingut no segur</translation>
+<translation id="6394634179843537518">Afegeix un fitxer</translation>
 <translation id="6395423953133416962">Envia les <ph name="BEGIN_LINK2" />mètriques<ph name="END_LINK2" /> i la <ph name="BEGIN_LINK1" />informació del sistema<ph name="END_LINK1" /></translation>
 <translation id="6397586889873084061">Sí, mantén les meves dades separades de les del centre educatiu (opció recomanada)</translation>
 <translation id="6398715114293939307">Suprimeix Google Play Store</translation>
@@ -9298,7 +9299,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="747114903913869239">Error: no s'ha pogut descodificar l'extensió</translation>
 <translation id="7471520329163184433">Més lent</translation>
 <translation id="747312361841682912">Suprimeix les dades mostrades</translation>
-<translation id="7473555040328423550">Afegeix una pestanya</translation>
 <translation id="7473891865547856676">No, gràcies</translation>
 <translation id="7474043404939621342">Personalitza la barra d'eines</translation>
 <translation id="747459581954555080">Restaura'ls tots</translation>
@@ -11877,7 +11877,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9215293857209265904">S'ha afegit "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="9215742531438648683">Desinstal·la Google Play Store</translation>
 <translation id="9218430445555521422">Defineix com a predeterminat</translation>
-<translation id="9218536722110863203">Penja un fitxer</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (l’aplicació no és compatible)</translation>
 <translation id="9219572436491982747">És possible que revisors humans vegin les dades enviades a Google per millorar la tecnologia de la IA de Chrome</translation>
 <translation id="9219741625496141320">Les dades de navegació s'han suprimit automàticament</translation>

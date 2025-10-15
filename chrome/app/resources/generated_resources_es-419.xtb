@@ -3996,7 +3996,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3735039640698208086">Cuando se reproduce audio…</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3735827758948958091">No se puede abrir <ph name="FILE_NAMES" /> con una conexión de uso medido</translation>
-<translation id="3736575924150462398">Agregar pestañas o más</translation>
 <translation id="3737058101969549870">¿Quieres mantener los datos de navegación existentes separados de este nuevo perfil?</translation>
 <translation id="3738632186060045350">Se borrarán los datos de <ph name="DEVICE_TYPE" /> en 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4626,6 +4625,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4151503145138736576">No hay espacio de almacenamiento sin conexión para liberar</translation>
 <translation id="4152011295694446843">Aquí encontrarás tus favoritos</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
+<translation id="4153858337812834972">Pestañas más recientes</translation>
 <translation id="4154658846204884961">Cometa</translation>
 <translation id="4154664944169082762">Huellas digitales</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: Vista izquierda</translation>
@@ -7764,6 +7764,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6391131092053186625">El IMEI de tu dispositivo es <ph name="IMEI_NUMBER" />. Este número se puede usar para activar el servicio.</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
+<translation id="6394634179843537518">Agregar archivo</translation>
 <translation id="6395423953133416962">Enviar <ph name="BEGIN_LINK1" />información del sistema<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Sí, mantener mis datos separados de los de la institución educativa (recomendado)</translation>
 <translation id="6398715114293939307">Quitar Google Play Store</translation>
@@ -9301,7 +9302,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="747114903913869239">Error: No se puede decodificar la extensión</translation>
 <translation id="7471520329163184433">Más lenta</translation>
 <translation id="747312361841682912">Borrar los datos que se muestran</translation>
-<translation id="7473555040328423550">Agregar pestaña</translation>
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7474043404939621342">Personalizar tu barra de herramientas</translation>
 <translation id="747459581954555080">Restaurar todo</translation>
@@ -11879,7 +11879,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" agregada</translation>
 <translation id="9215742531438648683">Desinstalar Google Play Store</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
-<translation id="9218536722110863203">Subir archivo</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (app no compatible)</translation>
 <translation id="9219572436491982747">Es posible que los revisores humanos vean los datos enviados a Google para mejorar la tecnología de la IA de Chrome.</translation>
 <translation id="9219741625496141320">Se borraron automáticamente los datos de navegación</translation>

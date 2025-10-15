@@ -4010,7 +4010,6 @@
 <translation id="3735039640698208086">ఆడియో ప్లే చేస్తున్నప్పుడు...</translation>
 <translation id="3735740477244556633">క్రమపద్ధతి</translation>
 <translation id="3735827758948958091">డేటా నియంత్రణ గల కనెక్షన్‌లో ఉన్నప్పుడు <ph name="FILE_NAMES" />ను తెరవడం సాధ్యం కాదు</translation>
-<translation id="3736575924150462398">ట్యాబ్‌లను లేదా మరిన్నింటిని జోడించండి</translation>
 <translation id="3737058101969549870">ఇప్పటికే ఉన్న బ్రౌజింగ్ డేటాను ఈ కొత్త ప్రొఫైల్ నుండి వేరుగా ఉంచాలా?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> డేటా 24 గంటలలో తొలగించబడుతుంది</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4640,6 +4639,7 @@
 <translation id="4151503145138736576">క్లీనప్ చేయడానికి ఆఫ్‌లైన్ స్టోరేజ్ లేదు</translation>
 <translation id="4152011295694446843">మీరు మీ బుక్‌మార్క్‌లను ఇక్కడ చూడవచ్చు</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
+<translation id="4153858337812834972">అత్యంత ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="4154658846204884961">కామెట్</translation>
 <translation id="4154664944169082762">వేలిముద్రలు</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - ఎడమ వీక్షణ</translation>
@@ -7777,6 +7777,7 @@
 <translation id="6391131092053186625">మీ పరికర IMEI <ph name="IMEI_NUMBER" />. సర్వీస్‌ను యాక్టివేట్ చేయడంలో సహాయపడటానికి ఈ నంబర్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="6393156038355142111">శక్తివంతమైన పాస్‌వర్డ్‌ని సూచించు</translation>
 <translation id="6393550101331051049">సురక్షితం కాని కంటెంట్‌ను చూపడానికి అనుమతించబడింది</translation>
+<translation id="6394634179843537518">ఫైల్‌ను జోడించండి</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />సిస్టమ్ సమాచారం<ph name="END_LINK1" /> మరియు <ph name="BEGIN_LINK2" />గణాంకాలు<ph name="END_LINK2" /> పంపు</translation>
 <translation id="6397586889873084061">అవును, నా డేటాను స్కూల్ నుండి వేరుగా ఉంచండి (సిఫార్సు చేయబడింది)</translation>
 <translation id="6398715114293939307">Google Play Storeను తీసివేయండి</translation>
@@ -9314,7 +9315,6 @@
 <translation id="747114903913869239">ఎర్రర్: ఎక్స్‌టెన్షన్‌లను డీకోడ్ చేయడం సాధ్యం కాలేదు</translation>
 <translation id="7471520329163184433">నెమ్మదిగా</translation>
 <translation id="747312361841682912">డిస్‌ప్లే అయ్యే డేటాను తొలగించండి</translation>
-<translation id="7473555040328423550">ట్యాబ్‌ను జోడించండి</translation>
 <translation id="7473891865547856676">వద్దు, ధన్యవాదాలు</translation>
 <translation id="7474043404939621342">మీ టూల్‌బార్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="747459581954555080">అన్నీ పునరుద్ధరించు</translation>
@@ -11889,7 +11889,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" జోడించబడింది</translation>
 <translation id="9215742531438648683">Google Play Storeను అన్ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="9218430445555521422">ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేయండి</translation>
-<translation id="9218536722110863203">ఫైల్‌ను అప్‌లోడ్ చేయండి</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (సపోర్ట్ లేని యాప్)</translation>
 <translation id="9219572436491982747">Chromeకు సంబంధించిన AI టెక్నాలజీని మెరుగుపరచడానికి Googleకు పంపిన డేటాను రివ్యూవర్‌లు రివ్యూ చేయవచ్చు</translation>
 <translation id="9219741625496141320">బ్రౌజింగ్ డేటా ఆటోమేటిక్‌గా తీసివేయబడింది</translation>

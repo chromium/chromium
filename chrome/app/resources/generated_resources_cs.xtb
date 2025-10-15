@@ -3939,7 +3939,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3704331259350077894">Ukončení operace</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706366828968376544">Obnovit odesílání obrazovky do zařízení <ph name="DEVICE_NAME" /></translation>
-<translation id="3706463572498736864">Stránek na tabulku</translation>
+<translation id="3706463572498736864">Stránek na list</translation>
 <translation id="370649949373421643">Povolit Wi-Fi</translation>
 <translation id="370665806235115550">Načítání...</translation>
 <translation id="3707034683772193706">Navštívené weby mohou do Chromu uložit malé množství informací (zejména k ověření, že nejste robot)</translation>
@@ -3999,7 +3999,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3735039640698208086">Při přehrávání zvuku...</translation>
 <translation id="3735740477244556633">Seřadit podle</translation>
 <translation id="3735827758948958091">Při měřeném připojení nelze otevírat soubory <ph name="FILE_NAMES" /></translation>
-<translation id="3736575924150462398">Přidat karty nebo jiné položky</translation>
 <translation id="3737058101969549870">Ponechat stávající údaje o prohlížení oddělené od tohoto nového profilu?</translation>
 <translation id="3738632186060045350">Data ze zařízení <ph name="DEVICE_TYPE" /> budou vymazána do 24 hodin</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4628,6 +4627,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4151503145138736576">Není k dispozici žádné offline úložiště k vyčištění</translation>
 <translation id="4152011295694446843">Zde najdete své záložky</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
+<translation id="4153858337812834972">Nejnovější karty</translation>
 <translation id="4154658846204884961">Kometa</translation>
 <translation id="4154664944169082762">Digitální otisky</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – zobrazení vlevo</translation>
@@ -7761,6 +7761,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6391131092053186625">IMEI vašeho zařízení je <ph name="IMEI_NUMBER" />. Toto číslo lze použít k aktivaci služby.</translation>
 <translation id="6393156038355142111">Navrhnout silné heslo</translation>
 <translation id="6393550101331051049">Povolení zobrazovat nezabezpečený obsah</translation>
+<translation id="6394634179843537518">Přidat soubor</translation>
 <translation id="6395423953133416962">Odesílat <ph name="BEGIN_LINK1" />informace o systému<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Ano, uchovávat moje údaje odděleně od školních (doporučeno)</translation>
 <translation id="6398715114293939307">Odstranit Obchod Google Play</translation>
@@ -9301,7 +9302,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="747114903913869239">Chyba: Nelze dekódovat rozšíření</translation>
 <translation id="7471520329163184433">Pomalejší</translation>
 <translation id="747312361841682912">Vymazat zobrazená data</translation>
-<translation id="7473555040328423550">Přidat kartu</translation>
 <translation id="7473891865547856676">Ne, děkuji</translation>
 <translation id="7474043404939621342">Upravit lištu</translation>
 <translation id="747459581954555080">Obnovit vše</translation>
@@ -11880,7 +11880,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9215293857209265904">Bylo přidáno rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="9215742531438648683">Odinstalovat obchod Google Play</translation>
 <translation id="9218430445555521422">Nastavit jako výchozí</translation>
-<translation id="9218536722110863203">Nahrát soubor</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (nepodporovaná aplikace)</translation>
 <translation id="9219572436491982747">Data odeslaná do Googlu mohou vidět kontroloři, kteří pomáhají zlepšovat AI technologie v Chromu</translation>
 <translation id="9219741625496141320">Údaje o prohlížení byly automaticky smazány</translation>

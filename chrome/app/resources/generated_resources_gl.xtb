@@ -4001,7 +4001,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3735039640698208086">Ao reproducir audio...</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3735827758948958091">Non é posible abrir <ph name="FILE_NAMES" /> se hai unha conexión de pago por consumo</translation>
-<translation id="3736575924150462398">Engadir pestanas ou máis</translation>
 <translation id="3737058101969549870">Queres manter os datos de navegación separados deste novo perfil?</translation>
 <translation id="3738632186060045350">Eliminaranse os datos do dispositivo (<ph name="DEVICE_TYPE" />) dentro de 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4631,6 +4630,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4151503145138736576">Non hai espazo de almacenamento sen conexión para liberar</translation>
 <translation id="4152011295694446843">Aquí atoparás os teus marcadores</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{Unha pestana}other{# pestanas}}</translation>
+<translation id="4153858337812834972">Pestanas máis recentes</translation>
 <translation id="4154658846204884961">Cometa</translation>
 <translation id="4154664944169082762">Impresións dixitais</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: vista esquerda</translation>
@@ -7766,6 +7766,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6391131092053186625">O IMEI do dispositivo é <ph name="IMEI_NUMBER" />. Este número pode usarse para axudar a activar o servizo.</translation>
 <translation id="6393156038355142111">Suxerir contrasinal seguro</translation>
 <translation id="6393550101331051049">Permiso concedido para mostrar contido inseguro</translation>
+<translation id="6394634179843537518">Engadir ficheiro</translation>
 <translation id="6395423953133416962">Enviar <ph name="BEGIN_LINK1" />información do sistema<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Si, manter os meus datos separados dos do centro educativo (opción recomendada)</translation>
 <translation id="6398715114293939307">Eliminar Google Play Store</translation>
@@ -9302,7 +9303,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="747114903913869239">Erro: non se puido descodificar a extensión</translation>
 <translation id="7471520329163184433">Máis lento</translation>
 <translation id="747312361841682912">Eliminar datos mostrados</translation>
-<translation id="7473555040328423550">Engadir pestana</translation>
 <translation id="7473891865547856676">Non, grazas</translation>
 <translation id="7474043404939621342">Personalizar barra de ferramentas</translation>
 <translation id="747459581954555080">Restablecer todo</translation>
@@ -11879,7 +11879,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9215293857209265904">Engadiuse "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="9215742531438648683">Desinstalar Google Play Store</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
-<translation id="9218536722110863203">Cargar ficheiro</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplicación non compatible)</translation>
 <translation id="9219572436491982747">Co fin de mellorar a tecnoloxía de IA de Chrome, os datos que se envíen a Google poden someterse a un proceso de revisión por parte do noso equipo</translation>
 <translation id="9219741625496141320">Os datos de navegación elimináronse automaticamente</translation>

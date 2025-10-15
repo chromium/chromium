@@ -3999,7 +3999,6 @@
 <translation id="3735039640698208086">აუდიოს დაკვრისას…</translation>
 <translation id="3735740477244556633">დალაგება</translation>
 <translation id="3735827758948958091"><ph name="FILE_NAMES" /> ვერ გაიხსნება, სანამ ლიმიტირებულ კავშირს იყენებთ</translation>
-<translation id="3736575924150462398">ჩანართების ან სხვა კონტენტის დამატება</translation>
 <translation id="3737058101969549870">გსურთ დათვალიერების არსებული მონაცემების ამ ახალი პროფილისგან განცალკევებით შენახვა?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-ზე არსებული მონაცემები წაიშლება 24 საათში</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4629,6 +4628,7 @@
 <translation id="4151503145138736576">გასასუფთავებელი ხაზგარეშე მეხსიერება არ არის</translation>
 <translation id="4152011295694446843">აქ იპოვით თქვენს სანიშნეებს</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
+<translation id="4153858337812834972">ბოლო ჩანართები</translation>
 <translation id="4154658846204884961">კომეტა</translation>
 <translation id="4154664944169082762">თითის ანაბეჭდები</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> — მარცხენა ხედი</translation>
@@ -7767,6 +7767,7 @@
 <translation id="6391131092053186625">თქვენი მოწყობილობის IMEI არის <ph name="IMEI_NUMBER" />. აღნიშნული ნომერი დაგეხმარებათ სერვისის გააქტიურებაში.</translation>
 <translation id="6393156038355142111">ძლიერი პაროლის შემოთავაზება</translation>
 <translation id="6393550101331051049">დაუცველი კონტენტის ჩვენება დაშვებულია</translation>
+<translation id="6394634179843537518">ფაილის დამატება</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />სისტემის ინფორმაციის<ph name="END_LINK1" /> და <ph name="BEGIN_LINK2" />მეტრიკის<ph name="END_LINK2" /> გაგზავნა</translation>
 <translation id="6397586889873084061">დიახ, შეინახე ჩემი მონაცემები სკოლის მონაცემებისგან დამოუკიდებლად (რეკომენდებული)</translation>
 <translation id="6398715114293939307">Google Play Store-ის ამოშლა</translation>
@@ -9302,7 +9303,6 @@
 <translation id="747114903913869239">შეცდომა: გაფართოება ვერ გაიშიფრა</translation>
 <translation id="7471520329163184433">უფრო ნელა</translation>
 <translation id="747312361841682912">ნაჩვენები მონაცემების წაშლა</translation>
-<translation id="7473555040328423550">ჩანართის დამატება</translation>
 <translation id="7473891865547856676">არა, გმადლობთ</translation>
 <translation id="7474043404939621342">ხელსაწყოთა ზოლის მორგება</translation>
 <translation id="747459581954555080">ყველას აღდგენა</translation>
@@ -11879,7 +11879,6 @@
 <translation id="9215293857209265904">„<ph name="EXTENSION_NAME" />“ დამატებულია</translation>
 <translation id="9215742531438648683">Google Play Store-ის დეინსტალაცია</translation>
 <translation id="9218430445555521422">ნაგულისხმევის დაყენება</translation>
-<translation id="9218536722110863203">ფაილის ატვირთვა</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (მხარდაუჭერელი აპი)</translation>
 <translation id="9219572436491982747">Google-თან გაგზავნილი მონაცემები შეიძლება ნახონ ადამიანმა მიმომხილველებმა, Chrome-ის ხელოვნური ინტელექტის ტექნოლოგიის გაუმჯობესების მიზნით</translation>
 <translation id="9219741625496141320">დათვალიერების მონაცემები ავტომატურად წაიშალა</translation>

@@ -3999,7 +3999,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3735039640698208086">Când se redă conținut audio...</translation>
 <translation id="3735740477244556633">Sortează după</translation>
 <translation id="3735827758948958091">Nu poți deschide <ph name="FILE_NAMES" /> atât timp cât folosești o conexiune contorizată</translation>
-<translation id="3736575924150462398">Adaugă file sau altele</translation>
 <translation id="3737058101969549870">Păstrezi datele de navigare existente separat de acest profil nou?</translation>
 <translation id="3738632186060045350">Datele de pe <ph name="DEVICE_TYPE" /> vor fi șterse în termen de 24 de ore</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4629,6 +4628,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4151503145138736576">Nu există spațiu de stocare offline de eliberat</translation>
 <translation id="4152011295694446843">Aici vei vedea marcajele</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{O filă}few{# file}other{# de file}}</translation>
+<translation id="4153858337812834972">Cele mai recente file</translation>
 <translation id="4154658846204884961">Cometă</translation>
 <translation id="4154664944169082762">Amprente digitale</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – vedere din stânga</translation>
@@ -7765,6 +7765,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6391131092053186625">Numărul IMEI al dispozitivului este <ph name="IMEI_NUMBER" />. Acest număr poate fi folosit pentru activarea serviciului.</translation>
 <translation id="6393156038355142111">Sugerează o parolă puternică</translation>
 <translation id="6393550101331051049">Au permisiunea de a afișa conținut nesigur</translation>
+<translation id="6394634179843537518">Adaugă un fișier</translation>
 <translation id="6395423953133416962">Trimiteți <ph name="BEGIN_LINK2" />valori<ph name="END_LINK2" /> și <ph name="BEGIN_LINK1" />informații de sistem<ph name="END_LINK1" /></translation>
 <translation id="6397586889873084061">Da, păstrează datele separat de cele de la școală (recomandat)</translation>
 <translation id="6398715114293939307">Elimină Magazinul Google Play</translation>
@@ -9304,7 +9305,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="747114903913869239">Eroare: extensia nu poate fi decodificată</translation>
 <translation id="7471520329163184433">Mai mică</translation>
 <translation id="747312361841682912">Șterge datele afișate</translation>
-<translation id="7473555040328423550">Adaugă o filă</translation>
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7474043404939621342">Personalizează bara de instrumente</translation>
 <translation id="747459581954555080">Restabilește-le pe toate</translation>
@@ -11883,7 +11883,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9215293857209265904">S-a adăugat „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="9215742531438648683">Dezinstalează Magazinul Google Play</translation>
 <translation id="9218430445555521422">Setează ca prestabilit</translation>
-<translation id="9218536722110863203">Încarcă un fișier</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplicație neacceptată)</translation>
 <translation id="9219572436491982747">Datele trimise la Google pot fi examinate de evaluatori umani pentru a îmbunătăți tehnologia AI Chrome</translation>
 <translation id="9219741625496141320">Datele de navigare au fost șterse automat</translation>

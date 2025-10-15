@@ -4005,7 +4005,6 @@
 <translation id="3735740477244556633">الترتيب حسب
 </translation>
 <translation id="3735827758948958091">تعذُّر فتح "<ph name="FILE_NAMES" />" أثناء الاتصال بشبكة تفرض تكلفة استخدام</translation>
-<translation id="3736575924150462398">إضافة علامات تبويب أو المزيد</translation>
 <translation id="3737058101969549870">هل تريد الاحتفاظ ببيانات التصفُّح الحالية بشكل منفصل عن هذا الملف الشخصي الجديد؟</translation>
 <translation id="3738632186060045350">سيتم حذف بيانات <ph name="DEVICE_TYPE" /> خلال 24 ساعة</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4632,6 +4631,7 @@
 <translation id="4151503145138736576">لا تتوفّر مساحة تخزين بلا إنترنت للمسح</translation>
 <translation id="4152011295694446843">ستظهر الإشارات المرجعية هنا</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{علامة تبويب واحدة}zero{# من علامات التبويب}two{علامتا تبويب (#)}few{# علامات تبويب}many{# علامة تبويب}other{# من علامات التبويب}}</translation>
+<translation id="4153858337812834972">أحدث علامات التبويب</translation>
 <translation id="4154658846204884961">مذنّب</translation>
 <translation id="4154664944169082762">بصمات الأصابع</translation>
 <translation id="4156297721709710037">‫<ph name="WINDOW_TITLE" /> - الجانب الأيسر</translation>
@@ -7770,6 +7770,7 @@
 <translation id="6391131092053186625">‏رمز IMEI لجهازك هو <ph name="IMEI_NUMBER" />. يمكن استخدام هذا الرقم للمساعدة في تفعيل الخدمة.</translation>
 <translation id="6393156038355142111">اقتراح كلمة مرور قوية</translation>
 <translation id="6393550101331051049">المواقع الإلكترونية التي يُسمح لها بعرض المحتوى غير الآمن</translation>
+<translation id="6394634179843537518">إضافة ملف</translation>
 <translation id="6395423953133416962">إرسال <ph name="BEGIN_LINK1" />معلومات النظام<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />المقاييس<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">نعم، أريد الاحتفاظ ببياناتي منفصلة عن ملف المؤسسة التعليمية (يُنصح به)</translation>
 <translation id="6398715114293939307">‏إزالة متجر Google Play</translation>
@@ -9315,7 +9316,6 @@
 <translation id="747114903913869239">خطأ: تعذر فك ترميز الإضافة</translation>
 <translation id="7471520329163184433">أبطأ</translation>
 <translation id="747312361841682912">حذف البيانات المعروضة</translation>
-<translation id="7473555040328423550">إضافة علامة تبويب</translation>
 <translation id="7473891865547856676">لا، شكرًا</translation>
 <translation id="7474043404939621342">تخصيص شريط الأدوات</translation>
 <translation id="747459581954555080">استرداد الكل</translation>
@@ -11898,7 +11898,6 @@
 <translation id="9215293857209265904">تمت إضافة "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="9215742531438648683">‏إلغاء تثبيت "متجر Google Play"</translation>
 <translation id="9218430445555521422">الضبط كخيار تلقائي</translation>
-<translation id="9218536722110863203">تحميل ملف</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (التطبيق غير متوافق)</translation>
 <translation id="9219572436491982747">‏قد يراجع فريق من المراجعين البيانات المُرسَلة إلى Google لتحسين تكنولوجيا الذكاء الاصطناعي في Chrome</translation>
 <translation id="9219741625496141320">تم حذف بيانات التصفُّح تلقائيًا</translation>

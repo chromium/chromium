@@ -3997,7 +3997,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3735039640698208086">Dok se reprodukuje zvuk…</translation>
 <translation id="3735740477244556633">Sortiraj prema</translation>
 <translation id="3735827758948958091"><ph name="FILE_NAMES" /> ne može da se otvori dok koristi vezu ograničenog prometa podataka</translation>
-<translation id="3736575924150462398">Dodajte kartice ili drugo</translation>
 <translation id="3737058101969549870">Želite da postojeći podaci pregledanja budu razdvojeni od ovog novog profila?</translation>
 <translation id="3738632186060045350">Podaci sa uređaja <ph name="DEVICE_TYPE" /> će biti izbrisani za 24 sata</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4627,6 +4626,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4151503145138736576">Nema oflajn memorijskog prostora za oslobađanje</translation>
 <translation id="4152011295694446843">Ovde ćete pronaći obeleživače</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
+<translation id="4153858337812834972">Najnovije kartice</translation>
 <translation id="4154658846204884961">Kometa</translation>
 <translation id="4154664944169082762">Otisci</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – Levi prikaz</translation>
@@ -7764,6 +7764,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6391131092053186625">IMEI uređaja je <ph name="IMEI_NUMBER" />. Pomoću ovog broja možete da aktivirate uslugu.</translation>
 <translation id="6393156038355142111">Predloži jaku lozinku</translation>
 <translation id="6393550101331051049">Dozvoljeno im je prikazivanje nebezbednog sadržaja</translation>
+<translation id="6394634179843537518">Dodajte fajl</translation>
 <translation id="6395423953133416962">Šalji <ph name="BEGIN_LINK1" />informacije<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />pokazatelje<ph name="END_LINK2" /> o sistemu</translation>
 <translation id="6397586889873084061">Da, ne objedinjuj moje podatke sa školskim profilom (preporučeno)</translation>
 <translation id="6398715114293939307">Uklonite Google Play prodavnicu</translation>
@@ -9305,7 +9306,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="747114903913869239">Greška: Nije moguće dešifrovati dodatak</translation>
 <translation id="7471520329163184433">Sporije</translation>
 <translation id="747312361841682912">Izbriši prikazane podatke</translation>
-<translation id="7473555040328423550">Dodajte karticu</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7474043404939621342">Prilagodi Toolbar</translation>
 <translation id="747459581954555080">Vrati sve</translation>
@@ -11885,7 +11885,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9215293857209265904">Dodat je „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="9215742531438648683">Deinstalirajte Google Play prodavnicu</translation>
 <translation id="9218430445555521422">Podesi kao podrazumevano</translation>
-<translation id="9218536722110863203">Otpremi fajl</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplikacija nije podržana)</translation>
 <translation id="9219572436491982747">Osobe koje pregledaju mogu da vide podatke poslate Google-u radi poboljšanja tehnologije Chrome veštačke inteligencije</translation>
 <translation id="9219741625496141320">Podaci pregledanja su automatski izbrisani</translation>

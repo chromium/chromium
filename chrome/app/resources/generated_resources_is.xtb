@@ -4013,7 +4013,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3735039640698208086">Þegar hljóð er spilað...</translation>
 <translation id="3735740477244556633">Raða eftir</translation>
 <translation id="3735827758948958091">Ekki er hægt að opna <ph name="FILE_NAMES" /> með gagnamældri tengingu.</translation>
-<translation id="3736575924150462398">Bæta við flipum eða fleiru</translation>
 <translation id="3737058101969549870">Halda núverandi vefskoðunargögnum aðskildum frá þessum nýja prófíl?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> gögnum verður eytt eftir sólarhring</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4643,6 +4642,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4151503145138736576">Engin geymsla án nettengingar til að hreinsa</translation>
 <translation id="4152011295694446843">Þú finnur bókamerkin þín hér</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{Einn flipi}one{# flipi}other{# flipar}}</translation>
+<translation id="4153858337812834972">Nýlegustu flipar</translation>
 <translation id="4154658846204884961">Halastjarna</translation>
 <translation id="4154664944169082762">Fingraför</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - Vinstra yfirlit</translation>
@@ -7781,6 +7781,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6391131092053186625">IMEI-númer tækisins er <ph name="IMEI_NUMBER" />. Hægt er að nota þetta númer til að hjálpa til við virkjun þjónustu.</translation>
 <translation id="6393156038355142111">Leggja til traust aðgangsorð</translation>
 <translation id="6393550101331051049">Mega birta óöruggt efni</translation>
+<translation id="6394634179843537518">Bæta við skrá</translation>
 <translation id="6395423953133416962">Senda <ph name="BEGIN_LINK1" />kerfisupplýsingar<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />mælingar<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Já, halda gögnunum mínum aðskildum frá skólaprófílnum (ráðlagt)</translation>
 <translation id="6398715114293939307">Fjarlægja Google Play Store</translation>
@@ -9319,7 +9320,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="747114903913869239">Villa: Ekki er hægt að afkóða viðbót</translation>
 <translation id="7471520329163184433">Hægar</translation>
 <translation id="747312361841682912">Eyða birtum gögnum</translation>
-<translation id="7473555040328423550">Bæta flipa við</translation>
 <translation id="7473891865547856676">Nei, takk</translation>
 <translation id="7474043404939621342">Sérsníddu tækjastikuna</translation>
 <translation id="747459581954555080">Endurheimta allt</translation>
@@ -11897,7 +11897,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9215293857209265904">„<ph name="EXTENSION_NAME" />“ bætt við</translation>
 <translation id="9215742531438648683">Fjarlægja Google Play Store</translation>
 <translation id="9218430445555521422">Velja sem sjálfgefið</translation>
-<translation id="9218536722110863203">Hlaða inn skrá</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (óstutt forrit)</translation>
 <translation id="9219572436491982747">Mannlegir yfirlesarar geta séð gögn sem send eru til Google til að bæta tækni gervigreindar Chrome</translation>
 <translation id="9219741625496141320">Vefskoðunargögnum var eytt sjálfkrafa</translation>

@@ -257,7 +257,7 @@
 
 只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="7192111075364461693">目前未在裝置設定中開啟 Chromium 通知。</translation>
-<translation id="7195217321165708458">Gemini 版 Chromium</translation>
+<translation id="7195217321165708458">Chromium 內建 Gemini</translation>
 <translation id="7219205286115692265">從 iPad 主畫面 Dock 更快存取 Chromium。</translation>
 <translation id="7222001353246886083">在 Chromium 中搜尋「${searchPhrase}」</translation>
 <translation id="7228180817326917122">Chromium 提示：選擇網址列位置</translation>

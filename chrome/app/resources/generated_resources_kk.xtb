@@ -3994,7 +3994,6 @@
 <translation id="3735039640698208086">Аудиомазмұн ойнатылғанда…</translation>
 <translation id="3735740477244556633">Сұрыптау шарты</translation>
 <translation id="3735827758948958091"><ph name="FILE_NAMES" /> трафик саналатын байланыста ашылмайды</translation>
-<translation id="3736575924150462398">Қойындылар немесе басқа элемент қосу</translation>
 <translation id="3737058101969549870">Бұрыннан бар браузерді пайдалану деректерін осы жаңа профильден бөлек сақтау керек пе?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> деректері 24 сағаттан кейін жойылады.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4624,6 +4623,7 @@
 <translation id="4151503145138736576">Офлайн жад көлемі бос.</translation>
 <translation id="4152011295694446843">Бетбелгілер осы жерге шығады</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 қойынды}other{# қойынды}}</translation>
+<translation id="4153858337812834972">Ең соңғы қойындылар</translation>
 <translation id="4154658846204884961">Комета</translation>
 <translation id="4154664944169082762">Саусақ іздері</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – сол жақ көрініс</translation>
@@ -7757,6 +7757,7 @@
 <translation id="6391131092053186625">Құрылғыңыздың IMEI нөмірі: <ph name="IMEI_NUMBER" />. Қызметті белсендіруге көмектесу үшін осы нөмірді пайдалануға болады.</translation>
 <translation id="6393156038355142111">Күрделі құпия сөз ұсыну</translation>
 <translation id="6393550101331051049">Қорғалмаған контент көрсетуге рұқсаты барлар</translation>
+<translation id="6394634179843537518">Файл қосу</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Жүйе ақпараты<ph name="END_LINK1" /> мен <ph name="BEGIN_LINK2" />көрсеткіштерді<ph name="END_LINK2" /> жіберу</translation>
 <translation id="6397586889873084061">Иә, деректерімді мектеп деректерінен бөлек сақтау (ұсынылады)</translation>
 <translation id="6398715114293939307">Google Play Store дүкенін жою</translation>
@@ -9292,7 +9293,6 @@
 <translation id="747114903913869239">Қате: кеңейтімді шифрсыздандыру мүмкін емес</translation>
 <translation id="7471520329163184433">Баяуырақ</translation>
 <translation id="747312361841682912">Көрсетілген деректерді жою</translation>
-<translation id="7473555040328423550">Қойынды қосу</translation>
 <translation id="7473891865547856676">Жоқ, рақмет</translation>
 <translation id="7474043404939621342">Құралдар тақтасын бейімдеу</translation>
 <translation id="747459581954555080">Барлығын қалпына келтіру</translation>
@@ -11869,7 +11869,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" қосылды</translation>
 <translation id="9215742531438648683">Google Play Store қолданбасын жою</translation>
 <translation id="9218430445555521422">Әдепкі ретінде орнату</translation>
-<translation id="9218536722110863203">Файл жүктеп салу</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (қолдау көрсетілмейтін қолданба)</translation>
 <translation id="9219572436491982747">Chrome-ның жасанды интеллект технологиясын жақсарту үшін Google-ға жіберілетін ақпаратты тексерушілер қарауы мүмкін.</translation>
 <translation id="9219741625496141320">Браузерді пайдалану деректері автоматты түрде жойылады</translation>

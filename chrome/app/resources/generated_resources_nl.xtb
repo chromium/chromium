@@ -3997,7 +3997,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3735039640698208086">Tijdens het afspelen van audio...</translation>
 <translation id="3735740477244556633">Sorteren op</translation>
 <translation id="3735827758948958091">Kan <ph name="FILE_NAMES" /> niet openen via een verbinding met datalimiet</translation>
-<translation id="3736575924150462398">Tabbladen of andere elementen toevoegen</translation>
 <translation id="3737058101969549870">Bestaande browsegegevens gescheiden houden van dit nieuwe profiel?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-gegevens worden over 24 uur verwijderd</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4626,6 +4625,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4151503145138736576">Geen offline opslag om op te schonen</translation>
 <translation id="4152011295694446843">Hier vind je je bookmarks</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tabblad}other{# tabbladen}}</translation>
+<translation id="4153858337812834972">Meest recente tabbladen</translation>
 <translation id="4154658846204884961">Komeet</translation>
 <translation id="4154664944169082762">Vingerafdrukken</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: weergave links</translation>
@@ -7759,6 +7759,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6391131092053186625">De IMEI van het apparaat is <ph name="IMEI_NUMBER" />. Met dit nummer kun je de service activeren.</translation>
 <translation id="6393156038355142111">Sterk wachtwoord voorstellen</translation>
 <translation id="6393550101331051049">Toestemming om onveilige content te bekijken</translation>
+<translation id="6394634179843537518">Bestand toevoegen</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Systeeminformatie<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />statistische gegevens<ph name="END_LINK2" /> verzenden</translation>
 <translation id="6397586889873084061">Ja, mijn gegevens gescheiden houden van school (aanbevolen)</translation>
 <translation id="6398715114293939307">Google Play Store verwijderen</translation>
@@ -9295,7 +9296,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="747114903913869239">Fout: kan extensie niet decoderen</translation>
 <translation id="7471520329163184433">Langzamer</translation>
 <translation id="747312361841682912">Weergegeven gegevens verwijderen</translation>
-<translation id="7473555040328423550">Tabblad toevoegen</translation>
 <translation id="7473891865547856676">Nee, bedankt</translation>
 <translation id="7474043404939621342">Je werkbalk aanpassen</translation>
 <translation id="747459581954555080">Alles herstellen</translation>
@@ -11874,7 +11874,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9215293857209265904">'<ph name="EXTENSION_NAME" />' toegevoegd</translation>
 <translation id="9215742531438648683">Google Play Store verwijderen</translation>
 <translation id="9218430445555521422">Instellen als standaard</translation>
-<translation id="9218536722110863203">Bestand uploaden</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (niet-ondersteunde app)</translation>
 <translation id="9219572436491982747">Gegevens die naar Google worden gestuurd, kunnen door menselijke reviewers worden bekeken om de AI-technologie van Chrome te verbeteren</translation>
 <translation id="9219741625496141320">Browsergegevens zijn automatisch verwijderd</translation>

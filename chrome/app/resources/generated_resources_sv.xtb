@@ -4012,7 +4012,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3735039640698208086">Vid ljuduppspelning …</translation>
 <translation id="3735740477244556633">Sortera efter</translation>
 <translation id="3735827758948958091">Det går inte att öppna <ph name="FILE_NAMES" /> med en anslutning med datapriser.</translation>
-<translation id="3736575924150462398">Lägg till flikar eller annat</translation>
 <translation id="3737058101969549870">Vill du hålla befintlig webbinformation åtskild från den här nya profilen?</translation>
 <translation id="3738632186060045350">Data på <ph name="DEVICE_TYPE" /> raderas inom 24 timmar</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4642,6 +4641,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4151503145138736576">Det finns inget offlinelagringsutrymme att rensa</translation>
 <translation id="4152011295694446843">Du hittar dina bokmärken här</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 flik}other{# flikar}}</translation>
+<translation id="4153858337812834972">Senaste flikarna</translation>
 <translation id="4154658846204884961">Komet</translation>
 <translation id="4154664944169082762">Fingeravtryck</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – vänster vy</translation>
@@ -7780,6 +7780,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6391131092053186625">Enhetens IMEI-nummer är <ph name="IMEI_NUMBER" />. Detta nummer kan användas för att aktivera tjänsten.</translation>
 <translation id="6393156038355142111">Föreslå ett starkt lösenord</translation>
 <translation id="6393550101331051049">Får visa osäkert innehåll</translation>
+<translation id="6394634179843537518">Lägg till en fil</translation>
 <translation id="6395423953133416962">Skicka <ph name="BEGIN_LINK1" />systeminformation<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />statistik<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Ja, håll min data åtskild från skolan (rekommenderas)</translation>
 <translation id="6398715114293939307">Ta bort Google Play Butik</translation>
@@ -9317,7 +9318,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="747114903913869239">Fel: det går inte att avkoda tillägget</translation>
 <translation id="7471520329163184433">Långsammare</translation>
 <translation id="747312361841682912">Radera data som visas</translation>
-<translation id="7473555040328423550">Lägg till flik</translation>
 <translation id="7473891865547856676">Nej tack</translation>
 <translation id="7474043404939621342">Anpassa ditt verktygsfält</translation>
 <translation id="747459581954555080">Återställ alla</translation>
@@ -11895,7 +11895,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9215293857209265904"><ph name="EXTENSION_NAME" /> har lagts till</translation>
 <translation id="9215742531438648683">Avinstallera Google Play Butik</translation>
 <translation id="9218430445555521422">Ange som standard</translation>
-<translation id="9218536722110863203">Ladda upp fil</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (appen stöds inte)</translation>
 <translation id="9219572436491982747">Data som skickas till Google kan ses av mänskliga granskare för att förbättra Chromes AI-teknik</translation>
 <translation id="9219741625496141320">Webbinformation har raderats automatiskt</translation>

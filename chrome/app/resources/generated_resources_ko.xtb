@@ -4014,7 +4014,6 @@
 <translation id="3735039640698208086">오디오 재생 시...</translation>
 <translation id="3735740477244556633">정렬 기준</translation>
 <translation id="3735827758948958091">데이터 종량제 연결에서는 <ph name="FILE_NAMES" /> 앱을 열 수 없습니다</translation>
-<translation id="3736575924150462398">탭 또는 기타 파일 추가</translation>
 <translation id="3737058101969549870">기존 인터넷 사용 기록을 이 새 프로필과 분리하여 유지하시겠습니까?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> 데이터가 24시간 후에 삭제됩니다</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4642,6 +4641,7 @@
 <translation id="4151503145138736576">정리할 오프라인 저장용량 없음</translation>
 <translation id="4152011295694446843">여기에서 북마크를 확인할 수 있습니다</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{탭 1개}other{탭 #개}}</translation>
+<translation id="4153858337812834972">최근 탭</translation>
 <translation id="4154658846204884961">혜성</translation>
 <translation id="4154664944169082762">지문</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - 왼쪽 뷰</translation>
@@ -7781,6 +7781,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6391131092053186625">기기 IMEI는 <ph name="IMEI_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
 <translation id="6393156038355142111">안전한 비밀번호 추천</translation>
 <translation id="6393550101331051049">안전하지 않은 콘텐츠 표시가 허용됨</translation>
+<translation id="6394634179843537518">파일 추가</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />시스템 정보<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />통계<ph name="END_LINK2" /> 전송</translation>
 <translation id="6397586889873084061">예, 개인 데이터를 학교와 분리하여 유지(권장)</translation>
 <translation id="6398715114293939307">Google Play 스토어 삭제</translation>
@@ -9317,7 +9318,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="747114903913869239">오류: 확장 프로그램을 디코딩할 수 없음</translation>
 <translation id="7471520329163184433">더 느리게</translation>
 <translation id="747312361841682912">표시된 데이터 삭제</translation>
-<translation id="7473555040328423550">탭 추가</translation>
 <translation id="7473891865547856676">나중에</translation>
 <translation id="7474043404939621342">툴바 맞춤설정</translation>
 <translation id="747459581954555080">모두 복원</translation>
@@ -11896,7 +11896,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9215293857209265904">'<ph name="EXTENSION_NAME" />'이(가) 추가됨</translation>
 <translation id="9215742531438648683">Google Play 스토어 제거</translation>
 <translation id="9218430445555521422">기본값으로 설정</translation>
-<translation id="9218536722110863203">파일 업로드</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" />(지원되지 않는 앱)</translation>
 <translation id="9219572436491982747">Chrome AI 기술을 개선하기 위해 Google로 전송된 데이터를 인적 검토자가 확인할 수 있습니다.</translation>
 <translation id="9219741625496141320">인터넷 사용 기록이 자동으로 삭제되었습니다</translation>

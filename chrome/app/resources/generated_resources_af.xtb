@@ -4012,7 +4012,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3735039640698208086">Wanneer oudio gespeel word …</translation>
 <translation id="3735740477244556633">Rangskik volgens</translation>
 <translation id="3735827758948958091">Kan nie <ph name="FILE_NAMES" /> oopmaak terwyl jy op ’n beperkte konneksie is nie</translation>
-<translation id="3736575924150462398">Voeg oortjies by of meer</translation>
 <translation id="3737058101969549870">Wil jy bestaande blaaierdata apart van hierdie nuwe profiel hou?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-data sal binne 24 uur uitgevee word</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4642,6 +4641,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4151503145138736576">Geen vanlyn berging om skoon te maak nie</translation>
 <translation id="4152011295694446843">Jy sal jou boekmerke hier kry</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 oortjie}other{# oortjies}}</translation>
+<translation id="4153858337812834972">Mees onlangse oortjies</translation>
 <translation id="4154658846204884961">Komeet</translation>
 <translation id="4154664944169082762">Vingerafdrukke</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – Linkeraansig</translation>
@@ -7781,6 +7781,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6391131092053186625">Jou toestel se IMEI is <ph name="IMEI_NUMBER" />. Hierdie nommer kan gebruik word om diens te help aktiveer.</translation>
 <translation id="6393156038355142111">Stel sterk wagwoord voor</translation>
 <translation id="6393550101331051049">Mag onveilige inhoud wys</translation>
+<translation id="6394634179843537518">Voeg lêer by</translation>
 <translation id="6395423953133416962">Stuur <ph name="BEGIN_LINK1" />stelselinligting<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />metrieke<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Ja, hou my data afsonderlik van skool (aanbeveel)</translation>
 <translation id="6398715114293939307">Verwyder Google Play Winkel</translation>
@@ -9317,7 +9318,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="747114903913869239">Fout: Kon nie uitbreiding ontsyfer nie</translation>
 <translation id="7471520329163184433">Stadiger</translation>
 <translation id="747312361841682912">Vee vertoonde data uit</translation>
-<translation id="7473555040328423550">Voeg oortjie by</translation>
 <translation id="7473891865547856676">Nee, Dankie</translation>
 <translation id="7474043404939621342">Pasmaak jou nutsbalk</translation>
 <translation id="747459581954555080">Stel alles terug</translation>
@@ -11894,7 +11894,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" is bygevoeg</translation>
 <translation id="9215742531438648683">Deïnstalleer Google Play Winkel</translation>
 <translation id="9218430445555521422">Stel as verstek</translation>
-<translation id="9218536722110863203">Laai lêer op</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (ongesteunde app)</translation>
 <translation id="9219572436491982747">Data wat na Google toe gestuur word, kan gesien word deur mense wat kontrolering uitvoer om Chrome AI se tegnologie te verbeter</translation>
 <translation id="9219741625496141320">Blaaierdata is outomaties uitgevee</translation>

@@ -4013,7 +4013,6 @@
 <translation id="3735039640698208086">অডিও বাজানোর সময়...</translation>
 <translation id="3735740477244556633">এই অনুসারে সাজান</translation>
 <translation id="3735827758948958091">মিটারড কানেকশনে <ph name="FILE_NAMES" /> ফাইল খোলা যাচ্ছে না</translation>
-<translation id="3736575924150462398">ট্যাব বা আরও অনেক কিছু যোগ করুন</translation>
 <translation id="3737058101969549870">এই নতুন প্রোফাইল থেকে আগে থাকা ব্রাউজ করা ডেটা আলাদা রাখতে চান?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-এর ডেটা ২৪ ঘণ্টার মধ্যে মুছে যাবে</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4643,6 +4642,7 @@
 <translation id="4151503145138736576">মোছার জন্য অফলাইনে কোনও স্টোরেজ নেই</translation>
 <translation id="4152011295694446843">আপনি নিজের বুকমার্ক এখানে খুঁজে পাবেন</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{১টি ট্যাব}one{#টি ট্যাব}other{#টি ট্যাব}}</translation>
+<translation id="4153858337812834972">সবচেয়ে সাম্প্রতিক ট্যাব</translation>
 <translation id="4154658846204884961">কমেট</translation>
 <translation id="4154664944169082762">আঙ্গুলের ছাপ</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - বাঁদিকের ভিউ</translation>
@@ -7782,6 +7782,7 @@
 <translation id="6391131092053186625">আপনার ডিভাইসের IMEI হল <ph name="IMEI_NUMBER" />। পরিষেবা চালু করার জন্য এই নম্বরগুলি ব্যবহার করা যেতে পারে।</translation>
 <translation id="6393156038355142111">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন</translation>
 <translation id="6393550101331051049">নিরাপদ নয় এমন কন্টেন্ট দেখানোর অনুমতি দেওয়া হয়েছে</translation>
+<translation id="6394634179843537518">ফাইল যোগ করুন</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />সিস্টেমের তথ্য<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />মেট্রিক্স<ph name="END_LINK2" /> পাঠান</translation>
 <translation id="6397586889873084061">হ্যাঁ, আমার ডেটা স্কুলের ডেটা থেকে আলাদা রাখুন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="6398715114293939307">Google Play Store সরান</translation>
@@ -9321,7 +9322,6 @@
 <translation id="747114903913869239">সমস্যা: এক্সটেনশন ডিকোড করা যায়নি</translation>
 <translation id="7471520329163184433">আরও ধীরে করুন</translation>
 <translation id="747312361841682912">দেখানো ডেটা মুছুন</translation>
-<translation id="7473555040328423550">ট্যাব যোগ করুন</translation>
 <translation id="7473891865547856676">না থাক</translation>
 <translation id="7474043404939621342">আপনার টুলবার কাস্টমাইজ করুন</translation>
 <translation id="747459581954555080">সকল পুনরুদ্ধার করুন</translation>
@@ -11900,7 +11900,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" জোড়া হয়েছে</translation>
 <translation id="9215742531438648683">Google Play Store আনইনস্টল করুন</translation>
 <translation id="9218430445555521422">ডিফল্ট হিসেবে সেট করুন</translation>
-<translation id="9218536722110863203">ফাইল আপলোড করুন</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (অ্যাপটি কাজ করবে না)</translation>
 <translation id="9219572436491982747">Google-কে পাঠানো ডেটা Chrome AI প্রযুক্তির উন্নতির জন্য হিউম্যান রিভিউয়াররা দেখতে পারেন</translation>
 <translation id="9219741625496141320">ব্রাউজ করা ডেটা অটোমেটিক মুছে ফেলা হয়েছে</translation>

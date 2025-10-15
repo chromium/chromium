@@ -22,7 +22,7 @@
 <translation id="1152920704813762236">關於 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中開啟(&amp;O)</translation>
 <translation id="1157985233335035034">最近使用過的語言</translation>
-<translation id="1158134713295836892">Gemini 版 Chrome</translation>
+<translation id="1158134713295836892">Chrome 內建 Gemini</translation>
 <translation id="1184145431117212167">Windows 版本不受支援，因此無法安裝</translation>
 <translation id="1194807384646768652">這不是其他人經常下載的檔案類型，可能有危險，因此 Chrome 已禁止下載</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
@@ -111,7 +111,7 @@
 <translation id="2199691482078155239">在 Chrome 中，你可以進一步控管系統顯示的廣告，並限制網站能根據哪些個人資訊放送個人化廣告</translation>
 <translation id="2216543877350048334">如要從 Chrome 中移除 Google 帳戶，請登出 Chrome</translation>
 <translation id="2236949375853147973">我的活動</translation>
-<translation id="22791603784558743">關閉 Gemini 版 Chrome (開發人員)</translation>
+<translation id="22791603784558743">關閉 Chrome 內建 Gemini (開發人員版)</translation>
 <translation id="2290014774651636340">缺少 Google API 金鑰，系統將停用 Google Chrome 的部分功能。</translation>
 <translation id="2290095356545025170">你是否確定要解除安裝 Google Chrome？</translation>
 <translation id="2301513536169703857">如要在所有裝置上使用你的密碼、書籤和其他資料，請登入 Chrome</translation>
@@ -144,7 +144,7 @@
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="2668094785979141847">按一下即可退出 Google 智慧鏡頭</translation>
 <translation id="2681444469812712297">在 Google Chrome 的新分頁中開啟 <ph name="URL" />。</translation>
-<translation id="2699790011615497488">開啟 Gemini 版 Chrome (Beta)</translation>
+<translation id="2699790011615497488">開啟 Chrome 內建 Gemini (Beta 版)</translation>
 <translation id="2712141162840347885">選取任何要使用 Google 智慧鏡頭搜尋的內容，按下 Esc 鍵即可退出 Google 智慧鏡頭</translation>
 <translation id="2738871930057338499">無法連線至網際網路。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法禁止擴充功能記錄你的瀏覽記錄。如要在無痕模式中停用這個擴充功能，請取消選取這個選項。</translation>
@@ -415,7 +415,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5825922397106002626">從 Chrome 中移除「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="5858486459377137936">關閉所有 Chrome 視窗後，系統會將你登出大部分網站，但如果你已登入 Chrome，Google 帳戶就會維持登入狀態。如要允許網站記住你的資訊，請<ph name="SETTINGS_LINK" />。</translation>
 <translation id="586971344380992563">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chrome 會顯示警告<ph name="END_LINK" /></translation>
-<translation id="5894164573378901688">如要使用 Gemini 版 Chrome，請登入其他 Google 帳戶</translation>
+<translation id="5894164573378901688">如要使用 Chrome 內建 Gemini，請登入其他 Google 帳戶</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 網路登入</translation>
 <translation id="5924017743176219022">正在連線至網際網路...</translation>
@@ -484,8 +484,8 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
 <translation id="6520670145826811516">如要使用位置資訊，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中授予 Chrome 存取權</translation>
 <translation id="652948702951888897">Chrome 歷史記錄</translation>
-<translation id="6532945796722480006">開啟 Gemini 版 Chrome Canary</translation>
-<translation id="6585124893636629274">關閉 Gemini 版 Chrome</translation>
+<translation id="6532945796722480006">開啟 Chrome 內建 Gemini (Canary 版)</translation>
+<translation id="6585124893636629274">關閉 Chrome 內建 Gemini</translation>
 <translation id="659498884637196217">前往這部裝置的 Google 密碼管理員進行更新</translation>
 <translation id="6631524303639368205">接續上次的瀏覽內容：Chrome 已還原上次開啟的分頁。如要關閉這項功能，請前往</translation>
 <translation id="6632473616050862500">ChromeOS Flex 藉助了其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />的相關技術才得以問世。</translation>
@@ -586,7 +586,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670287553302121848">Chrome 帳戶需要重新驗證</translation>
 <translation id="769538538642757151">如有任何需要檢查的事項，Chrome 會通知你</translation>
-<translation id="769906121737764913">關閉 Gemini 版 Chrome (Beta)</translation>
+<translation id="769906121737764913">關閉 Chrome 內建 Gemini (Beta 版)</translation>
 <translation id="7716950018788545737">工作已結束。</translation>
 <translation id="77283119132245232">提供 <ph name="BROWSER_NAME" /> 的系統追蹤服務。如果這項服務停用，瀏覽器建立的效能追蹤記錄就不會包含內容轉換和就緒執行緒事件等系統層級事件。</translation>
 <translation id="7736869414036750079">貴機構要求你登入 Chrome</translation>
@@ -607,7 +607,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7886087451482920026">使用 Google 智慧鏡頭選取文字</translation>
 <translation id="7890208801193284374">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他使用者使用 <ph name="ACCOUNT_EMAIL_LAST" /> 在這部電腦上登入 Chrome。請建立新的 Chrome 使用者，以便另行保存你的資訊。</translation>
-<translation id="7904985524660297937">試試 Gemini 版 Chrome</translation>
+<translation id="7904985524660297937">試試 Chrome 內建 Gemini</translation>
 <translation id="7917876797003313048">你可以管理已登入的 Google 帳戶。Google 帳戶可用於 Chrome 瀏覽器、Play 商店和 Gmail 等服務。如要添加他人 (例如家庭成員) 的帳戶，請改為將使用者新增至你的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">這是詐騙檔案，可能會對裝置造成非預期的變更，因此 Chrome 已禁止下載</translation>
 <translation id="7951272445806340501">ChromeOS Flex 必須重新啟動，才能套用更新。</translation>
@@ -668,7 +668,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將在 1 分鐘後重新啟動}other{Chrome 將在 # 分鐘後重新啟動}}</translation>
 <translation id="8637932705841171563">如要分享視窗內容，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
 <translation id="8641606876632989680">如果你使用遭外洩的密碼登入帳戶，Chrome 會通知你</translation>
-<translation id="8656634243791296665">開啟 Gemini 版 Chrome (開發人員)</translation>
+<translation id="8656634243791296665">開啟 Chrome 內建 Gemini (開發人員版)</translation>
 <translation id="8669527147644353129">Google Chrome 小幫手</translation>
 <translation id="8679801911857917785">這個擴充功能也會控管 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
@@ -696,13 +696,13 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送到 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8948460679427074738">這項擴充功能尚未發布隱私權實務規範 (例如擴充功能如何收集和使用資料)，因此 Chrome 建議你移除。</translation>
 <translation id="8958307504142971576">現在可以使用更多 Chrome 功能</translation>
-<translation id="8991530961471831170">開啟 Gemini 版 Chrome</translation>
+<translation id="8991530961471831170">開啟 Chrome 內建 Gemini</translation>
 <translation id="8992769679401294069">系統會使用通關密語加密資料。如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請輸入通關密語。</translation>
 <translation id="8999117580775242387">如果無法使用 HTTPS，Chrome 將使用不安全的連線，且不會發出警告</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發布 # 天}}</translation>
 <translation id="9014771989710951291">Chrome 是由多個機構管理</translation>
 <translation id="9024318700713112071">將 Chrome 設為預設瀏覽器</translation>
-<translation id="9066987883552592250">關閉 Gemini 版 Chrome Canary</translation>
+<translation id="9066987883552592250">關閉 Chrome 內建 Gemini (Canary 版)</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖某些檔案的原因</translation>
 <translation id="9106236359747881194">選取要搜尋的文字</translation>
 <translation id="911206726377975832">你要一併刪除瀏覽資料嗎？</translation>

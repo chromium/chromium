@@ -4011,7 +4011,6 @@
 <translation id="3735039640698208086">בהשמעת אודיו...</translation>
 <translation id="3735740477244556633">מיון לפי</translation>
 <translation id="3735827758948958091">לא ניתן לפתוח את הקובץ <ph name="FILE_NAMES" /> במהלך חיבור עם חיוב לפי שימוש בנתונים</translation>
-<translation id="3736575924150462398">הוספת כרטיסיות ועוד</translation>
 <translation id="3737058101969549870">לשמור את נתוני הגלישה הקיימים בנפרד מהפרופיל החדש?</translation>
 <translation id="3738632186060045350">הנתונים של <ph name="DEVICE_TYPE" /> יימחקו בתוך 24 שעות</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4641,6 +4640,7 @@
 <translation id="4151503145138736576">אין אחסון אופליין לניקוי</translation>
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{כרטיסייה אחת}one{# כרטיסיות}two{# כרטיסיות}other{# כרטיסיות}}</translation>
+<translation id="4153858337812834972">הכרטיסיות האחרונות</translation>
 <translation id="4154658846204884961">כוכב שביט</translation>
 <translation id="4154664944169082762">טביעות אצבע</translation>
 <translation id="4156297721709710037">‫<ph name="WINDOW_TITLE" /> – תצוגה ימנית</translation>
@@ -7780,6 +7780,7 @@
 <translation id="6391131092053186625">‏ה-IMEI של המכשיר הוא <ph name="IMEI_NUMBER" />. המספר הזה יכול לשמש להפעלת השירות.</translation>
 <translation id="6393156038355142111">הצעת סיסמה חזקה</translation>
 <translation id="6393550101331051049">מורשים להציג תוכן לא מאובטח</translation>
+<translation id="6394634179843537518">הוספה של קובץ</translation>
 <translation id="6395423953133416962">שליחת <ph name="BEGIN_LINK1" />פרטי מערכת<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />ערכים<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">כן, אני רוצה לשמור את הנתונים שלי בנפרד מפרופיל בית הספר (מומלץ)</translation>
 <translation id="6398715114293939307">‏הסרה של חנות Google Play</translation>
@@ -9321,7 +9322,6 @@
 <translation id="747114903913869239">שגיאה: לא ניתן לפענח תוסף</translation>
 <translation id="7471520329163184433">איטי יותר</translation>
 <translation id="747312361841682912">מחיקת הנתונים המוצגים</translation>
-<translation id="7473555040328423550">הוספת כרטיסייה</translation>
 <translation id="7473891865547856676">לא, תודה</translation>
 <translation id="7474043404939621342">עריכת סרגל הכלים</translation>
 <translation id="747459581954555080">שחזור הכול</translation>
@@ -11903,7 +11903,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" נוסף</translation>
 <translation id="9215742531438648683">‏הסרה של 'חנות Google Play'</translation>
 <translation id="9218430445555521422">הגדרה כברירת מחדל</translation>
-<translation id="9218536722110863203">העלאת קובץ</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (האפליקציה לא נתמכת)</translation>
 <translation id="9219572436491982747">‏יכול להיות שבודקים אנושיים יראו את הנתונים שנשלחים אל Google כדי לשפר את טכנולוגיית ה-AI של Chrome</translation>
 <translation id="9219741625496141320">נתוני הגלישה נמחקו באופן אוטומטי</translation>

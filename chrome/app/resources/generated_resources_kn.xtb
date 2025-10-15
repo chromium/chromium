@@ -4004,7 +4004,6 @@
 <translation id="3735039640698208086">ಆಡಿಯೋ ಪ್ಲೇ ಆಗುತ್ತಿರುವಾಗ...</translation>
 <translation id="3735740477244556633">ಈ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="3735827758948958091">ಮೀಟರ್ಡ್ ಕನೆಕ್ಷನ್‌ನಲ್ಲಿರುವಾಗ <ph name="FILE_NAMES" /> ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
-<translation id="3736575924150462398">ಟ್ಯಾಬ್‌ಗಳು ಅಥವಾ ಇತ್ಯಾದಿಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3737058101969549870">ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಈ ಹೊಸ ಪ್ರೊಫೈಲ್‌ನಿಂದ ಪ್ರತ್ಯೇಕವಾಗಿ ಇರಿಸುವುದೇ?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> ಡೇಟಾವನ್ನು 24 ಗಂಟೆಗಳಲ್ಲಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4634,6 +4633,7 @@
 <translation id="4151503145138736576">ತೆರವುಗೊಳಿಸಲು ಆಫ್‌ಲೈನ್ ಸಂಗ್ರಹಣೆ ಇಲ್ಲ</translation>
 <translation id="4152011295694446843">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
+<translation id="4153858337812834972">ತೀರಾ ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="4154658846204884961">ಧೂಮಕೇತು</translation>
 <translation id="4154664944169082762">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳು</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - ಎಡ ವೀಕ್ಷಣೆ</translation>
@@ -7772,6 +7772,7 @@
 <translation id="6391131092053186625">ನಿಮ್ಮ ಸಾಧನದ IMEI ಸಂಖ್ಯೆ <ph name="IMEI_NUMBER" /> ಆಗಿದೆ. ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಲು ಈ ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="6393156038355142111">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ</translation>
 <translation id="6393550101331051049">ಅಸುರಕ್ಷಿತ ವಿಷಯವನ್ನು ತೋರಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="6394634179843537518">ಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />ಸಿಸ್ಟಂ‌ ಮಾಹಿತಿ<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />ಮೆಟ್ರಿಕ್‌ಗಳನ್ನು<ph name="END_LINK2" /> ಕಳುಹಿಸಿ</translation>
 <translation id="6397586889873084061">ಹೌದು, ನನ್ನ ಡೇಟಾವನ್ನು ಶಾಲೆಯಿಂದ ಪ್ರತ್ಯೇಕವಾಗಿ ಇರಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="6398715114293939307">Google Play Store  ತೆಗೆದುಹಾಕಿ</translation>
@@ -9311,7 +9312,6 @@
 <translation id="747114903913869239">ದೋಷ: ವಿಸ್ತರಣೆಯನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="7471520329163184433">ನಿಧಾನವಾಗಿ</translation>
 <translation id="747312361841682912">ಡಿಸ್‌ಪ್ಲೇ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
-<translation id="7473555040328423550">ಟ್ಯಾಬ್ ಸೇರಿಸಿ</translation>
 <translation id="7473891865547856676">ಬೇಡ</translation>
 <translation id="7474043404939621342">ನಿಮ್ಮ ಟೂಲ್‌ಬಾರ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="747459581954555080">ಎಲ್ಲವನ್ನು ಮರುಸಂಗ್ರಹಿಸಿ</translation>
@@ -11888,7 +11888,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="9215742531438648683">Google Play Store ‌‌ ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="9218430445555521422">ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
-<translation id="9218536722110863203">ಫೈಲ್ ಅನ್ನು ಅಪ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (ಬೆಂಬಲಿಸದ ಆ್ಯಪ್)</translation>
 <translation id="9219572436491982747">Chrome AI ತಂತ್ರಜ್ಞಾನವನ್ನು ಸುಧಾರಿಸಲು Google ಗೆ ಕಳುಹಿಸಲಾದ ಡೇಟಾವನ್ನು ಮಾನವ ರಿವ್ಯೂವರ್‌ಗಳು ನೋಡಬಹುದು</translation>
 <translation id="9219741625496141320">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಳಿಸಲಾಗಿದೆ</translation>

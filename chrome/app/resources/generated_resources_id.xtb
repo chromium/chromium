@@ -4012,7 +4012,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3735039640698208086">Saat memutar audio...</translation>
 <translation id="3735740477244556633">Urutkan menurut</translation>
 <translation id="3735827758948958091">Tidak dapat membuka <ph name="FILE_NAMES" /> saat menggunakan koneksi berkuota</translation>
-<translation id="3736575924150462398">Tambahkan tab atau lainnya</translation>
 <translation id="3737058101969549870">Pisahkan data penjelajahan yang ada dari profil baru ini?</translation>
 <translation id="3738632186060045350">Data <ph name="DEVICE_TYPE" /> akan dihapus dalam 24 jam</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4642,6 +4641,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4151503145138736576">Tidak ada penyimpanan offline yang dapat dikosongkan</translation>
 <translation id="4152011295694446843">Bookmark Anda akan ditampilkan di sini</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tab}}</translation>
+<translation id="4153858337812834972">Tab terbaru</translation>
 <translation id="4154658846204884961">Komet</translation>
 <translation id="4154664944169082762">Sidik jari</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> — Tampilan kiri</translation>
@@ -7780,6 +7780,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6391131092053186625">IMEI perangkat Anda adalah <ph name="IMEI_NUMBER" />. Nomor ini dapat digunakan untuk membantu mengaktifkan layanan.</translation>
 <translation id="6393156038355142111">Sarankan sandi yang kuat</translation>
 <translation id="6393550101331051049">Diizinkan menampilkan konten yang tidak aman</translation>
+<translation id="6394634179843537518">Tambahkan file</translation>
 <translation id="6395423953133416962">Kirim <ph name="BEGIN_LINK1" />informasi sistem<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Ya, pisahkan data saya dari profil sekolah (direkomendasikan)</translation>
 <translation id="6398715114293939307">Hapus Google Play Store</translation>
@@ -9316,7 +9317,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="747114903913869239">Kesalahan: Tidak dapat mendekodekan ekstensi</translation>
 <translation id="7471520329163184433">Lebih lambat</translation>
 <translation id="747312361841682912">Hapus data yang ditampilkan</translation>
-<translation id="7473555040328423550">Tambahkan tab</translation>
 <translation id="7473891865547856676">Lain Kali</translation>
 <translation id="7474043404939621342">Menyesuaikan toolbar</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
@@ -11894,7 +11894,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ditambahkan</translation>
 <translation id="9215742531438648683">Uninstal Google Play Store</translation>
 <translation id="9218430445555521422">Jadikan default</translation>
-<translation id="9218536722110863203">Upload file</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplikasi tidak didukung)</translation>
 <translation id="9219572436491982747">Data yang dikirim ke Google mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas teknologi AI Chrome</translation>
 <translation id="9219741625496141320">Data penjelajahan otomatis dihapus</translation>

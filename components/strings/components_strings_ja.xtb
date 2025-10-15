@@ -847,7 +847,7 @@
 <translation id="2370368710215137370">ファイルのアップロード</translation>
 <translation id="2370739752330685659">後で</translation>
 <translation id="2371084566192454134">タブとタブグループ</translation>
-<translation id="2374629208601905275">お住まいの地域の法律に基づき、Chrome ではデフォルトの検索エンジンの選択を求めるメッセージが表示されます。これらの検索エンジンはお住まいの地域で一般的に使用されているもので、順不同です。</translation>
+<translation id="2374629208601905275">お住まいの地域の法律に基づき、Chrome ではデフォルトの検索サービスの選択を求めるメッセージが表示されます。これらの検索サービスはお住まいの地域で一般的に使用されているもので、順不同に表示されています。</translation>
 <translation id="2376455483361831781">新しい表</translation>
 <translation id="2377241607395428273">グラフィック、アニメーション ソフトウェア</translation>
 <translation id="2378084239755710604">カード保存のメッセージを閉じました。</translation>
@@ -1286,7 +1286,7 @@
 <translation id="3121994479408824897"><ph name="DOMAIN" /> に移動</translation>
 <translation id="3122696783148405307">過去 30 日間の結果を表示</translation>
 <translation id="3126023634486644099">ラベル（永久接着）</translation>
-<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> をデフォルトの検索エンジンに設定しました</translation>
+<translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> をデフォルトの検索サービスに設定しました</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />を検索</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{なし}=1{1 件のアカウントのログインデータ}other{# 件のアカウントのログインデータ}}</translation>
 <translation id="3140646734028448730">企業向けサービス</translation>
@@ -3202,7 +3202,7 @@
 <translation id="6288559570252410796">Google AI モードに質問する</translation>
 <translation id="628877850550444614">割引が見つかりました</translation>
 <translation id="6289939620939689042">ページの色</translation>
-<translation id="6292819926564202163">Chrome で使用する検索エンジン</translation>
+<translation id="6292819926564202163">Chrome で使用する検索サービス</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6295855836753816081">保存しています...</translation>
@@ -3306,7 +3306,7 @@
 <translation id="6432297414176614592">広告のトピックの詳細</translation>
 <translation id="6432831586648556868">営業、マーケティング系の求人情報</translation>
 <translation id="6433490469411711332">連絡先情報の編集</translation>
-<translation id="6433501201775827830">検索エンジンの選択</translation>
+<translation id="6433501201775827830">検索サービスの選択</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> で接続が拒否されました。</translation>
 <translation id="6433797564277305076">デバイスのロック解除を使用すると、カードを素早く確認できます</translation>
 <translation id="6437647869369934905">Google 図形描画</translation>
@@ -3405,7 +3405,7 @@
 <translation id="6598976221101665070">ドラマ映画</translation>
 <translation id="6599642189720630047">トラッキングしている商品</translation>
 <translation id="6613742613135780554">ハンド トラッキング</translation>
-<translation id="6613866251791999074">Chrome で使用する検索エンジンについての詳細</translation>
+<translation id="6613866251791999074">Google Chrome で使用する検索サービスについての詳細</translation>
 <translation id="6615297766614333076">スタッカー 2</translation>
 <translation id="6619496928666593220">IBAN が入力されていません</translation>
 <translation id="6624427990725312378">連絡先情報</translation>
@@ -3504,7 +3504,7 @@
 <translation id="6777088782163649345">保護者の設定に従って YouTube をお使いください</translation>
 <translation id="6779348349813025131">Google パスワード マネージャーに MacOS キーチェーンへのアクセスを許可する必要があります</translation>
 <translation id="6780449997190414928">通常はこのサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="LEARN_MORE" /></translation>
-<translation id="6785990323398321538">検索エンジンは Chrome の設定でいつでも変更できます。</translation>
+<translation id="6785990323398321538">デフォルトの検索サービスは Chrome の設定でいつでも変更できます。</translation>
 <translation id="6786145470008421571">6x9 インチ封筒</translation>
 <translation id="6786747875388722282">拡張機能</translation>
 <translation id="6787094689637422836">ユーザーの選択の幅が広がる新たなプライバシー機能がリリースされます。</translation>
@@ -3589,7 +3589,7 @@
 <translation id="6926216138694948720">ボディアート</translation>
 <translation id="692638818576287323">商用自動車</translation>
 <translation id="6930607614725241390">サイドパネルで検索</translation>
-<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />デフォルトの検索エンジンではウェブ検索ができるだけでなく、Chrome の機能を活用<ph name="END_BOLD" />してアドレスバーからの検索、ウェブページの画像からの検索なども行うことができます。ただし検索エンジンでサポートされていない機能は利用できない場合があります。</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />デフォルトの検索サービスではウェブ検索ができるだけでなく、Chrome の機能を活用<ph name="END_BOLD" />してアドレスバーからの検索、ウェブページの画像からの検索なども行うことができます。ただし検索サービスでサポートされていない機能は利用できない場合があります。</translation>
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>
 <translation id="6935077351544118151">Google ウォレットからポイントカードを自動入力できるようになりました</translation>
 <translation id="6935082727755903526">会計、財務系の求人情報</translation>
@@ -4856,7 +4856,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> はローカル ネットワーク上のデバイスの検出と接続を要求しています</translation>
 <translation id="9046864189129893978">マイク（<ph name="MICS_COUNT" />）</translation>
-<translation id="9047528041803621289">デフォルトの設定はウェブ検索です。検索エンジンは設定で変更できます。</translation>
+<translation id="9047528041803621289">デフォルトで設定したサービス（検索エンジン）でウェブを検索できます。なお、使用する検索サービスは [設定] で変更できます。</translation>
 <translation id="9048035366624198823">これらの動作を行うには、<ph name="POLICY_NAME" /> ポリシーを <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" /> に設定する必要があります。</translation>
 <translation id="9048662076076074925">24x36 インチ</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから無効な証明書が提示されました。</translation>

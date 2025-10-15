@@ -3997,7 +3997,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3735039640698208086">Audioa erreproduzitzean…</translation>
 <translation id="3735740477244556633">Ordenatzeko irizpidea</translation>
 <translation id="3735827758948958091">Ezin da ireki <ph name="FILE_NAMES" /> konexio neurtu batean</translation>
-<translation id="3736575924150462398">Gehitu fitxak edo gehiago</translation>
 <translation id="3737058101969549870">Lehendik dauden arakatze-datuak profil berri honetatik bereizita mantendu nahi dituzu?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> gailuko datuak 24 ordu barru ezabatuko dira</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4627,6 +4626,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4151503145138736576">Ez dago garbi daitekeen konexiorik gabeko biltegirik</translation>
 <translation id="4152011295694446843">Laster-markak aurkituko dituzu hemen</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{Fitxa bat}other{# fitxa}}</translation>
+<translation id="4153858337812834972">Azkenaldiko fitxak</translation>
 <translation id="4154658846204884961">Kometa</translation>
 <translation id="4154664944169082762">Erreferentzia-fitxategiak</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - Ezkerreko ikuspegia</translation>
@@ -7760,6 +7760,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6391131092053186625">Gailuaren IMEIa <ph name="IMEI_NUMBER" /> da. Zerbitzua aktibatzeko erabil daiteke zenbaki hori.</translation>
 <translation id="6393156038355142111">Iradoki pasahitz konplexu bat</translation>
 <translation id="6393550101331051049">Segurua ez den edukia erakuts dezakete</translation>
+<translation id="6394634179843537518">Gehitu fitxategi bat</translation>
 <translation id="6395423953133416962">Bidali <ph name="BEGIN_LINK1" />sistemari buruzko informazioa<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />estatistikak<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Bai, mantendu nire datuak eskolatik bereizita (gomendatuta)</translation>
 <translation id="6398715114293939307">Kendu Google Play Store</translation>
@@ -9295,7 +9296,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="747114903913869239">Errorea: ezin izan da deskodetu luzapena</translation>
 <translation id="7471520329163184433">Motelago</translation>
 <translation id="747312361841682912">Ezabatu bistaratutako datuak</translation>
-<translation id="7473555040328423550">Gehitu fitxa bat</translation>
 <translation id="7473891865547856676">Ez, eskerrik asko</translation>
 <translation id="7474043404939621342">Pertsonalizatu tresna-barra</translation>
 <translation id="747459581954555080">Leheneratu guztiak</translation>
@@ -11872,7 +11872,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" gehitu da</translation>
 <translation id="9215742531438648683">Desinstalatu Google Play Store</translation>
 <translation id="9218430445555521422">Ezarri lehenetsi gisa</translation>
-<translation id="9218536722110863203">Kargatu fitxategi bat</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplikazio bateraezina)</translation>
 <translation id="9219572436491982747">Baliteke Google-ri bidalitako datuak gizakiak diren berrikusleek ikustea, Chrome-ren AAren teknologia hobetzeko.</translation>
 <translation id="9219741625496141320">Arakatze-datuak automatikoki ezabatu dira</translation>

@@ -4013,7 +4013,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3735039640698208086">Kapag nagpe-play ng audio...</translation>
 <translation id="3735740477244556633">Pagbukud-bukurin ayon sa</translation>
 <translation id="3735827758948958091">Hindi mabubuksan ang mga <ph name="FILE_NAMES" /> habang gumagamit ng metered connection</translation>
-<translation id="3736575924150462398">Magdagdag ng mga tab o higit pa</translation>
 <translation id="3737058101969549870">Panatilihing nakahiwalay ang kasalukuyang data mula sa pag-browse sa bagong profile na ito?</translation>
 <translation id="3738632186060045350">Made-delete ang data ng <ph name="DEVICE_TYPE" /> pagkalipas ng 24 na oras</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4643,6 +4642,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4151503145138736576">Walang lilinising offline na storage</translation>
 <translation id="4152011295694446843">Makikita mo rito ang iyong mga bookmark</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}one{# tab}other{# na tab}}</translation>
+<translation id="4153858337812834972">Mga pinakakamakailang tab</translation>
 <translation id="4154658846204884961">Comet</translation>
 <translation id="4154664944169082762">Mga fingerprint</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - View sa kaliwa</translation>
@@ -7781,6 +7781,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6391131092053186625">Ang iyong device IMEI ay <ph name="IMEI_NUMBER" />. Puwedeng gamitin ang numerong ito para makatulong na ma-activate ang serbisyo.</translation>
 <translation id="6393156038355142111">Magmungkahi ng malakas na password</translation>
 <translation id="6393550101331051049">Pinapayagang magpakita ng hindi secure na content</translation>
+<translation id="6394634179843537518">Magdagdag ng file</translation>
 <translation id="6395423953133416962">Ipadala ang <ph name="BEGIN_LINK1" />impormasyon ng system<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />mga sukatan<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Oo, panatilihing nakahiwalay sa paaralan ang aking data (inirerekomenda)</translation>
 <translation id="6398715114293939307">Alisin ang Google Play Store</translation>
@@ -9320,7 +9321,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="747114903913869239">Error: Hindi magawang i-decode ang extension</translation>
 <translation id="7471520329163184433">Mas Mabagal</translation>
 <translation id="747312361841682912">I-delete ang ipinapakitang data</translation>
-<translation id="7473555040328423550">Magdagdag ng tab</translation>
 <translation id="7473891865547856676">Hindi, Salamat</translation>
 <translation id="7474043404939621342">I-customize ang iyong toolbar</translation>
 <translation id="747459581954555080">Ipanumbalik lahat</translation>
@@ -11901,7 +11901,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9215293857209265904">Idinagdag ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="9215742531438648683">I-uninstall ang Google Play Store</translation>
 <translation id="9218430445555521422">Itakda bilang default</translation>
-<translation id="9218536722110863203">Mag-upload ng file</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (hindi suportadong app)</translation>
 <translation id="9219572436491982747">Puwedeng makita ng mga taong tagasuri ang ipinadalang data sa Google para mapahusay ang teknolohiya ng Chrome AI</translation>
 <translation id="9219741625496141320">Awtomatikong na-delete ang data mula sa pag-browse</translation>

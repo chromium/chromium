@@ -4013,7 +4013,6 @@
 <translation id="3735039640698208086">ऑडियो चलाते समय...</translation>
 <translation id="3735740477244556633">इसके अनुसार क्रम से लगाएं</translation>
 <translation id="3735827758948958091">सीमित डेटा वाले कनेक्शन का इस्तेमाल करने पर, <ph name="FILE_NAMES" /> को नहीं खोला जा सकता</translation>
-<translation id="3736575924150462398">टैब वगैरह जोड़ें</translation>
 <translation id="3737058101969549870">क्या आपको मौजूदा ब्राउज़िंग डेटा को इस नई प्रोफ़ाइल से अलग रखना है?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> का डेटा 24 घंटे में मिटा दिया जाएगा</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4642,6 +4641,7 @@
 <translation id="4151503145138736576">स्टोरेज खाली करने के लिए, ऑफ़लाइन स्टोरेज उपलब्ध नहीं है</translation>
 <translation id="4152011295694446843">आपको अपने बुकमार्क यहां मिलेंगे</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
+<translation id="4153858337812834972">हाल ही में खोले गए टैब</translation>
 <translation id="4154658846204884961">धूमकेतु</translation>
 <translation id="4154664944169082762">फ़िंगरप्रिंट</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - लेफ़्ट व्यू</translation>
@@ -7778,6 +7778,7 @@
 <translation id="6391131092053186625">आपके डिवाइस का IMEI <ph name="IMEI_NUMBER" /> है. सेवा चालू करने के लिए, इस नंबर का इस्तेमाल किया जा सकता है.</translation>
 <translation id="6393156038355142111">मज़बूत पासवर्ड सुझाएं</translation>
 <translation id="6393550101331051049">असुरक्षित कॉन्टेंट दिखाने की अनुमति है</translation>
+<translation id="6394634179843537518">फ़ाइल जोड़ें</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />सिस्टम की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक्स<ph name="END_LINK2" /> भेजें</translation>
 <translation id="6397586889873084061">हां, मेरा निजी और स्कूल से जुड़ा डेटा अलग-अलग रखें (सुझाया गया)</translation>
 <translation id="6398715114293939307">Google Play Store निकालें</translation>
@@ -9316,7 +9317,6 @@
 <translation id="747114903913869239">गड़बड़ी: एक्सटेंशन डिकोड करने में असमर्थ</translation>
 <translation id="7471520329163184433">और धीमी</translation>
 <translation id="747312361841682912">दिखाया गया डेटा मिटाएं</translation>
-<translation id="7473555040328423550">टैब जोड़ें</translation>
 <translation id="7473891865547856676">नहीं, रहने दें</translation>
 <translation id="7474043404939621342">अपने टूलबार को पसंद के मुताबिक बनाएं</translation>
 <translation id="747459581954555080">सभी को पुनर्स्थापित करें</translation>
@@ -11895,7 +11895,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" जोड़ा गया</translation>
 <translation id="9215742531438648683">'Google Play Store' अनइंस्टॉल करें</translation>
 <translation id="9218430445555521422">डिफ़ॉल्ट के तौर पर सेट करें</translation>
-<translation id="9218536722110863203">फ़ाइल अपलोड करें</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (ऐप्लिकेशन काम नहीं करता)</translation>
 <translation id="9219572436491982747">Google को भेजा गया डेटा, समीक्षा करने वाले लोगों को दिख सकता है. इसका मकसद, Chrome की एआई टेक्नोलॉजी को बेहतर बनाना है</translation>
 <translation id="9219741625496141320">ब्राउज़िंग डेटा अपने-आप मिट गया</translation>

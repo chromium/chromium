@@ -3996,7 +3996,6 @@
 <translation id="3735039640698208086">ഓഡിയോ പ്ലേ ചെയ്യുമ്പോൾ...</translation>
 <translation id="3735740477244556633">ഇപ്രകാരം അടുക്കുക</translation>
 <translation id="3735827758948958091">മീറ്റർ ചെയ്ത കണക്ഷനിലായിരിക്കുമ്പോൾ <ph name="FILE_NAMES" /> തുറക്കാനാകില്ല</translation>
-<translation id="3736575924150462398">ടാബുകളോ മറ്റോ ചേർക്കുക</translation>
 <translation id="3737058101969549870">നിലവിലുള്ള ബ്രൗസിംഗ് ഡാറ്റ ഈ പുതിയ പ്രൊഫൈലിൽ നിന്ന് വേറിട്ട് സൂക്ഷിക്കണമെന്നുണ്ടോ?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> ഡാറ്റ 24 മണിക്കൂറിനുള്ളിൽ ഇല്ലാതാക്കും</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4625,6 +4624,7 @@
 <translation id="4151503145138736576">ക്ലീനപ്പ് ചെയ്യാൻ ഓഫ്‌ലൈൻ സ്റ്റോറേജൊന്നുമില്ല</translation>
 <translation id="4152011295694446843">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ ഇവിടെ കാണാം</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{ഒരു ടാബ്}other{# ടാബുകൾ}}</translation>
+<translation id="4153858337812834972">അടുത്തിടെ തുറന്ന ടാബുകൾ</translation>
 <translation id="4154658846204884961">വാൽനക്ഷത്രം</translation>
 <translation id="4154664944169082762">ഫിംഗര്‍‌പ്രിന്‍റുകള്‍‌</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - ഇടതുവശത്തെ കാഴ്‌ച</translation>
@@ -7763,6 +7763,7 @@
 <translation id="6391131092053186625">നിങ്ങളുടെ ഉപകരണത്തിന്റെ IMEI നമ്പർ <ph name="IMEI_NUMBER" /> ആണ്. സേവനം സജീവമാക്കാൻ സഹായിക്കുന്നതിന് ഈ നമ്പർ ഉപയോഗിക്കാം.</translation>
 <translation id="6393156038355142111">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക</translation>
 <translation id="6393550101331051049">സുരക്ഷിതമല്ലാത്ത ഉള്ളടക്കം കാണിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
+<translation id="6394634179843537518">ഫയൽ ചേർക്കുക</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />സിസ്റ്റം വിവരങ്ങളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />മെട്രിക്‌സും<ph name="END_LINK2" /> അയയ്‌ക്കുക</translation>
 <translation id="6397586889873084061">അതെ, എന്റെ ഡാറ്റ സ്കൂളിൽ നിന്ന് വേറിട്ട് സൂക്ഷിക്കുക (നിർദ്ദേശിക്കുന്നു)</translation>
 <translation id="6398715114293939307">Google Play Store നീക്കംചെയ്യുക</translation>
@@ -9299,7 +9300,6 @@
 <translation id="747114903913869239">പിശക്: വിപുലീകരണം ഡീകോഡ് ചെയ്യാനാവില്ല</translation>
 <translation id="7471520329163184433">സാവധാനം</translation>
 <translation id="747312361841682912">കാണിച്ചിരിക്കുന്ന ഡാറ്റ ഇല്ലാതാക്കുക</translation>
-<translation id="7473555040328423550">ടാബ് ചേർക്കൂ</translation>
 <translation id="7473891865547856676">വേണ്ട, നന്ദി</translation>
 <translation id="7474043404939621342">നിങ്ങളുടെ ടൂൾബാർ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="747459581954555080">എല്ലാം പുനഃസ്ഥാപിക്കുക</translation>
@@ -11876,7 +11876,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ചേർത്തു</translation>
 <translation id="9215742531438648683">Google Play Store അൺഇൻസ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="9218430445555521422">ഡിഫോൾട്ടായി സജ്ജീകരിക്കുക</translation>
-<translation id="9218536722110863203">ഫയൽ അപ്‌ലോഡ് ചെയ്യൂ</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (പിന്തുണയില്ലാത്ത ആപ്പ്)</translation>
 <translation id="9219572436491982747">Chrome AI-യുടെ സാങ്കേതികവിദ്യ മെച്ചപ്പെടുത്താൻ, Google-ലേക്ക് അയയ്ക്കുന്ന ഡാറ്റ റിവ്യൂവർമാർ കാണുകയും ചെയ്തേക്കാം</translation>
 <translation id="9219741625496141320">ബ്രൗസിംഗ് ഡാറ്റ സ്വയമേവ ഇല്ലാതാക്കി</translation>

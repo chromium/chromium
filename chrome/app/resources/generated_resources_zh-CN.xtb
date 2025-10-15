@@ -3989,7 +3989,6 @@
 <translation id="3735039640698208086">播放音频时…</translation>
 <translation id="3735740477244556633">排序依据</translation>
 <translation id="3735827758948958091">使用按流量计费的网络时无法打开 <ph name="FILE_NAMES" /></translation>
-<translation id="3736575924150462398">添加标签页或更多内容</translation>
 <translation id="3737058101969549870">是否要将现有浏览数据与这份新资料分开？</translation>
 <translation id="3738632186060045350">系统将会在 24 小时后删除 <ph name="DEVICE_TYPE" /> 数据</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
@@ -4618,6 +4617,7 @@
 <translation id="4151503145138736576">没有可清理的离线存储空间</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 个标签页}other{# 个标签页}}</translation>
+<translation id="4153858337812834972">最近打开的标签页</translation>
 <translation id="4154658846204884961">彗星</translation>
 <translation id="4154664944169082762">指纹</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - 左侧视图</translation>
@@ -7751,6 +7751,7 @@
 <translation id="6391131092053186625">您的设备 IMEI 为 <ph name="IMEI_NUMBER" />。此号码可用于帮助激活服务。</translation>
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6393550101331051049">允许显示不安全内容</translation>
+<translation id="6394634179843537518">添加文件</translation>
 <translation id="6395423953133416962">发送<ph name="BEGIN_LINK1" />系统信息<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">是，将我的数据与学校数据分开（推荐）</translation>
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
@@ -9288,7 +9289,6 @@
 <translation id="747114903913869239">错误：无法对扩展程序进行解码</translation>
 <translation id="7471520329163184433">减速</translation>
 <translation id="747312361841682912">删除显示的数据</translation>
-<translation id="7473555040328423550">添加标签页</translation>
 <translation id="7473891865547856676">不用了</translation>
 <translation id="7474043404939621342">自定义工具栏</translation>
 <translation id="747459581954555080">全部恢复</translation>
@@ -11866,7 +11866,6 @@
 <translation id="9215293857209265904">已添加“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="9215742531438648683">卸载 Google Play 商店</translation>
 <translation id="9218430445555521422">设为默认</translation>
-<translation id="9218536722110863203">上传文件</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" />（不支持此应用）</translation>
 <translation id="9219572436491982747">人工审核员可能会查看系统发送给 Google 的数据，以改进 Chrome AI 的技术</translation>
 <translation id="9219741625496141320">浏览数据已自动删除</translation>

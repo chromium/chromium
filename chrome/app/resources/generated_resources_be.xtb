@@ -3998,7 +3998,6 @@
 <translation id="3735039640698208086">Падчас прайгравання аўдыя...</translation>
 <translation id="3735740477244556633">Парадак сартавання</translation>
 <translation id="3735827758948958091">Нельга адкрыць файл "<ph name="FILE_NAMES" />", калі выкарыстоўваецца падключэнне з падлікам трафіка</translation>
-<translation id="3736575924150462398">Дадаць укладкі або іншыя аб’екты</translation>
 <translation id="3737058101969549870">Захоўваць існуючыя даныя пра работу ў браўзеры асобна ад новага профілю?</translation>
 <translation id="3738632186060045350">Даныя на прыладзе <ph name="DEVICE_TYPE" /> будуць выдалены праз 24 гадзіны</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4628,6 +4627,7 @@
 <translation id="4151503145138736576">Няма пазасеткавага сховішча, у якім можна было б вызваліць месца</translation>
 <translation id="4152011295694446843">Вашы закладкі знаходзяцца тут</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
+<translation id="4153858337812834972">Нядаўнія ўкладкі</translation>
 <translation id="4154658846204884961">Камета</translation>
 <translation id="4154664944169082762">Лічбавыя адбіткі</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: левы экран</translation>
@@ -7765,6 +7765,7 @@
 <translation id="6391131092053186625">IMEI прылады: <ph name="IMEI_NUMBER" />. Гэты нумар можна выкарыстаць для актывацыі сэрвісу.</translation>
 <translation id="6393156038355142111">Прапанаваць надзейны пароль</translation>
 <translation id="6393550101331051049">Дазволена паказваць небяспечнае змесціва</translation>
+<translation id="6394634179843537518">Дадайце файл</translation>
 <translation id="6395423953133416962">Адпраўляць <ph name="BEGIN_LINK1" />звесткі пра сістэму<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />значэнні паказчыкаў<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Так, я хачу захоўваць свае даныя адасоблена ад навучальных (рэкамендуецца)</translation>
 <translation id="6398715114293939307">Выдаліць Краму Google Play</translation>
@@ -9307,7 +9308,6 @@
 <translation id="747114903913869239">Памылка: не ўдалося дэкадаваць пашырэнне</translation>
 <translation id="7471520329163184433">Павальней</translation>
 <translation id="747312361841682912">Выдаліць указаныя даныя</translation>
-<translation id="7473555040328423550">Дадаць укладку</translation>
 <translation id="7473891865547856676">Не, дзякуй</translation>
 <translation id="7474043404939621342">Наладзіць панэль інструментаў</translation>
 <translation id="747459581954555080">Аднавіць усе</translation>
@@ -11884,7 +11884,6 @@
 <translation id="9215293857209265904">Дададзена пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="9215742531438648683">Выдаліць Краму Google Play</translation>
 <translation id="9218430445555521422">Выкарыстоўваць стандартна</translation>
-<translation id="9218536722110863203">Запампаваць файл</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (праграма не падтрымліваецца)</translation>
 <translation id="9219572436491982747">Для паляпшэння функцыі штучнага інтэлекту ў Chrome даныя, якія перадаюцца ў Google, могуць разглядацца спецыялістамі</translation>
 <translation id="9219741625496141320">Даныя пра работу ў браўзеры аўтаматычна выдалены</translation>

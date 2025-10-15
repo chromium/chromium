@@ -3006,7 +3006,7 @@
 <translation id="3029466929721441205">Прикажи ја алатката пенкало на полицата</translation>
 <translation id="3029808567601324798">Време до заклучување</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да преземете ажурирање денес. Ажурирањето ќе се преземе автоматски кога ќе се поврзете на интернет.}one{<ph name="MANAGER" /> бара да преземете ажурирање пред крајниот рок. Ажурирањето ќе се преземе автоматски кога ќе се поврзете на интернет.}other{<ph name="MANAGER" /> бара да преземете ажурирање пред крајниот рок. Ажурирањето ќе се преземе автоматски кога ќе се поврзете на интернет.}}</translation>
-<translation id="3030772324014024606">Измени</translation>
+<translation id="3030772324014024606">Изменете</translation>
 <translation id="3030795534674718505">Дозволено е сајтот да ги користи податоците што ги зачувал за вас</translation>
 <translation id="3030967311408872958">Од зајдисонце до изгрејсонце</translation>
 <translation id="3031417829280473749">Агентката X</translation>
@@ -4013,7 +4013,6 @@
 <translation id="3735039640698208086">Кога се пушта аудио...</translation>
 <translation id="3735740477244556633">Подреди по</translation>
 <translation id="3735827758948958091">Не може да се отвори <ph name="FILE_NAMES" /> додека сте на врска што се плаќа.</translation>
-<translation id="3736575924150462398">Додајте картички или друго</translation>
 <translation id="3737058101969549870">Да се чуваат постојните податоци од прелистување одделно од новиов профил?</translation>
 <translation id="3738632186060045350">Податоците на <ph name="DEVICE_TYPE" /> ќе се избришат по 24 часа</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4643,6 +4642,7 @@
 <translation id="4151503145138736576">Нема офлајн простор за подзачистување</translation>
 <translation id="4152011295694446843">Вашите обележувачи ќе ги најдете тука</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 картичка}one{# картичка}other{# картички}}</translation>
+<translation id="4153858337812834972">Најнови картички</translation>
 <translation id="4154658846204884961">Комета</translation>
 <translation id="4154664944169082762">Отпечатоци</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – приказ одлево</translation>
@@ -7781,6 +7781,7 @@
 <translation id="6391131092053186625">IMEI-бројот на вашиот уред е <ph name="IMEI_NUMBER" />. Бројов може да се користи за активирање услуга.</translation>
 <translation id="6393156038355142111">Предложи силна лозинка</translation>
 <translation id="6393550101331051049">Дозволено им е да прикажуваат небезбедни содржини</translation>
+<translation id="6394634179843537518">Додај датотека</translation>
 <translation id="6395423953133416962">Испрати <ph name="BEGIN_LINK1" />информации за системот<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />метриката<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">Да, чувај ги моите податоци одделно од училишниот профил (препорачано)</translation>
 <translation id="6398715114293939307">Отстранете ја Google Play Store</translation>
@@ -9319,7 +9320,6 @@
 <translation id="747114903913869239">Грешка: Не може да дешифрира наставка</translation>
 <translation id="7471520329163184433">Побавно</translation>
 <translation id="747312361841682912">Избриши ги прикажаните податоци</translation>
-<translation id="7473555040328423550">Додајте картичка</translation>
 <translation id="7473891865547856676">Не, фала</translation>
 <translation id="7474043404939621342">Приспособете го алатникот</translation>
 <translation id="747459581954555080">Поврати ги сите</translation>
@@ -11685,7 +11685,7 @@
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка од ред <ph name="ERROR_LINE_START" /> до <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Овозможете „Автоматско пополнување“ за пополнување формулари со еден клик</translation>
-<translation id="9065203028668620118">Измени</translation>
+<translation id="9065203028668620118">Изменете</translation>
 <translation id="9066394310994446814">Ставкава ја гледате според вашата претходна активност на услугите на Google. Може да ги гледате и бришете податоците, како и да ги менувате поставките на <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" />.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -11815,7 +11815,7 @@
 <translation id="9148058034647219655">Излези</translation>
 <translation id="9148126808321036104">Најави се повторно</translation>
 <translation id="9148963623915467028">Сајтов може да пристапува до вашата локација.</translation>
-<translation id="9149866541089851383">Измени...</translation>
+<translation id="9149866541089851383">Изменете...</translation>
 <translation id="9150045010208374699">Користи ја камерата</translation>
 <translation id="9150079578948279438">Профилот не можеше да се отстрани. Обидете се повторно или побарајте техничка поддршка од вашиот оператор.</translation>
 <translation id="9150860646299915960">Ажурирајте го контејнерот за Linux</translation>
@@ -11900,7 +11900,6 @@
 <translation id="9215293857209265904">Додадена е „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="9215742531438648683">Деинсталирање на Google Play Store</translation>
 <translation id="9218430445555521422">Постави како стандардно</translation>
-<translation id="9218536722110863203">Прикачете датотека</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (неподдржана апликација)</translation>
 <translation id="9219572436491982747">За да се подобри технологијата на Chrome AI, податоците што се испраќаат до Google може да ги гледаат прегледувачи</translation>
 <translation id="9219741625496141320">Податоците од прелистувањето се избришаа автоматски</translation>

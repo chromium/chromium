@@ -3999,7 +3999,6 @@
 <translation id="3735039640698208086">آڈیو چلاتے وقت…</translation>
 <translation id="3735740477244556633">ترتیب دیں بلحاظ</translation>
 <translation id="3735827758948958091">میٹرڈ کنکشن کے دوران <ph name="FILE_NAMES" /> نہیں کھل سکتی</translation>
-<translation id="3736575924150462398">ٹیبز یا مزید چیزیں شامل کریں</translation>
 <translation id="3737058101969549870">موجودہ براؤزنگ ڈیٹا کو اس نئی پروفائل سے الگ رکھیں؟</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> آلہ کا ڈیٹا 24 گھنٹے کے اندر حذف کر دیا جائے گا</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4629,6 +4628,7 @@
 <translation id="4151503145138736576">صاف کرنے کے لیے کوئی آف لائن اسٹوریج نہیں ہے</translation>
 <translation id="4152011295694446843">آپ اپنے بُک مارکس یہاں پائیں گے</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
+<translation id="4153858337812834972">حالیہ ترین ٹیبز</translation>
 <translation id="4154658846204884961">دُم دار سِتارہ</translation>
 <translation id="4154664944169082762">فنگر پرنٹس</translation>
 <translation id="4156297721709710037">‫<ph name="WINDOW_TITLE" /> - بائیں جانب کا منظر</translation>
@@ -7764,6 +7764,7 @@
 <translation id="6391131092053186625">‏آپ کے آلے کی IMEI <ph name="IMEI_NUMBER" /> ہے۔ سروس کو فعال کرنے میں مدد کے لیے اس نمبر کا استعمال کیا جا سکتا ہے۔</translation>
 <translation id="6393156038355142111">مضبوط پاس ورڈ تجویز کریں</translation>
 <translation id="6393550101331051049">غیر محفوظ مواد دکھانے کی اجازت ہے</translation>
+<translation id="6394634179843537518">فائل شامل کریں</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />سسٹم کی معلومات<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />میٹرکس<ph name="END_LINK2" /> بھیجیں۔</translation>
 <translation id="6397586889873084061">ہاں، میرا ڈیٹا اسکول پروفائل سے الگ رکھیں (تجویز کردہ)</translation>
 <translation id="6398715114293939307">‏Google Play اسٹور ہٹائیں</translation>
@@ -9300,7 +9301,6 @@
 <translation id="747114903913869239">خرابی: ایکسٹینشن کو ڈیکوڈ کرنے سے قاصر</translation>
 <translation id="7471520329163184433">آہستہ</translation>
 <translation id="747312361841682912">ڈسپلے کردہ ڈیٹا حذف کریں</translation>
-<translation id="7473555040328423550">ٹیب شامل کریں</translation>
 <translation id="7473891865547856676">نہیں شکریہ</translation>
 <translation id="7474043404939621342">اپنا ٹول بار حسب ضرورت بنائیں</translation>
 <translation id="747459581954555080">سبھی کو بحال کریں</translation>
@@ -11877,7 +11877,6 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" شامل کر دیا گیا</translation>
 <translation id="9215742531438648683">‏Google Play اسٹور اَن انسٹال کریں</translation>
 <translation id="9218430445555521422">بطور ڈیفالٹ سیٹ کریں</translation>
-<translation id="9218536722110863203">فائل اپ لوڈ کریں</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (غیر تعاون یافتہ ایپ)</translation>
 <translation id="9219572436491982747">‏‫Chrome AI کی ٹیکنالوجی کو بہتر بنانے کے لیے Google کو بھیجا گیا ڈیٹا انسانی جائزہ کاران دیکھ سکتے ہیں۔</translation>
 <translation id="9219741625496141320">براؤزنگ ڈیٹا خودکار طور پر حذف ہو گیا</translation>

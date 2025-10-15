@@ -3996,7 +3996,6 @@
 <translation id="3735039640698208086">播放音訊時...</translation>
 <translation id="3735740477244556633">排序依據</translation>
 <translation id="3735827758948958091">使用計量付費連線時無法開啟「<ph name="FILE_NAMES" />」</translation>
-<translation id="3736575924150462398">新增分頁或其他項目</translation>
 <translation id="3737058101969549870">要保留現有瀏覽資料，不要移到這個新設定檔嗎？</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> 資料將在 24 小時後遭到刪除</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
@@ -4625,6 +4624,7 @@
 <translation id="4151503145138736576">沒有可清理的離線儲存空間</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
+<translation id="4153858337812834972">最近開啟的分頁</translation>
 <translation id="4154658846204884961">彗星</translation>
 <translation id="4154664944169082762">指紋</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - 左側分頁</translation>
@@ -5749,7 +5749,7 @@
 <translation id="4956593309300508411">要停止共用嗎？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要儲存到這部裝置的資料夾嗎？</translation>
-<translation id="4958916254663453555">開啟 Gemini 版 Chrome 時，都會自動分享目前的分頁。系統會將目前分頁的完整內容和網址傳送給 Google。</translation>
+<translation id="4958916254663453555">開啟 Chrome 內建 Gemini 時，都會自動分享目前的分頁。系統會將目前分頁的完整內容和網址傳送給 Google。</translation>
 <translation id="4959262764292427323">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼</translation>
 <translation id="4960020053211143927">部分應用程式不支援這項功能</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -6550,7 +6550,7 @@
 <translation id="5527463195266282916">試圖降級外掛程式。</translation>
 <translation id="5527474464531963247">你也可以選取其他網路。</translation>
 <translation id="5527597176701279474">正在安裝「<ph name="APP_NAME" />」</translation>
-<translation id="5527822190489075064">最佳化充電效能</translation>
+<translation id="5527822190489075064">最佳化充電</translation>
 <translation id="5528295196101251711">VM 名稱</translation>
 <translation id="5529554942700688235">記憶體用量節省摘要，已釋出 <ph name="MEMORY_VALUE" /></translation>
 <translation id="5530977410273748884">如要將密碼儲存到 Google 密碼管理工具，請按一下這個按鍵</translation>
@@ -7754,6 +7754,7 @@
 <translation id="6391131092053186625">你的裝置 IMEI 是 <ph name="IMEI_NUMBER" />。這個編號可用於啟用服務。</translation>
 <translation id="6393156038355142111">建議高強度密碼</translation>
 <translation id="6393550101331051049">可以顯示不安全的內容</translation>
+<translation id="6394634179843537518">新增檔案</translation>
 <translation id="6395423953133416962">傳送<ph name="BEGIN_LINK1" />系統資訊<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" /></translation>
 <translation id="6397586889873084061">是，請將我的個人資料與學校資料分開 (建議)</translation>
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
@@ -9290,7 +9291,6 @@
 <translation id="747114903913869239">錯誤：無法為擴充功能解碼</translation>
 <translation id="7471520329163184433">減速</translation>
 <translation id="747312361841682912">刪除顯示的資料</translation>
-<translation id="7473555040328423550">新增分頁</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7474043404939621342">自訂工具列</translation>
 <translation id="747459581954555080">全部還原</translation>
@@ -11868,7 +11868,6 @@
 <translation id="9215293857209265904">已新增「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="9215742531438648683">解除安裝 Google Play 商店</translation>
 <translation id="9218430445555521422">設為預設</translation>
-<translation id="9218536722110863203">上傳檔案</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (不支援的應用程式)</translation>
 <translation id="9219572436491982747">傳送給 Google 的資料可能會由人工審查員查看，以提升 Chrome AI 技術</translation>
 <translation id="9219741625496141320">瀏覽資料已自動刪除</translation>
