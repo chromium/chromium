@@ -72,6 +72,8 @@ class FakeGlicTabStripController : public FakeBaseTabStripController {
     return browser_.get();
   }
 
+  bool CanShowModalUI() const override { return true; }
+
  private:
   bool use_otr_profile_ = false;
   std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
@@ -148,6 +150,11 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
         .WillByDefault(::testing::Return(true));
     ON_CALL(*tab_interface_, GetContents)
         .WillByDefault(::testing::Return(web_contents_.get()));
+    ON_CALL(*browser_window_interface_, RegisterActiveTabDidChange)
+        .WillByDefault([this](auto callback) {
+          SetActiveTabChangedCallback(callback);
+          return base::CallbackListSubscription();
+        });
 
     tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
         browser_window_interface_.get());
@@ -162,6 +169,11 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
 
   static std::string GetParamName(const ::testing::TestParamInfo<bool>& info) {
     return info.param ? "NudgeRedesign" : "NoNudgeRedesign";
+  }
+
+  void SetActiveTabChangedCallback(
+      base::RepeatingCallback<void(BrowserWindowInterface*)> cb) {
+    active_tab_changed_callback_ = cb;
   }
 
  protected:
@@ -180,6 +192,10 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
 
   content::WebContents* web_contents() { return web_contents_.get(); }
 
+  void SimulateActiveTabChanged() {
+    active_tab_changed_callback_.Run(browser_window_interface_.get());
+  }
+
  private:
   // Owned by TabStrip.
 
@@ -187,6 +203,8 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
+  base::RepeatingCallback<void(BrowserWindowInterface*)>
+      active_tab_changed_callback_;
 };
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -284,15 +302,26 @@ TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
 
 #if BUILDFLAG(ENABLE_GLIC)
 TEST_P(TabStripActionContainerTest, GlicButtonUpdateLabel) {
-  if (base::FeatureList::IsEnabled(features::kGlicEntrypointVariations)) {
-    GTEST_SKIP() << "TODO(crbug.com/450575228): Skipped when GlicEntrypointVariations "
-                    "flag is enabled. Update this test and re-enable.";
-  }
-
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->UpdateNudgeLabel(
       web_contents(), "TEST", /*activity=*/std::nullopt, base::NullCallback());
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
+}
+
+TEST_P(TabStripActionContainerTest, GlicButtonHideNudgeOnTabChange) {
+  BuildGlicContainer(/*use_otr_profile=*/false);
+  glic_nudge_controller_->SetDelegate(tab_strip_action_container_.get());
+
+  ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
+
+  glic_nudge_controller_->UpdateNudgeLabel(
+      web_contents(), "TEST", /*activity=*/std::nullopt, base::NullCallback());
+  ASSERT_TRUE(tab_strip_action_container_->GetIsShowingGlicNudge());
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
+
+  SimulateActiveTabChanged();
+  ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"Gemini");
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
