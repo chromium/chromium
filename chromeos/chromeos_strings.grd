@@ -7265,6 +7265,11 @@
       <message name="IDS_BOCA_CAPTIONS_STOP_TRANSLATING_BUTTON_TEXT" desc="Text for the button to stop captions translation.">
         Stop translating
       </message>
+
+      <!-- Strings for Class Tools remote receiver -->
+      <message name="IDS_BOCA_RECEIVER_TITLE" desc="Title of an app which runs in kiosk mode and receives incoming screen share presentations, and displays the shared screen. It is a 'remote' display because the user controls it remotely.">
+        Remote display
+      </message>
     </messages>
   </release>
 </grit>

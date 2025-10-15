@@ -31,6 +31,7 @@ static_library("boca_receiver_app_ui") {
     "//chromeos/ash/components/boca:spotlight_lib",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/receiver",
+    "//chromeos/strings",
     "//content/public/browser",
     "//content/public/common",
     "//google_apis/common",

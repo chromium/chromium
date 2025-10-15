@@ -9,6 +9,7 @@
 #include "ash/webui/grit/ash_boca_receiver_ui_resources.h"
 #include "ash/webui/grit/ash_boca_receiver_ui_resources_map.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -38,6 +39,11 @@ BocaReceiverUI::BocaReceiverUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,
       base::StringPrintf("frame-src %s;", kChromeUntrustedBocaReceiverURL));
+
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"appTitle", IDS_BOCA_RECEIVER_TITLE},
+  };
+  source->AddLocalizedStrings(kStrings);
 }
 
 BocaReceiverUI::~BocaReceiverUI() = default;
