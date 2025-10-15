@@ -180,7 +180,7 @@ void SystemMemoryPressureEvaluator::CheckDiskSpace() {
 }
 
 void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
-    int64_t free_bytes) {
+    std::optional<int64_t> free_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::MemoryPressureLevel new_disk_vote = base::MEMORY_PRESSURE_LEVEL_NONE;
 
@@ -189,7 +189,7 @@ void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
   const base::ByteCount threshold =
       base::MiB(kMacCriticalDiskSpacePressureThresholdMB.Get());
 
-  if (free_bytes != -1 && base::ByteCount(free_bytes) < threshold) {
+  if (free_bytes.has_value() && base::ByteCount(*free_bytes) < threshold) {
     new_disk_vote = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
 

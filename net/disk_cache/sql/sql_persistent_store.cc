@@ -319,8 +319,9 @@ class Backend {
             // a preferred size based on available disk space.
             max_bytes > 0
                 ? max_bytes
-                : PreferredCacheSize(base::SysInfo::AmountOfFreeDiskSpace(path),
-                                     type)),
+                : PreferredCacheSize(
+                      base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1),
+                      type)),
         high_watermark_(max_bytes_ -
                         max_bytes_ / kSqlBackendEvictionMarginDivisor),
         low_watermark_(max_bytes_ -

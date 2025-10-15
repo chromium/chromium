@@ -107,7 +107,7 @@ class TrashIOTask : public IOTask {
                         const trash::TrashPathsMap::reverse_iterator& it);
   void GotFreeDiskSpace(size_t source_idx,
                         const trash::TrashPathsMap::reverse_iterator& it,
-                        int64_t free_space);
+                        std::optional<int64_t> free_space);
 
   // Sets up the .Trash/files and .Trash/info subdirectories specified by the
   // `trash_subdirectory` parameter. Will create the parent directories as well

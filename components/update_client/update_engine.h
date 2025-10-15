@@ -130,19 +130,20 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
 
 // Describes a group of components which are installed or updated together.
 struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
-  UpdateContext(scoped_refptr<Configurator> config,
-                bool is_foreground,
-                bool is_install,
-                const std::vector<std::string>& ids,
-                UpdateClient::CrxStateChangeCallback crx_state_change_callback,
-                UpdateEngine::Callback callback,
-                PersistedData* persisted_data,
-                bool is_update_check_only,
-                base::RepeatingCallback<int64_t(const base::FilePath&)>
-                    get_available_space =
-                        base::BindRepeating([](const base::FilePath& dir) {
-                          return base::SysInfo::AmountOfFreeDiskSpace(dir);
-                        }));
+  UpdateContext(
+      scoped_refptr<Configurator> config,
+      bool is_foreground,
+      bool is_install,
+      const std::vector<std::string>& ids,
+      UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+      UpdateEngine::Callback callback,
+      PersistedData* persisted_data,
+      bool is_update_check_only,
+      base::RepeatingCallback<int64_t(const base::FilePath&)>
+          get_available_space =
+              base::BindRepeating([](const base::FilePath& dir) {
+                return base::SysInfo::AmountOfFreeDiskSpace(dir).value_or(-1);
+              }));
   UpdateContext(const UpdateContext&) = delete;
   UpdateContext& operator=(const UpdateContext&) = delete;
 

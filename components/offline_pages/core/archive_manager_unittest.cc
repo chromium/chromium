@@ -174,7 +174,8 @@ TEST_F(ArchiveManagerTest, TryWithInvalidTemporaryPath) {
   manager()->GetStorageStats(base::BindOnce(
       &ArchiveManagerTest::GetStorageStatsCallback, base::Unretained(this)));
   PumpLoop();
-  EXPECT_EQ(base::SysInfo::AmountOfFreeDiskSpace(temporary_archive_path()),
+  EXPECT_EQ(base::SysInfo::AmountOfFreeDiskSpace(temporary_archive_path())
+                .value_or(-1),
             last_storage_sizes().internal_free_disk_space);
   EXPECT_EQ(base::ComputeDirectorySize(private_archive_path()),
             last_storage_sizes().internal_archives_size());
@@ -188,8 +189,9 @@ TEST_F(ArchiveManagerTest, TryWithInvalidPublicPath) {
   manager()->GetStorageStats(base::BindOnce(
       &ArchiveManagerTest::GetStorageStatsCallback, base::Unretained(this)));
   PumpLoop();
-  EXPECT_EQ(base::SysInfo::AmountOfFreeDiskSpace(public_archive_path()),
-            last_storage_sizes().external_free_disk_space);
+  EXPECT_EQ(
+      base::SysInfo::AmountOfFreeDiskSpace(public_archive_path()).value_or(-1),
+      last_storage_sizes().external_free_disk_space);
   EXPECT_EQ(base::ComputeDirectorySize(temporary_archive_path()) +
                 base::ComputeDirectorySize(private_archive_path()),
             last_storage_sizes().internal_archives_size());

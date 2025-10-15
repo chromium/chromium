@@ -368,7 +368,9 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
 }
 
 // Ensures that there is enough free space on the destination volume.
-void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
+// TODO(crbug.com/429140103): Migrate this to ByteCount.
+void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(std::optional<int64_t> free_space) {
+  int64_t free_space_bytes = free_space.value_or(-1);
   auto* drive_integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);
   bool is_drive = drive_integration_service &&
@@ -378,7 +380,7 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
   if (progress_->GetDestinationFolder().filesystem_id() ==
           util::GetDownloadsMountPointName(profile_) ||
       is_drive) {
-    free_space -= cryptohome::kMinFreeSpaceInBytes;
+    free_space_bytes -= cryptohome::kMinFreeSpaceInBytes;
   }
 
   int64_t required_bytes = progress_->total_bytes;
@@ -393,7 +395,7 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
     }
   }
 
-  if (required_bytes > free_space || *DestinationNoSpace()) {
+  if (required_bytes > free_space_bytes || *DestinationNoSpace()) {
     progress_->outputs.emplace_back(progress_->GetDestinationFolder(),
                                     base::File::FILE_ERROR_NO_SPACE);
     LOG(ERROR) << "Insufficient free space in destination";

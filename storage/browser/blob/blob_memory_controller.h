@@ -187,7 +187,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
   void GrowFileAllocation(ShareableFileReference* file_reference,
                           uint64_t delta);
 
-  using DiskSpaceFuncPtr = int64_t (*)(const base::FilePath&);
+  using DiskSpaceFuncPtr = std::optional<int64_t> (*)(const base::FilePath&);
 
   void set_testing_disk_space(DiskSpaceFuncPtr disk_space_function) {
     disk_space_function_ = disk_space_function;

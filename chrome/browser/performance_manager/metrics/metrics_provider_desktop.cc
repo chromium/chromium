@@ -645,10 +645,10 @@ MetricsProviderDesktop::DiskMetrics
 MetricsProviderDesktop::DiskMetricsThreadPoolGetter::ComputeDiskMetrics(
     const base::FilePath& user_data_dir) {
   return {
-      .free_bytes =
-          base::ByteCount(base::SysInfo::AmountOfFreeDiskSpace(user_data_dir)),
-      .total_bytes =
-          base::ByteCount(base::SysInfo::AmountOfTotalDiskSpace(user_data_dir)),
+      .free_bytes = base::ByteCount(
+          base::SysInfo::AmountOfFreeDiskSpace(user_data_dir).value_or(-1)),
+      .total_bytes = base::ByteCount(
+          base::SysInfo::AmountOfTotalDiskSpace(user_data_dir).value_or(-1)),
   };
 }
 

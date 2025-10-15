@@ -1474,7 +1474,7 @@ void BackendImpl::AdjustMaxCacheSize(int table_len) {
   DCHECK(!table_len || data_->header.magic);
 
   // The user is not setting the size, let's figure it out.
-  int64_t available = base::SysInfo::AmountOfFreeDiskSpace(path_);
+  int64_t available = base::SysInfo::AmountOfFreeDiskSpace(path_).value_or(-1);
   if (available < 0) {
     max_size_ = kDefaultCacheSize;
     return;

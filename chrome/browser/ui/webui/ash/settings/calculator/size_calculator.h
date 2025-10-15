@@ -78,7 +78,7 @@ class SizeCalculator {
   virtual void PerformCalculation() = 0;
 
   // Notify the StorageHandler about the calculated storage item size
-  void NotifySizeCalculated(int64_t size);
+  void NotifySizeCalculated(std::optional<int64_t> size);
 
   // Item id.
   const CalculationType calculation_type_;

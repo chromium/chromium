@@ -43,7 +43,7 @@ const uint64_t kTestSmallBlobStorageMaxDiskSpace = 100;
 static int64_t sFakeDiskSpace = 0;
 static bool sFakeDiskSpaceCalled = true;
 
-int64_t FakeDiskSpaceMethod(const base::FilePath& path) {
+std::optional<int64_t> FakeDiskSpaceMethod(const base::FilePath& path) {
   EXPECT_FALSE(sFakeDiskSpaceCalled);
   sFakeDiskSpaceCalled = true;
   return sFakeDiskSpace;

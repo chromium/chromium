@@ -223,9 +223,8 @@ void RecordDownloadsDiskUsageStats(base::FilePath downloads_path) {
       k512GiBInMiB, 100);
 
   int64_t total_disk_space_in_bytes =
-      base::SysInfo::AmountOfTotalDiskSpace(downloads_path);
+      base::SysInfo::AmountOfTotalDiskSpace(downloads_path).value_or(-1);
 
-  // total_disk_space_in_bytes can be -1 on error.
   if (total_disk_space_in_bytes > 0) {
     int percentage_space_used = std::lround(
         (download_directory_size_in_bytes * 100.0) / total_disk_space_in_bytes);

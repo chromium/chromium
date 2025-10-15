@@ -4247,7 +4247,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_PercentComplete) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     int64_t free_space =
-        base::SysInfo::AmountOfFreeDiskSpace(GetDownloadDirectory(browser()));
+        base::SysInfo::AmountOfFreeDiskSpace(GetDownloadDirectory(browser()))
+            .value_or(-1);
     ASSERT_LE(parameters.size, free_space)
         << "Not enough disk space to download. Got " << free_space;
   }

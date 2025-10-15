@@ -101,7 +101,8 @@ void DoDeleteShareCacheFilePaths(const base::FilePath& profile_path,
 static int64_t CalculateRequiredSpace(const base::FilePath& share_dir,
                                       const uint64_t total_file_size) {
   DVLOG(1) << __func__;
-  int64_t free_disk_space = base::SysInfo::AmountOfFreeDiskSpace(share_dir);
+  int64_t free_disk_space =
+      base::SysInfo::AmountOfFreeDiskSpace(share_dir).value_or(-1);
   VLOG(1) << "Free disk space: " << free_disk_space;
   int64_t shared_files_size =
       static_cast<int64_t>(cryptohome::kMinFreeSpaceInBytes + total_file_size);

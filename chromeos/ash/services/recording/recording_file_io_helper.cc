@@ -52,7 +52,7 @@ void RecordingFileIoHelper::MaybeCheckRemainingSpace() {
   if (!IsDriveFsFile()) {
     OnGotRemainingFreeSpace(
         mojom::RecordingStatus::kLowDiskSpace,
-        base::SysInfo::AmountOfFreeDiskSpace(output_file_path_));
+        base::SysInfo::AmountOfFreeDiskSpace(output_file_path_).value_or(-1));
     return;
   }
 

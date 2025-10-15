@@ -57,7 +57,7 @@ class SystemMemoryPressureEvaluator
 
   // Callback for the disk space check. Updates the pressure level based on the
   // amount of free space.
-  void OnDiskSpaceCheckComplete(int64_t free_bytes);
+  void OnDiskSpaceCheckComplete(std::optional<int64_t> free_bytes);
 
   // Updates the pressure level and manages re-notification timers.
   void UpdatePressureAndManageNotifications();

@@ -101,7 +101,7 @@ bool WriteOrDeleteFile(const base::FilePath& path,
     return false;
   }
 
-  if (base::SysInfo::AmountOfFreeDiskSpace(path.DirName()) <
+  if (base::SysInfo::AmountOfFreeDiskSpace(path.DirName()).value_or(-1) <
       kMaxReservedAvailableDiskSpaceByte) {
     LOG(ERROR) << "Not enough disk space left.";
     return false;

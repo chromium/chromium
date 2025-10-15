@@ -108,8 +108,10 @@ class DiskSpaceCalculator {
   }
 
   static DiskSpaceInfo GetDiskSpaceBlocking(const base::FilePath& mount_path) {
-    int64_t free_bytes = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
-    int64_t total_bytes = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
+    int64_t free_bytes =
+        base::SysInfo::AmountOfFreeDiskSpace(mount_path).value_or(-1);
+    int64_t total_bytes =
+        base::SysInfo::AmountOfTotalDiskSpace(mount_path).value_or(-1);
     return DiskSpaceInfo{free_bytes, total_bytes};
   }
 

@@ -109,7 +109,8 @@ bool IsLogicalVolumeStructure(LPARAM data) {
 
 // Gets the total volume of the |mount_point| in bytes.
 uint64_t GetVolumeSize(const base::FilePath& mount_point) {
-  int64_t size = base::SysInfo::AmountOfTotalDiskSpace(mount_point);
+  int64_t size =
+      base::SysInfo::AmountOfTotalDiskSpace(mount_point).value_or(-1);
   return std::max(size, static_cast<int64_t>(0));
 }
 

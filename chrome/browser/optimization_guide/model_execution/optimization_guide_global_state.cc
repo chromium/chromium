@@ -66,12 +66,12 @@ class OnDeviceModelComponentStateManagerDelegate
     // std::optional<base::ByteCount> and remove this wrapper.
     auto amount_of_free_disk_space_wrapper = base::BindOnce(
         [](const base::FilePath& path) -> std::optional<base::ByteCount> {
-          int64_t amount_of_free_disk_space =
+          std::optional<int64_t> amount_of_free_disk_space =
               base::SysInfo::AmountOfFreeDiskSpace(path);
-          if (amount_of_free_disk_space < 0) {
+          if (!amount_of_free_disk_space) {
             return std::nullopt;
           }
-          return base::ByteCount(amount_of_free_disk_space);
+          return base::ByteCount(*amount_of_free_disk_space);
         },
         path);
 

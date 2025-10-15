@@ -675,10 +675,11 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   }
 
   // Called when AmountOfFreeDiskSpace() is complete.
-  void OnGetFreeDiskSpace(int64_t free_space) {
+  void OnGetFreeDiskSpace(std::optional<int64_t> free_space) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     Value::Dict local_storage_summary;
-    local_storage_summary.Set("free_space", static_cast<double>(free_space));
+    local_storage_summary.Set("free_space",
+                              static_cast<double>(free_space.value_or(-1)));
     MaybeCallJavascript("updateLocalStorageUsage",
                         Value(std::move(local_storage_summary)));
   }

@@ -62,12 +62,13 @@ class DiskSpaceTest : public DiagnosticsTest {
     if (!base::PathService::Get(chrome::DIR_USER_DATA, &data_dir)) {
       return false;
     }
-    base::ByteCount disk_space =
-        base::ByteCount(base::SysInfo::AmountOfFreeDiskSpace(data_dir));
-    if (disk_space.is_negative()) {
+    auto amount_of_free_disk_space =
+        base::SysInfo::AmountOfFreeDiskSpace(data_dir);
+    if (!amount_of_free_disk_space) {
       RecordFailure(DIAG_RECON_UNABLE_TO_QUERY, "Unable to query free space");
       return true;
     }
+    base::ByteCount disk_space = base::ByteCount(*amount_of_free_disk_space);
     std::string printable_size = base::NumberToString(disk_space.InBytes());
     if (disk_space < base::MiB(80)) {
       RecordFailure(DIAG_RECON_LOW_DISK_SPACE,

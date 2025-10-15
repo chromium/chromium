@@ -31,15 +31,15 @@ typedef base::OnceCallback<void(int64_t)> GetNecessaryFreeSpaceCallback;
 int64_t ComputeSpaceNeedToBeFreedAfterGetMetadataAsync(
     const base::FilePath& path,
     int64_t snapshot_size) {
-  int64_t free_size = base::SysInfo::AmountOfFreeDiskSpace(path);
-  if (free_size < 0) {
+  auto free_size = base::SysInfo::AmountOfFreeDiskSpace(path);
+  if (!free_size) {
     return -1;
   }
 
   // We need to keep cryptohome::kMinFreeSpaceInBytes free space even after
   // |snapshot_size| is occupied.
-  free_size -= snapshot_size + cryptohome::kMinFreeSpaceInBytes;
-  return (free_size < 0 ? -free_size : 0);
+  *free_size -= snapshot_size + cryptohome::kMinFreeSpaceInBytes;
+  return (*free_size < 0 ? -*free_size : 0);
 }
 
 // Part of ComputeSpaceNeedToBeFreed.

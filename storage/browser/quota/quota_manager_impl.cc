@@ -3160,8 +3160,9 @@ QuotaAvailability QuotaManagerImpl::CallGetVolumeInfo(
 
 // static
 QuotaAvailability QuotaManagerImpl::GetVolumeInfo(const base::FilePath& path) {
-  return QuotaAvailability(base::SysInfo::AmountOfTotalDiskSpace(path),
-                           base::SysInfo::AmountOfFreeDiskSpace(path));
+  return QuotaAvailability(
+      base::SysInfo::AmountOfTotalDiskSpace(path).value_or(-1),
+      base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1));
 }
 
 void QuotaManagerImpl::AddObserver(

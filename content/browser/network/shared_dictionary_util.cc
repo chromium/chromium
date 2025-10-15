@@ -41,7 +41,7 @@ uint64_t CaliculateCacheMaxSizeForInMemory() {
 uint64_t CaliculateCacheMaxSizeForOnDisk(const base::FilePath& path) {
   base::ByteCount cache_max_size = kDefaultCacheMaxSizeForOnDisk;
   const int64_t available_disk_space =
-      base::SysInfo::AmountOfFreeDiskSpace(path);
+      base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1);
   if (available_disk_space <= 0) {
     return cache_max_size.InBytes();
   }

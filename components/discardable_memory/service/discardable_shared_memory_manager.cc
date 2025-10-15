@@ -184,7 +184,7 @@ uint64_t GetDefaultMemoryLimit() {
   base::FilePath shmem_dir;
   if (base::GetShmemTempDir(false, &shmem_dir)) {
     int64_t shmem_dir_amount_of_free_space =
-        base::SysInfo::AmountOfFreeDiskSpace(shmem_dir);
+        base::SysInfo::AmountOfFreeDiskSpace(shmem_dir).value_or(-1);
     DCHECK_GT(shmem_dir_amount_of_free_space, 0);
     int64_t shmem_dir_amount_of_free_space_mb =
         shmem_dir_amount_of_free_space / kMegabyte;

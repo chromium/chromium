@@ -27,10 +27,8 @@ namespace {
 using google::protobuf::RepeatedPtrField;
 
 uint64_t GetFreeDiskSpace(const base::FilePath& path) {
-  if (int64_t size = base::SysInfo::AmountOfFreeDiskSpace(path); size != -1) {
-    return static_cast<uint64_t>(size);
-  }
-  return 0;
+  return static_cast<uint64_t>(
+      base::SysInfo::AmountOfFreeDiskSpace(path).value_or(0));
 }
 
 base::expected<FlushedKey, FlushError> WriteEvents(const base::FilePath& path,

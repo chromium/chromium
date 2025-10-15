@@ -131,10 +131,10 @@ HardwareEvaluationResult EvaluateWin11HardwareRequirements() {
             SysInfo::AmountOfPhysicalMemory() >= kMinTotalPhysicalMemory;
 
         FilePath system_path;
-        result.disk =
-            PathService::Get(DIR_SYSTEM, &system_path) &&
-            SysInfo::AmountOfTotalDiskSpace(
-                FilePath(system_path.GetComponents()[0])) >= kMinTotalDiskSpace;
+        result.disk = PathService::Get(DIR_SYSTEM, &system_path) &&
+                      SysInfo::AmountOfTotalDiskSpace(
+                          FilePath(system_path.GetComponents()[0]))
+                              .value_or(-1) >= kMinTotalDiskSpace;
 
         result.firmware = IsUEFISecureBootCapable();
 

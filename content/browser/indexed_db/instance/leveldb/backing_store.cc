@@ -210,7 +210,7 @@ CreateLevelDBState(const base::FilePath& file_name,
   }
 
   options.write_buffer_size = leveldb_env::WriteBufferSize(
-      base::SysInfo::AmountOfTotalDiskSpace(file_name));
+      base::SysInfo::AmountOfTotalDiskSpace(file_name).value_or(-1));
   options.create_if_missing = create_if_missing;
   std::unique_ptr<leveldb::DB> db;
   leveldb::Status ldb_status =
@@ -221,7 +221,7 @@ CreateLevelDBState(const base::FilePath& file_name,
     }
     constexpr int64_t kBytesInOneKilobyte = 1024;
     int64_t free_disk_space_bytes =
-        base::SysInfo::AmountOfFreeDiskSpace(file_name);
+        base::SysInfo::AmountOfFreeDiskSpace(file_name).value_or(-1);
     bool below_100kb = free_disk_space_bytes != -1 &&
                        free_disk_space_bytes < 100 * kBytesInOneKilobyte;
 

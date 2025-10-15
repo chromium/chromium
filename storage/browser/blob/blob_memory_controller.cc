@@ -87,7 +87,7 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
           ? optional_memory_size_for_testing.value()
           : base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned();
   if (disk_enabled && CreateBlobDirectory(storage_dir) == base::File::FILE_OK)
-    disk_size = base::SysInfo::AmountOfTotalDiskSpace(storage_dir);
+    disk_size = base::SysInfo::AmountOfTotalDiskSpace(storage_dir).value_or(-1);
 
   BlobStorageLimits limits;
 
@@ -169,7 +169,7 @@ EmptyFilesResult CreateEmptyFiles(
                             kUnknownDiskAvailability);
   }
 
-  int64_t free_disk_space = disk_space_function(blob_storage_dir);
+  int64_t free_disk_space = disk_space_function(blob_storage_dir).value_or(-1);
 
   std::vector<FileCreationInfo> result;
   for (const base::FilePath& file_path : file_paths) {
@@ -214,7 +214,7 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
   if (creation_info.error != File::FILE_OK)
     return std::make_pair(std::move(creation_info), kUnknownDiskAvailability);
 
-  int64_t free_disk_space = disk_space_function(blob_storage_dir);
+  int64_t free_disk_space = disk_space_function(blob_storage_dir).value_or(-1);
 
   // Fail early instead of creating the files if we fill the disk.
   if (free_disk_space != kUnknownDiskAvailability &&

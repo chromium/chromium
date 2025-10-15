@@ -334,8 +334,10 @@ TEST_F(StorageHandlerTest, GlobalSizeStat) {
   // Get local filesystem storage statistics.
   const base::FilePath mount_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
-  int64_t total_size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  int64_t available_size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+  int64_t total_size =
+      base::SysInfo::AmountOfTotalDiskSpace(mount_path).value_or(-1);
+  int64_t available_size =
+      base::SysInfo::AmountOfFreeDiskSpace(mount_path).value_or(-1);
 
   // Round the total size.
   int64_t rounded_total_size = RoundByteSize(total_size);

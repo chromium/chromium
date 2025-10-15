@@ -361,9 +361,10 @@ uint32_t EstimateAmountOfTotalDiskSpaceMB() {
     base::FilePath path;
     if (base::PathService::Get(path_key, &path)) {
       uint32_t total_space = static_cast<uint32_t>(
-          base::SysInfo::AmountOfTotalDiskSpace(path) / 1024 / 1024);
+          base::SysInfo::AmountOfTotalDiskSpace(path).value_or(0) / 1024 /
+          1024);
       uint32_t free_space = static_cast<uint32_t>(
-          base::SysInfo::AmountOfFreeDiskSpace(path) / 1024 / 1024);
+          base::SysInfo::AmountOfFreeDiskSpace(path).value_or(0) / 1024 / 1024);
       bool duplicated = false;
       for (size_t ii = 0; ii < total_space_vector.size(); ++ii) {
         if (total_space == total_space_vector[ii] &&

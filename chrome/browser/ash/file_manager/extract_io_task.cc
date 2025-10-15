@@ -248,7 +248,8 @@ void ExtractIOTask::ExtractAllSources() {
   }
 }
 
-void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
+void ExtractIOTask::GotFreeDiskSpace(std::optional<int64_t> free_space) {
+  int64_t free_space_bytes = free_space.value_or(-1);
   auto* drive_integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);
   if (progress_.GetDestinationFolder().filesystem_id() ==
@@ -256,10 +257,10 @@ void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
       (drive_integration_service &&
        drive_integration_service->GetMountPointPath().IsParent(
            progress_.GetDestinationFolder().path()))) {
-    free_space -= cryptohome::kMinFreeSpaceInBytes;
+    free_space_bytes -= cryptohome::kMinFreeSpaceInBytes;
   }
 
-  if (progress_.total_bytes > free_space) {
+  if (progress_.total_bytes > free_space_bytes) {
     progress_.outputs.emplace_back(progress_.GetDestinationFolder(),
                                    base::File::FILE_ERROR_NO_SPACE);
     progress_.state = State::kError;

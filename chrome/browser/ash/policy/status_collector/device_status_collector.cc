@@ -196,16 +196,18 @@ std::vector<em::VolumeInfo> GetVolumeInfo(
       continue;
     }
 
-    int64_t free_size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
-    int64_t total_size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-    if (free_size < 0 || total_size < 0) {
+    std::optional<int64_t> free_size =
+        base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+    std::optional<int64_t> total_size =
+        base::SysInfo::AmountOfTotalDiskSpace(mount_path);
+    if (!free_size.has_value() || !total_size.has_value()) {
       LOG(ERROR) << "Unable to get volume status for " << mount_point;
       continue;
     }
     em::VolumeInfo info;
     info.set_volume_id(mount_point);
-    info.set_storage_total(total_size);
-    info.set_storage_free(free_size);
+    info.set_storage_total(*total_size);
+    info.set_storage_free(*free_size);
     result.push_back(info);
   }
   return result;
@@ -375,23 +377,23 @@ em::DiskLifetimeEstimation ReadDiskLifeTimeEstimation() {
 em::StatefulPartitionInfo ReadStatefulPartitionInfo() {
   em::StatefulPartitionInfo spi;
   const base::FilePath statefulPartitionPath(kStatefulPartitionPath);
-  const int64_t available_space =
+  const auto available_space =
       base::SysInfo::AmountOfFreeDiskSpace(statefulPartitionPath);
-  const int64_t total_space =
+  const auto total_space =
       base::SysInfo::AmountOfTotalDiskSpace(statefulPartitionPath);
 
-  if (available_space == -1) {
+  if (!available_space) {
     LOG(ERROR) << "ReadStatefulPartitionInfo failed fetching available space.";
     return spi;
   }
 
-  if (total_space == -1) {
+  if (!total_space) {
     LOG(ERROR) << "ReadStatefulPartitionInfo failed fetching total space.";
     return spi;
   }
 
-  spi.set_available_space(available_space);
-  spi.set_total_space(total_space);
+  spi.set_available_space(*available_space);
+  spi.set_total_space(*total_space);
   return spi;
 }
 

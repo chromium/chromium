@@ -90,14 +90,14 @@ class BASE_EXPORT SysInfo {
   static ByteCount AmountOfVirtualMemory();
 
   // Return the available disk space in bytes on the volume containing |path|,
-  // or -1 on failure.
+  // or nullopt on failure.
   // TODO(crbug.com/429140103): Convert the return type to ByteCount.
-  static int64_t AmountOfFreeDiskSpace(const FilePath& path);
+  static std::optional<int64_t> AmountOfFreeDiskSpace(const FilePath& path);
 
-  // Return the total disk space in bytes on the volume containing |path|, or -1
-  // on failure.
+  // Return the total disk space in bytes on the volume containing |path|, or
+  // nullopt on failure.
   // TODO(crbug.com/429140103): Convert the return type to ByteCount.
-  static int64_t AmountOfTotalDiskSpace(const FilePath& path);
+  static std::optional<int64_t> AmountOfTotalDiskSpace(const FilePath& path);
 
 #if BUILDFLAG(IS_FUCHSIA)
   // Sets the total amount of disk space to report under the specified |path|.

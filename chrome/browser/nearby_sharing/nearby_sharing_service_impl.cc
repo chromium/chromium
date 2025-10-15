@@ -248,7 +248,7 @@ bool IsOutOfStorage(const base::FilePath& file_path,
                     int64_t storage_required,
                     std::optional<int64_t> free_disk_space_for_testing) {
   int64_t free_space = free_disk_space_for_testing.value_or(
-      base::SysInfo::AmountOfFreeDiskSpace(file_path));
+      base::SysInfo::AmountOfFreeDiskSpace(file_path).value_or(-1));
   return free_space < storage_required;
 }
 
