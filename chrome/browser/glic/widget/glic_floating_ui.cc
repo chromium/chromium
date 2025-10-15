@@ -231,6 +231,7 @@ void GlicFloatingUi::Show() {
 void GlicFloatingUi::Close() {
   window_event_observer_.reset();
   glic_window_animator_.reset();
+  glic_widget_observation_.Reset();
   glic_widget_.reset();
   user_resizable_ = false;
   delegate_->WillCloseFor(FloatingEmbedderKey{});
