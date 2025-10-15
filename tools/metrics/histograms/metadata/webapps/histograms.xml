@@ -270,8 +270,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Terminate"
-    enum="InstallableAmbientBadgeState" expires_after="2025-11-16">
-  <owner>eirage@chromium.org</owner>
+    enum="InstallableAmbientBadgeState" expires_after="2026-10-13">
+  <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     On mobile, an install ambient badge may automatically shows to promote an

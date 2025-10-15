@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Uninstall{WebApkDistributorType}" enum="BooleanHit"
-    expires_after="2025-11-16">
+    expires_after="2026-10-13">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
