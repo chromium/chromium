@@ -270,6 +270,7 @@
 <translation id="2249635629516220541">Управление данными, которые сайты используют для показа рекламы</translation>
 <translation id="2251809247798634662">Новое окно в режиме инкогнито</translation>
 <translation id="2253927598983295051">Выберите, чем поделиться с <ph name="APP_NAME" /></translation>
+<translation id="2261570557291037252">Подробнее о приложении</translation>
 <translation id="2276696007612801991">Чтобы проверить пароли, войдите в свой аккаунт Google.</translation>
 <translation id="2281243904606300427">Выбранная вкладка инкогнито "<ph name="TAB_TITLE" />"</translation>
 <translation id="2286841657746966508">Платежный адрес</translation>
@@ -1299,6 +1300,7 @@
 <translation id="6865313869410766144">Данные для автозаполнения</translation>
 <translation id="6867400383614725881">Новая вкладка инкогнито</translation>
 <translation id="686899695320434745">Адреса не шифруются кодовой фразой. Поэтому вы можете использовать их в других сервисах Google.</translation>
+<translation id="6870625088374152862">Вы вошли как <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="687838958001010630">Все, у кого есть ссылка, могут изменять любые вкладки.</translation>
 <translation id="6880903702195291049">С разрешениями все в порядке</translation>
 <translation id="6883204995689174413">Отправка</translation>

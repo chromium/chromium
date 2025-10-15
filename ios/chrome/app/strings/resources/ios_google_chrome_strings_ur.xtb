@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">‏Chrome میں {searchPhrase}$ تلاش کریں</translation>
 <translation id="1237769345474105984">‏‫Chrome سے</translation>
 <translation id="124228879633599436">‏آپ کا Chrome پرانا ہے۔ محفوظ رہنے کے لیے اسے اپ ڈیٹ کریں۔</translation>
+<translation id="1258531953614971819">‏‫Chrome کی تجویز: Chrome کو اپنی ہوم اسکرین پر منتقل کریں</translation>
 <translation id="1333745675627230582">‏Chrome ڈائنوسار گیم کھیلیں</translation>
 <translation id="1352919863522755794">‏Google پاس ورڈ مینیجر آپ کے پاس ورڈز چیک نہیں کر سکا۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
 <translation id="1394995526009609883">‏آپ Chrome کی ترتیبات میں کسی بھی وقت اپنے انتخابات کو اپ ڈیٹ کر سکتے ہیں۔</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">‏اپنے ٹیبز، پاس ورڈز اور ادائیگی کی معلومات کو اپنے تمام آلات پر سنک کرنے کیلئے Chrome کو بطور ڈیفالٹ براؤزر سیٹ کریں</translation>
 <translation id="1504372625950710826">‏Chrome اپ ڈیٹس چیک نہیں کر سکا۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
 <translation id="1516692594929310090">‏Chrome میں ٹیب گرِڈ کھلتا ہے۔</translation>
+<translation id="152319127067424683">‏اپنے iPhone کے ڈاک سے Chrome تک تیزی سے رسائی حاصل کریں۔</translation>
 <translation id="1526327845902180576">‏آن ہونے پر:
 <ph name="BEGIN_INDENT" />  • Chrome کو ان لوگوں کے لیے بہتر بنانے میں مدد کریں جو اسے آپ کی طرح استعمال کرتے ہیں۔<ph name="END_INDENT" />
 
@@ -58,6 +60,7 @@
 <translation id="2199719347983604670">‏Chrome Sync کا ڈیٹا</translation>
 <translation id="2213327331203157297">‏Chrome میں لاک ڈاؤن وضع کو غیر فعال کرنے کیلئے اسے اپنے iPhone پر آف کریں۔</translation>
 <translation id="2242467532204595597">‏جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپاتے ہیں تو Chrome استعمال کریں۔</translation>
+<translation id="2256384876478573507">‏اپنے iPhone پر براؤز کرنے کے لیے، Chrome کو تیزی سے کھولیں۔</translation>
 <translation id="2311240109311056604">‏Chrome ڈائنو گیم کھلتی ہے۔</translation>
 <translation id="2339201583852607431">‏آپ کا پاس ورڈ آپ کے Google اکاؤنٹ (<ph name="EMAIL" />) میں محفوظ ہو جائے گا۔</translation>
 <translation id="2342919707875585281">‏Chrome آپ کے مقام کی معلومات کا اشتراک ان سائٹس کے ساتھ کرتا ہے جن کی آپ اجازت دیتے ہیں۔</translation>
@@ -66,6 +69,7 @@
 <translation id="2427791862912929107">‏Chrome میں ایسی خصوصیات ہیں جو آپ کے انٹرنیٹ کے ڈیٹا کا نظم کرنے اور کتنی جلدی آپ ویب صفحات لوڈ کر سکتے ہیں اس میں آپ کی مدد کرتی ہیں۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{‏ایسا اس وقت ہوتا ہے جب Chrome {THRESHOLD} منٹوں تک استعمال نہیں ہوتا ہے اس میں سرگزشت اور آٹو فل شامل ہو سکتے ہیں۔}other{‏ایسا اس وقت ہوتا ہے جب Chrome {THRESHOLD} منٹوں تک استعمال نہیں ہوتا ہے۔ اس میں سرگزشت اور آٹو فل شامل ہو سکتے ہیں۔}}</translation>
+<translation id="2531823184391665648">‏اپنے iPad پر براؤز کرنے کے لیے، Chrome کو تیزی سے کھولیں۔</translation>
 <translation id="2561231791489583059">‏خطرناک سائٹس سے محفوظ رہنے اور اپنے پاس ورڈز کو محفوظ رکھنے کیلئے، Chrome کا اپنے ڈیفالٹ براؤزر کے طور پر استعمال کریں</translation>
 <translation id="2574249610672786438">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں بھی آپ Chrome استعمال کرتے ہیں، اپنے تمام آلات پر سائن ان کریں</translation>
 <translation id="2576431527583832481">‏Chrome اب بہتر ہو گیا! ایک نیا ورژن دستیاب ہے۔</translation>
@@ -81,6 +85,7 @@
 <translation id="2767464022270041271">‏کوئی محفوظ کردہ پاس ورڈز نہیں۔ جب آپ اپنے پاس ورڈز کو محفوظ کرتے ہیں تو Google پاس ورڈ مینیجر انہیں چیک کر سکتا ہے۔</translation>
 <translation id="2788811701191021538">‏‫Chrome میں ادائیگی کے طریقوں کی ترتیب کا صفحہ کھولتا ہے۔</translation>
 <translation id="2876628302275096482">‏اس بارے میں مزید جانیں کہ <ph name="BEGIN_LINK" />Chrome آپ کے ڈیٹا کو کس طرح نجی رکھتا ہے<ph name="END_LINK" /></translation>
+<translation id="2922914028977213693">‏اپنے iPad پر Chrome سے زیادہ سے زیادہ فائدہ اٹھانے کے لیے یہاں تھپتھپائیں۔</translation>
 <translation id="292371311537977079">‏Chrome کی ترتیبات</translation>
 <translation id="2923827943290349720">‏جب آپ Chrome کو بند کرتے ہیں تب پوشیدگی ٹیبز کو مقفل کریں</translation>
 <translation id="2940565985148833945">‏‫Chrome تجویز: لینز کے ساتھ تلاش کریں</translation>
@@ -97,6 +102,7 @@
 <translation id="3140589780564632473">‏‫Chrome میں ویژوئلز تلاش کریں</translation>
 <translation id="314782365035065913">‏اپنے ہوم اسکرین ڈاک سے Chrome تک تیزی سے رسائی حاصل کریں</translation>
 <translation id="3167189358072330585">‏آپ کا اکاؤنٹ Google Chrome پر کام نہیں کرتا ہے۔ سائن ان کرنے کیلئے براہ کرم اپنے ڈومین کے منتظم سے رابطہ کریں یا ایک مستقل Google اکاؤنٹ استعمال کریں۔</translation>
+<translation id="320747600144551583">‏‫Chrome کی تجویز: بہتر کردہ محفوظ براؤزنگ فعال کریں</translation>
 <translation id="322254490661677575">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا کا استعمال اور اسے محفوظ کرنے کیلئے، اپنا پاس فریز درج کریں۔</translation>
 <translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
 <translation id="3303503998967553377">‏‫iOS پر Chrome ایکشنز استعمال کریں</translation>
@@ -109,6 +115,7 @@
 <translation id="3440830787838130530">‏‫Google پاس ورڈ مینیجر میں اپنے فیملی گروپ کے ساتھ پاس ورڈ کی کاپی کا آسانی اور محفوظ طریقے سے اشتراک کریں</translation>
 <translation id="3460369101684070455">‏اپنی دیگر ایپس میں اپنے محفوظ کردہ پاس ورڈز کو آسانی سے حاصل کرنے کیلئے، Chrome برائے آٹو فل کا انتخاب کریں</translation>
 <translation id="3472587960215700950">‏Chrome پتا لگائے گئے پتوں پر آپ کو ڈائریکشنز اور مقامی معلومات فراہم کرنے کے لیے Google Maps کا استعمال کرتا ہے۔</translation>
+<translation id="3482807551645716768">‏اپنے iPad کی ہوم اسکرین سے Chrome تک تیزی سے رسائی حاصل کریں۔</translation>
 <translation id="3503014945441706099">‏اس Chrome پروفائل کے لیے بھی بہتر کردہ محفوظ براؤزنگ حاصل کریں</translation>
 <translation id="3522659714780527202">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں بھی آپ Chrome استعمال کرتے ہیں، سِنک کو آن کریں</translation>
 <translation id="364480321352456989">‏آپ کا Chrome پرانا ہے۔</translation>
@@ -125,16 +132,19 @@
 <translation id="3988789688219830639">‏Google Chrome کو آپ کی تصاویر یا ویڈیوز تک رسائی حاصل نہیں ہے۔ iOS ترتیبات &gt; رازداری &gt; تصاویر میں رسائی کو فعال کریں۔</translation>
 <translation id="4064699917955374540">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا کا استعمال اور اسے محفوظ کرنے کیلئے، توثیق کریں کہ یہ آپ ہی ہیں۔</translation>
 <translation id="411154422556990518">‏قیمت کی ٹریکنگ کی اپ ڈیٹس اور Chrome کی تجاویز سے باخبر رہیں۔</translation>
+<translation id="4167555379306984168">‏دیکھیں کہ Chrome میں نیا کیا ہے</translation>
 <translation id="417201473131094001">‏Chrome Canary پر تعاون یافتہ نہیں ہے</translation>
 <translation id="424864128008805179">‏Chrome سے سائن آؤٹ کریں؟</translation>
 <translation id="4430797724889237570">‏‫Gmail, Maps, YouTube اور دیگر ایپس کی لنکس کو Chrome میں کھولیں</translation>
 <translation id="447252321002412580">‏Chrome کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4523886039239821078">‏کچھ اضافے Chrome کے کریش ہونے کا سبب بنتے ہیں۔ براہ کرم اَن انسٹال کریں:</translation>
+<translation id="4568024439284012497">‏اپنے iPhone کی ہوم اسکرین سے Chrome تک تیزی سے رسائی حاصل کریں۔</translation>
 <translation id="4574806550936185355">‏‫"Chrome بند کرنے پر پوشیدگی ٹیبز کو مقفل کریں" کو آن کریں</translation>
 <translation id="4633328489441962921">‏Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
 <translation id="4636900170638246267">‏اس سائٹ اور Chrome پر سائن ان کریں۔</translation>
 <translation id="4647910807533196601">‏‫Chrome میں میرا تازہ ترین ٹیب کھولیں۔</translation>
 <translation id="4693084815234024320">‏آپ Chrome پوشیدگی میں ہیں</translation>
+<translation id="4708857722625759026">‏اپنے iPad کے ڈاک سے Chrome تک تیزی سے رسائی حاصل کریں۔</translation>
 <translation id="4713740144985377441">‏اپنی فائل اپ لوڈ کرنے کے لیے Chrome پر واپس جائیں</translation>
 <translation id="4713907610796204963">‏شروع کرنے کے لیے مددگار Chrome کے مبادیات جانیں</translation>
 <translation id="4724297637870447613">‏‫Chrome کو ہر جگہ استعمال کریں</translation>
@@ -149,6 +159,8 @@
 <translation id="4903674399067644695">‏یہ کارڈ آپ کو Chrome سے زیادہ سے زیادہ فائدہ اٹھانے کے بارے میں تجاویز دکھاتا ہے۔</translation>
 <translation id="49200511069271369">‏آپ کی تنظیم، <ph name="DOMAIN" />، اس اکاؤنٹ کا نظم کرتی ہے جس میں آپ سائن ان کر رہے ہیں اور اس بات کا نظم کرتی ہے کہ Chrome کو کیسے استعمال کیا جا سکتا ہے۔ آپ کا منتظم بعض خصوصیات سیٹ اپ کر سکتا یا ان پر پابندی عائد کر سکتا ہے۔</translation>
 <translation id="4925322001044117929">‏iPad پر بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
+<translation id="4934496192263958600">‏اپنے ڈیٹا تک رسائی حاصل کرنے کے لیے Chrome میں سائن ان کریں</translation>
+<translation id="496747131578053942">‏‫Chrome کی تجویز: آپ جو دیکھتے ہیں اسے Google لینز کے ذریعے تلاش کریں</translation>
 <translation id="498985224078955265">‏اس ٹیب کو دوسرے آلے پر بھیجنے کے لیے دونوں آلات پر Chrome میں سائن ان کریں۔</translation>
 <translation id="5030102366287574140">‏Chrome آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹوں اور مزید بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
 <translation id="5109169629909011627">‏‫Chrome بُک مارکس دیکھیں</translation>
@@ -225,16 +237,19 @@
 <translation id="6684809838922667136">‏Chrome کو بہتر بنائیں</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{‏ایسا اس وقت ہوتا ہے جب Chrome {THRESHOLD} منٹ تک استعمال نہیں ہوتا ہے۔ آپ کے سائن ہونے کے دوران صرف اس آلے پر محفوظ کردہ ڈیٹا کو حذف کر دیا جائے گا۔ اس میں سرگزشت اور پاس ورڈز شامل ہو سکتے ہیں۔}other{‏ایسا اس وقت ہوتا ہے جب Chrome {THRESHOLD} منٹوں تک استعمال نہیں ہوتا ہے۔ آپ کے سائن ہونے کے دوران صرف اس آلے پر محفوظ کردہ ڈیٹا کو حذف کر دیا جائے گا۔ اس میں سرگزشت اور پاس ورڈز شامل ہو سکتے ہیں۔}}</translation>
 <translation id="6709398533399187136">‏ڈیٹا کی خلاف ورزی میں آپ کا پاس ورڈ افشاء ہو گیا۔ Google پاس ورڈ مینیجر اسے ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="6718973358446066955">‏آپ نے Chrome کا سیٹ اپ تقریباً مکمل کر لیا ہے!</translation>
 <translation id="6820553595690137150">‏پاس فریز کی مرموز کاری میں ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔
 
 اس ترتیب کو تبدیل کرنے کے لیے، <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="6838525730752203626">‏بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
+<translation id="6864705365700484754">‏اپنے iPhone پر Chrome سے زیادہ سے زیادہ فائدہ اٹھانے کے لیے یہاں تھپتھپائیں۔</translation>
 <translation id="686691656039982452">‏آپ اس بات کا نظم کر سکتے ہیں کہ آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK" />Chrome کا کون سا ڈیٹا محفوظ کیا جائے<ph name="END_LINK" />۔
 
 آپ کے Chrome کے تجربے کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کرنے والی مزید ترتیبات کے لیے <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="6922332667202044570">‏‫Chrome میں براؤزنگ ڈیٹا کو حذف کریں۔</translation>
 <translation id="6924922227983877439">‏‫Chrome میں بطور ڈیفالٹ لنکس کھولیں</translation>
 <translation id="6975725306479268850">‏Chrome برائے آٹو فل کا انتخاب کریں</translation>
+<translation id="7001031184470316752">‏‫Chrome کو اپنے ڈاک میں منتقل کریں</translation>
 <translation id="7038674195294813388">‏‫iOS میں ڈیفالٹ ایپس کی ترتیبات کھولیں، پھر "براؤزر ایپ" پر تھپتھپائیں اور Chrome کو منتخب کریں۔</translation>
 <translation id="7056826488869329999">‏Chrome میں سیفٹی چیک کھولتا اور چلاتا ہے۔</translation>
 <translation id="7061455974939528301">‏‫Chrome آئیکن کو چھوئیں اور دبائے رکھیں اور "ہوم اسکرین میں ترمیم کریں" پر کلک کریں</translation>
@@ -305,6 +320,7 @@
 صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="8370517070665726704">‏کاپی رائٹ<ph name="YEAR" /> Google LLC۔ جملہ حقوق محفوظ ہیں۔</translation>
 <translation id="8371138994040262994">‏‫Chrome میں ترتیبات کھولتا ہے۔</translation>
+<translation id="8375378038757507658">‏جب بھی آپ پیغامات یا دیگر ایپس میں لنکس پر تھپتھپاتے ہیں تو آسانی سے Chrome استعمال کریں۔</translation>
 <translation id="8387459386171870978">‏Chrome کا استعمال جاری رکھیں</translation>
 <translation id="8392023217086447677">‏‫Chrome پوشیدگی میں کھولا گیا</translation>
 <translation id="840168496893712993">‏کچھ اضافے Chrome کو کریش کر دیتے ہیں۔ براہ کرم ان کو اَن انسٹال کرنے کی کوشش کریں۔</translation>

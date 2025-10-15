@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">Isto significa que o Chromium irá pedir sempre o site para dispositivos móveis.</translation>
 <translation id="1115463765356382667">Conclua as ações sugeridas abaixo para tirar o máximo partido do Chromium.</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
+<translation id="1211450393895337634">Abra o Chromium mais rapidamente quando estiver a postos para navegar no seu iPad.</translation>
 <translation id="1229234641991056119">Use as suas palavras-passe, histórico, marcadores e cartões de crédito do Safari no Chromium</translation>
 <translation id="1257458525759135959">Para guardar imagens, toque em Definições para permitir que o Chromium adicione as suas fotos.</translation>
 <translation id="1260702988262336471">Abra o menu do Chromium</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">Um feed personalizado criado para si. Incluindo notícias, desporto e meteorologia.</translation>
 <translation id="1561849081734670621">Para desativar o modo de bloqueio no Chromium, desative-o no seu iPhone.</translation>
 <translation id="1569258826720962327">Use as ações do Chromium no iOS</translation>
+<translation id="1573441572176948907">Mova o Chromium para a Dock</translation>
 <translation id="159029779861043703">O Chromium mantém os seus dados confidenciais seguros com o Face ID.</translation>
 <translation id="1591119736686995611">Abre a grelha de separadores do Chromium.</translation>
 <translation id="16001233025397167">A verificação de segurança protege contra violações de dados, Websites inseguros e muito mais. Receba alertas sobre quaisquer problemas de privacidade ou segurança detetados pelo Chromium.</translation>
@@ -66,6 +68,7 @@ Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sess�
 <translation id="2340423701577464731">Adicione o item da Lista de leitura ao Chromium</translation>
 <translation id="2374627437126809292">O Chromium usa o Google Maps para lhe dar direções e informações locais sobre moradas detetadas.</translation>
 <translation id="2386292341327187942">Na caixa Widgets de Pesquisa, introduza "Chromium"</translation>
+<translation id="2389827884654658221">Aceda ao Chromium mais rapidamente a partir do ecrã principal do iPad.</translation>
 <translation id="2426113998523353159">A sua organização requer que inicie sessão para utilizar o Chromium.</translation>
 <translation id="2450140762465183767">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="2459183986985456602">Abra o separador mais recente no Chromium.</translation>
@@ -74,11 +77,15 @@ Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sess�
 <translation id="2485774047568879945">Defina o Chromium como o navegador predefinido para partilhar e abrir links facilmente</translation>
 <translation id="2512597191798760956">Prima sem soltar o ícone do Chromium e clique em "Editar ecrã principal"</translation>
 <translation id="2517624234762908348">Sincronizar dados do Chromium</translation>
+<translation id="2575968074225731646">Aceda ao Chromium mais rapidamente a partir da Dock do iPhone.</translation>
 <translation id="2592940277904433508">Continuar a usar o Chromium</translation>
 <translation id="2607609479243848905">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">Dica do Chromium: pesquise o que vê com o Google Lens</translation>
 <translation id="2650312721222849884">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, ative a sincronização.</translation>
 <translation id="2684230048001240293">Defina o Chromium como a predefinição para sincronizar os separadores, as palavras-chave e as informações de pagamento em todos os seus dispositivos</translation>
+<translation id="2729836253097154631">Inicie sessão no Chromium para aceder ao seu conteúdo</translation>
 <translation id="2730884209570016437">O Chromium não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
+<translation id="2742952311155593352">A configuração do Chromium está quase concluída!</translation>
 <translation id="2798503587425057129">Abre a Lista de leitura do Chromium.</translation>
 <translation id="28276745681323897">Pode <ph name="BEGIN_LINK" />gerir que dados do Chromium são guardados<ph name="END_LINK" /> na sua Conta Google.
 
@@ -98,6 +105,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto. Estas informações podem incluir o histórico e o preenchimento automático.}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos. Estas informações podem incluir o histórico e o preenchimento automático.}}</translation>
 <translation id="3410395242749598859">Alguns dos seus dados do Chromium ainda não foram guardados na conta <ph name="EMAIL" />.
 Experimente aguardar alguns minutos antes de mudar de conta. Se mudar de conta agora, estes dados vão ser eliminados.</translation>
+<translation id="3420586870838853527">Dica do Chromium: a Navegação segura melhorada vai salvar o seu dia</translation>
 <translation id="3440830787838130530">Partilhe de forma fácil e segura uma cópia de uma palavra-passe com o seu grupo familiar no Gestor de Palavras-passe da Google</translation>
 <translation id="3472200483164753384">Opção não suportada no Chromium Canary.</translation>
 <translation id="347967311580159871">Para ver mais definições que usam dados para melhorar a sua experiência do Chromium, aceda aos <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
@@ -173,6 +181,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="5131565040785979529">A sua organização, <ph name="DOMAIN" />, gere a conta na qual tem sessão iniciada e como o Chromium é usado.</translation>
 <translation id="5134464247000681876">Abra links do Gmail, do Maps, do YouTube e de outras apps no Chromium</translation>
 <translation id="5203244847421322551">Guarde e preencha automaticamente palavras-passe no Chromium</translation>
+<translation id="5218806323985098884">Veja as novidades do Chromium</translation>
 <translation id="5224391634244552924">Não existem palavras-passe guardadas. O Chromium consegue verificar as suas palavras-passe quando as guarda.</translation>
 <translation id="5259423875997548710">Pesquise imagens no Chromium.</translation>
 <translation id="5284913972719948193">Importe os seus dados para usar as palavras-passe, o histórico, os marcadores e os cartões de crédito no Chromium</translation>
@@ -194,6 +203,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="5521125884468363740">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, inicie sessão e ative a sincronização.</translation>
 <translation id="5534584691915394889">Isto vai ser usado para criar eventos no seu Calendário Apple a partir do Chromium e Google Lens.</translation>
 <translation id="5571094606370987472">Abre os separadores recentes do Chromium.</translation>
+<translation id="5596644122344097310">Toque aqui para tirar o máximo partido do Chromium no seu iPhone.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Ative/desative o Chromium</translation>
 <translation id="5664395081284292058">Abra o separador mais recente no Chromium</translation>
@@ -235,11 +245,15 @@ Aspetos a considerar:
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="6433172051771630690">Sugestões para tirar o máximo partido do Chromium.</translation>
 <translation id="65045991564554105">Veja os marcadores do Chromium</translation>
+<translation id="6519797228806907665">Aceda ao Chromium mais rapidamente a partir do ecrã principal do iPhone.</translation>
 <translation id="6538713818758208754">Abre a página de definição dos métodos de pagamento no Chromium.</translation>
 <translation id="6540186279384079894">Abra um novo separador no Chromium</translation>
 <translation id="6563921047760808519">Saiba <ph name="BEGIN_LINK" />como o Chromium mantém os seus dados privados<ph name="END_LINK" /></translation>
+<translation id="6564769014061914792">Toque aqui para tirar o máximo partido do Chromium no seu iPad.</translation>
+<translation id="6566303693324540692">Dica do Chromium: mova o Chromium para o ecrã principal</translation>
 <translation id="6574750762636192517">Faça a gestão de palavras-passe no Chromium</translation>
 <translation id="6590232959690355435">Abre a página Histórico do Chromium.</translation>
+<translation id="6649269674808477353">Abra o Chromium mais rapidamente quando estiver a postos para navegar no seu iPhone.</translation>
 <translation id="6674470628873622334">Abre um novo separador de navegação anónima do Chromium.</translation>
 <translation id="6680609900732453726">Mantenha a sua navegação privada com a autenticação do dispositivo quando fechar o Chromium</translation>
 <translation id="6752854822223394465">A sua entidade está a configurar o Chromium…</translation>
@@ -289,6 +303,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7934404985878918282">Veja a Lista de leitura do Chromium</translation>
 <translation id="7935734571048689933">O Chromium é gerido</translation>
 <translation id="7951793218148208717">Abre um novo separador no Chromium.</translation>
+<translation id="7957726318578167662">Use facilmente o Chromium sempre que tocar em links em mensagens ou noutras apps.</translation>
 <translation id="7980860476903281594">O Chromium partilha a sua localização com os sites que permite.</translation>
 <translation id="7994322153108931467">Para receber sugestões úteis do Chromium, ative as notificações nas definições do iOS.</translation>
 <translation id="7997159823054171568">Defina o Chromium como o navegador predefinido</translation>
@@ -324,6 +339,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="8860548555286245440">Abrir URLs no Chromium na Navegação anónima</translation>
 <translation id="8880024619507699923">A sua organização requer que inicie sessão para usar o Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Tenha a segurança mais avançada do Chromium</translation>
+<translation id="8908791447256515663">Aceda ao Chromium mais rapidamente a partir da Dock do iPad.</translation>
 <translation id="8925569192291721236">Mantenha-se a par das atualizações de acompanhamento de preço e das dicas do Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos}}</translation>
 <translation id="8963279154877372067">Permita que as notificações do Chromium recebam alertas de descida do preço</translation>

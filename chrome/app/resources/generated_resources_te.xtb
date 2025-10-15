@@ -432,7 +432,6 @@
 <translation id="1277020343994096713">మీ ప్రస్తుత PINకు భిన్నంగా ఉన్న ఒక కొత్త PINను క్రియేట్ చేయండి</translation>
 <translation id="1277597051786235230">కొత్త ట్యాబ్‌కు వెళ్లి <ph name="SEARCH_ENGINE" />‌లో “<ph name="SEARCH_TERMS" />” అని సెర్చ్ చేయండి</translation>
 <translation id="127849925363482083">పిన్ చేసిన ట్యాబ్‌ను మూసివేయడానికి <ph name="SHORTCUT_TEXT" />‌ను మళ్లీ నొక్కండి</translation>
-<translation id="1278542245784398460">ఈ ట్యాబ్‌పై రైట్-క్లిక్ చేసి, “కొత్త విభజన వీక్షణకు ట్యాబ్‌ను జోడించండి”ని ఎంచుకోండి</translation>
 <translation id="1278859221870828664">Google Play యాప్‌లు, సర్వీస్‌లను రివ్యూ చేయండి</translation>
 <translation id="1279024913354609713">అనుమతించవద్దు</translation>
 <translation id="127946606521051357">సమీపంలోని పరికరం షేర్ చేస్తోంది</translation>
@@ -2427,6 +2426,7 @@
 <translation id="2636266464805306348">విండో టైటిల్స్</translation>
 <translation id="2637313651144986786">ట్యాబ్‌లలో సెర్చ్ చేయండి...</translation>
 <translation id="2637400434494156704">పిన్ తప్పు. మీకు 1 ప్రయత్నం మిగిలి ఉంది.</translation>
+<translation id="263796568413910992"><ph name="SEARCH_ENGINE_NAME" />‌ను అడగండి లేదా URLను టైప్ చేయండి</translation>
 <translation id="2638662041295312666">సైన్ ఇన్ ఇమేజ్</translation>
 <translation id="2640299212685523844">GTKని ఉపయోగించండి</translation>
 <translation id="264083724974021997">మీ ఫోన్‌కు కనెక్ట్ చేయండి - డైలాగ్</translation>
@@ -8753,6 +8753,7 @@
 <translation id="7055451306017383754">ఒక యాప్ ఈ ఫోల్డర్‌ను ఉపయోగిస్తుంది కాబట్టి షేరింగ్‌ను తీసివేయడం సాధ్యపడలేదు. Parallels Desktop మళ్లీ షట్ డౌన్ అయినప్పుడు ఫోల్డర్ షేరింగ్ తీసివేయబడుతుంది.</translation>
 <translation id="7056418393177503237">{0,plural, =1{అజ్ఞాతం}other{# తెరిచి ఉన్న అజ్ఞాత విండోలు}}</translation>
 <translation id="7056526158851679338">&amp;పరికరాలను పర్యవేక్షించు</translation>
+<translation id="7057567173736333354">మీ ఇమేజ్ గురించి వివరించండి</translation>
 <translation id="70577934383983846">మీ అన్ని పరికరాలలో ఈ పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
 <translation id="7058024590501568315">దాచబడిన నెట్‌వర్క్</translation>
 <translation id="7059858479264779982">స్వీయ-ప్రారంభానికి సెట్ చేయి</translation>
@@ -9958,6 +9959,7 @@
 <translation id="7899720074434636454"><ph name="EXTENSION_NAME" />‌కు సంబంధించిన విస్మరింపు రిక్వెస్ట్</translation>
 <translation id="7900950034255258543">ఈ పరికరాన్ని సురక్షితంగా వినియోగించవచ్చని నిర్ధారించుకోవడానికి, దాని ఆపరేటింగ్ సిస్టమ్, బ్రౌజర్ అలాగే సెట్టింగ్‌ల గురించిన సమాచారాన్ని, పరికరంలో ఏ సాఫ్ట్‌వేర్ ఇన్‌స్టాల్ చేసి ఉంది అనే వాటిని మీ సంస్థ చూడగలదు</translation>
 <translation id="7901405293566323524">ఫోన్ హబ్</translation>
+<translation id="7901728443188947649">ఇమేజ్‌లను క్రియేట్ చేయండి</translation>
 <translation id="7903429136755645827">మీ గేమ్ కంట్రోల్స్‌ను అనుకూలంగా మార్చడానికి క్లిక్ చేయండి</translation>
 <translation id="7903481341948453971">పాస్‌వర్డ్‌లను పూరించేటప్పుడు మీ స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
 <translation id="7903925330883316394">యుటిలిటీ: <ph name="UTILITY_TYPE" /></translation>
@@ -10582,6 +10584,7 @@
 <translation id="8310409247509201074"><ph name="NUM" /> ట్యాబ్‌లు</translation>
 <translation id="831207808878314375">నిర్వచనం</translation>
 <translation id="8312841338723044391">లైవ్‌లో అందుబాటులో ఉంది</translation>
+<translation id="8313308349366087671">అప్లికేషన్ ఆప్షన్‌లు</translation>
 <translation id="8314089908545021657">కొత్త ఫోన్‌కు పెయిర్ చేయండి</translation>
 <translation id="8314381333424235892">ఎక్స్‌టెన్షన్‌ను అందించలేదు లేదా అన్ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="831440797644402910">ఈ ఫోల్డర్‌ను తెరవడం సాధ్యం కాదు</translation>
@@ -10733,6 +10736,7 @@
 <translation id="8413795581997394485">ప్రమాదకరమని తెలిసిన సైట్‌లు, డౌన్‌లోడ్‌లు, అలాగే ఎక్స్‌టెన్షన్‌ల నుండి రక్షిస్తుంది. మీరు ఒక సైట్‌కు వెళ్లినప్పుడు, Chrome మీ IP అడ్రస్‌ ను దాచిపెట్టే గోప్యతా సర్వర్ ద్వారా URLకు సంబంధించిన గందరగోళానికి గురి చేసే భాగాన్ని Googleకి పంపుతుంది. ఏదైనా సైట్ అనుమానాస్పదంగా ఉంటే, పూర్తి URLలు, పేజీ కంటెంట్‌కు సంబంధించిన బిట్‌లు కూడా పంపబడతాయి.</translation>
 <translation id="8413956290606243087">ChromeOSకు బిల్ట్-ఇన్ స్క్రీన్ రీడర్ అయిన ChromeVoxను మీరు యాక్టివేట్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> లో <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> తో సైన్ ఇన్ చేయండి</translation>
+<translation id="8415120635186642416">దేన్నైనా రీసెర్చ్ చేయండి</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (కేస్)</translation>
 <translation id="8417065541337558100">మీ కెమెరా ప్రివ్యూ</translation>
 <translation id="8417548266957501132">తల్లి/తండ్రి పాస్‌వర్డ్‌</translation>

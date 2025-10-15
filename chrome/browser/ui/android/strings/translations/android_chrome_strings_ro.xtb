@@ -270,6 +270,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2249635629516220541">Personalizează informațiile folosite de site-uri pentru a-ți afișa anunțuri</translation>
 <translation id="2251809247798634662">Fereastră incognito nouă</translation>
 <translation id="2253927598983295051">Alege la ce informații are acces <ph name="APP_NAME" /></translation>
+<translation id="2261570557291037252">Mai multe informații despre aplicație</translation>
 <translation id="2276696007612801991">Conectează-te la contul Google pentru a verifica parolele</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, filă incognito selectată</translation>
 <translation id="2286841657746966508">Adresa de facturare</translation>
@@ -1299,6 +1300,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6865313869410766144">Datele de completare automată a formularelor</translation>
 <translation id="6867400383614725881">Filă incognito nouă</translation>
 <translation id="686899695320434745">Adresele nu sunt criptate cu expresia de acces. Astfel, le poți folosi în alte servicii Google.</translation>
+<translation id="6870625088374152862">Te-ai conectat ca <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="687838958001010630">Oricine are linkul poate să editeze toate filele</translation>
 <translation id="6880903702195291049">Permisiunile par în regulă</translation>
 <translation id="6883204995689174413">Trimite</translation>

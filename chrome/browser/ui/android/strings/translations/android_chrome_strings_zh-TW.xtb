@@ -270,6 +270,7 @@
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資訊</translation>
 <translation id="2251809247798634662">新增無痕視窗</translation>
 <translation id="2253927598983295051">選擇要與「<ph name="APP_NAME" />」分享的內容</translation>
+<translation id="2261570557291037252">更多應用程式資訊</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查你的密碼</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />，選取的無痕分頁</translation>
 <translation id="2286841657746966508">帳單地址</translation>
@@ -1299,6 +1300,7 @@
 <translation id="6865313869410766144">自動填入表單資料</translation>
 <translation id="6867400383614725881">新無痕分頁</translation>
 <translation id="686899695320434745">系統不會透過通關密語將地址加密，這是為了方便你在其他 Google 服務中使用地址。</translation>
+<translation id="6870625088374152862">目前登入的帳戶：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="687838958001010630">知道連結的使用者都可以編輯所有分頁</translation>
 <translation id="6880903702195291049">權限沒有問題</translation>
 <translation id="6883204995689174413">分享</translation>

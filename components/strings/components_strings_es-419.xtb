@@ -983,6 +983,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2596415276201385844">Para establecer una conexión segura, el reloj debe estar configurado correctamente. Esto se debe a que los certificados que usan los sitios web para su identificación solo son válidos por períodos de tiempo específicos. Debido a que la configuración del reloj del dispositivo es incorrecta, Chrome no puede verificar estos certificados.</translation>
 <translation id="2597378329261239068">Este documento está protegido por contraseña. Ingresa una contraseña.</translation>
 <translation id="2600083925285092409">Autocompleta esta tarjeta para las compras realizadas en Chromium cuando se guarde para usarla con Google Pay</translation>
+<translation id="2602283642570832995">Es posible que esta acción incumpla las políticas de <ph name="DOMAIN" /></translation>
 <translation id="2605979593348332811">Nombre fonético</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2608019759319359258">Si se bloquea un tema, no se utilizará para personalizar los anuncios</translation>
@@ -2022,6 +2023,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4281998142035485137">{0,plural, =1{¿Quieres abrir un archivo confidencial?}other{¿Quieres abrir archivos confidenciales?}}</translation>
 <translation id="4282280603030594840">Compra de vehículos</translation>
 <translation id="4282346679996504092">Se desactivaron las alertas para este producto y se quitó el favorito</translation>
+<translation id="4284885181066817063">Bloqueada por <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Dejar de fijar</translation>
 <translation id="4287495839370498922">Privacidad mejorada en los anuncios en Chrome</translation>
 <translation id="4288101205645068104">Borrar vehículo</translation>
@@ -2919,7 +2921,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5813119285467412249">&amp;Rehacer Agregar</translation>
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
-<translation id="5820625124144807242">Después de revisar tu pedido, debes acceder a tu cuenta o crear una con <ph name="BNPL_ISSUER_NAME" />. Esta cuenta se vinculará automáticamente a Google Pay.</translation>
 <translation id="5826507051599432481">Nombre común (CN)</translation>
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -3662,6 +3663,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7020464868401003526">La URL del acceso directo supera la longitud máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="702275896380648118">Este sitio determina lo que te gusta y, luego, sugiere anuncios a otros sitios. Este sitio también obtiene tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="7023162328967545559">Advertencia del administrador</translation>
+<translation id="7023765275461720661">¿Quieres vincular la cuenta y pagar con <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030164307377592766">modificar los parámetros de configuración para completar formas de pago</translation>
 <translation id="7031110846419387930">Información sobre tu navegador, SO, dispositivo, software instalado, archivos y direcciones IP</translation>
@@ -3946,7 +3948,6 @@ Detalles adicionales:
 <translation id="7485085230273446323">Industrias y empresas</translation>
 <translation id="7485870689360869515">No se encontró ningún dato.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
-<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> verificará si cumples con los requisitos (esto no afectará tu calificación crediticia). Si se aprueba, <ph name="BNPL_ISSUER_NAME" /> te proporcionará opciones de planes de pagos para que completes tu compra.</translation>
 <translation id="7489392576326061356">Champús y acondicionadores</translation>
 <translation id="7489919936111034362">Tu almacenamiento en Google Drive está lleno</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Comunícate con el propietario del sitio para solucionar el problema.</translation>

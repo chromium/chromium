@@ -270,6 +270,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2249635629516220541">Customise the info used by sites to show you ads</translation>
 <translation id="2251809247798634662">New Incognito window</translation>
 <translation id="2253927598983295051">Choose what to share with <ph name="APP_NAME" /></translation>
+<translation id="2261570557291037252">More app info</translation>
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, selected Incognito tab</translation>
 <translation id="2286841657746966508">Billing address</translation>
@@ -1299,6 +1300,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6865313869410766144">Autofill form data</translation>
 <translation id="6867400383614725881">New Incognito tab</translation>
 <translation id="686899695320434745">Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.</translation>
+<translation id="6870625088374152862">Signed in as <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="687838958001010630">Anyone with the link can edit all tabs</translation>
 <translation id="6880903702195291049">Permissions look good</translation>
 <translation id="6883204995689174413">Share</translation>

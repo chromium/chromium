@@ -434,7 +434,6 @@
 <translation id="1277020343994096713">Направите нови PIN који се разликује од актуелног PIN-а</translation>
 <translation id="1277597051786235230">&amp;Претражи термине „<ph name="SEARCH_TERMS" />“ у претраживачу <ph name="SEARCH_ENGINE" /> на новој картици</translation>
 <translation id="127849925363482083">Поново притисните <ph name="SHORTCUT_TEXT" /> да бисте затворили закачену картицу</translation>
-<translation id="1278542245784398460">Кликните десним тастером на ову картицу и изаберите Додај картицу у нови подељени приказ</translation>
 <translation id="1278859221870828664">Прегледајте Google Play апликације и услуге</translation>
 <translation id="1279024913354609713">Не дозволи</translation>
 <translation id="127946606521051357">Уређај у близини дели садржај</translation>
@@ -2414,6 +2413,7 @@
 <translation id="2636266464805306348">Наслови прозора</translation>
 <translation id="2637313651144986786">Претражите картице…</translation>
 <translation id="2637400434494156704">Нетачан PIN. Имате још један покушај.</translation>
+<translation id="263796568413910992">Питајте <ph name="SEARCH_ENGINE_NAME" /> или унесите URL</translation>
 <translation id="2638662041295312666">Слика за пријављивање</translation>
 <translation id="2640299212685523844">Користи GTK</translation>
 <translation id="264083724974021997">Повежите са телефоном – дијалог</translation>
@@ -10576,6 +10576,7 @@
 <translation id="8310409247509201074">Картица: <ph name="NUM" /></translation>
 <translation id="831207808878314375">Дефиниција</translation>
 <translation id="8312841338723044391">УЖИВО</translation>
+<translation id="8313308349366087671">Опције апликације</translation>
 <translation id="8314089908545021657">Упари са новим телефоном</translation>
 <translation id="8314381333424235892">Додатак недостаје или је деинсталиран</translation>
 <translation id="831440797644402910">Отварање овог директоријума није успело</translation>

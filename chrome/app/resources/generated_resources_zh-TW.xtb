@@ -432,7 +432,6 @@
 <translation id="1277020343994096713">新設定的 PIN 碼不能與目前的 PIN 碼相同</translation>
 <translation id="1277597051786235230">開啟新分頁並使用「<ph name="SEARCH_ENGINE" />」搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
 <translation id="127849925363482083">再次按下 <ph name="SHORTCUT_TEXT" /> 即可關閉固定分頁</translation>
-<translation id="1278542245784398460">在這個分頁標籤上按一下滑鼠右鍵，選取「將分頁加入新的分割檢視畫面」</translation>
 <translation id="1278859221870828664">檢查 Google Play 應用程式和服務</translation>
 <translation id="1279024913354609713">不允許</translation>
 <translation id="127946606521051357">附近的裝置正在分享資料</translation>
@@ -5761,7 +5760,7 @@
 <translation id="4956593309300508411">要停止共用嗎？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要儲存到這部裝置的資料夾嗎？</translation>
-<translation id="4958916254663453555">開啟 Gemini 版 Chrome 時，都會自動分享目前的分頁。系統會將目前分頁的完整內容和網址傳送給 Google。</translation>
+<translation id="4958916254663453555">開啟 Chrome 內建 Gemini 時，都會自動分享目前的分頁。系統會將目前分頁的完整內容和網址傳送給 Google。</translation>
 <translation id="4959262764292427323">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼</translation>
 <translation id="4960020053211143927">部分應用程式不支援這項功能</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -6564,7 +6563,7 @@
 <translation id="5527463195266282916">試圖降級外掛程式。</translation>
 <translation id="5527474464531963247">你也可以選取其他網路。</translation>
 <translation id="5527597176701279474">正在安裝「<ph name="APP_NAME" />」</translation>
-<translation id="5527822190489075064">最佳化充電效能</translation>
+<translation id="5527822190489075064">最佳化充電</translation>
 <translation id="5528295196101251711">VM 名稱</translation>
 <translation id="5529554942700688235">記憶體用量節省摘要，已釋出 <ph name="MEMORY_VALUE" /></translation>
 <translation id="5530977410273748884">如要將密碼儲存到 Google 密碼管理工具，請按一下這個按鍵</translation>

@@ -270,6 +270,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2249635629516220541">Personalize as informações usadas pelos sites para mostrar anúncios</translation>
 <translation id="2251809247798634662">Nova janela anônima</translation>
 <translation id="2253927598983295051">Escolha o que compartilhar com <ph name="APP_NAME" /></translation>
+<translation id="2261570557291037252">Mais informações sobre o app</translation>
 <translation id="2276696007612801991">Acesse sua Conta do Google para verificar as senhas</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" /> (guia anônima selecionada)</translation>
 <translation id="2286841657746966508">Endereço de faturamento</translation>
@@ -1300,6 +1301,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6865313869410766144">Preenchimento automático de dados de formulário</translation>
 <translation id="6867400383614725881">Nova guia anônima</translation>
 <translation id="686899695320434745">Endereços não são criptografados com sua senha longa. Isso permite que você os use em outros serviços do Google.</translation>
+<translation id="6870625088374152862">Conta conectada: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="687838958001010630">Qualquer pessoa com o link pode editar todas as guias</translation>
 <translation id="6880903702195291049">Tudo certo com as permissões</translation>
 <translation id="6883204995689174413">Compartilhar</translation>

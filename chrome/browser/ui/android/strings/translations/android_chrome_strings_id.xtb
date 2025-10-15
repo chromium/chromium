@@ -270,6 +270,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2249635629516220541">Sesuaikan info yang digunakan situs untuk menampilkan iklan</translation>
 <translation id="2251809247798634662">Jendela Samaran baru</translation>
 <translation id="2253927598983295051">Pilih informasi yang akan dibagikan ke <ph name="APP_NAME" /></translation>
+<translation id="2261570557291037252">Info aplikasi lainnya</translation>
 <translation id="2276696007612801991">Login ke Akun Google Anda untuk memeriksa sandi</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, Tab Samaran yang Dipilih</translation>
 <translation id="2286841657746966508">Alamat penagihan</translation>
@@ -1299,6 +1300,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6865313869410766144">Data formulir isi otomatis</translation>
 <translation id="6867400383614725881">Tab Samaran baru</translation>
 <translation id="686899695320434745">Alamat tidak dienkripsi dengan frasa sandi. Dengan begitu, Anda dapat menggunakannya di layanan Google lainnya.</translation>
+<translation id="6870625088374152862">Login sebagai <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="687838958001010630">Siapa saja yang memiliki link ini dapat mengedit semua tab</translation>
 <translation id="6880903702195291049">Izin aman</translation>
 <translation id="6883204995689174413">Bagikan</translation>

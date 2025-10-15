@@ -270,6 +270,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2249635629516220541">Přizpůsobení informací, které weby používají k zobrazování reklam</translation>
 <translation id="2251809247798634662">Nové anonymní okno</translation>
 <translation id="2253927598983295051">Vyberte, co chcete sdílet s aplikací <ph name="APP_NAME" /></translation>
+<translation id="2261570557291037252">Další informace o aplikaci</translation>
 <translation id="2276696007612801991">Pokud chcete zkontrolovat hesla, přihlaste se k účtu Google</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, vybraná anonymní karta</translation>
 <translation id="2286841657746966508">Fakturační adresa</translation>
@@ -1299,6 +1300,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6865313869410766144">Automatické vyplňování formulářů</translation>
 <translation id="6867400383614725881">Nová anonymní karta</translation>
 <translation id="686899695320434745">Adresy se nešifrují pomocí vaší heslové fráze. Můžete je tak používat v jiných službách Google.</translation>
+<translation id="6870625088374152862">Jste přihlášeni jako <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="687838958001010630">Kdokoli s odkazem může upravovat všechny karty</translation>
 <translation id="6880903702195291049">Oprávnění vypadají v pořádku</translation>
 <translation id="6883204995689174413">Sdílení</translation>
