@@ -29,6 +29,10 @@ namespace content {
 // The AgentClusterKey is computed upon navigation, or when launching a worker.
 // It is then passed to RenderFrameHostManager to determine which SiteInstance
 // is appropriate to host the execution context.
+// TODO(crbug.com/342365078): Currently, AgentClusterKey is only computed when a
+// document has a Document-Isolation-Policy. Compute it on all navigations. Once
+// this is properly done, use the AgentClusterKey to replace the site URL in
+// SiteInfo, as it will only duplicate the information in AgentClusterKey.
 class CONTENT_EXPORT AgentClusterKey {
  public:
   // Cross-origin isolated agent clusters have an additional isolation key.
@@ -57,7 +61,7 @@ class CONTENT_EXPORT AgentClusterKey {
 
   // Tracks the state of an Origin-Agent-Cluster request for a document.
   // The Origin-Agent-Cluster header can be used to request either an
-  // origin-keyed agent cluster (?1) or a site-keyed one (?0). In the absence of
+  // origin-keyed agent cluster (1?) or a site-keyed one (0?). In the absence of
   // an OAC header, agent clusters will be either site-keyed or origin-keyed by
   // default, depending on whether features::kOriginKeyedProcessesByDefault is
   // enabled.
@@ -117,14 +121,7 @@ class CONTENT_EXPORT AgentClusterKey {
   AgentClusterKey(const AgentClusterKey& other);
   ~AgentClusterKey();
 
-  // Whether the Agent Cluster is keyed using Site URL or Origin. Since the
-  // AgentClusterKey is stored in SiteInfo and used to make process allocation
-  // decisions, this impacts whether the SiteInfo is using site-keyed processes
-  // or origin-keyed processes.
-  // TODO(crbug.com/449923301): Use SiteInstanceGroup so that AgentClusterKeys
-  // are always properly assigned according to spec and the decision to allocate
-  // site-keyed or origin-keyed processes is decoupled from the decision to have
-  // an origin-keyed or a site-keyed AgentClusterKey.
+  // Whether the Agent Cluster is keyed using Site URL or Origin.
   bool IsSiteKeyed() const;
   bool IsOriginKeyed() const;
 
@@ -145,17 +142,6 @@ class CONTENT_EXPORT AgentClusterKey {
   // origin-keyed and |oac_status_| to be kSiteKeyedByDefault, for example in
   // the case of a cross-origin isolated document with DocumentIsolationPolicy.
   const OACStatus& oac_status() const { return oac_status_; }
-
-  // This returns true if the AgentClusterKey was made origin-keyed because of
-  // the Origin-Agent-Cluster mechanism (whether through the use of the OAC
-  // header or because of default origin isolation). Note that this will return
-  // false if the origin-keying request cannot be honored, e.g. a document sent
-  // an OAC ?1 header while there already was a same-origin document in the
-  // browsing instance using site-keyed agent clusters.
-  // This may also return false even if IsOriginKeyed returns true, when the
-  // AgentClusterKey is made origin-keyed due to non-OAC reasons like
-  // cross-origin isolation.
-  bool IsOriginKeyedDueToOAC() const;
 
   // The site URL or the origin of the AgentClusterKey. Each function should
   // only be called when the Agent Cluster is site-keyed or origin-keyed

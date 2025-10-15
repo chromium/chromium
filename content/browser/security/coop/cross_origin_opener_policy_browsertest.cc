@@ -3140,7 +3140,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_EQ(iframe_si, main_si);
   }
 
-  // Same site but cross origin iframe.
+  // Cross origin iframe.
   {
     TestNavigationManager cross_origin_iframe_navigation(web_contents(),
                                                          isolated_page_b);
@@ -3159,10 +3159,14 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
     EXPECT_TRUE(iframe_si->IsCrossOriginIsolated());
     EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
-    // In this case, the main frame and the child frame have different origins,
-    // so they will be placed into different processes because
-    // CrossOriginIsolated pages use origin keyed processes.
-    EXPECT_NE(iframe_si->GetProcess(), main_si->GetProcess());
+    if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+      // In this case, the main frame and the child frame have different
+      // origins, so when OriginKeyedProcessesByDefault is enabled they will
+      // be placed into different processes.
+      EXPECT_NE(iframe_si->GetProcess(), main_si->GetProcess());
+    } else {
+      EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
+    }
   }
 }
 
@@ -3607,10 +3611,14 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
   EXPECT_TRUE(iframe_si->IsCrossOriginIsolated());
   EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
-  // In this case, the main frame and the child frame have different origins,
-  // so they will be placed into different processes because
-  // CrossOriginIsolated pages use origin keyed processes.
-  EXPECT_NE(iframe_si->GetProcess(), main_si->GetProcess());
+  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+    // The main frame and the child frame have different origins, so when
+    // OriginKeyedProcessesByDefault is enabled they will be placed in different
+    // processes.
+    EXPECT_NE(iframe_si->GetProcess(), main_si->GetProcess());
+  } else {
+    EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
+  }
 
   // Open an isolated popup, but cross-origin.
   {

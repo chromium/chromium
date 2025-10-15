@@ -160,13 +160,6 @@ SiteInfo SiteInfo::CreateForErrorPage(
         url::Origin::Create(GetErrorPageSiteAndLockURL()),
         cross_origin_isolation_key.value(),
         AgentClusterKey::OACStatus::kSiteKeyedByDefault);
-  } else if (web_exposed_isolation_info.is_isolated()) {
-    // TODO(crbug.com/342365083): AgentClusterKeys for pages with COOP and COEP
-    // should use an appropriate CrossOriginIsolationKey instead of being
-    // created as just origin-keyed here.
-    agent_cluster_key = AgentClusterKey::CreateOriginKeyed(
-        url::Origin::Create(GetErrorPageSiteAndLockURL()),
-        AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   } else {
     agent_cluster_key = AgentClusterKey::CreateSiteKeyed(
         GetErrorPageSiteAndLockURL(),
@@ -207,13 +200,6 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
     agent_cluster_key = AgentClusterKey::CreateWithCrossOriginIsolationKey(
         url::Origin::Create(SiteInstanceImpl::GetDefaultSiteURL()),
         cross_origin_isolation_key.value(),
-        AgentClusterKey::OACStatus::kSiteKeyedByDefault);
-  } else if (web_exposed_isolation_info.is_isolated()) {
-    // TODO(crbug.com/342365083): AgentClusterKeys for pages with COOP and COEP
-    // should use an appropriate CrossOriginIsolationKey instead of being
-    // created as just origin-keyed here.
-    agent_cluster_key = AgentClusterKey::CreateOriginKeyed(
-        url::Origin::Create(SiteInstanceImpl::GetDefaultSiteURL()),
         AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   } else {
     agent_cluster_key = AgentClusterKey::CreateSiteKeyed(
@@ -454,8 +440,7 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
   // origin-keyed, regardless of the Origin-Agent-Cluster header.
   if ((oac_status() == AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
        oac_status() == AgentClusterKey::OACStatus::kOriginKeyedByDefault) &&
-      !agent_cluster_key_.GetCrossOriginIsolationKey().has_value() &&
-      !web_exposed_isolation_info_.is_isolated()) {
+      !agent_cluster_key_.GetCrossOriginIsolationKey().has_value()) {
     CHECK(agent_cluster_key_.IsOriginKeyed());
     DCHECK(agent_cluster_key_.GetOrigin().scheme() == url::kHttpsScheme);
 
@@ -682,16 +667,10 @@ bool SiteInfo::RequiresDedicatedProcess(
 
   BrowserContext* browser_context =
       isolation_context.browser_or_resource_context().ToBrowserContext();
-  // Note: it is important to pass |AgentClusterKey::IsOriginKeyedDueToOAC|
-  // here and not |AgentClusterKey::IsOriginKeyed| below, because
-  // RequiresDedicatedProcessInternal wants to know about OAC requests
-  // exclusively. It is possible for the AgentClusterKey to be origin-keyed even
-  // if there is no OAC request for that, for example for cross-origin isolated
-  // contexts.
   return RequiresDedicatedProcessInternal(
       site_url_, isolation_context, browser_context, is_error_page(),
       does_site_request_dedicated_process_for_coop_,
-      agent_cluster_key().IsOriginKeyedDueToOAC(), is_sandboxed_, is_pdf_);
+      agent_cluster_key_.IsOriginKeyed(), is_sandboxed_, is_pdf_);
 }
 
 bool SiteInfo::ShouldLockProcessToSite(
@@ -904,15 +883,6 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
         origin, url_info.cross_origin_isolation_key.value(), oac_status);
   }
 
-  // Cross-origin isolated contexts with COOP and COEP should be origin-keyed.
-  // TODO(crbug.com/342365083): In addition to being origin-keyed,
-  // AgentClusterKeys for pages with COOP and COEP should use an appropriate
-  // CrossOriginIsolationKey.
-  if (url_info.web_exposed_isolation_info &&
-      url_info.web_exposed_isolation_info->is_isolated()) {
-    return AgentClusterKey::CreateOriginKeyed(origin, oac_status);
-  }
-
   bool requires_origin_keyed_process =
       oac_status == AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
       oac_status == AgentClusterKey::OACStatus::kOriginKeyedByDefault;
@@ -1111,7 +1081,7 @@ bool SiteInfo::RequiresDedicatedProcessInternal(
     const IsolationContext& isolation_context,
     BrowserContext* browser_context,
     bool does_site_request_dedicated_process_for_coop,
-    bool requires_origin_keyed_process_for_oac,
+    bool requires_origin_keyed_process,
     bool is_error_page,
     bool is_sandboxed,
     bool is_pdf) {
@@ -1130,24 +1100,7 @@ bool SiteInfo::RequiresDedicatedProcessInternal(
   // Always require a dedicated process for isolated origins.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (policy->IsIsolatedOrigin(isolation_context, url::Origin::Create(site_url),
-                               requires_origin_keyed_process_for_oac)) {
-    return true;
-  }
-
-  // Subtle corner case: some IsolatedOriginEntries are created without port
-  // number. This cause the check above to fail when called with the site URL of
-  // an origin-keyed SiteInfo whose origin has a port number, even though we
-  // want those checks to match in partial Site Isolation mode. Also check if
-  // there is a matching IsolatedOriginEntry for the origin without port number.
-  // Note that this corner case only applies to the legacy isolated origins and
-  // not OAC isolated origins, so we pass false to requires_origin_keyed_process
-  // in the call below.
-  GURL::Replacements replacements;
-  replacements.ClearPort();
-  GURL site_url_without_port = site_url.ReplaceComponents(replacements);
-  if (policy->IsIsolatedOrigin(isolation_context,
-                               url::Origin::Create(site_url_without_port),
-                               /*origin_requests_isolation=*/false)) {
+                               requires_origin_keyed_process)) {
     return true;
   }
 
