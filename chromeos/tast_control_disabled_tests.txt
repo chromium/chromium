@@ -99,4 +99,7 @@ tast.bruschetta.CopyFilesToGuest@betty
 # https://crbug.com/432304431
 tast.featured.FieldTrialEarlyBoot.active_trial
 
+# b/452385105
+tast.crostini.AudioBasic.baguette_lowperf@jacuzzi
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
