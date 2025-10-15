@@ -3,3 +3,6 @@ brunobraga@google.com
 jkeitel@google.com
 mamir@chromium.org
 schwering@google.com
+
+per-file chrome_autofill_client*=file://components/autofill/OWNERS
+per-file autofill_client*=file://components/autofill/OWNERS
