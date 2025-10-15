@@ -406,6 +406,10 @@ BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
 // Feature flag the "Hide Toolbar" button in the overflow menu.
 BASE_DECLARE_FEATURE(kHideToolbarsInOverflowMenu);
 
+extern const char kBottomOmniboxEvolutionParam[];
+extern const char kBottomOmniboxEvolutionParamEditStateFollowSteadyState[];
+extern const char kBottomOmniboxEvolutionParamForceBottomOmniboxEditState[];
+
 // Feature flag to enable improvdements in the bottom omnibox.
 BASE_DECLARE_FEATURE(kBottomOmniboxEvolution);
 

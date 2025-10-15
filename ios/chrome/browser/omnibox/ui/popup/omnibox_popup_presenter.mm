@@ -46,6 +46,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 /// Top constraint between the popup and it's container. This is used to animate
 /// suggestions when focusing the omnibox.
 @property(nonatomic, strong) NSLayoutConstraint* popupTopConstraint;
+/// Top constraint between the popup container and the view containing it.
+@property(nonatomic, strong) NSLayoutConstraint* popupContainerTopConstraint;
 
 // The layout guide center to use to refer to the omnibox.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
@@ -305,18 +307,24 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   // Top constraints.
   BOOL constraintTopToOmnibox =
       self.topOmniboxGuide && !self.useBottomOmniboxInPopup;
-  NSLayoutConstraint* topConstraint =
-      constraintTopToOmnibox
-          ? [popup.topAnchor
-                constraintEqualToAnchor:self.topOmniboxGuide.bottomAnchor
-                               constant:kVerticalOffset]
-          : [popup.topAnchor
-                constraintEqualToAnchor:[self.delegate
-                                            popupParentViewForPresenter:self]
-                                            .safeAreaLayoutGuide.topAnchor];
+
+  _popupContainerTopConstraint.active = NO;
+  if (constraintTopToOmnibox) {
+    _popupContainerTopConstraint = [popup.topAnchor
+        constraintEqualToAnchor:self.topOmniboxGuide.bottomAnchor
+                       constant:kVerticalOffset];
+  } else if (IsLandscape(popup.window)) {
+    _popupContainerTopConstraint = [popup.topAnchor
+        constraintEqualToAnchor:[self.delegate popupParentViewForPresenter:self]
+                                    .topAnchor];
+  } else {
+    _popupContainerTopConstraint = [popup.topAnchor
+        constraintEqualToAnchor:[self.delegate popupParentViewForPresenter:self]
+                                    .safeAreaLayoutGuide.topAnchor];
+  }
 
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
-      [NSMutableArray arrayWithObject:topConstraint];
+      [NSMutableArray arrayWithObject:_popupContainerTopConstraint];
 
   BOOL regularXRegularSizeClass =
       tabletFormFactor &&
@@ -371,6 +379,10 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 }
 
 - (BOOL)useBottomOmniboxInPopup {
+  if (omnibox::ForceBottomOmniboxInEditState()) {
+    return YES;
+  }
+
   return omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() &&
          _unfocusedOmniboxToolbarType == ToolbarType::kSecondary;
 }

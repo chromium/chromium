@@ -1201,9 +1201,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
 // UITrait has been changed.
 - (void)updateUIOnTraitChange {
   [self updateBackgroundColor];
-  BOOL followSteadyState =
-      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
-  if (followSteadyState ||
+
+  if (omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() ||
+      omnibox::ForceBottomOmniboxInEditState() ||
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [self.mutator onTraitCollectionChange];
   }

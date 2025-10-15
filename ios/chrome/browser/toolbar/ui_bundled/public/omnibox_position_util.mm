@@ -55,7 +55,17 @@ bool IsSafariSwitcher(
 }
 
 bool ShouldFocusedOmniboxFollowSteadyStatePosition() {
-  return base::FeatureList::IsEnabled(kBottomOmniboxEvolution);
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kBottomOmniboxEvolution, kBottomOmniboxEvolutionParam);
+  return feature_param ==
+         kBottomOmniboxEvolutionParamEditStateFollowSteadyState;
+}
+
+bool ForceBottomOmniboxInEditState() {
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kBottomOmniboxEvolution, kBottomOmniboxEvolutionParam);
+  return feature_param ==
+         kBottomOmniboxEvolutionParamForceBottomOmniboxEditState;
 }
 
 }  // namespace omnibox

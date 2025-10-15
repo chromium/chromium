@@ -21,6 +21,10 @@ bool IsSafariSwitcher(
 /// as the one in steady state.
 bool ShouldFocusedOmniboxFollowSteadyStatePosition();
 
+/// Whether the focused omnibox should always stay in the bottom regardless of
+/// the steady state position.
+bool ForceBottomOmniboxInEditState();
+
 }  // namespace omnibox
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_PUBLIC_OMNIBOX_POSITION_UTIL_H_

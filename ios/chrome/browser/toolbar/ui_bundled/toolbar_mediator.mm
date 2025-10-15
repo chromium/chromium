@@ -236,13 +236,21 @@
 
 /// Computes the toolbar that should contain the omnibox in the current state.
 - (ToolbarType)omniboxPositionInCurrentState {
-  BOOL followSteadyState =
-      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
-  if (_locationBarFocused && !followSteadyState) {
-    return ToolbarType::kPrimary;
-  } else {
-    return [self steadyStateOmniboxPositionInCurrentState];
+  ToolbarType steadyState = [self steadyStateOmniboxPositionInCurrentState];
+
+  if (!_locationBarFocused) {
+    return steadyState;
   }
+
+  if (omnibox::ForceBottomOmniboxInEditState()) {
+    return ToolbarType::kSecondary;
+  }
+
+  if (omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
+    return steadyState;
+  }
+
+  return ToolbarType::kPrimary;
 }
 
 /// Updates the omnibox position to the correct toolbar.

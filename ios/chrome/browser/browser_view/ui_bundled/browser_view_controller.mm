@@ -948,8 +948,13 @@ const CGFloat kTopDynamicIslandInset = 24;
   // Update the heights of the toolbars to account for the new insets.
   self.primaryToolbarHeightConstraint.constant =
       [self primaryToolbarHeightWithInset];
-  self.secondaryToolbarHeightConstraint.constant =
+
+  CGFloat secondaryToolbarHeightWithInset =
       [self secondaryToolbarHeightWithInset];
+  [self.toolbarCoordinator
+      setBottomOmniboxOffsetForPopup:secondaryToolbarHeightWithInset];
+  self.secondaryToolbarHeightConstraint.constant =
+      secondaryToolbarHeightWithInset;
 
   // Update the tab strip placement.
   if (self.tabStripView) {

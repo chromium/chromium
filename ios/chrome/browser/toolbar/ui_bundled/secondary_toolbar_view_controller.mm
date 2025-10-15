@@ -201,6 +201,7 @@
             withNotification:(NSNotification*)notification {
   BOOL followSteadyStateEnabled =
       omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
+  BOOL forceBottomOmniboxInEditState = omnibox::ForceBottomOmniboxInEditState();
   BOOL keyboardActiveForWebContent =
       [self.keyboardStateProvider keyboardIsActiveForWebContent];
   BOOL hasOmnibox = [self hasOmnibox];
@@ -220,7 +221,8 @@
   // This behavior does not happen when the user interacts with text fields in
   // the web content.
   BOOL attachOmniboxToKeyboard =
-      !keyboardActiveForWebContent && hasOmnibox && followSteadyStateEnabled;
+      !keyboardActiveForWebContent && hasOmnibox &&
+      (followSteadyStateEnabled || forceBottomOmniboxInEditState);
 
   if (showLocationIndicator) {
     self.view.locationBarKeyboardConstraint.active = YES;

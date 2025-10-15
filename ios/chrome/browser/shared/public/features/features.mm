@@ -313,6 +313,12 @@ constexpr base::FeatureParam<int>
 
 BASE_FEATURE(kNotificationSettingsMenuItem, base::FEATURE_ENABLED_BY_DEFAULT);
 
+const char kBottomOmniboxEvolutionParam[] = "kBottomOmniboxEvolutionParam";
+const char kBottomOmniboxEvolutionParamEditStateFollowSteadyState[] =
+    "kBottomOmniboxEvolutionParamEditStateFollowSteadyState";
+const char kBottomOmniboxEvolutionParamForceBottomOmniboxEditState[] =
+    "kBottomOmniboxEvolutionParamForceBottomOmniboxEditState";
+
 BASE_FEATURE(kBottomOmniboxEvolution, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOnlyAccessClipboardAsync, base::FEATURE_ENABLED_BY_DEFAULT);
