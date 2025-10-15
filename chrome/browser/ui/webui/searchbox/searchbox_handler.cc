@@ -412,6 +412,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                         ? ntp_realbox::RealboxLayoutModeToString(
                               ntp_realbox::kRealboxLayoutMode.Get())
                         : "");
+  source->AddBoolean("ntpRealboxNextEnabled",
+                     ntp_realbox::IsNtpRealboxNextEnabled(profile));
   source->AddBoolean("searchboxCyclingPlaceholders",
                      ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
                          ntp_realbox::kCyclingPlaceholders.Get());

@@ -276,6 +276,11 @@ export class SearchboxElement extends SearchboxElementBase {
         reflect: true,
       },
 
+      ntpRealboxNextEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
+
       composeboxEnabled: {type: Boolean},
 
       composeButtonEnabled: {type: Boolean},
@@ -394,6 +399,8 @@ export class SearchboxElement extends SearchboxElementBase {
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor realboxLayoutMode: string =
       loadTimeData.getString('realboxLayoutMode');
+  accessor ntpRealboxNextEnabled: boolean =
+      loadTimeData.getBoolean('ntpRealboxNextEnabled');
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
   accessor showThumbnail: boolean = false;
@@ -465,7 +472,7 @@ export class SearchboxElement extends SearchboxElementBase {
       this.placeholderCycler_.start();
     }
 
-    if (this.realboxLayoutMode === 'Tall') {
+    if (this.ntpRealboxNextEnabled) {
       this.pageHandler_.notifySessionStarted();
     }
   }
@@ -473,7 +480,7 @@ export class SearchboxElement extends SearchboxElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    if (this.realboxLayoutMode === 'Tall') {
+    if (this.ntpRealboxNextEnabled) {
       this.pageHandler_.notifySessionAbandoned();
     }
 

@@ -78,16 +78,19 @@ ${this.realboxLayoutMode === 'Tall' ? html`
     ` : ''}
   ` : ''}
 
-  ${this.realboxLayoutMode === 'Tall' ? html`
+  ${this.ntpRealboxNextEnabled ? html`
     <div class="dropdownContainer">
       <contextual-entrypoint-and-carousel id="context"
+          part="contextual-entrypoint-and-carousel"
+          exportparts="composebox-entrypoint"
           @add-tab-context="${this.addTabContext_}"
           @add-file-context="${this.addFileContext_}"
           @delete-context="${this.deleteContext_}"
           @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
           @on-context-files-changed="${this.onContextFilesChanged_}"
           @on-file-validation-error="${this.onFileValidationError_}"
-          ?show-dropdown="${this.dropdownIsVisible}">
+          ?show-dropdown="${this.dropdownIsVisible}"
+          ?compact-mode="${this.realboxLayoutMode === 'Compact'}">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"
             role="listbox" .result="${this.result_}"

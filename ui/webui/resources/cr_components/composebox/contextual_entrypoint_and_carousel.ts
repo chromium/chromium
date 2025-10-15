@@ -69,6 +69,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   static override get properties() {
     return {
       showDropdown: {type: Boolean},
+      compactMode: {type: Boolean},
       attachmentFileTypes_: {type: String},
       contextMenuEnabled_: {type: Boolean},
       files_: {type: Object},
@@ -98,6 +99,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   accessor showDropdown: boolean = false;
+  accessor compactMode: boolean = false;
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
   protected accessor contextMenuEnabled_: boolean =
