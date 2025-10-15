@@ -26,7 +26,6 @@ TEST_F(DOMOriginTest, BuildOpaqueOrigins) {
     DOMOrigin* origin = DOMOrigin::Create();
     ASSERT_TRUE(origin);
     EXPECT_TRUE(origin->opaque());
-    EXPECT_EQ(origin->toJSON(), "null");
   }
 
   {
@@ -34,14 +33,12 @@ TEST_F(DOMOriginTest, BuildOpaqueOrigins) {
     ASSERT_TRUE(origin);
     EXPECT_TRUE(origin->opaque());
     EXPECT_FALSE(exception_state.HadException());
-    EXPECT_EQ(origin->toJSON(), "null");
   }
 
   {
     DOMOrigin* origin = DOMOrigin::parse("null");
     ASSERT_TRUE(origin);
     EXPECT_TRUE(origin->opaque());
-    EXPECT_EQ(origin->toJSON(), "null");
   }
 }
 
@@ -59,7 +56,8 @@ TEST_F(DOMOriginTest, BuildTupleOrigins) {
     DOMOrigin* origin = DOMOrigin::Create(test, exception_state);
     ASSERT_TRUE(origin);
     EXPECT_FALSE(exception_state.HadException());
-    EXPECT_EQ(origin->toJSON(), test);
+    EXPECT_TRUE(SecurityOrigin::CreateFromString(test)->IsSameOriginWith(
+        origin->GetOriginForTesting()));
   }
 
   for (const char* test : test_cases) {
@@ -68,7 +66,8 @@ TEST_F(DOMOriginTest, BuildTupleOrigins) {
     DummyExceptionStateForTesting exception_state;
     DOMOrigin* origin = DOMOrigin::parse(test);
     ASSERT_TRUE(origin);
-    EXPECT_EQ(origin->toJSON(), test);
+    EXPECT_TRUE(SecurityOrigin::CreateFromString(test)->IsSameOriginWith(
+        origin->GetOriginForTesting()));
   }
 }
 
@@ -204,8 +203,9 @@ TEST_F(DOMOriginTest, ParsingValidURLs) {
 
     DOMOrigin* origin = DOMOrigin::fromURL(test);
     ASSERT_TRUE(origin);
-    EXPECT_EQ(SecurityOrigin::CreateFromString(test)->ToString(),
-              origin->toJSON());
+    EXPECT_EQ(!origin->opaque(),
+              SecurityOrigin::CreateFromString(test)->IsSameOriginWith(
+                  origin->GetOriginForTesting()));
   }
 }
 

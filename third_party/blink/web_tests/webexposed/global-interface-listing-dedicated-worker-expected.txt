@@ -1586,8 +1586,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method isSameOrigin
 [Worker]     method isSameSite
-[Worker]     method toJSON
-[Worker]     method toString
 [Worker] interface Path2D
 [Worker]     attribute @@toStringTag
 [Worker]     method addPath

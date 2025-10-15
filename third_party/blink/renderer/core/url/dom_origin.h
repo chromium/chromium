@@ -44,14 +44,15 @@ class CORE_EXPORT DOMOrigin final : public ScriptWrappable {
                          ScriptValue value,
                          ExceptionState& exception_state);
 
-  String toJSON() const;
-
   bool opaque() const;
 
   bool isSameOrigin(const DOMOrigin* other) const;
   bool isSameSite(const DOMOrigin* other) const;
 
   void Trace(Visitor*) const override;
+
+  // Expose the internal `SecurityOrigin` for unit tests:
+  const SecurityOrigin* GetOriginForTesting() const { return origin_.get(); }
 
  private:
   static DOMOrigin* Create(scoped_refptr<const SecurityOrigin>);

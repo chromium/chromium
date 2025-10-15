@@ -1489,8 +1489,6 @@ interface Origin
     method constructor
     method isSameOrigin
     method isSameSite
-    method toJSON
-    method toString
 interface Path2D
     attribute @@toStringTag
     method addPath

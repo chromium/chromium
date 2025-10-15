@@ -6872,8 +6872,6 @@ interface Origin
     method constructor
     method isSameOrigin
     method isSameSite
-    method toJSON
-    method toString
 interface OscillatorNode : AudioScheduledSourceNode
     attribute @@toStringTag
     getter detune

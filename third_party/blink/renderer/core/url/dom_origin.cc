@@ -209,10 +209,6 @@ bool DOMOrigin::opaque() const {
   return origin_->IsOpaque();
 }
 
-String DOMOrigin::toJSON() const {
-  return origin_->ToString();
-}
-
 bool DOMOrigin::isSameOrigin(const DOMOrigin* other) const {
   return origin_->IsSameOriginWith(other->origin_.get());
 }
