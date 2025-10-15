@@ -13,25 +13,14 @@ namespace optimization_guide {
 
 using model_execution::prefs::ModelExecutionEnterprisePolicyValue;
 
-class EnterprisePolicyRegistryTest : public testing::Test {
- public:
-  EnterprisePolicyRegistryTest() = default;
-  ~EnterprisePolicyRegistryTest() override = default;
-
-  void SetUp() override {
-    EnterprisePolicyRegistry::GetInstance().ClearForTesting();
-  }
-
-  void TearDown() override {
-    EnterprisePolicyRegistry::GetInstance().ClearForTesting();
-  }
-};
+class EnterprisePolicyRegistryTest : public testing::Test {};
 
 TEST_F(EnterprisePolicyRegistryTest, Register) {
   TestingPrefServiceSimple pref_service;
-  EnterprisePolicyRegistry::GetInstance().Register("pref_name");
-  EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(
-      pref_service.registry());
+  std::unique_ptr<EnterprisePolicyRegistry> registry =
+      EnterprisePolicyRegistry::CreateForTesting();
+  registry->Register("pref_name");
+  registry->RegisterProfilePrefs(pref_service.registry());
   auto value =
       static_cast<model_execution::prefs::ModelExecutionEnterprisePolicyValue>(
           pref_service.GetInteger("pref_name"));
@@ -42,10 +31,11 @@ TEST_F(EnterprisePolicyRegistryTest, Register) {
 
 TEST_F(EnterprisePolicyRegistryTest, GetValue) {
   TestingPrefServiceSimple pref_service;
+  std::unique_ptr<EnterprisePolicyRegistry> registry =
+      EnterprisePolicyRegistry::CreateForTesting();
   EnterprisePolicyPref enterprise_policy("pref_name");
-  EnterprisePolicyRegistry::GetInstance().Register(enterprise_policy.name());
-  EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(
-      pref_service.registry());
+  registry->Register(enterprise_policy.name());
+  registry->RegisterProfilePrefs(pref_service.registry());
 
   EXPECT_EQ(model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow,
             enterprise_policy.GetValue(&pref_service));

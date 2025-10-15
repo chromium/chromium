@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_FEATURE_REGISTRY_ENTERPRISE_POLICY_REGISTRY_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_FEATURE_REGISTRY_ENTERPRISE_POLICY_REGISTRY_H_
 
+#include <memory>
 #include <vector>
 
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -35,6 +36,10 @@ class EnterprisePolicyPref {
 class EnterprisePolicyRegistry {
  public:
   EnterprisePolicyRegistry();
+
+  // Export destructor so test instances created with `CreateForTesting` can be
+  // destructed.
+  COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
   ~EnterprisePolicyRegistry();
 
   COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -52,8 +57,9 @@ class EnterprisePolicyRegistry {
   COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
   void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Allows tests to create instances that can be tested in isolation.
   COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-  void ClearForTesting();
+  static std::unique_ptr<EnterprisePolicyRegistry> CreateForTesting();
 
  private:
   std::vector<EnterprisePolicyPref> enterprise_policies_;
