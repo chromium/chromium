@@ -1550,8 +1550,8 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       // Default is IDS_AX_ROLE_HEADER.
       return GetLocalizedString(IDS_AX_ROLE_BANNER);
     case ax::mojom::Role::kListGrid:
-      // Default is no special role description.
-      return GetLocalizedString(IDS_AX_ROLE_TABLE);
+      // List grid is not used on Android.
+      NOTREACHED();
     case ax::mojom::Role::kMenuItemCheckBox:
       // Default is no special role description.
       return GetLocalizedString(IDS_AX_ROLE_CHECK_BOX);
