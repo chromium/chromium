@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
 
 #import "base/notreached.h"
-#import "components/autofill/core/common/autofill_features.h"
 
 autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
     AutofillCreditCardUIType type) {
@@ -28,26 +27,4 @@ autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
     default:
       NOTREACHED();
   }
-}
-
-bool FieldIsUsedInAddress(autofill::FieldType autofillType,
-                          NSString* countryCode) {
-  // TODO(crbug.com/40281788): Replace all this with libaddressinput.
-
-  if (autofillType == autofill::ADDRESS_HOME_DEPENDENT_LOCALITY) {
-    // List of countries which require the dependent locality field.
-    NSArray<NSString*>* countryCodes = @[
-      @"BR", @"CN", @"CO", @"IE", @"IR", @"KR", @"MX", @"MY", @"NG", @"NZ",
-      @"PH", @"PK", @"TH", @"ZA"
-    ];
-
-    return ([countryCodes indexOfObject:countryCode] != NSNotFound);
-  }
-
-  if (autofillType == autofill::ADDRESS_HOME_ADMIN_LEVEL2) {
-    // Admin Level 2 is only available in Mexico.
-    return [countryCode isEqualToString:@"MX"];
-  }
-
-  return true;
 }
