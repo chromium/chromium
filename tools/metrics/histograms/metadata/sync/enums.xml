@@ -378,6 +378,7 @@ chromium-metrics-reviews@google.com.
   <int value="104" label="AutofillAmountExtractionAiTermsSeen"/>
   <int value="105" label="CrossDevicePriceTrackingHomeModuleEnabled"/>
   <int value="106" label="CrossDeviceMostVisitedHomeModuleEnabled"/>
+  <int value="107" label="CrossDeviceTipsHomeModuleEnabled"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

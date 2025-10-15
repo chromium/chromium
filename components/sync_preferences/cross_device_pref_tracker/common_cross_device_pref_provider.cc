@@ -23,6 +23,7 @@ CommonCrossDevicePrefProvider::GetProfilePrefs() const {
           commerce::kPriceTrackingHomeModuleEnabled,
           ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
           ntp_tiles::prefs::kTabResumptionHomeModuleEnabled,
+          ntp_tiles::prefs::kTipsHomeModuleEnabled,
           safety_check::prefs::kSafetyCheckHomeModuleEnabled,
           // go/keep-sorted end
       });

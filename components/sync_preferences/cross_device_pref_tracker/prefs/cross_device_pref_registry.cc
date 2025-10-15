@@ -27,6 +27,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kCrossDeviceTabResumptionHomeModuleEnabled,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
+      prefs::kCrossDeviceTipsHomeModuleEnabled,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDictionaryPref(
       prefs::kCrossDevicePriceTrackingHomeModuleEnabled,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }

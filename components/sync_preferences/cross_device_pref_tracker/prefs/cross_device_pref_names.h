@@ -41,6 +41,10 @@ inline constexpr char kCrossDeviceSafetyCheckHomeModuleEnabled[] =
 inline constexpr char kCrossDeviceTabResumptionHomeModuleEnabled[] =
     "cross_device.home.module.tab_resumption.enabled";
 
+// Dictionary that stores if the Tips Home Module is enabled.
+inline constexpr char kCrossDeviceTipsHomeModuleEnabled[] =
+    "cross_device.home.module.tips.enabled";
+
 // go/keep-sorted end
 
 }  // namespace prefs
