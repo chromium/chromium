@@ -18,7 +18,11 @@
   --cr-searchbox-results-margin-bottom: 0;
   --cr-searchbox-width: 100%;
   --cr-searchbox-match-font-weight: 700;
-  font-size: 14.6px; /* closely resembles the omnibox input font size. */
+
+  /* Closely resembles the views Omnibox input font size.
+  * TODO(crbug.com/450640041): Investigate webUI blink & views rendering difference */
+  font-size: 14.3px;/* closely resembles the omnibox input font size. */
+
   /* Colors used in the cr-searchbox results dropdown */
   --color-searchbox-answer-icon-background: var(--color-omnibox-answer-icon-g-m3-background);
   --color-searchbox-answer-icon-foreground: var(--color-omnibox-answer-icon-g-m3-foreground);
