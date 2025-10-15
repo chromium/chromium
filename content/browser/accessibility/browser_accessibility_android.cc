@@ -1540,6 +1540,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kEmphasis:
     case ax::mojom::Role::kForm:
     case ax::mojom::Role::kImage:
+    case ax::mojom::Role::kProgressIndicator:
     case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kSectionFooter:
     case ax::mojom::Role::kSectionHeader:
