@@ -315,7 +315,8 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
       ignore_video_transformation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
-  video_renderer.Paint(frame, canvas, flags, params, raster_context_provider);
+  video_renderer.PaintOOPR(frame, canvas, flags, params,
+                           raster_context_provider);
 }
 
 scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
