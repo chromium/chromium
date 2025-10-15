@@ -76,7 +76,7 @@ void AboutUIHTMLSource::StartDataRequest(
     web::URLDataSourceIOS::GotDataCallback callback) {
   std::string response;
   // Add your data source here, in alphabetical order.
-  // go/keep-sorted start block=yes
+  // keep-sorted start block=yes
   if (source_name_ == kChromeUICreditsHost) {
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath) {
@@ -109,7 +109,7 @@ void AboutUIHTMLSource::StartDataRequest(
       response.append("<br><hr><br>");
     }
   }
-  // go/keep-sorted end
+  // keep-sorted end
 
   FinishDataRequest(response, std::move(callback));
 }
