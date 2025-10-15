@@ -303,6 +303,8 @@ struct WebClientInitialState {
   bool enable_get_page_metadata;
   // Whether kGlicApiActivationGating is enabled.
   bool enable_api_activation_gating;
+  // Whether capture region is enabled.
+  bool enable_capture_region;
 };
 
 // Options for getting tab context.

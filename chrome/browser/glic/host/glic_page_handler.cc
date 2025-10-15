@@ -768,6 +768,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(
           mojom::HostCapability::kGetModelQualityClientId);
     }
+    state->enable_capture_region =
+        base::FeatureList::IsEnabled(features::kGlicCaptureRegion);
 
     std::move(callback).Run(std::move(state));
   }
