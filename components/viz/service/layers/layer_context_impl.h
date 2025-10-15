@@ -158,6 +158,9 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   void HandleBadMojoMessage(const std::string& function,
                             const std::string& error);
 
+  void DoDrawInternal(const BeginFrameArgs& begin_frame_args,
+                      base::TimeTicks start_update_display_tree);
+
   const raw_ptr<CompositorFrameSinkSupport> compositor_sink_;
   const std::unique_ptr<cc::AnimationHost> animation_host_{
       cc::AnimationHost::CreateMainInstance()};

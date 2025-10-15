@@ -1449,22 +1449,12 @@ LayerContextImpl::~LayerContextImpl() {
 
 void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
-    // TODO(vmiura): Manage these flags properly.
-    const bool has_damage = true;
     compositor_sink_->SetLayerContextWantsBeginFrames(false);
-    if (!host_impl_->CanDraw()) {
-      return;
-    }
-
-    host_impl_->WillBeginImplFrame(args);
-
-    cc::LayerTreeHostImpl::FrameData frame;
-    frame.begin_frame_ack = BeginFrameAck(args, has_damage);
-    frame.origin_begin_main_frame_args = args;
-    host_impl_->PrepareToDraw(&frame);
-    host_impl_->DrawLayers(&frame);
-    host_impl_->DidDrawAllLayers(frame);
-    host_impl_->DidFinishImplFrame(args);
+    // TODO(zmo): The stage breakdown var is |start_update_display_tree|.
+    // Consider using a difference name, so it works for TreeAnimationsInViz
+    // mode as well.
+    base::TimeTicks start_begin_frame = base::TimeTicks::Now();
+    DoDrawInternal(args, start_begin_frame);
   }
 }
 
@@ -1968,28 +1958,36 @@ void LayerContextImpl::DoDraw(const BeginFrameArgs& begin_frame_args,
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
     compositor_sink_->SetLayerContextWantsBeginFrames(true);
   } else {
-    if (host_impl_->CanDraw()) {
-      host_impl_->WillBeginImplFrame(begin_frame_args);
-
-      cc::LayerTreeHostImpl::FrameData frame;
-      TreesInVizTiming stage_breakdown;
-      stage_breakdown.start_update_display_tree = start_update_display_tree;
-      const bool has_damage = true;
-      frame.begin_frame_ack = BeginFrameAck(begin_frame_args, has_damage);
-      frame.origin_begin_main_frame_args = begin_frame_args;
-      stage_breakdown.start_prepare_to_draw = base::TimeTicks::Now();
-      host_impl_->PrepareToDraw(&frame);
-      stage_breakdown.start_draw_layers = base::TimeTicks::Now();
-      std::optional<cc::SubmitInfo> submit_info =
-          host_impl_->DrawLayers(&frame);
-      if (submit_info.has_value()) {
-        stage_breakdown.submit_compositor_frame = submit_info->time;
-      }
-      frame.set_trees_in_viz_timestamps(std::move(stage_breakdown));
-      host_impl_->DidDrawAllLayers(frame);
-      host_impl_->DidFinishImplFrame(begin_frame_args);
-    }
+    DoDrawInternal(begin_frame_args, start_update_display_tree);
   }
+}
+
+void LayerContextImpl::DoDrawInternal(
+    const BeginFrameArgs& begin_frame_args,
+    base::TimeTicks start_update_display_tree) {
+  if (!host_impl_->CanDraw()) {
+    return;
+  }
+
+  host_impl_->WillBeginImplFrame(begin_frame_args);
+
+  cc::LayerTreeHostImpl::FrameData frame;
+  TreesInVizTiming stage_breakdown;
+  stage_breakdown.start_update_display_tree = start_update_display_tree;
+  // TODO(vmiura): Manage these flags properly.
+  const bool has_damage = true;
+  frame.begin_frame_ack = BeginFrameAck(begin_frame_args, has_damage);
+  frame.origin_begin_main_frame_args = begin_frame_args;
+  stage_breakdown.start_prepare_to_draw = base::TimeTicks::Now();
+  host_impl_->PrepareToDraw(&frame);
+  stage_breakdown.start_draw_layers = base::TimeTicks::Now();
+  std::optional<cc::SubmitInfo> submit_info = host_impl_->DrawLayers(&frame);
+  if (submit_info.has_value()) {
+    stage_breakdown.submit_compositor_frame = submit_info->time;
+  }
+  frame.set_trees_in_viz_timestamps(std::move(stage_breakdown));
+  host_impl_->DidDrawAllLayers(frame);
+  host_impl_->DidFinishImplFrame(begin_frame_args);
 }
 
 void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
