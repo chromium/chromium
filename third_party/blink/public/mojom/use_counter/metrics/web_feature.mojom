@@ -5005,6 +5005,15 @@ enum WebFeature {
   kClipboardGetTypeTimeDiffOfSameTypeIsBetween1MinAnd10Min = 5690,
   kClipboardGetTypeTimeDiffOfSameTypeIsMoreThan10Min = 5691,
   kClipboardGetTypeWindowNotInFocus = 5692,
+  kReportBodyToJSON = 5693,
+  kCSPViolationReportBodyToJSON = 5694,
+  kDeprecationReportBodyToJSON = 5695,
+  kInterventionReportBodyToJSON = 5696,
+  kDocumentPolicyViolationReportBodyToJSON = 5697,
+  kIntegrityViolationReportBodyToJSON = 5698,
+  kPermissionsPolicyViolationReportBodyToJSON = 5699,
+  kCoopAccessViolationReportBodyToJSON = 5700,
+  kTestReportBodyToJSON = 5701,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

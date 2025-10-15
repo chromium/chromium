@@ -12,5 +12,5 @@
   readonly attribute USVString? blockedURL;
   readonly attribute USVString? destination;
   readonly attribute boolean reportOnly;
-  [CallWith=ScriptState] object toJSON();
+  [CallWith=ScriptState] object toJSON(optional DOMString key);
 };

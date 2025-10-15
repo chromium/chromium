@@ -15,5 +15,5 @@
   readonly attribute DOMString? message;
   [RuntimeEnabled=PotentialPermissionsPolicyReporting] readonly attribute DOMString? allowAttribute;
   [RuntimeEnabled=PotentialPermissionsPolicyReporting] readonly attribute DOMString? srcAttribute;
-  [CallWith=ScriptState] object toJSON();
+  [CallWith=ScriptState] object toJSON(optional DOMString key);
 };

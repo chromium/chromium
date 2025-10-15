@@ -6306,6 +6306,15 @@ Called by update_use_counter_feature_enum.py.-->
       label="ClipboardGetTypeTimeDiffOfSameTypeIsBetween1MinAnd10Min"/>
   <int value="5691" label="ClipboardGetTypeTimeDiffOfSameTypeIsMoreThan10Min"/>
   <int value="5692" label="ClipboardGetTypeWindowNotInFocus"/>
+  <int value="5693" label="ReportBodyToJSON"/>
+  <int value="5694" label="CSPViolationReportBodyToJSON"/>
+  <int value="5695" label="DeprecationReportBodyToJSON"/>
+  <int value="5696" label="InterventionReportBodyToJSON"/>
+  <int value="5697" label="DocumentPolicyViolationReportBodyToJSON"/>
+  <int value="5698" label="IntegrityViolationReportBodyToJSON"/>
+  <int value="5699" label="PermissionsPolicyViolationReportBodyToJSON"/>
+  <int value="5700" label="CoopAccessViolationReportBodyToJSON"/>
+  <int value="5701" label="TestReportBodyToJSON"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
