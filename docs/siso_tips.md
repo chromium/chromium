@@ -45,6 +45,16 @@ $ compile base/time/time.cc base/time/time_unittest.cc
 ...
 ```
 
+## Build gn target
+
+GN emits phony target for a gn target label, dropping `//`-prefix,
+e.g. `base:base` for `//base:base`, which is `base` target in `base/BUILD.gn`,
+so you can use this as a build target.
+
+```shell
+$ autoninja -C out/Default base:base
+```
+
 ## Preferred command line flags
 
 If you keep using the same command line flags, you can put it in
