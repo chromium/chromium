@@ -7,7 +7,10 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 
 class Browser;
 class Profile;
@@ -17,7 +20,8 @@ namespace webauthn {
 // This class manages the unlock state for Google Password Manager (GPM)
 // passkeys. It asynchronously determines if passkeys are locked, but can be
 // unlocked. Once the final state is known, it notifies observers.
-class PasskeyUnlockManager : public KeyedService {
+class PasskeyUnlockManager : public KeyedService,
+                             public PasskeyModel::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -46,6 +50,13 @@ class PasskeyUnlockManager : public KeyedService {
   static void OpenTabForPasskeyUnlockHandler(Browser* browser);
 
  private:
+  // Returns the PasskeyModel associated with the profile passed to the
+  // constructor.
+  PasskeyModel* passkey_model();
+
+  // Updates the cached value of `has_passkeys_`.
+  void UpdateHasPasskeys();
+
   // Used for notifying observers.
   void NotifyObservers();
 
@@ -58,7 +69,12 @@ class PasskeyUnlockManager : public KeyedService {
 
   // TODO(crbug.com/449949272): Implement EnclaveManager::Observer.
 
-  // TODO(crbug.com/449948456): Implement webauthn::PasskeyModel::Observer.
+  // webauthn::PasskeyModel::Observer
+  // After getting notified - update the cached value of `has_passkeys_`
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
 
   // TODO(crbug.com/449950177): Implement syncer::SyncServiceObserver.
 
@@ -71,6 +87,9 @@ class PasskeyUnlockManager : public KeyedService {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
+      passkey_model_observation_{this};
   base::WeakPtrFactory<PasskeyUnlockManager> weak_ptr_factory_{this};
 };
 

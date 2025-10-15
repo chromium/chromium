@@ -8,9 +8,15 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/webauthn/passkey_model_factory.h"
 
 namespace webauthn {
-PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {}
+PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
+  passkey_model_observation_.Observe(
+      PasskeyModelFactory::GetForProfile(profile));
+  UpdateHasPasskeys();
+  NotifyObservers();
+}
 
 PasskeyUnlockManager::~PasskeyUnlockManager() = default;
 
@@ -35,9 +41,18 @@ void PasskeyUnlockManager::OpenTabForPasskeyUnlockHandler(Browser* browser) {
   NOTIMPLEMENTED();
 }
 
+PasskeyModel* PasskeyUnlockManager::passkey_model() {
+  return passkey_model_observation_.GetSource();
+}
+
+void PasskeyUnlockManager::UpdateHasPasskeys() {
+  has_passkeys_ = !passkey_model()->GetAllPasskeys().empty();
+}
+
 void PasskeyUnlockManager::NotifyObservers() {
-  // TODO(crbug.com/450271136): Implement and call when the state changes.
-  NOTIMPLEMENTED();
+  for (Observer& observer : observer_list_) {
+    observer.OnPasskeyUnlockManagerStateChanged();
+  }
 }
 
 void PasskeyUnlockManager::AsynchronouslyCheckGpmPinAvailability() {
@@ -53,6 +68,22 @@ void PasskeyUnlockManager::AsynchronouslyCheckSystemUVAvailability() {
 void PasskeyUnlockManager::AsynchronouslyLoadEnclaveManager() {
   // TODO(crbug.com/449949272): Implement and call in the constructor.
   NOTIMPLEMENTED();
+}
+
+// webauthn::PasskeyModel::Observer
+void PasskeyUnlockManager::OnPasskeysChanged(
+    const std::vector<webauthn::PasskeyModelChange>& changes) {
+  UpdateHasPasskeys();
+  NotifyObservers();
+}
+
+// webauthn::PasskeyModel::Observer
+void PasskeyUnlockManager::OnPasskeyModelShuttingDown() {}
+
+// webauthn::PasskeyModel::Observer
+void PasskeyUnlockManager::OnPasskeyModelIsReady(bool is_ready) {
+  UpdateHasPasskeys();
+  NotifyObservers();
 }
 
 }  // namespace webauthn
