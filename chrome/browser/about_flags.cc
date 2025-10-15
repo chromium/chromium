@@ -4848,14 +4848,13 @@ const FeatureEntry::FeatureParam kNtpCustomizeChromePromoFirstNTPOnly[] = {
 const FeatureEntry::FeatureParam kNtpCustomizeChromePromoIPHOnly[] = {
     {"max_iph_count", "3"},
     {"max_customize_chrome_shown_count", "0"}};
-const FeatureEntry::FeatureVariation
-    kNtpCustomizeChromePromoVariations[] = {
-        {"- On every NTP", kNtpCustomizeChromePromoOnEveryNTP,
-         std::size(kNtpCustomizeChromePromoOnEveryNTP), nullptr},
-        {"- First NTP only", kNtpCustomizeChromePromoFirstNTPOnly,
-         std::size(kNtpCustomizeChromePromoFirstNTPOnly), nullptr},
-        {"- IPH only", kNtpCustomizeChromePromoIPHOnly,
-         std::size(kNtpCustomizeChromePromoIPHOnly), nullptr},
+const FeatureEntry::FeatureVariation kNtpCustomizeChromePromoVariations[] = {
+    {"- On every NTP", kNtpCustomizeChromePromoOnEveryNTP,
+     std::size(kNtpCustomizeChromePromoOnEveryNTP), nullptr},
+    {"- First NTP only", kNtpCustomizeChromePromoFirstNTPOnly,
+     std::size(kNtpCustomizeChromePromoFirstNTPOnly), nullptr},
+    {"- IPH only", kNtpCustomizeChromePromoIPHOnly,
+     std::size(kNtpCustomizeChromePromoIPHOnly), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpEnterpriseShortcutsWithFakeData[] = {
@@ -8431,6 +8430,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kStrictOriginIsolation)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"load-all-tabs-at-startup", flag_descriptions::kLoadAllTabsAtStartupName,
+     flag_descriptions::kLoadAllTabsAtStartupDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kLoadAllTabsAtStartup)},
     {"lock-controls-on-tablets",
      flag_descriptions::kLockTopControlsOnLargeTabletsName,
      flag_descriptions::kLockTopControlsOnLargeTabletsDescription, kOsAndroid,

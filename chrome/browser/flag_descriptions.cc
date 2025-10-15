@@ -2601,6 +2601,11 @@ const char kLensUpdatedFeedbackEntrypointDescription[] =
     "Enables an updated feedback entry point in the Lens side panel.";
 
 #if BUILDFLAG(IS_ANDROID)
+const char kLoadAllTabsAtStartupName[] = "Load all tabs at startup";
+const char kLoadAllTabsAtStartupDescription[] =
+    "Creates WebContents without renderers for all tabs at startup. Warning: "
+    "this may have significant overhead and degrade performance.";
+
 const char kLockTopControlsOnLargeTabletsName[] =
     "Lock top controls on tablets";
 const char kLockTopControlsOnLargeTabletsDescription[] =

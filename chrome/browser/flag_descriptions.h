@@ -1544,6 +1544,9 @@ extern const char kLensVideoCitationsName[];
 extern const char kLensVideoCitationsDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kLoadAllTabsAtStartupName[];
+extern const char kLoadAllTabsAtStartupDescription[];
+
 extern const char kLockTopControlsOnLargeTabletsName[];
 extern const char kLockTopControlsOnLargeTabletsDescription[];
 

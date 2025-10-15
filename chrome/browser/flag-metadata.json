@@ -6612,6 +6612,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "load-all-tabs-at-startup",
+    "owners": [
+      "ckitagawa@chromium.org",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "local-network-access-check",
     "owners": [
       "cthomp@chromium.org",

@@ -9287,6 +9287,7 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityDictationListening:enabled"/>
   <int value="-1772172557" label="enable-osk-overscroll"/>
   <int value="-1771552112" label="QueryTilesInOmnibox:disabled"/>
+  <int value="-1769585756" label="LoadAllTabsAtStartup:enabled"/>
   <int value="-1769361050" label="DynamicSafeAreaInsetsSupportedByCC:disabled"/>
   <int value="-1768672408" label="ChromeDuplex:disabled"/>
   <int value="-1768308156" label="OmniboxDedupeGoogleDriveURLs:enabled"/>
@@ -18827,6 +18828,7 @@ from previous Chrome versions.
   <int value="1627666567" label="ChromeOSAmbientMode:disabled"/>
   <int value="1627854370" label="NearbyPresence:disabled"/>
   <int value="1628259213" label="DuetTabStripIntegrationAndroid:enabled"/>
+  <int value="1628273580" label="LoadAllTabsAtStartup:disabled"/>
   <int value="1628831121" label="SafeBrowsingUseLocalBlacklistsV2:enabled"/>
   <int value="1629047185" label="IPH_ExtensionsMenu:disabled"/>
   <int value="1629289109" label="EnableBloom:disabled"/>
