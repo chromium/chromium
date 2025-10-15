@@ -15,7 +15,16 @@
 
 namespace blink {
 
-PlainTextPainter::PlainTextPainter(PlainTextPainter::Mode mode) : mode_(mode) {}
+PlainTextPainter::PlainTextPainter(PlainTextPainter::Mode mode) : mode_(mode) {
+  // We don't use FrameShapeCache in the kShared mode. See GetCacheFor().
+  //
+  // blink::MemoryPressureListenerRegistry doesn't support listeners in
+  // non-main threads.
+  if (mode_ == kCanvas && IsMainThread() &&
+      RuntimeEnabledFeatures::CanvasTextMemoryPressureEnabled()) {
+    MemoryPressureListenerRegistry::Instance().RegisterClient(this);
+  }
+}
 
 void PlainTextPainter::Trace(Visitor* visitor) const {
   visitor->Trace(cache_map_);

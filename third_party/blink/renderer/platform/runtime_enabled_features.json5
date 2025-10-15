@@ -902,6 +902,11 @@
       status: "stable",
     },
     {
+      // crbug.com/389726691.
+      name: "CanvasTextMemoryPressure",
+      status: "stable",
+    },
+    {
       // Canvas2D API for specifying HDR tone mapping behavior.
       // https:/crbug.com/448552449, https://github.com/whatwg/html/issues/11424
       name: "CanvasToneMapping",

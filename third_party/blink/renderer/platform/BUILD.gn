@@ -2230,6 +2230,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/orientation_iterator_test.cc",
     "fonts/palette_interpolation_test.cc",
     "fonts/plain_text_node_test.cc",
+    "fonts/plain_text_painter_test.cc",
     "fonts/script_run_iterator_test.cc",
     "fonts/shaping/font_features_test.cc",
     "fonts/shaping/frame_shape_cache_test.cc",

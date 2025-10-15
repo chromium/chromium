@@ -98,6 +98,8 @@ class PLATFORM_EXPORT PlainTextPainter
   void DidSwitchFrame();
 
  private:
+  friend class PlainTextPainterTest;
+
   const PlainTextNode& CreateNode(const TextRun& text_run,
                                   const Font& font,
                                   bool supports_bidi = true);
