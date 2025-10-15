@@ -73,14 +73,7 @@ public class AwPrefetchManager {
         if (!UrlUtilities.isHttps(url)) {
             error = new IllegalArgumentException("URL must have HTTPS scheme for prefetch.");
         } else if (prefetchParameters != null) {
-            IllegalArgumentException exception =
-                    AwBrowserContext.validateAdditionalHeaders(
-                            prefetchParameters.getAdditionalHeaders());
-            if (exception != null) {
-                error = exception;
-            } else {
-                error = null;
-            }
+            error = AwContents.validateAdditionalHeaders(prefetchParameters.getAdditionalHeaders());
         } else {
             error = null;
         }

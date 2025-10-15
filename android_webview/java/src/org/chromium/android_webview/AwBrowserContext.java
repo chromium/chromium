@@ -34,10 +34,8 @@ import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.Origin;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Java side of the Browser Context: contains all the java side objects needed to host one browsing
@@ -52,10 +50,6 @@ import java.util.regex.Pattern;
 public class AwBrowserContext implements BrowserContextHandle {
 
     private static final String BASE_PREFERENCES = "WebViewProfilePrefs";
-
-    /* package */ static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
-    /* package */ static final String BAD_HEADER_MSG =
-            "HTTP headers must not contain null, CR, or NL characters. ";
 
     /**
      * Cache storing already-initialized Play providers for the Media Integrity Blink renderer
@@ -300,35 +294,6 @@ public class AwBrowserContext implements BrowserContextHandle {
         }
     }
 
-    /**
-     * Check if any of the provided HTTP header key-value pairs contains invalid characters.
-     *
-     * @param headers Map of HTTP header name-value pairs.
-     * @return An exception if validation fails. Otherwise, an empty Optional.
-     */
-    public static @Nullable IllegalArgumentException validateAdditionalHeaders(
-            Map<String, String> headers) {
-        if (headers == null) return null;
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            String headerName = header.getKey();
-            String headerValue = header.getValue();
-            if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
-                return new IllegalArgumentException(
-                        BAD_HEADER_MSG + "Invalid header name '" + headerName + "'.");
-            }
-            if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
-                return new IllegalArgumentException(
-                        BAD_HEADER_MSG
-                                + "Header '"
-                                + headerName
-                                + "' has invalid value '"
-                                + headerValue
-                                + "'");
-            }
-        }
-        return null;
-    }
-
     @NonNull
     public AwPrefetchManager getPrefetchManager() {
         return mPrefetchManager;
@@ -356,10 +321,10 @@ public class AwBrowserContext implements BrowserContextHandle {
         if (headerName.isBlank()) {
             throw new IllegalArgumentException("Blank HTTP header names are not allowed.");
         }
-        if (!AwBrowserContextJni.get().isValidHttpHeaderName(headerName)) {
+        if (!isValidHttpHeaderName(headerName)) {
             throw new IllegalArgumentException("Invalid HTTP header name: " + headerName);
         }
-        if (!AwBrowserContextJni.get().isValidHttpHeaderValue(headerValue)) {
+        if (!isValidHttpHeaderValue(headerValue)) {
             throw new IllegalArgumentException("Invalid HTTP header value: " + headerValue);
         }
 
@@ -380,10 +345,10 @@ public class AwBrowserContext implements BrowserContextHandle {
         if (headerName.isBlank()) {
             throw new IllegalArgumentException("Blank HTTP header names are not allowed.");
         }
-        if (!AwBrowserContextJni.get().isValidHttpHeaderName(headerName)) {
+        if (!isValidHttpHeaderName(headerName)) {
             throw new IllegalArgumentException("Invalid HTTP header name: " + headerName);
         }
-        if (!AwBrowserContextJni.get().isValidHttpHeaderValue(headerValue)) {
+        if (!isValidHttpHeaderValue(headerValue)) {
             throw new IllegalArgumentException("Invalid HTTP header value: " + headerValue);
         }
 
@@ -518,6 +483,16 @@ public class AwBrowserContext implements BrowserContextHandle {
                     ? PermissionStatus.GRANTED
                     : PermissionStatus.DENIED;
         }
+    }
+
+    /*package*/ static boolean isValidHttpHeaderValue(@NonNull String headerValue) {
+        return org.chromium.android_webview.AwBrowserContextJni.get()
+                .isValidHttpHeaderValue(headerValue);
+    }
+
+    /*package*/ static boolean isValidHttpHeaderName(@NonNull String headerName) {
+        return org.chromium.android_webview.AwBrowserContextJni.get()
+                .isValidHttpHeaderName(headerName);
     }
 
     @NativeMethods

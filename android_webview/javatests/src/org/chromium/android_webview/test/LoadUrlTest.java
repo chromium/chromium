@@ -32,6 +32,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -284,10 +285,10 @@ public class LoadUrlTest extends AwParameterizedTest {
             throws Exception {
         String textContent =
                 mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, contentsClient);
-        String[] header_values = textContent.split("\\\\n");
+        String[] headerValues = textContent.split("\\\\n");
         for (int i = 0; i < extraHeader.length; i += 2) {
             Assert.assertEquals(
-                    shouldHeaderExist ? extraHeader[i + 1] : "None", header_values[i / 2]);
+                    shouldHeaderExist ? extraHeader[i + 1] : "None", headerValues[i / 2]);
         }
     }
 
@@ -310,7 +311,7 @@ public class LoadUrlTest extends AwParameterizedTest {
         }
     }
 
-    private final String encodeUrl(String url) {
+    private String encodeUrl(String url) {
         try {
             return URLEncoder.encode(url, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -394,6 +395,38 @@ public class LoadUrlTest extends AwParameterizedTest {
         validateHeadersValue(awContents, contentsClient, extraHeaders, true);
         onReceivedTitleHelper.waitForCallback(onReceivedTitleCallCount);
         Assert.assertEquals("5", onReceivedTitleHelper.getTitle());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNonTokenHeaderNamesAreIgnored() throws Throwable {
+        final TestAwContentsClient contentsClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
+        final AwContents awContents = testContainerView.getAwContents();
+
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        final String url = mTestServer.getURL("/echoheader?invalid%3Aheader");
+        String[] extraHeaders = {"invalid:header", "valid-value"};
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.LoadUrl.RejectedHeaderCount", 1)) {
+            loadUrlWithExtraHeadersSync(
+                    awContents,
+                    contentsClient.getOnPageFinishedHelper(),
+                    url,
+                    createHeadersMap(extraHeaders));
+            watcher.assertExpected();
+        }
+
+        String header =
+                mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, contentsClient);
+        // We should not have a header with an invalid character in it.
+        // But the important thing is that we got to this spot without crashing.
+        // See https://crbug.com/450927905.
+        Assert.assertEquals("None", header);
     }
 
     @Test

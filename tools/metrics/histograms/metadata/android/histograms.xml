@@ -7450,6 +7450,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.LoadUrl.RejectedHeaderCount" units="headers"
+    expires_after="2026-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    This histogram records the number of HTTP headers that are silently rejected
+    by the WebView.loadUrl API. The API will reject headers if the name or value
+    contains any of NULL, CR, LF with an IllegalArgumentException. However,
+    header names have more forbidden characters than just those three, and the
+    API will silently discard those headers to maintain long-term compatibility.
+
+    The purpose of this histogram is to identify applications who rely on this
+    silent rejection of invalid headers in order to determine the disruption
+    caused if we change the API contract in the future.
+
+    This histogram logs the count of headers that are silently rejected.
+
+    The histogram will only be emitted if the application is setting at least
+    one header, and will be 0 if no invalid headers were rejected. It will not
+    be emitted if any headers were rejected due to the 3 characters mentioned
+    above.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.LoadUrl.Success" enum="BooleanSuccess"
     expires_after="2026-03-01">
   <owner>peconn@chromium.org</owner>

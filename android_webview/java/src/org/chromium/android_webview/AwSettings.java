@@ -821,20 +821,15 @@ public class AwSettings {
         if (TRACE) Log.i(TAG, "setUserAgentString=" + ua);
         synchronized (mAwSettingsLock) {
             final String oldUserAgent = mUserAgent;
-            if (ua == null || ua.length() == 0) {
+            if (ua == null || ua.isEmpty()) {
                 mUserAgent = LazyDefaultUserAgent.sInstance;
+            } else if (!AwBrowserContext.isValidHttpHeaderValue(ua)) {
+                throw new IllegalArgumentException("Invalid HTTP header value: '" + ua + "'");
             } else {
                 mUserAgent = ua;
             }
             if (!oldUserAgent.equals(mUserAgent)) {
-                if (ua != null
-                        && ua.length() > 0
-                        && AwBrowserContext.BAD_HEADER_CHAR.matcher(ua).find()) {
-                    throw new IllegalArgumentException(
-                            AwBrowserContext.BAD_HEADER_MSG + "Invalid User-Agent '" + ua + "'");
-                }
-                mEventHandler.runOnUiThreadBlockingAndLocked(
-                        () -> updateUserAgentOnUiThreadLocked());
+                mEventHandler.runOnUiThreadBlockingAndLocked(this::updateUserAgentOnUiThreadLocked);
             }
         }
     }
