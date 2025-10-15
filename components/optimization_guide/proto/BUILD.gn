@@ -34,7 +34,6 @@ proto_library("optimization_guide_proto") {
     "features/model_prototyping.proto",
     "features/notification_content_detection.proto",
     "features/password_change_submission.proto",
-    "features/permissions_ai.proto",
     "features/product_specifications.proto",
     "features/prompt_api.proto",
     "features/proofreader_api.proto",

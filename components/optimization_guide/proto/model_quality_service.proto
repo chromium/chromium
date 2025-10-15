@@ -18,7 +18,6 @@ import "components/optimization_guide/proto/features/history_query_intent.proto"
 import "components/optimization_guide/proto/features/model_prototyping.proto";
 import "components/optimization_guide/proto/features/notification_content_detection.proto";
 import "components/optimization_guide/proto/features/password_change_submission.proto";
-import "components/optimization_guide/proto/features/permissions_ai.proto";
 import "components/optimization_guide/proto/features/product_specifications.proto";
 import "components/optimization_guide/proto/features/prompt_api.proto";
 import "components/optimization_guide/proto/features/proofreader_api.proto";
@@ -38,7 +37,7 @@ option java_outer_classname = "ModelQualityServiceProto";
 // A request to send AI data logs to the model quality server. Data logging for
 // an AI feature with metadata specific to the logging.
 message LogAiDataRequest {
-  reserved 10, 11;
+  reserved 10, 11, 18;
 
   // For the use of MQLS client ID in glic API.
   // LINT.IfChange(MQLSClientIdReservation)
@@ -74,8 +73,6 @@ message LogAiDataRequest {
     PasswordChangeSubmissionLoggingData password_change_submission = 16;
 
     ScamDetectionLoggingData scam_detection = 17;
-
-    PermissionsAILoggingData permissions_ai = 18;
 
     FormsClassificationsLoggingData forms_classifications = 19;
 

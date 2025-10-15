@@ -24,7 +24,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "components/optimization_guide/proto/features/permissions_ai.pb.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request.h"
@@ -67,7 +66,6 @@ using ::permissions::PredictionRequestFeatures;
 using QuietUiReason = PermissionsAiUiSelector::QuietUiReason;
 using Decision = PermissionsAiUiSelector::Decision;
 using PredictionSource = ::permissions::PermissionPredictionSource;
-using ::optimization_guide::proto::PermissionsAiResponse;
 
 constexpr auto VeryUnlikely = permissions::
     PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;

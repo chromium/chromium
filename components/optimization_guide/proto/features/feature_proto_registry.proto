@@ -15,7 +15,6 @@ import public "components/optimization_guide/proto/features/compose.proto";
 import public "components/optimization_guide/proto/features/example_for_testing.proto";
 import public "components/optimization_guide/proto/features/history_answer.proto";
 import public "components/optimization_guide/proto/features/history_query_intent.proto";
-import public "components/optimization_guide/proto/features/permissions_ai.proto";
 import public "components/optimization_guide/proto/features/prompt_api.proto";
 import public "components/optimization_guide/proto/features/proofreader_api.proto";
 import public "components/optimization_guide/proto/string_value.proto";
@@ -39,6 +38,8 @@ message SummarizeLoggingData {
 // This message is never instantiated, it just enumerates the message types that
 // will be supported as requests/responses by on-device code.
 message OnDeviceFeatureProtoRegistry {
+  reserved 11;
+
   optimization_guide.proto.ComposeLoggingData a = 1;
   optimization_guide.proto.HistoryAnswerLoggingData b = 2;
   optimization_guide.proto.HistoryQueryIntentLoggingData c = 3;
@@ -49,6 +50,5 @@ message OnDeviceFeatureProtoRegistry {
   optimization_guide.proto.ScamDetectionLoggingData h = 8;
   optimization_guide.proto.WritingAssistanceApiLoggingData i = 9;
   ExampleForTestingData j = 10;
-  optimization_guide.proto.PermissionsAILoggingData k = 11;
   optimization_guide.proto.ProofreaderApiLoggingData l = 12;
 }
