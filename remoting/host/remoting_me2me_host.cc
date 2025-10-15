@@ -1707,7 +1707,6 @@ std::optional<ErrorCode> HostProcess::OnSessionPoliciesReceived(
 
   std::string username = GetUsername();
   LOG(INFO) << "Current local username is '" << username << "'";
-  bool found_match = false;
   for (const std::string& owner_email : host_owner_emails_) {
     auto email_parts = base::SplitStringOnce(owner_email, '@');
     if (!email_parts.has_value()) {
@@ -1717,19 +1716,14 @@ std::optional<ErrorCode> HostProcess::OnSessionPoliciesReceived(
     auto owner_username = email_parts->first;
     if (base::EqualsCaseInsensitiveASCII(username, owner_username)) {
       LOG(INFO) << owner_email << " matches the local username";
-      found_match = true;
-      break;
+      return std::nullopt;
     }
     LOG(WARNING) << owner_email << " does not match the local username";
   }
 
-  if (!found_match) {
-    LOG(ERROR) << "No owner emails are allowed based on match username policy.";
-    // TODO: crbug.com/359977809 - Add a new error code for mismatched username.
-    return ErrorCode::DISALLOWED_BY_POLICY;
-  }
-
-  return std::nullopt;
+  LOG(ERROR) << "No owner emails are allowed based on match username policy.";
+  // TODO: crbug.com/359977809 - Add a new error code for mismatched username.
+  return ErrorCode::DISALLOWED_BY_POLICY;
 
 #endif  // BUILDFLAG(IS_WIN) #else
 }
