@@ -2360,6 +2360,7 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
                 ],
+                retry_only_failed_tests = True,
                 swarming = targets.swarming(
                     dimensions = {
                         # use 8-core to shorten runtime
