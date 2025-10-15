@@ -497,6 +497,11 @@ void GlicButton::StartShowAnimation() {
     return SetCloseButtonVisible(true);
   }
 
+  // Don't restart the animation if already expanding or expanded.
+  if (is_showing_nudge_) {
+    return;
+  }
+
   // Remember the button's original width before changing the text and showing
   // the close button.
   initial_width_ = GetLayoutManager()->GetPreferredSize(this).width();
@@ -531,6 +536,11 @@ void GlicButton::StartHideAnimation() {
     // If flag is disabled, the parent drives the animation. Just update the
     // close button.
     return SetCloseButtonVisible(false);
+  }
+
+  // Don't start the animation if already collapsing or collapsed.
+  if (!is_showing_nudge_) {
+    return;
   }
 
   const base::TimeDelta kHideDuration = DurationMs(500);

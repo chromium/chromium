@@ -534,6 +534,48 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
+                       OnlyExpandGlicIfNotExpanded) {
+  // Show the nudge and finish the expansion animation.
+  ShowTabStripNudgeButton(GlicNudgeButton());
+  GetExpansionAnimation(GlicNudgeButton())->Reset(1);
+  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(1, tab_strip_action_container()
+                   ->GetGlicButton()
+                   ->width_factor_for_testing());
+
+  // Show again. Since we're already showing, the button should remain expanded.
+  ShowTabStripNudgeButton(GlicNudgeButton());
+  EXPECT_EQ(1, tab_strip_action_container()
+                   ->GetGlicButton()
+                   ->width_factor_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
+                       OnlyCollapseGlicIfNotCollapsed) {
+  // Show the nudge and finish the expansion animation.
+  ShowTabStripNudgeButton(GlicNudgeButton());
+  GetExpansionAnimation(GlicNudgeButton())->Reset(1);
+  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(1, tab_strip_action_container()
+                   ->GetGlicButton()
+                   ->width_factor_for_testing());
+
+  // Collapse.
+  SetLockedExpansionMode(LockedExpansionMode::kWillHide, GlicNudgeButton());
+  OnButtonDismissed(GlicNudgeButton());
+  GetExpansionAnimation(GlicNudgeButton())->Reset(0);
+  EXPECT_EQ(0, tab_strip_action_container()
+                   ->GetGlicButton()
+                   ->width_factor_for_testing());
+
+  // Collapse again. The button should remain collapsed.
+  OnButtonDismissed(GlicNudgeButton());
+  EXPECT_EQ(0, tab_strip_action_container()
+                   ->GetGlicButton()
+                   ->width_factor_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        LogsWhenGlicActorTaskIconClicked) {
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
   ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
