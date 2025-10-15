@@ -228,6 +228,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::JobController::Start(
       source_net_log.source());
 
   RunLoop(OK);
+  // `this` may be deleted at this point.
 
   return request;
 }
@@ -241,6 +242,7 @@ void HttpStreamFactory::JobController::Preconnect(int num_streams) {
   num_streams_ = num_streams;
 
   RunLoop(OK);
+  // `this` may be deleted at this point.
 }
 
 LoadState HttpStreamFactory::JobController::GetLoadState() const {
@@ -469,6 +471,7 @@ void HttpStreamFactory::JobController::OnStreamFailed(Job* job, int status) {
     }
     DCHECK_EQ(OK, status);
     RunLoop(status);
+    // `this` may be deleted at this point.
     return;
   }
 
@@ -746,6 +749,7 @@ HttpStreamFactory::JobController::websocket_handshake_stream_create_helper() {
 
 void HttpStreamFactory::JobController::OnIOComplete(int result) {
   RunLoop(result);
+  // `this` may be deleted at this point.
 }
 
 void HttpStreamFactory::JobController::RunLoop(int result) {
@@ -753,6 +757,15 @@ void HttpStreamFactory::JobController::RunLoop(int result) {
   if (rv == ERR_IO_PENDING) {
     return;
   }
+
+  if (switched_to_http_stream_pool_ && !is_preconnect_) {
+    // The request is handed over to the HttpStreamPool. Complete `this`.
+    DCHECK_EQ(rv, OK);
+    MaybeNotifyFactoryOfCompletion();
+    // `this` is deleted.
+    return;
+  }
+
   if (rv != OK) {
     // DoLoop can only fail during proxy resolution step which happens before
     // any jobs are created. Notify |request_| of the failure one message loop
@@ -1550,11 +1563,6 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
       std::exchange(request_, nullptr), std::exchange(delegate_, nullptr),
       std::move(pool_request_info), priority_, allowed_bad_certs_,
       enable_ip_based_pooling_for_h2_, enable_alternative_services_);
-
-  // Delete `this` later as this method is called while running DoLoop().
-  TaskRunner(priority_)->PostTask(
-      FROM_HERE, base::BindOnce(&JobController::MaybeNotifyFactoryOfCompletion,
-                                ptr_factory_.GetWeakPtr()));
 }
 
 void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
