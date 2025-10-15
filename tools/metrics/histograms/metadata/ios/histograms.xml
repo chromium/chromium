@@ -3118,6 +3118,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.Module.Click.DefaultBrowser" units="index"
+    expires_after="2026-04-15">
+  <owner>bmcclure@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records the rank index of the Default Browser module when a user clicks on
+    it.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MagicStack.Module.Click.MostVisited" units="index"
     expires_after="2026-09-28">
   <owner>thegreenfrog@chromium.org</owner>
