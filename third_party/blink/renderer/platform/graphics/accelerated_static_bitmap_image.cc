@@ -301,17 +301,6 @@ void AcceleratedStaticBitmapImage::CreateImageFromMailboxIfNeeded() {
       context_provider_wrapper->ContextProvider().RasterInterface();
   shared_ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
 
-  const auto& capabilities =
-      context_provider_wrapper->ContextProvider().GetCapabilities();
-
-  if (!capabilities.gpu_rasterization) {
-    // As the context provider no longer has a GrDirectContext, it is
-    // impossible to obtain a texture backing without OOP-R.
-    // TODO(crbug.com/391648152): Remove this condition entirely as part of
-    // removing non-OOP-R codepaths from Blink.
-    return;
-  }
-
   skia_context_provider_wrapper_ = context_provider_wrapper;
   texture_backing_ = sk_make_sp<MailboxTextureBacking>(
       shared_image_->mailbox(), mailbox_ref_, GetSize(), GetSharedImageFormat(),
