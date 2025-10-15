@@ -14,7 +14,6 @@ import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
 import android.util.SparseArray;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.Window;
 
 import org.chromium.build.annotations.NullMarked;
@@ -25,12 +24,6 @@ import java.util.concurrent.Executor;
 /** Interface to call unreleased Android APIs that are guarded by aconfig flags. */
 @NullMarked
 public interface AconfigFlaggedApiDelegate {
-    /**
-     * The default text cursor blink interval in milliseconds. This value is used as a fallback in
-     * public Chromium builds where the real implementation is not available.
-     */
-    int DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS = 500;
-
     /**
      * Prefer to use this to get a instance instead of calling ServiceLoaderUtil. If possible, avoid
      * caching the return value in member or global variables as it allows more compile time
@@ -142,16 +135,6 @@ public interface AconfigFlaggedApiDelegate {
      */
     default void rebindService(
             Context context, ServiceConnection connection, BindServiceFlags flags) {}
-
-    /**
-     * Calls the {@link android.view.ViewConfiguration#getTextCursorBlinkIntervalMillis()} method if
-     * an implementation is available, otherwise returns a default value.
-     *
-     * @param viewConfiguration The {@link android.view.ViewConfiguration} instance to use.
-     */
-    default int getTextCursorBlinkInterval(ViewConfiguration viewConfiguration) {
-        return DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
-    }
 
     /**
      * Calls {@link android.view.View#requestRectangleOnScreen(Rect, boolean, int)} if supported,

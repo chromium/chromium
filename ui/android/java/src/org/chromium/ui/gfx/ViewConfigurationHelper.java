@@ -14,12 +14,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 
 /**
@@ -34,8 +31,6 @@ public class ViewConfigurationHelper {
     // Fallback constants when resource lookup fails, see
     // ui/android/java/res/values/dimens.xml.
     private static final float MIN_SCALING_SPAN_MM = 12.0f;
-
-    private @Nullable AconfigFlaggedApiDelegate mAconfigFlaggedApiDelegate;
 
     private ViewConfiguration mViewConfiguration;
     private float mDensity;
@@ -86,8 +81,7 @@ public class ViewConfigurationHelper {
                         getMinimumFlingVelocity(),
                         getTouchSlop(),
                         getDoubleTapSlop(),
-                        getMinScalingSpan(),
-                        getTextCursorBlinkInterval());
+                        getMinScalingSpan());
     }
 
     @CalledByNative
@@ -130,18 +124,6 @@ public class ViewConfigurationHelper {
         return toDips(getScaledMinScalingSpan());
     }
 
-    @CalledByNative
-    private int getTextCursorBlinkInterval() {
-        if (mAconfigFlaggedApiDelegate == null) {
-            mAconfigFlaggedApiDelegate =
-                    ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
-            if (mAconfigFlaggedApiDelegate == null) {
-                return AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
-            }
-        }
-        return mAconfigFlaggedApiDelegate.getTextCursorBlinkInterval(mViewConfiguration);
-    }
-
     private int getScaledMinScalingSpan() {
         final Resources res = ContextUtils.getApplicationContext().getResources();
         // The correct minimum scaling span depends on how we recognize scale
@@ -181,7 +163,6 @@ public class ViewConfigurationHelper {
                 float minimumFlingVelocity,
                 float touchSlop,
                 float doubleTapSlop,
-                float minScalingSpan,
-                int textCursorBlinkInterval);
+                float minScalingSpan);
     }
 }

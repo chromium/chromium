@@ -33,10 +33,6 @@ bool OsSettingsProviderAndroid::PrefersInvertedColors() const {
   return display_inversion_enabled_;
 }
 
-base::TimeDelta OsSettingsProviderAndroid::CaretBlinkInterval() const {
-  return text_cursor_blink_interval_;
-}
-
 void OsSettingsProviderAndroid::OnDisplayInversionEnabledChanged(bool enabled) {
   if (std::exchange(display_inversion_enabled_, enabled) != enabled) {
     NotifyOnSettingsChanged();
@@ -47,14 +43,6 @@ void OsSettingsProviderAndroid::OnContrastLevelChanged(
     bool high_contrast_enabled) {
   if (std::exchange(high_contrast_enabled_, high_contrast_enabled) !=
       high_contrast_enabled) {
-    NotifyOnSettingsChanged();
-  }
-}
-
-void OsSettingsProviderAndroid::OnTextCursorBlinkIntervalChanged(
-    base::TimeDelta new_interval) {
-  if (std::exchange(text_cursor_blink_interval_, new_interval) !=
-      new_interval) {
     NotifyOnSettingsChanged();
   }
 }
