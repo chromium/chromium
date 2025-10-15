@@ -7,7 +7,9 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
+#include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
+#include "chrome/browser/glic/widget/glic_panel_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -34,6 +36,11 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
     return;
   }
 
+  application_hotkey_manager_ =
+      MakeApplicationHotkeyManager(weak_ptr_factory_.GetWeakPtr());
+  glic_panel_hotkey_manager_ =
+      MakeGlicWindowHotkeyManager(weak_ptr_factory_.GetWeakPtr());
+
   panel_visibility_subscription_ =
       glic_side_panel_coordinator->AddStateCallback(
           base::BindRepeating(&GlicSidePanelUi::SidePanelStateChanged,
@@ -44,8 +51,9 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
 }
 
 std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
-  auto glic_view = std::make_unique<GlicView>(
-      profile, GlicWidget::GetInitialSize(), nullptr);
+  auto glic_view =
+      std::make_unique<GlicView>(profile, GlicWidget::GetInitialSize(),
+                                 glic_panel_hotkey_manager_->GetWeakPtr());
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
   glic_view_ = glic_view->GetWeakPtr();
@@ -137,6 +145,8 @@ void GlicSidePanelUi::Show() {
   }
   panel_state_.kind = mojom::PanelState_Kind::kAttached;
   delegate_->NotifyPanelStateChanged();
+  application_hotkey_manager_->InitializeAccelerators();
+  glic_panel_hotkey_manager_->InitializeAccelerators();
   glic_side_panel_coordinator->Show();
 }
 
@@ -158,6 +168,31 @@ std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
     const {
   return GlicInactiveSidePanelUi::CreateForVisibleTab(
       tab_, delegate_->host().webui_contents(), delegate_.get());
+}
+
+void GlicSidePanelUi::FocusIfOpen() {
+  if (IsShowing()) {
+    Focus();
+  }
+}
+
+bool GlicSidePanelUi::IsActive() {
+  if (!glic_view_) {
+    return false;
+  }
+  return glic_view_->HasFocus();
+}
+
+bool GlicSidePanelUi::ActivateBrowser() {
+  if (!tab_) {
+    return false;
+  }
+  tab_->GetContents()->Focus();
+  return true;
+}
+
+void GlicSidePanelUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
+  // This is floaty-specific. It doesn't make sense in side panel.
 }
 
 base::WeakPtr<views::View> GlicSidePanelUi::GetView() {
