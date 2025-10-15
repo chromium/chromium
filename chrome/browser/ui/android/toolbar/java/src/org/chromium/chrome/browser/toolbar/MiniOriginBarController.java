@@ -356,7 +356,8 @@ public class MiniOriginBarController implements Observer {
         switch (mMiniOriginBarState) {
             case MiniOriginState.NOT_READY -> {
                 if (mIsFormFieldFocusedSupplier.getAsBoolean()
-                        && mBrowserControlsSizer.getControlsPosition() == ControlsPosition.BOTTOM) {
+                        && mBrowserControlsSizer.getControlsPosition() == ControlsPosition.BOTTOM
+                        && !mIsOmniboxFocusedSupplier.getAsBoolean()) {
                     return isKeyboardShowing() ? MiniOriginState.SHOWING : MiniOriginState.READY;
                 }
                 return MiniOriginState.NOT_READY;
@@ -377,17 +378,18 @@ public class MiniOriginBarController implements Observer {
             case MiniOriginState.ANIMATING -> {
                 return switch (miniOriginEvent) {
                     case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP -> MiniOriginState.NOT_READY;
-                        // A predictive back hide animation for the keyboard can be cancelled,
-                        // ending in a transient state where the keyboard insets are not applied but
-                        // it remains visible. To avoid visual glitches from hiding and reshowing,
-                        // we stay in the showing state.
-                    case MiniOriginEvent.KEYBOARD_ANIMATION_CANCELLED_BY_USER -> MiniOriginState
-                            .SHOWING;
-                    case MiniOriginEvent.KEYBOARD_ANIMATION_ENDED -> isKeyboardShowing()
-                            ? MiniOriginState.SHOWING
-                            : MiniOriginState.READY;
-                    case MiniOriginEvent.ACCESSORY_SHEET_APPEARED -> MiniOriginState
-                            .SHOWING_WITH_ACCESSORY_SHEET;
+                    // A predictive back hide animation for the keyboard can be cancelled,
+                    // ending in a transient state where the keyboard insets are not applied but
+                    // it remains visible. To avoid visual glitches from hiding and reshowing,
+                    // we stay in the showing state.
+                    case MiniOriginEvent.KEYBOARD_ANIMATION_CANCELLED_BY_USER ->
+                            MiniOriginState.SHOWING;
+                    case MiniOriginEvent.KEYBOARD_ANIMATION_ENDED ->
+                            isKeyboardShowing() && !mIsOmniboxFocusedSupplier.getAsBoolean()
+                                    ? MiniOriginState.SHOWING
+                                    : MiniOriginState.READY;
+                    case MiniOriginEvent.ACCESSORY_SHEET_APPEARED ->
+                            MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET;
                     default -> MiniOriginState.ANIMATING;
                 };
             }
