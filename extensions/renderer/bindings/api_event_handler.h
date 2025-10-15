@@ -68,6 +68,8 @@ class APIEventHandler {
 
   // Notifies all listeners of the event with the given `event_name` in the
   // specified `context`, sending the included `arguments`.
+  // `on_dispatched_callback` allows the caller to specify a `v8::Function` to
+  // be called with the results of the listener event dispatch.
   // Warning: This runs arbitrary JS code, so the `context` may be invalidated
   // after this!
   void FireEventInContext(const std::string& event_name,
@@ -78,7 +80,7 @@ class APIEventHandler {
                           v8::Local<v8::Context> context,
                           v8::LocalVector<v8::Value>* arguments,
                           mojom::EventFilteringInfoPtr filter,
-                          v8::Local<v8::Function> callback);
+                          v8::Local<v8::Function> on_dispatched_callback);
 
   // Registers a `function` to serve as an "argument massager" for the given
   // `event_name`, mutating the original arguments.

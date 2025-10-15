@@ -57,7 +57,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   void Fire(v8::Local<v8::Context> context,
             v8::LocalVector<v8::Value>* args,
             mojom::EventFilteringInfoPtr filter,
-            v8::Local<v8::Function> callback);
+            v8::Local<v8::Function> on_dispatched_callback);
 
   // Fires the event to any listeners synchronously, and returns the result.
   // This should only be used if the caller is certain that JS is already
@@ -110,7 +110,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   void DispatchAsync(v8::Local<v8::Context> context,
                      v8::LocalVector<v8::Value>* args,
                      mojom::EventFilteringInfoPtr filter,
-                     v8::Local<v8::Function> callback);
+                     v8::Local<v8::Function> on_dispatched_callback);
   static void DispatchAsyncHelper(
       const v8::FunctionCallbackInfo<v8::Value>& info);
 
