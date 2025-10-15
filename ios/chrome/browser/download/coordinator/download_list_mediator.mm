@@ -371,11 +371,6 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
   }
   [self.consumer setDownloadListItems:items.copy];
   [self.consumer setEmptyState:(items.count == 0)];
-
-  // Hide filter view when there are no records at all.
-  // Check if allRecords is empty, which means no records exist.
-  BOOL hasAnyRecords = !self.allRecords.empty();
-  [self.consumer setFilterViewShown:hasAnyRecords];
 }
 
 // Normalizes the search keyword by trimming whitespace and collapsing multiple

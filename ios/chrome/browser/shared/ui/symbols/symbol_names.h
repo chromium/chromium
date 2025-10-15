@@ -320,9 +320,6 @@ extern NSString* const kKeySymbol;
 extern NSString* const kTextDocument;
 extern NSString* const kPhotoOnRectangleSymbol;
 extern NSString* const kSystemCameraSymbol;
-extern NSString* const kTextJustifyLeftSymbol;
-extern NSString* const kVideoSymbol;
-extern NSString* const kWaveformSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

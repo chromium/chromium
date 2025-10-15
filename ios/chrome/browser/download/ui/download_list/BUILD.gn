@@ -4,12 +4,8 @@
 
 source_set("download_list") {
   sources = [
-    "download_filter_cell.h",
-    "download_filter_cell.mm",
     "download_list_action_delegate.h",
     "download_list_consumer.h",
-    "download_list_filter_view.h",
-    "download_list_filter_view.mm",
     "download_list_group_item.h",
     "download_list_group_item.mm",
     "download_list_grouping_util.h",

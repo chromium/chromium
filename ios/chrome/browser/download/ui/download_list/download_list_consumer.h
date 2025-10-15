@@ -26,11 +26,6 @@
 /// Shows empty state when no downloads exist.
 - (void)setEmptyState:(BOOL)empty;
 
-/// Controls the visibility of the filter view.
-/// When shown is NO, the filter view should be hidden (e.g., when no records
-/// exist).
-- (void)setFilterViewShown:(BOOL)shown;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_LIST_DOWNLOAD_LIST_CONSUMER_H_
