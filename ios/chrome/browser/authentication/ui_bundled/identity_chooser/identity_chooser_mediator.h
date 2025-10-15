@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class ChromeAccountManagerService;
+class GaiaId;
 @protocol IdentityChooserConsumer;
 @protocol SystemIdentity;
 namespace signin {
@@ -38,7 +39,7 @@ class IdentityManager;
 - (void)disconnect;
 
 // Selects an identity with a Gaia ID.
-- (void)selectIdentityWithGaiaID:(NSString*)gaiaID;
+- (void)selectIdentityWithGaiaID:(const GaiaId&)gaiaID;
 
 @end
 

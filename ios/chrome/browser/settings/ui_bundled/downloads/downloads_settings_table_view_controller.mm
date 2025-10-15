@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
@@ -98,7 +99,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setIdentityButtonAvatar:(UIImage*)avatar
                            name:(NSString*)name
                           email:(NSString*)email
-                         gaiaID:(NSString*)gaiaID
+                         gaiaID:(const GaiaId&)gaiaID
            askEveryTimeSwitchOn:(BOOL)askEveryTimeSwitchOn {
   // Update the identity button item.
   IdentityButtonItem* identityButtonItem = self.saveToPhotosDefaultIdentityItem;
@@ -214,9 +215,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.saveToPhotosSettingsMutator
       setAskWhichAccountToUseEveryTime:askWhichAccountToUseEveryTime];
   if (!askWhichAccountToUseEveryTime) {
-    [self.saveToPhotosSettingsMutator
-        setSelectedIdentityGaiaID:self.saveToPhotosDefaultIdentityItem
-                                      .identityGaiaID];
+    GaiaId gaiaID = self.saveToPhotosDefaultIdentityItem.identityGaiaID;
+    [self.saveToPhotosSettingsMutator setSelectedIdentityGaiaID:&gaiaID];
   }
 }
 

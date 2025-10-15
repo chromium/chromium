@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_account_chooser/identity_item_configurator.h"
@@ -113,7 +114,7 @@
 - (void)updateIdentityItemConfigurator:(IdentityItemConfigurator*)configurator
                           withIdentity:(id<SystemIdentity>)identity {
   CHECK(identity, base::NotFatalUntil::M147);
-  configurator.gaiaID = identity.gaiaID;
+  configurator.gaiaID = identity.gaiaId;
   configurator.name = identity.userFullName;
   configurator.email = identity.userEmail;
   configurator.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
@@ -140,7 +141,7 @@
   IdentityItemConfigurator* configurator = nil;
   for (IdentityItemConfigurator* cursor in self
            .sortedIdentityItemConfigurators) {
-    if ([cursor.gaiaID isEqualToString:identity.gaiaID]) {
+    if (cursor.gaiaID == identity.gaiaId) {
       configurator = cursor;
     }
   }

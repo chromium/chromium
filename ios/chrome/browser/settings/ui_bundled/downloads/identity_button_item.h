@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
+class GaiaId;
 typedef NS_ENUM(NSInteger, IdentityButtonControlArrowDirection);
 
 // Table view item to present an IdentityButtonControl in a table view.
@@ -19,7 +20,7 @@ typedef NS_ENUM(NSInteger, IdentityButtonControlArrowDirection);
 @property(nonatomic, strong) UIImage* identityAvatar;
 @property(nonatomic, copy) NSString* identityName;
 @property(nonatomic, copy) NSString* identityEmail;
-@property(nonatomic, copy) NSString* identityGaiaID;
+@property(nonatomic, assign) GaiaId identityGaiaID;
 @property(nonatomic, assign) BOOL identityManaged;
 @property(nonatomic, assign) IdentityButtonControlArrowDirection arrowDirection;
 @property(nonatomic, assign) IdentityViewStyle identityViewStyle;

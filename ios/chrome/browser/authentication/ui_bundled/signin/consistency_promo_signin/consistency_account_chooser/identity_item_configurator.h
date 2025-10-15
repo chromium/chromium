@@ -7,12 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+class GaiaId;
 @class TableViewIdentityItem;
 
 // This class configures TableViewIdentityItem instances.
 @interface IdentityItemConfigurator : NSObject
 
-@property(nonatomic, copy) NSString* gaiaID;
+@property(nonatomic, assign) GaiaId gaiaID;
 @property(nonatomic, copy) NSString* name;
 @property(nonatomic, copy) NSString* email;
 @property(nonatomic, strong) UIImage* avatar;

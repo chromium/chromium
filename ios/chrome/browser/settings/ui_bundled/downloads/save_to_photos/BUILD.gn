@@ -45,7 +45,10 @@ source_set("test_support") {
     "fake_save_to_photos_settings_mutator.h",
     "fake_save_to_photos_settings_mutator.mm",
   ]
-  deps = [ ":save_to_photos" ]
+  deps = [
+    ":save_to_photos",
+    "//google_apis",
+  ]
 }
 
 source_set("unit_tests") {

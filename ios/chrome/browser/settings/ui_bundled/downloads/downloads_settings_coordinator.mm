@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_coordinator.h"
 
 #import "components/prefs/pref_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
@@ -204,8 +205,8 @@
                      signinIdentity:(id<SystemIdentity>)signinIdentity {
   [self stopSigninCoordinator];
   if (result == SigninCoordinatorResultSuccess && signinIdentity) {
-    [_saveToPhotosSettingsMediator
-        setSelectedIdentityGaiaID:signinIdentity.gaiaID];
+    GaiaId gaiaID = signinIdentity.gaiaId;
+    [_saveToPhotosSettingsMediator setSelectedIdentityGaiaID:&gaiaID];
   }
 }
 

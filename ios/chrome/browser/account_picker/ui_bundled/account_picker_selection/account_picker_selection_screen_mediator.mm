@@ -111,7 +111,7 @@
             (AccountPickerSelectionScreenIdentityItemConfigurator*)configurator
                           withIdentity:(id<SystemIdentity>)identity {
   CHECK(identity, base::NotFatalUntil::M147);
-  configurator.gaiaID = identity.gaiaID;
+  configurator.gaiaID = identity.gaiaId;
   configurator.name = identity.userFullName;
   configurator.email = identity.userEmail;
   configurator.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
@@ -138,7 +138,7 @@
   AccountPickerSelectionScreenIdentityItemConfigurator* configurator = nil;
   for (AccountPickerSelectionScreenIdentityItemConfigurator* cursor in self
            .sortedIdentityItemConfigurators) {
-    if ([cursor.gaiaID isEqualToString:identity.gaiaID]) {
+    if (cursor.gaiaID == identity.gaiaId) {
       configurator = cursor;
     }
   }

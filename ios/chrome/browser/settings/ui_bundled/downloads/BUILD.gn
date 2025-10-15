@@ -50,6 +50,7 @@ source_set("identity_button_cell") {
     "identity_button_item.mm",
   ]
   deps = [
+    "//google_apis",
     "//ios/chrome/browser/authentication/ui_bundled/views",
     "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
     "//ios/chrome/browser/shared/ui/table_view/cells",

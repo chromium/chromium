@@ -168,7 +168,7 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
           didSelectIdentityWithGaiaID:(const GaiaId&)gaiaID {
   DCHECK_EQ(self.identityChooserViewController, viewController);
   DCHECK_EQ(IdentityChooserCoordinatorStateStarted, self.state);
-  [self.identityChooserMediator selectIdentityWithGaiaID:gaiaID.ToNSString()];
+  [self.identityChooserMediator selectIdentityWithGaiaID:gaiaID];
   // If the account refresh token is invalidated during this
   // operation then `identity` will be nil.
   if (self.selectedIdentity) {

@@ -268,7 +268,7 @@ CGFloat kSectionFooterHeight = 8.;
     TableViewIdentityItem* item =
         base::apple::ObjCCastStrict<TableViewIdentityItem>(
             [model itemAtIndexPath:path]);
-    if ([item.gaiaID isEqualToString:configurator.gaiaID]) {
+    if (item.gaiaID == configurator.gaiaID) {
       [configurator configureIdentityChooser:item];
       [self reconfigureCellsForItems:@[ item ]];
       [self.tableView reloadRowsAtIndexPaths:@[ path ]

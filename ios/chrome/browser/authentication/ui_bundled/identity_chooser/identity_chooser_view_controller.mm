@@ -70,7 +70,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       DCHECK(tableViewIdentityItem);
       [self.presentationDelegate
           identityChooserViewController:self
-            didSelectIdentityWithGaiaID:GaiaId(tableViewIdentityItem.gaiaID)];
+            didSelectIdentityWithGaiaID:tableViewIdentityItem.gaiaID];
       break;
     }
     case AddAccountItemType:
@@ -119,7 +119,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self reconfigureCellsForItems:@[ changedItem ]];
 }
 
-- (TableViewIdentityItem*)tableViewIdentityItemWithGaiaID:(NSString*)gaiaID {
+- (TableViewIdentityItem*)tableViewIdentityItemWithGaiaID:
+    (const GaiaId&)gaiaID {
   for (TableViewIdentityItem* item in [self.tableViewModel
            itemsInSectionWithIdentifier:IdentitiesSectionIdentifier]) {
     if (item.type != IdentityItemType) {
@@ -127,7 +128,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     TableViewIdentityItem* identityItem =
         base::apple::ObjCCastStrict<TableViewIdentityItem>(item);
-    if ([identityItem.gaiaID isEqualToString:gaiaID]) {
+    if (identityItem.gaiaID == gaiaID) {
       return identityItem;
     }
   }

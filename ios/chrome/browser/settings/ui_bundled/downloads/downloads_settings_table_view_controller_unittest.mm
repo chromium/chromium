@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
@@ -111,7 +112,7 @@ TEST_F(DownloadsSettingsTableViewControllerTest,
   [downloadsController setIdentityButtonAvatar:identity_avatar
                                           name:@"Firstname Lastname"
                                          email:@"firstname.lastname@example.org"
-                                        gaiaID:@"mygaiaid"
+                                        gaiaID:GaiaId("mygaiaid")
                           askEveryTimeSwitchOn:YES];
 
   EXPECT_EQ(1, NumberOfSections());
@@ -126,7 +127,7 @@ TEST_F(DownloadsSettingsTableViewControllerTest,
   EXPECT_NSEQ(@"Firstname Lastname", identity_button_item.identityName);
   EXPECT_NSEQ(@"firstname.lastname@example.org",
               identity_button_item.identityEmail);
-  EXPECT_NSEQ(@"mygaiaid", identity_button_item.identityGaiaID);
+  EXPECT_EQ(GaiaId(@"mygaiaid"), identity_button_item.identityGaiaID);
   EXPECT_TRUE(identity_button_item.enabled);
   EXPECT_EQ(IdentityButtonControlArrowRight,
             identity_button_item.arrowDirection);
@@ -136,7 +137,7 @@ TEST_F(DownloadsSettingsTableViewControllerTest,
       YES, IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME, 0, 1);
 
   // Test that disabling and re-enabling the switch updates the mutator.
-  EXPECT_FALSE(save_to_photos_mutator_.selectedIdentityGaiaID);
+  EXPECT_TRUE(save_to_photos_mutator_.selectedIdentityGaiaID.empty());
   TableViewCellContentView* content_view =
       base::apple::ObjCCast<TableViewCellContentView>([[controller()
                       tableView:controller().tableView

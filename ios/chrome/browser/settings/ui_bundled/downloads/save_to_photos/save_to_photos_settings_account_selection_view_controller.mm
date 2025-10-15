@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_view_controller_action_delegate.h"
@@ -89,7 +90,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeIdentity: {
       TableViewIdentityItem* identityItem =
           base::apple::ObjCCastStrict<TableViewIdentityItem>(item);
-      [self.mutator setSelectedIdentityGaiaID:identityItem.gaiaID];
+      GaiaId gaiaID = identityItem.gaiaID;
+      [self.mutator setSelectedIdentityGaiaID:&gaiaID];
       break;
     }
     case ItemTypeAddAccount: {

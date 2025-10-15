@@ -351,7 +351,8 @@ TEST_F(DownloadsSettingsCoordinatorTest,
   id<SystemIdentity> added_identity = [FakeSystemIdentity fakeIdentity1];
   ASSERT_TRUE(show_signin_callback);
   OCMExpect([mock_save_to_photos_settings_mediator_
-      setSelectedIdentityGaiaID:added_identity.gaiaID]);
+                setSelectedIdentityGaiaID:ios::OCM::AnyPointer<const GaiaId>()])
+      .andCompareObjectAtIndex(added_identity.gaiaId, 0);
   show_signin_callback(SigninCoordinatorResultSuccess, added_identity);
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_settings_mediator_);
 

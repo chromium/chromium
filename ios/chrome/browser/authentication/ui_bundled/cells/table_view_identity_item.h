@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
@@ -15,7 +16,7 @@
 @interface TableViewIdentityItem : TableViewItem
 
 // Gaia ID.
-@property(nonatomic, copy) NSString* gaiaID;
+@property(nonatomic, assign) GaiaId gaiaID;
 // User name.
 @property(nonatomic, copy) NSString* name;
 // User email.
