@@ -625,7 +625,7 @@ export class ComposeboxElement extends I18nMixinLit
           /* are_matches_showing */ true, (e as MouseEvent).button || 0,
           e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
     } else {
-      this.pageHandler_.submitQuery(
+      this.searchboxHandler_.submitQuery(
           this.$.input.value.trim(), (e as MouseEvent).button || 0, e.altKey,
           e.ctrlKey, e.metaKey, e.shiftKey);
     }

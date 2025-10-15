@@ -136,53 +136,6 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
   std::unique_ptr<ComposeboxHandler> handler_;
 };
 
-TEST_F(ComposeboxHandlerTest, SubmitQuery) {
-  // Wait until the state changes to kClusterInfoReceived.
-  base::RunLoop run_loop;
-  query_controller().set_on_query_controller_state_changed_callback(
-      base::BindLambdaForTesting([&](QueryControllerState state) {
-        if (state == QueryControllerState::kClusterInfoReceived) {
-          run_loop.Quit();
-        }
-      }));
-
-  std::vector<SessionState> session_states;
-  EXPECT_CALL(metrics_recorder(), NotifySessionStateChanged)
-      .Times(3)
-      .WillRepeatedly([&](SessionState session_state) {
-        session_states.push_back(session_state);
-      });
-
-  // Start the session.
-  EXPECT_CALL(query_controller(), NotifySessionStarted)
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          &query_controller(), &MockQueryController::NotifySessionStartedBase));
-  handler().NotifySessionStarted();
-  run_loop.Run();
-
-  SubmitQueryAndWaitForNavigation();
-
-  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
-      search_url_request_info = std::make_unique<
-          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
-  search_url_request_info->query_text = kQueryText;
-  search_url_request_info->query_start_time = base::Time::Now();
-  GURL expected_url =
-      query_controller().CreateSearchUrl(std::move(search_url_request_info));
-  GURL actual_url =
-      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
-
-  // Ensure navigation occurred.
-  EXPECT_EQ(StripTimestampsFromAimUrl(expected_url),
-            StripTimestampsFromAimUrl(actual_url));
-
-  EXPECT_THAT(session_states,
-              testing::ElementsAre(SessionState::kSessionStarted,
-                                   SessionState::kQuerySubmitted,
-                                   SessionState::kNavigationOccurred));
-}
-
 TEST_F(ComposeboxHandlerTest, SetDeepSearchMode) {
   // Wait until the state changes to kClusterInfoReceived.
   base::RunLoop run_loop;

@@ -106,6 +106,12 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void AddTabContext(int32_t tab_id, AddTabContextCallback) override {}
   void DeleteContext(const base::UnguessableToken& file_token) override {}
   void ClearFiles() override {}
+  void SubmitQuery(const std::string& query_text,
+                   uint8_t mouse_button,
+                   bool alt_key,
+                   bool ctrl_key,
+                   bool meta_key,
+                   bool shift_key) override {}
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);

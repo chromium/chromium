@@ -21,6 +21,8 @@
 #include "components/lens/contextual_input.h"
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/base/window_open_disposition_utils.h"
 
 using composebox::SessionState;
 
@@ -175,17 +177,21 @@ void ContextualSearchboxHandler::DeleteContext(
   query_controller_->ClearSuggestInputs();
 }
 
-void ContextualSearchboxHandler::OnGetTabPageContext(
-    const base::UnguessableToken& context_token,
-    std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  query_controller_->StartFileUploadFlow(context_token,
-                                         std::move(page_content_data),
-                                         CreateImageEncodingOptions());
-}
-
 void ContextualSearchboxHandler::ClearFiles() {
   deleted_context_tokens_.clear();
   query_controller_->ClearFiles();
+}
+
+void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
+                                             uint8_t mouse_button,
+                                             bool alt_key,
+                                             bool ctrl_key,
+                                             bool meta_key,
+                                             bool shift_key) {
+  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+      shift_key);
+  ComputeAndOpenQueryUrl(query_text, disposition, /*additional_params=*/{});
 }
 
 void ContextualSearchboxHandler::OnFileUploadStatusChanged(
@@ -209,4 +215,69 @@ std::string ContextualSearchboxHandler::AutocompleteIconToResourceName(
   }
 
   return SearchboxHandler::AutocompleteIconToResourceName(icon);
+}
+
+void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
+    const std::string& query_text,
+    WindowOpenDisposition disposition,
+    std::map<std::string, std::string> additional_params) {
+  // Update the query controller state to reflect any deleted contexts.
+  std::erase_if(deleted_context_tokens_,
+                [this](const base::UnguessableToken& context_token) {
+                  ComposeboxQueryController::FileInfo* file_info =
+                      query_controller_->GetFileInfo(context_token);
+
+                  if (file_info == nullptr) {
+                    return false;
+                  }
+
+                  lens::MimeType file_type = file_info
+                                                 ? file_info->mime_type_
+                                                 : lens::MimeType::kUnknown;
+                  FileUploadStatus file_status =
+                      file_info ? file_info->GetFileUploadStatus()
+                                : FileUploadStatus::kNotUploaded;
+
+                  bool success = query_controller_->DeleteFile(context_token);
+                  composebox_metrics_recorder_->RecordFileDeletedMetrics(
+                      success, file_type, file_status);
+
+                  return success;
+                });
+
+  // This is the time that the user clicked the submit button, however optional
+  // autocomplete logic may be run before this if there was a match associated
+  // with the query.
+  base::Time query_start_time = base::Time::Now();
+  composebox_metrics_recorder_->NotifySessionStateChanged(
+      SessionState::kQuerySubmitted);
+  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+      search_url_request_info = std::make_unique<
+          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = query_text;
+  search_url_request_info->query_start_time = query_start_time;
+  search_url_request_info->additional_params = additional_params;
+  OpenUrl(
+      query_controller_->CreateSearchUrl(std::move(search_url_request_info)),
+      disposition);
+  composebox_metrics_recorder_->NotifySessionStateChanged(
+      SessionState::kNavigationOccurred);
+  composebox_metrics_recorder_->RecordQueryMetrics(
+      query_text.size(), query_controller_->num_files_in_request());
+}
+
+void ContextualSearchboxHandler::OnGetTabPageContext(
+    const base::UnguessableToken& context_token,
+    std::unique_ptr<lens::ContextualInputData> page_content_data) {
+  query_controller_->StartFileUploadFlow(context_token,
+                                         std::move(page_content_data),
+                                         CreateImageEncodingOptions());
+}
+
+void ContextualSearchboxHandler::OpenUrl(
+    GURL url,
+    const WindowOpenDisposition disposition) {
+  content::OpenURLParams params(url, content::Referrer(), disposition,
+                                ui::PAGE_TRANSITION_LINK, false);
+  web_contents_->OpenURL(params, base::DoNothing());
 }

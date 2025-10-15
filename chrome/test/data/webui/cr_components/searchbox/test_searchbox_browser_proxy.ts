@@ -34,6 +34,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'getPlaceholderConfig',
       'getRecentTabs',
       'getTabPreview',
+      'submitQuery',
     ]);
   }
 
@@ -147,6 +148,14 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   clearFiles() {
     this.methodCalled('clearFiles');
+  }
+
+  submitQuery(
+      queryText: string, mouseButton: number, altKey: boolean, ctrlKey: boolean,
+      metaKey: boolean, shiftKey: boolean) {
+    this.methodCalled(
+        'submitQuery',
+        {queryText, mouseButton, altKey, ctrlKey, metaKey, shiftKey});
   }
 }
 

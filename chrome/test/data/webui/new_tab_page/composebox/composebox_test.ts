@@ -731,7 +731,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert call does not occur.
-    assertEquals(handler.getCallCount('submitQuery'), 0);
+    assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
     assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
   });
 
@@ -1154,7 +1154,7 @@ suite('NewTabPageComposeboxTest', () => {
   test('composebox does not open match when only file present', async () => {
     createComposeboxElement();
 
-    assertEquals(handler.getCallCount('submitQuery'), 0);
+    assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
     const token = {low: BigInt(1), high: BigInt(2)};
     await uploadFileAndVerify(
         token, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
@@ -1163,7 +1163,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert call occurs.
-    assertEquals(handler.getCallCount('submitQuery'), 1);
+    assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
     assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
   });
 
@@ -1296,7 +1296,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(destinationUrl, keydownArgs[1]);
     assertEquals(1, searchboxHandler.getCallCount('deleteAutocompleteMatch'));
     // Pressing the 'Enter' button doesn't accidentally trigger navigation.
-    assertEquals(0, handler.getCallCount('submitQuery'));
+    assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
     searchboxHandler.reset();
     handler.reset();
 
@@ -1308,7 +1308,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(destinationUrl, clickArgs[1]);
     assertEquals(1, searchboxHandler.getCallCount('deleteAutocompleteMatch'));
     // Clicking the button doesn't accidentally trigger navigation.
-    assertEquals(0, handler.getCallCount('submitQuery'));
+    assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
   });
 
   test('composebox stops autocomplete when clearing input', async () => {
