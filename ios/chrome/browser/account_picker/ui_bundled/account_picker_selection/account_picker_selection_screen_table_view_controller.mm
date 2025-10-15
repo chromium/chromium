@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_model_delegate.h"
@@ -78,7 +79,7 @@ CGFloat kSectionFooterHeight = 8.;
       DCHECK(identityItem);
       [self.actionDelegate
           accountPickerListTableViewController:self
-                   didSelectIdentityWithGaiaID:identityItem.gaiaID];
+                   didSelectIdentityWithGaiaID:GaiaId(identityItem.gaiaID)];
       break;
     }
     case AddAccountItemType:

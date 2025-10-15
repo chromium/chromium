@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_add_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_header_item.h"
@@ -69,7 +70,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       DCHECK(tableViewIdentityItem);
       [self.presentationDelegate
           identityChooserViewController:self
-            didSelectIdentityWithGaiaID:tableViewIdentityItem.gaiaID];
+            didSelectIdentityWithGaiaID:GaiaId(tableViewIdentityItem.gaiaID)];
       break;
     }
     case AddAccountItemType:

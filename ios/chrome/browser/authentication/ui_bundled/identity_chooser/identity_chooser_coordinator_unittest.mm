@@ -79,7 +79,7 @@ TEST_F(IdentityChooserCoordinatorTest, testValidIdentity) {
   // User selects a valid account.
   [GetViewControllerDelegate()
       identityChooserViewController:presented_view_controller
-        didSelectIdentityWithGaiaID:identity.gaiaID];
+        didSelectIdentityWithGaiaID:identity.gaiaId];
   EXPECT_NSEQ(identity, coordinator_.selectedIdentity);
   [coordinator_ stop];
 }
@@ -95,7 +95,7 @@ TEST_F(IdentityChooserCoordinatorTest, testIdentityInvalidatedDuringSelection) {
   // User selects an account that has been invalidated.
   [GetViewControllerDelegate()
       identityChooserViewController:presented_view_controller
-        didSelectIdentityWithGaiaID:@"1"];
+        didSelectIdentityWithGaiaID:GaiaId("1")];
   EXPECT_NSEQ(nil, coordinator_.selectedIdentity);
   [coordinator_ stop];
 }

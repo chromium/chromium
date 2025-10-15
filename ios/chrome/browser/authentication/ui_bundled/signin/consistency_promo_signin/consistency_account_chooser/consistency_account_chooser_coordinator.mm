@@ -94,7 +94,7 @@
 
 - (void)consistencyAccountChooserTableViewController:
             (ConsistencyAccountChooserTableViewController*)viewController
-                         didSelectIdentityWithGaiaID:(NSString*)gaiaID {
+                         didSelectIdentityWithGaiaID:(const GaiaId&)gaiaID {
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
 

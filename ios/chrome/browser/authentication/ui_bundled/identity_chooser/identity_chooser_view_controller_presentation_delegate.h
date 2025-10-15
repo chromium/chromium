@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+class GaiaId;
 @class IdentityChooserViewController;
 
 // Delegate protocol for presentation events of IdentityChooserViewController.
@@ -23,7 +24,7 @@
 // Called when the user taps on an identity.
 - (void)identityChooserViewController:
             (IdentityChooserViewController*)viewController
-          didSelectIdentityWithGaiaID:(NSString*)gaiaID;
+          didSelectIdentityWithGaiaID:(const GaiaId&)gaiaID;
 
 @end
 

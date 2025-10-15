@@ -50,6 +50,7 @@ source_set("identity_chooser_ui") {
     "//base",
     "//base:i18n",
     "//components/google/core/common",
+    "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/authentication/ui_bundled/identity_chooser/resources",
