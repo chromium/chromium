@@ -130,7 +130,7 @@ class AdbQuerySocket : AdbClientSocket {
 
   void OnResponse(int result, const std::string& response) {
     if (++current_query_ < queries_.size()) {
-      SendNextQuery(result);
+      SendNextQuery(net::OK);
     } else {
       std::move(callback_).Run(result, response);
       delete this;

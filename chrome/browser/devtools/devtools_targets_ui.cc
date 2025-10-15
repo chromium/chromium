@@ -47,8 +47,6 @@ const char kGuestList[] = "guests";
 
 const char kAdbModelField[] = "adbModel";
 const char kAdbConnectedField[] = "adbConnected";
-const char kAdbUnauthorizedField[] = "adbUnauthorized";
-const char kAdbLockedField[] = "adbLocked";
 const char kAdbSerialField[] = "adbSerial";
 const char kAdbBrowsersList[] = "browsers";
 const char kAdbDeviceIdFormat[] = "device:%s";
@@ -234,8 +232,6 @@ void AdbTargetsUIHandler::DeviceListChanged(
     device_data.Set(kAdbModelField, device->model());
     device_data.Set(kAdbSerialField, device->serial());
     device_data.Set(kAdbConnectedField, device->is_connected());
-    device_data.Set(kAdbUnauthorizedField, device->is_unauthorized());
-    device_data.Set(kAdbLockedField, device->is_locked());
     std::string device_id = base::StringPrintf(
         kAdbDeviceIdFormat,
         device->serial().c_str());

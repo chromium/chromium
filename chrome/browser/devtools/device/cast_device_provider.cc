@@ -72,7 +72,7 @@ AndroidDeviceManager::DeviceInfo ServiceDescriptionToDeviceInfo(
       ParseServiceTxtRecord(service_description.metadata);
 
   AndroidDeviceManager::DeviceInfo device_info;
-  device_info.connected_state = AndroidDeviceManager::DeviceInfo::kConnected;
+  device_info.connected = true;
   device_info.model = GetServiceMapValue(*record_map, "md", kUnknownCastDevice);
   AndroidDeviceManager::BrowserInfo browser_info;
   browser_info.socket_name = base::NumberToString(kCastInspectPort);

@@ -39,6 +39,7 @@ class AndroidDeviceManager {
                               const std::string& extensions,
                               const std::string& body_head,
                               std::unique_ptr<net::StreamSocket>)>;
+  using SerialsCallback = base::OnceCallback<void(std::vector<std::string>)>;
 
   struct BrowserInfo {
     BrowserInfo();
@@ -62,22 +63,12 @@ class AndroidDeviceManager {
     DeviceInfo(const DeviceInfo& other);
     ~DeviceInfo();
 
-    enum ConnectedState {
-      kUnknown,
-      kUnauthorized,
-      kOffline,
-      kConnected,
-      kLocked,
-    };
-
     std::string model;
-    ConnectedState connected_state = kUnknown;
+    bool connected;
     gfx::Size screen_size;
     std::vector<BrowserInfo> browser_info;
   };
 
-  using SerialsCallback = base::OnceCallback<void(
-      std::vector<std::pair<std::string, DeviceInfo::ConnectedState>>)>;
   using DeviceInfoCallback = base::OnceCallback<void(const DeviceInfo&)>;
   class Device;
 
@@ -147,7 +138,6 @@ class AndroidDeviceManager {
         AndroidWebSocket::Delegate* delegate);
 
     const std::string& serial() { return serial_; }
-    DeviceInfo::ConnectedState connected_state() { return connected_state_; }
 
    private:
     friend class base::RefCountedDeleteOnSequence<Device>;
@@ -157,14 +147,12 @@ class AndroidDeviceManager {
 
     Device(scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
            scoped_refptr<DeviceProvider> provider,
-           const std::string& serial,
-           const DeviceInfo::ConnectedState connected_state);
+           const std::string& serial);
     ~Device();
 
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
     scoped_refptr<DeviceProvider> provider_;
     const std::string serial_;
-    DeviceInfo::ConnectedState connected_state_;
 
     base::WeakPtrFactory<Device> weak_factory_{this};
   };
@@ -236,7 +224,6 @@ class AndroidDeviceManager {
 
     scoped_refptr<DeviceProvider> provider;
     std::string serial;
-    DeviceInfo::ConnectedState connected_state;
   };
 
   typedef std::vector<DeviceDescriptor> DeviceDescriptors;
