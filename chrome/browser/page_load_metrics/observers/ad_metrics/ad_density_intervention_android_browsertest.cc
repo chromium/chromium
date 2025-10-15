@@ -117,9 +117,10 @@ IN_PROC_BROWSER_TEST_F(
       1);
 }
 
+// TODO(crbug.com/449908513): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     AdDensityViolationBrowserTestMessagesUi,
-    MobilePageAdDensityByHeightBelow30_AdInterventionNotTriggered_MessagesUi) {
+    DISABLED_MobilePageAdDensityByHeightBelow30_AdInterventionNotTriggered_MessagesUi) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
