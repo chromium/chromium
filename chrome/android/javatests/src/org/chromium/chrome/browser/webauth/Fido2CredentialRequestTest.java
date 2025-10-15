@@ -59,7 +59,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -100,6 +99,7 @@ import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.FidoIntentSender;
 import org.chromium.components.webauthn.GetAssertionOutcome;
+import org.chromium.components.webauthn.GmsCoreUtils;
 import org.chromium.components.webauthn.GpmBrowserOptionsHelper;
 import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
@@ -2678,8 +2678,11 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertion_conditionalUiHybrid_success() {
+        if (!GmsCoreUtils.isHybridClientApiSupported()) {
+            return;
+        }
+
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mMockBrowserBridge.setExpectedCredentialDetailsList(
                 Arrays.asList(Fido2ApiTestHelper.getCredentialDetails()));
