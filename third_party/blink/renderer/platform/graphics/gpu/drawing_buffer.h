@@ -310,8 +310,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Restore all state that may have been dirtied by any call.
   void RestoreAllState();
 
-  bool UsingSwapChain() const { return using_swap_chain_; }
-
   // Returns true if the drawing buffer supports direct (no-copy) export for low
   // latency (e.g., to the display compositor).
   bool SupportsNoCopyExportForLowLatency();
