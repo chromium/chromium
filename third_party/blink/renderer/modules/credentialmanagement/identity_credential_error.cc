@@ -5,7 +5,10 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential_error.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_error_init.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -43,6 +46,19 @@ String IdentityCredentialError::code(ExceptionState& exception_state) const {
         "FedCmErrorAttribute feature is enabled. Use 'error' attribute "
         "instead.");
     return String();
+  }
+
+  // Add console warning when code attribute is accessed
+  if (ScriptState* script_state =
+          ScriptState::ForCurrentRealm(exception_state.GetIsolate())) {
+    if (ExecutionContext* execution_context =
+            ExecutionContext::From(script_state)) {
+      execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "The 'code' attribute of IdentityCredentialError is deprecated and "
+          "will be removed in Chrome 145. Use the 'error' attribute instead."));
+    }
   }
 
   return error_code_;

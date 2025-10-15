@@ -204,13 +204,23 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
       continue;
     }
 
-    if (IsWellKnownEndpointValidationEnabled()) {
-      // Check if this IDP has a client_metadata endpoint
-      bool has_client_metadata_endpoint =
-          !fetch_result.endpoints.client_metadata.is_empty();
+    // Check if this IDP has a client_metadata endpoint
+    bool has_client_metadata_endpoint =
+        !fetch_result.endpoints.client_metadata.is_empty();
 
-      if (!ValidateWellKnownFormatForClientMetadata(
-              fetch_result.wellknown, has_client_metadata_endpoint)) {
+    if (!ValidateWellKnownFormatForClientMetadata(
+            fetch_result.wellknown, has_client_metadata_endpoint)) {
+      render_frame_host_->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "The FedCM configuration uses client_metadata but the "
+          ".well-known/web-identity file is missing required endpoints. "
+          "When client_metadata is used, both 'accounts_endpoint' and "
+          "'login_url' must be explicitly included in the well-known file "
+          "for privacy reasons. This will become a hard requirement in Chrome "
+          "145. Please update your .well-known/web-identity file to include "
+          "these endpoints.");
+
+      if (IsWellKnownEndpointValidationEnabled()) {
         federated_auth_request_impl_->OnFetchDataForIdpFailed(
             std::move(idp_info),
             FederatedAuthRequestResult::kWellKnownInvalidResponse,

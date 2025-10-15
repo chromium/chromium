@@ -1335,6 +1335,19 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
     std::vector<std::string> messages =
         RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
 
+    // TODO(crbug.com/451219310): Remove when FedCM deprecation warnings
+    // removed. Filter out known deprecation warnings
+    std::vector<std::string> filtered_messages;
+    for (const auto& message : messages) {
+      if (message.find("Top-level nonce support will be removed") ==
+              std::string::npos &&
+          message.find("The FedCM configuration uses client_metadata") ==
+              std::string::npos) {
+        filtered_messages.push_back(message);
+      }
+    }
+    messages = std::move(filtered_messages);
+
     bool did_expect_any_messages = false;
     size_t expected_message_index = messages.size() - 1;
     if (devtools_issue_status != FederatedAuthRequestResult::kSuccess) {

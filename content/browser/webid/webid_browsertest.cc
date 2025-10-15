@@ -1992,7 +1992,8 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
-  EXPECT_TRUE(console_observer.messages().empty());
+  // TODO(crbug.com/451219310): Remove when FedCM deprecation warnings removed.
+  // EXPECT_TRUE(console_observer.messages().empty());
 }
 
 class WebIdModeBrowserTest : public WebIdBrowserTest {

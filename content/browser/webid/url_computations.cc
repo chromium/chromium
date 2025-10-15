@@ -48,6 +48,12 @@ std::string ComputeUrlEncodedTokenPostData(
   }
 
   if (!webid::IsNonceInParamsEnabled() && !nonce.empty()) {
+    render_frame_host.AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "The 'nonce' parameter should be passed within the 'params' "
+        "object instead of as a top-level parameter. Top-level nonce "
+        "support will be removed in Chrome 145.");
+
     if (!query.empty()) {
       query += "&";
     }
