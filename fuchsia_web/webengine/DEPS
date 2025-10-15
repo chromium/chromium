@@ -9,6 +9,7 @@ include_rules = [
   "+components/fuchsia_component_support",
   "+components/media_control",
   "+components/on_load_script_injector",
+  "+components/push_messaging",
   "+components/version_info",
   "+content/public/app",
   "+content/public/common",

@@ -6,13 +6,19 @@
 #define FUCHSIA_WEB_WEBENGINE_BROWSER_PUSH_MESSAGING_SERVICE_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/sequence_checker.h"
 #include "base/version_info/channel.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_driver.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/push_messaging/app_identifier.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/push_messaging_service.h"
+
+class GURL;
 
 namespace content {
 class BrowserContext;
@@ -22,11 +28,27 @@ namespace os_crypt_async {
 class OSCryptAsync;
 }  // namespace os_crypt_async
 
-class PushMessagingServiceImpl : public content::PushMessagingService,
-                                 public gcm::GCMAppHandler {
+// The PushMessagingService implementation dedicated for WebEngine since the
+// //chrome/browser/push_messaging implementation uses Profile which is not a
+// concept in //fuchsia_web.
+// Most of the implementations are copied from
+// //chrome/browser/push_messaging/push_messaging_service_impl but modified to
+// fit the limits of WebEngine.
+//
+// The principle of this implementation is to ensure the WebAPI compatibility
+// between a full functional Chrome and WebEngine. WebApp should function the
+// same except for the designated specific behaviors in this implementation,
+// e.g. no notification support; no per-profile messaging; no user controllable
+// permission.
+//
+// TODO(crbug.com/424479300): Move more shared logic from
+// //chrome/browser/push_messaging/ to //contents/browser/push_messaging/ and
+// //components/push_messaging/ to reduce the duplications.
+class PushMessagingServiceImpl final : public content::PushMessagingService,
+                                       public gcm::GCMAppHandler {
  public:
   PushMessagingServiceImpl(content::BrowserContext&,
-                           os_crypt_async::OSCryptAsync*);
+                           os_crypt_async::OSCryptAsync&);
   ~PushMessagingServiceImpl() override;
 
   // PushMessagingService implementations.
@@ -72,6 +94,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
  private:
   gcm::GCMDriver& GetGCMDriver();
+  instance_id::InstanceIDDriver& GetInstanceIDDriver();
 
   void RequestProxyResolvingSocketFactory(
       mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
@@ -84,12 +107,67 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   std::string GetProductCategoryForSubtypes() const;
 
+  // Shared implementation for both SubscribeFromDocument and
+  // SubscribeFromWorker.
+  void DoSubscribe(const GURL& requesting_origin,
+                   int64_t service_worker_registration_id,
+                   blink::mojom::PushSubscriptionOptionsPtr options,
+                   RegisterCallback callback);
+
+  void DidSubscribe(const push_messaging::AppIdentifier& app_identifier,
+                    const std::string& sender_id,
+                    RegisterCallback callback,
+                    const std::string& subscription_id,
+                    instance_id::InstanceID::Result result);
+
+  // An O(N) search on all the subscriptions to find the match of
+  // |origin| and |service_worker_registration_id|.
+  std::optional<push_messaging::AppIdentifier> FindByServiceWorker(
+      const GURL& origin,
+      int64_t service_worker_registration_id) const;
+
+  void DidSubscribeWithEncryptionInfo(
+      const push_messaging::AppIdentifier& app_identifier,
+      RegisterCallback callback,
+      const std::string& subscription_id,
+      const GURL& endpoint,
+      std::string p256dh,
+      std::string auth_secret);
+
+  void DidClearPushSubscriptionId(blink::mojom::PushUnregistrationReason reason,
+                                  const push_messaging::AppIdentifier& app_id,
+                                  UnregisterCallback callback);
+
+  void DidDeleteID(const std::string& app_id, instance_id::InstanceID::Result);
+  // RemoveInstanceID must be run asynchronously, since it calls
+  // InstanceIDDriver::RemoveInstanceID which deletes the InstanceID itself.
+  // Calling that immediately would cause a use-after-free in our caller.
+  void RemoveInstanceID(const std::string& app_id);
+
+  void DidUnsubscribe(gcm::GCMClient::Result);
+
+  // Class variables
+
   // Lazy initialized.
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
 
+  // Lazy initialized.
+  std::unique_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
+
   // Outlive this instance.
   content::BrowserContext& parent_context_;
-  raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  os_crypt_async::OSCryptAsync& os_crypt_async_;
+
+  // TODO(http://crbug.com/424479300): Implement the persistent storage of the
+  // |app_ids_|.
+  //
+  // map<app_id, AppIdentifier>, the AppIdentifier.app_id must match the map
+  // key.
+  std::unordered_map<std::string, push_messaging::AppIdentifier> app_ids_;
+
+  // Number of on-the-fly subscriptions, i.e. DoSubscribe was called, but not
+  // DidSubscribe.
+  int pending_subscriptions_{0};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

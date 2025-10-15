@@ -204,7 +204,7 @@ WebEngineBrowserContext::WebEngineBrowserContext(
       reduce_accept_language_delegate_(GetAcceptLanguages())
 #ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
       ,
-      push_messaging_service_(*this, os_crypt_async)
+      push_messaging_service_(*this, *os_crypt_async)
 #endif
 {
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
