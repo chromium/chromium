@@ -81,19 +81,15 @@ AutofillAiLogger::~AutofillAiLogger() {
   }
 }
 
-void AutofillAiLogger::OnFormEligibilityAvailable(
-    FormGlobalId form_id,
-    DenseSet<EntityType> relevant_entities) {
-  for (EntityType entity_type : relevant_entities) {
-    form_states_[form_id][entity_type].is_eligible = true;
-  }
-}
-
 void AutofillAiLogger::OnFormHasDataToFill(
     FormGlobalId form_id,
-    DenseSet<EntityType> entities_to_fill) {
-  for (EntityType entity_type : entities_to_fill) {
-    form_states_[form_id][entity_type].has_data_to_fill = true;
+    DenseSet<EntityType> form_relevant_entity_types,
+    base::span<const EntityInstance> stored_entities) {
+  DenseSet<EntityType> stored_entity_types(stored_entities,
+                                           &EntityInstance::type);
+  for (EntityType type : form_relevant_entity_types) {
+    form_states_[form_id][type].has_data_to_fill =
+        stored_entity_types.contains(type);
   }
 }
 

@@ -26,10 +26,9 @@ class AutofillAiLogger {
   AutofillAiLogger& operator=(const AutofillAiLogger&) = delete;
   ~AutofillAiLogger();
 
-  void OnFormEligibilityAvailable(FormGlobalId form_id,
-                                  DenseSet<EntityType> relevant_entities);
   void OnFormHasDataToFill(FormGlobalId form_id,
-                           DenseSet<EntityType> entities_to_fill);
+                           DenseSet<EntityType> form_relevant_entity_types,
+                           base::span<const EntityInstance> stored_entities);
   void OnSuggestionsShown(const FormStructure& form,
                           const AutofillField& field,
                           DenseSet<EntityType> suggested_entity_types,
@@ -69,9 +68,6 @@ class AutofillAiLogger {
   // TODO(crbug.com/372170223): Investigate whether this can be represented as
   // an enum.
   struct FunnelState {
-    // Given a form, records whether it is supported for filling by prediction
-    // improvements.
-    bool is_eligible = false;
     // Given a form, records whether there's data available to fill this form.
     // Whether or not this data is used for filling is irrelevant.
     bool has_data_to_fill = false;

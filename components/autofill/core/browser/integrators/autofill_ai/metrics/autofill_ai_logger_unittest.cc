@@ -897,8 +897,8 @@ TEST_F(AutofillAiMqlsMetricsTest, UserPrompts) {
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
   std::unique_ptr<FormStructure> form = CreatePassportForm();
 
-  test_api(manager()).logger().OnFormHasDataToFill(form->global_id(),
-                                                   {kPassport});
+  test_api(manager()).logger().OnFormHasDataToFill(
+      form->global_id(), {kPassport}, {test::GetPassportEntityInstance()});
   test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(1),
                                                   {kPassport},
                                                   /*ukm_source_id=*/{});
@@ -946,8 +946,8 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_PerfectFilling) {
 
   // Simulate a perfect filling (i.e. a fill where the user doesn't modify any
   // field).
-  test_api(manager()).logger().OnFormHasDataToFill(form->global_id(),
-                                                   {kPassport});
+  test_api(manager()).logger().OnFormHasDataToFill(
+      form->global_id(), {kPassport}, {test::GetPassportEntityInstance()});
   test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(1),
                                                   {kPassport},
                                                   /*ukm_source_id=*/{});
