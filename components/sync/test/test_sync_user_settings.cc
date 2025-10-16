@@ -67,8 +67,10 @@ void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
 
   if (sync_everything_enabled_) {
     selected_types_.PutAll(UserSelectableTypeSet::All());
+    disabled_types_.Clear();
   } else {
     selected_types_ = types;
+    disabled_types_.RemoveAll(types);
   }
 }
 
@@ -76,6 +78,7 @@ void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
                                            bool is_type_on) {
   if (is_type_on) {
     selected_types_.Put(type);
+    disabled_types_.Remove(type);
   } else {
     selected_types_.Remove(type);
   }
@@ -86,6 +89,7 @@ void TestSyncUserSettings::ResetSelectedType(UserSelectableType type) {
   // default value. Since `selected_types_` is populated with all types by
   // default, this can be considered resetting.
   selected_types_.Put(type);
+  disabled_types_.Remove(type);
 }
 
 void TestSyncUserSettings::KeepAccountSettingsPrefsOnlyForUsers(
@@ -113,8 +117,11 @@ TestSyncUserSettings::GetTypePrefStateForAccount(
     UserSelectableType type) const {
   if (selected_types_.Has(type)) {
     return SyncUserSettings::UserSelectableTypePrefState::kEnabledOrDefault;
+  } else if (disabled_types_.Has(type)) {
+    return SyncUserSettings::UserSelectableTypePrefState::kDisabled;
   }
-  return SyncUserSettings::UserSelectableTypePrefState::kDisabled;
+
+  return SyncUserSettings::UserSelectableTypePrefState::kNotApplicable;
 }
 
 DataTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
@@ -342,6 +349,11 @@ void TestSyncUserSettings::SetPassphraseType(PassphraseType type) {
 void TestSyncUserSettings::SetExplicitPassphraseTime(base::Time t) {
   CHECK(IsUsingExplicitPassphrase());
   explicit_passphrase_time_ = t;
+}
+
+void TestSyncUserSettings::SetDisabledType(UserSelectableType type) {
+  selected_types_.Remove(type);
+  disabled_types_.Put(type);
 }
 
 const std::string& TestSyncUserSettings::GetEncryptionPassphrase() const {

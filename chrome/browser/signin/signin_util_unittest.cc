@@ -473,6 +473,15 @@ TEST_F(SigninUtilHistorySyncOptinTest,
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(SigninUtilHistorySyncOptinTest, HasExplicitlyDisabledHistorySync) {
+  SignInAndSetUpSyncService();
+  EXPECT_FALSE(signin_util::HasExplicitlyDisabledHistorySync(*profile()));
+
+  test_sync_service()->GetUserSettings()->SetDisabledType(
+      syncer::UserSelectableType::kHistory);
+  EXPECT_TRUE(signin_util::HasExplicitlyDisabledHistorySync(*profile()));
+}
+
 TEST_F(SigninUtilHistorySyncOptinTest,
        ShouldNotShowHistorySyncOptinScreenIfNoPrimaryAccount) {
   ASSERT_TRUE(profile());
