@@ -1581,8 +1581,15 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
                 transition_token)) {
           return;
         }
-        view_transition_token_to_animation_manager_[transition_token] =
+        std::unique_ptr<SurfaceAnimationManager> surface_animation_manager =
             frame_sink_manager_->TakeSurfaceAnimationManager(transition_token);
+        // If Frame deadline has passed before Save is completed, there is no
+        // SurfaceAnimationManager in the map.
+        if (!surface_animation_manager) {
+          return;
+        }
+        view_transition_token_to_animation_manager_[transition_token] =
+            std::move(surface_animation_manager);
       }
 
       auto it =
