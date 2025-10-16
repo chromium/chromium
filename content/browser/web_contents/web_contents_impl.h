@@ -37,7 +37,6 @@
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
-#include "content/browser/preloading/prerender/prerender_handle_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
@@ -136,16 +135,16 @@ class NativeTheme;
 }  // namespace ui
 
 namespace content {
-class JavaScriptDialogDismissNotifier;
-enum class PictureInPictureResult;
 class BeforeUnloadBlockingDelegate;  // content_browser_test_utils_internal.h
 class BrowserPluginEmbedder;
 class BrowserPluginGuest;
 class FindRequestManager;
+class JavaScriptDialogDismissNotifier;
 class MediaSession;
 class MediaWebContentsObserver;
 class NFCHost;
 class PartitionedPopinsController;
+class PreloadingAttempt;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 class RenderViewHost;
@@ -166,8 +165,8 @@ class WakeLockContextHost;
 class WebContentsDelegate;
 class WebContentsImpl;
 class WebContentsView;
+enum class PictureInPictureResult;
 struct MHTMLGenerationParams;
-class PreloadingAttempt;
 
 namespace mojom {
 class CreateNewWindowParams;

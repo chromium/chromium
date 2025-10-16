@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/audio_parameters.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {

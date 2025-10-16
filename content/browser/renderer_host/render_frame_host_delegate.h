@@ -28,7 +28,6 @@
 #include "content/public/common/javascript_dialog_type.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "media/mojo/mojom/media_player.mojom.h"
-#include "media/mojo/services/media_metrics_provider.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

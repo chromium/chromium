@@ -231,6 +231,7 @@
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/remoting.mojom.h"
+#include "media/mojo/services/media_metrics_provider.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -243,7 +244,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/net_buildflags.h"
-#include "render_frame_host_impl.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -346,7 +346,6 @@
 #endif
 
 #if AX_FAIL_FAST_BUILD()
-#include "base/command_line.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/accessibility_switches.h"
 #endif
