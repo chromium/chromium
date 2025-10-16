@@ -1886,6 +1886,10 @@ if (use_fuzzing_engine_with_lpm) {
       "//components/autofill/core/common",
       "//third_party/libprotobuf-mutator",
     ]
+
+    if(use_blink) {
+      deps += ["//content/test:test_support"]
+    }
   }
 }
 

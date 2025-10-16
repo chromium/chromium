@@ -3765,9 +3765,15 @@ if (is_mac) {
 fuzzer_test("content_sms_parser_fuzzer") {
   sources = [ "sms/sms_parser_fuzzer.cc" ]
   deps = [
+    # This parser depends on `./sms/sms_parser.h` from `:browser`.
+    #
+    # However `:browser` doesn't properly declare its dependency on
+    # `//content/public/renderer:renderer_sources`, causing linker errors if
+    # it was used alone.
+    # As a result, we depend on both here:
     ":browser",
-    "//base",
     "//content/public/browser:browser_sources",
+    "//content/public/renderer:renderer_sources",
   ]
 }
 
@@ -3781,8 +3787,16 @@ fuzzer_test("partitioned_popins_policy_fuzzer") {
   sources =
       [ "renderer_host/partitioned_popins/partitioned_popins_policy_fuzzer.cc" ]
   deps = [
+    # This parser depends on `./renderer_host/partitioned_popins/partitioned_popins_policy.h`
+    # from `:browser`.
+    #
+    # However `:browser` doesn't properly declare its dependency on
+    # `//content/public/renderer:renderer_sources`, causing linker errors if
+    # it was used alone.
+    # As a result, we depend on both here:
     ":browser",
     "//content/public/browser:browser_sources",
+    "//content/public/renderer:renderer_sources",
   ]
   seed_corpus = "//content/test/data/fuzzer_corpus/partitioned_popin_policy/"
 }

@@ -299,6 +299,7 @@ source_set("indexed_db_fuzzer_support") {
     "//components/services/storage",
     "//content/browser/indexed_db",
     "//content/public/browser:browser_sources",
+    "//content/test:test_support",
     "//third_party/blink/public/common:headers",
   ]
   testonly = true
@@ -340,6 +341,7 @@ if (use_fuzzing_engine) {
       "//base/test:test_support",
       "//content/browser",
       "//content/public/browser:browser_sources",
+      "//content/test:test_support",
       "//net",
       "//net:net_fuzzer_test_support",
     ]
