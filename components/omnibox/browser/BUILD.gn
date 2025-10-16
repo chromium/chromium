@@ -623,6 +623,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteInput.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
+      "android/java/src/org/chromium/components/omnibox/AutocompleteRequestType.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionDelegate.java",
@@ -1037,10 +1038,10 @@ mojom("mojo_bindings") {
   webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
 
   public_deps = [
+    "//components/omnibox/composebox:mojo_bindings",
     "//mojo/public/mojom/base",
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
-    "//components/omnibox/composebox:mojo_bindings",
   ]
 
   if (!is_android && !is_ios) {

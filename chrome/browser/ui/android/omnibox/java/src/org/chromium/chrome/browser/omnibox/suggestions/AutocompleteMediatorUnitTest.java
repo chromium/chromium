@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsCoordinator;
-import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -74,6 +73,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -1622,8 +1622,8 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
         ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
-        supplier.set(NavigationFulfillmentType.AI_MODE);
-        when(mNavigationAttachmentsCoordinator.getNavigationFulfillmentTypeSupplier())
+        supplier.set(AutocompleteRequestType.AI_MODE);
+        when(mNavigationAttachmentsCoordinator.getAutocompleteRequestTypeSupplier())
                 .thenReturn(supplier);
         GURL url = JUnitTestGURLs.BLUE_2;
         when(mNavigationAttachmentsCoordinator.getAimUrl("test")).thenReturn(url);

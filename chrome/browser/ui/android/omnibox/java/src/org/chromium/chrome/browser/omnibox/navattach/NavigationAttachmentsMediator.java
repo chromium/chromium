@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -67,8 +68,8 @@ class NavigationAttachmentsMediator {
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ModelList mTabAttachmentsModelList;
     private final Drawable mFallbackDrawable;
-    private final ObservableSupplierImpl<@NavigationFulfillmentType Integer>
-            mNavigationFulfillmentTypeSupplier;
+    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
+            mAutocompleteRequestTypeSupplier;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private boolean mAiModeSessionActive;
 
@@ -79,8 +80,8 @@ class NavigationAttachmentsMediator {
             NavigationAttachmentsViewHolder viewHolder,
             ModelList modelList,
             ObservableSupplier<Profile> profileObservableSupplier,
-            ObservableSupplierImpl<@NavigationFulfillmentType Integer>
-                    navigationFulfillmentTypeSupplier,
+            ObservableSupplierImpl<@AutocompleteRequestType Integer>
+                    autocompleteRequestTypeSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             ModelList tabAttachmentsModelList) {
         mContext = context;
@@ -93,7 +94,7 @@ class NavigationAttachmentsMediator {
         mTabAttachmentsModelList = tabAttachmentsModelList;
         mFallbackDrawable =
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_attach_file_24dp);
-        mNavigationFulfillmentTypeSupplier = navigationFulfillmentTypeSupplier;
+        mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
 
         mModel.set(
                 NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
@@ -130,8 +131,8 @@ class NavigationAttachmentsMediator {
         if (mAiModeSessionActive == enabled) return;
 
         mAiModeSessionActive = enabled;
-        mNavigationFulfillmentTypeSupplier.set(
-                enabled ? NavigationFulfillmentType.AI_MODE : NavigationFulfillmentType.DEFAULT);
+        mAutocompleteRequestTypeSupplier.set(
+                enabled ? AutocompleteRequestType.AI_MODE : AutocompleteRequestType.SEARCH);
         mModel.set(NavigationAttachmentsProperties.AI_MODE_ENABLED, enabled);
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, enabled);
         if (enabled) {
@@ -167,11 +168,11 @@ class NavigationAttachmentsMediator {
     }
 
     /**
-     * @return An {@link ObservableSupplier} that notifies observers when the navigation fulfillment
+     * @return An {@link ObservableSupplier} that notifies observers when the autocomplete request
      *     type changes.
      */
-    ObservableSupplier<@NavigationFulfillmentType Integer> getNavigationFulfillmentTypeSupplier() {
-        return mNavigationFulfillmentTypeSupplier;
+    ObservableSupplier<@AutocompleteRequestType Integer> getAutocompleteRequestTypeSupplier() {
+        return mAutocompleteRequestTypeSupplier;
     }
 
     /**
