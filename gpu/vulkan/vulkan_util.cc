@@ -190,9 +190,9 @@ bool IsDeviceBlockedByFeatureParams(const GPUInfo& gpu_info,
 }
 
 bool IsVulkanV2Allowed() {
-  // We require at least android T deqp test to pass for v2.
-  constexpr int32_t kVulkanDEQPAndroidT = 0x07E60301;
-  if (base::android::device_info::vulkan_deqp_level() < kVulkanDEQPAndroidT) {
+  // We require at least android V deqp test to pass for v2.
+  constexpr int32_t kVulkanDEQPAndroidV = 0x7e80301;
+  if (base::android::device_info::vulkan_deqp_level() < kVulkanDEQPAndroidV) {
     return false;
   }
 
