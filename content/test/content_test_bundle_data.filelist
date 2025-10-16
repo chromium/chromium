@@ -8890,8 +8890,6 @@ data/workers/multi_worker.html
 data/workers/pass_messageport_to_sharedworker.html
 data/workers/pass_messageport_to_sharedworker_dont_wait_for_connect.html
 data/workers/post_ready.js
-data/workers/post_ready_with_pna_headers.js
-data/workers/post_ready_with_pna_headers.js.mock-http-headers
 data/workers/queued_shared_worker_shutdown.html
 data/workers/send-beacon.html
 data/workers/service_worker.js
@@ -8899,8 +8897,6 @@ data/workers/service_worker_setup.html
 data/workers/shared_fetcher_treat_as_public.js
 data/workers/shared_fetcher_treat_as_public.js.mock-http-headers
 data/workers/shared_post_ready.js
-data/workers/shared_post_ready_with_pna_headers.js
-data/workers/shared_post_ready_with_pna_headers.js.mock-http-headers
 data/workers/shared_worker_auth.html
 data/workers/shutdown_shared_worker.html
 data/workers/simple.html

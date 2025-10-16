@@ -2865,4 +2865,104 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, Redirect) {
   EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
 }
 
+// =========================
+// WORKER SCRIPT FETCH TESTS
+// =========================
+
+namespace {
+
+// Path to a worker script that posts a message to its creator once loaded.
+constexpr char kWorkerScriptPath[] = "/workers/post_ready.js";
+
+// Instantiates a dedicated worker script from `path`.
+// If it loads successfully, the worker should post a message to its creator to
+// signal success.
+std::string FetchWorkerScript(std::string_view path) {
+  constexpr char kTemplate[] = R"(
+    new Promise((resolve) => {
+      const worker = new Worker($1);
+      worker.addEventListener("message", () => resolve(true));
+      worker.addEventListener("error", () => resolve(false));
+    })
+  )";
+
+  return JsReplace(kTemplate, path);
+}
+
+// Path to a worker script that posts a message to each client that connects.
+constexpr char kSharedWorkerScriptPath[] = "/workers/shared_post_ready.js";
+
+// Instantiates a shared worker script from `path`.
+// If it loads successfully, the worker should post a message to each client
+// that connects to it to signal success.
+std::string FetchSharedWorkerScript(std::string_view path) {
+  constexpr char kTemplate[] = R"(
+    new Promise((resolve) => {
+      const worker = new SharedWorker($1);
+      worker.port.addEventListener("message", () => resolve(true));
+      worker.addEventListener("error", () => resolve(false));
+      worker.port.start();
+    })
+  )";
+
+  return JsReplace(kTemplate, path);
+}
+
+// TODO(crbug.com/40290702): Remove this and replace calls below with
+// calls to `EXPECT_EQ` directly once Shared Workers are supported on Android.
+void ExpectFetchSharedWorkerScriptResult(bool expected,
+                                         const EvalJsResult& result) {
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(expected, result);
+#else
+  EXPECT_FALSE(result.is_ok());
+#endif
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FetchWorkerFromInsecureTreatAsPublicToLoopback) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
+
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FetchWorkerFromSecureTreatAsPublicToLoopback) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLoopbackURL(kTreatAsPublicAddressPath)));
+
+  // The request is exempt from Local Network Access checks because it is
+  // same-origin and the origin is potentially trustworthy. Dedicated worker
+  // scripts are required to be same-origin.
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(), FetchWorkerScript(kWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FetchSharedWorkerFromInsecureTreatAsPublicToLoopback) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
+
+  ExpectFetchSharedWorkerScriptResult(
+      false, EvalJs(root_frame_host(),
+                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FetchSharedWorkerFromSecureTreatAsPublicToLoopback) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLoopbackURL(kTreatAsPublicAddressPath)));
+
+  // The request is exempt from Local Network Access checks because it is
+  // same-origin and the origin is potentially trustworthy. Shared worker
+  // scripts are required to be same-origin.
+  ExpectFetchSharedWorkerScriptResult(
+      true, EvalJs(root_frame_host(),
+                   FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+}
+
 }  // namespace content
