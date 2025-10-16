@@ -114,6 +114,16 @@ function arrowDown(realbox: SearchboxElement): KeyboardEvent {
   return arrowDownEvent;
 }
 
+async function createAndAppendRealbox(properties: Partial<SearchboxElement> = {}):
+    Promise<SearchboxElement> {
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  const realbox = document.createElement('cr-searchbox');
+  Object.assign(realbox, properties);
+  document.body.appendChild(realbox);
+  await microtasksFinished();
+  return realbox;
+}
+
 suite('NewTabPageRealboxTest', () => {
   let realbox: SearchboxElement;
 
@@ -121,7 +131,7 @@ suite('NewTabPageRealboxTest', () => {
 
   const testMetricsReporterProxy = TestMock.fromClass(BrowserProxyImpl);
 
-  setup(() => {
+  setup(async () => {
     loadTimeData.overrideValues({
       isLensSearchbox: false,
       searchboxCyclingPlaceholders: false,
@@ -130,8 +140,6 @@ suite('NewTabPageRealboxTest', () => {
       searchboxVoiceSearch: true,
       reportMetrics: true,
     });
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     // Set up Realbox's browser proxy.
     testProxy = new TestSearchboxBrowserProxy();
@@ -146,8 +154,7 @@ suite('NewTabPageRealboxTest', () => {
     BrowserProxyImpl.setInstance(testMetricsReporterProxy);
     MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
 
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
   });
 
   // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
@@ -190,11 +197,9 @@ suite('NewTabPageRealboxTest', () => {
     assertFalse(await areMatchesShowing());
   });
 
-  test('Voice search button is present by default', () => {
+  test('Voice search button is present by default', async () => {
     // Arrange.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
 
     // Assert
     const voiceSearchButton =
@@ -202,12 +207,10 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(!!voiceSearchButton);
   });
 
-  test('Voice search button is not present when not enabled', () => {
+  test('Voice search button is not present when not enabled', async () => {
     // Arrange.
     loadTimeData.overrideValues({searchboxVoiceSearch: false});
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
 
     // Assert
     const voiceSearchButton =
@@ -217,9 +220,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('clicking voice search button send voice search event', async () => {
     // Arrange.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
 
     const whenOpenVoiceSearch = eventToPromise('open-voice-search', realbox);
 
@@ -233,28 +234,24 @@ suite('NewTabPageRealboxTest', () => {
     await whenOpenVoiceSearch;
   });
 
-  test('realbox default loupe icon', () => {
+  test('realbox default loupe icon', async () => {
     // Arrange.
     loadTimeData.overrideValues({
       searchboxDefaultIcon: 'search.svg',
     });
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
 
     // Assert.
     assertIconMaskImageUrl(realbox.$.icon, 'search.svg');
   });
 
-  test('realbox default Google G icon', () => {
+  test('realbox default Google G icon', async () => {
     // Arrange.
     loadTimeData.overrideValues({
       searchboxDefaultIcon:
           '//resources/cr_components/searchbox/icons/google_g.svg',
     });
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
 
     // Assert.
     assertStyle(
@@ -302,14 +299,9 @@ suite('NewTabPageRealboxTest', () => {
     },
   ];
   webkitTestCases.forEach(({description, properties, shouldUseWebkit}) => {
-    test(`useWebkitSearchIcons ${description}`, () => {
+    test(`useWebkitSearchIcons ${description}`, async () => {
       // Arrange.
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      realbox = document.createElement('cr-searchbox');
-
-      // Act.
-      Object.assign(realbox, properties);
-      document.body.appendChild(realbox);
+      realbox = await createAndAppendRealbox(properties);
 
       // Assert
       const [iconProperty, nonIconProperty] = shouldUseWebkit ?
@@ -336,11 +328,9 @@ suite('NewTabPageRealboxTest', () => {
     });
   });
 
-  test('Compose button is not enabled by default.', () => {
+  test('Compose button is not enabled by default.', async () => {
     // Arrange.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
 
     // Assert.
     const composeButton =
@@ -350,11 +340,8 @@ suite('NewTabPageRealboxTest', () => {
 
   test('clicking composebox button emits an event.', async () => {
     // Arrange.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    realbox.composeButtonEnabled = true;
-    realbox.composeboxEnabled = true;
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox(
+        {composeButtonEnabled: true, composeboxEnabled: true});
 
     const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
 
@@ -385,11 +372,8 @@ suite('NewTabPageRealboxTest', () => {
 
   test('hovering on composebox button plays the animation.', async () => {
     // Arrange.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    realbox.composeButtonEnabled = true;
-    realbox.composeboxEnabled = true;
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox(
+        {composeButtonEnabled: true, composeboxEnabled: true});
 
     // Act.
     const composeButton =
@@ -423,16 +407,12 @@ suite('NewTabPageRealboxTest', () => {
 
   test('animation plays on page load.', async () => {
     // Arrange.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
     loadTimeData.overrideValues({
       searchboxShowComposeAnimation: true,
     });
 
-    realbox = document.createElement('cr-searchbox');
-    realbox.composeButtonEnabled = true;
-    realbox.composeboxEnabled = true;
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox(
+        {composeButtonEnabled: true, composeboxEnabled: true});
 
     // Act.
     const composeButton =
@@ -453,16 +433,12 @@ suite('NewTabPageRealboxTest', () => {
 
   test('animation does not play on page load.', async () => {
     // Arrange.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
     loadTimeData.overrideValues({
       searchboxShowComposeAnimation: false,
     });
 
-    realbox = document.createElement('cr-searchbox');
-    realbox.composeButtonEnabled = true;
-    realbox.composeboxEnabled = true;
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox(
+        {composeButtonEnabled: true, composeboxEnabled: true});
 
     // Act.
     const composeButton =
@@ -483,14 +459,12 @@ suite('NewTabPageRealboxTest', () => {
 
   test('adding context files opens composebox', async () => {
     // Arrange.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    realbox.composeButtonEnabled = true;
-    realbox.composeboxEnabled = true;
-    realbox.realboxLayoutMode = 'TallBottomContext';
-    realbox.ntpRealboxNextEnabled = true;
-    document.body.appendChild(realbox);
-    await microtasksFinished();
+    realbox = await createAndAppendRealbox({
+      composeButtonEnabled: true,
+      composeboxEnabled: true,
+      realboxLayoutMode: 'TallBottomContext',
+      ntpRealboxNextEnabled: true,
+    });
     const contextElement =
         realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
     assertTrue(!!contextElement);
@@ -513,12 +487,8 @@ suite('NewTabPageRealboxTest', () => {
     loadTimeData.overrideValues({
       composeboxShowDeepSearchButton: true,
     });
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    realbox.ntpRealboxNextEnabled = true;
-    realbox.realboxLayoutMode = 'Compact';
-    document.body.appendChild(realbox);
-    await microtasksFinished();
+    realbox = await createAndAppendRealbox(
+        {ntpRealboxNextEnabled: true, realboxLayoutMode: 'Compact'});
     const contextElement =
         realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
     assertTrue(!!contextElement);
@@ -555,12 +525,8 @@ suite('NewTabPageRealboxTest', () => {
     loadTimeData.overrideValues({
       composeboxShowCreateImageButton: true,
     });
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    realbox.ntpRealboxNextEnabled = true;
-    realbox.realboxLayoutMode = 'Compact';
-    document.body.appendChild(realbox);
-    await microtasksFinished();
+    realbox = await createAndAppendRealbox(
+        {ntpRealboxNextEnabled: true, realboxLayoutMode: 'Compact'});
     const contextElement =
         realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
     assertTrue(!!contextElement);
@@ -1195,9 +1161,7 @@ suite('NewTabPageRealboxTest', () => {
     loadTimeData.overrideValues({
       isLensSearchbox: true,
     });
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
 
     realbox.$.input.value = 'he';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
@@ -1221,9 +1185,7 @@ suite('NewTabPageRealboxTest', () => {
   });
 
   test('autocomplete result change does not impact focus', async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
 
     realbox.$.input.value = 'he';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
@@ -2663,9 +2625,7 @@ suite('NewTabPageRealboxTest', () => {
       searchboxDefaultIcon: 'hello.svg',
       isLensSearchbox: true,
     });
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
 
     assertIconMaskImageUrl(realbox.$.icon, 'hello.svg');  // Default icon.
 
@@ -3184,18 +3144,15 @@ suite('NewTabPageRealboxTabsTest', () => {
   let realbox: SearchboxElement;
   let testProxy: TestSearchboxBrowserProxy;
 
-  setup(() => {
+  setup(async () => {
     loadTimeData.overrideValues({
       ntpRealboxNextEnabled: true,
     });
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
 
-    realbox = document.createElement('cr-searchbox');
-    document.body.appendChild(realbox);
+    realbox = await createAndAppendRealbox();
   });
 
   test('on tab strip changed', async () => {
