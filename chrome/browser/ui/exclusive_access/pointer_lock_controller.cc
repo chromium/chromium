@@ -76,10 +76,12 @@ void PointerLockController::RequestToLockPointer(WebContents* web_contents,
       return;
     }
   }
-
-  content::GlobalRenderFrameHostId rfh_id =
-      web_contents->GetPrimaryMainFrame()->GetGlobalId();
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kKeyboardLockPrompt)) {
+    content::GlobalRenderFrameHostId rfh_id =
+        web_contents->GetPrimaryMainFrame()->GetGlobalId();
     LockPointer(web_contents->GetWeakPtr(), rfh_id, last_unlocked_by_target);
+  }
 }
 
 bool PointerLockController::IsWaitingForPointerLockPrompt(
