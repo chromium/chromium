@@ -108,6 +108,11 @@ class ToastManagerImplTest : public AshTestBase,
     SetShouldLockScreenAutomatically(false);
   }
 
+  void TearDown() override {
+    manager_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
  protected:
   ToastManagerImpl* manager() { return manager_; }
 
@@ -195,7 +200,7 @@ class ToastManagerImplTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<ToastManagerImpl, DanglingUntriaged> manager_ = nullptr;
+  raw_ptr<ToastManagerImpl> manager_ = nullptr;
   unsigned int serial_ = 0;
 };
 
