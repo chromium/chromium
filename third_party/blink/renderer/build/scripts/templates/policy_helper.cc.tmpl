@@ -29,15 +29,21 @@ const char k{{feature.name}}PolicyName[] = "{{feature.permissions_policy_name}}"
 // permissions policy to allow use of the feature in subframes (The framed
 // document will still require a valid origin trial token to use the feature in
 // this scenario).
-const FeatureNameMap GetDefaultFeatureNameMap(bool is_isolated_context) {
-  DEFINE_STATIC_LOCAL(FeatureNameMapCache, default_feature_name_map_cache, ());
-  FeatureNameMapCacheKey key(is_isolated_context);
-  if (default_feature_name_map_cache.Contains(key) &&
-      !default_feature_name_map_cache.at(key).empty()) {
-    return default_feature_name_map_cache.at(key);
+const FeatureNameMap& GetDefaultFeatureNameMap(bool is_isolated_context) {
+  DEFINE_STATIC_LOCAL(FeatureNameMap, isolated_default_feature_name_map, ());
+  DEFINE_STATIC_LOCAL(FeatureNameMap, non_isolated_default_feature_name_map, ());
+
+  FeatureNameMap& default_feature_name_map = is_isolated_context ?
+    isolated_default_feature_name_map : non_isolated_default_feature_name_map;
+
+  // If we've already computed the map, return it.
+  if (default_feature_name_map.size() > 0) {
+    return default_feature_name_map;
   }
 
-  FeatureNameMap default_feature_name_map;
+  // Build the map for the first time.
+  default_feature_name_map.ReserveCapacityForSize({{ permissions_policy_features|length }});
+
   {% for feature in permissions_policy_features %}
   {% if not feature.depends_on or feature.name in pp_origin_trial_dependency_map %}
   {% if feature.visibility == "All" %}
@@ -69,16 +75,6 @@ const FeatureNameMap GetDefaultFeatureNameMap(bool is_isolated_context) {
     {% endfor %}
   }
   {% endfor %}
-
-  // Before we set |key| in the hash to be the map, check that it's empty.
-  if (default_feature_name_map_cache.Contains(key)) {
-    CHECK(default_feature_name_map_cache.at(key).empty());
-  }
-
-  // The contents of |default_feature_name_map| are copied into
-  // |default_feature_name_map_cache| here, which is declared static
-  // local above.
-  default_feature_name_map_cache.Set(key, default_feature_name_map);
 
   return default_feature_name_map;
 }
