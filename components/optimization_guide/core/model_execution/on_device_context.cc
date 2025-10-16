@@ -97,8 +97,7 @@ OnDeviceOptions::OnDeviceOptions(const OnDeviceOptions& orig)
       safety_checker(std::make_unique<SafetyChecker>(*orig.safety_checker)),
       token_limits(orig.token_limits),
       capabilities(orig.capabilities),
-      sampling_params(orig.sampling_params),
-      logger(orig.logger) {}
+      sampling_params(orig.sampling_params) {}
 
 bool OnDeviceOptions::ShouldUse() const {
   return model_client->ShouldUse();

@@ -47,8 +47,6 @@
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
-class OptimizationGuideLogger;
-
 namespace optimization_guide {
 enum class OnDeviceModelEligibilityReason;
 class OnDeviceModelAccessController;
@@ -98,7 +96,6 @@ class OnDeviceModelServiceController final {
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
       ModelBasedCapabilityKey feature,
       ExecuteRemoteFn execute_remote_fn,
-      base::WeakPtr<OptimizationGuideLogger> logger,
       const std::optional<SessionConfigParams>& config_params);
 
   // Sets the language detection model to be used by the ODM service when text

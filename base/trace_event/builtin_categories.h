@@ -197,6 +197,7 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("optimization_guide").SetDescription(
         "Includes events related to processing hints and machine learning "
         "models by the Optimization Guide component."),
+    perfetto::Category("optimization_guide.debug").SetTags("debug"),
     perfetto::Category("ozone"),
     perfetto::Category("partition_alloc"),
     perfetto::Category("passwords"),

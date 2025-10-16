@@ -240,8 +240,7 @@ ModelExecutionManager::StartSession(
     return nullptr;
   }
   return on_device_model_service_controller_->CreateSession(
-      feature, CreateNoOpExecuteRemoteFn(),
-      optimization_guide_logger_->GetWeakPtr(), config_params);
+      feature, CreateNoOpExecuteRemoteFn(), config_params);
 }
 
 on_device_model::Capabilities ModelExecutionManager::GetOnDeviceCapabilities() {

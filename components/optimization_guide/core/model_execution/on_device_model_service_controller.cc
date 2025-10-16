@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -20,7 +21,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
-#include "base/containers/contains.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -181,7 +181,6 @@ std::unique_ptr<OptimizationGuideModelExecutor::Session>
 OnDeviceModelServiceController::CreateSession(
     ModelBasedCapabilityKey feature,
     ExecuteRemoteFn execute_remote_fn,
-    base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
     const std::optional<SessionConfigParams>& config_params) {
   // Ensure an initial solution is computed to avoid giving kUnknown error.
   UpdateSolutionProvider(feature);
@@ -219,7 +218,6 @@ OnDeviceModelServiceController::CreateSession(
   opts.token_limits = solution->adapter()->GetTokenLimits();
   opts.adapter = solution->adapter();
 
-  opts.logger = optimization_guide_logger;
   if (config_params) {
     opts.capabilities = config_params->capabilities;
     // TODO: can this be required?

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -46,16 +47,6 @@ namespace {
 using google::protobuf::RepeatedPtrField;
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
-
-void LogSessionCreation(OptimizationGuideLogger* logger,
-                        ModelBasedCapabilityKey feature) {
-  if (logger && logger->ShouldEnableDebugLogs()) {
-    OPTIMIZATION_GUIDE_LOGGER(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
-        << "Starting on-device session for "
-        << std::string(GetStringNameForModelExecutionFeature(feature));
-  }
-}
 
 SamplingParams ResolveSamplingParams(
     const std::optional<SessionConfigParams>& config_params,
@@ -88,7 +79,8 @@ SessionImpl::SessionImpl(
       capabilities_(config_params ? config_params->capabilities
                                   : on_device_model::Capabilities()) {
   if (on_device_opts && on_device_opts->ShouldUse()) {
-    LogSessionCreation(on_device_opts->logger.get(), feature_);
+    TRACE_EVENT("optimization_guide", "SessionImpl::Warmup", "target",
+                base::ToString(feature_));
     // TODO(crbug.com/403383823): Consider removing `sampling_params_` from
     // `SessionImpl` in favor of querying them from `on_device_context_`.
     on_device_opts->sampling_params = sampling_params_;

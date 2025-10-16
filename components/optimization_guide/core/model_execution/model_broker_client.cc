@@ -110,8 +110,6 @@ ModelClient::CreateSession(
       weak_ptr_factory_.GetWeakPtr(), SafetyConfig(safety_config_));
   opts.token_limits = feature_adapter_->GetTokenLimits();
 
-  opts.logger = args.logger_;
-
   ExecuteRemoteFn execute_fn = args.remote_fn_;
   if (config_params) {
     opts.capabilities = config_params->capabilities;

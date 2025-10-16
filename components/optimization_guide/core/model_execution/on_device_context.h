@@ -48,8 +48,6 @@ struct OnDeviceOptions final {
   on_device_model::Capabilities capabilities;
   SamplingParams sampling_params;
 
-  base::WeakPtr<OptimizationGuideLogger> logger;
-
   // Returns true if the on-device model may be used.
   bool ShouldUse() const;
 };
