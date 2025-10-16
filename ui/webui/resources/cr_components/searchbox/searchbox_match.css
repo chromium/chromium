@@ -238,10 +238,18 @@
 }
 
 #remove {
-  --cr-icon-button-fill-color:
-      var(--color-searchbox-results-icon-selected);
   display: none;
   margin-inline-end: 1px;
+}
+
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #remove {
+  --cr-icon-button-fill-color: var(--color-searchbox-results-icon-selected);
+}
+
+
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #remove:hover {
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-button-selected-hover);
 }
 
 :host-context(.vertical) .container:hover #remove,
