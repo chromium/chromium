@@ -31,6 +31,7 @@
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
 #import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
+#import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
 
 // Typedefs of |completionHandler| in |fetchProfilesWithCompletionHandler:|,
@@ -364,6 +365,29 @@ class WebViewPasswordStoreObserver
 - (void)deleteProfile:(CWVAutofillProfile*)profile {
   _personalDataManager->address_data_manager().RemoveProfile(
       profile.internalProfile->guid());
+}
+
+- (UIImage*)fetchIconForCreditCard:(CWVCreditCard*)creditCard {
+  // Check if custom card art is available.
+  GURL cardArtURL = _personalDataManager->payments_data_manager().GetCardArtURL(
+      *creditCard.internalCard);
+  if (!cardArtURL.is_empty() && cardArtURL.is_valid()) {
+    if (const gfx::Image* image =
+            _personalDataManager->payments_data_manager()
+                .GetCachedCardArtImageForUrl(cardArtURL)) {
+      return image->ToUIImage();
+    }
+  }
+
+  // Otherwise, try to get the default card icon
+  autofill::Suggestion::Icon icon =
+      creditCard.internalCard->CardIconForAutofillSuggestion();
+  return icon == autofill::Suggestion::Icon::kNoIcon
+             ? nil
+             : ui::ResourceBundle::GetSharedInstance()
+                   .GetNativeImageNamed(
+                       autofill::CreditCard::IconResourceId(icon))
+                   .ToUIImage();
 }
 
 - (void)fetchCreditCardsWithCompletionHandler:

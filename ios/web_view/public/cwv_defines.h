@@ -47,6 +47,9 @@
 // Supports APIs used to implement the trusted vault for chrome sync.
 #define IOS_WEB_VIEW_SUPPORTS_TRUSTED_VAULT_APIS 1
 
+// Supports -[CWVAutofillDataManager fetchIconForCreditCard:creditCard].
+#define IOS_WEB_VIEW_SUPPORTS_FETCHING_CREDIT_CARD_ICON 1
+
 // Supports -[CWVAutofillDataManager updatePassword:newUsername:newPassword:].
 #define IOS_WEB_VIEW_SUPPORTS_UPDATING_PASSWORDS 1
 

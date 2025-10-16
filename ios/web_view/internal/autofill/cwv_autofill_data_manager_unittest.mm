@@ -33,6 +33,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
+#import "ui/gfx/image/image_unittest_util.h"
+#import "url/gurl.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -211,6 +213,44 @@ TEST_F(CWVAutofillDataManagerTest, UpdateProfile) {
   EXPECT_TRUE(FetchProfiles(^(NSArray<CWVAutofillProfile*>* profiles) {
     EXPECT_NSEQ(kNewName, profiles.firstObject.name);
   }));
+}
+
+// Tests fetching credit card icons.
+TEST_F(CWVAutofillDataManagerTest, FetchCreditCardIcon) {
+  // 1. Test fetching a custom card art image.
+  autofill::CreditCard card_with_art =
+      autofill::test::GetMaskedServerCardVisa();
+  GURL art_url("https://www.example.com/card.png");
+  card_with_art.set_card_art_url(art_url);
+  personal_data_manager_->payments_data_manager().AddCreditCard(card_with_art);
+
+  // Create a test image and add it to the PaymentsDataManager cache.
+  personal_data_manager_->test_payments_data_manager().CacheImage(
+      art_url, gfx::test::CreateImage(32, 32));
+
+  CWVCreditCard* cwv_card_with_art =
+      [[CWVCreditCard alloc] initWithCreditCard:card_with_art];
+  UIImage* fetched_art_image =
+      [autofill_data_manager_ fetchIconForCreditCard:cwv_card_with_art];
+
+  // Verify that the fetched image is not the card icon image.
+  EXPECT_FALSE(
+      gfx::test::AreImagesEqual(gfx::Image(fetched_art_image),
+                                gfx::Image(cwv_card_with_art.networkIcon)));
+
+  // 2. Test fallback to the default network icon.
+  autofill::CreditCard card_without_art =
+      autofill::test::GetMaskedServerCardVisa();
+  personal_data_manager_->payments_data_manager().AddCreditCard(
+      card_without_art);
+  CWVCreditCard* cwv_card_without_art =
+      [[CWVCreditCard alloc] initWithCreditCard:card_without_art];
+  UIImage* fetched_network_icon =
+      [autofill_data_manager_ fetchIconForCreditCard:cwv_card_without_art];
+
+  EXPECT_TRUE(
+      gfx::test::AreImagesEqual(gfx::Image(fetched_network_icon),
+                                gfx::Image(cwv_card_without_art.networkIcon)));
 }
 
 // Tests CWVAutofillDataManager properly returns credit cards.

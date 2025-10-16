@@ -131,6 +131,7 @@ source_set("unittests") {
     "//net:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/gfx:test_support",
   ]
 }
 
