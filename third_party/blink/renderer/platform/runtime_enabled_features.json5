@@ -5658,6 +5658,11 @@
       public: true,
     },
     {
+      // https://chromestatus.com/feature/5110223547269120
+      name: "WebGPUTextureComponentSwizzle",
+      status: "stable",
+    },
+    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
     },
