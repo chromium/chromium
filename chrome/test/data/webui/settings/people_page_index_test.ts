@@ -17,6 +17,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 suite('PeoplePageIndex', function() {
   let index: SettingsPeoplePageIndexElement;
+  let browserProxy: TestSyncBrowserProxy;
 
   async function createPeoplePageIndex(): Promise<void> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -37,7 +38,7 @@ suite('PeoplePageIndex', function() {
 
     // Set SignedInState.SIGNED_IN otherwise navigating to routes.SYNC_ADVANCED
     // would automatically redirect to routes.SYNC.
-    const browserProxy = new TestSyncBrowserProxy();
+    browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
     browserProxy.testSyncStatus = {
       signedInState: SignedInState.SIGNED_IN,
@@ -156,5 +157,27 @@ suite('PeoplePageIndex', function() {
     assertTrue(result.matchCount >= 2);
     assertFalse(result.wasClearSearch);
   });
+
+  // Regression test for crbug.com/443268152.
+  test(
+      'SearchUnavailablePageReplaceSyncPromosWithSigninPromos',
+      async function() {
+        loadTimeData.overrideValues({
+          replaceSyncPromosWithSignInPromos: true,
+        });
+        browserProxy.testSyncStatus = {
+          signedInState: SignedInState.SYNCING,
+          statusAction: StatusAction.NO_ACTION,
+        };
+        resetRouterForTesting();
+        await createPeoplePageIndex();
+
+        // Search for a keyword that available on the settings pages `/account`
+        // and `/googleServices`, and make sure it does not crash even though
+        // the pages do not exist when the user is syncing.
+        const result = await index.searchContents('google');
+        assertFalse(result.canceled);
+        assertFalse(result.wasClearSearch);
+      });
   // </if>
 });
