@@ -1518,6 +1518,7 @@ ci.builder(
             "variations_smoke_tests",  # single module scheme
             "mojo_python_unittests",  # pyunit scheme
             "grit_python_unittests",  # pyunit scheme
+            "webgpu_cts_dedicated_worker_tests",  # webgpucts scheme
         ],
         mixins = [
             "isolate_profile_data",
@@ -1572,7 +1573,14 @@ ci.builder(
             "webdriver_wpt_tests": targets.mixin(
                 ci_only = True,
             ),
+            "webgpu_cts_dedicated_worker_tests": [
+                "linux_nvidia_gtx_1660_stable",
+            ],
         },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
