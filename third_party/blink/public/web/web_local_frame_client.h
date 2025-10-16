@@ -890,6 +890,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual base::ScopedClosureRunner CreateScopedClientNavigationThrottler() {
     return {};
   }
+
+  // Returns true if this frame is for the initial WebUI.
+  virtual bool IsForInitialWebUI() const { return false; }
 };
 
 }  // namespace blink

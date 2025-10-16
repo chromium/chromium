@@ -4430,6 +4430,7 @@ static_library("browser") {
       "//chrome/browser/ui/views/toolbar:impl",
       "//chrome/browser/ui/views/zoom:impl",
       "//chrome/browser/ui/waap",
+      "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/web_applications:impl",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/access_code_cast",

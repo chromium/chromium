@@ -21,11 +21,29 @@ static_library("waap") {
   ]
 }
 
+source_set("waap_utils") {
+  sources = [
+    "waap_utils.cc",
+    "waap_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//content/public/common",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "waap_ui_metrics_service_unittest.cc" ]
+  sources = [
+    "waap_ui_metrics_service_unittest.cc",
+    "waap_utils_unittest.cc",
+  ]
   deps = [
     ":waap",
+    ":waap_utils",
     "//base/test:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
