@@ -2860,7 +2860,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kZeroStateSuggestions)},
     {"ios-synced-set-up", flag_descriptions::kIOSSyncedSetUpName,
      flag_descriptions::kIOSSyncedSetUpDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSSyncedSetUp)}};
+     FEATURE_VALUE_TYPE(kIOSSyncedSetUp)},
+    {"multiline-browser-omnibox",
+     flag_descriptions::kMultilineBrowserOmniboxName,
+     flag_descriptions::kMultilineBrowserOmniboxDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kMultilineBrowserOmnibox)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

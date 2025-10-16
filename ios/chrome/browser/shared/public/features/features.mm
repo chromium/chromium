@@ -1161,3 +1161,9 @@ BASE_FEATURE(kIOSSyncedSetUp, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsSyncedSetUpEnabled() {
   return base::FeatureList::IsEnabled(kIOSSyncedSetUp);
 }
+
+BASE_FEATURE(kMultilineBrowserOmnibox, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsMultilineBrowserOmniboxEnabled() {
+  return base::FeatureList::IsEnabled(kMultilineBrowserOmnibox);
+}

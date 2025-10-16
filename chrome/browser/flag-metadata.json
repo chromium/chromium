@@ -6945,6 +6945,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "multiline-browser-omnibox",
+    "owners": [ "christianxu@chromium.org", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "mute-notification-snooze-action",
     "owners": [ "knollr@chromium.org", "peter@chromium.org" ],
     "expiry_milestone": 96

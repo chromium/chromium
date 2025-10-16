@@ -1039,6 +1039,10 @@ const char kMostVisitedTilesHorizontalRenderGroupName[] =
 const char kMostVisitedTilesHorizontalRenderGroupDescription[] =
     "When enabled, the MV tiles are represented as individual matches";
 
+const char kMultilineBrowserOmniboxName[] = "Multiline omnibox in browser";
+const char kMultilineBrowserOmniboxDescription[] =
+    "Enables multiline for the browser omnibox.";
+
 const char kNTPBackgroundCustomizationName[] =
     "Enable background customization menu on the NTP";
 const char kNTPBackgroundCustomizationDescription[] =

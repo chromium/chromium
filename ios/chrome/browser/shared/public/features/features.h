@@ -1112,4 +1112,10 @@ BASE_DECLARE_FEATURE(kIOSSyncedSetUp);
 // Returns true if `kIOSSyncedSetUp` is enabled.
 bool IsSyncedSetUpEnabled();
 
+// Enables the MultilineBrowserOmnibox feature.
+BASE_DECLARE_FEATURE(kMultilineBrowserOmnibox);
+
+// Returns true if the MultilineBrowserOmnibox feature is enabled.
+bool IsMultilineBrowserOmniboxEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

@@ -612,6 +612,9 @@ extern const char kMobilePromoOnDesktopDescription[];
 extern const char kMostVisitedTilesHorizontalRenderGroupName[];
 extern const char kMostVisitedTilesHorizontalRenderGroupDescription[];
 
+extern const char kMultilineBrowserOmniboxName[];
+extern const char kMultilineBrowserOmniboxDescription[];
+
 extern const char kNTPBackgroundCustomizationName[];
 extern const char kNTPBackgroundCustomizationDescription[];
 
