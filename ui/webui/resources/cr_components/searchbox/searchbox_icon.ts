@@ -304,10 +304,10 @@ export class SearchboxIconElement extends CrLitElement {
     }
 
     // Navigation suggestions should always use the background image, except for
-    // Lens searchboxes and starter pack suggestions, which prefer to use the
-    // default icon in the mask image.
+    // Lens searchboxes and pedal/starter pack suggestions, which prefer to use
+    // the default icon in the mask image.
     if (!this.isLensSearchbox_ && this.match && !this.match.isSearchType &&
-        this.match.type !== STARTER_PACK) {
+        this.match.type !== STARTER_PACK && this.match.type !== PEDAL) {
       return true;
     }
 
