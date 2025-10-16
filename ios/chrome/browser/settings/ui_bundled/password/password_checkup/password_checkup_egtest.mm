@@ -825,7 +825,15 @@ NSString* LeakedPasswordDescription() {
 
 // Tests changing the password of a muted compromised password to a weak
 // password.
-- (void)testChangeMutedPasswordToWeakPassword {
+// TODO(crbug.com/452549992): Test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testChangeMutedPasswordToWeakPassword \
+  FLAKY_testChangeMutedPasswordToWeakPassword
+#else
+#define MAYBE_testChangeMutedPasswordToWeakPassword \
+  testChangeMutedPasswordToWeakPassword
+#endif
+- (void)MAYBE_testChangeMutedPasswordToWeakPassword {
   SaveMutedCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
