@@ -3644,6 +3644,7 @@ message TpmVersionInfo {
   optional string did_vid = 8;
   // This field represents the kernel key version stored in tpm
   // which is used to prevent OS rollback to less secure versions.
+  // Note that this field can be referred to as "rollback protection version".
   optional string kernel_key_version = 9;
 }
 
