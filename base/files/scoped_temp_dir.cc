@@ -109,7 +109,7 @@ bool ScopedTempDir::IsValid() const {
 }
 
 // static
-const FilePath::CharType* ScopedTempDir::GetTempDirPrefix() {
+const FilePath::CharType* ScopedTempDir::GetDefaultTempDirPrefix() {
   return kDefaultScopedDirPrefix;
 }
 

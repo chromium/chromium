@@ -79,7 +79,7 @@ TEST(ScopedTempDir, TempDir) {
 }
 
 TEST(ScopedTempDir, Prefix) {
-  EXPECT_STREQ(ScopedTempDir::GetTempDirPrefix(),
+  EXPECT_STREQ(ScopedTempDir::GetDefaultTempDirPrefix(),
                FILE_PATH_LITERAL("scoped_dir"));
 
   // Default prefix.
