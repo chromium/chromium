@@ -20,14 +20,18 @@
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -327,8 +331,19 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
       return SBOX_ERROR_GENERIC;
     }
   } else {
-    result = broker_->SpawnTarget(prog_name, arguments.c_str(),
-                                  std::move(policy_), &last_error, &target);
+    base::test::TaskEnvironment task_environment;
+    base::RunLoop run_loop;
+    broker_->SpawnTargetAsync(
+        prog_name, arguments.c_str(), std::move(policy_),
+        base::BindLambdaForTesting(
+            [&](base::win::ScopedProcessInformation proc_info, DWORD error,
+                ResultCode res) {
+              target = proc_info.Take();
+              last_error = error;
+              result = res;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
   }
 
   if (SBOX_ALL_OK != result)

@@ -345,7 +345,7 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy() {
 std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
     std::string_view tag) {
   // If you change the type of the object being created here you must also
-  // change the downcast to it in SpawnTarget().
+  // change the downcast to it in SpawnTargetAsync().
   auto policy = std::make_unique<PolicyBase>(tag);
   // Empty key implies we will not use the store. The policy will need
   // to look after its config.
@@ -365,40 +365,6 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
   return policy;
 }
 
-ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
-                                           const wchar_t* command_line,
-                                           std::unique_ptr<TargetPolicy> policy,
-                                           DWORD* last_error,
-                                           PROCESS_INFORMATION* target_info) {
-  *last_error = 0;
-  *target_info = {};
-  ResultCode result = SBOX_ERROR_GENERIC;
-  bool callback_called = false;
-
-  // With parallel launching disabled, it is safe to capture local references
-  // because SpawnTargetAsyncImpl is guaranteed to run the callback before
-  // returning.
-  // The `policy` downcast is safe as long as we control CreatePolicy().
-  SpawnTargetAsyncImpl(
-      exe_path, command_line,
-      base::WrapUnique(static_cast<PolicyBase*>(policy.release())),
-      base::BindOnce(
-          [](DWORD* last_error, PROCESS_INFORMATION* target_info,
-             ResultCode* result, bool* callback_called,
-             base::win::ScopedProcessInformation result_target_info,
-             DWORD result_last_error, ResultCode result_code) {
-            *target_info = result_target_info.Take();
-            *last_error = result_last_error;
-            *result = result_code;
-            *callback_called = true;
-          },
-          last_error, target_info, &result, &callback_called),
-      /*allow_parallel_launch=*/false);
-
-  CHECK(callback_called);
-  return result;
-}
-
 void BrokerServicesBase::SpawnTargetAsync(const wchar_t* exe_path,
                                           const wchar_t* command_line,
                                           std::unique_ptr<TargetPolicy> policy,
@@ -407,8 +373,7 @@ void BrokerServicesBase::SpawnTargetAsync(const wchar_t* exe_path,
   SpawnTargetAsyncImpl(
       exe_path, command_line,
       base::WrapUnique(static_cast<PolicyBase*>(policy.release())),
-      std::move(result_callback),
-      /*allow_parallel_launch=*/true);
+      std::move(result_callback));
 }
 
 ResultCode BrokerServicesBase::PreSpawnTarget(
@@ -438,7 +403,7 @@ ResultCode BrokerServicesBase::PreSpawnTarget(
       return SBOX_ERROR_FAILED_TO_FREEZE_CONFIG;
   }
 
-  // Even though the resources touched by SpawnTarget can be accessed in
+  // Even though the resources touched by SpawnTargetAsync can be accessed in
   // multiple threads, the method itself cannot be called from more than one
   // thread. This is to protect the global variables used while setting up the
   // child process, and to make sure launcher thread mitigations are applied
@@ -517,14 +482,13 @@ ResultCode BrokerServicesBase::PreSpawnTarget(
   return SBOX_ALL_OK;
 }
 
-// SpawnTarget does all the interesting sandbox setup and creates the target
-// process inside the sandbox.
+// Does all the interesting sandbox setup and creates the target process inside
+// the sandbox.
 void BrokerServicesBase::SpawnTargetAsyncImpl(
     const wchar_t* exe_path,
     const wchar_t* command_line,
     std::unique_ptr<PolicyBase> policy_base,
-    SpawnTargetCallback result_callback,
-    bool allow_parallel_launch) {
+    SpawnTargetCallback result_callback) {
   auto startup_info = std::make_unique<StartupInformationHelper>();
   std::unique_ptr<TargetProcess> target;
 
@@ -536,8 +500,7 @@ void BrokerServicesBase::SpawnTargetAsyncImpl(
     return;
   }
 
-  if (allow_parallel_launch &&
-      broker_services_delegate_->ParallelLaunchEnabled()) {
+  if (broker_services_delegate_->ParallelLaunchEnabled()) {
     TargetProcess* target_ptr = target.get();
     broker_services_delegate_->ParallelLaunchPostTaskAndReplyWithResult(
         FROM_HERE,

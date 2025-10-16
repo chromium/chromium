@@ -46,26 +46,15 @@ class TargetServices;
 enum class Desktop;
 
 // BrokerServices exposes all the broker API.
-// The basic use is to start the target(s) and wait for them to end.
-//
-// This API is intended to be called in the following order
-// (error checking omitted):
-//  BrokerServices* broker = SandboxFactory::GetBrokerServices();
-//  broker->Init();
-//  PROCESS_INFORMATION target;
-//  broker->SpawnTarget(target_exe_path, target_args, &target);
-//  ::ResumeThread(target->hThread);
-//  // -- later you can call:
-//  broker->WaitForAllTargets(option);
 //
 // We need [[clang::lto_visibility_public]] because instances of this class are
 // passed across module boundaries. This means different modules must have
 // compatible definitions of the class even when LTO is enabled.
 class [[clang::lto_visibility_public]] BrokerServices {
  public:
-  // The callback used for receiving the SpawnTarget() process launch result.
-  // The parameters include the new process and thread handle, the Win32 last
-  // error code, and the sandbox ResultCode.
+  // The callback used for receiving the SpawnTargetAsync() process launch
+  // result. The parameters include the new process and thread handle, the Win32
+  // last error code, and the sandbox ResultCode.
   using SpawnTargetCallback = base::OnceCallback<
       void(base::win::ScopedProcessInformation, DWORD, ResultCode)>;
 
@@ -95,16 +84,16 @@ class [[clang::lto_visibility_public]] BrokerServices {
 
   // Returns the interface pointer to a new, empty policy object. Use this
   // interface to specify the sandbox policy for new processes created by
-  // SpawnTarget().
+  // SpawnTargetAsync().
   virtual std::unique_ptr<TargetPolicy> CreatePolicy() = 0;
 
   // Returns the interface pointer to a new, empty policy object. Use this
   // interface to specify the sandbox policy for new processes created by
-  // SpawnTarget().
+  // SpawnTargetAsync().
   //
   // The first time a specific value of `tag` is provided an empty policy will
   // be returned, and both TargetConfig and TargetPolicy methods should be
-  // called to populate the object before passing it to SpawnTarget().
+  // called to populate the object before passing it to SpawnTargetAsync().
   //
   // The second and subsequent times a given `tag` is provided, the object will
   // share the backing data for state configured by TargetConfig methods (with
@@ -122,31 +111,22 @@ class [[clang::lto_visibility_public]] BrokerServices {
   // Creates a new target (child process) in a suspended state and takes
   // ownership of |policy|.
   // Parameters:
-  //   exe_path: This is the full path to the target binary. This parameter
+  // * |exe_path|: This is the full path to the target binary. This parameter
   //   can be null and in this case the exe path must be the first argument
   //   of the command_line.
-  //   command_line: The arguments to be passed as command line to the new
+  // * |command_line|: The arguments to be passed as command line to the new
   //   process. This can be null if the exe_path parameter is not null.
-  //   policy: This is the pointer to the policy object for the sandbox to
+  // * |policy|: This is the pointer to the policy object for the sandbox to
   //   be created.
-  //   last_error: If an error or warning is returned from this method this
-  //   parameter will hold the last Win32 error value.
-  //   target: returns the resulting target process information such as process
-  //   handle and PID just as if CreateProcess() had been called. The caller is
-  //   responsible for closing the handles returned in this structure.
-  // Returns:
-  //   ALL_OK if successful. All other return values imply failure.
-  virtual ResultCode SpawnTarget(const wchar_t* exe_path,
-                                 const wchar_t* command_line,
-                                 std::unique_ptr<TargetPolicy> policy,
-                                 DWORD* last_error,
-                                 PROCESS_INFORMATION* target) = 0;
-
-  // Async version of SpawnTarget that supports parallel process launching.
+  // * |result_callback|: Accepts these output parameters:
+  //   * |last_error|: If an error or warning is returned from this method this
+  //     parameter will hold the last Win32 error value.
+  //   * |target|: returns the resulting target process information such as
+  //     process handle and PID just as if CreateProcess() had been called. The
+  //     caller is responsible for closing the handles returned in this
+  //     structure.
   // Target creation happens on the thread pool when parallel launching is
-  // enabled (controlled by BrokerServicesDelegate). This function is the same
-  // as SpawnTarget, except the out parameters `last_error`, `target` and
-  // ResultCode are passed to `result_callback`.
+  // enabled (controlled by BrokerServicesDelegate).
   virtual void SpawnTargetAsync(const wchar_t* exe_path,
                                 const wchar_t* command_line,
                                 std::unique_ptr<TargetPolicy> policy,
@@ -185,7 +165,8 @@ class [[clang::lto_visibility_public]] BrokerServices {
 // of a target process. To obtain a pointer to it use
 // Sandbox::GetTargetServices(). Note that this call returns a non-null
 // pointer only if this process is in fact a target. A process is a target
-// only if the process was spawned by a call to BrokerServices::SpawnTarget().
+// only if the process was spawned by a call to
+// BrokerServices::SpawnTargetAsync().
 //
 // This API allows the target to gain access to resources with a high
 // privilege token and then when it is ready to perform dangerous activities
@@ -276,7 +257,8 @@ class [[clang::lto_visibility_public]] BrokerServicesTargetTracker {
   virtual ~BrokerServicesTargetTracker() {}
 };
 
-// Used internally by SpawnTarget() to return process launch info from a task.
+// Used internally by SpawnTargetAsync() to return process launch info from a
+// task.
 struct [[clang::lto_visibility_public]] CreateTargetResult {
   base::win::ScopedProcessInformation process_info;
   DWORD last_error = ERROR_SUCCESS;

@@ -922,7 +922,7 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadSuccess) {
 // - JobLevel <= JobLevel::kLimitedUser which also triggers setting
 //   PROC_THREAD_ATTRIBUTE_CHILD_PROCESS_POLICY to
 //   PROCESS_CREATION_CHILD_PROCESS_RESTRICTED in
-//   BrokerServicesBase::SpawnTarget (on >= WIN10_TH2).
+//   BrokerServicesBase::SpawnTargetAsync (on >= WIN10_TH2).
 //------------------------------------------------------------------------------
 
 // This test validates that we can spawn a child process if

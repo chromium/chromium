@@ -20,7 +20,7 @@ using base::win::StartupInformation;
 
 // Wraps base::win::StartupInformation and allows some querying of what is
 // set. This is specialized for the dance between
-// BrokerServices::SpawnTarget() and TargetProcess::Create().
+// BrokerServices::SpawnTargetAsync() and TargetProcess::Create().
 class StartupInformationHelper {
  public:
   StartupInformationHelper();
