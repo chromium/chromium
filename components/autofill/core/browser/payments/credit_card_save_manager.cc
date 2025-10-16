@@ -132,6 +132,51 @@ PrepareForVirtualCardEnroll(
   return std::nullopt;
 }
 
+#if BUILDFLAG(IS_IOS)
+// Logs iOS-specific metrics for the save card prompt offer.
+void LogSaveCardPromptOfferMetricIos(
+    autofill_metrics::SaveCardPromptOffer metric,
+    bool is_upload_save,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions& options) {
+  std::string_view destination = is_upload_save ? ".Server" : ".Local";
+
+  std::string base_histogram_name =
+      base::StrCat({"Autofill.SaveCreditCardPromptOffer.IOS", destination,
+                    autofill::ShouldShowSaveCardBottomSheet(
+                        options.card_save_type, options.num_strikes.value_or(0),
+                        options.should_request_name_from_user,
+                        options.should_request_expiration_date_from_user)
+                        ? ".BottomSheet"
+                        : ".Banner"});
+  base::UmaHistogramEnumeration(base_histogram_name, metric);
+
+  auto is_num_strikes_in_range = [](int strikes) {
+    return strikes >= 0 && strikes <= 2;
+  };
+
+  // To avoid emitting an arbitrary number of histograms, limit
+  // `num_strikes` to [0, 2], matching the save card's current maximum
+  // allowed strikes.
+  if (!options.num_strikes ||
+      !is_num_strikes_in_range(*(options.num_strikes))) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({base_histogram_name, ".NumStrikes.",
+                    base::NumberToString(options.num_strikes.value()),
+                    (options.should_request_name_from_user &&
+                     options.should_request_expiration_date_from_user)
+                        ? ".RequestingCardHolderNameAndExpiryDate"
+                    : (options.should_request_name_from_user)
+                        ? ".RequestingCardHolderName"
+                    : (options.should_request_expiration_date_from_user)
+                        ? ".RequestingExpiryDate"
+                        : ".NoFixFlow"}),
+      metric);
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 // Logs metrics for whether the save card prompt is shown or not. When the
 // prompt is not shown, it also logs platform-specific metrics since the save
 // card flow does not proceed further.
@@ -149,7 +194,7 @@ void LogPromptOfferMetricForCreditCardSave(
       autofill_metrics::LogSaveCreditCardPromptOfferMetricAndroid(
           metric, is_upload_save, /*save_credit_card_options=*/options);
 #elif BUILDFLAG(IS_IOS)
-// TODO(crbug.com/430588721): Log ios-specific metric.
+      LogSaveCardPromptOfferMetricIos(metric, is_upload_save, options);
 #else
       if (metric == SaveCardPromptOffer::kNotShownMaxStrikesReached) {
         // On desktop, save will be offered in the omnibox without popping-up

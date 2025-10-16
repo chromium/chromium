@@ -4083,22 +4083,29 @@ TEST_F(CreditCardSaveManagerTest,
       "Autofill.SaveCreditCardPromptOffer.Server",
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
 
-  // TODO(crbug.com/430588721): Verify ios specific metrics
-  std::string platform_name;
 #if BUILDFLAG(IS_ANDROID)
-  platform_name = ".Android";
-#elif !BUILDFLAG(IS_IOS)
-  platform_name = ".Desktop";
-#endif
-
-#if !BUILDFLAG(IS_IOS)
   histogram_tester.ExpectUniqueSample(
-      base::StrCat(
-          {"Autofill.SaveCreditCardPromptOffer", platform_name, ".Server"}),
+      "Autofill.SaveCreditCardPromptOffer.Android.Server",
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({"Autofill.SaveCreditCardPromptOffer", platform_name,
-                    ".Server.WithSameLastFourButDifferentExpiration"}),
+      "Autofill.SaveCreditCardPromptOffer.Android.Server."
+      "WithSameLastFourButDifferentExpiration",
+      autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
+#elif BUILDFLAG(IS_IOS)
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveCreditCardPromptOffer.IOS.Server.BottomSheet",
+      autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveCreditCardPromptOffer.IOS.Server.BottomSheet.NumStrikes.0."
+      "NoFixFlow",
+      autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
+#else  // BUILDFLAG(IS_DESKTOP)
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Desktop.Server",
+      autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Desktop.Server."
+      "WithSameLastFourButDifferentExpiration",
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
 #endif
 
@@ -5523,12 +5530,13 @@ TEST_F(CreditCardSaveManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Android.Local",
       autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+#else
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveCreditCardPromptOffer.IOS.Local.Banner",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
 #endif
 }
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
 // Tests that a card with max strikes does not offer save on mobile at all.
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesDisallowsSave) {
   TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
@@ -5581,14 +5589,21 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesDisallowsSave) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Server",
       autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+#if BUILDFLAG(IS_ANDROID)
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Android.Server",
       autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+#else
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveCreditCardPromptOffer.IOS.Server.Banner",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
+#endif
   // Verify that the correct UKM was logged.
   ExpectCardUploadDecisionUkm(
       autofill_metrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE);
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
        SaveCreditCard_RequestingMissingData_MaxStrikesDisallowsSave) {
   TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
