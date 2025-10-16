@@ -49,6 +49,7 @@ bool UpdaterServiceDelegate::PreRun() {
 }
 
 void UpdaterServiceDelegate::OnServiceControlStop() {
+  VLOG(2) << __func__;
   GetAppServerWinInstance()->Stop();
 }
 

@@ -1319,13 +1319,13 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
 
 IFACEMETHODIMP_(ULONG) LegacyAppCommandWebImpl::AddRef() {
   const ULONG count = IDispatchImpl<IAppCommandWeb>::AddRef();
-  VLOG(2) << __func__ << ": count: " << count;
+  VLOG(2) << __func__ << ": " << this << ": count: " << count;
   return count;
 }
 
 IFACEMETHODIMP_(ULONG) LegacyAppCommandWebImpl::Release() {
   const ULONG count = IDispatchImpl<IAppCommandWeb>::Release();
-  VLOG(2) << __func__ << ": count: " << count;
+  VLOG(2) << __func__ << ": " << this << ": count: " << count;
   return count;
 }
 
