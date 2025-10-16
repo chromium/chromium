@@ -25,6 +25,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.PROGRESS_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TEXT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
@@ -224,6 +226,14 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 BNPL_SELECTION_PROGRESS_FOOTER,
                 TouchToFillPaymentMethodViewBinder::createBnplSelectionProgressFooterItemView,
                 TouchToFillPaymentMethodViewBinder::bindBnplSelectionProgressFooterView);
+        adapter.registerType(
+                TOS_FOOTER,
+                TouchToFillPaymentMethodViewBinder::createLegalMessageItemView,
+                TouchToFillPaymentMethodViewBinder::bindLegalMessageItemView);
+        adapter.registerType(
+                TEXT_BUTTON,
+                TouchToFillPaymentMethodViewBinder::createTextButtonView,
+                TouchToFillPaymentMethodViewBinder::bindButtonView);
         view.setSheetItemListAdapter(adapter);
     }
 

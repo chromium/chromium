@@ -8,6 +8,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.mockito.Mockito.mock;
+
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
@@ -57,6 +59,7 @@ import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.autofill.payments.BnplIssuerContext;
 import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -66,6 +69,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * These tests render screenshots of touch to fill for credit cards/IBANs sheet and compare them to
@@ -443,11 +447,15 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* selectionText= */ "Purchase must be under $10,000.00",
                     /* isLinked= */ false,
                     /* isEligible= */ false);
+    private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
     private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
             new BnplIssuerTosDetail(
                     /* reviewText= */ "Review text for affirm",
                     /* approveText= */ "Approve text for affirm",
-                    /* linkText= */ new SpannableString("Link text for affirm"));
+                    /* linkText= */ new SpannableString("Link text for affirm"),
+                    /* legalMessages= */ new BnplIssuerTosDetail.LegalMessages(
+                            Arrays.asList(new LegalMessageLine("Affirm legal message line")),
+                            MOCK_LINK_OPENER));
     private static final String BNPL_FOOTER_TEXT =
             "To hide pay later options, go to <link>payment settings</link>";
 

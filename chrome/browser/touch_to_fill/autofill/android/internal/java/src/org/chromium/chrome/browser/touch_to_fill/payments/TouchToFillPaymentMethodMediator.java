@@ -63,6 +63,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.PROGRESS_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TEXT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
@@ -82,6 +84,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.graphics.drawable.Drawable;
@@ -112,6 +115,7 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ProgressIconProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.LoyaltyCard;
@@ -334,7 +338,7 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(
                     new ListItem(
                             FILL_BUTTON,
-                            createFillButtonModel(
+                            createButtonModel(
                                     R.string.autofill_payment_method_continue_button,
                                     () -> onSelectedCreditCard(mSuggestions.get(0)))));
         }
@@ -385,7 +389,7 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(
                     new ListItem(
                             FILL_BUTTON,
-                            createFillButtonModel(
+                            createButtonModel(
                                     R.string.autofill_payment_method_continue_button,
                                     () -> this.onSelectedIban(mIbans.get(0)))));
         }
@@ -473,7 +477,7 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(
                     new ListItem(
                             FILL_BUTTON,
-                            createFillButtonModel(
+                            createButtonModel(
                                     R.string.autofill_loyalty_card_autofill_button,
                                     () ->
                                             this.onSelectedLoyaltyCard(
@@ -599,7 +603,7 @@ class TouchToFillPaymentMethodMediator {
         errorScreenModel.add(
                 new ListItem(
                         FILL_BUTTON,
-                        createFillButtonModel(
+                        createButtonModel(
                                 R.string.autofill_bnpl_error_ok_button,
                                 () -> this.onErrorOkPressed())));
 
@@ -640,7 +644,19 @@ class TouchToFillPaymentMethodMediator {
                         BNPL_TOS_TEXT,
                         createBnplIssuerTosTextItemModel(
                                 R.drawable.add_link, bnplIssuerTosDetail.getLinkText())));
-
+        sheetItems.add(buildFooterForLegalMessage(bnplIssuerTosDetail.getLegalMessages()));
+        sheetItems.add(
+                new ListItem(
+                        FILL_BUTTON,
+                        createButtonModel(
+                                R.string.autofill_bnpl_tos_ok_button_label,
+                                this::onBnplIssuerTosAccepted)));
+        sheetItems.add(
+                new ListItem(
+                        TEXT_BUTTON,
+                        createButtonModel(
+                                R.string.autofill_bnpl_tos_bottom_sheet_cancel_button_label,
+                                this::onBnplIssuerTosCancelled)));
         mModel.set(
                 SHEET_CONTENT_DESCRIPTION_ID,
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_content_description);
@@ -802,6 +818,14 @@ class TouchToFillPaymentMethodMediator {
         mDelegate.onErrorOkPressed();
     }
 
+    private void onBnplIssuerTosAccepted() {
+        // TODO(crbug.com/438784697): Handle ToS accepted event.
+    }
+
+    private void onBnplIssuerTosCancelled() {
+        // TODO(crbug.com/438784697): Dismiss the screen and reset the BNPL flow.
+    }
+
     private void showAllLoyaltyCards() {
         mModel.set(CURRENT_SCREEN, ALL_LOYALTY_CARDS_SCREEN);
         mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.all_loyalty_cards_back_image_button);
@@ -929,7 +953,7 @@ class TouchToFillPaymentMethodMediator {
                 .build();
     }
 
-    private PropertyModel createFillButtonModel(@StringRes int titleId, Runnable onClickAction) {
+    private PropertyModel createButtonModel(@StringRes int titleId, Runnable onClickAction) {
         return new PropertyModel.Builder(ButtonProperties.ALL_KEYS)
                 .with(TEXT_ID, titleId)
                 .with(ON_CLICK_ACTION, onClickAction)
@@ -1066,6 +1090,14 @@ class TouchToFillPaymentMethodMediator {
                         .with(FOOTER_TEXT, footerText)
                         .with(ON_LINK_CLICK_CALLBACK, (view) -> showPaymentMethodSettings())
                         .with(APPLY_LINK_DEACTIVATED_STYLE, isInProgress)
+                        .build());
+    }
+
+    private ListItem buildFooterForLegalMessage(BnplIssuerTosDetail.LegalMessages legalMessages) {
+        return new ListItem(
+                TOS_FOOTER,
+                new PropertyModel.Builder(TosFooterProperties.ALL_KEYS)
+                        .with(LEGAL_MESSAGE, legalMessages)
                         .build());
     }
 

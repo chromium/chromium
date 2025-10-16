@@ -57,12 +57,15 @@ bool BnplIssuerContext::IsEligible() const {
   NOTREACHED();
 }
 
-BnplIssuerTosDetail::BnplIssuerTosDetail(std::u16string review_text,
-                                         std::u16string approve_text,
-                                         TextWithLink link_text)
+BnplIssuerTosDetail::BnplIssuerTosDetail(
+    std::u16string review_text,
+    std::u16string approve_text,
+    TextWithLink link_text,
+    std::vector<LegalMessageLine> legal_message_lines)
     : review_text(std::move(review_text)),
       approve_text(std::move(approve_text)),
-      link_text(std::move(link_text)) {}
+      link_text(std::move(link_text)),
+      legal_message_lines(std::move(legal_message_lines)) {}
 
 BnplIssuerTosDetail::BnplIssuerTosDetail(const BnplIssuerTosDetail& other) =
     default;

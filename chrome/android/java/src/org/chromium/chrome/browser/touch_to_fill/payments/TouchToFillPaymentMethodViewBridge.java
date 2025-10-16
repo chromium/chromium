@@ -32,6 +32,7 @@ import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.autofill.payments.BnplIssuerContext;
 import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -177,6 +178,12 @@ class TouchToFillPaymentMethodViewBridge {
                 spanEnd,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         return textWithLink;
+    }
+
+    @CalledByNative
+    private BnplIssuerTosDetail.LegalMessages convertLegalMessageLinesForBnplTos(
+            @JniType("std::vector") List<LegalMessageLine> legalMessageLines) {
+        return new BnplIssuerTosDetail.LegalMessages(legalMessageLines, this::openLink);
     }
 
     private void openLink(String url) {

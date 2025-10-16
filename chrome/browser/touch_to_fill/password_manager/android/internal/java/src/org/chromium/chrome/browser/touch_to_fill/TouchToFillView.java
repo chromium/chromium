@@ -125,7 +125,7 @@ class TouchToFillView extends TouchToFillViewBase {
     }
 
     @Override
-    protected int footerItemType() {
-        return TouchToFillProperties.ItemType.FOOTER;
+    protected Set<Integer> footerItemTypes() {
+        return Set.of(TouchToFillProperties.ItemType.FOOTER);
     }
 }

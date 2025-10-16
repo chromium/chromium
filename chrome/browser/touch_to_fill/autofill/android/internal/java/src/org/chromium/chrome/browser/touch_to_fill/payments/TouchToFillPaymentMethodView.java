@@ -63,6 +63,8 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.BNPL_SELECTION_PROGRESS_HEADER:
                 case ItemType.ERROR_DESCRIPTION:
                 case ItemType.BNPL_SELECTION_PROGRESS_FOOTER:
+                case ItemType.TOS_FOOTER:
+                case ItemType.TEXT_BUTTON:
                     return true;
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:
@@ -196,8 +198,10 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
     }
 
     @Override
-    protected int footerItemType() {
-        return TouchToFillPaymentMethodProperties.ItemType.FOOTER;
+    protected Set<Integer> footerItemTypes() {
+        return Set.of(
+                TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER,
+                TouchToFillPaymentMethodProperties.ItemType.FOOTER);
     }
 
     private int getDisplayedChildForScreenId(@ScreenId int screenId) {

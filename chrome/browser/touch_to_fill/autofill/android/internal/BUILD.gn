@@ -59,6 +59,7 @@ android_resources("java_resources") {
     "java/res/layout/touch_to_fill_error_description_sheet_item.xml",
     "java/res/layout/touch_to_fill_error_screen.xml",
     "java/res/layout/touch_to_fill_iban_sheet_item.xml",
+    "java/res/layout/touch_to_fill_legal_message_item.xml",
     "java/res/layout/touch_to_fill_loyalty_card_sheet_item.xml",
     "java/res/layout/touch_to_fill_payment_method_all_loyalty_cards_screen.xml",
     "java/res/layout/touch_to_fill_payment_method_footer_item.xml",

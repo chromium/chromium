@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
@@ -67,7 +68,8 @@ struct BnplIssuerTosDetail {
  public:
   BnplIssuerTosDetail(std::u16string review_text,
                       std::u16string approve_text,
-                      TextWithLink link_text);
+                      TextWithLink link_text,
+                      std::vector<LegalMessageLine> legal_message_lines);
   BnplIssuerTosDetail(const BnplIssuerTosDetail& other);
   BnplIssuerTosDetail(BnplIssuerTosDetail&&);
   BnplIssuerTosDetail& operator=(const BnplIssuerTosDetail& other);
@@ -82,6 +84,9 @@ struct BnplIssuerTosDetail {
 
   // Account link/unlink message.
   TextWithLink link_text;
+
+  // Legal messages with links that are shown in screen footer.
+  std::vector<LegalMessageLine> legal_message_lines;
 };
 
 // Returns the selection option text for a given BNPL issuer.

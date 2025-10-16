@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
@@ -55,7 +56,9 @@ testing::Matcher<const payments::BnplIssuerTosDetail&> EqualBnplIssuerTosDetail(
                            Field(&payments::TextWithLink::offset,
                                  bnpl_issuer_tos_detail.link_text.offset),
                            Field(&payments::TextWithLink::url,
-                                 bnpl_issuer_tos_detail.link_text.url))));
+                                 bnpl_issuer_tos_detail.link_text.url))),
+               Field(&payments::BnplIssuerTosDetail::legal_message_lines,
+                     bnpl_issuer_tos_detail.legal_message_lines));
 }
 
 class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
@@ -488,8 +491,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   // Index of text with redirect link;
   link_text.offset = gfx::Range(36, link_text.text.length());
   link_text.url = GURL("https://wallet.google.com/");
+  const LegalMessageLines legal_message = {
+      TestLegalMessageLine("This is the entire message.")};
   const payments::BnplIssuerTosDetail bnpl_issuer_tos_detail(
-      review_text, approve_text, link_text);
+      review_text, approve_text, link_text, legal_message);
 
   // Test that the BNPL issuer ToS info have propagated to the view.
   EXPECT_CALL(

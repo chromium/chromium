@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -86,6 +87,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.PROGRESS_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TEXT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
@@ -104,6 +107,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.ALL_TERMS_LABEL_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.COMPLETE_OPACITY_ALPHA;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.GRAYED_OUT_OPACITY_ALPHA;
@@ -153,6 +157,7 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ErrorDescriptionProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -162,6 +167,8 @@ import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.PaymentsPayload;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.autofill.payments.BnplIssuerContext;
+import org.chromium.components.autofill.payments.BnplIssuerTosDetail.LegalMessages;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -172,7 +179,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.function.Consumer;
 
 /** Tests for {@link TouchToFillPaymentMethodView} */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -413,6 +422,9 @@ public class TouchToFillPaymentMethodViewTest {
     private static final String BNPL_ISSUER_TOS_ITEM_TEXT = "Affirm ToS text";
     private static final String BNPL_FOOTER_TEXT =
             "To hide pay later options, go to <link>payment settings</link>";
+    private static final String TITLE_TEXT = "test title string";
+    private static final String LEGAL_MESSAGE_LINE = "legal message";
+    private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1169,7 +1181,7 @@ public class TouchToFillPaymentMethodViewTest {
                             .add(
                                     new ListItem(
                                             FILL_BUTTON,
-                                            createFillButtonModel(
+                                            createButtonModel(
                                                     R.string.autofill_loyalty_card_autofill_button,
                                                     actionCallback)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
@@ -1340,6 +1352,67 @@ public class TouchToFillPaymentMethodViewTest {
         assertTrue(imageView.isShown());
         imageView = bnplTosScreen.getChildAt(1).findViewById(R.id.bnpl_tos_icon);
         assertTrue(imageView.isShown());
+    }
+
+    @Test
+    @MediumTest
+    public void testBnplIssuerTosFooter() {
+        Runnable acceptCallback = mock(Runnable.class);
+        Runnable cancelCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    ModelList bnplTosFooter = new ModelList();
+                    bnplTosFooter.add(new ListItem(TOS_FOOTER, createTosFooterModel()));
+                    bnplTosFooter.add(
+                            new ListItem(
+                                    FILL_BUTTON,
+                                    createButtonModel(
+                                            R.string.autofill_bnpl_tos_ok_button_label,
+                                            acceptCallback)));
+                    bnplTosFooter.add(
+                            new ListItem(
+                                    TEXT_BUTTON,
+                                    createButtonModel(
+                                            R.string
+                                                    .autofill_bnpl_tos_bottom_sheet_cancel_button_label,
+                                            cancelCallback)));
+                    mTouchToFillPaymentMethodModel.set(CURRENT_SCREEN, BNPL_ISSUER_TOS_SCREEN);
+                    mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, bnplTosFooter);
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                    // Expand the sheet to the full height to show action buttons.
+                    mSheetTestSupport.setSheetState(BottomSheetController.SheetState.FULL, false);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        BottomSheetTestSupport.waitForState(
+                mBottomSheetController, BottomSheetController.SheetState.FULL);
+
+        TextView legalMessageView =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.legal_message);
+        assertNotNull(legalMessageView);
+        assertThat(legalMessageView.getText().toString(), is(LEGAL_MESSAGE_LINE));
+
+        TextView acceptButton =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.touch_to_fill_button_title);
+        assertNotNull(acceptButton);
+        assertThat(
+                acceptButton.getText(), is(getString(R.string.autofill_bnpl_tos_ok_button_label)));
+
+        TextView cancelButton =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.touch_to_fill_text_button);
+        assertNotNull(cancelButton);
+        assertThat(
+                cancelButton.getText(),
+                is(getString(R.string.autofill_bnpl_tos_bottom_sheet_cancel_button_label)));
+
+        onView(is(acceptButton)).perform(click());
+        waitForEvent(acceptCallback).run();
+
+        onView(is(cancelButton)).perform(click());
+        waitForEvent(cancelCallback).run();
     }
 
     @Test
@@ -1866,6 +1939,16 @@ public class TouchToFillPaymentMethodViewTest {
                 .build();
     }
 
+    private static PropertyModel createTosFooterModel() {
+        return new PropertyModel.Builder(TosFooterProperties.ALL_KEYS)
+                .with(
+                        LEGAL_MESSAGE,
+                        new LegalMessages(
+                                Arrays.asList(new LegalMessageLine(LEGAL_MESSAGE_LINE)),
+                                MOCK_LINK_OPENER))
+                .build();
+    }
+
     private static PropertyModel createCardSuggestionModel(
             AutofillSuggestion suggestion, FillableItemCollectionInfo collectionInfo) {
         return createCardSuggestionModel(suggestion, collectionInfo, CallbackUtils.emptyRunnable());
@@ -1991,12 +2074,10 @@ public class TouchToFillPaymentMethodViewTest {
     }
 
     private static PropertyModel createFillButtonModel(Runnable actionCallback) {
-        return createFillButtonModel(
-                R.string.autofill_payment_method_continue_button, actionCallback);
+        return createButtonModel(R.string.autofill_payment_method_continue_button, actionCallback);
     }
 
-    private static PropertyModel createFillButtonModel(
-            @StringRes int textId, Runnable actionCallback) {
+    private static PropertyModel createButtonModel(@StringRes int textId, Runnable actionCallback) {
         return new PropertyModel.Builder(ButtonProperties.ALL_KEYS)
                 .with(TEXT_ID, textId)
                 .with(ON_CLICK_ACTION, actionCallback)

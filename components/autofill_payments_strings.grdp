@@ -1120,9 +1120,14 @@
   <message name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL" desc="The description label shown in body of the Autofill filled card information bubble for the Buy Now Pay Later flow.">
     When you pay over time, a one-time virtual card number is filled. You can click to copy and paste card details for this purchase.
   </message>
-  <message name="IDS_AUTOFILL_BNPL_TOS_OK_BUTTON_LABEL" desc="The OK button label of the Buy-Now-Pay-Later Terms of Service dialog. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website.">
+  <message name="IDS_AUTOFILL_BNPL_TOS_OK_BUTTON_LABEL" desc="The OK button label of the Buy-Now-Pay-Later Terms of Service dialog. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website." formatter_data="android_java">
     Continue
   </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_BNPL_TOS_BOTTOM_SHEET_CANCEL_BUTTON_LABEL" desc="The cancel button label of the Buy-Now-Pay-Later Terms of Service bottom sheet. If the user cancels, the flow will end and the bottom sheet will close." formatter_data="android_java">
+      No thanks
+    </message>
+  </if>
   <message name="IDS_AUTOFILL_BNPL_TOS_CANCEL_BUTTON_LABEL" desc="The cancel button label of the Buy-Now-Pay-Later Terms of Service dialog. If the user cancels this dialog, the flow will end and the dialog will close.">
     Cancel
   </message>

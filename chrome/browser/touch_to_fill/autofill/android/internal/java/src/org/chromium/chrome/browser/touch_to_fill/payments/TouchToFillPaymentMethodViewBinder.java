@@ -61,6 +61,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.text.SpannableString;
@@ -77,12 +78,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
+import org.chromium.components.autofill.payments.BnplIssuerTosDetail.LegalMessages;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -429,6 +432,20 @@ class TouchToFillPaymentMethodViewBinder {
     }
 
     /**
+     * Factory used to create a new "Cancel" button that dismiss the current screen.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static Button createTextButtonView(ViewGroup parent) {
+        Button buttonView =
+                (Button)
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.touch_to_fill_text_button, parent, false);
+        AutofillUiUtils.setFilterTouchForSecurity(buttonView);
+        return buttonView;
+    }
+
+    /**
      * Factory used to create a new "Wallet settings" button that redirects the user to the
      * corresponding Chrome settings page.
      *
@@ -687,12 +704,49 @@ class TouchToFillPaymentMethodViewBinder {
         if (propertyKey == SHOULD_SHOW_SCAN_CREDIT_CARD) {
             setScanCreditCardButton(view, model.get(SHOULD_SHOW_SCAN_CREDIT_CARD));
         } else if (propertyKey == SCAN_CREDIT_CARD_CALLBACK) {
-            setScanCreditCardCallback(view, model.get(SCAN_CREDIT_CARD_CALLBACK));
+            setCallbackForButton(view, R.id.scan_new_card, model.get(SCAN_CREDIT_CARD_CALLBACK));
         } else if (propertyKey == OPEN_MANAGEMENT_UI_TITLE_ID) {
             setShowPaymentMethodsSettingsTitle(
                     view, view.getContext().getString(model.get(OPEN_MANAGEMENT_UI_TITLE_ID)));
         } else if (propertyKey == OPEN_MANAGEMENT_UI_CALLBACK) {
-            setShowPaymentMethodsSettingsCallback(view, model.get(OPEN_MANAGEMENT_UI_CALLBACK));
+            setCallbackForButton(
+                    view, R.id.open_management_ui, model.get(OPEN_MANAGEMENT_UI_CALLBACK));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /**
+     * Factory used to create a new footer inside the ListView inside the
+     * TouchToFillPaymentMethodView for showing legal messages.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createLegalMessageItemView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.touch_to_fill_legal_message_item, parent, false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindLegalMessageItemView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == LEGAL_MESSAGE) {
+            TextView textView = view.findViewById(R.id.legal_message);
+            LegalMessages legalMessages = model.get(LEGAL_MESSAGE);
+            textView.setText(
+                    AutofillUiUtils.getSpannableStringForLegalMessageLines(
+                            textView.getContext(),
+                            legalMessages.mLines,
+                            /* underlineLinks= */ false,
+                            (String url) -> {
+                                legalMessages.mLinkOpener.accept(url);
+                            }));
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -784,18 +838,13 @@ class TouchToFillPaymentMethodViewBinder {
         }
     }
 
-    private static void setScanCreditCardCallback(View view, Runnable callback) {
-        View scanCreditCard = view.findViewById(R.id.scan_new_card);
-        scanCreditCard.setOnClickListener(unused -> callback.run());
-    }
-
     private static void setShowPaymentMethodsSettingsTitle(View view, String title) {
         TextView managePaymentMethodsButton = view.findViewById(R.id.open_management_ui);
         managePaymentMethodsButton.setText(title);
     }
 
-    private static void setShowPaymentMethodsSettingsCallback(View view, Runnable callback) {
-        View managePaymentMethodsButton = view.findViewById(R.id.open_management_ui);
-        managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
+    private static void setCallbackForButton(View view, @IdRes int buttonId, Runnable callback) {
+        View buttonView = view.findViewById(buttonId);
+        buttonView.setOnClickListener(unused -> callback.run());
     }
 }

@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -86,6 +87,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
@@ -102,6 +104,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.app.Activity;
@@ -143,6 +146,7 @@ import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.autofill.payments.BnplIssuerContext;
 import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -153,10 +157,12 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -437,11 +443,16 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* selectionText= */ "Purchase must be under $10,000.00",
                     /* isLinked= */ false,
                     /* isEligible= */ false);
+    private static final String LEGAL_MESSAGE_LINE = "legal message line";
+    private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
     private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
             new BnplIssuerTosDetail(
                     /* reviewText= */ "Review text for affirm",
                     /* approveText= */ "Approve text for affirm",
-                    /* linkText= */ new SpannableString("Link text for affirm"));
+                    /* linkText= */ new SpannableString("Link text for affirm"),
+                    /* legalMessages= */ new BnplIssuerTosDetail.LegalMessages(
+                            Arrays.asList(new LegalMessageLine(LEGAL_MESSAGE_LINE)),
+                            MOCK_LINK_OPENER));
     private static final String BNPL_FOOTER_TEXT =
             "To hide pay later options, go to <link>payment settings</link>";
 
@@ -1052,6 +1063,13 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 bnplTosItemModel.get(2).get(DESCRIPTION_TEXT).toString(),
                 is(BNPL_ISSUER_TOS_DETAIL.getLinkText().toString()));
         assertThat(bnplTosItemModel.get(2).get(BNPL_TOS_ICON_ID), is(R.drawable.add_link));
+
+        List<PropertyModel> footerModel = getModelsOfType(itemList, TOS_FOOTER);
+        assertThat(footerModel.size(), is(1));
+        BnplIssuerTosDetail.LegalMessages legalMessages = footerModel.get(0).get(LEGAL_MESSAGE);
+        assertThat(legalMessages.mLines.size(), is(1));
+        assertThat(legalMessages.mLines.get(0).text, is(LEGAL_MESSAGE_LINE));
+        assertThat(legalMessages.mLinkOpener, is(MOCK_LINK_OPENER));
     }
 
     @Test

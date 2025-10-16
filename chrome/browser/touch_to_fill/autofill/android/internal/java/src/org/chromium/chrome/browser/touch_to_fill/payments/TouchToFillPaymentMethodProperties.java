@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.components.autofill.LoyaltyCard;
+import org.chromium.components.autofill.payments.BnplIssuerTosDetail.LegalMessages;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -94,8 +95,7 @@ class TouchToFillPaymentMethodProperties {
         // An item which displays all user's loyalty cards upon click.
         int ALL_LOYALTY_CARDS = 4;
 
-        // A section containing a clickable button.
-        // TODO(crbug.com/430575808): Rename "FILL_BUTTON" to "BUTTON" to reflect its new use cases.
+        // A section containing a clickable button with filled background color.
         int FILL_BUTTON = 5;
 
         // A button that redirects the user to the Wallet settings in Chrome.
@@ -127,6 +127,12 @@ class TouchToFillPaymentMethodProperties {
 
         // The footer at the bottom of the BNPL selection and progress screens.
         int BNPL_SELECTION_PROGRESS_FOOTER = 15;
+
+        // A section contains legal messages shown in the screen footer.
+        int TOS_FOOTER = 16;
+
+        // A section containing a clickable button with no background.
+        int TEXT_BUTTON = 17;
     }
 
     /** Metadata associated with a card's image. */
@@ -425,6 +431,16 @@ class TouchToFillPaymentMethodProperties {
         };
 
         private BnplSelectionProgressFooterProperties() {}
+    }
+
+    /** Properties defined here reflect the visible state of the footer showing legal messages. */
+    static class TosFooterProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<LegalMessages> LEGAL_MESSAGE =
+                new PropertyModel.ReadableObjectPropertyKey<>("legal_message");
+
+        static final PropertyKey[] ALL_KEYS = {LEGAL_MESSAGE};
+
+        private TosFooterProperties() {}
     }
 
     private TouchToFillPaymentMethodProperties() {}

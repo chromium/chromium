@@ -19,9 +19,11 @@
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
+#include "components/autofill/android/payments/legal_message_line_android.h"
 #include "components/autofill/core/browser/data_model/valuables/android/loyalty_card_android.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -54,6 +56,18 @@ ConvertTextWithLinkToJavaObject(
 }
 
 static base::android::ScopedJavaLocalRef<jobject>
+ConvertLegalMessageLinesToJavaObject(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const autofill::LegalMessageLines legal_message_lines) {
+  return autofill::
+      Java_TouchToFillPaymentMethodViewBridge_convertLegalMessageLinesForBnplTos(
+          env, obj,
+          autofill::LegalMessageLineAndroid::ConvertToJavaLinkedList(
+              legal_message_lines));
+}
+
+static base::android::ScopedJavaLocalRef<jobject>
 ConvertBnplIssuerTosDetailToJavaObject(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
@@ -62,7 +76,9 @@ ConvertBnplIssuerTosDetailToJavaObject(
       env, ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.review_text),
       ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.approve_text),
       ConvertTextWithLinkToJavaObject(env, obj,
-                                      bnpl_issuer_tos_detail.link_text));
+                                      bnpl_issuer_tos_detail.link_text),
+      ConvertLegalMessageLinesToJavaObject(
+          env, obj, bnpl_issuer_tos_detail.legal_message_lines));
 }
 
 // TODO(crbug.com/449764859): Refactor BnplIssuerContext to use JNI type

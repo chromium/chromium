@@ -127,18 +127,18 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     /**
      * Used as a helper for the suggestion list height calculation.
-     * @return the item type of the footer on the {@link BottomSheet}.
+     *
+     * @return the item types of the footer on the {@link BottomSheet}.
      */
-    protected abstract int footerItemType();
+    protected abstract Set<Integer> footerItemTypes();
 
     /**
      * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
      * @param contentView The content of the bottom sheet.
      * @param suppressCollectionA11y Disables/enables setting the collection related a11y node info,
-     *                               basically removing the "2 of 4" part in a regular RecycleView
-     *                               item announcement. Setting it to `true` implies that the item
-     *                               content description is updated accordingly for items that are
-     *                               eligible for indexing from the UI perspective.
+     *     basically removing the "2 of 4" part in a regular RecycleView item announcement. Setting
+     *     it to `true` implies that the item content description is updated accordingly for items
+     *     that are eligible for indexing from the UI perspective.
      */
     public TouchToFillViewBase(
             BottomSheetController bottomSheetController,
@@ -339,7 +339,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
         int posInAdapter =
                 assumeNonNull(mSheetItemListView).getChildAdapterPosition(childInSheetView);
         assumeNonNull(mSheetItemListView.getAdapter());
-        return mSheetItemListView.getAdapter().getItemViewType(posInAdapter) == footerItemType();
+        return footerItemTypes()
+                .contains(mSheetItemListView.getAdapter().getItemViewType(posInAdapter));
     }
 
     @Override
