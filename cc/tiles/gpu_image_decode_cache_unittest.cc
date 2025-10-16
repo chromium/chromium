@@ -188,14 +188,6 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
   std::unique_ptr<uint8_t, base::AlignedFreeDeleter> mapped_entry_;
 };
 
-class MockRasterImplementation : public gpu::raster::RasterImplementationGLES {
- public:
-  explicit MockRasterImplementation(gpu::gles2::GLES2Interface* gl,
-                                    gpu::ContextSupport* support)
-      : RasterImplementationGLES(gl, support, gpu::Capabilities()) {}
-  ~MockRasterImplementation() override = default;
-};
-
 class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
  public:
   static scoped_refptr<GPUImageDecodeTestMockContextProvider> Create(
@@ -205,8 +197,8 @@ class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
         transfer_cache_helper, advertise_accelerated_decoding);
     auto gl = std::make_unique<FakeGPUImageDecodeTestGLES2Interface>(
         transfer_cache_helper, false /* advertise_accelerated_decoding */);
-    auto raster = std::make_unique<StrictMock<MockRasterImplementation>>(
-        gl.get(), support.get());
+    auto raster = std::make_unique<gpu::raster::RasterImplementationGLES>(
+        gl.get(), support.get(), gpu::Capabilities());
     return new GPUImageDecodeTestMockContextProvider(
         std::move(support), std::move(gl), std::move(raster));
   }
@@ -4169,11 +4161,6 @@ class GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest
                            .TakePaintImage();
     return image;
   }
-
-  StrictMock<MockRasterImplementation>* raster_implementation() const {
-    return static_cast<StrictMock<MockRasterImplementation>*>(
-        context_provider_->RasterInterface());
-  }
 };
 
 TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
@@ -4214,7 +4201,6 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
 
   TestTileTaskRunner::RunTask(jpeg_task.task.get());
   TestTileTaskRunner::CompleteTask(jpeg_task.task.get());
-  testing::Mock::VerifyAndClearExpectations(raster_implementation());
 
   // After running the tasks, trying to get another task for the image should
   // result in no task.
@@ -4246,7 +4232,6 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
   ASSERT_TRUE(webp_task.task->dependencies()[0]);
   TestTileTaskRunner::ProcessTask(webp_task.task->dependencies()[0].get());
   TestTileTaskRunner::ProcessTask(webp_task.task.get());
-  testing::Mock::VerifyAndClearExpectations(raster_implementation());
 
   // The image should have been cached.
   webp_task = cache->GetTaskForImageAndRef(client_id, webp_draw_image,
