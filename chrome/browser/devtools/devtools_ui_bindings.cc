@@ -392,6 +392,15 @@ std::string SanitizeEnabledExperiments(const std::string& value) {
   return std::ranges::all_of(value, is_legal) ? value : std::string();
 }
 
+std::string SanitizeTraceURL(const std::string& value) {
+  if (base::StartsWith(value, "http") &&
+      (base::EndsWith(value, ".json") || base::EndsWith(value, ".json.gz"))) {
+    return value;
+  }
+
+  return std::string();
+}
+
 std::string SanitizeFrontendQueryParam(const std::string& key,
                                        const std::string& value) {
   // Convert boolean flags to true.
@@ -426,6 +435,10 @@ std::string SanitizeFrontendQueryParam(const std::string& key,
 
   if (key == "enabledExperiments") {
     return SanitizeEnabledExperiments(value);
+  }
+
+  if (key == "traceURL") {
+    return SanitizeTraceURL(value);
   }
 
   if (key == "targetType" && value == "tab") {
