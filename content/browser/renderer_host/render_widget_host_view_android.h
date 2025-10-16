@@ -526,6 +526,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void UnlockOrientation() override;
   void SetHasPersistentVideo(bool has_persistent_video) override;
 
+  // This method is used as a callback for `ViewAndroid::HitTest` to determine
+  // if the View is actually ready to send event.
+  bool IsHitTestReady();
+
  private:
   friend class RenderWidgetHostViewAndroidTest;
   friend class RenderWidgetHostViewAndroidFullscreenRotationTest;

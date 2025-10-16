@@ -336,6 +336,10 @@ void ViewAndroid::SetCopyOutputCallback(CopyViewCallback callback) {
   copy_view_callback_ = std::move(callback);
 }
 
+void ViewAndroid::SetHitTestCallback(HitTestCallback callback) {
+  hit_test_callback_ = std::move(callback);
+}
+
 // If view does not support copy request, return back the request.
 std::unique_ptr<viz::CopyOutputRequest> ViewAndroid::MaybeRequestCopyOfView(
     std::unique_ptr<viz::CopyOutputRequest> request) {
@@ -776,7 +780,7 @@ void ViewAndroid::OnPointerLockRelease() {
 
 bool ViewAndroid::IsCheckHitEligible() const {
   return !base::FeatureList::IsEnabled(kCheckHitEligibility) ||
-         is_hit_test_eligible_;
+         hit_test_callback_.is_null() || hit_test_callback_.Run();
 }
 
 }  // namespace ui

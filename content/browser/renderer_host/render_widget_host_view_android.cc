@@ -678,6 +678,10 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
   // layer is managed by the DelegatedFrameHost.
   view_.SetLayer(cc::slim::Layer::Create());
   view_.set_event_handler(this);
+  if (base::FeatureList::IsEnabled(ui::kCheckHitEligibility)) {
+    view_.SetHitTestCallback(base::BindRepeating(
+        &RenderWidgetHostViewAndroid::IsHitTestReady, base::Unretained(this)));
+  }
 
   // If we're showing at creation time, we won't get a visibility change, so
   // generate our initial LocalSurfaceId here.
@@ -3768,6 +3772,12 @@ CompositorImpl* RenderWidgetHostViewAndroid::GetCompositorImpl() {
     return nullptr;
   }
   return static_cast<CompositorImpl*>(window->GetCompositor());
+}
+
+bool RenderWidgetHostViewAndroid::IsHitTestReady() {
+  // We do not want to send to a view which is still in prerendering state,
+  // since any event should not be sent to non-active (and showing) view.
+  return !host()->frame_tree()->is_prerendering();
 }
 
 }  // namespace content
