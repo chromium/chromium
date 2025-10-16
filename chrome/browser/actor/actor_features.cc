@@ -32,7 +32,7 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kGlicActionUseOptimizationGuide, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicBlockNavigationToDangerousContentTypes,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicCrossOriginNavigationGating,
              base::FEATURE_DISABLED_BY_DEFAULT);

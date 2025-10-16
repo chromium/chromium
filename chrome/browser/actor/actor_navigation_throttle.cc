@@ -8,7 +8,6 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
@@ -104,13 +103,12 @@ ActorNavigationThrottle::WillProcessResponse() {
     std::string mime_type;
     if (headers->GetMimeType(&mime_type) &&
         kBlockedMimeTypes.contains(mime_type)) {
-      GetJournal().Log(
-          navigation_handle()->GetURL(), task_id_, mojom::JournalTrack::kActor,
-          "NavThrottle",
-          JournalDetailsBuilder()
-              .AddError(base::StringPrintf(
-                  "Navigate to disallowed content-type: %s", mime_type.c_str()))
-              .Build());
+      GetJournal().Log(navigation_handle()->GetURL(), task_id_,
+                       mojom::JournalTrack::kActor, "NavThrottle",
+                       JournalDetailsBuilder()
+                           .AddError("Navigate to disallowed content-type")
+                           .Add("mime_type", mime_type)
+                           .Build());
 
       // If the navigation we're about to cancel is attributable to the actor's
       // tool usage, consider the action a failure.
