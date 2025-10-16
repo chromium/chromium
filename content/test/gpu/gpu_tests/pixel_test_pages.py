@@ -6,7 +6,6 @@
 # pylint: disable=too-many-lines
 
 from collections.abc import Callable
-from datetime import date
 from enum import Enum
 import json
 import logging
@@ -833,8 +832,6 @@ class PixelTestPages():
     standard_crop = ca.NonWhiteContentCropAction(
         initial_crop=ca.FixedRectCropAction(0, 0, 500, 500))
 
-    # Setting grace_period_end to monitor the affects on bots for 2 weeks
-    # without making the bots red unexpectedly.
     return [
         # Enabled OneCopyCapture
         PixelTestPage('pixel_webgpu_canvas_capture_to_video.html',
@@ -1847,9 +1844,6 @@ class PixelTestPages():
     # scrollbar to appear along the bottom. So, crop that first.
     standard_crop = ca.NonWhiteContentCropAction(
         ca.FixedRectCropAction(0, 60, None, -20))
-    # Run the tests on CI for a while to see how stable they are with
-    # fuzzy matching enabled.
-    grace_period_end = date(2025, 12, 1)
     # These tests are known to produce flaky output that cannot be consistently
     # handled by inexact matching without relaxing inexact matching parameters
     # to the point of letting basically any image through. This is mostly
@@ -1862,20 +1856,17 @@ class PixelTestPages():
                       crop_action=standard_crop,
                       browser_args=video_args,
                       matching_algorithm=meet_sample_area_matching,
-                      grace_period_end=grace_period_end,
                       known_flaky_output_test=True),
         PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=539',
                       f'{base_name}_MeetEffectsRainbowWig',
                       crop_action=standard_crop,
                       browser_args=video_args,
                       matching_algorithm=meet_sample_area_matching,
-                      grace_period_end=grace_period_end,
                       known_flaky_output_test=True),
         PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=530',
                       f'{base_name}_MeetEffectsTruckerHat',
                       crop_action=standard_crop,
                       browser_args=video_args,
                       matching_algorithm=meet_sample_area_matching,
-                      grace_period_end=grace_period_end,
                       known_flaky_output_test=True),
     ]

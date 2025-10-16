@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from datetime import date
 import logging
 import os
 import re
@@ -74,19 +73,12 @@ class SkiaGoldTestCase():
   def __init__(self,
                name: str,
                gpu_process_disabled: bool = False,
-               grace_period_end: date | None = None,
                matching_algorithm: algo.SkiaGoldMatchingAlgorithm | None = None,
                refresh_after_finish: bool = False):
     """
     Args:
       name: A string containing the name of the test.
       gpu_process_disabled: Whether the test runs with the GPU process disabled.
-      grace_period_end: An optional datetime.date, before which Gold comparison
-          failures will be ignored. This allows a newly added test to be
-          exempted for a (hopefully) short period after being added. This is so
-          that any slightly different different but valid images that get
-          produced by the CI builders can be triaged without turning the
-          builders red.
       matching_algorithm: A
           skia_gold_matching_algoriths.SkiaGoldMatchingAlgorithm that specifies
           which matching algorithm Skia Gold should use for the test. Defaults
@@ -96,7 +88,6 @@ class SkiaGoldTestCase():
     """
     self.name = name
     self.gpu_process_disabled = gpu_process_disabled
-    self.grace_period_end = grace_period_end
     self.matching_algorithm = (matching_algorithm
                                or algo.ExactMatchingAlgorithm())
     self.refresh_after_finish = refresh_after_finish
@@ -429,14 +420,6 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         'skia_graphite_status':
         _ToNonEmptyStrOrNone(img_params.skia_graphite_status),
     }
-    # If we have a grace period active, then the test is potentially flaky.
-    # Include a pair that will cause Gold to ignore any untriaged images, which
-    # will prevent it from automatically commenting on unrelated CLs that happen
-    # to produce a new image.
-    if _GracePeriodActive(test_case):
-      # This is put in the regular keys dict instead of the optional one because
-      # ignore rules do not apply to optional keys.
-      gpu_keys['ignore'] = '1'
     return gpu_keys
 
   # pylint: disable=no-self-use
@@ -524,17 +507,14 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       logging.error(
           'Given unhandled SkiaGoldSession StatusCode %s with error %s', status,
           error)
-    if self._ShouldReportGoldFailure(test_case):
+    if self._ShouldReportGoldFailure():
       raise GoldComparisonFailure(
           'goldctl command returned non-zero exit code, see above for details. '
           'This probably just means that the test produced an image that has '
           'not been triaged as positive.')
 
-  def _ShouldReportGoldFailure(self, test_case: SkiaGoldTestCase) -> bool:
+  def _ShouldReportGoldFailure(self) -> bool:
     """Determines if a Gold failure should actually be surfaced.
-
-    Args:
-      test_case: The GPU SkiaGoldTestCase object for the test.
 
     Returns:
       True if the failure should be surfaced, i.e. the test should fail,
@@ -543,10 +523,6 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     parsed_options = self.GetOriginalFinderOptions()
     # Don't surface if we're explicitly told not to.
     if parsed_options.no_skia_gold_failure:
-      return False
-    # Don't surface if the test was recently added and we're still within its
-    # grace period.
-    if _GracePeriodActive(test_case):
       return False
     return True
 
@@ -571,20 +547,6 @@ def _ToHexOrNone(num: str | None) -> str:
 
 def _ToNonEmptyStrOrNone(val: str | None) -> str:
   return 'None' if val == '' else str(val)
-
-
-def _GracePeriodActive(test_case: SkiaGoldTestCase) -> bool:
-  """Returns whether a grace period is currently active for a test.
-
-  Args:
-    test_case: The GPU SkiaGoldTestCase object for the test in question.
-
-  Returns:
-    True if a grace period is defined for |test_case| and has not yet expired.
-    Otherwise, False.
-  """
-  return (test_case.grace_period_end
-          and date.today() <= test_case.grace_period_end)
 
 
 def _StripAngleRevisionFromDriver(img_params: _ImageParameters) -> None:

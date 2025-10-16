@@ -391,12 +391,14 @@ crbug.com/403252788 [ mac angle-metal asan graphite-enabled intel-0x3e9b passthr
 crbug.com/349132647 [ android android-sm-s911u1 android-chromium ] Pixel_WebGLContextRestored [ Slow ]
 
 # Meet effects tests currently take a while to actually start, which can cause
-# the initial heartbeat message to be delayed significantly.
-crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Slow ]
-crbug.com/286989320 [ win amd ] Pixel_MeetEffects* [ Slow ]
-crbug.com/286989320 [ win nvidia ] Pixel_MeetEffects* [ Slow ]
-crbug.com/286989320 [ win qualcomm ] Pixel_MeetEffects* [ Slow ]
-crbug.com/286989320 [ win intel-0x4680 ] Pixel_MeetEffects* [ Slow ]
+# the initial heartbeat message to be delayed significantly. Additionally, these
+# are marked as failing until they are confirmed to be stable.
+crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Failure Slow ]
+crbug.com/286989320 [ win amd ] Pixel_MeetEffects* [ Failure Slow ]
+crbug.com/286989320 [ win nvidia ] Pixel_MeetEffects* [ Failure Slow ]
+crbug.com/286989320 [ win qualcomm ] Pixel_MeetEffects* [ Failure Slow ]
+crbug.com/286989320 [ win intel-0x4680 ] Pixel_MeetEffects* [ Failure Slow ]
+crbug.com/286989320 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ Failure ]
 
 # Slow on DCHECK builds being used on fuchsia builders.
 crbug.com/425745937 [ fuchsia web-engine-shell ] Pixel_ViewTransitionsCapture_TreesInViz [ Slow ]
@@ -487,7 +489,8 @@ crbug.com/413062240 [ win10 intel-0x4680 passthrough ] Pixel_WebGPUDestroyed_Ons
 
 
 # Flaky D3D11 device creation crash
-crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
+# Should be re-added when the conflicting Failure expectation is removed.
+# crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
 
 # Failure on Win10 Nvidia bot
 crbug.com/420902568 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MeetEffectsTruckerHat [ Failure ]
