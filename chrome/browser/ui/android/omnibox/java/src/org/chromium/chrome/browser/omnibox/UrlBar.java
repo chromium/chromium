@@ -466,7 +466,7 @@ public class UrlBar extends AutocompleteEditText {
 
         limitDisplayableLength();
 
-        if (OmniboxFeatures.allowMultilineEditField()) {
+        if (OmniboxFeatures.allowMultilineEditField() && !mIsInCct) {
             // Observe the user input alone, to prevent autocompletion from taking over the input.
             boolean isMultilineEligible = TextUtils.indexOf(getTextWithoutAutocomplete(), ' ') >= 0;
             boolean wasMultilineEligible = !isSingleLine();
