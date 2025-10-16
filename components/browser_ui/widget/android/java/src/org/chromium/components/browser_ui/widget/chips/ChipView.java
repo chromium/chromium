@@ -82,7 +82,7 @@ public class ChipView extends LinearLayout {
     private @MonotonicNonNull ViewGroup mEndIconWrapper;
     private @MonotonicNonNull LinearLayout mTextViewsWrapper;
     private @MonotonicNonNull AppCompatTextView mSecondaryText;
-    private int mMaxWidth = Integer.MAX_VALUE;
+    private @Px int mMaxWidth = Integer.MAX_VALUE;
 
     /** Constructor for applying a theme overlay. */
     public ChipView(Context context, @StyleRes int themeOverlay) {
@@ -554,8 +554,18 @@ public class ChipView extends LinearLayout {
      *
      * @param maxWidth of the chip in px.
      */
-    public void setMaxWidth(int maxWidth) {
+    public void setMaxWidth(@Px int maxWidth) {
         mMaxWidth = maxWidth;
+    }
+
+    /**
+     * Returns the max width of this {@link ChipView}. Returns Integer.MAX_VALUE if this {@link
+     * ChipView} doesn't have width constraints.
+     *
+     * @return the max width set to this {@link ChipView}.
+     */
+    public @Px int getMaxWidth() {
+        return mMaxWidth;
     }
 
     /**

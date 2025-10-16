@@ -129,6 +129,7 @@ robolectric_binary("keyboard_accessory_junit_tests") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingControllerTest.java",
+    "junit/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryChipGroupTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetControllerTest.java",
