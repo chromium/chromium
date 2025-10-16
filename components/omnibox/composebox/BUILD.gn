@@ -17,6 +17,8 @@ source_set("composebox") {
     "composebox_metrics_recorder.h",
     "composebox_query_controller.cc",
     "composebox_query_controller.h",
+    "contextual_session_service.cc",
+    "contextual_session_service.h",
   ]
   deps = [
     ":mojo_bindings",
@@ -65,6 +67,7 @@ source_set("unit_tests") {
   sources = [
     "composebox_metrics_recorder_unittest.cc",
     "composebox_query_controller_unittest.cc",
+    "contextual_session_service_unittest.cc",
   ]
   deps = [
     ":composebox",

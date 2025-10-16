@@ -871,6 +871,8 @@ static_library("browser") {
     "ntp_tiles/chrome_popular_sites_factory.h",
     "offline_items_collection/offline_content_aggregator_factory.cc",
     "offline_items_collection/offline_content_aggregator_factory.h",
+    "omnibox/contextual_session_service_factory.cc",
+    "omnibox/contextual_session_service_factory.h",
     "origin_trials/origin_trials_factory.cc",
     "origin_trials/origin_trials_factory.h",
     "page_content_annotations/annotate_page_content_request.cc",
