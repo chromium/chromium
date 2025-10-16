@@ -25,6 +25,9 @@ class URLFetcher : public URLRequest::Delegate {
   URLRequest& request() { return *request_; }
   const std::string& data_received() const { return data_received_; }
   int net_error() const { return net_error_; }
+  const CookieAndLineAccessResultList& maybe_stored_cookies() const {
+    return request_->maybe_stored_cookies();
+  }
 
  private:
   // URLRequest::Delegate

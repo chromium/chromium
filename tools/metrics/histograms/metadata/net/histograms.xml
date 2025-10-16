@@ -1919,6 +1919,77 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.MinimumBoundCookieLifetime" units="ms"
+    expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    On each refresh request due to a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md), this histogram
+    logs the minimum bound cookie lifetime in the refresh response.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.DeviceBoundSessions.MinimumProactiveRefreshThreshold{Outcome}"
+    units="ms" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    On each refresh request due to a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md), this histogram
+    logs the minimum threshold to make the previous request trigger a proactive
+    refresh. This is logged {Outcome}.
+  </summary>
+  <token key="Outcome">
+    <variant name="" summary="on every refresh"/>
+    <variant name=".Failure"
+        summary="when a proactive refresh would fail to prevent the current
+                 refresh request"/>
+    <variant name=".Success"
+        summary="when a proactive refresh would successfully prevent the
+                 current refresh request"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.DeviceBoundSessions.ProactiveRefreshCandidateDeferredCount.{Threshold}"
+    units="requests" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    On each refresh request due to a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) that Chrome
+    believes may have been preventable with proactive refresh, this histogram
+    logs the number of deferrals that proactive refresh would have prevented.
+    This is logged when the minimum threshold is {Threshold}.
+  </summary>
+  <token key="Threshold">
+    <variant name="OneMinute" summary="less than 1 minute"/>
+    <variant name="ThirtySeconds" summary="less than 30 seconds"/>
+    <variant name="TwoMinutes" summary="less than 2 minutes"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.DeviceBoundSessions.ProactiveRefreshCandidateRequestDeferredDuration.{Threshold}"
+    units="requests" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    On each refresh request due to a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) that Chrome
+    believes may have been preventable with proactive refresh, this histogram
+    logs the duration of each deferral that proactive refresh would have
+    prevented. This is logged when the minimum threshold is {Threshold}.
+  </summary>
+  <token key="Threshold">
+    <variant name="OneMinute" summary="less than 1 minute"/>
+    <variant name="ThirtySeconds" summary="less than 30 seconds"/>
+    <variant name="TwoMinutes" summary="less than 2 minutes"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.RefreshResult"
     enum="DeviceBoundSessionError" expires_after="2026-02-18">
   <owner>drubery@chromium.org</owner>

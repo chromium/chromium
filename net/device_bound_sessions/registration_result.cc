@@ -8,10 +8,16 @@
 
 namespace net::device_bound_sessions {
 
-RegistrationResult::RegistrationResult(std::unique_ptr<Session> session)
-    : storage_(std::move(session)) {}
-RegistrationResult::RegistrationResult(NoSessionConfigChange no_change)
-    : storage_(std::move(no_change)) {}
+RegistrationResult::RegistrationResult(
+    std::unique_ptr<Session> session,
+    CookieAndLineAccessResultList maybe_stored_cookies)
+    : storage_(std::move(session)),
+      maybe_stored_cookies_(std::move(maybe_stored_cookies)) {}
+RegistrationResult::RegistrationResult(
+    NoSessionConfigChange no_change,
+    CookieAndLineAccessResultList maybe_stored_cookies)
+    : storage_(std::move(no_change)),
+      maybe_stored_cookies_(std::move(maybe_stored_cookies)) {}
 RegistrationResult::RegistrationResult(SessionError error)
     : storage_(std::move(error)) {}
 RegistrationResult::RegistrationResult(
