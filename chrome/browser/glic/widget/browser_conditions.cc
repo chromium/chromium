@@ -127,6 +127,16 @@ bool IsBrowserVisible(Browser* browser) {
          browser->capabilities()->IsVisibleOnScreen();
 }
 
+BrowserWindowInterface* GetActiveGlicEligibleBrowser(Profile* profile) {
+  BrowserWindowInterface* const active_bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (active_bwi && IsBrowserGlicAttachable(profile, active_bwi) &&
+      IsBrowserInForeground(active_bwi)) {
+    return active_bwi;
+  }
+  return nullptr;
+}
+
 class BrowserAttachObservationImpl : public BrowserAttachObservation,
                                      public BrowserListObserver,
                                      public views::WidgetObserver {

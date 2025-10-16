@@ -46,6 +46,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/global_features.h"
@@ -257,7 +258,8 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
     return;
   }
 
-  window_controller().Toggle(bwi, prevent_close, source);
+  window_controller().Toggle(bwi ? bwi : GetActiveGlicEligibleBrowser(profile_),
+                             prevent_close, source);
 }
 
 void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,

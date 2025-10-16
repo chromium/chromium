@@ -279,27 +279,8 @@ void GlicWindowControllerImpl::ShowAfterSignIn(base::WeakPtr<Browser> browser) {
 void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
                                       bool prevent_close,
                                       mojom::InvocationSource source) {
-  // If `bwi` is non-null, the glic button was clicked on a specific window and
-  // glic should be attached to that window. Otherwise glic was invoked from the
-  // hotkey or other OS-level entrypoint.
   Browser* new_attached_browser =
       bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
-
-  mojom::PanelState panel_state = ComputePanelState();
-  bool is_detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
-
-  // In the case where the user invokes the hotkey, or the status tray glic
-  // icon and the most recently used window for the glic profile is active,
-  // treat this as if the user clicked the glic button on that window if
-  // Chrome is currently in the foreground and we aren't in detached state.
-  if (!new_attached_browser && !is_detached) {
-    BrowserWindowInterface* const active_bwi =
-        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-    if (active_bwi && IsBrowserGlicAttachable(profile_, active_bwi) &&
-        IsBrowserInForeground(active_bwi)) {
-      new_attached_browser = active_bwi->GetBrowserForMigrationOnly();
-    }
-  }
 
   if (!AlwaysDetached()) {
     ToggleWhenNotAlwaysDetached(new_attached_browser, prevent_close, source);

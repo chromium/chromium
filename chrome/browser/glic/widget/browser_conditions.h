@@ -25,6 +25,10 @@ bool IsBrowserGlicAttachable(Profile* profile, BrowserWindowInterface* browser);
 // state and on windows includes a occlusion check.
 bool IsBrowserInForeground(BrowserWindowInterface* bwi);
 
+// Returns the last active Window that is in foreground and
+// eligible for Glic.
+BrowserWindowInterface* GetActiveGlicEligibleBrowser(Profile* profile);
+
 // Returns whether 'browser' is visible with a valid widget and window.
 bool IsBrowserVisible(Browser* browser);
 
