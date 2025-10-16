@@ -22,7 +22,6 @@ rakina@chromium.org
 per-file *aura*=jonross@chromium.org
 
 # Mac platform GPU-related code.
-per-file *mac*=kbr@chromium.org
 per-file *mac*=ccameron@chromium.org
 
 # Android platform code.
