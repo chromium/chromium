@@ -1096,11 +1096,18 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
                        testGetZeroStateSuggestionsApi) {
-  // TODO: zero state suggestions not yet implemented for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
-      .Times(1);
+  if (GetParam().multi_instance) {
+    EXPECT_CALL(
+        *mock_cueing_service(),
+        GetContextualGlicZeroStateSuggestionsForPinnedTabs(_, _, _, _, _))
+        .Times(testing::AtLeast(1));
+    // TODO(b/451618836): This is currently called 4 times, but should only be
+    // called once.
+  } else {
+    EXPECT_CALL(*mock_cueing_service(),
+                GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
+        .Times(1);
+  }
 
   ExecuteJsTest();
 }

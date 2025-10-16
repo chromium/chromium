@@ -90,7 +90,6 @@ void GlicZeroStateSuggestionsManager::
   if (!glic_instance_->IsShowing()) {
     return;
   }
-
   if (pinned_tab_data.size() >
       static_cast<size_t>(
           contextual_cueing::kMaxPinnedPagesForTriggeringSuggestions.Get())) {

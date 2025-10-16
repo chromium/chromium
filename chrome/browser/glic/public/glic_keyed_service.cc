@@ -100,13 +100,15 @@ std::unique_ptr<GlicWindowController> CreateWindowController(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     GlicKeyedService* glic_service,
-    GlicEnabling* glic_enabling) {
+    GlicEnabling* glic_enabling,
+    contextual_cueing::ContextualCueingService* contextual_cueing_service) {
   if (UseDefaultWindowController()) {
     return std::make_unique<GlicWindowControllerImpl>(
         profile, identity_manager, glic_service, glic_enabling);
   }
   return std::make_unique<GlicInstanceCoordinatorImpl>(
-      profile, identity_manager, glic_service, glic_enabling);
+      profile, identity_manager, glic_service, glic_enabling,
+      contextual_cueing_service);
 }
 
 std::unique_ptr<GlicSharingManager> CreateSharingManager(
@@ -142,7 +144,8 @@ GlicKeyedService::GlicKeyedService(
       window_controller_(CreateWindowController(profile,
                                                 identity_manager,
                                                 this,
-                                                enabling_.get())),
+                                                enabling_.get(),
+                                                contextual_cueing_service)),
       sharing_manager_(
           CreateSharingManager(profile, &window_controller(), metrics_.get())),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),

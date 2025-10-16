@@ -38,6 +38,9 @@ namespace gfx {
 class Point;
 }  // namespace gfx
 
+namespace contextual_cueing {
+class ContextualCueingService;
+}
 namespace glic {
 
 // An interface to GlicInstanceCoordinatorImpl. Should be used instead of direct
@@ -52,10 +55,12 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
       delete;
 
-  GlicInstanceCoordinatorImpl(Profile* profile,
-                              signin::IdentityManager* identity_manager,
-                              GlicKeyedService* service,
-                              GlicEnabling* enabling);
+  GlicInstanceCoordinatorImpl(
+      Profile* profile,
+      signin::IdentityManager* identity_manager,
+      GlicKeyedService* service,
+      GlicEnabling* enabling,
+      contextual_cueing::ContextualCueingService* contextual_cueing_service);
   ~GlicInstanceCoordinatorImpl() override;
 
   // GlicInstanceImpl::InstanceCoordinatorDelegate implementation
@@ -144,6 +149,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
 
   mojom::PanelState panel_state_;
   const raw_ptr<Profile> profile_;
+  raw_ptr<contextual_cueing::ContextualCueingService>
+      contextual_cueing_service_;
 
   std::map<InstanceId, std::unique_ptr<GlicInstanceImpl>> instances_;
 

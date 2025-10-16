@@ -27,12 +27,16 @@ class Profile;
 namespace tabs {
 class TabInterface;
 }
+namespace contextual_cueing {
+class ContextualCueingService;
+}
 
 namespace glic {
 
 class GlicUiEmbedder;
 class EmptyEmbedderDelegate;
 class GlicTabContentsObserver;
+class GlicZeroStateSuggestionsManager;
 
 // A GlicInstance owns a single host keeping any state that must exist for the
 // lifetime of the host. When a host is showing, the GlicInstance creates a
@@ -68,7 +72,8 @@ class GlicInstanceImpl : public GlicInstance,
       Profile* profile,
       InstanceId instance_id,
       base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
-      GlicMetrics* metrics);
+      GlicMetrics* metrics,
+      contextual_cueing::ContextualCueingService* contextual_cueing_service);
   ~GlicInstanceImpl() override;
 
   GlicInstanceImpl(const GlicInstanceImpl&) = delete;
@@ -241,6 +246,9 @@ class GlicInstanceImpl : public GlicInstance,
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
+
+  std::unique_ptr<GlicZeroStateSuggestionsManager>
+      zero_state_suggestions_manager_;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

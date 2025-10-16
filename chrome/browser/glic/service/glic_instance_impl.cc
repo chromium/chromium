@@ -115,7 +115,8 @@ GlicInstanceImpl::GlicInstanceImpl(
     Profile* profile,
     InstanceId instance_id,
     base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
-    GlicMetrics* metrics)
+    GlicMetrics* metrics,
+    contextual_cueing::ContextualCueingService* contextual_cueing_service)
     : profile_(profile),
       service_(GlicKeyedService::Get(profile)),
       coordinator_delegate_(coordinator_delegate),
@@ -129,7 +130,12 @@ GlicInstanceImpl::GlicInstanceImpl(
           std::make_unique<GlicPinnedTabManager>(profile, this, metrics),
           profile,
           metrics),
-      last_non_hidden_panel_state_kind_(mojom::PanelState_Kind::kAttached) {
+      last_non_hidden_panel_state_kind_(mojom::PanelState_Kind::kAttached),
+      zero_state_suggestions_manager_(
+          std::make_unique<GlicZeroStateSuggestionsManager>(
+              &sharing_manager_,
+              this,
+              contextual_cueing_service)) {
   browser_list_observation_.Observe(BrowserList::GetInstance());
   // Start warming the contents.
   host_.SetDelegate(&empty_embedder_delegate_);
@@ -309,9 +315,11 @@ void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
     const mojom::ZeroStateSuggestionsOptions& options,
     mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
         callback) {
-  service_->GetZeroStateSuggestionsAndSubscribe(has_active_subscription,
-                                                options, std::move(callback));
+  zero_state_suggestions_manager_->ObserveZeroStateSuggestions(
+      has_active_subscription, options.is_first_run, options.supported_tools,
+      std::move(callback));
 }
+
 void GlicInstanceImpl::PrepareForOpen() {
   GlicKeyedServiceFactory::GetGlicKeyedService(profile_)
       ->fre_controller()

@@ -64,8 +64,9 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     GlicKeyedService* service,
-    GlicEnabling* enabling)
-    : profile_(profile) {
+    GlicEnabling* enabling,
+    contextual_cueing::ContextualCueingService* contextual_cueing_service)
+    : profile_(profile), contextual_cueing_service_(contextual_cueing_service) {
   host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
 }
 
@@ -362,7 +363,8 @@ void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
   InstanceId instance_id = base::Uuid::GenerateRandomV4();
   warmed_instance_ = std::make_unique<GlicInstanceImpl>(
       profile_, instance_id, weak_ptr_factory_.GetWeakPtr(),
-      GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->metrics());
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->metrics(),
+      contextual_cueing_service_);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleFloaty(bool prevent_close) {
