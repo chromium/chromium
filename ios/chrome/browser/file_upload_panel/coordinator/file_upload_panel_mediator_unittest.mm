@@ -28,9 +28,11 @@ class FileUploadPanelMediatorTest : public PlatformTest {
     ChooseFileEvent event =
         ChooseFileEvent::Builder().SetWebState(web_state_.get()).Build();
     controller_ = std::make_unique<FakeChooseFileController>(event);
+    handler_ = OCMProtocolMock(@protocol(FileUploadPanelCommands));
     if (@available(iOS 18.4, *)) {
       mediator_ = [[FileUploadPanelMediator alloc]
           initWithChooseFileController:controller_.get()];
+      mediator_.fileUploadPanelHandler = handler_;
     }
   }
 
@@ -38,8 +40,18 @@ class FileUploadPanelMediatorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<FakeChooseFileController> controller_;
+  id<FileUploadPanelCommands> handler_;
   API_AVAILABLE(ios(18.4)) FileUploadPanelMediator* mediator_;
 };
+
+// Tests that destroying the controller calls the handler to hide the panel.
+TEST_F(FileUploadPanelMediatorTest, ControllerDestroyed) {
+  if (@available(iOS 18.4, *)) {
+    OCMExpect([handler_ hideFileUploadPanel]);
+    controller_.reset();
+    EXPECT_OCMOCK_VERIFY(handler_);
+  }
+}
 
 // Tests that disconnecting the mediator submits the selection if it has not
 // been submitted yet.

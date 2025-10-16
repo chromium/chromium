@@ -11,6 +11,8 @@
 
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/observer_list.h"
+#import "base/observer_list_types.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 
 // Controller object to keep track of a file selection flow in a WebState. It is
@@ -18,6 +20,13 @@
 // the selection is submitted or canceled.
 class ChooseFileController {
  public:
+  // Observer interface for `ChooseFileController`.
+  struct Observer : public base::CheckedObserver {
+    // Called when the `controller` is being destroyed.
+    virtual void ChooseFileControllerDestroyed(
+        ChooseFileController* controller) = 0;
+  };
+
   explicit ChooseFileController(ChooseFileEvent event);
   ChooseFileController(const ChooseFileController&) = delete;
   ChooseFileController(ChooseFileController&&) = delete;
@@ -25,6 +34,10 @@ class ChooseFileController {
 
   ChooseFileController& operator=(const ChooseFileController&) = delete;
   ChooseFileController& operator=(ChooseFileController&&) = delete;
+
+  // Add/Remove `observer` to/from the list of observers.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Returns the event associated with this controller.
   const ChooseFileEvent& GetChooseFileEvent() const;
@@ -67,6 +80,8 @@ class ChooseFileController {
   ChooseFileEvent choose_file_event_;
   // A closure to abort the flow.
   base::OnceClosure abort_handler_ = base::DoNothing();
+  // Observers list.
+  base::ObserverList<Observer, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_CONTROLLER_H_

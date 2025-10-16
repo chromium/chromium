@@ -14,6 +14,9 @@ class ChooseFileController;
 API_AVAILABLE(ios(18.4))
 @interface FileUploadPanelMediator : NSObject
 
+// Handler for the file upload panel UI.
+@property(nonatomic, weak) id<FileUploadPanelCommands> fileUploadPanelHandler;
+
 // Initializes the file upload panel and binds it to `controller`.
 - (instancetype)initWithChooseFileController:(ChooseFileController*)controller
     NS_DESIGNATED_INITIALIZER;

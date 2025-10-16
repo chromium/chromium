@@ -43,6 +43,8 @@
   CHECK(chooseFileController);
   _mediator = [[FileUploadPanelMediator alloc]
       initWithChooseFileController:chooseFileController];
+  _mediator.fileUploadPanelHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), FileUploadPanelCommands);
 
   // TODO(crbug.com/441659098): Create a mediator to observe the file selection
   // in the model layer. Skip the context menu if it is unnecessary e.g.

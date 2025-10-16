@@ -10,6 +10,8 @@ source_set("choose_file") {
     "choose_file_controller.mm",
     "choose_file_controller_impl.h",
     "choose_file_controller_impl.mm",
+    "choose_file_controller_observer_bridge.h",
+    "choose_file_controller_observer_bridge.mm",
     "choose_file_event.h",
     "choose_file_event.mm",
     "choose_file_event_holder.h",
@@ -52,6 +54,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "choose_file_controller_impl_unittest.mm",
+    "choose_file_controller_observer_bridge_unittest.mm",
     "choose_file_controller_unittest.mm",
     "choose_file_java_script_feature_unittest.mm",
     "choose_file_tab_helper_unittest.mm",

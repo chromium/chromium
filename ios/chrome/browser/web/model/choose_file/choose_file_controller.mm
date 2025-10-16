@@ -10,7 +10,17 @@
 ChooseFileController::ChooseFileController(ChooseFileEvent event)
     : choose_file_event_(std::move(event)) {}
 
-ChooseFileController::~ChooseFileController() = default;
+ChooseFileController::~ChooseFileController() {
+  observers_.Notify(&Observer::ChooseFileControllerDestroyed, this);
+}
+
+void ChooseFileController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ChooseFileController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 const ChooseFileEvent& ChooseFileController::GetChooseFileEvent() const {
   return choose_file_event_;

@@ -10,8 +10,22 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+
+namespace {
+
+// Mock implementation of ChooseFileController::Observer.
+class MockChooseFileControllerObserver : public ChooseFileController::Observer {
+ public:
+  MOCK_METHOD(void,
+              ChooseFileControllerDestroyed,
+              (ChooseFileController * controller),
+              (override));
+};
+
+}  // namespace
 
 // Test suite for ChooseFileController.
 class ChooseFileControllerTest : public PlatformTest {
@@ -83,4 +97,15 @@ TEST_F(ChooseFileControllerTest, GetChooseFileEvent) {
   EXPECT_EQ(event_->accept_mime_types, event.accept_mime_types);
   EXPECT_EQ(event_->web_state.get(), event.web_state.get());
   EXPECT_EQ(event_->time, event.time);
+}
+
+// Tests that destroying the controller calls the observer.
+TEST_F(ChooseFileControllerTest, ObserverDestroyed) {
+  MockChooseFileControllerObserver observer;
+  controller_->AddObserver(&observer);
+
+  ChooseFileController* controller = controller_.get();
+  EXPECT_CALL(observer, ChooseFileControllerDestroyed(controller))
+      .WillOnce([&](ChooseFileController* c) { c->RemoveObserver(&observer); });
+  controller_.reset();
 }
