@@ -113,6 +113,12 @@ export declare interface GlicWebClient {
    *
    * Important: The panel is only made user-visible once the returned promise is
    * resolved or failed (failures are ignored and the panel is still shown).
+   *
+   * WARNING: Chrome may call this multiple times over the lifetime of the
+   * panel, even while the panel is already open. These calls may indicate that
+   * the panel was opened on a different tab's side panel or as a floating
+   * window. The web client should still inspect and react to the
+   * `panelOpeningData` in these cases.
    */
   notifyPanelWillOpen?
       (panelOpeningData: PanelOpeningData&PanelState): Promise<OpenPanelInfo>;
