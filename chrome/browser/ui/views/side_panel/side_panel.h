@@ -32,6 +32,7 @@ class SidePanel : public views::AccessiblePaneView,
   enum class HorizontalAlignment { kLeft = 0, kRight };
   explicit SidePanel(
       BrowserView* browser_view,
+      bool has_border,
       HorizontalAlignment horizontal_alignment = HorizontalAlignment::kRight);
   SidePanel(const SidePanel&) = delete;
   SidePanel& operator=(const SidePanel&) = delete;
@@ -95,6 +96,7 @@ class SidePanel : public views::AccessiblePaneView,
   views::View* GetContentParentView();
 
  private:
+  class BorderView;
   class VisibleBoundsViewClipper;
 
   // This method is the shared implementation of Open/Close.
@@ -119,7 +121,7 @@ class SidePanel : public views::AccessiblePaneView,
   base::TimeTicks last_animation_step_timestamp_;
   std::optional<base::TimeDelta> largest_animation_step_time_;
 
-  raw_ptr<View> border_view_ = nullptr;
+  raw_ptr<BorderView> border_view_ = nullptr;
   const raw_ptr<BrowserView> browser_view_;
   raw_ptr<View> resize_area_ = nullptr;
   raw_ptr<views::View> header_view_ = nullptr;

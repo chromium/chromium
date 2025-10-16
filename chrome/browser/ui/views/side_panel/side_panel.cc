@@ -56,8 +56,7 @@ namespace {
 // This thickness includes the solid-color background and the inner round-rect
 // border-color stroke. It does not include the outer-color separator.
 int GetBorderThickness() {
-  return (lens::features::IsLensOverlayEnabled() ? 8 : 16) +
-         views::Separator::kThickness;
+  return 8 + views::Separator::kThickness;
 }
 
 // This is how many units of the toolbar are essentially expected to be
@@ -190,7 +189,30 @@ class SidePanelBorder : public views::Border {
   const raw_ptr<BrowserView> browser_view_;
 };
 
-class BorderView : public views::View {
+// ContentParentView is the parent view for views hosted in the
+// side panel.
+class ContentParentView : public views::View {
+  METADATA_HEADER(ContentParentView, views::View)
+
+ public:
+  ContentParentView() {
+    SetUseDefaultFillLayout(true);
+    SetBackground(views::CreateSolidBackground(kColorSidePanelBackground));
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+  }
+
+  ~ContentParentView() override = default;
+};
+
+BEGIN_METADATA(ContentParentView)
+END_METADATA
+
+}  // namespace
+
+class SidePanel::BorderView : public views::View {
   METADATA_HEADER(BorderView, views::View)
 
  public:
@@ -237,31 +259,8 @@ class BorderView : public views::View {
   raw_ptr<SidePanelBorder> border_;
 };
 
-BEGIN_METADATA(BorderView)
+BEGIN_METADATA(SidePanel, BorderView)
 END_METADATA
-
-// ContentParentView is the parent view for views hosted in the
-// side panel.
-class ContentParentView : public views::View {
-  METADATA_HEADER(ContentParentView, views::View)
-
- public:
-  ContentParentView() {
-    SetUseDefaultFillLayout(true);
-    SetBackground(views::CreateSolidBackground(kColorSidePanelBackground));
-    SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kUnbounded));
-  }
-
-  ~ContentParentView() override = default;
-};
-
-BEGIN_METADATA(ContentParentView)
-END_METADATA
-
-}  // namespace
 
 // Ensures immediate children of the SidePanel have their layers clipped to
 // their visible bounds to prevent incorrect clipping during animation.
@@ -313,23 +312,24 @@ class SidePanel::VisibleBoundsViewClipper : public views::ViewObserver {
 };
 
 SidePanel::SidePanel(BrowserView* browser_view,
+                     bool has_border,
                      HorizontalAlignment horizontal_alignment)
     : views::AnimationDelegateViews(this),
       browser_view_(browser_view),
+      visible_bounds_view_clipper_(
+          std::make_unique<VisibleBoundsViewClipper>(this)),
       horizontal_alignment_(horizontal_alignment) {
-  if (lens::features::IsLensOverlayEnabled()) {
-    visible_bounds_view_clipper_ =
-        std::make_unique<VisibleBoundsViewClipper>(this);
-  }
-  std::unique_ptr<BorderView> border_view =
-      std::make_unique<BorderView>(browser_view);
-  border_view_ = border_view.get();
-  AddChildView(std::move(border_view));
+  if (has_border) {
+    std::unique_ptr<BorderView> border_view =
+        std::make_unique<BorderView>(browser_view);
+    border_view_ = border_view.get();
+    AddChildView(std::move(border_view));
 
-  std::unique_ptr<views::SidePanelResizeArea> resize_area =
-      std::make_unique<views::SidePanelResizeArea>(this);
-  resize_area_ = resize_area.get();
-  AddChildView(std::move(resize_area));
+    std::unique_ptr<views::SidePanelResizeArea> resize_area =
+        std::make_unique<views::SidePanelResizeArea>(this);
+    resize_area_ = resize_area.get();
+    AddChildView(std::move(resize_area));
+  }
 
   pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
 
@@ -351,7 +351,9 @@ SidePanel::SidePanel(BrowserView* browser_view,
   // default.
   SetPanelWidth(GetMinimumSize().width());
 
-  SetBorder(views::CreateEmptyBorder(GetBorderInsets()));
+  if (has_border) {
+    SetBorder(views::CreateEmptyBorder(GetBorderInsets()));
+  }
 
   SetProperty(views::kElementIdentifierKey, kSidePanelElementId);
 
@@ -375,10 +377,8 @@ bool SidePanel::ShouldRestrictMaxWidth() const {
   if (!side_panel_ui) {
     return true;
   }
-  std::optional<SidePanelEntry::Id> side_panel_entry_id =
-      side_panel_ui->GetCurrentEntryId();
-  return !side_panel_entry_id.has_value() ||
-         side_panel_entry_id.value() != SidePanelEntryId::kReadAnything;
+  return !side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything));
 }
 
 void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
@@ -387,9 +387,11 @@ void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
   }
   background_radii_ = radii;
 
-  // Since the border_view paints the background, by adding rounded
-  // corners to border will paint a rounded background for the side panel.
-  static_cast<BorderView*>(border_view_)->SetBorderRadii(background_radii_);
+  if (border_view_) {
+    // Since the border_view paints the background, by adding rounded
+    // corners to border will paint a rounded background for the side panel.
+    border_view_->SetBorderRadii(background_radii_);
+  }
 }
 
 void SidePanel::UpdateWidthOnEntryChanged() {
@@ -457,7 +459,9 @@ void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
   header_view_ = view.get();
   AddChildView(std::move(view));
   header_view_->DeprecatedLayoutImmediately();
-  static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
+  if (border_view_) {
+    border_view_->HeaderViewChanged(header_view_);
+  }
   // Update the border so that the insets include space for the header to be
   // placed on top of the border area.
   int top_inset = header_view_->height() - GetBorderInsets().top();
@@ -467,7 +471,9 @@ void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
 
 void SidePanel::RemoveHeaderView() {
   SetBorder(views::CreateEmptyBorder(GetBorderInsets().set_top(0)));
-  static_cast<BorderView*>(border_view_)->HeaderViewChanged(nullptr);
+  if (border_view_) {
+    border_view_->HeaderViewChanged(nullptr);
+  }
   if (header_view_) {
     auto header_view = RemoveChildViewT(header_view_);
     header_view_ = nullptr;
@@ -475,7 +481,10 @@ void SidePanel::RemoveHeaderView() {
 }
 
 void SidePanel::SetOutlineVisibility(bool visible) {
-  static_cast<BorderView*>(border_view_)->SetOutlineVisibilty(visible);
+  if (!border_view_) {
+    return;
+  }
+  border_view_->SetOutlineVisibilty(visible);
 }
 
 gfx::Size SidePanel::GetContentSizeUpperBound() const {
@@ -512,7 +521,9 @@ void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
 
   // Reorder `border_view_` to be last so that it gets painted on top, even if
   // an added child also paints to a layer.
-  ReorderChildView(border_view_, children().size());
+  if (border_view_) {
+    ReorderChildView(border_view_, children().size());
+  }
 
   // Reorder `header_view_` if it exists to get painted on top of the border
   // view.
@@ -521,7 +532,9 @@ void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
   }
   // Reorder `resize_area_` to be last so that it gets painted on top of
   // `border_view_`, for displaying the resize handle.
-  ReorderChildView(resize_area_, children().size());
+  if (resize_area_) {
+    ReorderChildView(resize_area_, children().size());
+  }
 
   if (header_view_) {
     // The header view should come before all other side panel children except
@@ -530,7 +543,9 @@ void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
   }
   // The resize area should come before all other side panel children in focus
   // order.
-  resize_area_->InsertBeforeInFocusList(GetChildrenFocusList().front());
+  if (resize_area_) {
+    resize_area_->InsertBeforeInFocusList(GetChildrenFocusList().front());
+  }
 }
 
 void SidePanel::OnChildViewRemoved(View* observed_view, View* child) {
@@ -671,13 +686,14 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
   // TODO(pbos): Should layer visibility/painting be automatically tied to
   // parent visibility? I.e. the difference between GetVisible() and IsDrawn().
   bool side_panel_open_or_closing = GetVisible() || should_be_open;
-  if (side_panel_open_or_closing != border_view_->GetVisible()) {
+  if (border_view_ &&
+      side_panel_open_or_closing != border_view_->GetVisible()) {
     border_view_->SetVisible(side_panel_open_or_closing);
     if (side_panel_open_or_closing) {
       border_view_->SetPaintToLayer();
       border_view_->layer()->SetFillsBoundsOpaquely(false);
       if (header_view_ && header_view_->GetVisible()) {
-        static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
+        border_view_->HeaderViewChanged(header_view_);
         int top_inset = header_view_->height() - GetBorderInsets().top();
         SetBorder(views::CreateEmptyBorder(
             GetBorderInsets() + gfx::Insets::TLBR(top_inset, 0, 0, 0)));
@@ -711,8 +727,7 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
 }
 
 bool SidePanel::ShouldShowAnimation() const {
-  return lens::features::IsLensOverlayEnabled() &&
-         gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_;
+  return gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_;
 }
 
 void SidePanel::AnnounceResize() {

@@ -740,8 +740,9 @@ BrowserView::BrowserView(Browser* browser)
       prefs::kSidePanelHorizontalAlignment);
   contents_height_side_panel_ =
       main_container_->AddChildView(std::make_unique<SidePanel>(
-          this, is_right_aligned ? SidePanel::HorizontalAlignment::kRight
-                                 : SidePanel::HorizontalAlignment::kLeft));
+          this, /*has_border=*/true,
+          is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                           : SidePanel::HorizontalAlignment::kLeft));
 
   // `MultiContentsView` owns separators when `SideBySide` is enabled.
   if (!multi_contents_view_) {
