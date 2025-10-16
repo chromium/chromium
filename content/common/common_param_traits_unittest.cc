@@ -17,7 +17,7 @@
 #include "components/viz/common/surfaces/surface_info.h"
 #include "content/common/content_param_traits.h"
 #include "content/public/common/content_constants.h"
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/ssl/ssl_info.h"

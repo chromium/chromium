@@ -115,7 +115,7 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_factory.h"
-#include "ipc/ipc_platform_file.h"
+#include "ipc/platform_file_for_transit.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media.h"
 #include "media/base/media_switches.h"

@@ -4,9 +4,9 @@
 
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 
-#include "ipc/ipc_message_utils.h"
-#include "ipc/ipc_mojo_param_traits.h"
-#include "ipc/ipc_platform_file.h"
+#include "ipc/mojo_param_traits.h"
+#include "ipc/param_traits_utils.h"
+#include "ipc/platform_file_for_transit.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_util.h"
 

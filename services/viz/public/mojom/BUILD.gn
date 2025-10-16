@@ -578,7 +578,7 @@ mojom("mojom") {
         "//gpu/ipc/common/mailbox_holder_mojom_traits.h",
         "//gpu/ipc/common/mailbox_mojom_traits.h",
         "//gpu/ipc/common/sync_token_mojom_traits.h",
-        "//ipc/ipc_message_utils.h",
+        "//ipc/param_traits_utils.h",
         "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h",

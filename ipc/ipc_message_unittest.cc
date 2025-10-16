@@ -27,8 +27,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
-#include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace IPC {

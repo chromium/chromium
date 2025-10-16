@@ -5,10 +5,8 @@
 #ifndef UI_GFX_IPC_GEOMETRY_GFX_PARAM_TRAITS_H_
 #define UI_GFX_IPC_GEOMETRY_GFX_PARAM_TRAITS_H_
 
-#include <string>
-
-#include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 #include "ui/gfx/ipc/geometry/gfx_ipc_geometry_export.h"
 
 namespace gfx {

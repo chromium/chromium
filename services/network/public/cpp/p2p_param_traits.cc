@@ -4,7 +4,7 @@
 
 #include "services/network/public/cpp/p2p_param_traits.h"
 
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
 
 // Generation of IPC definitions.

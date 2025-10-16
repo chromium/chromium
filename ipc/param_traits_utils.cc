@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -29,7 +29,7 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_attachment_set.h"
-#include "ipc/ipc_mojo_param_traits.h"
+#include "ipc/mojo_param_traits.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
@@ -41,7 +41,7 @@
 #include <tchar.h>
 
 #include "ipc/handle_win.h"
-#include "ipc/ipc_platform_file.h"
+#include "ipc/platform_file_for_transit.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/file_descriptor_posix.h"
 #include "ipc/ipc_platform_file_attachment_posix.h"
@@ -177,8 +177,9 @@ bool ReadDictValue(const base::Pickle* pickle,
                    int recursion,
                    base::Value::Dict* value) {
   int size;
-  if (!ReadParam(pickle, iter, &size))
+  if (!ReadParam(pickle, iter, &size)) {
     return false;
+  }
 
   for (int i = 0; i < size; i++) {
     std::string key;
@@ -199,14 +200,16 @@ bool ReadListValue(const base::Pickle* pickle,
                    int recursion,
                    base::Value::List* value) {
   int size;
-  if (!ReadParam(pickle, iter, &size))
+  if (!ReadParam(pickle, iter, &size)) {
     return false;
+  }
 
   value->reserve(size);
   for (int i = 0; i < size; i++) {
     base::Value subval;
-    if (!ReadValue(pickle, iter, recursion + 1, &subval))
+    if (!ReadValue(pickle, iter, recursion + 1, &subval)) {
       return false;
+    }
     value->Append(std::move(subval));
   }
   return true;
@@ -222,13 +225,15 @@ bool ReadValue(const base::Pickle* pickle,
   }
 
   int type;
-  if (!ReadParam(pickle, iter, &type))
+  if (!ReadParam(pickle, iter, &type)) {
     return false;
+  }
 
   constexpr int kMinValueType = static_cast<int>(base::Value::Type::NONE);
   constexpr int kMaxValueType = static_cast<int>(base::Value::Type::LIST);
-  if (type > kMaxValueType || type < kMinValueType)
+  if (type > kMaxValueType || type < kMinValueType) {
     return false;
+  }
 
   switch (static_cast<base::Value::Type>(type)) {
     case base::Value::Type::NONE:
@@ -236,29 +241,33 @@ bool ReadValue(const base::Pickle* pickle,
       break;
     case base::Value::Type::BOOLEAN: {
       bool val;
-      if (!ReadParam(pickle, iter, &val))
+      if (!ReadParam(pickle, iter, &val)) {
         return false;
+      }
       *value = base::Value(val);
       break;
     }
     case base::Value::Type::INTEGER: {
       int val;
-      if (!ReadParam(pickle, iter, &val))
+      if (!ReadParam(pickle, iter, &val)) {
         return false;
+      }
       *value = base::Value(val);
       break;
     }
     case base::Value::Type::DOUBLE: {
       double val;
-      if (!ReadParam(pickle, iter, &val))
+      if (!ReadParam(pickle, iter, &val)) {
         return false;
+      }
       *value = base::Value(val);
       break;
     }
     case base::Value::Type::STRING: {
       std::string val;
-      if (!ReadParam(pickle, iter, &val))
+      if (!ReadParam(pickle, iter, &val)) {
         return false;
+      }
       *value = base::Value(std::move(val));
       break;
     }
@@ -272,15 +281,17 @@ bool ReadValue(const base::Pickle* pickle,
     }
     case base::Value::Type::DICT: {
       base::Value::Dict val;
-      if (!ReadDictValue(pickle, iter, recursion, &val))
+      if (!ReadDictValue(pickle, iter, recursion, &val)) {
         return false;
+      }
       *value = base::Value(std::move(val));
       break;
     }
     case base::Value::Type::LIST: {
       base::Value::List val;
-      if (!ReadListValue(pickle, iter, recursion, &val))
+      if (!ReadListValue(pickle, iter, recursion, &val)) {
         return false;
+      }
       *value = base::Value(std::move(val));
       break;
     }
@@ -303,8 +314,9 @@ bool ParamTraits<signed char>::Read(const base::Pickle* m,
                                     base::PickleIterator* iter,
                                     param_type* r) {
   const char* data;
-  if (!iter->ReadBytes(&data, sizeof(param_type)))
+  if (!iter->ReadBytes(&data, sizeof(param_type))) {
     return false;
+  }
   memcpy(r, data, sizeof(param_type));
   return true;
 }
@@ -317,8 +329,9 @@ bool ParamTraits<unsigned char>::Read(const base::Pickle* m,
                                       base::PickleIterator* iter,
                                       param_type* r) {
   const char* data;
-  if (!iter->ReadBytes(&data, sizeof(param_type)))
+  if (!iter->ReadBytes(&data, sizeof(param_type))) {
     return false;
+  }
   memcpy(r, data, sizeof(param_type));
   return true;
 }
@@ -331,8 +344,9 @@ bool ParamTraits<unsigned short>::Read(const base::Pickle* m,
                                        base::PickleIterator* iter,
                                        param_type* r) {
   const char* data;
-  if (!iter->ReadBytes(&data, sizeof(param_type)))
+  if (!iter->ReadBytes(&data, sizeof(param_type))) {
     return false;
+  }
   memcpy(r, data, sizeof(param_type));
   return true;
 }
@@ -344,7 +358,7 @@ void ParamTraits<double>::Write(base::Pickle* m, const param_type& p) {
 bool ParamTraits<double>::Read(const base::Pickle* m,
                                base::PickleIterator* iter,
                                param_type* r) {
-  const char *data;
+  const char* data;
   if (!iter->ReadBytes(&data, sizeof(*r))) {
     NOTREACHED();
   }
@@ -357,8 +371,9 @@ bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
                                      base::PickleIterator* iter,
                                      param_type* r) {
   std::u16string_view piece16;
-  if (!iter->ReadStringPiece16(&piece16))
+  if (!iter->ReadStringPiece16(&piece16)) {
     return false;
+  }
 
   *r = base::AsWString(piece16);
   return true;
@@ -393,21 +408,24 @@ void ParamTraits<std::vector<bool>>::Write(base::Pickle* m,
   // Cast to bool below is required because libc++'s
   // vector<bool>::const_reference is different from bool, and we want to avoid
   // writing an extra specialization of ParamTraits for it.
-  for (size_t i = 0; i < p.size(); i++)
+  for (size_t i = 0; i < p.size(); i++) {
     WriteParam(m, static_cast<bool>(p[i]));
+  }
 }
 
 bool ParamTraits<std::vector<bool>>::Read(const base::Pickle* m,
                                           base::PickleIterator* iter,
                                           param_type* r) {
   size_t size;
-  if (!iter->ReadLength(&size))
+  if (!iter->ReadLength(&size)) {
     return false;
+  }
   r->resize(size);
   for (size_t i = 0; i < size; i++) {
     bool value;
-    if (!ReadParam(m, iter, &value))
+    if (!ReadParam(m, iter, &value)) {
       return false;
+    }
     (*r)[i] = value;
   }
   return true;
@@ -432,16 +450,19 @@ void ParamTraits<base::FileDescriptor>::Write(base::Pickle* m,
   const bool valid = p.fd >= 0;
   WriteParam(m, valid);
 
-  if (!valid)
+  if (!valid) {
     return;
+  }
 
   if (p.auto_close) {
     if (!m->WriteAttachment(
-            new internal::PlatformFileAttachment(base::ScopedFD(p.fd))))
+            new internal::PlatformFileAttachment(base::ScopedFD(p.fd)))) {
       NOTREACHED();
+    }
   } else {
-    if (!m->WriteAttachment(new internal::PlatformFileAttachment(p.fd)))
+    if (!m->WriteAttachment(new internal::PlatformFileAttachment(p.fd))) {
       NOTREACHED();
+    }
   }
 }
 
@@ -451,15 +472,18 @@ bool ParamTraits<base::FileDescriptor>::Read(const base::Pickle* m,
   *r = base::FileDescriptor();
 
   bool valid;
-  if (!ReadParam(m, iter, &valid))
+  if (!ReadParam(m, iter, &valid)) {
     return false;
+  }
 
-  if (!valid)
+  if (!valid) {
     return true;
+  }
 
   scoped_refptr<base::Pickle::Attachment> attachment;
-  if (!m->ReadAttachment(iter, &attachment))
+  if (!m->ReadAttachment(iter, &attachment)) {
     return false;
+  }
 
   if (static_cast<MessageAttachment*>(attachment.get())->GetType() !=
       MessageAttachment::Type::PLATFORM_FILE) {
@@ -479,8 +503,9 @@ void ParamTraits<base::ScopedFD>::Write(base::Pickle* m, const param_type& p) {
   const bool valid = p.is_valid();
   WriteParam(m, valid);
 
-  if (!valid)
+  if (!valid) {
     return;
+  }
 
   if (!m->WriteAttachment(new internal::PlatformFileAttachment(
           std::move(const_cast<param_type&>(p))))) {
@@ -494,15 +519,18 @@ bool ParamTraits<base::ScopedFD>::Read(const base::Pickle* m,
   r->reset();
 
   bool valid;
-  if (!ReadParam(m, iter, &valid))
+  if (!ReadParam(m, iter, &valid)) {
     return false;
+  }
 
-  if (!valid)
+  if (!valid) {
     return true;
+  }
 
   scoped_refptr<base::Pickle::Attachment> attachment;
-  if (!m->ReadAttachment(iter, &attachment))
+  if (!m->ReadAttachment(iter, &attachment)) {
     return false;
+  }
 
   if (static_cast<MessageAttachment*>(attachment.get())->GetType() !=
       MessageAttachment::Type::PLATFORM_FILE) {
@@ -521,8 +549,9 @@ void ParamTraits<base::win::ScopedHandle>::Write(base::Pickle* m,
                                                  const param_type& p) {
   const bool valid = p.IsValid();
   WriteParam(m, valid);
-  if (!valid)
+  if (!valid) {
     return;
+  }
 
   HandleWin handle(p.Get());
   WriteParam(m, handle);
@@ -534,14 +563,17 @@ bool ParamTraits<base::win::ScopedHandle>::Read(const base::Pickle* m,
   r->Close();
 
   bool valid;
-  if (!ReadParam(m, iter, &valid))
+  if (!ReadParam(m, iter, &valid)) {
     return false;
-  if (!valid)
+  }
+  if (!valid) {
     return true;
+  }
 
   HandleWin handle;
-  if (!ReadParam(m, iter, &handle))
+  if (!ReadParam(m, iter, &handle)) {
     return false;
+  }
 
   r->Set(handle.get_handle());
   return true;
@@ -555,8 +587,9 @@ void ParamTraits<zx::vmo>::Write(base::Pickle* m, const param_type& p) {
   const bool valid = p.is_valid();
   WriteParam(m, valid);
 
-  if (!valid)
+  if (!valid) {
     return;
+  }
 
   if (!m->WriteAttachment(new internal::HandleAttachmentFuchsia(
           std::move(const_cast<param_type&>(p))))) {
@@ -570,15 +603,18 @@ bool ParamTraits<zx::vmo>::Read(const base::Pickle* m,
   r->reset();
 
   bool valid;
-  if (!ReadParam(m, iter, &valid))
+  if (!ReadParam(m, iter, &valid)) {
     return false;
+  }
 
-  if (!valid)
+  if (!valid) {
     return true;
+  }
 
   scoped_refptr<base::Pickle::Attachment> attachment;
-  if (!m->ReadAttachment(iter, &attachment))
+  if (!m->ReadAttachment(iter, &attachment)) {
     return false;
+  }
 
   if (static_cast<MessageAttachment*>(attachment.get())->GetType() !=
       MessageAttachment::Type::FUCHSIA_HANDLE) {
@@ -596,8 +632,9 @@ void ParamTraits<zx::channel>::Write(base::Pickle* m, const param_type& p) {
   const bool valid = p.is_valid();
   WriteParam(m, valid);
 
-  if (!valid)
+  if (!valid) {
     return;
+  }
 
   if (!m->WriteAttachment(new internal::HandleAttachmentFuchsia(
           std::move(const_cast<param_type&>(p))))) {
@@ -611,15 +648,18 @@ bool ParamTraits<zx::channel>::Read(const base::Pickle* m,
   r->reset();
 
   bool valid;
-  if (!ReadParam(m, iter, &valid))
+  if (!ReadParam(m, iter, &valid)) {
     return false;
+  }
 
-  if (!valid)
+  if (!valid) {
     return true;
+  }
 
   scoped_refptr<base::Pickle::Attachment> attachment;
-  if (!m->ReadAttachment(iter, &attachment))
+  if (!m->ReadAttachment(iter, &attachment)) {
     return false;
+  }
 
   if (static_cast<MessageAttachment*>(attachment.get())->GetType() !=
       MessageAttachment::Type::FUCHSIA_HANDLE) {
@@ -639,8 +679,9 @@ void ParamTraits<base::android::ScopedHardwareBufferHandle>::Write(
     const param_type& p) {
   const bool is_valid = p.is_valid();
   WriteParam(m, is_valid);
-  if (!is_valid)
+  if (!is_valid) {
     return;
+  }
 
   // We must keep a ref to the AHardwareBuffer alive until the receiver has
   // acquired its own reference. We do this by sending a message pipe handle
@@ -666,14 +707,17 @@ bool ParamTraits<base::android::ScopedHardwareBufferHandle>::Read(
   *r = base::android::ScopedHardwareBufferHandle();
 
   bool is_valid;
-  if (!ReadParam(m, iter, &is_valid))
+  if (!ReadParam(m, iter, &is_valid)) {
     return false;
-  if (!is_valid)
+  }
+  if (!is_valid) {
     return true;
+  }
 
   scoped_refptr<base::Pickle::Attachment> tracking_pipe_attachment;
-  if (!m->ReadAttachment(iter, &tracking_pipe_attachment))
+  if (!m->ReadAttachment(iter, &tracking_pipe_attachment)) {
     return false;
+  }
 
   // We keep this alive until the AHB is safely deserialized below. When this
   // goes out of scope, the sender holding the other end of this pipe will treat
@@ -684,14 +728,16 @@ bool ParamTraits<base::android::ScopedHardwareBufferHandle>::Read(
           ->TakeMojoHandle();
 
   base::FileDescriptor descriptor;
-  if (!ReadParam(m, iter, &descriptor))
+  if (!ReadParam(m, iter, &descriptor)) {
     return false;
+  }
 
   // NOTE: It is valid to deserialize an invalid FileDescriptor, so the success
   // of |ReadParam()| above does not imply that |descriptor| is valid.
   base::ScopedFD scoped_fd(descriptor.fd);
-  if (!scoped_fd.is_valid())
+  if (!scoped_fd.is_valid()) {
     return false;
+  }
 
   *r = base::android::ScopedHardwareBufferHandle::DeserializeFromFileDescriptor(
       std::move(scoped_fd));
@@ -712,8 +758,9 @@ bool ParamTraits<base::ReadOnlySharedMemoryRegion>::Read(
     base::PickleIterator* iter,
     param_type* r) {
   base::subtle::PlatformSharedMemoryRegion handle;
-  if (!ReadParam(m, iter, &handle))
+  if (!ReadParam(m, iter, &handle)) {
     return false;
+  }
 
   *r = base::ReadOnlySharedMemoryRegion::Deserialize(std::move(handle));
   return true;
@@ -732,8 +779,9 @@ bool ParamTraits<base::WritableSharedMemoryRegion>::Read(
     base::PickleIterator* iter,
     param_type* r) {
   base::subtle::PlatformSharedMemoryRegion handle;
-  if (!ReadParam(m, iter, &handle))
+  if (!ReadParam(m, iter, &handle)) {
     return false;
+  }
 
   *r = base::WritableSharedMemoryRegion::Deserialize(std::move(handle));
   return true;
@@ -752,8 +800,9 @@ bool ParamTraits<base::UnsafeSharedMemoryRegion>::Read(
     base::PickleIterator* iter,
     param_type* r) {
   base::subtle::PlatformSharedMemoryRegion handle;
-  if (!ReadParam(m, iter, &handle))
+  if (!ReadParam(m, iter, &handle)) {
     return false;
+  }
 
   *r = base::UnsafeSharedMemoryRegion::Deserialize(std::move(handle));
   return true;
@@ -767,8 +816,9 @@ void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Write(
   const bool valid = p.IsValid();
   WriteParam(m, valid);
 
-  if (!valid)
+  if (!valid) {
     return;
+  }
 
   WriteParam(m, p.GetMode());
   WriteParam(m, static_cast<uint64_t>(p.GetSize()));
@@ -806,8 +856,9 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
     base::PickleIterator* iter,
     param_type* r) {
   bool valid;
-  if (!ReadParam(m, iter, &valid))
+  if (!ReadParam(m, iter, &valid)) {
     return false;
+  }
   if (!valid) {
     *r = base::subtle::PlatformSharedMemoryRegion();
     return true;
@@ -825,27 +876,31 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
 
 #if BUILDFLAG(IS_WIN)
   HandleWin handle_win;
-  if (!ReadParam(m, iter, &handle_win))
+  if (!ReadParam(m, iter, &handle_win)) {
     return false;
+  }
   *r = base::subtle::PlatformSharedMemoryRegion::Take(
       base::win::ScopedHandle(handle_win.get_handle()), mode, size, guid);
 #elif BUILDFLAG(IS_FUCHSIA)
   zx::vmo vmo;
-  if (!ReadParam(m, iter, &vmo))
+  if (!ReadParam(m, iter, &vmo)) {
     return false;
+  }
   *r = base::subtle::PlatformSharedMemoryRegion::Take(std::move(vmo), mode,
                                                       size, guid);
 #elif BUILDFLAG(IS_APPLE)
   MachPortMac mach_port_mac;
-  if (!ReadParam(m, iter, &mach_port_mac))
+  if (!ReadParam(m, iter, &mach_port_mac)) {
     return false;
+  }
   *r = base::subtle::PlatformSharedMemoryRegion::Take(
       base::apple::ScopedMachSendRight(mach_port_mac.get_mach_port()), mode,
       size, guid);
 #elif BUILDFLAG(IS_POSIX)
   scoped_refptr<base::Pickle::Attachment> attachment;
-  if (!m->ReadAttachment(iter, &attachment))
+  if (!m->ReadAttachment(iter, &attachment)) {
     return false;
+  }
   if (static_cast<MessageAttachment*>(attachment.get())->GetType() !=
       MessageAttachment::Type::PLATFORM_FILE) {
     return false;
@@ -860,8 +915,9 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
 #else
   scoped_refptr<base::Pickle::Attachment> readonly_attachment;
   if (mode == base::subtle::PlatformSharedMemoryRegion::Mode::kWritable) {
-    if (!m->ReadAttachment(iter, &readonly_attachment))
+    if (!m->ReadAttachment(iter, &readonly_attachment)) {
       return false;
+    }
 
     if (static_cast<MessageAttachment*>(readonly_attachment.get())->GetType() !=
         MessageAttachment::Type::PLATFORM_FILE) {
@@ -899,8 +955,9 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion::Mode>::Read(
     base::PickleIterator* iter,
     param_type* p) {
   int value;
-  if (!iter->ReadInt(&value))
+  if (!iter->ReadInt(&value)) {
     return false;
+  }
   if (!(static_cast<int>(value) >= 0 &&
         static_cast<int>(value) <= static_cast<int>(param_type::kMaxValue))) {
     return false;
@@ -924,16 +981,18 @@ bool ParamTraits<PlatformFileForTransit>::Read(const base::Pickle* m,
                                                base::PickleIterator* iter,
                                                param_type* r) {
   bool is_valid;
-  if (!iter->ReadBool(&is_valid))
+  if (!iter->ReadBool(&is_valid)) {
     return false;
+  }
   if (!is_valid) {
     *r = PlatformFileForTransit();
     return true;
   }
 
   HandleWin handle_win;
-  if (!ParamTraits<HandleWin>::Read(m, iter, &handle_win))
+  if (!ParamTraits<HandleWin>::Read(m, iter, &handle_win)) {
     return false;
+  }
   *r = PlatformFileForTransit(handle_win.get_handle());
   return true;
 }
@@ -983,12 +1042,12 @@ bool ParamTraits<base::File::Info>::Read(const base::Pickle* m,
                                          base::PickleIterator* iter,
                                          param_type* p) {
   double last_modified, last_accessed, creation_time;
-  if (!ReadParam(m, iter, &p->size) ||
-      !ReadParam(m, iter, &p->is_directory) ||
+  if (!ReadParam(m, iter, &p->size) || !ReadParam(m, iter, &p->is_directory) ||
       !ReadParam(m, iter, &last_modified) ||
       !ReadParam(m, iter, &last_accessed) ||
-      !ReadParam(m, iter, &creation_time))
+      !ReadParam(m, iter, &creation_time)) {
     return false;
+  }
   p->last_modified = base::Time::FromSecondsSinceUnixEpoch(last_modified);
   p->last_accessed = base::Time::FromSecondsSinceUnixEpoch(last_accessed);
   p->creation_time = base::Time::FromSecondsSinceUnixEpoch(creation_time);
@@ -1003,8 +1062,9 @@ bool ParamTraits<base::Time>::Read(const base::Pickle* m,
                                    base::PickleIterator* iter,
                                    param_type* r) {
   int64_t value;
-  if (!ParamTraits<int64_t>::Read(m, iter, &value))
+  if (!ParamTraits<int64_t>::Read(m, iter, &value)) {
     return false;
+  }
   *r = base::Time::FromInternalValue(value);
   return true;
 }
@@ -1018,8 +1078,9 @@ bool ParamTraits<base::TimeDelta>::Read(const base::Pickle* m,
                                         param_type* r) {
   int64_t value;
   bool ret = ParamTraits<int64_t>::Read(m, iter, &value);
-  if (ret)
+  if (ret) {
     *r = base::TimeDelta::FromInternalValue(value);
+  }
 
   return ret;
 }
@@ -1033,8 +1094,9 @@ bool ParamTraits<base::TimeTicks>::Read(const base::Pickle* m,
                                         param_type* r) {
   int64_t value;
   bool ret = ParamTraits<int64_t>::Read(m, iter, &value);
-  if (ret)
+  if (ret) {
     *r = base::TimeTicks::FromInternalValue(value);
+  }
 
   return ret;
 }
@@ -1057,8 +1119,9 @@ bool ParamTraits<base::UnguessableToken>::Read(const base::Pickle* m,
                                                param_type* r) {
   uint64_t high, low;
   if (!ParamTraits<uint64_t>::Read(m, iter, &high) ||
-      !ParamTraits<uint64_t>::Read(m, iter, &low))
+      !ParamTraits<uint64_t>::Read(m, iter, &low)) {
     return false;
+  }
 
   // This is not mapped as nullable_is_same_type, so any UnguessableToken
   // deserialized by the traits should always yield a non-empty token.
@@ -1101,15 +1164,16 @@ bool ParamTraits<Message>::Read(const base::Pickle* m,
                                 base::PickleIterator* iter,
                                 Message* r) {
   uint32_t routing_id, type, flags;
-  if (!iter->ReadUInt32(&routing_id) ||
-      !iter->ReadUInt32(&type) ||
-      !iter->ReadUInt32(&flags))
+  if (!iter->ReadUInt32(&routing_id) || !iter->ReadUInt32(&type) ||
+      !iter->ReadUInt32(&flags)) {
     return false;
+  }
 
   size_t payload_size;
   const char* payload;
-  if (!iter->ReadData(&payload, &payload_size))
+  if (!iter->ReadData(&payload, &payload_size)) {
     return false;
+  }
 
   r->SetHeaderValues(static_cast<int32_t>(routing_id), type, flags);
   r->WriteBytes(payload, payload_size);
@@ -1127,8 +1191,9 @@ bool ParamTraits<HANDLE>::Read(const base::Pickle* m,
                                base::PickleIterator* iter,
                                param_type* r) {
   int32_t temp;
-  if (!iter->ReadInt(&temp))
+  if (!iter->ReadInt(&temp)) {
     return false;
+  }
   *r = LongToHandle(temp);
   return true;
 }
@@ -1140,7 +1205,7 @@ void ParamTraits<MSG>::Write(base::Pickle* m, const param_type& p) {
 bool ParamTraits<MSG>::Read(const base::Pickle* m,
                             base::PickleIterator* iter,
                             param_type* r) {
-  const char *data;
+  const char* data;
   size_t data_size = 0;
   bool result = iter->ReadData(&data, &data_size);
   if (result && data_size == sizeof(MSG)) {

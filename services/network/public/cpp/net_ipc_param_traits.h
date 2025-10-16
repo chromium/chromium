@@ -5,12 +5,10 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_NET_IPC_PARAM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_NET_IPC_PARAM_TRAITS_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"

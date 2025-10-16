@@ -11,7 +11,7 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
 
 namespace base {

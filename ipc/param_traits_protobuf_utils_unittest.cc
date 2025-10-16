@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ipc/ipc_message_protobuf_utils.h"
+#include "ipc/param_traits_protobuf_utils.h"
 
 #include <initializer_list>
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 #include "ipc/test_proto.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,8 +25,9 @@ struct ParamTraits<ipc_message_utils_test::TestMessage1> {
                    base::PickleIterator* iter,
                    param_type* r) {
     int number;
-    if (!iter->ReadInt(&number))
+    if (!iter->ReadInt(&number)) {
       return false;
+    }
     r->set_number(number);
     return true;
   }
@@ -56,13 +57,13 @@ void AssertEqual(const P1& left, const P2& right) {
   ASSERT_EQ(left, right);
 }
 
-template<>
+template <>
 void AssertEqual(const int& left,
                  const ipc_message_utils_test::TestMessage1& right) {
   ASSERT_EQ(left, right.number());
 }
 
-template <template<class> class RepeatedFieldLike, class P1, class P2>
+template <template <class> class RepeatedFieldLike, class P1, class P2>
 void AssertRepeatedFieldEquals(std::initializer_list<P1> expected,
                                const RepeatedFieldLike<P2>& fields) {
   ASSERT_EQ(static_cast<int>(expected.size()), fields.size());

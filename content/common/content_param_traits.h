@@ -5,7 +5,7 @@
 // This file is used to define IPC::ParamTraits<> specializations for a number
 // of types so that they can be serialized over IPC.  IPC::ParamTraits<>
 // specializations for basic types (like int and std::string) and types in the
-// 'base' project can be found in ipc/ipc_message_utils.h.  This file contains
+// 'base' project can be found in ipc/param_traits_utils.h.  This file contains
 // specializations for types that are used by the content code, and which need
 // manual serialization code.  This is usually because they're not structs with
 // public members, or because the same type is being used in multiple
@@ -16,7 +16,6 @@
 
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits_macros.h"
-#include "ipc/ipc_mojo_param_traits.h"
 
 namespace blink {
 class MessagePortChannel;

@@ -120,7 +120,7 @@ class BASE_EXPORT File {
   // If you add more fields to this structure (platform-specific fields are OK),
   // make sure to update all functions that use it in file_util_{win|posix}.cc,
   // too, and the ParamTraits<base::File::Info> implementation in
-  // ipc/ipc_message_utils.cc.
+  // ipc/param_traits_utils.cc.
   struct BASE_EXPORT Info {
     Info();
     ~Info();

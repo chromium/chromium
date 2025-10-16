@@ -7,8 +7,8 @@
 
 #include "gpu/ipc/common/gpu_command_buffer_traits_multi.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "ipc/ipc_message_utils.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
+#include "ipc/param_traits_utils.h"
 
 namespace gpu {
 struct Mailbox;

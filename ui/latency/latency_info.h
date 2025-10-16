@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_BLINK)
-#include "ipc/ipc_param_traits.h"  // nogncheck
+#include "ipc/param_traits.h"                        // nogncheck
 #include "mojo/public/cpp/bindings/struct_traits.h"  // nogncheck
 #endif
 

@@ -6,7 +6,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/common/webplugininfo.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
 
 #undef IPC_MESSAGE_EXPORT

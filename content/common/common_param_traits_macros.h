@@ -10,8 +10,8 @@
 
 #include "cc/trees/browser_controls_params.h"
 #include "content/common/content_export.h"
-#include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"

@@ -5,7 +5,7 @@
 #include "media/base/ipc/media_param_traits.h"
 
 #include "base/strings/stringprintf.h"
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_point.h"
 #include "media/base/encryption_pattern.h"

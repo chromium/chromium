@@ -8,7 +8,7 @@
 
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/socket_permission_entry.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 
 namespace extensions {
 

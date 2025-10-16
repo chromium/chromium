@@ -6,7 +6,7 @@
 
 #include "base/files/file.h"
 #include "ipc/handle_win.h"
-#include "ipc/ipc_platform_file.h"
+#include "ipc/platform_file_for_transit.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace IPC {

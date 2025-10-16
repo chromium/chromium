@@ -6,9 +6,9 @@
 #define UI_GFX_IPC_COLOR_GFX_PARAM_TRAITS_MACROS_H_
 
 #include "base/pickle.h"
-#include "ipc/ipc_message_utils.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/ipc/color/gfx_ipc_color_export.h"
 

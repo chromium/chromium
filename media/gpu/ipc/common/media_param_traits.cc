@@ -10,7 +10,7 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 
 namespace IPC {
 

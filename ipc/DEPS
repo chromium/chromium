@@ -15,7 +15,7 @@ specific_include_rules = {
     "+mojo/core/embedder",
     "+mojo/core/test",
   ],
-  "ipc_message_protobuf_utils\.h": [
+  "param_traits_protobuf_utils\.h": [
     # Support serializing RepeatedField / RepeatedPtrField:
     "+third_party/protobuf/src/google/protobuf/repeated_field.h",
   ],

@@ -7,7 +7,7 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -62,15 +62,15 @@ TEST(IPCMessageUtilsTest, NestedMessages) {
   // Verify nested message content
   base::PickleIterator nested_iter(nested_msg);
   int result_content = 0;
-  ASSERT_TRUE(ParamTraits<int>::Read(&nested_msg, &nested_iter,
-                                     &result_content));
+  ASSERT_TRUE(
+      ParamTraits<int>::Read(&nested_msg, &nested_iter, &result_content));
   EXPECT_EQ(nested_content, result_content);
 
   // Try reading past the ends for both messages and make sure it fails.
   IPC::Message dummy;
   ASSERT_FALSE(ParamTraits<Message>::Read(&outer_msg, &iter, &dummy));
-  ASSERT_FALSE(ParamTraits<int>::Read(&nested_msg, &nested_iter,
-                                      &result_content));
+  ASSERT_FALSE(
+      ParamTraits<int>::Read(&nested_msg, &nested_iter, &result_content));
 }
 
 // Tests that detection of various bad parameters is working correctly.

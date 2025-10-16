@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "content/public/common/socket_permission_request.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 
 namespace extensions {
 

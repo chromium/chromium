@@ -5,10 +5,8 @@
 #ifndef UI_GFX_IPC_BUFFER_TYPES_GFX_PARAM_TRAITS_H_
 #define UI_GFX_IPC_BUFFER_TYPES_GFX_PARAM_TRAITS_H_
 
-#include <string>
-
-#include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 #include "ui/gfx/ipc/buffer_types/gfx_ipc_export.h"
 #include "ui/gfx/ipc/buffer_types/gfx_param_traits_macros.h"
 

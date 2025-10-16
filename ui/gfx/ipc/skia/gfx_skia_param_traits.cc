@@ -8,7 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/pickle.h"
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 // Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"

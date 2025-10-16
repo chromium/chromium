@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IPC_IPC_MESSAGE_UTILS_H_
-#define IPC_IPC_MESSAGE_UTILS_H_
+#ifndef IPC_PARAM_TRAITS_UTILS_H_
+#define IPC_PARAM_TRAITS_UTILS_H_
 
 #include <limits.h>
 #include <stddef.h>
@@ -34,8 +34,8 @@
 #include "base/types/id_type.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "ipc/ipc_mojo_param_traits.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/mojo_param_traits.h"
+#include "ipc/param_traits.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
@@ -71,8 +71,7 @@ class PlatformFileForTransit;
 
 // A dummy struct to place first just to allow leading commas for all
 // members in the macro-generated constructor initializer lists.
-struct NoParams {
-};
+struct NoParams {};
 
 // Specializations are checked by 'IPC checker' part of find-bad-constructs
 // Clang plugin (see WriteParam() below for the details).
@@ -99,7 +98,7 @@ template <class P>
                                     base::PickleIterator* iter,
                                     P* p) {
   typedef typename SimilarTypeTraits<P>::Type Type;
-  return ParamTraits<Type>::Read(m, iter, reinterpret_cast<Type* >(p));
+  return ParamTraits<Type>::Read(m, iter, reinterpret_cast<Type*>(p));
 }
 
 // Primitive ParamTraits -------------------------------------------------------
@@ -183,9 +182,7 @@ struct ParamTraits<unsigned int> {
 template <>
 struct ParamTraits<long> {
   typedef long param_type;
-  static void Write(base::Pickle* m, const param_type& p) {
-    m->WriteLong(p);
-  }
+  static void Write(base::Pickle* m, const param_type& p) { m->WriteLong(p); }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
@@ -196,9 +193,7 @@ struct ParamTraits<long> {
 template <>
 struct ParamTraits<unsigned long> {
   typedef unsigned long param_type;
-  static void Write(base::Pickle* m, const param_type& p) {
-    m->WriteLong(p);
-  }
+  static void Write(base::Pickle* m, const param_type& p) { m->WriteLong(p); }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
@@ -260,15 +255,17 @@ template <class P, size_t Size>
 struct ParamTraits<P[Size]> {
   using param_type = P[Size];
   static void Write(base::Pickle* m, const param_type& p) {
-    for (const P& element : p)
+    for (const P& element : p) {
       WriteParam(m, element);
+    }
   }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
     for (P& element : *r) {
-      if (!ReadParam(m, iter, &element))
+      if (!ReadParam(m, iter, &element)) {
         return false;
+      }
     }
     return true;
   }
@@ -361,47 +358,54 @@ struct ParamTraits<std::vector<P>> {
   typedef std::vector<P> param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     WriteParam(m, base::checked_cast<int>(p.size()));
-    for (size_t i = 0; i < p.size(); i++)
+    for (size_t i = 0; i < p.size(); i++) {
       WriteParam(m, p[i]);
+    }
   }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
     size_t size;
     // ReadLength() checks for < 0 itself.
-    if (!iter->ReadLength(&size))
+    if (!iter->ReadLength(&size)) {
       return false;
+    }
     // Resizing beforehand is not safe, see BUG 1006367 for details.
-    if (size > INT_MAX / sizeof(P))
+    if (size > INT_MAX / sizeof(P)) {
       return false;
+    }
     r->resize(size);
     for (size_t i = 0; i < size; i++) {
-      if (!ReadParam(m, iter, &(*r)[i]))
+      if (!ReadParam(m, iter, &(*r)[i])) {
         return false;
+      }
     }
     return true;
   }
 };
 
 template <class P>
-struct ParamTraits<std::set<P> > {
+struct ParamTraits<std::set<P>> {
   typedef std::set<P> param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     WriteParam(m, base::checked_cast<int>(p.size()));
     typename param_type::const_iterator iter;
-    for (iter = p.begin(); iter != p.end(); ++iter)
+    for (iter = p.begin(); iter != p.end(); ++iter) {
       WriteParam(m, *iter);
+    }
   }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
     size_t size;
-    if (!iter->ReadLength(&size))
+    if (!iter->ReadLength(&size)) {
       return false;
+    }
     for (size_t i = 0; i < size; ++i) {
       P item;
-      if (!ReadParam(m, iter, &item))
+      if (!ReadParam(m, iter, &item)) {
         return false;
+      }
       r->insert(item);
     }
     return true;
@@ -409,7 +413,7 @@ struct ParamTraits<std::set<P> > {
 };
 
 template <class K, class V, class C, class A>
-struct ParamTraits<std::map<K, V, C, A> > {
+struct ParamTraits<std::map<K, V, C, A>> {
   typedef std::map<K, V, C, A> param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     WriteParam(m, base::checked_cast<int>(p.size()));
@@ -422,15 +426,18 @@ struct ParamTraits<std::map<K, V, C, A> > {
                    base::PickleIterator* iter,
                    param_type* r) {
     int size;
-    if (!ReadParam(m, iter, &size) || size < 0)
+    if (!ReadParam(m, iter, &size) || size < 0) {
       return false;
+    }
     for (int i = 0; i < size; ++i) {
       K k;
-      if (!ReadParam(m, iter, &k))
+      if (!ReadParam(m, iter, &k)) {
         return false;
+      }
       V& value = (*r)[k];
-      if (!ReadParam(m, iter, &value))
+      if (!ReadParam(m, iter, &value)) {
         return false;
+      }
     }
     return true;
   }
@@ -450,22 +457,25 @@ struct ParamTraits<std::unordered_map<K, V, C, A>> {
                    base::PickleIterator* iter,
                    param_type* r) {
     int size;
-    if (!ReadParam(m, iter, &size) || size < 0)
+    if (!ReadParam(m, iter, &size) || size < 0) {
       return false;
+    }
     for (int i = 0; i < size; ++i) {
       K k;
-      if (!ReadParam(m, iter, &k))
+      if (!ReadParam(m, iter, &k)) {
         return false;
+      }
       V& value = (*r)[k];
-      if (!ReadParam(m, iter, &value))
+      if (!ReadParam(m, iter, &value)) {
         return false;
+      }
     }
     return true;
   }
 };
 
 template <class A, class B>
-struct ParamTraits<std::pair<A, B> > {
+struct ParamTraits<std::pair<A, B>> {
   typedef std::pair<A, B> param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     WriteParam(m, p.first);
@@ -758,7 +768,6 @@ struct ParamTraits<std::tuple<Args...>> {
                    param_type* r) {
     return Helper::Read(m, iter, r);
   }
-
 };
 
 template <class P, size_t stack_capacity>
@@ -807,8 +816,9 @@ struct ParamTraits<base::flat_map<Key, Mapped, Compare>> {
                    base::PickleIterator* iter,
                    param_type* r) {
     size_t size;
-    if (!iter->ReadLength(&size))
+    if (!iter->ReadLength(&size)) {
       return false;
+    }
 
     // Construct by creating in a vector and moving into the flat_map. Properly
     // serialized flat_maps will be in-order so this will be O(n). Incorrectly
@@ -816,10 +826,12 @@ struct ParamTraits<base::flat_map<Key, Mapped, Compare>> {
     std::vector<typename param_type::value_type> vect;
     vect.resize(size);
     for (size_t i = 0; i < size; ++i) {
-      if (!ReadParam(m, iter, &vect[i].first))
+      if (!ReadParam(m, iter, &vect[i].first)) {
         return false;
-      if (!ReadParam(m, iter, &vect[i].second))
+      }
+      if (!ReadParam(m, iter, &vect[i].second)) {
         return false;
+      }
     }
 
     *r = param_type(std::move(vect));
@@ -833,15 +845,17 @@ struct ParamTraits<std::unique_ptr<P>> {
   static void Write(base::Pickle* m, const param_type& p) {
     bool valid = !!p;
     WriteParam(m, valid);
-    if (valid)
+    if (valid) {
       WriteParam(m, *p);
+    }
   }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
     bool valid = false;
-    if (!ReadParam(m, iter, &valid))
+    if (!ReadParam(m, iter, &valid)) {
       return false;
+    }
 
     if (!valid) {
       r->reset();
@@ -849,8 +863,9 @@ struct ParamTraits<std::unique_ptr<P>> {
     }
 
     param_type temp(new P());
-    if (!ReadParam(m, iter, temp.get()))
+    if (!ReadParam(m, iter, temp.get())) {
       return false;
+    }
 
     r->swap(temp);
     return true;
@@ -865,19 +880,22 @@ struct ParamTraits<std::optional<P>> {
   static void Write(base::Pickle* m, const param_type& p) {
     const bool is_set = static_cast<bool>(p);
     WriteParam(m, is_set);
-    if (is_set)
+    if (is_set) {
       WriteParam(m, p.value());
+    }
   }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
     bool is_set = false;
-    if (!iter->ReadBool(&is_set))
+    if (!iter->ReadBool(&is_set)) {
       return false;
+    }
     if (is_set) {
       P value;
-      if (!ReadParam(m, iter, &value))
+      if (!ReadParam(m, iter, &value)) {
         return false;
+      }
       *r = std::move(value);
     }
     return true;
@@ -907,8 +925,9 @@ struct ParamTraits<base::IdType<TypeMarker, WrappedType, kInvalidValue>> {
                    base::PickleIterator* iter,
                    param_type* r) {
     WrappedType value;
-    if (!ReadParam(m, iter, &value))
+    if (!ReadParam(m, iter, &value)) {
       return false;
+    }
     *r = param_type::FromUnsafeValue(value);
     return true;
   }
@@ -924,8 +943,9 @@ struct ParamTraits<base::StrongAlias<TagType, UnderlyingType>> {
                    base::PickleIterator* iter,
                    param_type* r) {
     UnderlyingType value;
-    if (!ReadParam(m, iter, &value))
+    if (!ReadParam(m, iter, &value)) {
       return false;
+    }
     *r = param_type(value);
     return true;
   }
@@ -965,4 +985,4 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<MSG> {
 
 }  // namespace IPC
 
-#endif  // IPC_IPC_MESSAGE_UTILS_H_
+#endif  // IPC_PARAM_TRAITS_UTILS_H_

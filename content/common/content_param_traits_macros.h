@@ -12,9 +12,9 @@
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits.h"
 #include "content/common/navigation_gesture.h"
-#include "ipc/ipc_message_utils.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"

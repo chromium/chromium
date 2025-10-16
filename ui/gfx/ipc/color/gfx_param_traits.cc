@@ -4,8 +4,8 @@
 
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
-#include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/ipc/buffer_types/gfx_ipc_export.h"

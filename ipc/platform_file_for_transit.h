@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IPC_IPC_PLATFORM_FILE_H_
-#define IPC_IPC_PLATFORM_FILE_H_
+#ifndef IPC_PLATFORM_FILE_FOR_TRANSIT_H_
+#define IPC_PLATFORM_FILE_FOR_TRANSIT_H_
 
 #include "base/files/file.h"
 #include "base/process/process.h"
@@ -83,4 +83,4 @@ TakePlatformFileForTransit(base::File file);
 
 }  // namespace IPC
 
-#endif  // IPC_IPC_PLATFORM_FILE_H_
+#endif  // IPC_PLATFORM_FILE_FOR_TRANSIT_H_

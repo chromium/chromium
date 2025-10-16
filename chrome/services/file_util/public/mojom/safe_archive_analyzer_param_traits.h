@@ -10,8 +10,8 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/ipc_protobuf_message_macros.h"
 #include "components/safe_browsing/buildflags.h"
-#include "ipc/ipc_message_protobuf_utils.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_protobuf_utils.h"
 
 #if !BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #error BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) should be set.
