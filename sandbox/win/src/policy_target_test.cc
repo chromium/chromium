@@ -10,12 +10,11 @@
 #include "base/environment.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/run_loop.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/broker_services.h"
@@ -291,19 +290,11 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
   policy->GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
                                                             USER_LOCKDOWN));
-  base::RunLoop run_loop;
-  broker->SpawnTargetAsync(
-      prog_name, arguments.c_str(), std::move(policy),
-      base::BindLambdaForTesting(
-          [&](base::win::ScopedProcessInformation proc_info, DWORD error,
-              ResultCode res) {
-            target = std::move(proc_info);
-            last_error = error;
-            result = res;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-
+  base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
+      test_future;
+  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+                           test_future.GetCallback());
+  std::tie(target, last_error, result) = test_future.Take();
   EXPECT_EQ(SBOX_ALL_OK, result);
 
   // Run the process for some time to make sure it doesn't crash on launch
@@ -356,18 +347,11 @@ TEST(PolicyTargetTest, DesktopPolicy) {
   // Keep the desktop name to test against later (note - it was precreated).
   std::wstring desktop_name =
       broker->GetDesktopName(Desktop::kAlternateDesktop);
-  base::RunLoop run_loop;
-  broker->SpawnTargetAsync(
-      prog_name, arguments.c_str(), std::move(policy),
-      base::BindLambdaForTesting(
-          [&](base::win::ScopedProcessInformation proc_info, DWORD error,
-              ResultCode res) {
-            target = std::move(proc_info);
-            last_error = error;
-            result = res;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
+      test_future;
+  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+                           test_future.GetCallback());
+  std::tie(target, last_error, result) = test_future.Take();
 
   EXPECT_EQ(SBOX_ALL_OK, result);
 
@@ -428,18 +412,11 @@ TEST(PolicyTargetTest, WinstaPolicy) {
   // Keep the desktop name for later (note - it was precreated).
   std::wstring desktop_name =
       broker->GetDesktopName(Desktop::kAlternateWinstation);
-  base::RunLoop run_loop;
-  broker->SpawnTargetAsync(
-      prog_name, arguments.c_str(), std::move(policy),
-      base::BindLambdaForTesting(
-          [&](base::win::ScopedProcessInformation proc_info, DWORD error,
-              ResultCode res) {
-            target = std::move(proc_info);
-            last_error = error;
-            result = res;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
+      test_future;
+  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+                           test_future.GetCallback());
+  std::tie(target, last_error, result) = test_future.Take();
 
   EXPECT_EQ(SBOX_ALL_OK, result);
 
@@ -545,18 +522,11 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
                                                             USER_LOCKDOWN));
   DWORD last_error = ERROR_SUCCESS;
-  base::RunLoop run_loop;
-  broker->SpawnTargetAsync(
-      prog_name, arguments.c_str(), std::move(policy),
-      base::BindLambdaForTesting(
-          [&](base::win::ScopedProcessInformation proc_info, DWORD error,
-              ResultCode res) {
-            target = std::move(proc_info);
-            last_error = error;
-            result = res;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
+      test_future;
+  broker->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy),
+                           test_future.GetCallback());
+  std::tie(target, last_error, result) = test_future.Take();
 
   EXPECT_EQ(SBOX_ALL_OK, result);
 

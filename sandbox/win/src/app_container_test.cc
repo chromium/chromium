@@ -23,14 +23,13 @@
 #include "base/path_service.h"
 #include "base/process/process_info.h"
 #include "base/rand_util.h"
-#include "base/run_loop.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -225,18 +224,12 @@ class AppContainerTest : public ::testing::Test {
     DWORD last_error = 0;
     ResultCode result;
     base::test::TaskEnvironment task_environment;
-    base::RunLoop run_loop;
-    broker_services_->SpawnTargetAsync(
-        prog_name, prog_name, std::move(policy_),
-        base::BindLambdaForTesting(
-            [&](base::win::ScopedProcessInformation proc_info, DWORD error,
-                ResultCode res) {
-              scoped_process_info_ = std::move(proc_info);
-              last_error = error;
-              result = res;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<base::win::ScopedProcessInformation, DWORD,
+                           ResultCode>
+        test_future;
+    broker_services_->SpawnTargetAsync(prog_name, prog_name, std::move(policy_),
+                                       test_future.GetCallback());
+    std::tie(scoped_process_info_, last_error, result) = test_future.Take();
     ASSERT_EQ(SBOX_ALL_OK, result) << "Last Error: " << last_error;
   }
 

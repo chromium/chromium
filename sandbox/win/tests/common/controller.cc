@@ -20,13 +20,12 @@
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -332,18 +331,14 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
     }
   } else {
     base::test::TaskEnvironment task_environment;
-    base::RunLoop run_loop;
-    broker_->SpawnTargetAsync(
-        prog_name, arguments.c_str(), std::move(policy_),
-        base::BindLambdaForTesting(
-            [&](base::win::ScopedProcessInformation proc_info, DWORD error,
-                ResultCode res) {
-              target = proc_info.Take();
-              last_error = error;
-              result = res;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+    base::test::TestFuture<base::win::ScopedProcessInformation, DWORD,
+                           ResultCode>
+        test_future;
+    broker_->SpawnTargetAsync(prog_name, arguments.c_str(), std::move(policy_),
+                              test_future.GetCallback());
+    base::win::ScopedProcessInformation proc_info;
+    std::tie(proc_info, last_error, result) = test_future.Take();
+    target = proc_info.Take();
   }
 
   if (SBOX_ALL_OK != result)
