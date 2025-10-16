@@ -968,6 +968,9 @@ extern const char kUseDefaultAppsDestinationForPromosDescription[];
 extern const char kUseFeedEligibilityServiceName[];
 extern const char kUseFeedEligibilityServiceDescription[];
 
+extern const char kVariationsSeedCorpusName[];
+extern const char kVariationsSeedCorpusDescription[];
+
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
 

@@ -10310,6 +10310,13 @@
     "expiry_milestone": 145
   },
   {
+    "name": "variations-seed-corpus",
+    "owners": [ "//components/variations/OWNERS" ],
+    // This is used by testers to manually test changes to the variations seed
+    // infrastructure.
+    "expiry_milestone": -1
+  },
+  {
     "name": "vc-background-replace",
     "owners": [ "skyostil@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org" ],
     "expiry_milestone": 126

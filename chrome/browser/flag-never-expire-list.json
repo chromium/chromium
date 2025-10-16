@@ -161,6 +161,7 @@
   "use-stork-smds-server-address",
   "use-sync-sandbox",
   "use-wallpaper-staging-url",
+  "variations-seed-corpus",
   "wait-threshold-seconds-for-capabilities-api",
   "wallet-service-use-sandbox",
   "wallpaper-fast-refresh",

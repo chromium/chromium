@@ -78,6 +78,10 @@ const char kVariationsOverrideCountry[] = "variations-override-country";
 // |kVariationsCompressedSeed| and |kVariationsSeedSignature|.
 const char kVariationsTestSeedJsonPath[] = "variations-test-seed-path";
 
+// Specifies the value of the variations seed corpus to use. When unspecified or
+// unrecognized, the default corpus will be used.
+const char kVariationsSeedCorpus[] = "variations-seed-corpus";
+
 // Specifies a custom URL for the server which reports variation data to the
 // client. Specifying this switch enables the Variations service on
 // unofficial builds. See variations_service.cc.

@@ -509,6 +509,14 @@ GURL VariationsService::GetVariationsServerURL(HttpOptions http_options) {
         net::AppendOrReplaceQueryParameter(server_url, "milestone", milestone);
   }
 
+  const std::string corpus =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kVariationsSeedCorpus);
+  if (!corpus.empty()) {
+    server_url =
+        net::AppendOrReplaceQueryParameter(server_url, "corpus", corpus);
+  }
+
   DCHECK(server_url.is_valid());
   return server_url;
 }

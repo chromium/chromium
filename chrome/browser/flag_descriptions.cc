@@ -8390,6 +8390,11 @@ const char kAllowUserInstalledChromeAppsDescription[] =
     "by users.";
 #endif
 
+const char kVariationsSeedCorpusName[] = "Variations seed corpus";
+const char kVariationsSeedCorpusDescription[] =
+    "The value of the 'corpus' parameter in the variations seed request. "
+    "If unspecified, the 'corpus' parameter is omitted from the request.";
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

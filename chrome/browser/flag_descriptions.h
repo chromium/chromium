@@ -4801,6 +4801,9 @@ extern const char kEnableManagementPromotionBannerDescription[];
 extern const char kSupervisedUserBlockInterstitialV3Name[];
 extern const char kSupervisedUserBlockInterstitialV3Description[];
 
+extern const char kVariationsSeedCorpusName[];
+extern const char kVariationsSeedCorpusDescription[];
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.

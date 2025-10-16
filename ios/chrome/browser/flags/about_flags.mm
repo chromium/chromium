@@ -88,6 +88,7 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/common/translate_util.h"
 #import "components/variations/net/variations_command_line.h"
+#import "components/variations/variations_switches.h"
 #import "components/webui/flags/feature_entry.h"
 #import "components/webui/flags/feature_entry_macros.h"
 #import "components/webui/flags/flags_storage.h"
@@ -139,10 +140,6 @@
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
 #import "ios/chrome/browser/screen_time/model/features.h"
-#endif
-
-#if !defined(OFFICIAL_BUILD)
-#import "components/variations/variations_switches.h"
 #endif
 
 using flags_ui::FeatureEntry;
@@ -2859,6 +2856,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kIOSTipsNotificationsAlternativeStrings,
          kTipsNotificationsAlternativeStringVariation,
          "IOSTipsNotificationsAlternativeStrings")},
+    {"variations-seed-corpus", flag_descriptions::kVariationsSeedCorpusName,
+     flag_descriptions::kVariationsSeedCorpusDescription, flags_ui::kOsIos,
+     STRING_VALUE_TYPE(variations::switches::kVariationsSeedCorpus, "")},
     {"zero-state-suggestions", flag_descriptions::kZeroStateSuggestionsName,
      flag_descriptions::kZeroStateSuggestionsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kZeroStateSuggestions)},

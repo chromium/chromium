@@ -13182,6 +13182,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kMigrateAccountManagerDelegate)},
 #endif
 
+    {"variations-seed-corpus", flag_descriptions::kVariationsSeedCorpusName,
+     flag_descriptions::kVariationsSeedCorpusDescription, kOsAll,
+     STRING_VALUE_TYPE(variations::switches::kVariationsSeedCorpus, "")},
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     {"passkey-unlock-error-ui", flag_descriptions::kPasskeyUnlockErrorUiName,

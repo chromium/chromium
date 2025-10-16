@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/strings/escape.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -39,6 +40,13 @@ const char kSeedFetchTimeHistogram[] = "IOS.Variations.FirstRun.SeedFetchTime";
 // it aborts the task to make sure the fetch result won't be overriden.
 static BOOL g_seed_fetching_in_progress = NO;
 
+// Returns the trimmed and URL-escaped value of the given string.
+std::string GetEscapedValue(std::string_view value) {
+  return base::EscapeQueryParamValue(
+      base::TrimWhitespaceASCII(value, base::TrimPositions::TRIM_ALL),
+      /*use_plus=*/false);
+}
+
 }  // namespace
 
 @implementation IOSChromeVariationsSeedFetcher {
@@ -52,6 +60,10 @@ static BOOL g_seed_fetching_in_progress = NO;
   // The forced channel string retrieved from the command line. Accessed on the
   // main thread.
   std::string _forcedChannel;
+
+  // The fored variations seed corpus retrieved from the command line. Accessed
+  // on the main thread.
+  std::string _forcedCorpus;
 
   // The timestamp when the current seed request starts. This is used for metric
   // reporting, and will be reset to null value when the request finishes.
@@ -76,6 +88,8 @@ static BOOL g_seed_fetching_in_progress = NO;
         "--" + std::string(variations::switches::kVariationsServerURL) + "=";
     std::string channel_switch =
         "--" + std::string(variations::switches::kFakeVariationsChannel) + "=";
+    std::string corpus_switch =
+        "--" + std::string(variations::switches::kVariationsSeedCorpus) + "=";
     for (NSString* a in arguments) {
       std::string arg = base::SysNSStringToUTF8(a);
 
@@ -85,7 +99,11 @@ static BOOL g_seed_fetching_in_progress = NO;
           _fetchingEnabled = YES;
         }
       } else if (base::StartsWith(arg, channel_switch)) {
-        _forcedChannel = arg.substr(channel_switch.size());
+        _forcedChannel = GetEscapedValue(
+            std::string_view(arg).substr(channel_switch.size()));
+      } else if (base::StartsWith(arg, corpus_switch)) {
+        _forcedCorpus =
+            GetEscapedValue(std::string_view(arg).substr(corpus_switch.size()));
       }
     }
   }
@@ -142,6 +160,9 @@ static BOOL g_seed_fetching_in_progress = NO;
   }
   if (!channel.empty()) {
     queryString += "&channel=" + channel;
+  }
+  if (!_forcedCorpus.empty()) {
+    queryString += "&corpus=" + _forcedCorpus;
   }
   return [NSURL
       URLWithString:base::SysUTF8ToNSString(_variationsDomain + queryString)];

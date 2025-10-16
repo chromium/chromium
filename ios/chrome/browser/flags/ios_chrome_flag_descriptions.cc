@@ -1648,6 +1648,11 @@ const char kUseFeedEligibilityServiceDescription[] =
     "Use the new eligibility service to handle whether the Discover "
     "feed is displayed on NTP";
 
+const char kVariationsSeedCorpusName[] = "Variations seed corpus";
+const char kVariationsSeedCorpusDescription[] =
+    "The value of the 'corpus' parameter in the variations seed request. "
+    "If unspecified, the 'corpus' parameter is omitted from the request.";
+
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";
