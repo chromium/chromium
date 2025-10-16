@@ -772,24 +772,24 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const auto paint_image = image->PaintImageForCurrentFrame();
   const auto sk_image_info = paint_image.GetSkImageInfo();
   auto sk_color_space = sk_image_info.refColorSpace();
-  if (!sk_color_space)
+  if (!sk_color_space) {
     sk_color_space = SkColorSpace::MakeSRGB();
-
-  auto gfx_color_space = gfx::ColorSpace(*sk_color_space);
-  if (!gfx_color_space.IsValid()) {
-    exception_state.ThrowTypeError("Invalid color space");
-    return nullptr;
   }
 
+  gfx::ColorSpace gfx_color_space;
   if (sk_image_info.colorType() == kRGBA_F16_SkColorType &&
+      paint_image.GetContentColorUsage() == gfx::ContentColorUsage::kHDR &&
       SkColorSpace::Equals(sk_color_space.get(),
                            SkColorSpace::MakeSRGBLinear().get())) {
-    // TODO(crbug.com/438675262): |sk_color_type| converts to
-    // gfx::ColorSpace::TransferID::LINEAR while it should actually be
-    // gfx::ColorSpace::TransferID::LINEAR_HDR. Waiting for gfx::ColorSpace
-    // to be removed.
-    // Replace with SRGBLinear with LINEAR_HDR transfer ID.
+    // This creates a color space with the LINEAR_HDR transfer function. SDR
+    // content will convert to LINEAR in the lower branch.
     gfx_color_space = gfx::ColorSpace::CreateSRGBLinear();
+  } else {
+    gfx_color_space = gfx::ColorSpace(*sk_color_space);
+    if (!gfx_color_space.IsValid()) {
+      exception_state.ThrowTypeError("Invalid color space");
+      return nullptr;
+    }
   }
 
   const auto orientation = image->Orientation().Orientation();
