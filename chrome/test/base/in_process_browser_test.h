@@ -225,12 +225,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // navigation succeeded. |check_navigation_success| is ignored and will be
   // removed as part of check_navigation_success http://crbug.com/1014186.
   // Do not add new usages of the version with |check_navigation_success|.
-  [[nodiscard]] bool AddTabAtIndexToBrowser(Browser* browser,
+  [[nodiscard]] bool AddTabAtIndexToBrowser(BrowserWindowInterface* bwi,
                                             int index,
                                             const GURL& url,
                                             ui::PageTransition transition,
                                             bool check_navigation_success);
-  [[nodiscard]] bool AddTabAtIndexToBrowser(Browser* browser,
+  [[nodiscard]] bool AddTabAtIndexToBrowser(BrowserWindowInterface* bwi,
                                             int index,
                                             const GURL& url,
                                             ui::PageTransition transition);

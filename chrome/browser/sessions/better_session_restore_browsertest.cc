@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
@@ -561,12 +563,16 @@ class RestartTest : public BetterSessionRestoreTest {
  protected:
   void Restart() {
     // Simulate restarting the browser, but let the test exit peacefully.
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      browser->profile()->SaveSessionState();
-      SessionDataServiceFactory::GetForProfile(browser->profile())
-          ->SetForceKeepSessionState();
-    }
-    PrefService* pref_service = g_browser_process->local_state();
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [](BrowserWindowInterface* browser) {
+          Profile* const profile = browser->GetProfile();
+          profile->SaveSessionState();
+
+          SessionDataServiceFactory::GetForProfile(profile)
+              ->SetForceKeepSessionState();
+          return true;
+        });
+    PrefService* const pref_service = g_browser_process->local_state();
     pref_service->SetBoolean(prefs::kWasRestarted, true);
   }
 };

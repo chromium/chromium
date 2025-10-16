@@ -27,6 +27,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -728,19 +729,22 @@ void SessionServiceBase::BuildCommandsFromBrowsers(
     IdToRange* tab_to_available_range,
     std::set<SessionID>* windows_to_track) {
   DCHECK(is_saving_enabled_);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Make sure the browser has tabs and a window. Browser's destructor
-    // removes itself from the BrowserList. When a browser is closed the
-    // destructor is not necessarily run immediately. This means it's possible
-    // for us to get a handle to a browser that is about to be removed. If
-    // the tab count is 0 or the window is NULL, the browser is about to be
-    // deleted, so we ignore it.
-    if (ShouldTrackBrowser(browser) && browser->tab_strip_model()->count() &&
-        browser->window()) {
-      BuildCommandsForBrowser(browser, tab_to_available_range,
-                              windows_to_track);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, tab_to_available_range,
+       windows_to_track](BrowserWindowInterface* browser) {
+        // Make sure the browser has tabs and a window. Browser's destructor
+        // removes itself from the BrowserList. When a browser is closed the
+        // destructor is not necessarily run immediately. This means it's
+        // possible for us to get a handle to a browser that is about to be
+        // removed. If the tab count is 0 or the window is NULL, the browser is
+        // about to be deleted, so we ignore it.
+        if (ShouldTrackBrowser(browser->GetBrowserForMigrationOnly()) &&
+            browser->GetTabStripModel()->count() && browser->GetWindow()) {
+          BuildCommandsForBrowser(browser->GetBrowserForMigrationOnly(),
+                                  tab_to_available_range, windows_to_track);
+        }
+        return true;
+      });
 }
 
 void SessionServiceBase::ScheduleCommand(

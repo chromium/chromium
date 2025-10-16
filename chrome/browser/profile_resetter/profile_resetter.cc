@@ -30,6 +30,8 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/common/pref_names.h"
@@ -385,18 +387,22 @@ void ProfileResetter::ResetStartupPages() {
 
 void ProfileResetter::ResetPinnedTabs() {
   // Unpin all the tabs.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->is_type_normal() && browser->profile() == profile_) {
-      TabStripModel* tab_model = browser->tab_strip_model();
-      // Here we assume that indexof(any mini tab) < indexof(any normal tab).
-      // If we unpin the tab, it can be moved to the right. Thus traversing in
-      // reverse direction is correct.
-      for (int i = tab_model->count() - 1; i >= 0; --i) {
-        if (tab_model->IsTabPinned(i))
-          tab_model->SetTabPinned(i, false);
-      }
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
+            browser->GetProfile() == profile_) {
+          TabStripModel* const tab_model = browser->GetTabStripModel();
+          // Here we assume that indexof(any mini tab) < indexof(any normal
+          // tab). If we unpin the tab, it can be moved to the right. Thus
+          // traversing in reverse direction is correct.
+          for (int i = tab_model->count() - 1; i >= 0; --i) {
+            if (tab_model->IsTabPinned(i)) {
+              tab_model->SetTabPinned(i, false);
+            }
+          }
+        }
+        return true;
+      });
   MarkAsDone(PINNED_TABS);
 }
 

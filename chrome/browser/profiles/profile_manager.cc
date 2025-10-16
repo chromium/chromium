@@ -135,6 +135,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #else
@@ -2090,11 +2092,19 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
       SaveActiveProfiles();
   }
 
-  Profile* original_profile = profile->GetOriginalProfile();
+  Profile* const original_profile = profile->GetOriginalProfile();
   // Do nothing if the closed window is not the last window of the same profile.
-  for (Browser* browser_iter : *BrowserList::GetInstance()) {
-    if (browser_iter->profile()->GetOriginalProfile() == original_profile)
-      return;
+  bool has_other_window = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [original_profile, &has_other_window](BrowserWindowInterface* browser) {
+        const Profile* const iter_profile = browser->GetProfile();
+        if (iter_profile->GetOriginalProfile() == original_profile) {
+          has_other_window = true;
+        }
+        return !has_other_window;
+      });
+  if (has_other_window) {
+    return;
   }
 
   if (profile->IsGuestSession()) {

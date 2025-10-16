@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/session_crashed_bubble.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -680,34 +681,42 @@ bool SessionService::IsOnlyOneTabLeft() const {
     return is_only_one_tab_left_for_test_;
 
   int window_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    const SessionID window_id = browser->session_id();
-    if (ShouldTrackBrowser(browser) &&
-        window_closing_ids_.find(window_id) == window_closing_ids_.end()) {
-      if (++window_count > 1)
-        return false;
-      // By the time this is invoked the tab has been removed. As such, we use
-      // > 0 here rather than > 1.
-      if (browser->tab_strip_model()->count() > 0)
-        return false;
-    }
-  }
-  return true;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &window_count](BrowserWindowInterface* browser) {
+        const SessionID window_id = browser->GetSessionID();
+        if (ShouldTrackBrowser(browser->GetBrowserForMigrationOnly()) &&
+            window_closing_ids_.find(window_id) == window_closing_ids_.end()) {
+          if (++window_count > 1) {
+            return false;
+          }
+          // By the time this is invoked the tab has been removed. As such, we
+          // use > 0 here rather than > 1.
+          if (browser->GetTabStripModel()->count() > 0) {
+            return false;
+          }
+        }
+        return true;
+      });
+  return window_count <= 1;
 }
 
 bool SessionService::HasOpenTrackableBrowsers(SessionID window_id) const {
   if (profile()->AsTestingProfile())
     return has_open_trackable_browser_for_test_;
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    const SessionID browser_id = browser->session_id();
-    if (browser_id != window_id &&
-        window_closing_ids_.find(browser_id) == window_closing_ids_.end() &&
-        ShouldTrackBrowser(browser)) {
-      return true;
-    }
-  }
-  return false;
+  bool has_open_trackable = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, window_id, &has_open_trackable](BrowserWindowInterface* browser) {
+        const SessionID browser_id = browser->GetSessionID();
+        if (browser_id != window_id &&
+            window_closing_ids_.find(browser_id) == window_closing_ids_.end()) {
+          if (ShouldTrackBrowser(browser->GetBrowserForMigrationOnly())) {
+            has_open_trackable = true;
+          }
+        }
+        return !has_open_trackable;
+      });
+  return has_open_trackable;
 }
 
 void SessionService::RebuildCommandsIfRequired() {
@@ -730,12 +739,14 @@ void SessionService::LogExitEvent() {
   RemoveExitEvent();
   int browser_count = 0;
   int tab_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile()) {
-      ++browser_count;
-      tab_count += browser->tab_strip_model()->count();
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &browser_count, &tab_count](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == profile()) {
+          ++browser_count;
+          tab_count += browser->GetTabStripModel()->count();
+        }
+        return true;
+      });
   did_log_exit_ = true;
   LogSessionServiceExitEvent(profile(), browser_count, tab_count,
                              is_first_session_service_, did_schedule_command_);

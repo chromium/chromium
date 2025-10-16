@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
@@ -206,19 +208,22 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
     tab_waiter.Wait();
     SetBrowser(browser_created_observer.Wait());
 
-    for (Browser* new_browser : *BrowserList::GetInstance()) {
-      WaitForTabsToLoad(new_browser);
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser) {
+          WaitForTabsToLoad(browser);
+          return true;
+        });
 
     restore_observer.Wait();
     keep_alive.reset();
     profile_keep_alive.reset();
   }
 
-  void WaitForTabsToLoad(Browser* browser) {
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      content::WebContents* contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
+  void WaitForTabsToLoad(BrowserWindowInterface* browser) {
+    TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+    for (int i = 0; i < tab_strip_model->count(); ++i) {
+      content::WebContents* const contents =
+          tab_strip_model->GetWebContentsAt(i);
       contents->GetController().LoadIfNecessary();
       EXPECT_TRUE(content::WaitForLoadStop(contents));
     }

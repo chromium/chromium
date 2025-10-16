@@ -65,6 +65,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -126,31 +128,41 @@ static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
 #else
   // Check to see if this notification comes from a webpage that is displaying
   // fullscreen content.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Only consider the browsers for the profile that created the notification
-    if (browser->profile() != profile)
-      continue;
+  bool found = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &origin,
+       &found](BrowserWindowInterface* browser_window_interface) {
+        // Only consider the browsers for the profile that created the
+        // notification
+        const Profile* const browser_profile =
+            browser_window_interface->GetProfile();
+        if (browser_profile != profile) {
+          return true;
+        }
 
-    content::WebContents* active_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    if (!active_contents)
-      continue;
+        content::WebContents* const active_contents =
+            browser_window_interface->GetTabStripModel()
+                ->GetActiveWebContents();
+        if (!active_contents) {
+          return true;
+        }
 
-    // Check to see if
-    //  (a) the active tab in the browser shares its origin with the
-    //      notification.
-    //  (b) the browser is fullscreen
-    //  (c) the browser has focus.
-    if (active_contents->GetURL().DeprecatedGetOriginAsURL() == origin &&
-        browser->GetFeatures()
-            .exclusive_access_manager()
-            ->context()
-            ->IsFullscreen() &&
-        browser->window()->IsActive()) {
-      return true;
-    }
-  }
-  return false;
+        // Check to see if
+        //  (a) the active tab in the browser shares its origin with the
+        //      notification.
+        //  (b) the browser is fullscreen
+        //  (c) the browser has focus.
+        if (active_contents->GetURL().DeprecatedGetOriginAsURL() == origin &&
+            browser_window_interface->GetFeatures()
+                .exclusive_access_manager()
+                ->context()
+                ->IsFullscreen() &&
+            browser_window_interface->GetWindow()->IsActive()) {
+          found = true;
+        }
+        return !found;
+      });
+  return found;
 #endif
 }
 

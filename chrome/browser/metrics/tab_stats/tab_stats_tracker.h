@@ -33,7 +33,7 @@ class Profile;
 #if BUILDFLAG(IS_ANDROID)
 class TabModel;
 #else
-class Browser;
+class BrowserWindowInterface;
 #endif
 
 namespace content {
@@ -339,10 +339,12 @@ class TabStatsTracker::TabStripInterface {
   const TabModel* tab_model() const { return model_.get(); }
   TabModel* tab_model() { return model_.get(); }
 #else
-  using PlatformModel = Browser;
+  using PlatformModel = BrowserWindowInterface;
 
-  const Browser* browser() const { return model_.get(); }
-  Browser* browser() { return model_.get(); }
+  const BrowserWindowInterface* browser_window_interface() const {
+    return model_.get();
+  }
+  BrowserWindowInterface* browser_window_interface() { return model_.get(); }
 #endif
 
   explicit TabStripInterface(PlatformModel* model);

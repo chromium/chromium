@@ -664,7 +664,7 @@ void InProcessBrowserTest::RunUntilBrowserProcessQuits() {
 // navigation to tests, which should make sure navigations succeed when
 // appropriate. See https://crbug.com/425335
 bool InProcessBrowserTest::AddTabAtIndexToBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     int index,
     const GURL& url,
     ui::PageTransition transition,
@@ -673,7 +673,7 @@ bool InProcessBrowserTest::AddTabAtIndexToBrowser(
 }
 
 bool InProcessBrowserTest::AddTabAtIndexToBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     int index,
     const GURL& url,
     ui::PageTransition transition) {

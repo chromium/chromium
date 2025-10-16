@@ -1813,10 +1813,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
       params.browser);
 
   // Have the page trigger closing the browser.
-  ASSERT_TRUE(content::ExecJs(params.browser->GetBrowserForMigrationOnly()
-                                  ->tab_strip_model()
-                                  ->GetActiveWebContents(),
-                              "window.open('', '_self').close()"));
+  ASSERT_TRUE(content::ExecJs(
+      params.browser->GetTabStripModel()->GetActiveWebContents(),
+      "window.open('', '_self').close()"));
 
   // Wait for the browser to close as a result of the single tab closing
   // itself.
@@ -3589,6 +3588,19 @@ class AppSessionRestoreTest : public SessionRestoreTest {
     return web_app::test::InstallWebApp(profile, std::move(web_app_info));
   }
 
+  // Helper function to count browsers of a specific type.
+  int CountBrowsersForType(BrowserWindowInterface::Type type) {
+    int count = 0;
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&count, type](BrowserWindowInterface* browser) {
+          if (browser->GetType() == type) {
+            count++;
+          }
+          return true;
+        });
+    return count;
+  }
+
  private:
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
@@ -3619,22 +3631,22 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
 
   // At this point, we have a browser and an app.
   ASSERT_EQ(2u, BrowserList::GetInstance()->size());
-  int apps = 0;
-  int browsers = 0;
-  for (Browser* browser : *(BrowserList::GetInstance())) {
-    if (browser->type() == Browser::Type::TYPE_APP) {
-      apps++;
-      EXPECT_EQ(browser, app_browser);
-    } else if (browser->type() == Browser::Type::TYPE_NORMAL) {
-      browsers++;
-      EXPECT_EQ(browser->tab_strip_model()->count(), 2);
-      auto tab1_url = browser->tab_strip_model()->GetWebContentsAt(0)->GetURL();
-      auto tab2_url = browser->tab_strip_model()->GetWebContentsAt(1)->GetURL();
-      EXPECT_EQ(tab2_url, example_url2);
-    }
-  }
-  EXPECT_EQ(browsers, 1);
-  EXPECT_EQ(apps, 1);
+  EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
+  EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_NORMAL));
+
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [app_browser, &example_url2](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::TYPE_APP) {
+          EXPECT_EQ(browser, app_browser);
+        } else if (browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
+          TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+          EXPECT_EQ(tab_strip_model->count(), 2);
+          auto tab1_url = tab_strip_model->GetWebContentsAt(0)->GetURL();
+          auto tab2_url = tab_strip_model->GetWebContentsAt(1)->GetURL();
+          EXPECT_EQ(tab2_url, example_url2);
+        }
+        return true;
+      });
 
   // Pretend to 'close the browser'.
   ShutdownServices(profile);
@@ -3652,26 +3664,27 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
   // We should get +1 browser +1 app.
   // Ensure the apps are the same, and ensure the browsers are the same.
   ASSERT_EQ(4u, BrowserList::GetInstance()->size());
-  apps = 0;
-  browsers = 0;
-  for (Browser* browser : *(BrowserList::GetInstance())) {
-    if (browser->type() == Browser::Type::TYPE_APP) {
-      EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
-      apps++;
-      auto url = browser->tab_strip_model()->GetWebContentsAt(0)->GetURL();
-      EXPECT_EQ(url, example_url);
-    } else if (browser->type() == Browser::Type::TYPE_NORMAL) {
-      browsers++;
-      // Every browser should look the same, with two tabs and example_url2
-      // on the second tab.
-      EXPECT_EQ(browser->tab_strip_model()->count(), 2);
-      auto tab1_url = browser->tab_strip_model()->GetWebContentsAt(0)->GetURL();
-      auto tab2_url = browser->tab_strip_model()->GetWebContentsAt(1)->GetURL();
-      EXPECT_EQ(tab2_url, example_url2);
-    }
-  }
-  EXPECT_EQ(browsers, 2);
-  EXPECT_EQ(apps, 2);
+  EXPECT_EQ(2, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
+  EXPECT_EQ(2, CountBrowsersForType(BrowserWindowInterface::TYPE_NORMAL));
+
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [app_id, &example_url, &example_url2](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::TYPE_APP) {
+          EXPECT_TRUE(
+              web_app::AppBrowserController::IsForWebApp(browser, app_id));
+          auto url = browser->GetTabStripModel()->GetWebContentsAt(0)->GetURL();
+          EXPECT_EQ(url, example_url);
+        } else if (browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
+          // Every browser should look the same, with two tabs and example_url2
+          // on the second tab.
+          TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+          EXPECT_EQ(tab_strip_model->count(), 2);
+          auto tab1_url = tab_strip_model->GetWebContentsAt(0)->GetURL();
+          auto tab2_url = tab_strip_model->GetWebContentsAt(1)->GetURL();
+          EXPECT_EQ(tab2_url, example_url2);
+        }
+        return true;
+      });
 }
 
 // This feature is only available on ChromeOS.
@@ -3750,9 +3763,11 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
                                      SessionRestore::RESTORE_BROWSER,
                                  {});
 
-  for (Browser* browser : *(BrowserList::GetInstance())) {
-    EXPECT_NE(browser->type(), Browser::Type::TYPE_APP);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser) {
+        EXPECT_NE(browser->GetType(), BrowserWindowInterface::TYPE_APP);
+        return true;
+      });
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 
   keep_alive.reset();
@@ -3829,9 +3844,11 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
                                      SessionRestore::RESTORE_BROWSER,
                                  {});
 
-  for (Browser* browser : *(BrowserList::GetInstance())) {
-    EXPECT_NE(browser->type(), Browser::Type::TYPE_APP);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser) {
+        EXPECT_NE(browser->GetType(), BrowserWindowInterface::TYPE_APP);
+        return true;
+      });
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 
   keep_alive.reset();
@@ -3874,41 +3891,38 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 
   // Verify there are 4 apps.
   ASSERT_EQ(4u, BrowserList::GetInstance()->size());
-  for (Browser* browser : *(BrowserList::GetInstance())) {
-    ASSERT_EQ(browser->type(), Browser::Type::TYPE_APP);
-    EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
-  }
+  EXPECT_EQ(4, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
+
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [app_id](BrowserWindowInterface* browser) {
+        EXPECT_EQ(browser->GetType(), BrowserWindowInterface::TYPE_APP);
+        EXPECT_TRUE(
+            web_app::AppBrowserController::IsForWebApp(browser, app_id));
+        return true;
+      });
 
   // Now open the browser window.
   // This should be treated the same as a browser opening when nothing,
   // i.e. it will trigger a browser restore.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   SessionRestoreTestHelper restore_observer;
   chrome::NewEmptyWindow(profile);
   restore_observer.Wait();
+  BrowserWindowInterface* const restored_browser =
+      browser_created_observer.Wait();
 
   // Ensure there's 4 apps and 1 restored window
-  int apps = 0;
-  int browsers = 0;
-  Browser* restored_browser = nullptr;
   ASSERT_EQ(5u, BrowserList::GetInstance()->size());
-  for (Browser* browser : *(BrowserList::GetInstance())) {
-    if (browser->type() == Browser::Type::TYPE_NORMAL) {
-      restored_browser = browser;
-      browsers++;
-    } else if (browser->type() == Browser::Type::TYPE_APP) {
-      apps++;
-    }
-  }
-  ASSERT_EQ(apps, 4);
-  ASSERT_EQ(browsers, 1);
-  ASSERT_NE(restored_browser, nullptr);
+  EXPECT_EQ(4, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
+  EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_NORMAL));
 
-  // now check we restored the browser correctly.
-  EXPECT_EQ(restored_browser->tab_strip_model()->count(), 2);
-  auto tab1_url =
-      restored_browser->tab_strip_model()->GetWebContentsAt(0)->GetURL();
-  auto tab2_url =
-      restored_browser->tab_strip_model()->GetWebContentsAt(1)->GetURL();
+  // Check we restored the browser correctly.
+  ASSERT_NE(restored_browser, nullptr);
+  EXPECT_EQ(restored_browser->GetType(), BrowserWindowInterface::TYPE_NORMAL);
+  TabStripModel* tab_strip_model = restored_browser->GetTabStripModel();
+  EXPECT_EQ(tab_strip_model->count(), 2);
+  auto tab1_url = tab_strip_model->GetWebContentsAt(0)->GetURL();
+  auto tab2_url = tab_strip_model->GetWebContentsAt(1)->GetURL();
   EXPECT_EQ(tab2_url, example_url2);
 }
 
@@ -3933,11 +3947,12 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
 
   // Open a PWA.
   webapps::AppId app_id = InstallPWA(profile, example_url);
-  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  BrowserWindowInterface* app_browser =
+      web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
-  app_browser->window()->Minimize();
+  app_browser->GetWindow()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(app_browser));
-  EXPECT_TRUE(app_browser->window()->IsMinimized());
+  EXPECT_TRUE(app_browser->GetWindow()->IsMinimized());
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -3960,22 +3975,29 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
 
   // It opens up the browser and the app.
   app_browser = nullptr;
-  Browser* normal_browser = nullptr;
+  BrowserWindowInterface* normal_browser = nullptr;
   ASSERT_EQ(2u, BrowserList::GetInstance()->size());
-  for (Browser* browser : *(BrowserList::GetInstance())) {
-    if (browser->type() == Browser::Type::TYPE_APP) {
-      EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
+  EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_APP));
+  EXPECT_EQ(1, CountBrowsersForType(BrowserWindowInterface::TYPE_NORMAL));
+
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&app_browser, &normal_browser, app_id,
+       &example_url](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::TYPE_APP) {
+          EXPECT_TRUE(
+              web_app::AppBrowserController::IsForWebApp(browser, app_id));
 #if !BUILDFLAG(IS_LINUX)
-      EXPECT_TRUE(ui_test_utils::WaitForMinimized(browser));
-      EXPECT_TRUE(browser->window()->IsMinimized());
+          EXPECT_TRUE(ui_test_utils::WaitForMinimized(browser));
+          EXPECT_TRUE(browser->GetWindow()->IsMinimized());
 #endif
-      EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
-                example_url);
-      app_browser = browser;
-    } else {
-      normal_browser = browser;
-    }
-  }
+          EXPECT_EQ(browser->GetTabStripModel()->GetWebContentsAt(0)->GetURL(),
+                    example_url);
+          app_browser = browser;
+        } else {
+          normal_browser = browser;
+        }
+        return true;
+      });
 
   ASSERT_NE(app_browser, nullptr);
   ASSERT_NE(normal_browser, nullptr);

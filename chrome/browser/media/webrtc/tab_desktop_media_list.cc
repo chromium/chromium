@@ -17,8 +17,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -147,26 +146,30 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
     return;
   }
 
-  std::vector<Browser*> browsers;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Omit all the IWAs for TabDesktopMediaList as they are already
-    // present in NativeDesktopMediaList.
-    bool is_isolated_web_app = browser->app_controller() &&
-                               browser->app_controller()->IsIsolatedWebApp();
+  std::vector<BrowserWindowInterface*> browsers;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&browsers, profile](BrowserWindowInterface* browser) {
+        // Omit all the IWAs for TabDesktopMediaList as they are already
+        // present in NativeDesktopMediaList.
+        web_app::AppBrowserController* const app_controller =
+            browser->GetAppBrowserController();
+        bool is_isolated_web_app =
+            app_controller && app_controller->IsIsolatedWebApp();
 
-    if ((!base::FeatureList::IsEnabled(
-             features::kRemovalOfIWAsFromTabCapture) ||
-         !is_isolated_web_app) &&
-        browser->profile()->GetOriginalProfile() ==
-            profile->GetOriginalProfile()) {
-      browsers.push_back(browser);
-    }
-  }
+        if ((!base::FeatureList::IsEnabled(
+                 features::kRemovalOfIWAsFromTabCapture) ||
+             !is_isolated_web_app) &&
+            browser->GetProfile()->GetOriginalProfile() ==
+                profile->GetOriginalProfile()) {
+          browsers.push_back(browser);
+        }
+        return true;
+      });
 
   std::vector<WebContents*> contents_list;
   // Enumerate all tabs for a user profile.
-  for (auto* browser : browsers) {
-    const TabStripModel* tab_strip_model = browser->tab_strip_model();
+  for (BrowserWindowInterface* const browser : browsers) {
+    const TabStripModel* tab_strip_model = browser->GetTabStripModel();
     DCHECK(tab_strip_model);
 
     for (int i = 0; i < tab_strip_model->count(); i++) {

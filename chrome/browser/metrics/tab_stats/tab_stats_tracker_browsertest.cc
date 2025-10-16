@@ -243,7 +243,7 @@ class TabStatsTrackerBrowserTest : public PlatformBrowserTest {
 
   bool AddTabToTabStrip(TabStripInterface& tab_strip,
                         const GURL& url = GURL("about:blank")) {
-    return AddTabAtIndexToBrowser(tab_strip.browser(), 1, url,
+    return AddTabAtIndexToBrowser(tab_strip.browser_window_interface(), 1, url,
                                   ui::PAGE_TRANSITION_TYPED);
   }
 
@@ -252,7 +252,7 @@ class TabStatsTrackerBrowserTest : public PlatformBrowserTest {
   }
 
   void CloseTabStrip(std::unique_ptr<TabStripInterface> tab_strip) {
-    Browser* browser = tab_strip->browser();
+    BrowserWindowInterface* browser = tab_strip->browser_window_interface();
     // Destroy `tab_strip` before `browser` to avoid a dangling raw_ref.
     tab_strip.reset();
     CloseBrowserSynchronously(browser);
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   gfx::Rect browser_rect(work_area.origin(), size);
   browser()->window()->SetBounds(browser_rect);
   browser_rect.set_x(browser_rect.right());
-  window2->browser()->window()->SetBounds(browser_rect);
+  window2->browser_window_interface()->GetWindow()->SetBounds(browser_rect);
   auto expected_window1_tab1_visibility = content::Visibility::VISIBLE;
 #endif
 

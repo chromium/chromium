@@ -72,6 +72,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #endif
 
 namespace policy {
@@ -229,17 +231,19 @@ class LocalTestInfoBarVisibilityManager :
       model->AddObserver(this);
     }
 #else
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      CHECK(browser);
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser) {
+          CHECK(browser);
 
-      OnBrowserAdded(browser);
+          OnBrowserAdded(browser->GetBrowserForMigrationOnly());
 
-      TabStripModel* tab_strip_model = browser->tab_strip_model();
-      for (int i = 0; i < tab_strip_model->count(); i++) {
-        AddInfobarForActiveLocalTestPolicies(
-            tab_strip_model->GetWebContentsAt(i));
-      }
-    }
+          TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+          for (int i = 0; i < tab_strip_model->count(); i++) {
+            AddInfobarForActiveLocalTestPolicies(
+                tab_strip_model->GetWebContentsAt(i));
+          }
+          return true;
+        });
     BrowserList::GetInstance()->AddObserver(this);
 #endif  // BUILDFLAG(IS_ANDROID)
     infobar_active_ = true;
@@ -268,17 +272,19 @@ class LocalTestInfoBarVisibilityManager :
       model->RemoveObserver(this);
     }
 #else
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      CHECK(browser);
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser) {
+          CHECK(browser);
 
-      browser->tab_strip_model()->RemoveObserver(this);
+          browser->GetTabStripModel()->RemoveObserver(this);
 
-      TabStripModel* tab_strip_model = browser->tab_strip_model();
-      for (int i = 0; i < tab_strip_model->count(); i++) {
-        DismissInfobarForActiveLocalTestPolicies(
-            tab_strip_model->GetWebContentsAt(i));
-      }
-    }
+          TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+          for (int i = 0; i < tab_strip_model->count(); i++) {
+            DismissInfobarForActiveLocalTestPolicies(
+                tab_strip_model->GetWebContentsAt(i));
+          }
+          return true;
+        });
     BrowserList::GetInstance()->RemoveObserver(this);
 #endif  // BUILDFLAG(IS_ANDROID)
     infobar_active_ = false;

@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
@@ -17,11 +18,13 @@ BrowserListRouterHelper::BrowserListRouterHelper(
     Profile* profile)
     : router_(router), profile_(profile) {
   BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    if (browser->profile() == profile_) {
-      browser->tab_strip_model()->AddObserver(this);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == profile_) {
+          browser->GetTabStripModel()->AddObserver(this);
+        }
+        return true;
+      });
   browser_list->AddObserver(this);
 }
 

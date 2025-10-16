@@ -81,6 +81,7 @@
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #endif
 
@@ -553,14 +554,17 @@ void ChromeSigninClient::RecordOpenTabCount(
     tabs_count += model->GetTabCount();
   }
 #else   // !BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile_) {
-      continue;
-    }
-    if (TabStripModel* tab_strip_model = browser->tab_strip_model()) {
-      tabs_count += tab_strip_model->count();
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &tabs_count](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile_) {
+          return true;
+        }
+        if (TabStripModel* const tab_strip_model =
+                browser->GetTabStripModel()) {
+          tabs_count += tab_strip_model->count();
+        }
+        return true;
+      });
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   signin_metrics::RecordOpenTabCountOnSignin(consent_level, tabs_count);
