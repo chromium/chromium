@@ -45,19 +45,6 @@ class ImageDecodeAcceleratorWorker {
   // returned.
   virtual std::vector<ImageDecodeAcceleratorSupportedProfile>
   GetSupportedProfiles() = 0;
-
-  // Enqueue a decode of |encoded_data|. The |decode_cb| is called
-  // asynchronously when the decode completes passing as parameter DecodeResult
-  // containing a reference to the decoded image (in the form of a
-  // gfx::GpuMemoryBufferHandle). The |buffer_byte_size| is the size of the
-  // buffer that |handle| refers to. For a successful decode, implementations
-  // must guarantee that |visible_size| == |output_size|.
-  //
-  // If the decode fails, |decode_cb| is called asynchronously with nullptr.
-  // Callbacks should be called in the order that this method is called.
-  virtual void Decode(std::vector<uint8_t> encoded_data,
-                      const gfx::Size& output_size,
-                      CompletedDecodeCB decode_cb) = 0;
 };
 
 }  // namespace gpu
