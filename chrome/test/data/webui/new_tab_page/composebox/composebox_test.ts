@@ -663,6 +663,65 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(composeboxElement.$.context.$.imageUploadButton.disabled);
   });
 
+  test(
+      'inputs disabled based on file count and create image mode', async () => {
+        loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
+
+        createComposeboxElement();
+        await microtasksFinished();
+
+        searchboxHandler.setResultFor(
+            ADD_FILE_CONTEXT_FN,
+            Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+
+        // Upload a PDF file. `inputsDisabled` should be true.
+        const pdfFile = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(pdfFile);
+        composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
+        composeboxElement.$.context.$.fileInput.dispatchEvent(
+            new Event('change'));
+
+        await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
+        await microtasksFinished();
+        assertTrue(composeboxElement.$.context['inputsDisabled_']);
+
+        // Delete the file. `inputsDisabled` should be false.
+        const deletedId = composeboxElement.$.context.$.carousel.files[0]!.uuid;
+        composeboxElement.$.context.$.carousel.dispatchEvent(new CustomEvent(
+            'delete-file',
+            {detail: {uuid: deletedId}, bubbles: true, composed: true}));
+        await microtasksFinished();
+        assertFalse(composeboxElement.$.context['inputsDisabled_']);
+        searchboxHandler.resetResolver(ADD_FILE_CONTEXT_FN);
+        searchboxHandler.setResultFor(
+            ADD_FILE_CONTEXT_FN,
+            Promise.resolve({token: {low: BigInt(3), high: BigInt(4)}}));
+
+        // Upload an image file. `inputsDisabled` should be false.
+        const imageFile = new File(['foo'], 'foo.png', {type: 'image/png'});
+        const dataTransfer2 = new DataTransfer();
+        dataTransfer2.items.add(imageFile);
+
+        const imageInput = composeboxElement.$.context.$.imageInput;
+        imageInput.files = dataTransfer2.files;
+        imageInput.dispatchEvent(new Event('change'));
+
+        await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
+        await microtasksFinished();
+        assertFalse(composeboxElement.$.context['inputsDisabled_']);
+
+        // Enter create image mode. `inputsDisabled` should be true.
+        composeboxElement.$.context['inCreateImageMode_'] = true;
+        await composeboxElement.$.context.updateComplete;
+        assertTrue(composeboxElement.$.context['inputsDisabled_']);
+
+        // Exit create image mode. `inputsDisabled` should be false.
+        composeboxElement.$.context['inCreateImageMode_'] = false;
+        await composeboxElement.$.context.updateComplete;
+        assertFalse(composeboxElement.$.context['inputsDisabled_']);
+      });
+
   test('session abandoned on esc click', async () => {
     // Arrange.
     createComposeboxElement();

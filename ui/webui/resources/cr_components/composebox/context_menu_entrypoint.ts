@@ -49,8 +49,13 @@ export class ContextMenuEntrypointElement extends
   static override get properties() {
     return {
       inputsDisabled: {type: Boolean},
+      fileNum: {type: Number},
       showContextMenuDescription: {type: Boolean},
       inCreateImageMode: {
+        reflect: true,
+        type: Boolean,
+      },
+      hasImageFiles: {
         reflect: true,
         type: Boolean,
       },
@@ -71,8 +76,10 @@ export class ContextMenuEntrypointElement extends
   }
 
   accessor inputsDisabled: boolean = false;
+  accessor fileNum: number = 0;
   accessor showContextMenuDescription: boolean = false;
   accessor inCreateImageMode: boolean = false;
+  accessor hasImageFiles: boolean = false;
   accessor disabledTabIds: Set<number> = new Set();
   accessor entrypointName: string = '';
   protected accessor tabSuggestions_: TabInfo[] = [];
@@ -81,12 +88,40 @@ export class ContextMenuEntrypointElement extends
       loadTimeData.getBoolean('composeboxShowContextMenuTabPreviews');
   protected accessor showDeepSearch_: boolean =
       loadTimeData.getBoolean('composeboxShowDeepSearchButton');
-
   protected accessor showCreateImage_: boolean =
       loadTimeData.getBoolean('composeboxShowCreateImageButton');
+  protected maxFileCount_: number =
+      loadTimeData.getInteger('composeboxFileMaxCount');
 
   constructor() {
     super();
+  }
+
+  // Checks if the image upload item in the context menu should be disabled.
+  protected get imageUploadDisabled_(): boolean {
+    return this.fileNum >= this.maxFileCount_ ||
+        (this.inCreateImageMode && this.hasImageFiles);
+  }
+
+  // Checks if the file upload item in the context menu should be disabled.
+  protected get fileUploadDisabled_(): boolean {
+    return this.inCreateImageMode || this.fileNum >= this.maxFileCount_;
+  }
+
+  // Checks if the deep search item in the context menu should be disabled.
+  protected get deepSearchDisabled_(): boolean {
+    return this.inCreateImageMode || this.fileNum === 1 || this.fileNum > 1;
+  }
+
+  // Checks if the create image item in the context menu should be disabled.
+  protected get createImageDisabled_(): boolean {
+    return this.fileNum > 1 || ((this.fileNum === 1) && !this.hasImageFiles);
+  }
+
+  // Checks if a tab item in the context menu should be disabled.
+  protected isTabDisabled_(tab: TabInfo): boolean {
+    return this.inCreateImageMode || this.fileNum >= this.maxFileCount_ ||
+        this.disabledTabIds.has(tab.tabId);
   }
 
   protected onEntrypointClick_() {
