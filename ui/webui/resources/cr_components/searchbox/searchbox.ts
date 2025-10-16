@@ -1090,6 +1090,15 @@ export class SearchboxElement extends SearchboxElementBase {
     this.$.errorScrim.setErrorMessage(e.detail.errorMessage);
   }
 
+  protected async getTabPreview_(e: CustomEvent<{
+    tabId: number,
+    onPreviewFetched: (previewDataUrl: string) => void,
+  }>) {
+    const {previewDataUrl} =
+        await this.pageHandler_.getTabPreview(e.detail.tabId);
+    e.detail.onPreviewFetched(previewDataUrl || '');
+  }
+
   protected onComposeButtonClick_(e: CustomEvent<ComposeClickEventDetail>) {
     if (!this.composeboxEnabled || this.$.input.value.trim()) {
       // Construct navigation url.

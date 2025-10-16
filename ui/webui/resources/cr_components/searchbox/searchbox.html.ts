@@ -89,6 +89,7 @@ ${this.realboxLayoutMode === 'TallTopContext' || this.realboxLayoutMode === 'Tal
           @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
           @on-context-files-changed="${this.onContextFilesChanged_}"
           @on-file-validation-error="${this.onFileValidationError_}"
+          @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.dropdownIsVisible}"
           realbox-layout-mode="${this.realboxLayoutMode}">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"

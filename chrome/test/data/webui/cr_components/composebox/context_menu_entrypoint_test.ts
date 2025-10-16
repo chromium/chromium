@@ -166,8 +166,7 @@ suite('ContextMenuEntrypoint', () => {
   test('tab thumbnail is shown on pointerenter', async () => {
     // Arrange.
     const previewUrl = 'data:image/png;base64,sometestdata';
-    const tabPreviewPromise = Promise.resolve({previewDataUrl: previewUrl});
-    searchboxPageHandler.setResultFor('getTabPreview', tabPreviewPromise);
+    const tabPreviewPromise = eventToPromise('get-tab-preview', entrypoint);
     await openContextMenuWithSuggestions(createTabInfo(1));
 
     // Assert that thumbnail is not shown initially.
@@ -179,15 +178,14 @@ suite('ContextMenuEntrypoint', () => {
         entrypoint, '.suggestion-container .dropdown-item');
     assertTrue(!!tabItem);
     tabItem.dispatchEvent(new PointerEvent('pointerenter', {bubbles: true}));
-    await tabPreviewPromise;
+    const e = await tabPreviewPromise;
+    e.detail.onPreviewFetched(previewUrl);
     await microtasksFinished();
 
     // Assert that thumbnail is shown.
     preview = $$<HTMLImageElement>(entrypoint, '.tab-preview');
     assertTrue(!!preview);
     assertEquals(previewUrl, preview.src);
-    assertEquals(1, searchboxPageHandler.getCallCount('getTabPreview'));
-    assertEquals(1, searchboxPageHandler.getArgs('getTabPreview')[0]);
   });
 
   test('tab thumbnail is updated on pointerenter on another tab', async () => {
@@ -202,11 +200,11 @@ suite('ContextMenuEntrypoint', () => {
     assertEquals(2, tabItems.length);
 
     // Act & Assert for first tab.
-    const tabPreviewPromise1 = Promise.resolve({previewDataUrl: previewUrl1});
-    searchboxPageHandler.setResultFor('getTabPreview', tabPreviewPromise1);
+    const tabPreviewPromise1 = eventToPromise('get-tab-preview', entrypoint);
     tabItems[0]!.dispatchEvent(
         new PointerEvent('pointerenter', {bubbles: true}));
-    await tabPreviewPromise1;
+    const e1 = await tabPreviewPromise1;
+    e1.detail.onPreviewFetched(previewUrl1);
     await microtasksFinished();
 
     let previews = entrypoint.shadowRoot.querySelectorAll<HTMLImageElement>(
@@ -214,15 +212,13 @@ suite('ContextMenuEntrypoint', () => {
     assertEquals(2, previews.length);
     assertEquals(previewUrl1, previews[0]!.src);
     assertEquals(previewUrl1, previews[1]!.src);
-    assertEquals(1, searchboxPageHandler.getCallCount('getTabPreview'));
-    assertEquals(1, searchboxPageHandler.getArgs('getTabPreview')[0]);
 
     // Act & Assert for second tab.
-    const tabPreviewPromise2 = Promise.resolve({previewDataUrl: previewUrl2});
-    searchboxPageHandler.setResultFor('getTabPreview', tabPreviewPromise2);
+    const tabPreviewPromise2 = eventToPromise('get-tab-preview', entrypoint);
     tabItems[1]!.dispatchEvent(
         new PointerEvent('pointerenter', {bubbles: true}));
-    await tabPreviewPromise2;
+    const e2 = await tabPreviewPromise2;
+    e2.detail.onPreviewFetched(previewUrl2);
     await microtasksFinished();
 
     previews = entrypoint.shadowRoot.querySelectorAll<HTMLImageElement>(
@@ -230,8 +226,6 @@ suite('ContextMenuEntrypoint', () => {
     assertEquals(2, previews.length);
     assertEquals(previewUrl2, previews[0]!.src);
     assertEquals(previewUrl2, previews[1]!.src);
-    assertEquals(2, searchboxPageHandler.getCallCount('getTabPreview'));
-    assertEquals(2, searchboxPageHandler.getArgs('getTabPreview')[1]);
   });
 
   test('tab thumbnail is not shown when feature is disabled', async () => {
@@ -258,6 +252,5 @@ suite('ContextMenuEntrypoint', () => {
     // Assert that thumbnail is not shown.
     const preview = $$<HTMLImageElement>(entrypoint, '.tab-preview');
     assertFalse(!!preview);
-    assertEquals(0, searchboxPageHandler.getCallCount('getTabPreview'));
   });
 });

@@ -409,6 +409,15 @@ export class ComposeboxElement extends I18nMixinLit
     e.detail.onRefreshComplete(tabs);
   }
 
+  protected async getTabPreview_(e: CustomEvent<{
+    tabId: number,
+    onPreviewFetched: (previewDataUrl: string) => void,
+  }>) {
+    const {previewDataUrl} =
+        await this.searchboxHandler_.getTabPreview(e.detail.tabId);
+    e.detail.onPreviewFetched(previewDataUrl || '');
+  }
+
   protected onCancelClick_() {
     if (this.$.input.value.trim().length > 0 || this.contextFilesSize_ > 0) {
       this.$.input.value = '';
