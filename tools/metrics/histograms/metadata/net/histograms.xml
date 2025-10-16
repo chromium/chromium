@@ -98,6 +98,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".GoogleHost" summary="Google Host"/>
 </variants>
 
+<variants name="NegotiatedProtocolCoalesced">
+  <variant name="H1"/>
+  <variant name="H2"/>
+  <variant name="H3"/>
+</variants>
+
 <variants name="NetHttpContentLengthType">
   <variant name=".Http" summary=""/>
   <variant name=".Https" summary=""/>
@@ -3539,7 +3545,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.JobCompleteTime3.{Result}" units="ms"
+<histogram name="Net.HttpStreamPool.JobCompleteTime4.{Result}" units="ms"
     expires_after="2026-04-05">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -3553,7 +3559,6 @@ chromium-metrics-reviews@google.com.
     <variant name="H1" summary="Job succeeded with HTTP/1.1"/>
     <variant name="H2" summary="Job succeeded with HTTP/2"/>
     <variant name="H3" summary="Job succeeded with HTTP/3"/>
-    <variant name="Unknown" summary="Job succeeded with unknown next protocol"/>
   </token>
 </histogram>
 
@@ -3569,7 +3574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.HttpStreamPool.JobControllerRequestCompleteTime.{Protocol}"
+    name="Net.HttpStreamPool.JobControllerRequestCompleteTime2.{Protocol}"
     units="ms" expires_after="2026-04-12">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -3578,7 +3583,7 @@ chromium-metrics-reviews@google.com.
     controller completes the corresponding request. Recorded when the job
     controller completes the corresponding request.
   </summary>
-  <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
+  <token key="Protocol" variants="NegotiatedProtocolCoalesced"/>
 </histogram>
 
 <histogram name="Net.HttpStreamPool.JobErrorCode" enum="NetErrorCodes"
@@ -3848,7 +3853,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.NetworkTransaction.Create{StreamType}Time{HostType}.{Protocol}{AddressFamily}"
+    name="Net.NetworkTransaction.Create{StreamType}Time2{HostType}.{Protocol}{AddressFamily}"
     units="ms" expires_after="2026-03-22">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -3865,7 +3870,7 @@ chromium-metrics-reviews@google.com.
     <variant name=""/>
     <variant name=".GoogleHost"/>
   </token>
-  <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
+  <token key="Protocol" variants="NegotiatedProtocolCoalesced"/>
   <token key="AddressFamily">
     <variant name=""/>
     <variant name=".IPv4"/>
@@ -4006,7 +4011,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.NetworkTransaction.SessionSource.{Protocol}"
+<histogram name="Net.NetworkTransaction.SessionSource2.{Protocol}"
     enum="NetworkSessionSource" expires_after="2026-04-12">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -4019,7 +4024,7 @@ chromium-metrics-reviews@google.com.
     only for search navigation. These histograms are recorded per navigation,
     whereas this histograms measures per request.
   </summary>
-  <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
+  <token key="Protocol" variants="NegotiatedProtocolCoalesced"/>
 </histogram>
 
 <histogram name="Net.NetworkTransaction.StreamAddressFamily"

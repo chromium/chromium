@@ -50,4 +50,17 @@ const std::string_view NegotiatedProtocolToHistogramSuffix(
   }
 }
 
+const std::string_view NegotiatedProtocolToHistogramSuffixCoalesced(
+    NextProto next_proto) {
+  switch (next_proto) {
+    case NextProto::kProtoHTTP11:
+    case NextProto::kProtoUnknown:
+      return "H1";
+    case NextProto::kProtoHTTP2:
+      return "H2";
+    case NextProto::kProtoQUIC:
+      return "H3";
+  }
+}
+
 }  // namespace net

@@ -2471,12 +2471,12 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
         create_stream_end_time_ - create_stream_start_time_;
 
     const std::string_view histogram_base_name =
-        ForWebSocketHandshake() ? "CreateWebSocketStreamTime"
-                                : "CreateHttpStreamTime";
+        ForWebSocketHandshake() ? "CreateWebSocketStreamTime2"
+                                : "CreateHttpStreamTime2";
     const std::string_view host_suffix =
         IsGoogleHostWithAlpnH3(url_.host()) ? ".GoogleHost" : "";
     const std::string_view protocol_suffix =
-        NegotiatedProtocolToHistogramSuffix(negotiated_protocol_);
+        NegotiatedProtocolToHistogramSuffixCoalesced(negotiated_protocol_);
     std::string histogram_name =
         base::StrCat({"Net.NetworkTransaction.", histogram_base_name,
                       host_suffix, ".", protocol_suffix});
@@ -2498,7 +2498,7 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
     if (stream_request_completion_details_->session_source.has_value()) {
       base::UmaHistogramEnumeration(
           base::StrCat(
-              {"Net.NetworkTransaction.SessionSource.", protocol_suffix}),
+              {"Net.NetworkTransaction.SessionSource2.", protocol_suffix}),
           *stream_request_completion_details_->session_source);
     }
   } else {

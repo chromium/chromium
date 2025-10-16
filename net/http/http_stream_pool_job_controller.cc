@@ -629,8 +629,8 @@ void HttpStreamPool::JobController::CallRequestCompleteAndStreamReady() {
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::UmaHistogramLongTimes100(
-      base::StrCat({"Net.HttpStreamPool.JobControllerRequestCompleteTime.",
-                    NegotiatedProtocolToHistogramSuffix(
+      base::StrCat({"Net.HttpStreamPool.JobControllerRequestCompleteTime2.",
+                    NegotiatedProtocolToHistogramSuffixCoalesced(
                         pending_stream_->negotiated_protocol)}),
       now - created_time_);
   base::UmaHistogramTimes(

@@ -251,11 +251,12 @@ void HttpStreamPool::Job::OnDone(std::optional<int> result) {
   // completed.
   if (result_.has_value()) {
     constexpr std::string_view kCompleteTimeHistogramName =
-        "Net.HttpStreamPool.JobCompleteTime3.";
+        "Net.HttpStreamPool.JobCompleteTime4.";
     base::TimeDelta complete_time = base::TimeTicks::Now() - create_time_;
     if (*result_ == OK) {
-      const std::string_view protocol = NegotiatedProtocolToHistogramSuffix(
-          negotiated_protocol_.value_or(NextProto::kProtoUnknown));
+      const std::string_view protocol =
+          NegotiatedProtocolToHistogramSuffixCoalesced(
+              negotiated_protocol_.value_or(NextProto::kProtoUnknown));
       base::UmaHistogramLongTimes100(
           base::StrCat({kCompleteTimeHistogramName, protocol}), complete_time);
     } else {
