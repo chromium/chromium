@@ -3717,9 +3717,6 @@ extern const char kAutocorrectByDefaultDescription[];
 extern const char kAutocorrectParamsTuningName[];
 extern const char kAutocorrectParamsTuningDescription[];
 
-extern const char kBatteryBadgeIconName[];
-extern const char kBatteryBadgeIconDescription[];
-
 extern const char kBatteryChargeLimitName[];
 extern const char kBatteryChargeLimitDescription[];
 
@@ -3737,9 +3734,6 @@ extern const char kBluetoothFlossTelephonyDescription[];
 
 extern const char kBluetoothUseFlossName[];
 extern const char kBluetoothUseFlossDescription[];
-
-extern const char kBluetoothWifiQSPodRefreshName[];
-extern const char kBluetoothWifiQSPodRefreshDescription[];
 
 extern const char kBluetoothUseLLPrivacyName[];
 extern const char kBluetoothUseLLPrivacyDescription[];
@@ -4198,9 +4192,6 @@ extern const char kMicrophoneMuteSwitchDeviceDescription[];
 
 extern const char kMultiCalendarSupportName[];
 extern const char kMultiCalendarSupportDescription[];
-
-extern const char kNotificationWidthIncreaseName[];
-extern const char kNotificationWidthIncreaseDescription[];
 
 extern const char kEnableNearbyBleV2Name[];
 extern const char kEnableNearbyBleV2Description[];

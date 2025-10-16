@@ -10746,18 +10746,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAssistantIphDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(feature_engagement::kIPHLauncherSearchHelpUiFeature)},
 
-    {"battery-badge-icon", flag_descriptions::kBatteryBadgeIconName,
-     flag_descriptions::kBatteryBadgeIconDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kBatteryBadgeIcon)},
-
     {"battery-charge-limit", flag_descriptions::kBatteryChargeLimitName,
      flag_descriptions::kBatteryChargeLimitDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBatteryChargeLimit)},
-
-    {"bluetooth-wifi-qs-pod-refresh",
-     flag_descriptions::kBluetoothWifiQSPodRefreshName,
-     flag_descriptions::kBluetoothWifiQSPodRefreshDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kBluetoothWifiQSPodRefresh)},
 
     {"mahi", flag_descriptions::kMahiName, flag_descriptions::kMahiDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(chromeos::features::kMahi)},
@@ -10769,11 +10760,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"mahi-panel-resizable", flag_descriptions::kMahiPanelResizableName,
      flag_descriptions::kMahiPanelResizableDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kMahiPanelResizable)},
-
-    {"notification-width-increase",
-     flag_descriptions::kNotificationWidthIncreaseName,
-     flag_descriptions::kNotificationWidthIncreaseDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kNotificationWidthIncrease)},
 
     {"pompano", flag_descriptions::kPompanoName,
      flag_descriptions::kPompanoDescritpion, kOsCrOS,

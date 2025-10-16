@@ -6564,11 +6564,6 @@ const char kAutocorrectParamsTuningName[] = "CrOS autocorrect params tuning";
 const char kAutocorrectParamsTuningDescription[] =
     "Enables params tuning experiment for autocorrect on ChromeOS.";
 
-const char kBatteryBadgeIconName[] = "Enables smaller battery badge icon";
-const char kBatteryBadgeIconDescription[] =
-    "Enables smaller battery badge icons for increased legibility of the "
-    "battery percentage.";
-
 const char kBatteryChargeLimitName[] = "ChromeOS Battery Charge Limit";
 const char kBatteryChargeLimitDescription[] =
     "Enables an option in Power settings which allows the user to choose "
@@ -6603,11 +6598,6 @@ const char kBluetoothUseFlossDescription[] =
     "Enables using Floss (also known as Fluoride, Android's Bluetooth stack) "
     "instead of BlueZ. This is meant to be used by developers and is not "
     "guaranteed to be stable";
-
-const char kBluetoothWifiQSPodRefreshName[] =
-    "Enable better bluetooth and wifi UI";
-const char kBluetoothWifiQSPodRefreshDescription[] =
-    "Enables better quick settings UI for bluetooth and wifi error states";
 
 const char kBluetoothUseLLPrivacyName[] = "Enable LL Privacy in Floss";
 const char kBluetoothUseLLPrivacyDescription[] =
@@ -7408,12 +7398,6 @@ const char kMultiCalendarSupportName[] =
 const char kMultiCalendarSupportDescription[] =
     "Enables the Quick Settings Calendar to display Google Calendar events for "
     "up to 10 of the user's calendars.";
-
-const char kNotificationWidthIncreaseName[] =
-    "Notification Width Increase Feature";
-const char kNotificationWidthIncreaseDescription[] =
-    "Enables increased notification width for pop-up notifications and "
-    "notifications in the message center.";
 
 const char kEnableNearbyBleV2Name[] = "Nearby BLE v2";
 const char kEnableNearbyBleV2Description[] = "Enables Nearby BLE v2.";

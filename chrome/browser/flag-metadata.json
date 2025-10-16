@@ -1222,15 +1222,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "battery-badge-icon",
-    "owners": [
-      "bbetini@google.com",
-      "leandre@chromium.org",
-      "amehfooz@chromium.org"
-    ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "battery-charge-limit",
     "owners": [
       "mwoj@google.com",
@@ -1329,15 +1320,6 @@
     "name": "bluetooth-use-llprivacy",
     "owners": ["jiangzp@chromium.org", "chromeos-bt-champs@google.com"],
     "expiry_milestone": 150
-  },
-  {
-    "name": "bluetooth-wifi-qs-pod-refresh",
-    "owners": [
-      "bbetini@google.com",
-      "leandre@chromium.org",
-      "amehfooz@chromium.org"
-    ],
-    "expiry_milestone": 132
   },
   {
     "name": "boarding-pass-detector",
@@ -7096,15 +7078,6 @@
       "name": "notification-settings-menu-item",
       "owners": ["danieltwhite@chromium.org", "ajuma@chromium.org" ],
       "expiry_milestone": 116
-  },
-  {
-    "name": "notification-width-increase",
-    "owners": [
-      "bbetini@google.com",
-      "leandre@chromium.org",
-      "amehfooz@chromium.org"
-    ],
-    "expiry_milestone": 130
   },
   {
       "name": "notifications-ignore-require-interaction",
