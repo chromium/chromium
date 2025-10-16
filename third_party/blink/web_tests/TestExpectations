@@ -3654,7 +3654,7 @@ crbug.com/412326639 [ Mac13 ] virtual/view-transition-wide-gamut/external/wpt/cs
 
 crbug.com/411576891 [ Linux ] external/wpt/webdriver/tests/classic/minimize_window/minimize.py [ Failure ]
 crbug.com/409809138 [ Win11 ] external/wpt/custom-elements/revamped-scoped-registry/ShadowRoot-init-customElementRegistry.tentative.html [ Pass Timeout ]
-crbug.com/409850360 external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py [ Timeout ]
+crbug.com/409850360 external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py [ Pass Timeout ]
 crbug.com/408539325 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
 crbug.com/408039461 [ Win11-arm64 ] external/wpt/css/css-text/white-space/control-chars-01D.html [ Failure ]
 crbug.com/408034113 [ Win11-arm64 ] external/wpt/service-workers/service-worker/fetch-mixed-content-to-inscope.https.html [ Crash ]
