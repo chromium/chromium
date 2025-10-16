@@ -74,9 +74,15 @@ class OmniboxEditModel {
   // model->view updates can go through the observer.
   class Observer : public base::CheckedObserver {
    public:
-    // Called whenever `popup_view_->OnSelectionChanged()` is called.
+    // Invoked when the selection changes. The `line` field in either selection
+    // may be `OmniboxPopupSelection::kNoMatch`.
     virtual void OnSelectionChanged(OmniboxPopupSelection old_selection,
-                                    OmniboxPopupSelection new_selection) {}
+                                    OmniboxPopupSelection new_selection) = 0;
+
+    // Invoked when the icon used for the given match has been updated.
+    virtual void OnMatchIconUpdated(size_t index) = 0;
+
+    ~Observer() override = default;
   };
 
   OmniboxEditModel(OmniboxController* controller, OmniboxView* view);
@@ -871,7 +877,7 @@ class OmniboxEditModel {
   GURL old_focused_url_;
 
   // See comment on `Observer`.
-  base::ObserverList<Observer> observers_;
+  mutable base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<OmniboxEditModel> weak_factory_{this};
 };

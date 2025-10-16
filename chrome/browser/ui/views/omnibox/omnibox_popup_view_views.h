@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -33,7 +34,7 @@ struct AutocompleteMatch;
 // A view representing the contents of the autocomplete popup.
 class OmniboxPopupViewViews : public views::View,
                               public OmniboxPopupView,
-                              public views::WidgetObserver {
+                              public OmniboxEditModel::Observer {
   METADATA_HEADER(OmniboxPopupViewViews, views::View)
 
  public:
@@ -66,11 +67,8 @@ class OmniboxPopupViewViews : public views::View,
   // OmniboxPopupView:
   bool IsOpen() const override;
   void InvalidateLine(size_t line) override;
-  void OnSelectionChanged(OmniboxPopupSelection old_selection,
-                          OmniboxPopupSelection new_selection) override;
   void UpdatePopupAppearance() override;
   void ProvideButtonFocusHint(size_t line) override;
-  void OnMatchIconUpdated(size_t match_index) override;
   void OnDragCanceled() override;
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
   std::u16string_view GetAccessibleButtonTextForResult(
@@ -82,9 +80,14 @@ class OmniboxPopupViewViews : public views::View,
 
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& new_bounds) override;
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
-  void OnWidgetDestroying(views::Widget* widget) override;
+                             const gfx::Rect& new_bounds);
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible);
+  void OnWidgetDestroying(views::Widget* widget);
+
+  // OmniboxEditModel::Observer:
+  void OnSelectionChanged(OmniboxPopupSelection old_selection,
+                          OmniboxPopupSelection new_selection) override;
+  void OnMatchIconUpdated(size_t match_index) override;
 
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 
@@ -124,6 +127,26 @@ class OmniboxPopupViewViews : public views::View,
   size_t GetIndexForPoint(const gfx::Point& point) const;
 
  private:
+  // Classes shouldn't observe multiple objects (to avoid inheriting
+  // `base::CheckedObserver` twice). Since `OmniboxPopupViewViews` already
+  // observes `OmniboxEditModel`, it needs `WidgetObserverHelper` to observe
+  // `Widget`.
+  class WidgetObserverHelper : public views::WidgetObserver {
+   public:
+    explicit WidgetObserverHelper(OmniboxPopupViewViews* popup_view);
+    ~WidgetObserverHelper() override;
+
+    // views::WidgetObserver:
+    void OnWidgetBoundsChanged(views::Widget* widget,
+                               const gfx::Rect& new_bounds) override;
+    void OnWidgetVisibilityChanged(views::Widget* widget,
+                                   bool visible) override;
+    void OnWidgetDestroying(views::Widget* widget) override;
+
+   private:
+    raw_ptr<OmniboxPopupViewViews> popup_view_;
+  };
+
   void UpdateAccessibleStates() const;
 
   void UpdateAccessibleControlIds();
@@ -165,6 +188,13 @@ class OmniboxPopupViewViews : public views::View,
   // The row views that are children of this view or children of subviews of
   // this view like `row_group_view_`.
   std::vector<raw_ptr<OmniboxRowView>> row_views_;
+
+  // Used to observe `views::Widget`. Manual (i.e. unscoped) observation because
+  // widgets get created and destroyed during `OmniboxPopupViewViews` lifetime.
+  WidgetObserverHelper widget_observer_helper_{this};
+  // Used to observe `OmniboxEditModel`.
+  base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>
+      edit_model_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_
