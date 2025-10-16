@@ -37,7 +37,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.build.annotations.Nullable;
@@ -140,7 +139,6 @@ public class CloseAllTabsDialogTest {
     @LargeTest
     @EnableAnimations
     @Restriction({DeviceFormFactor.PHONE})
-    @DisabledTest(message = "Flaky - crbug.com/417752224")
     public void testCloseAllTabs_CustomAnimation() {
         TabModelSelector selector =
                 mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
