@@ -19,11 +19,20 @@ export interface SavedInfoHandlerProxy {
    * Get the number of passwords and passkeys.
    */
   getPasswordCount(): Promise<PasswordCount>;
+
+  /**
+   * Get the number of loyalty cards.
+   */
+  getLoyaltyCardsCount(): Promise<number|undefined>;
 }
 
 export class SavedInfoHandlerImpl implements SavedInfoHandlerProxy {
   getPasswordCount() {
     return sendWithPromise('getPasswordCount');
+  }
+
+  getLoyaltyCardsCount() {
+    return sendWithPromise('getLoyaltyCardsCount');
   }
 
   static getInstance(): SavedInfoHandlerProxy {

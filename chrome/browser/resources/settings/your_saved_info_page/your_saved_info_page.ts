@@ -80,6 +80,7 @@ export class SettingsYourSavedInfoPageElement extends
       knownTravelerNumbersCount: Number,
       redressNumbersCount: Number,
       flightReservationsCount: Number,
+      loyaltyCardsCount: Number,
     };
   }
 
@@ -100,6 +101,7 @@ export class SettingsYourSavedInfoPageElement extends
   declare knownTravelerNumbersCount: number|undefined;
   declare redressNumbersCount: number|undefined;
   declare flightReservationsCount: number|undefined;
+  declare loyaltyCardsCount: number|undefined;
 
   declare private passwordsCardData_: ChipData[];
   declare private paymentsCardData_: ChipData[];
@@ -179,6 +181,14 @@ export class SettingsYourSavedInfoPageElement extends
         this.onAutofillAiEntitiesChangedListener_);
     this.autofillAiEntityManager_.loadEntityInstances().then(
         this.onAutofillAiEntitiesChangedListener_);
+
+    // Wallet: Loyalty cards count.
+    const setLoyaltyCardsCount = (loyaltyCardsCount?: number) => {
+      this.loyaltyCardsCount = loyaltyCardsCount;
+    };
+    this.addWebUiListener('loyalty-cards-count-changed', setLoyaltyCardsCount);
+    SavedInfoHandlerImpl.getInstance().getLoyaltyCardsCount().then(
+        setLoyaltyCardsCount);
   }
 
   private onAutofillAiEntitiesChanged(
