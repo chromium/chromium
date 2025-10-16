@@ -3429,6 +3429,12 @@ const char kEnableOmniboxClientSearchPrefetchDescription[] =
     "Search Engine that the client thinks are likely to be navigated. Requires "
     "chrome://flags/#omnibox-search-prefetch";
 
+const char kNtpComposeboxUsesChromeComposeClientName[] =
+    "Composebox uses chrome-compose client";
+const char kNtpComposeboxUsesChromeComposeClientDescription[] =
+    "Composebox will use chrome-compose client when querying suggest for "
+    "unimodal typed inputs instead of chrome-omni.";
+
 const char kPrivacySandboxAdTopicsContentParityName[] =
     "Privacy Sandbox Ad Topics Content Parity";
 const char kPrivacySandboxAdTopicsContentParityDescription[] =
@@ -5913,12 +5919,6 @@ const char kNtpComposeboxName[] = "NTP Composebox";
 const char kNtpComposeboxDescription[] =
     "Shows the Composebox on the New Tab Page Searchbox upon clicking the "
     "entrypoint.";
-
-const char kNtpComposeboxUsesChromeComposeClientName[] =
-    "Composebox uses chrome-compose client";
-const char kNtpComposeboxUsesChromeComposeClientDescription[] =
-    "Composebox will use chrome-compose client when querying suggest for "
-    "unimodal typed inputs instead of chrome-omni.";
 
 const char kNtpCustomizeChromePromoName[] = "NTP Customize Chrome Promo";
 const char kNtpCustomizeChromePromoDescription[] =
