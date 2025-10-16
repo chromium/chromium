@@ -2818,6 +2818,10 @@
       status: "stable",
     },
     {
+      name: "ImageDocumentUseLayoutWidth",
+      status: "stable",
+    },
+    {
       name: "ImplicitRootScroller",
       public: true,
       settable_from_internals: true,

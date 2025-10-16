@@ -97,6 +97,12 @@ class CORE_EXPORT ImageDocument final : public HTMLDocument {
 
   FRIEND_TEST_ALL_PREFIXES(ImageDocumentViewportTest, ScaleImage);
   FRIEND_TEST_ALL_PREFIXES(ImageDocumentViewportTest, DivWidth);
+  FRIEND_TEST_ALL_PREFIXES(ImageDocumentViewportTest,
+                           DivWidthOnMobileWithDisabledViewportMeta);
+  FRIEND_TEST_ALL_PREFIXES(ImageDocumentViewportTest,
+                           DivWidthOnMobileWithDisabledViewportMetaWideImage);
+  FRIEND_TEST_ALL_PREFIXES(ImageDocumentViewportTest,
+                           DivWidthOnMobileWithDisabledViewportMetaTallImage);
 };
 
 template <>
