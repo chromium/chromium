@@ -54,13 +54,18 @@ class EligibilityServiceBrowserTestBase : public InProcessBrowserTest {
  public:
   EligibilityServiceBrowserTestBase(bool disable_3p_cookies,
                                     bool enable_silent_onboarding) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kCookieDeprecationFacilitatedTesting,
-        {{"label", "label_test"},
-         {"force_eligible", "true"},
-         {kDisable3PCookiesName, base::ToString(disable_3p_cookies)},
-         {kEnableSilentOnboardingName,
-          base::ToString(enable_silent_onboarding)}});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kCookieDeprecationFacilitatedTesting,
+                               {{"label", "label_test"},
+                                {"force_eligible", "true"},
+                                {kDisable3PCookiesName,
+                                 base::ToString(disable_3p_cookies)},
+                                {kEnableSilentOnboardingName,
+                                 base::ToString(enable_silent_onboarding)}}},
+                              {features::
+                                   kCookieDeprecationFacilitatedTestingLabels,
+                               {}}},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {

@@ -20119,10 +20119,12 @@ class AdAuctionServiceImplFacilitatedTestingTest
  public:
   AdAuctionServiceImplFacilitatedTestingTest() {
     features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
         {{features::kCookieDeprecationFacilitatedTesting,
           {{"label", "LabelForTesting"}}},
+         {features::kCookieDeprecationFacilitatedTestingLabels, {}},
          {features::kFledgeFacilitatedTestingSignalsHeaders, {}}},
-        {});
+        /*disabled_features=*/{});
   }
 
  private:

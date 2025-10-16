@@ -40,7 +40,10 @@ constexpr char kSecCookieDeprecationHeaderStatus[] =
 
 class CookieDeprecationLabelBrowserTestBase : public ContentBrowserTest {
  public:
-  CookieDeprecationLabelBrowserTestBase() = default;
+  CookieDeprecationLabelBrowserTestBase() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kCookieDeprecationFacilitatedTestingLabels);
+  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -79,6 +82,9 @@ class CookieDeprecationLabelBrowserTestBase : public ContentBrowserTest {
     server->ServeFilesFromSourceDirectory("content/test/data");
     return server;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class CookieDeprecationLabelDisabledBrowserTestBase
