@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.RawRes;
+import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.widget.ImageViewCompat;
 
@@ -422,15 +424,27 @@ public class NewTabPageLayout extends LinearLayout
         if (mDseIconView.getVisibility() == visibility) return;
 
         mDseIconView.setVisibility(visibility);
+        boolean shouldApplyWhiteBackground =
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
 
         if (isVisible) {
             mSearchBoxCoordinator.setStartPadding(mFakeSearchBoxStartPaddingWithDseLogo);
-            mSearchBoxCoordinator.setSearchBoxTextAppearance(
-                    R.style.TextAppearance_FakeSearchBoxTextMedium);
+            if (shouldApplyWhiteBackground) {
+                mSearchBoxCoordinator.setSearchBoxTextAppearance(
+                        R.style.TextAppearance_FakeSearchBoxTextMediumDark);
+            } else {
+                mSearchBoxCoordinator.setSearchBoxTextAppearance(
+                        R.style.TextAppearance_FakeSearchBoxTextMedium);
+            }
         } else {
             mSearchBoxCoordinator.setStartPadding(mFakeSearchBoxStartPadding);
-            mSearchBoxCoordinator.setSearchBoxTextAppearance(
-                    R.style.TextAppearance_FakeSearchBoxText);
+            if (shouldApplyWhiteBackground) {
+                mSearchBoxCoordinator.setSearchBoxTextAppearance(
+                        R.style.TextAppearance_FakeSearchBoxTextDark);
+            } else {
+                mSearchBoxCoordinator.setSearchBoxTextAppearance(
+                        R.style.TextAppearance_FakeSearchBoxText);
+            }
         }
     }
 
@@ -456,6 +470,16 @@ public class NewTabPageLayout extends LinearLayout
     private void initializeComposeplate() {
         if (!mIsComposeplateEnabled) return;
 
+        boolean shouldApplyWhiteBackgroundOnSearchBox =
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
+        ColorStateList colorStateList =
+                NtpCustomizationUtils.getSearchBoxIconColorTint(
+                        mContext, shouldApplyWhiteBackgroundOnSearchBox);
+        @StyleRes
+        int textStyleResId =
+                NtpCustomizationUtils.getSearchBoxTextStyleResId(
+                        shouldApplyWhiteBackgroundOnSearchBox);
+
         if (!mIsComposeplateV2Enabled) {
             mComposeplateButtonClickListener =
                     view -> {
@@ -466,14 +490,16 @@ public class NewTabPageLayout extends LinearLayout
                     mComposeplateButtonClickListener);
             @RawRes
             int iconRawResId =
-                    ColorUtils.inNightMode(mContext)
+                    !shouldApplyWhiteBackgroundOnSearchBox && ColorUtils.inNightMode(mContext)
                             ? R.raw.composeplate_loop_dark
                             : R.raw.composeplate_loop_light;
             mSearchBoxCoordinator.setComposeplateButtonIconRawResId(iconRawResId);
 
             ViewStub composeplateViewStub = findViewById(R.id.composeplate_view_stub);
             ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
-            mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
+            mComposeplateCoordinator =
+                    new ComposeplateCoordinator(
+                            composeplateView, mProfile, colorStateList, textStyleResId);
 
             assert mVoiceSearchButtonClickListener != null && mLensButtonClickListener != null;
             mComposeplateCoordinator.setVoiceSearchClickListener(mVoiceSearchButtonClickListener);
@@ -484,7 +510,9 @@ public class NewTabPageLayout extends LinearLayout
 
         ViewStub composeplateViewStub = findViewById(R.id.composeplate_view_v2_stub);
         ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
-        mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
+        mComposeplateCoordinator =
+                new ComposeplateCoordinator(
+                        composeplateView, mProfile, colorStateList, textStyleResId);
         mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
         // Don't log click metrics in this listener, since the mComposeplateCoordinator will
         // log.

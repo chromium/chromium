@@ -16,4 +16,12 @@ found in the LICENSE file.
         <item name="android:clickable">true</item>
         <item name="android:scaleType">center</item>
     </style>
+
+    <style name="TextAppearance.ComposeplateTextMedium" parent="TextAppearance.TextMediumThick">
+        <item name="android:textColor">@macro/ntp_search_box_hint</item>
+    </style>
+
+    <style name="TextAppearance.ComposeplateTextMediumDark" parent="TextAppearance.ComposeplateTextMedium">
+        <item name="android:textColor">@color/default_text_color_dark</item>
+    </style>
 </resources>

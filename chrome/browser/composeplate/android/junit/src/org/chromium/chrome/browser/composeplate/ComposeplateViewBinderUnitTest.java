@@ -9,10 +9,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -22,6 +24,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
+import androidx.annotation.StyleRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -120,6 +124,9 @@ public class ComposeplateViewBinderUnitTest {
 
     @Test
     public void testApplyWhiteBackgroundWithShadow() {
+        // Bind PropertyModel with mView.
+        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
+
         float expectedElevation =
                 mContext.getResources().getDimensionPixelSize(R.dimen.ntp_search_box_elevation);
         assertNotEquals(0, Float.compare(0f, expectedElevation));
@@ -129,8 +136,6 @@ public class ComposeplateViewBinderUnitTest {
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.composeplate_view_button_padding_for_shadow);
 
-        mPropertyModel = new PropertyModel.Builder(ComposeplateProperties.ALL_KEYS).build();
-        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
         View composeplateButton = mView.findViewById(R.id.composeplate_button);
         View incognitoButton = mView.findViewById(R.id.incognito_button);
 
@@ -145,6 +150,59 @@ public class ComposeplateViewBinderUnitTest {
         verifyResetBackground(incognitoButton, defaultBackground);
         assertEquals(0, mView.getPaddingStart());
         assertEquals(0, mView.getPaddingEnd());
+    }
+
+    @Test
+    public void testSetColorStateList_withMockView() {
+        ColorStateList colorStateList = mock(ColorStateList.class);
+        mPropertyModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
+        verify(mViewMock).setColorStateList(eq(colorStateList));
+    }
+
+    @Test
+    public void testSetColorStateList() {
+        // Bind PropertyModel with mView.
+        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
+
+        ColorStateList colorStateList =
+                AppCompatResources.getColorStateList(mContext, R.color.default_red);
+        mPropertyModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
+
+        ImageView composeplateIconView = mView.findViewById(R.id.composeplate_button_icon);
+        assertEquals(colorStateList, composeplateIconView.getImageTintList());
+
+        ImageView incognitoIconView = mView.findViewById(R.id.incognito_button_icon);
+        assertEquals(colorStateList, incognitoIconView.getImageTintList());
+    }
+
+    @Test
+    public void testSetColorStateList_v1() {
+        mView =
+                (ComposeplateView)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.composeplate_view_layout, null);
+        // Bind PropertyModel with mView.
+        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
+
+        ColorStateList colorStateList =
+                AppCompatResources.getColorStateList(mContext, R.color.default_red);
+        mPropertyModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
+
+        ImageView incognitoButton = mView.findViewById(R.id.incognito_button);
+        assertEquals(colorStateList, incognitoButton.getImageTintList());
+
+        ImageView voiceSearchButton = mView.findViewById(R.id.voice_search_button);
+        assertEquals(colorStateList, voiceSearchButton.getImageTintList());
+
+        ImageView lensButton = mView.findViewById(R.id.lens_camera_button);
+        assertEquals(colorStateList, lensButton.getImageTintList());
+    }
+
+    @Test
+    public void testSetTextStyle() {
+        @StyleRes int textStyleResId = R.style.TextAppearance_MediumStyle;
+        mPropertyModel.set(ComposeplateProperties.TEXT_STYLE_RES_ID, textStyleResId);
+        verify(mViewMock).setTextStyle(eq(textStyleResId));
     }
 
     private void verifyApplyBackground(View view, float elevation) {

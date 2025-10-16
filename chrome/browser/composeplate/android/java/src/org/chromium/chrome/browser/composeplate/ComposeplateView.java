@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser.composeplate;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.annotation.StyleRes;
 
 import org.jni_zero.internal.Nullable;
 
@@ -72,5 +76,59 @@ public class ComposeplateView extends LinearLayout {
         if (mVoiceSearchButton != null) {
             ComposeplateUtils.applyWhiteBackgroundAndShadow(context, mVoiceSearchButton, apply);
         }
+    }
+
+    /** Sets the ColorStateList to tint the icons on the buttons. */
+    void setColorStateList(@Nullable ColorStateList colorStateList) {
+        if (colorStateList == null) return;
+
+        if (mComposeplateButton != null) {
+            setColorStateList(
+                    mComposeplateButton.findViewById(R.id.composeplate_button_icon),
+                    colorStateList);
+        }
+
+        // TODO (https://crbug.com/421944848): Cleans up this class when cleaning up
+        //  composeplate_view_layout(_V2).xml.
+        if (mIncognitoButton != null) {
+            if (mIncognitoButton instanceof ImageView incognitoButtonImageView) {
+                incognitoButtonImageView.setImageTintList(colorStateList);
+            } else {
+                setColorStateList(
+                        mIncognitoButton.findViewById(R.id.incognito_button_icon), colorStateList);
+            }
+        }
+
+        setColorStateList(mLensButton, colorStateList);
+        setColorStateList(mVoiceSearchButton, colorStateList);
+    }
+
+    /**
+     * Sets the text appearance of the texts on the buttons.
+     *
+     * @param textStyleResId The resource id of the text appearance.
+     */
+    void setTextStyle(@StyleRes int textStyleResId) {
+        if (mComposeplateButton != null) {
+            setTextStyle(
+                    mComposeplateButton.findViewById(R.id.composeplate_button_text),
+                    textStyleResId);
+        }
+
+        if (mIncognitoButton != null) {
+            setTextStyle(mIncognitoButton.findViewById(R.id.incognito_button_text), textStyleResId);
+        }
+    }
+
+    private void setColorStateList(@Nullable ImageView view, ColorStateList colorStateList) {
+        if (view == null) return;
+
+        view.setImageTintList(colorStateList);
+    }
+
+    private void setTextStyle(@Nullable TextView view, @StyleRes int textStyleResId) {
+        if (view == null) return;
+
+        view.setTextAppearance(textStyleResId);
     }
 }

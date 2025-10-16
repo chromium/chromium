@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.composeplate;
 
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COLOR_STATE_LIST;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.INCOGNITO_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_INCOGNITO_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.LENS_CLICK_LISTENER;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.TEXT_STYLE_RES_ID;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER;
 
 import android.view.View;
@@ -50,6 +52,10 @@ public class ComposeplateViewBinder {
             }
         } else if (APPLY_WHITE_BACKGROUND_WITH_SHADOW == propertyKey) {
             view.applyWhiteBackgroundWithShadow(model.get(APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        } else if (COLOR_STATE_LIST == propertyKey) {
+            view.setColorStateList(model.get(COLOR_STATE_LIST));
+        } else if (TEXT_STYLE_RES_ID == propertyKey) {
+            view.setTextStyle(model.get(TEXT_STYLE_RES_ID));
         } else {
             assert false : "Unhandled property detected in ComposeplateViewBinder!";
         }

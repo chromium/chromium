@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.composeplate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -13,9 +14,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.res.ColorStateList;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import androidx.annotation.StyleRes;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,9 +53,11 @@ public class ComposeplateCoordinatorUnitTest {
     @Mock private View mComposeplateButton;
     @Mock private View.OnClickListener mOriginalOnClickListener;
     @Mock private Profile mProfile;
+    @Mock private ColorStateList mColorStateList;
 
     private ComposeplateCoordinator mCoordinator;
     private PropertyModel mPropertyModel;
+    private @StyleRes int mTextStyleResId;
 
     @Before
     public void setUp() {
@@ -66,7 +72,10 @@ public class ComposeplateCoordinatorUnitTest {
         when(mComposeplateView.findViewById(R.id.composeplate_button))
                 .thenReturn(mComposeplateButton);
 
-        mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
+        mTextStyleResId = R.style.TextAppearance_ComposeplateTextMedium;
+        mCoordinator =
+                new ComposeplateCoordinator(
+                        mParentView, mProfile, mColorStateList, mTextStyleResId);
         mPropertyModel = mCoordinator.getModelForTesting();
     }
 
@@ -85,6 +94,12 @@ public class ComposeplateCoordinatorUnitTest {
         mCoordinator.setVisibilityV1(/* visible= */ false, /* isCurrentPage= */ true);
         verify(mComposeplateView).setVisibility(View.GONE);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCreate() {
+        assertEquals(mColorStateList, mPropertyModel.get(ComposeplateProperties.COLOR_STATE_LIST));
+        assertEquals(mTextStyleResId, mPropertyModel.get(ComposeplateProperties.TEXT_STYLE_RES_ID));
     }
 
     @Test
@@ -119,7 +134,9 @@ public class ComposeplateCoordinatorUnitTest {
     @Test
     public void testSetIncognitoButtonVisibilityV1_HideIncognitoButton() {
         ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.setForTesting(true);
-        mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
+        mCoordinator =
+                new ComposeplateCoordinator(
+                        mParentView, mProfile, mColorStateList, mTextStyleResId);
 
         mCoordinator.setVisibilityV1(/* visible= */ true, /* isCurrentPage= */ true);
         verify(mComposeplateView).setVisibility(View.VISIBLE);
@@ -135,7 +152,9 @@ public class ComposeplateCoordinatorUnitTest {
         IncognitoUtils.setEnabledForTesting(false);
         assertFalse(IncognitoUtils.isIncognitoModeEnabled(mProfile));
         assertFalse(ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue());
-        mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
+        mCoordinator =
+                new ComposeplateCoordinator(
+                        mParentView, mProfile, mColorStateList, mTextStyleResId);
 
         mCoordinator.setVisibilityV1(/* visible= */ true, /* isCurrentPage= */ true);
         verify(mComposeplateView).setVisibility(View.VISIBLE);
