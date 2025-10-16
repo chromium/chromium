@@ -7,6 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
+#include "extensions/browser/permissions_manager.h"
+#include "extensions/common/extension_id.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+class BrowserWindowInterface;
 
 // The platform agnostic controller for the extensions menu.
 // TODO(crbug.com/449814184): Move the observers from
@@ -14,13 +22,24 @@
 class ExtensionsMenuViewModel {
  public:
   explicit ExtensionsMenuViewModel(
+      BrowserWindowInterface* browser,
       std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate);
   ExtensionsMenuViewModel(const ExtensionsMenuViewModel&) = delete;
   const ExtensionsMenuViewModel& operator=(const ExtensionsMenuViewModel&) =
       delete;
   ~ExtensionsMenuViewModel();
 
+  // Updates the extension's site access for the current site.
+  void UpdateSiteAccess(
+      const extensions::ExtensionId& extension_id,
+      extensions::PermissionsManager::UserSiteAccess site_access);
+
  private:
+  content::WebContents* GetActiveWebContents();
+
+  // The browser window that the extensions menu is in.
+  raw_ptr<BrowserWindowInterface> browser_;
+
   std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate_;
 };
 
