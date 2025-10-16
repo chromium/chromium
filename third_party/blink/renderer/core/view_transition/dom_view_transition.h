@@ -48,6 +48,7 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   ScriptPromise<IDLUndefined> finished(ScriptState*) const;
   ScriptPromise<IDLUndefined> ready(ScriptState*) const;
   ScriptPromise<IDLUndefined> updateCallbackDone(ScriptState*) const;
+  void waitUntil(ScriptState*, const ScriptPromise<IDLAny>&);
 
   ViewTransitionTypeSet* types() const;
 
@@ -71,6 +72,8 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
  private:
+  class WaitUntilPromiseSettledCallback;
+
   void AtMicrotask(ViewTransition::PromiseResponse response,
                    PromiseProperty* resolver);
   void HandlePromise(ViewTransition::PromiseResponse response,

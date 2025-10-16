@@ -289,6 +289,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // pseudo-elements, then this invalidates the style for those pseudo-elements.
   void InvalidateInternalPseudoStyle();
 
+  // Count the number of blocking promises for waitUntil() functionality.
+  void IncrementWaitUntilPromises();
+  void DecrementWaitUntilPromises();
+
  private:
   friend class ViewTransitionTest;
   friend class AXViewTransitionTest;
@@ -448,6 +452,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool first_animating_frame_ = true;
   bool context_destroyed_ = false;
   bool pending_skip_view_transitions_ = false;
+
+  int wait_until_pending_promise_count_ = 0;
 };
 
 }  // namespace blink

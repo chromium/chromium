@@ -40,4 +40,11 @@
   // document.startViewTransition() and
   // document.documentElement.startViewTransition().
   [RuntimeEnabled=ScopedViewTransitions] readonly attribute Element transitionRoot;
+
+  // Calling the following function will delay the termination of the view
+  // transition until the promise has settled (rejected or resolved). Calling
+  // this multiple times will result in all of the promises being waited on.
+  // In other words waitUntil(promise1); waitUntil(promise2); will prevent the
+  // transition from ending until _both_ promise1 and promise2 have settled.
+  [RuntimeEnabled=ViewTransitionWaitUntil, CallWith=ScriptState] void waitUntil(Promise<any> promise);
 };

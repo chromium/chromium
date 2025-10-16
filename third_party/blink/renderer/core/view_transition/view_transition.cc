@@ -644,8 +644,10 @@ void ViewTransition::ProcessCurrentState() {
           break;
         }
 
-        if (style_tracker_->HasActiveAnimations())
+        if (style_tracker_->HasActiveAnimations() ||
+            wait_until_pending_promise_count_ > 0) {
           break;
+        }
 
         // Post a task to run the next state (cleanup) outside of the current
         // lifecycle update.
@@ -1174,6 +1176,18 @@ void ViewTransition::WillExitGetComputedStyleScope() {
 void ViewTransition::InvalidateInternalPseudoStyle() {
   if (style_tracker_) {
     style_tracker_->InvalidateInternalPseudoStyle();
+  }
+}
+
+void ViewTransition::IncrementWaitUntilPromises() {
+  ++wait_until_pending_promise_count_;
+}
+
+void ViewTransition::DecrementWaitUntilPromises() {
+  CHECK_GT(wait_until_pending_promise_count_, 0);
+  // If we reach 0, then schedule an animation so that we process the animation.
+  if (--wait_until_pending_promise_count_ == 0) {
+    document_->View()->ScheduleAnimation();
   }
 }
 

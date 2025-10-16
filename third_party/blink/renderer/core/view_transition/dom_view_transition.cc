@@ -30,6 +30,27 @@ const char kTimeoutMessage[] =
 
 }  // namespace
 
+class DOMViewTransition::WaitUntilPromiseSettledCallback
+    : public ThenCallable<IDLAny, WaitUntilPromiseSettledCallback> {
+ public:
+  explicit WaitUntilPromiseSettledCallback(ViewTransition* view_transition)
+      : view_transition_(view_transition) {}
+
+  ScriptPromise<IDLUndefined> React(ScriptState* script_state,
+                                    const ScriptValue&) {
+    view_transition_->DecrementWaitUntilPromises();
+    return EmptyPromise();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(view_transition_);
+    ThenCallable::Trace(visitor);
+  }
+
+ private:
+  Member<ViewTransition> view_transition_;
+};
+
 DOMViewTransition::DOMViewTransition(ExecutionContext& execution_context,
                                      ViewTransition& view_transition)
     : DOMViewTransition(execution_context,
@@ -84,6 +105,18 @@ ScriptPromise<IDLUndefined> DOMViewTransition::ready(
 ScriptPromise<IDLUndefined> DOMViewTransition::updateCallbackDone(
     ScriptState* script_state) const {
   return dom_updated_promise_property_->Promise(script_state->World());
+}
+
+void DOMViewTransition::waitUntil(ScriptState* script_state,
+                                  const ScriptPromise<IDLAny>& promise) {
+  if (promise.IsEmpty()) {
+    return;
+  }
+  view_transition_->IncrementWaitUntilPromises();
+  auto* promise_settled_callback =
+      MakeGarbageCollected<WaitUntilPromiseSettledCallback>(view_transition_);
+  promise.Then(script_state, promise_settled_callback,
+               promise_settled_callback);
 }
 
 void DOMViewTransition::DidSkipTransition(
