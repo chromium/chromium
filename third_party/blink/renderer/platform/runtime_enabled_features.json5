@@ -2873,7 +2873,7 @@
       // Enable DataTransfer propagation to input events for insertFromPaste,
       // insertFromDrop, and insertReplacementText operations on content-editables.
       name: "InputEventDataTransferForInsertCmd",
-      status: "test",
+      status: "stable",
     },
     {
       // The HTML parser inserts a </select> end tag before inserting <input>
