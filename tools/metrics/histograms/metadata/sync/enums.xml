@@ -408,6 +408,7 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="CrossDeviceMostVisitedHomeModuleEnabled"/>
   <int value="107" label="CrossDeviceTipsHomeModuleEnabled"/>
   <int value="108" label="CrossDeviceMagicStackHomeModuleEnabled"/>
+  <int value="109" label="ShowAiModeOmniboxButton"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

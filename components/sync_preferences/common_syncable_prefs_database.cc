@@ -155,6 +155,7 @@ enum {
   kCrossDeviceMostVisitedHomeModuleEnabled = 106,
   kCrossDeviceTipsHomeModuleEnabled = 107,
   kCrossDeviceMagicStackHomeModuleEnabled = 108,
+  kShowAiModeOmniboxButton = 109,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -446,6 +447,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {autofill::prefs::kAutofillAmountExtractionAiTermsSeen,
          {syncable_prefs_ids::kAutofillAmountExtractionAiTermsSeen,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {omnibox::kShowAiModeOmniboxButton,
+         {syncable_prefs_ids::kShowAiModeOmniboxButton, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
     });
 
 }  // namespace

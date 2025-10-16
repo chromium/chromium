@@ -2132,6 +2132,18 @@ Chromium is unable to recover your settings.
           desc="The hint text of the AI mode searchbox in the Lens side panel. This text is shown in the searchbox when the user has not yet typed any text, and prompts the user to ask a follow up question.">
           Ask a follow up
         </message>
+
+        <if expr="use_titlecase">
+          <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON"
+            desc="In Title Case: The text label of the omnibox context menu option to show the 'AI Mode' shortcut button">
+            Always Show Google AI Mode Shortcut
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON" desc="The text label of the omnibox context menu option to show the 'AI Mode' shortcut button">
+          Always show Google AI Mode shortcut
+        </message>
+        </if>
       </if>
 
       <!-- OOBE -->

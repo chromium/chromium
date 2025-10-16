@@ -11342,6 +11342,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:buildflags",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:unexpire_flags",
       "//chrome/browser/actor",

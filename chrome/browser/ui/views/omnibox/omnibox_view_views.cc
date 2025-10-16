@@ -683,6 +683,7 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
     case IDC_EDIT_SEARCH_ENGINES:
     case IDC_SHOW_FULL_URLS:
     case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
+    case IDC_SHOW_AI_MODE_OMNIBOX_BUTTON:
     case IDC_SHOW_SEARCH_TOOLS:
       location_bar_view_->command_updater()->ExecuteCommand(command_id);
       return;
@@ -1755,6 +1756,7 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
   // These menu items are only shown when they are valid.
   if (command_id == IDC_SHOW_FULL_URLS ||
       command_id == IDC_SHOW_GOOGLE_LENS_SHORTCUT ||
+      command_id == IDC_SHOW_AI_MODE_OMNIBOX_BUTTON ||
       command_id == IDC_SHOW_SEARCH_TOOLS) {
     return true;
   }
@@ -2242,6 +2244,12 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
         IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
   }
 
+  if (omnibox_feature_configs::AiModeOmniboxEntryPoint::Get().enabled) {
+    menu_contents->AddCheckItemWithStringId(
+        IDC_SHOW_AI_MODE_OMNIBOX_BUTTON,
+        IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON);
+  }
+
   if (omnibox_feature_configs::Toolbelt::Get().enabled) {
     menu_contents->AddCheckItemWithStringId(IDC_SHOW_SEARCH_TOOLS,
                                             IDS_CONTEXT_MENU_SHOW_SEARCH_TOOLS);
@@ -2260,6 +2268,10 @@ bool OmniboxViewViews::IsCommandIdChecked(int id) const {
   if (id == IDC_SHOW_SEARCH_TOOLS) {
     return location_bar_view_->profile()->GetPrefs()->GetBoolean(
         omnibox::kShowSearchTools);
+  }
+  if (id == IDC_SHOW_AI_MODE_OMNIBOX_BUTTON) {
+    return location_bar_view_->profile()->GetPrefs()->GetBoolean(
+        omnibox::kShowAiModeOmniboxButton);
   }
   return false;
 }

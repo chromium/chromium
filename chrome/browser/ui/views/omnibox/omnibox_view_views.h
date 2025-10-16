@@ -184,6 +184,8 @@ class OmniboxViewViews
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, DoNotNavigateOnDrop);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, AyncDropCallback);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, AccessibleTextSelectBoundTest);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsAIMButtonPreferenceTest,
+                           ButtonVisibilityTogglesWithPref_OmniboxFocused);
 
   enum class UnelisionGesture {
     HOME_KEY_PRESSED,

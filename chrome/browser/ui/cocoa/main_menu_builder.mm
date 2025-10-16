@@ -297,6 +297,8 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                   .command_id(IDC_SHOW_FULL_URLS),
               Item(IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT)
                   .command_id(IDC_SHOW_GOOGLE_LENS_SHORTCUT),
+              Item(IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON)
+                  .command_id(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON),
               Item(IDS_CONTEXT_MENU_SHOW_SEARCH_TOOLS)
                   .command_id(IDC_SHOW_SEARCH_TOOLS),
               Item(IDS_CUSTOMIZE_TOUCH_BAR)

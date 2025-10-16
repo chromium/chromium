@@ -1436,6 +1436,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
         // Profile-level items that affect how the profile's UI looks should
         // only be available while there is a Profile opened.
         case IDC_SHOW_FULL_URLS:
+        case IDC_SHOW_AI_MODE_OMNIBOX_BUTTON:
         case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
         case IDC_SHOW_SEARCH_TOOLS:
           enable = hasLoadedProfile;

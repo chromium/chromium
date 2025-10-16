@@ -287,6 +287,7 @@ void OpenFeedbackDialog(BrowserWindowInterface* bwi,
 void ToggleBookmarkBar(Browser* browser);
 void ToggleShowFullURLs(Browser* browser);
 void ToggleShowGoogleLensShortcut(Browser* browser);
+void ToggleShowAiModeOmniboxButton(Browser* browser);
 void ToggleShowSearchTools(Browser* browser);
 void ShowAppMenu(Browser* browser);
 void ShowAvatarMenu(Browser* browser);

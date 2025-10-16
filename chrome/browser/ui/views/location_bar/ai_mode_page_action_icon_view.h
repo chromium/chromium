@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_AI_MODE_PAGE_ACTION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_AI_MODE_PAGE_ACTION_ICON_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -12,6 +14,7 @@
 
 class BrowserWindowInterface;
 class OmniboxView;
+class PrefChangeRegistrar;
 
 namespace gfx {
 struct VectorIcon;
@@ -54,6 +57,8 @@ class AiModePageActionIconView : public PageActionIconView {
   OmniboxView* GetOmniboxView();
 
   const raw_ptr<BrowserWindowInterface> browser_;
+
+  std::unique_ptr<PrefChangeRegistrar> pref_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_AI_MODE_PAGE_ACTION_ICON_VIEW_H_

@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/location_bar/ai_mode_page_action_icon_view.h"
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
@@ -14,7 +16,10 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -41,6 +46,12 @@ AiModePageActionIconView::AiModePageActionIconView(
       browser_(browser) {
   CHECK(browser_);
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
+
+  pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_registrar_->Init(browser_->GetProfile()->GetPrefs());
+  pref_registrar_->Add(omnibox::kShowAiModeOmniboxButton,
+                       base::BindRepeating(&AiModePageActionIconView::Update,
+                                           base::Unretained(this)));
 
   SetProperty(views::kElementIdentifierKey, kAiModePageActionIconElementId);
 
@@ -102,6 +113,8 @@ void AiModePageActionIconView::ExecuteWithKeyboardSourceForTesting() {
 
 void AiModePageActionIconView::UpdateImpl() {
   Profile* profile = browser_->GetProfile();
+  bool enabled =
+      profile->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton);
   views::View* location_bar_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kLocationBarElementId,
@@ -112,8 +125,8 @@ void AiModePageActionIconView::UpdateImpl() {
   }
 
   const bool is_visible =
-      omnibox::AiModePageActionController::ShouldShowPageAction(
-          profile, *location_bar_view, *omnibox_view);
+      enabled && omnibox::AiModePageActionController::ShouldShowPageAction(
+                     profile, *location_bar_view, *omnibox_view);
   if (is_visible) {
     omnibox::AiModePageActionController::NotifyOmniboxTriggeredFeatureService(
         *omnibox_view);

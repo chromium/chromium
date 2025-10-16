@@ -71,6 +71,10 @@ inline constexpr char kPreventUrlElisionsInOmnibox[] =
 inline constexpr char kShowGoogleLensShortcut[] =
     "omnibox.show_google_lens_shortcut";
 
+// Boolean that specifies whether to show the AI Mode omnibox button.
+inline constexpr char kShowAiModeOmniboxButton[] =
+    "omnibox.show_ai_mode_omnibox_button";
+
 // Boolean that specifies whether to show the search tools at the bottom of the
 // omnibox.
 inline constexpr char kShowSearchTools[] = "omnibox.show_search_tools";

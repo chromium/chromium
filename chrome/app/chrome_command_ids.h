@@ -299,6 +299,7 @@
 #define IDC_SHOW_SEARCH_TOOLS  40296
 #define IDC_SHOW_COMMENTS_SIDE_PANEL  40297
 #define IDC_RECENT_TABS_SEE_DEVICE_TABS  40298
+#define IDC_SHOW_AI_MODE_OMNIBOX_BUTTON 40299
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

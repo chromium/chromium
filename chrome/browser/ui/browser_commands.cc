@@ -2319,6 +2319,13 @@ void ToggleShowGoogleLensShortcut(Browser* browser) {
                                              !pref_enabled);
 }
 
+void ToggleShowAiModeOmniboxButton(Browser* browser) {
+  bool pref_enabled = browser->profile()->GetPrefs()->GetBoolean(
+      omnibox::kShowAiModeOmniboxButton);
+  browser->profile()->GetPrefs()->SetBoolean(omnibox::kShowAiModeOmniboxButton,
+                                             !pref_enabled);
+}
+
 void ToggleShowSearchTools(Browser* browser) {
   bool pref_enabled =
       browser->profile()->GetPrefs()->GetBoolean(omnibox::kShowSearchTools);

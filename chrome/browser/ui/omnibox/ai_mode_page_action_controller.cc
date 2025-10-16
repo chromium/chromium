@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -16,7 +17,9 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/views/focus/focus_manager.h"
@@ -79,6 +82,10 @@ bool AiModePageActionController::ShouldShowPageAction(
     Profile* profile,
     const views::View& location_bar_view,
     const OmniboxView& omnibox_view) {
+  if (!profile->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton)) {
+    return false;
+  }
+
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   if (!OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
@@ -136,6 +143,13 @@ AiModePageActionController::AiModePageActionController(
       omnibox_view_(*location_bar_view.GetOmniboxView()),
       scoped_data_(bwi.GetUnownedUserDataHost(), *this) {
   CHECK(IsPageActionMigrated(PageActionIconType::kAiMode));
+
+  pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_registrar_->Init(profile_->GetPrefs());
+  pref_registrar_->Add(
+      omnibox::kShowAiModeOmniboxButton,
+      base::BindRepeating(&AiModePageActionController::UpdatePageAction,
+                          base::Unretained(this)));
 }
 
 AiModePageActionController::~AiModePageActionController() = default;

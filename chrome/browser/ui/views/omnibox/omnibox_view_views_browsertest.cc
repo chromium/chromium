@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -1607,4 +1608,84 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingDisabledBrowserTest,
   FocusAndPaint();
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 0);
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintDailyImpressionsCount), 0);
+}
+
+class OmniboxViewViewsAIMButtonPreferenceTest : public OmniboxViewViewsTest {
+ public:
+  OmniboxViewViewsAIMButtonPreferenceTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::kAiModeOmniboxEntryPoint, {}}},
+        {lens::features::kLensOverlay, features::kPageActionsMigration});
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    OmniboxViewViewsTest::SetUpBrowserContextKeyedServices(context);
+    SetUpAimEligibilityService(context,
+                               /*is_locally_eligible=*/true,
+                               /*is_server_eligible=*/true,
+                               /*server_eligibility_enabled=*/true);
+  }
+
+ protected:
+  void SetUpAimEligibilityService(content::BrowserContext* context,
+                                  bool is_locally_eligible,
+                                  bool is_server_eligible,
+                                  bool server_eligibility_enabled) {
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        Profile::FromBrowserContext(context),
+        base::BindLambdaForTesting([=](content::BrowserContext* context) {
+          Profile* profile = Profile::FromBrowserContext(context);
+          auto mock_service = std::make_unique<MockAimEligibilityService>(
+              *profile->GetPrefs(),
+              TemplateURLServiceFactory::GetForProfile(profile),
+              /*url_loader_factory=*/nullptr,
+              /*identity_manager=*/nullptr);
+          ON_CALL(*mock_service, IsAimLocallyEligible())
+              .WillByDefault(Return(is_locally_eligible));
+          ON_CALL(*mock_service, IsServerEligibilityEnabled())
+              .WillByDefault(Return(server_eligibility_enabled));
+          ON_CALL(*mock_service, IsAimEligible())
+              .WillByDefault(
+                  Return(is_locally_eligible &&
+                         (!server_eligibility_enabled || is_server_eligible)));
+          return static_cast<std::unique_ptr<KeyedService>>(
+              std::move(mock_service));
+        }));
+  }
+
+  void FocusOmnibox() {
+    omnibox()->SetUserText(u"");
+    OmniboxViewViews* view = static_cast<OmniboxViewViews*>(omnibox());
+    view->RequestFocus();
+    ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
+  }
+
+  PrefService* prefs() { return browser()->profile()->GetPrefs(); }
+
+  OmniboxViewViews* omnibox_views() {
+    return static_cast<OmniboxViewViews*>(omnibox());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsAIMButtonPreferenceTest,
+                       ButtonVisibilityTogglesWithPref_OmniboxFocused) {
+  FocusOmnibox();
+  IconLabelBubbleView* ai_mode_icon =
+      omnibox_views()->GetAiModePageActionIconView();
+  ASSERT_TRUE(ai_mode_icon);
+  EXPECT_TRUE(ai_mode_icon->GetVisible());
+
+  chrome::ToggleShowAiModeOmniboxButton(browser());
+  EXPECT_FALSE(ai_mode_icon->GetVisible());
+
+  chrome::ToggleShowAiModeOmniboxButton(browser());
+  EXPECT_TRUE(ai_mode_icon->GetVisible());
 }

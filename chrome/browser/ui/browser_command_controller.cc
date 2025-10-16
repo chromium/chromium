@@ -967,6 +967,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
       ToggleShowGoogleLensShortcut(browser_);
       break;
+    case IDC_SHOW_AI_MODE_OMNIBOX_BUTTON:
+      ToggleShowAiModeOmniboxButton(browser_);
+      break;
     case IDC_SHOW_SEARCH_TOOLS:
       ToggleShowSearchTools(browser_);
       break;
@@ -1430,6 +1433,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SHOW_FULL_URLS, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_GOOGLE_LENS_SHORTCUT, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_SEARCH_TOOLS, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON, true);
 
   // Window management commands
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);

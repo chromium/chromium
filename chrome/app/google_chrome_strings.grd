@@ -2146,6 +2146,18 @@ Google Chrome is unable to recover your settings.
           Ask a follow up
         </message>
 
+        <if expr="use_titlecase">
+          <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON"
+            desc="In Title Case: The text label of the omnibox context menu option to show the 'AI Mode' shortcut button">
+            Always Show Google AI Mode Shortcut
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON" desc="The text label of the omnibox context menu option to show the 'AI Mode' shortcut button">
+          Always show Google AI Mode shortcut
+        </message>
+      </if>
+
         <!-- On Sign-in Avatar Button Label Desktop -->
         <message name="IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS" desc="The avatar button label when the user has just signed in. When clicked, it opens the profile menu.">
           Making Chrome yours...
