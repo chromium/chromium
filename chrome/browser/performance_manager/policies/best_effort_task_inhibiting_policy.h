@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/task/execution_fence.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/features.h"
@@ -84,8 +84,7 @@ class BestEffortTaskInhibitingPolicy
   base::TimeTicks no_fence_until_time_;
 
   base::OneShotTimer periodic_quota_check_timer_;
-  std::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
-      best_effort_fence_;
+  std::optional<base::ScopedBestEffortExecutionFence> best_effort_fence_;
 
   // Time during which to enable running best effort tasks again when they have
   // been disabled for too long.

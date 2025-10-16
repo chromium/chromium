@@ -707,6 +707,8 @@ component("base") {
     "task/delay_policy.h",
     "task/delayed_task_handle.cc",
     "task/delayed_task_handle.h",
+    "task/execution_fence.cc",
+    "task/execution_fence.h",
     "task/lazy_thread_pool_task_runner.cc",
     "task/lazy_thread_pool_task_runner.h",
     "task/post_job.cc",

@@ -11,8 +11,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/task/execution_fence.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_command_line.h"
 #include "content/browser/browser_main_loop.h"                 //nogncheck
 #include "content/browser/image_capture/image_capture_impl.h"  //nogncheck
@@ -85,7 +85,7 @@ ImageCaptureTestcase::ImageCaptureTestcase(const ProtoTestcase& testcase)
       scoped_command_line.GetProcessCommandLine());
   content::BrowserMainLoop browser_main_loop_(
       std::move(main_function_params),
-      std::make_unique<base::ThreadPoolInstance::ScopedExecutionFence>());
+      std::make_unique<base::ScopedThreadPoolExecutionFence>());
   browser_main_loop_.Init();
 }
 

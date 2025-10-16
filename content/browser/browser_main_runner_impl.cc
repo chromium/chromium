@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/execution_fence.h"
 #include "base/time/time.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 #include "base/trace_event/trace_event.h"
@@ -60,7 +61,7 @@ BrowserMainRunnerImpl::BrowserMainRunnerImpl()
     : initialization_started_(false),
       is_shutdown_(false),
       scoped_execution_fence_(
-          std::make_unique<base::ThreadPoolInstance::ScopedExecutionFence>()) {}
+          std::make_unique<base::ScopedThreadPoolExecutionFence>()) {}
 
 BrowserMainRunnerImpl::~BrowserMainRunnerImpl() {
   if (initialization_started_ && !is_shutdown_) {

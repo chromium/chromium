@@ -13,7 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/task/execution_fence.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "content/browser/browser_process_io_thread.h"
@@ -113,7 +113,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   // BrowserMainLoop.
   explicit BrowserMainLoop(
       MainFunctionParams parameters,
-      std::unique_ptr<base::ThreadPoolInstance::ScopedExecutionFence> fence);
+      std::unique_ptr<base::ScopedThreadPoolExecutionFence> fence);
 
   BrowserMainLoop(const BrowserMainLoop&) = delete;
   BrowserMainLoop& operator=(const BrowserMainLoop&) = delete;
@@ -283,19 +283,19 @@ class CONTENT_EXPORT BrowserMainLoop {
   // //content must be initialized single-threaded until
   // BrowserMainLoop::CreateThreads() as things initialized before it require an
   // initialize-once happens-before relationship with all eventual content tasks
-  // running on other threads. This ScopedExecutionFence ensures that no tasks
-  // posted to ThreadPool gets to run before CreateThreads(); satisfying this
-  // requirement even though the ThreadPoolInstance is created and started
-  // before content is entered.
-  std::unique_ptr<base::ThreadPoolInstance::ScopedExecutionFence>
-      scoped_execution_fence_;
+  // running on other threads. This ScopedThreadPoolExecutionFence ensures that
+  // no tasks posted to ThreadPool gets to run before CreateThreads();
+  // satisfying this requirement even though the ThreadPoolInstance is created
+  // and started before content is entered.
+  std::unique_ptr<base::ScopedThreadPoolExecutionFence> scoped_execution_fence_;
 
   // BEST_EFFORT tasks are not allowed to run between //content initialization
   // and startup completion.
   //
-  // TODO(fdoray): Move this to a more elaborate class that prevents BEST_EFFORT
-  // tasks from running when resources are needed to respond to user actions.
-  std::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
+  // TODO(crbug.com/441949788): Move this to a more elaborate class that
+  // prevents BEST_EFFORT tasks from running when resources are needed to
+  // respond to user actions.
+  std::optional<base::ScopedBestEffortExecutionFence>
       scoped_best_effort_execution_fence_;
 
   // Members initialized in |Init()| -------------------------------------------

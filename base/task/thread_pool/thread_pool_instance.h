@@ -95,32 +95,6 @@ class BASE_EXPORT ThreadPoolInstance {
 #endif
   };
 
-  // A Scoped(BestEffort)ExecutionFence prevents new tasks of any/BEST_EFFORT
-  // priority from being scheduled in ThreadPoolInstance within its scope.
-  // Multiple fences can exist at the same time. Upon destruction of all
-  // Scoped(BestEffort)ExecutionFences, tasks that were preeempted are released.
-  // Note: the constructor of Scoped(BestEffort)ExecutionFence will not wait for
-  // currently running tasks (as they were posted before entering this scope and
-  // do not violate the contract; some of them could be CONTINUE_ON_SHUTDOWN and
-  // waiting for them to complete is ill-advised).
-  class BASE_EXPORT ScopedExecutionFence {
-   public:
-    ScopedExecutionFence();
-    ScopedExecutionFence(const ScopedExecutionFence&) = delete;
-    ScopedExecutionFence& operator=(const ScopedExecutionFence&) = delete;
-    ~ScopedExecutionFence();
-  };
-
-  class BASE_EXPORT ScopedBestEffortExecutionFence {
-   public:
-    ScopedBestEffortExecutionFence();
-    ScopedBestEffortExecutionFence(const ScopedBestEffortExecutionFence&) =
-        delete;
-    ScopedBestEffortExecutionFence& operator=(
-        const ScopedBestEffortExecutionFence&) = delete;
-    ~ScopedBestEffortExecutionFence();
-  };
-
   // Used to restrict the maximum number of concurrent tasks that can run in a
   // scope.
   class BASE_EXPORT ScopedRestrictedTasks {
@@ -258,6 +232,8 @@ class BASE_EXPORT ThreadPoolInstance {
   static ThreadPoolInstance* Get();
 
  private:
+  friend class ScopedBestEffortExecutionFence;
+  friend class ScopedThreadPoolExecutionFence;
   friend class ThreadPoolTestHelpers;
   friend class gin::V8Platform;
   friend class content::BrowserMainLoopTest_CreateThreadsInSingleProcess_Test;

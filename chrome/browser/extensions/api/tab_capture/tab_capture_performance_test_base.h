@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/task/execution_fence.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
@@ -138,8 +138,7 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
   // that would also preempt BEST_EFFORT tasks in utility processes, and
   // TabCapturePerformanceTest.Performance relies on BEST_EFFORT tasks in
   // utility process for tracing.
-  std::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
-      best_effort_fence_;
+  std::optional<base::ScopedBestEffortExecutionFence> best_effort_fence_;
 
   bool is_full_performance_run_ = false;
 
