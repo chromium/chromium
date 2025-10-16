@@ -113,7 +113,7 @@ public class SnackbarManager
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
     private final SnackbarCollection mSnackbars = new SnackbarCollection();
 
-    private @Nullable EdgeToEdgeController mEdgeToEdgeSupplier;
+    private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private @Nullable SnackbarView mView;
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
@@ -126,10 +126,30 @@ public class SnackbarManager
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
      *     Animator#start is called instead.
      */
+    // TODO: Clean up this ctor.
+    @Deprecated
     public SnackbarManager(
             Activity activity,
             ViewGroup snackbarParentView,
             @Nullable WindowAndroid windowAndroid) {
+        this(activity, snackbarParentView, windowAndroid, null);
+    }
+
+    /**
+     * Constructs a SnackbarManager to show snackbars in the given window.
+     *
+     * @param activity The embedding activity.
+     * @param snackbarParentView The ViewGroup used to display this snackbar.
+     * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
+     *     Animator#start is called instead.
+     * @param edgeToEdgeControllerSupplier The supplier publishes the changes of the edge-to-edge
+     *     state and the expected bottom paddings when edge-to-edge is on.
+     */
+    public SnackbarManager(
+            Activity activity,
+            ViewGroup snackbarParentView,
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mUiThreadHandler = new Handler();
         mOriginalParentView = snackbarParentView;
@@ -142,6 +162,7 @@ public class SnackbarManager
         }
 
         mIsShowingSupplier.set(isShowing());
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 
     @Override
@@ -286,14 +307,6 @@ public class SnackbarManager
     }
 
     /**
-     * @param supplier The supplier publishes the changes of the edge-to-edge state and the expected
-     *     bottom paddings when edge-to-edge is on.
-     */
-    public void setEdgeToEdgeSupplier(@Nullable EdgeToEdgeController supplier) {
-        mEdgeToEdgeSupplier = supplier;
-    }
-
-    /**
      * Overrides the parent {@link ViewGroup} of the currently-showing snackbar. This method removes
      * the snackbar from its original parent, and attaches it to the given parent. If <code>null
      * </code> is given, the snackbar will be reattached to its original parent.
@@ -330,7 +343,9 @@ public class SnackbarManager
                                 currentSnackbar,
                                 mOriginalParentView,
                                 mWindowAndroid,
-                                mEdgeToEdgeSupplier,
+                                mEdgeToEdgeControllerSupplier != null
+                                        ? mEdgeToEdgeControllerSupplier.get()
+                                        : null,
                                 isTablet());
                 mView.show();
 

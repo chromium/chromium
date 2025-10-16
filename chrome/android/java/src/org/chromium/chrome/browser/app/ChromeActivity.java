@@ -630,7 +630,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             mBottomContainer = findViewById(R.id.bottom_container);
 
-            mSnackbarManager = new SnackbarManager(this, mBottomContainer, getWindowAndroid());
+            mSnackbarManager =
+                    new SnackbarManager(
+                            this, mBottomContainer, getWindowAndroid(), getEdgeToEdgeSupplier());
             getInsetObserver().addObserver(mSnackbarManager);
             SnackbarManagerProvider.attach(getWindowAndroid(), mSnackbarManager);
             // TODO (crbug.com/365110749): Remove wiring the InsetObserver when the dialog window

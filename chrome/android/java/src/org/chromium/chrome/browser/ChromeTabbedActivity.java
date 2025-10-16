@@ -1524,9 +1524,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             }
 
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
-
-            getSnackbarManager().setEdgeToEdgeSupplier(getEdgeToEdgeSupplier().get());
-
             initializeSuggestionMetricsTracker();
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
                 mSuggestionEventObserver =

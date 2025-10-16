@@ -1967,7 +1967,8 @@ public class RootUiCoordinator
                             new SnackbarManager(
                                     mActivity,
                                     view.findViewById(R.id.bottom_sheet_snackbar_container),
-                                    mWindowAndroid);
+                                    mWindowAndroid,
+                                    mEdgeToEdgeControllerSupplier);
                 };
 
         Supplier<OverlayPanelManager> panelManagerSupplier =

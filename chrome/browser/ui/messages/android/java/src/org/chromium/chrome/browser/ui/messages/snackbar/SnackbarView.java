@@ -157,6 +157,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mActionButtonView.setOnClickListener(listener);
         mProfileImageView = (ImageView) mContainerView.findViewById(R.id.snackbar_profile_image);
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        // TODO(crbug/com/451807932): Replace with a custom pad adjuster to account for inset
+        //  changes.
         if (SnackbarManager.isFloatingSnackbarEnabled()) {
             // Add bottom margin to extend the snackbar view into the bottom window inset. This
             // margin has to be applied to the snackbar view itself to avoid weird visual clipping

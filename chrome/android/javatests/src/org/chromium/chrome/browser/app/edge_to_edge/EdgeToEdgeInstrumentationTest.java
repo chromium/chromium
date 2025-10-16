@@ -256,7 +256,6 @@ public class EdgeToEdgeInstrumentationTest {
         activateFeatureToEdge();
         optOutOfToEdge();
         var snackbarManager = mActivity.getSnackbarManager();
-        snackbarManager.setEdgeToEdgeSupplier(mEdgeToEdgeController);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     snackbarManager.showSnackbar(
@@ -302,7 +301,6 @@ public class EdgeToEdgeInstrumentationTest {
         activateFeatureToEdge();
         optOutOfToEdge();
         var snackbarManager = mActivity.getSnackbarManager();
-        snackbarManager.setEdgeToEdgeSupplier(mEdgeToEdgeController);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     snackbarManager.showSnackbar(
