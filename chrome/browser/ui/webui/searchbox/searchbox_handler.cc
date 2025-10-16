@@ -655,12 +655,12 @@ SearchboxHandler::CreateAutocompleteMatch(
       bookmark_model->IsBookmarked(match.destination_url);
   // For starter pack suggestions, use template url to generate proper vector
   // icon.
-  const TemplateURL* turl =
+  const TemplateURL* associated_keyword_turl =
       match.associated_keyword.empty()
           ? nullptr
           : turl_service->GetTemplateURLForKeyword(match.associated_keyword);
-  mojom_match->icon_path =
-      AutocompleteIconToResourceName(match.GetVectorIcon(is_bookmarked, turl));
+  mojom_match->icon_path = AutocompleteIconToResourceName(
+      match.GetVectorIcon(is_bookmarked, associated_keyword_turl));
   // For enterprise search aggregator people suggestions, use branded icon if
   // branded build.
   if (match.enterprise_search_aggregator_type ==
@@ -674,6 +674,19 @@ SearchboxHandler::CreateAutocompleteMatch(
 #endif
   }
   mojom_match->icon_url = match.icon_url;
+  // For featured enterprise search suggestions, use template url to generate
+  // the proper icon url.
+  const TemplateURL* keyword_turl =
+      match.keyword.empty()
+          ? nullptr
+          : turl_service->GetTemplateURLForKeyword(match.keyword);
+  if (AutocompleteMatch::IsFeaturedEnterpriseSearchType(match.type) &&
+      keyword_turl) {
+    GURL favicon_url = keyword_turl->favicon_url();
+    if (favicon_url.is_valid()) {
+      mojom_match->icon_url = favicon_url;
+    }
+  }
   mojom_match->image_dominant_color = match.image_dominant_color;
   mojom_match->image_url = match.image_url.spec();
   mojom_match->fill_into_edit = match.fill_into_edit;

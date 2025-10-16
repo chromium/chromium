@@ -13,6 +13,7 @@ import {getHtml} from './searchbox_icon.html.js';
 
 const CALCULATOR: string = 'search-calculator-answer';
 const DOCUMENT_MATCH_TYPE: string = 'document';
+const FEATURED_ENTERPRISE_SEARCH: string = 'featured-enterprise-search';
 const HISTORY_CLUSTER_MATCH_TYPE: string = 'history-cluster';
 const PEDAL: string = 'pedal';
 const STARTER_PACK: string = 'starter-pack';
@@ -88,6 +89,14 @@ export class SearchboxIconElement extends CrLitElement {
        * Whether icon belongs to a starter pack match.
        */
       isStarterPack: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      /**
+       * Whether icon belongs to a featured enterprise search match.
+       */
+      isFeaturedEnterpriseSearch: {
         type: Boolean,
         reflect: true,
       },
@@ -178,6 +187,7 @@ export class SearchboxIconElement extends CrLitElement {
   accessor inSearchbox: boolean = false;
   accessor isAnswer: boolean = false;
   accessor isStarterPack = false;
+  accessor isFeaturedEnterpriseSearch = false;
   accessor isWeatherAnswer: boolean = false;
   accessor isEnterpriseSearchAggregatorPeopleType: boolean = false;
   accessor maskImage: string = '';
@@ -205,6 +215,8 @@ export class SearchboxIconElement extends CrLitElement {
       this.isEnterpriseSearchAggregatorPeopleType =
           this.computeIsEnterpriseSearchAggregatorPeopleType_();
       this.isStarterPack = this.computeIsStarterPack_();
+      this.isFeaturedEnterpriseSearch =
+          this.computeIsFeaturedEnterpriseSearch();
       this.isWeatherAnswer = this.computeIsWeatherAnswer_();
       this.hasImage = this.computeHasImage_();
       this.maskImage = this.computeMaskImage_();
@@ -260,7 +272,9 @@ export class SearchboxIconElement extends CrLitElement {
         return `url(${this.match.iconPath})`;
       }
 
-      if (this.match.type !== HISTORY_CLUSTER_MATCH_TYPE) {
+      // Featured enterprise search suggestions have the icon set match.iconUrl.
+      if (this.match.type !== HISTORY_CLUSTER_MATCH_TYPE &&
+          this.match.type !== FEATURED_ENTERPRISE_SEARCH) {
         return getFaviconForPageURL(
             this.match.destinationUrl.url, /* isSyncedUrlForHistoryUi= */ false,
             /* remoteIconUrlForUma= */ '', /* size= */ 16,
@@ -307,10 +321,11 @@ export class SearchboxIconElement extends CrLitElement {
     if (this.isLensSearchbox_ && this.inSearchbox) {
       return `url(${this.defaultIcon})`;
     }
-    // Enterprise search aggregator people and starter pack suggestions should
-    // show icon even in searchbox.
+    // Enterprise search aggregator people and starter pack/featured enterprise
+    // search suggestions should show icon even in searchbox.
     if (this.match &&
         (!this.match.isRichSuggestion || this.match.type === STARTER_PACK ||
+         this.match.type === FEATURED_ENTERPRISE_SEARCH ||
          this.match.isEnterpriseSearchAggregatorPeopleType ||
          !this.inSearchbox)) {
       return `url(${this.match.iconPath})`;
@@ -432,8 +447,9 @@ export class SearchboxIconElement extends CrLitElement {
     this.imageError_ = true;
   }
 
-  // All pedals, starter pack suggestions, and AiS except weather should have
-  // a colored background container that matches the current theme.
+  // All pedals, starter pack/featured enterprise search suggestions, and AiS
+  // except weather should have a colored background container that matches the
+  // current theme.
   // TODO(niharm): Refactor logic in C++ and send via mojom in
   // "chrome/browser/ui/webui/searchbox/searchbox_handler.cc".
   private computeHasIconContainerBackground_(): boolean {
@@ -441,6 +457,7 @@ export class SearchboxIconElement extends CrLitElement {
       return this.match.type === PEDAL ||
           this.match.type === HISTORY_CLUSTER_MATCH_TYPE ||
           this.match.type === CALCULATOR || this.match.type === STARTER_PACK ||
+          this.match.type === FEATURED_ENTERPRISE_SEARCH ||
           (!!this.match.answer && !this.isWeatherAnswer);
     }
     return false;
@@ -448,6 +465,10 @@ export class SearchboxIconElement extends CrLitElement {
 
   private computeIsStarterPack_(): boolean {
     return this.match?.type === STARTER_PACK;
+  }
+
+  private computeIsFeaturedEnterpriseSearch(): boolean {
+    return this.match?.type === FEATURED_ENTERPRISE_SEARCH;
   }
 }
 
