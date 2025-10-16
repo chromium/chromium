@@ -311,6 +311,12 @@ export class ComposeboxElement extends I18nMixinLit
     if (changedPrivateProperties.has('smartComposeInlineHint_')) {
       if (this.smartComposeInlineHint_) {
         this.adjustInputForSmartCompose();
+        // TODO(crbug.com/452619068): Investigate why screenreader is
+        // inconsistent.
+        const announcer = getAnnouncerInstance();
+        announcer.announce(
+            this.smartComposeInlineHint_ + ', ' +
+            this.i18n('composeboxSmartComposeTitle'));
       } else {
         // Unset the height override so input can expand through typing.
         this.$.input.style.height =
