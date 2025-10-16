@@ -164,12 +164,6 @@ void TestInProcessContextProvider::CheckValidThreadOrLockAcquired() const {
 #endif
 }
 
-unsigned int TestInProcessContextProvider::GetGrGLTextureFormat(
-    SharedImageFormat format) const {
-  return SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
-      format, ContextCapabilities().angle_rgbx_internal_format);
-}
-
 GpuServiceImpl* TestInProcessContextProvider::GpuService() {
   return TestGpuServiceHolder::GetInstance()->gpu_service();
 }

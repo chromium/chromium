@@ -55,7 +55,6 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   bool disable_one_component_textures = false;
   bool gpu_rasterization = false;
   bool avoid_stencil_buffers = false;
-  bool angle_rgbx_internal_format = false;
 
   bool disable_2d_canvas_copy_on_write = false;
 

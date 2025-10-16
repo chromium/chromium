@@ -3327,9 +3327,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.gpu_memory_buffer_formats =
       feature_info_->feature_flags().gpu_memory_buffer_formats;
 
-  caps.angle_rgbx_internal_format =
-      feature_info_->feature_flags().angle_rgbx_internal_format;
-
   // Technically, YUV readback is handled on the client side, but enable it here
   // so that clients can use this to detect support.
   caps.supports_yuv_readback = true;

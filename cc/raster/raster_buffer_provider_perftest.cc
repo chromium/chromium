@@ -124,12 +124,6 @@ class PerfContextProvider
   base::Lock* GetLock() override { return &context_lock_; }
   void AddObserver(viz::ContextLostObserver* obs) override {}
   void RemoveObserver(viz::ContextLostObserver* obs) override {}
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override {
-    return viz::SharedImageFormatRestrictedSinglePlaneUtils::
-        ToGLTextureStorageFormat(
-            format, ContextCapabilities().angle_rgbx_internal_format);
-  }
 
  private:
   friend class base::RefCountedThreadSafe<PerfContextProvider>;

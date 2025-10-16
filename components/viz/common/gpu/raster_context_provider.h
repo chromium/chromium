@@ -109,9 +109,6 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // been successfully bound to a thread before calling this.
   virtual gpu::raster::RasterInterface* RasterInterface() = 0;
 
-  // Returns the format that should be used for GL texture storage.
-  virtual unsigned int GetGrGLTextureFormat(SharedImageFormat format) const = 0;
-
  protected:
   virtual ~RasterContextProvider() = default;
 };

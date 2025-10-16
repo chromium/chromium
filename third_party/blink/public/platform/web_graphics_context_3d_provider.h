@@ -108,8 +108,6 @@ class WebGraphicsContext3DProvider {
   virtual cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) = 0;
   virtual gpu::SharedImageInterface* SharedImageInterface() = 0;
   virtual viz::RasterContextProvider* RasterContextProvider() const = 0;
-  virtual unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const = 0;
 };
 
 }  // namespace blink

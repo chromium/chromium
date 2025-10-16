@@ -108,11 +108,6 @@ class TestRasterContextProvider
     ADD_FAILURE();
     return nullptr;
   }
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override {
-    ADD_FAILURE();
-    return 0;
-  }
 
  private:
   friend class base::RefCountedThreadSafe<TestRasterContextProvider>;

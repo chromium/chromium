@@ -1172,8 +1172,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.render_buffer_format_bgra8888 =
       feature_info()->feature_flags().ext_render_buffer_format_bgra8888;
 
-  caps.angle_rgbx_internal_format =
-      feature_info()->feature_flags().angle_rgbx_internal_format;
   caps.chromium_gpu_fence = feature_info()->feature_flags().chromium_gpu_fence;
   caps.mesa_framebuffer_flip_y =
       feature_info()->feature_flags().mesa_framebuffer_flip_y;

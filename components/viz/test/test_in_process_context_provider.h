@@ -62,7 +62,6 @@ class TestInProcessContextProvider
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
   void AddObserver(ContextLostObserver* obs) override;
   void RemoveObserver(ContextLostObserver* obs) override;
-  unsigned int GetGrGLTextureFormat(SharedImageFormat format) const override;
   GpuServiceImpl* GpuService();
 
   // Calls OnContextLost() on all observers. This doesn't modify the context.

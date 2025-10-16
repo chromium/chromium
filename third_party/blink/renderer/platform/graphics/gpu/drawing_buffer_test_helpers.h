@@ -79,10 +79,6 @@ class WebGraphicsContext3DProviderForTests
   viz::RasterContextProvider* RasterContextProvider() const override {
     return nullptr;
   }
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override {
-    return 0;
-  }
 
   gpu::GpuFeatureInfo& GetMutableGpuFeatureInfo() { return gpu_feature_info_; }
 

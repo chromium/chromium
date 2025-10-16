@@ -107,9 +107,6 @@ class VIZ_COMMON_EXPORT ContextProvider {
   // been successfully bound to a thread before calling this.
   virtual gpu::gles2::GLES2Interface* ContextGL() = 0;
 
-  // Returns the format that should be used for GL texture storage.
-  virtual unsigned int GetGrGLTextureFormat(SharedImageFormat format) const = 0;
-
  protected:
   virtual ~ContextProvider() = default;
 };

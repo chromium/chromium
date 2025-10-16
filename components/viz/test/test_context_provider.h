@@ -81,7 +81,6 @@ class TestContextProvider
   base::Lock* GetLock() override;
   void AddObserver(ContextLostObserver* obs) override;
   void RemoveObserver(ContextLostObserver* obs) override;
-  unsigned int GetGrGLTextureFormat(SharedImageFormat format) const override;
 
   TestGLES2Interface* TestContextGL();
   TestRasterInterface* GetTestRasterInterface();

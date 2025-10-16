@@ -543,12 +543,6 @@ void ContextProviderCommandBuffer::RemoveObserver(ContextLostObserver* obs) {
   observers_.RemoveObserver(obs);
 }
 
-unsigned int ContextProviderCommandBuffer::GetGrGLTextureFormat(
-    SharedImageFormat format) const {
-  return SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
-      format, ContextCapabilities().angle_rgbx_internal_format);
-}
-
 gpu::webgpu::WebGPUInterface* ContextProviderCommandBuffer::WebGPUInterface() {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
