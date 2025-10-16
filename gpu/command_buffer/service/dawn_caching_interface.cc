@@ -245,7 +245,7 @@ size_t DawnMemoryCache::Entry::ReadData(void* value_out,
   // Otherwise, verify that the size that is being copied out is identical.
   TRACE_EVENT0("gpu", "DawnCachingInterface::CacheHit");
   DCHECK(value_size == DataSize());
-  UNSAFE_TODO(memcpy(value_out, data_.data(), value_size));
+  data_.copy(static_cast<char*>(value_out), value_size);
   return value_size;
 }
 
