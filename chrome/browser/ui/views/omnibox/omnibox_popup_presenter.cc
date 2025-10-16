@@ -64,15 +64,14 @@ void OmniboxPopupPresenter::Show() {
 
     widget_->Init(std::move(params));
 
-    widget_->ShowInactive();
-
     widget_->SetContentsView(
         std::make_unique<RoundedOmniboxResultsFrame>(this, location_bar_view_));
     widget_->AddObserver(this);
-
-    // On Show(), the widget height can not be 0 or else the compositor thinks
-    // the webview is hidden and will not calculate its preferred size.
+    widget_->SetVisibilityChangedAnimationsEnabled(false);
+    // On ShowInactive(), the widget height can not be 0 or else the compositor
+    // thinks the webview is hidden and will not calculate its preferred size.
     SetWidgetContentHeight(1);
+    widget_->ShowInactive();
 
     // Manually set zoom level, since any zooming is undesirable in the omnibox.
     auto* zoom_controller =
