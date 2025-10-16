@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "base/task/common/task_annotator.h"
@@ -1583,6 +1584,13 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
         }
         std::unique_ptr<SurfaceAnimationManager> surface_animation_manager =
             frame_sink_manager_->TakeSurfaceAnimationManager(transition_token);
+        // Emit how often for cross frame-sink view transitions,
+        // SurfaceAnimationManager is not cached when `kAnimateRenderer` is
+        // requested.
+        base::UmaHistogramBoolean(
+            "Viz.CompositorFrameSinkSupport."
+            "HasSurfaceAnimationManagerOnAnimate",
+            !!surface_animation_manager);
         // If Frame deadline has passed before Save is completed, there is no
         // SurfaceAnimationManager in the map.
         if (!surface_animation_manager) {

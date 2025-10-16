@@ -1974,6 +1974,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Viz.CompositorFrameSinkSupport.HasSurfaceAnimationManagerOnAnimate"
+    enum="Boolean" expires_after="2026-10-30">
+  <owner>hitawala@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Records if SurfaceAnimationManager is cached by FrameSinkManagerImpl on
+    Animate. The SurfaceAnimationManager may not be cached if
+    CompositorFrameTransitionDirective::Type::kAnimateRenderer directive is
+    issued before CompositorFrameTransitionDirective::Type::kSave directive is
+    completely processed leading to an incomplete CopyOutputRequest.
+  </summary>
+</histogram>
+
 <histogram name="Viz.CreateFallbackImageResult"
     enum="CreateFallbackImageResult" expires_after="2026-04-12">
   <owner>kylechar@chromium.org</owner>
