@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(GFX) NativePixmapDmaBuf : public gfx::NativePixmap {
 
  private:
   gfx::Size size_;
-  gfx::BufferFormat format_;
+  viz::SharedImageFormat format_;
   gfx::NativePixmapHandle handle_;
 };
 
