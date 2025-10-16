@@ -18,7 +18,6 @@ group("providers") {
     "//ios/chrome/test/providers/context_menu",
     "//ios/chrome/test/providers/discover_feed",
     "//ios/chrome/test/providers/drive",
-    "//ios/chrome/test/providers/follow",
     "//ios/chrome/test/providers/font",
     "//ios/chrome/test/providers/fullscreen",
     "//ios/chrome/test/providers/glow_effect",

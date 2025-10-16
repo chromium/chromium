@@ -44,7 +44,6 @@ specific_include_rules = {
     "+ios/chrome/browser/variations/model/client",
     "+ios/chrome/browser/favicon/model",
     "+ios/chrome/browser/feature_engagement/model",
-    "+ios/chrome/browser/follow/model",
     "+ios/chrome/browser/gcm/model",
     "+ios/chrome/browser/google/model",
     "+ios/chrome/browser/history/model",
