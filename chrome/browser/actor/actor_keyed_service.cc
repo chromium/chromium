@@ -368,9 +368,8 @@ void ActorKeyedService::OnActionsFinished(
 }
 
 void ActorKeyedService::FailAllTasks() {
-  auto no_op_predicate = [](const ActorTask& task) { return true; };
   std::vector<TaskId> tasks_to_stop =
-      FindTaskIdsInActive(base::BindRepeating(no_op_predicate));
+      FindTaskIdsInActive([](const ActorTask& task) { return true; });
   for (const auto& task_id : tasks_to_stop) {
     StopTask(task_id, /*success=*/false);
   }
@@ -432,10 +431,10 @@ Profile* ActorKeyedService::GetProfile() {
 }
 
 std::vector<TaskId> ActorKeyedService::FindTaskIdsInActive(
-    const base::RepeatingCallback<bool(const ActorTask&)>& predicate) const {
+    base::FunctionRef<bool(const ActorTask&)> predicate) const {
   std::vector<TaskId> result;
   for (const auto& [id, task] : active_tasks_) {
-    if (predicate.Run(*task)) {
+    if (predicate(*task)) {
       result.push_back(id);
     }
   }
@@ -443,10 +442,10 @@ std::vector<TaskId> ActorKeyedService::FindTaskIdsInActive(
 }
 
 std::vector<TaskId> ActorKeyedService::FindTaskIdsInInactive(
-    const base::RepeatingCallback<bool(const ActorTask&)>& predicate) const {
+    base::FunctionRef<bool(const ActorTask&)> predicate) const {
   std::vector<TaskId> result;
   for (const auto& [id, task] : inactive_tasks_) {
-    if (predicate.Run(*task)) {
+    if (predicate(*task)) {
       result.push_back(id);
     }
   }

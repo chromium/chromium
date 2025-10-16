@@ -70,12 +70,10 @@ class ActorKeyedService : public KeyedService {
   const std::map<TaskId, const ActorTask*> GetActiveTasks() const;
   const std::map<TaskId, const ActorTask*> GetInactiveTasks() const;
 
-  // TODO(liuwilliam): These functions can take in a `base::FunctionRef` to
-  // avoid the `base::BindRepeating` at the callsite.
   std::vector<TaskId> FindTaskIdsInActive(
-      const base::RepeatingCallback<bool(const ActorTask&)>& predicate) const;
+      base::FunctionRef<bool(const ActorTask&)> predicate) const;
   std::vector<TaskId> FindTaskIdsInInactive(
-      const base::RepeatingCallback<bool(const ActorTask&)>& predicate) const;
+      base::FunctionRef<bool(const ActorTask&)> predicate) const;
 
   // Stop and clear all active and inactive tasks for testing only.
   void ResetForTesting();

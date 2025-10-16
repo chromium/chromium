@@ -85,12 +85,12 @@ void GlicActorTaskIconManager::UpdateTaskIcon(bool is_showing,
                                               CurrentView current_view) {
   auto active_tasks = actor_service_->GetActiveTasks();
   // TODO(crbug.com/431015299): Cache some of these values.
-  auto completed_tasks = actor_service_->FindTaskIdsInInactive(
-      base::BindRepeating(&IsRecentlyCompletedTask));
-  auto paused_by_actor_tasks = actor_service_->FindTaskIdsInActive(
-      base::BindRepeating([](const ActorTask& task) {
+  auto completed_tasks =
+      actor_service_->FindTaskIdsInInactive(&IsRecentlyCompletedTask);
+  auto paused_by_actor_tasks =
+      actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
         return task.GetState() == ActorTask::State::kPausedByActor;
-      }));
+      });
 
   // If there are no active tasks and no recently completed tasks, we can hide
   // the task icon.

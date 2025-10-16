@@ -114,10 +114,10 @@ TEST_F(ActorKeyedServiceTest, FindTaskIdsInActive_ReturnsSuccessfully) {
   actor_service->GetTask(id2)->Pause(/*from_actor=*/true);
 
   // Find a single active task.
-  std::vector<TaskId> single_found = actor_service->FindTaskIdsInActive(
-      base::BindRepeating([](const ActorTask& task) {
+  std::vector<TaskId> single_found =
+      actor_service->FindTaskIdsInActive([](const ActorTask& task) {
         return task.GetState() == ActorTask::State::kPausedByActor;
-      }));
+      });
   ASSERT_EQ(single_found.size(), 1u);
   EXPECT_EQ(single_found[0], id2);
 }
@@ -130,10 +130,10 @@ TEST_F(ActorKeyedServiceTest, FindTaskIdsInInactive_ReturnsSuccessfully) {
   actor_service->StopTask(id2, /*success=*/false);
 
   // Find a single inactive task.
-  std::vector<TaskId> single_found = actor_service->FindTaskIdsInInactive(
-      base::BindRepeating([](const ActorTask& task) {
+  std::vector<TaskId> single_found =
+      actor_service->FindTaskIdsInInactive([](const ActorTask& task) {
         return task.GetState() == ActorTask::State::kCancelled;
-      }));
+      });
   ASSERT_EQ(single_found.size(), 1u);
   EXPECT_EQ(single_found[0], id2);
 }

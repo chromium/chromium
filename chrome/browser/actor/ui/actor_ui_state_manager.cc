@@ -255,11 +255,11 @@ void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
     return;
   }
 
-  auto ids = actor_service_->FindTaskIdsInActive(
-      base::BindRepeating([](const ActorTask& task) {
+  auto ids =
+      actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
         return task.GetState() == ActorTask::State::kActing ||
                task.GetState() == ActorTask::State::kReflecting;
-      }));
+      });
 
   if (!ids.empty() && MaybeShowToastViaController(bwi)) {
     pref_service->SetInteger(kToastShown, toast_shown_count + 1);
