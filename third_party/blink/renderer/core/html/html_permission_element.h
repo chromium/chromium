@@ -161,6 +161,8 @@ class CORE_EXPORT HTMLPermissionElement
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            GeolocationUsingLocationAppearance);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationWatchPositionAppearance);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            GeolocationTranslateInnerText);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            GeolocationSetInnerTextAfterRegistration);

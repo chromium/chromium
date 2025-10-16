@@ -106,9 +106,7 @@ void HTMLGeolocationElement::AttributeChanged(
     GetCurrentPosition();
   }
   if (params.name == html_names::kWatchAttr) {
-    if (params.new_value) {
-      WatchPosition();
-    } else {
+    if (!params.new_value) {
       auto* geolocation = GetGeolocation();
       if (!geolocation) {
         return;
@@ -124,7 +122,11 @@ void HTMLGeolocationElement::DefaultEventHandler(Event& event) {
   // We consume the click event here if the permission is already granted
   // and propagate any other events to the parent HTMLPermissionElement.
   if (event.type() == event_type_names::kDOMActivate && PermissionsGranted()) {
-    GetCurrentPosition();
+    if (FastHasAttribute(html_names::kWatchAttr)) {
+      WatchPosition();
+    } else {
+      GetCurrentPosition();
+    }
     return;
   }
   HTMLPermissionElement::DefaultEventHandler(event);
@@ -146,10 +148,7 @@ void HTMLGeolocationElement::GetCurrentPosition() {
     return;
   }
 
-  is_geolocation_request_in_progress_ = true;
-  spinning_started_time_ = base::TimeTicks::Now();
-  spinning_icon_timer_.StartOneShot(kMinimumSpinningIconTime, FROM_HERE);
-  UpdateAppearance();
+  StartSpinning(RequestInProgress::kYes);
   auto* dom_window = GetDocument().domWindow();
   if (!dom_window) {
     return;
@@ -164,12 +163,21 @@ void HTMLGeolocationElement::GetCurrentPosition() {
 
 void HTMLGeolocationElement::WatchPosition() {
   auto* geolocation = GetGeolocation();
-  if (!geolocation) {
+  if (!geolocation && !WebTestSupport::IsRunningWebTest()) {
     return;
   }
-  watch_id_ = geolocation->WatchPosition(
-      blink::BindRepeating(&HTMLGeolocationElement::CurrentPositionCallback,
-                           WrapWeakPersistent(this)));
+
+  StartSpinning(RequestInProgress::kYes);
+
+  if (!WebTestSupport::IsRunningWebTest()) {
+    watch_id_ = geolocation->WatchPosition(
+        blink::BindRepeating(&HTMLGeolocationElement::CurrentPositionCallback,
+                             WrapWeakPersistent(this)));
+  } else {
+    // In web tests, we don't have a real geolocation service.
+    // Set a dummy watch_id to simulate success.
+    watch_id_ = 1;
+  }
 }
 void HTMLGeolocationElement::CurrentPositionCallback(
     base::expected<Geoposition*, GeolocationPositionError*> position) {
@@ -184,6 +192,10 @@ void HTMLGeolocationElement::CurrentPositionCallback(
   }
   EnqueueEvent(*Event::CreateCancelableBubble(event_type_names::kLocation),
                TaskType::kUserInteraction);
+
+  if (watch_id_ != 0) {
+    StartSpinning(RequestInProgress::kNo);
+  }
 }
 
 void HTMLGeolocationElement::SpinningIconTimerFired(TimerBase*) {
@@ -195,6 +207,16 @@ void HTMLGeolocationElement::MaybeStopSpinning() {
     spinning_icon_timer_.Stop();
     UpdateAppearance();
   }
+}
+
+void HTMLGeolocationElement::StartSpinning(
+    RequestInProgress request_in_progress) {
+  if (request_in_progress == RequestInProgress::kYes) {
+    is_geolocation_request_in_progress_ = true;
+  }
+  spinning_started_time_ = base::TimeTicks::Now();
+  spinning_icon_timer_.StartOneShot(kMinimumSpinningIconTime, FROM_HERE);
+  UpdateAppearance();
 }
 
 }  // namespace blink

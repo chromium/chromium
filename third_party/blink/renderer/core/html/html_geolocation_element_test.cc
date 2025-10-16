@@ -17,6 +17,7 @@
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
@@ -466,11 +467,129 @@ TEST_F(HTMLGeolocationElementTest, GeolocationUsingLocationAppearance) {
       kGeolocationString,
       geolocation_element->permission_text_span_for_testing()->innerText());
   EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // Dispatch a click event under granted.
+  auto* event = Event::Create(event_type_names::kDOMActivate);
+  geolocation_element->DefaultEventHandler(*event);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  task_environment().FastForwardBy(base::Seconds(3));
+  geolocation_element->CurrentPositionCallback(base::ok(nullptr));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+}
+
+TEST_F(HTMLGeolocationElementTest, GeolocationWatchPositionAppearance) {
+  auto* geolocation_element = CreateGeolocationElement();
+  geolocation_element->setAttribute(html_names::kWatchAttr, AtomicString(""));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return geolocation_element->is_registered_in_browser_process();
+  }));
+
+  // 1. Call WatchPosition and check initial spinning.
+  geolocation_element->WatchPosition();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // 2. After 1s, simulate a position update. Spinning should continue because
+  // it's re-triggered.
+  task_environment().FastForwardBy(base::Seconds(1));
+  geolocation_element->CurrentPositionCallback(base::ok(nullptr));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // 3. After another 2.1s, spinning should stop.
+  task_environment().FastForwardBy(base::Seconds(2.1));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // 4. Simulate another position update, it should start spinning again.
+  geolocation_element->CurrentPositionCallback(base::ok(nullptr));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // 5. Remove watch attribute.
+  geolocation_element->removeAttribute(html_names::kWatchAttr);
+  // Let the current spinning finish.
+  task_environment().FastForwardBy(base::Seconds(2.1));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // 6. Simulate another position update. It should NOT start spinning again.
+  geolocation_element->CurrentPositionCallback(base::ok(nullptr));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+}
+
+TEST_F(HTMLGeolocationElementTest, GeolocationGrantedClickBehavior) {
+  CachedPermissionStatus::From(GetDocument().domWindow())
+      ->SetPermissionStatusMap({{blink::mojom::PermissionName::GEOLOCATION,
+                                 MojoPermissionStatus::GRANTED}});
+
+  // Test with kWatchAttr
+  auto* geolocation_element_watch = CreateGeolocationElement();
+  geolocation_element_watch->setAttribute(html_names::kWatchAttr,
+                                          AtomicString(""));
+  auto* event_watch = Event::Create(event_type_names::kDOMActivate);
+  geolocation_element_watch->DefaultEventHandler(*event_watch);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(kUsingLocationString,
+            geolocation_element_watch->permission_text_span_for_testing()
+                ->innerText());
+  EXPECT_TRUE(
+      geolocation_element_watch->SpinningIconTimerForTesting().IsActive());
+
+  // Test without kWatchAttr
+  auto* geolocation_element_get_position = CreateGeolocationElement();
+  auto* event_get_position = Event::Create(event_type_names::kDOMActivate);
+  geolocation_element_get_position->DefaultEventHandler(*event_get_position);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(kUsingLocationString,
+            geolocation_element_get_position->permission_text_span_for_testing()
+                ->innerText());
+  EXPECT_TRUE(geolocation_element_get_position->SpinningIconTimerForTesting()
+                  .IsActive());
 }
 
 class HTMLGeolocationElementSimTest : public SimTest {
  public:
-  HTMLGeolocationElementSimTest() = default;
+  HTMLGeolocationElementSimTest()
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
   void SetUp() override {

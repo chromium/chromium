@@ -55,6 +55,13 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
                            GeolocationUsingLocationAppearance);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            GeolocationTranslateInnerText);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationWatchPositionAppearance);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationGrantedClickBehavior);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationTranslateInnerText);
+
   // blink::HTMLPermissionElement:
   void AttributeChanged(const AttributeModificationParams& params) override;
   void DefaultEventHandler(Event&) override;
@@ -70,6 +77,8 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
   Geolocation* GetGeolocation();
   void SpinningIconTimerFired(TimerBase*);
   void MaybeStopSpinning();
+  enum class RequestInProgress { kNo, kYes };
+  void StartSpinning(RequestInProgress request_in_progress);
   bool ShouldShowSpinningIcon();
 
   bool precise_ = false;
