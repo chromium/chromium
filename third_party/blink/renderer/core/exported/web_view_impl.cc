@@ -1843,6 +1843,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       !prefs.disable_accelerated_small_canvases);
   RuntimeEnabledFeatures::SetLongPressLinkSelectTextEnabled(
       prefs.long_press_link_select_text);
+  settings->SetDynamicSafeAreaInsetsEnabled(
+      prefs.dynamic_safe_area_insets_enabled);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
@@ -1900,10 +1902,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetModalContextMenu(prefs.modal_context_menu);
   settings->SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
       prefs.subapps_apis_require_user_gesture_and_authorization);
-  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled()) {
-    settings->SetDynamicSafeAreaInsetsEnabled(
-        prefs.dynamic_safe_area_insets_enabled);
-  }
 
 #if BUILDFLAG(IS_MAC)
   web_view_impl->SetMaximumLegibleScale(

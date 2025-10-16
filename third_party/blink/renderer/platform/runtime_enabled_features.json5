@@ -2033,12 +2033,6 @@
     {
       name: "DOMPartsAPIMinimal",
     },
-    // Dynamically change the safe area insets based on the bottom browser
-    // controls visibility.
-    {
-      name: "DynamicSafeAreaInsets",
-      status: {"Android": "stable"},
-    },
     {
       // See https://crbug.com/379170477
       name: "EditContextHandleTextOrSelectionUpdateDuringComposition",

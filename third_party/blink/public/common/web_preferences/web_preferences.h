@@ -441,8 +441,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool modal_context_menu = true;
 
   // Whether the safe-area-insets should be changed dynamically based on
-  // browser controls shown ratio. This value is used in web settings only
-  // when feature DynamicSafeAreaInsets is enabled.
+  // browser controls shown ratio on Android.
   bool dynamic_safe_area_insets_enabled = false;
 
   // Whether PaymentRequest is enabled. Controlled by WebView settings on
