@@ -975,6 +975,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/android/customtabs/detached_resource_request.h",
       "//chrome/browser/android/feedback/connectivity_checker.cc",
       "//chrome/browser/android/policy/policy_auditor.cc",
+      "//chrome/browser/android/tab_storage_packager_android.h",
       "//chrome/browser/android/webapk/webapk_installer.h",
       "//chrome/browser/long_screenshots/long_screenshots_tab_service.h",
       "//chrome/browser/metrics/metrics_reporting_state.h",

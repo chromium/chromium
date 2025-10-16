@@ -152,10 +152,12 @@ long TabStoragePackagerAndroid::ConsolidateTabData(
 long TabStoragePackagerAndroid::ConsolidateTabStripCollectionData(
     JNIEnv* env,
     jint window_id,
-    jboolean is_off_the_record) {
+    jint j_tab_model_type) {
+  TabModelType tab_model_type = static_cast<TabModelType>(j_tab_model_type);
+
   tabs_pb::TabStripCollectionState state;
   state.set_window_id(window_id);
-  state.set_incognito_status(is_off_the_record);
+  state.set_incognito_status(tab_model_type == TabModelType::kIncognito);
 
   TabStripCollectionStorageData* data =
       new TabStripCollectionStorageData(state);

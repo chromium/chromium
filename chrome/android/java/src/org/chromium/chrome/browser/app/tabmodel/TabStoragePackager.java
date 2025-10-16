@@ -106,9 +106,12 @@ public class TabStoragePackager {
     public long packageTabStripCollection(
             @JniType("const TabStripCollection*") TabStripCollection collection) {
         TabModelInfo info = getTabModelInfo(collection);
+        boolean offTheRecord = info.tabModel.isOffTheRecord();
+        @TabModelType
+        int tabModelType = offTheRecord ? TabModelType.INCOGNITO : TabModelType.REGULAR;
         return TabStoragePackagerJni.get()
                 .consolidateTabStripCollectionData(
-                        mNativeTabStoragePackager, info.windowId, info.tabModel.isOffTheRecord());
+                        mNativeTabStoragePackager, info.windowId, tabModelType);
     }
 
     @NativeMethods
@@ -124,6 +127,6 @@ public class TabStoragePackager {
                 @JniType("TabAndroid*") Tab tab);
 
         long consolidateTabStripCollectionData(
-                long nativeTabStoragePackagerAndroid, int windowId, boolean isOffTheRecord);
+                long nativeTabStoragePackagerAndroid, int windowId, @TabModelType int tabModelType);
     }
 }

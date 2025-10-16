@@ -21,6 +21,19 @@ namespace tabs {
 class StoragePackage;
 class TabInterface;
 
+// The types of TabModels, differing in terms of scope.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.app.tabmodel
+enum class TabModelType {
+  kUnknown = 0,
+  // Scoped to a window ID & regular profile.
+  kRegular = 1,
+  // Scoped to a window ID & OTR profile.
+  kIncognito = 2,
+  // Scoped to a profile.
+  kArchived = 3,
+  kMaxValue = kArchived,
+};
+
 // This class is the Android implementation of the TabStoragePackager.
 class TabStoragePackagerAndroid : public TabStoragePackager {
  public:
@@ -45,7 +58,7 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
       TabAndroid* tab);
   long ConsolidateTabStripCollectionData(JNIEnv* env,
                                          jint window_id,
-                                         jboolean is_off_the_record);
+                                         jint j_tab_model_type);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
