@@ -12,7 +12,9 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/display_android_manager.h"
 #include "ui/android/view_android.h"
@@ -373,6 +375,9 @@ bool WindowAndroid::SetHasKeyboardCapture(bool keyboard_capture) {
 }
 
 std::optional<gfx::Rect> WindowAndroid::GetBoundsInScreenCoordinates() {
+  TRACE_EVENT("ui", "WindowAndroid::GetBoundsInScreenCoordinates");
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jintArray> j_bounds_array =
       Java_WindowAndroid_getBoundsInScreenCoordinates(env, GetJavaObject());
@@ -389,6 +394,8 @@ std::optional<gfx::Rect> WindowAndroid::GetBoundsInScreenCoordinates() {
   const int width = bounds_vector[2];
   const int height = bounds_vector[3];
 
+  UMA_HISTOGRAM_TIMES("Android.Window.TimeToAcquireWindowBounds",
+                      base::TimeTicks::Now() - start_time);
   return gfx::Rect(x, y, width, height);
 }
 

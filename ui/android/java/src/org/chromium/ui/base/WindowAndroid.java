@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Process;
+import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Surface;
@@ -52,6 +53,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
@@ -1414,6 +1416,8 @@ public class WindowAndroid
 
     @RequiresApi(Build.VERSION_CODES.R)
     private void maybeSendWindowPositionChangedEventToNative() {
+        final long startTimeMs = SystemClock.elapsedRealtime();
+
         if (mNativeWindowAndroid == 0) {
             return;
         }
@@ -1431,6 +1435,9 @@ public class WindowAndroid
         mLastWindowBounds = boundsPx;
 
         WindowAndroidJni.get().onWindowPositionChanged(mNativeWindowAndroid);
+
+        final long durationMs = SystemClock.elapsedRealtime() - startTimeMs;
+        RecordHistogram.recordTimesHistogram("Android.Window.TimeToUpdateWindowBounds", durationMs);
     }
 
     @NativeMethods

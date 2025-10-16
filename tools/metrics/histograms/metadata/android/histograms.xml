@@ -9254,6 +9254,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Window.TimeToAcquireWindowBounds" units="ms"
+    expires_after="M150">
+  <owner>chominskib@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
+  <summary>
+    Records the time it takes to acquire on-screen bounds of the browser window
+    by the `WindowAndroid::GetBoundsInScreenCoordinates()` method.
+  </summary>
+</histogram>
+
+<histogram name="Android.Window.TimeToUpdateWindowBounds" units="ms"
+    expires_after="M150">
+  <owner>chominskib@google.com</owner>
+  <owner>lt-web-apps-team@google.com</owner>
+  <summary>
+    Records the time it takes to process a window bounds change event received
+    from the OS, including notifying native counterparts and sending new bounds
+    to Blink in native part. Recorded only if the window bounds have actually
+    changed compared to values cached in the WindowAndroid Java object.
+  </summary>
+</histogram>
+
 <histogram name="AndroidSearchEngineLogo.Events"
     enum="AndroidSearchEngineLogoEvents" expires_after="2025-07-06">
   <owner>wylieb@google.com</owner>
