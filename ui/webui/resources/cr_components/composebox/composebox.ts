@@ -131,10 +131,15 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
       },
       tabSuggestions_: {type: Array},
+      realboxLayoutMode: {
+        type: String,
+        reflect: true,
+      },
     };
   }
 
   accessor ntpRealboxNextEnabled: boolean = false;
+  accessor realboxLayoutMode: string = '';
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
