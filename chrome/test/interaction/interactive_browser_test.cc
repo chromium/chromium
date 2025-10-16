@@ -835,29 +835,6 @@ InteractiveBrowserTestApi::WaitForElementVisible(
   return steps;
 }
 
-InteractiveBrowserTestApi::MultiStep
-InteractiveBrowserTestApi::WaitForElementExists(
-    const ui::ElementIdentifier& element_id,
-    const WebContentsInteractionTestUtil::DeepQuery& query) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWaitForElementExistsEvent);
-  StateChange element_exists;
-  element_exists.event = kWaitForElementExistsEvent;
-  element_exists.where = query;
-  return WaitForStateChange(element_id, element_exists);
-}
-
-InteractiveBrowserTestApi::MultiStep
-InteractiveBrowserTestApi::WaitForElementDoesNotExist(
-    const ui::ElementIdentifier& element_id,
-    const WebContentsInteractionTestUtil::DeepQuery& query) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWaitForElementDoesNotExistEvent);
-  StateChange element_does_not_exist;
-  element_does_not_exist.type = StateChange::Type::kDoesNotExist;
-  element_does_not_exist.event = kWaitForElementDoesNotExistEvent;
-  element_does_not_exist.where = query;
-  return WaitForStateChange(element_id, element_does_not_exist);
-}
-
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ClickElement(
     ui::ElementIdentifier web_contents,
     const DeepQuery& where,

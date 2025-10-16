@@ -63,8 +63,6 @@ namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithTitle[] = "/title3.html";
 constexpr char kDocumentWithTextField[] = "/form_interaction.html";
-constexpr char kDocumentWithScrollToElement[] =
-    "/test_framework/scroll_to_element.html";
 }  // namespace
 
 class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
@@ -509,24 +507,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyPress) {
       SendKeyPress(kOmniboxElementId, ui::VKEY_A),
       SendKeyPress(kOmniboxElementId, ui::VKEY_B, ui::EF_SHIFT_DOWN),
       CheckViewProperty(kOmniboxElementId, &OmniboxViewViews::GetText, u"aB"));
-}
-
-IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, WaitForExistence) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithScrollToElement);
-  const DeepQuery kDomElement = {"#target"};
-
-  RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      // The element should exist, but not be visible without scrolling.
-      WaitForElementExists(kWebContentsId, kDomElement),
-      EnsureNotVisible(kWebContentsId, kDomElement),
-      // Ensure we can scroll to the element.
-      ScrollIntoView(kWebContentsId, kDomElement),
-      WaitForElementVisible(kWebContentsId, kDomElement),
-      // Remove the element and ensure it no longer exists.
-      ExecuteJsAt(kWebContentsId, kDomElement, "el => { el.remove(); }"),
-      WaitForElementDoesNotExist(kWebContentsId, kDomElement));
 }
 
 // Simple bubble containing a WebView. Allows us to simulate swapping out one

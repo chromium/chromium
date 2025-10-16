@@ -475,19 +475,6 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       ui::ElementIdentifier web_contents,
       const DeepQuery& where);
 
-  // Waits for an element identified by `query` to exist in the DOM of an
-  // instrumented WebUI identified by `element_id`. Use
-  // ScrollIntoView(web_contents, where) to then scroll the element into view.
-  [[nodiscard]] MultiStep WaitForElementExists(
-      const ui::ElementIdentifier& element_id,
-      const WebContentsInteractionTestUtil::DeepQuery& query);
-
-  // Waits for an element identified by `query` to not exist in the DOM of an
-  // instrumented WebUI identified by `element_id`.
-  [[nodiscard]] MultiStep WaitForElementDoesNotExist(
-      const ui::ElementIdentifier& element_id,
-      const WebContentsInteractionTestUtil::DeepQuery& query);
-
   // Simulates clicking on an HTML element by injecting the click event directly
   // into the DOM. You can specify the mouse button and additional modifier
   // keys (default is left-click, no modifiers).

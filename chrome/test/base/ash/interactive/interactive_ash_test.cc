@@ -544,6 +544,29 @@ InteractiveAshTest::WaitForWindowWithTitle(aura::Env* env,
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementExists(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
+  StateChange element_exists;
+  element_exists.event = kElementExists;
+  element_exists.where = query;
+  return WaitForStateChange(element_id, element_exists);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementDoesNotExist(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExist);
+  StateChange does_not_exist;
+  does_not_exist.type = StateChange::Type::kDoesNotExist;
+  does_not_exist.event = kElementDoesNotExist;
+  does_not_exist.where = query;
+  return WaitForStateChange(element_id, does_not_exist);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementEnabled(
     const ui::ElementIdentifier& element_id,
     WebContentsInteractionTestUtil::DeepQuery element) {
