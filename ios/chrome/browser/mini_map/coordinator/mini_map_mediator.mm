@@ -161,7 +161,8 @@ std::string MiniMapOutcomeHistogram(MiniMapQueryType type) {
 }
 
 - (void)userDisabledURLSettingFromMiniMap {
-  // TODO(crbug.com/420402648): Add metrics.
+  base::UmaHistogramEnumeration(MiniMapOutcomeHistogram(_type),
+                                MiniMapOutcome::kUserDisabled);
   if (!self.prefService) {
     return;
   }
