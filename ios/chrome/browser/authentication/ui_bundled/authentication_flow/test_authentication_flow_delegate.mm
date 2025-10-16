@@ -48,16 +48,18 @@
 
 #pragma mark - AuthenticationFlowDelegate
 
-- (void)authenticationFlowDidSignInInSameProfileWithResult:
-            (SigninCoordinatorResult)result
-                                                  identity:(id<SystemIdentity>)
-                                                               identity {
+- (void)
+    authenticationFlowDidSignInInSameProfileWithCancelationReason:
+        (signin_ui::CancelationReason)cancelationReason
+                                                         identity:
+                                                             (id<SystemIdentity>)
+                                                                 identity {
   CHECK(_signinCompletion);
   CHECK(!_callbackCalled);
   _callbackCalled = YES;
   signin_ui::SigninCompletionCallback signinCompletion = _signinCompletion;
   _signinCompletion = nil;
-  signinCompletion(result);
+  signinCompletion(cancelationReason);
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:

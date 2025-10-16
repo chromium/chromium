@@ -226,16 +226,18 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 
 #pragma mark - AuthenticationFlowDelegate
 
-- (void)authenticationFlowDidSignInInSameProfileWithResult:
-            (SigninCoordinatorResult)result
-                                                  identity:(id<SystemIdentity>)
-                                                               identity {
+- (void)
+    authenticationFlowDidSignInInSameProfileWithCancelationReason:
+        (signin_ui::CancelationReason)cancelationReason
+                                                         identity:
+                                                             (id<SystemIdentity>)
+                                                                 identity {
   if (!_identityManager) {
     // The mediator was already disconnected, nothing to do.
     return;
   }
   _authenticationFlow = nil;
-  if (result != SigninCoordinatorResultSuccess) {
+  if (cancelationReason != signin_ui::CancelationReason::kNotCanceled) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             IOS_AUTH_FLOW_CANCELLED_OR_FAILED,

@@ -11,7 +11,9 @@
 
 @class SceneState;
 
-typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
+namespace signin_ui {
+enum class CancelationReason;
+}  // namespace signin_ui
 
 // The key in the user info dictionary containing the GoogleServiceAuthError
 // code.
@@ -72,7 +74,7 @@ namespace signin_ui {
 
 // Completion callback for a sign-in operation.
 // `success` is YES if the operation was successful.
-using SigninCompletionCallback = void (^)(SigninCoordinatorResult success);
+using SigninCompletionCallback = void (^)(CancelationReason cancelationReason);
 
 // Completion callback for a sign-out operation.
 // `success` is YES if the operation was successful.

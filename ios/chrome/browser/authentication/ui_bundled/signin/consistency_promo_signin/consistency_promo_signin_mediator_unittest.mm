@@ -135,11 +135,12 @@ class ConsistencyPromoSigninMediatorTest
     task_environment_.AdvanceClock(base::Seconds(30));
   }
 
-  void ExpectAuthFlowStartAndSetResult(id<SystemIdentity> identity,
-                                       signin_metrics::AccessPoint access_point,
-                                       SigninCoordinatorResult result) {
+  void ExpectAuthFlowStartAndSetResult(
+      id<SystemIdentity> identity,
+      signin_metrics::AccessPoint access_point,
+      signin_ui::CancelationReason cancelation_reason) {
     bool success =
-        result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
+        cancelation_reason == signin_ui::CancelationReason::kNotCanceled;
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediatorSigninStarted:[OCMArg any]]);
     OCMExpect([authentication_flow_mock_ identity]).andReturn(identity);
@@ -152,8 +153,10 @@ class ConsistencyPromoSigninMediatorTest
       // The mediator_ is the AuthenticationFlow’s delegate.
       CHECK(authentication_flow_mock_delegate_);
       [authentication_flow_mock_delegate_
-          authenticationFlowDidSignInInSameProfileWithResult:result
-                                                    identity:identity];
+          authenticationFlowDidSignInInSameProfileWithCancelationReason:
+              cancelation_reason
+                                                               identity:
+                                                                   identity];
     };
     OCMExpect([authentication_flow_mock_
         setDelegate:[OCMArg
@@ -253,9 +256,9 @@ TEST_P(ConsistencyPromoSigninMediatorTest,
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
 
-  ExpectAuthFlowStartAndSetResult(
-      kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
-      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectAuthFlowStartAndSetResult(kDefaultIdentity,
+                                  signin_metrics::AccessPoint::kWebSignin,
+                                  signin_ui::CancelationReason::kNotCanceled);
   ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   mediator_ = BuildConsistencyPromoSigninMediator(
@@ -295,9 +298,9 @@ TEST_P(ConsistencyPromoSigninMediatorTest,
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
 
-  ExpectAuthFlowStartAndSetResult(
-      kNonDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
-      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectAuthFlowStartAndSetResult(kNonDefaultIdentity,
+                                  signin_metrics::AccessPoint::kWebSignin,
+                                  signin_ui::CancelationReason::kNotCanceled);
   ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   mediator_ = BuildConsistencyPromoSigninMediator(
@@ -339,9 +342,9 @@ TEST_P(ConsistencyPromoSigninMediatorTest,
       signin_metrics::AccessPoint::kWebSignin);
   [mediator_ systemIdentityAdded:kDefaultIdentity];
 
-  ExpectAuthFlowStartAndSetResult(
-      kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
-      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectAuthFlowStartAndSetResult(kDefaultIdentity,
+                                  signin_metrics::AccessPoint::kWebSignin,
+                                  signin_ui::CancelationReason::kNotCanceled);
   ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
@@ -380,9 +383,9 @@ TEST_P(ConsistencyPromoSigninMediatorTest, CookiesError) {
   mediator_ = BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint::kWebSignin);
 
-  ExpectAuthFlowStartAndSetResult(
-      kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
-      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectAuthFlowStartAndSetResult(kDefaultIdentity,
+                                  signin_metrics::AccessPoint::kWebSignin,
+                                  signin_ui::CancelationReason::kNotCanceled);
   ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
@@ -435,9 +438,9 @@ TEST_P(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
   mediator_ = BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint::kWebSignin);
 
-  ExpectAuthFlowStartAndSetResult(
-      kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
-      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectAuthFlowStartAndSetResult(kDefaultIdentity,
+                                  signin_metrics::AccessPoint::kWebSignin,
+                                  signin_ui::CancelationReason::kNotCanceled);
   ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
@@ -489,9 +492,9 @@ TEST_P(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
   mediator_ = BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint::kWebSignin);
 
-  ExpectAuthFlowStartAndSetResult(
-      kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
-      SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
+  ExpectAuthFlowStartAndSetResult(kDefaultIdentity,
+                                  signin_metrics::AccessPoint::kWebSignin,
+                                  signin_ui::CancelationReason::kFailed);
 
   // The error is only signaled after AuthenticationService::Signout() and
   // that's async (note: the user never really signed-in in this case, but the
@@ -535,9 +538,9 @@ TEST_P(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
   mediator_ = BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint::kSettings);
 
-  ExpectAuthFlowStartAndSetResult(
-      kDefaultIdentity, signin_metrics::AccessPoint::kSettings,
-      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectAuthFlowStartAndSetResult(kDefaultIdentity,
+                                  signin_metrics::AccessPoint::kSettings,
+                                  signin_ui::CancelationReason::kNotCanceled);
   OCMExpect([mediator_delegate_mock_
       consistencyPromoSigninMediatorSignInDone:mediator_
                                   withIdentity:kDefaultIdentity]);

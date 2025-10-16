@@ -298,7 +298,7 @@ TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
 TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
-                      withResult:SigninCoordinatorResultInterrupted
+           withCancelationReason:signin_ui::CancelationReason::kFailed
                   signedIdentity:nil
                  userTappedClose:NO]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
@@ -417,9 +417,9 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   OCMExpect([delegate_mock_ signinFinished]);
   // Simulate AuthenticationFlow failure.
   [authentication_flow_request_helper
-      authenticationFlowDidSignInInSameProfileWithResult:
-          SigninCoordinatorResultCanceledByUser
-                                                identity:nil];
+      authenticationFlowDidSignInInSameProfileWithCancelationReason:
+          signin_ui::CancelationReason::kUserCanceled
+                                                           identity:nil];
 }
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
@@ -460,9 +460,9 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
   OCMExpect([delegate_mock_ signinFinished]);
   [authentication_flow_request_helper
-      authenticationFlowDidSignInInSameProfileWithResult:
-          SigninCoordinatorResult::SigninCoordinatorResultInterrupted
-                                                identity:nil];
+      authenticationFlowDidSignInInSameProfileWithCancelationReason:
+          signin_ui::CancelationReason::kFailed
+                                                           identity:nil];
 
   // Checks the user is signed-back in.
   ASSERT_EQ(kPrimaryIdentity, authentication_service_->GetPrimaryIdentity(
@@ -500,14 +500,15 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   VerifyMock();
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
-                      withResult:SigninCoordinatorResultSuccess
+           withCancelationReason:signin_ui::CancelationReason::kNotCanceled
                   signedIdentity:kSecondaryIdentity
                  userTappedClose:NO]);
   OCMExpect([delegate_mock_ signinFinished]);
   [authentication_flow_request_helper
-      authenticationFlowDidSignInInSameProfileWithResult:
-          SigninCoordinatorResultSuccess
-                                                identity:kSecondaryIdentity];
+      authenticationFlowDidSignInInSameProfileWithCancelationReason:
+          signin_ui::CancelationReason::kNotCanceled
+                                                           identity:
+                                                               kSecondaryIdentity];
 }
 
 // Tests the result of didTapErrorButton when a passphrase is required.
@@ -597,7 +598,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   [mediator_ signOutFromTargetRect:rect];
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
-                      withResult:SigninCoordinatorResultCanceledByUser
+           withCancelationReason:signin_ui::CancelationReason::kUserCanceled
                   signedIdentity:nil
                  userTappedClose:NO]);
   completion(YES, nil);
@@ -625,7 +626,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
 TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
-                      withResult:SigninCoordinatorResultCanceledByUser
+           withCancelationReason:signin_ui::CancelationReason::kUserCanceled
                   signedIdentity:nil
                  userTappedClose:YES]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);

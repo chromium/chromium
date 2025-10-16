@@ -82,15 +82,6 @@ enum class AuthenticationState {
   kDone,
 };
 
-enum class CancelationReason {
-  // Not canceled.
-  kNotCanceled,
-  // Canceled by the user.
-  kUserCanceled,
-  // Canceled, but not by the user.
-  kFailed,
-};
-
 // Used by `RecordUnsyncedDataHistogramIfNeeded()` to know which histogram to
 // record the unsynced data types.
 enum class UnsyncedDataTypeHistogram {
@@ -280,7 +271,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
   // State machine tracking.
   AuthenticationState _state;
-  CancelationReason _cancelationReason;
+  signin_ui::CancelationReason _cancelationReason;
   // YES if the personal profile should be converted to a managed (work) profile
   // as part of the signin flow. Can only be true if the to-be-signed-in account
   // is managed.
@@ -352,7 +343,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     _anchorView = anchorView;
     _anchorRect = anchorRect;
     _state = AuthenticationState::kBegin;
-    _cancelationReason = CancelationReason::kNotCanceled;
+    _cancelationReason = signin_ui::CancelationReason::kNotCanceled;
     _profileSeparationDataMigrationSettings =
         policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;
 
@@ -404,7 +395,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     // The performer might not have been able to continue the flow if it was
     // waiting for a callback (e.g. waiting for AccountReconcilor). In this
     // case, we force the flow to finish synchronously.
-    [self cancelFlowWithReason:CancelationReason::kFailed];
+    [self cancelFlowWithReason:signin_ui::CancelationReason::kFailed];
   }
   DCHECK_EQ(AuthenticationState::kDone, _state);
 }
@@ -713,10 +704,13 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     __weak id<AuthenticationFlowDelegate> delegate = [self takeDelegate];
     // Not using a call to a method on self, because self will be
     // deallocated by the time the `signinCompletion` is executed.
-    _signInInProfileCompletion = ^(SigninCoordinatorResult result) {
+    _signInInProfileCompletion = ^(
+        signin_ui::CancelationReason cancelationReason) {
       [delegate
-          authenticationFlowDidSignInInSameProfileWithResult:result
-                                                    identity:identityToSignIn];
+          authenticationFlowDidSignInInSameProfileWithCancelationReason:
+              cancelationReason
+                                                               identity:
+                                                                   identityToSignIn];
       if (Browser* browser = weakBrowser.get()) {
         CompletePostSignInActions(postSignInActions, identityToSignIn, browser,
                                   accessPoint);
@@ -797,19 +791,11 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 // authenticationFlowDidSignInInSameProfile:withResult:]` synchronously when the
 // flow failed.
 - (void)completeWithFailureStep {
-  SigninCoordinatorResult result;
-  switch (_cancelationReason) {
-    case CancelationReason::kFailed:
-      result = SigninCoordinatorResult::SigninCoordinatorResultInterrupted;
-      break;
-    case CancelationReason::kUserCanceled:
-      result = SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser;
-      break;
-    case CancelationReason::kNotCanceled:
-      NOTREACHED();
-  }
-  [[self takeDelegate] authenticationFlowDidSignInInSameProfileWithResult:result
-                                                                 identity:nil];
+  CHECK_NE(_cancelationReason, signin_ui::CancelationReason::kNotCanceled);
+  [[self takeDelegate]
+      authenticationFlowDidSignInInSameProfileWithCancelationReason:
+          _cancelationReason
+                                                           identity:nil];
   [self continueFlow];
 }
 
@@ -825,12 +811,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 - (BOOL)canceled {
-  return _cancelationReason != CancelationReason::kNotCanceled;
+  return _cancelationReason != signin_ui::CancelationReason::kNotCanceled;
 }
 
 // Cancels the current sign-in flow.
-- (void)cancelFlowWithReason:(CancelationReason)reason {
-  CHECK_NE(reason, CancelationReason::kNotCanceled);
+- (void)cancelFlowWithReason:(signin_ui::CancelationReason)reason {
+  CHECK_NE(reason, signin_ui::CancelationReason::kNotCanceled);
   if ([self canceled]) {
     // Avoid double handling of cancel or error.
     return;
@@ -846,7 +832,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     return;
   }
   DCHECK(error);
-  _cancelationReason = CancelationReason::kFailed;
+  _cancelationReason = signin_ui::CancelationReason::kFailed;
   self.handlingError = YES;
   __weak AuthenticationFlow* weakSelf = self;
   [_performer showAuthenticationError:error
@@ -874,7 +860,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   if (acceptToContinue) {
     [self continueFlow];
   } else {
-    [self cancelFlowWithReason:CancelationReason::kUserCanceled];
+    [self cancelFlowWithReason:signin_ui::CancelationReason::kUserCanceled];
   }
 }
 
@@ -937,7 +923,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 - (void)didCancelManagedConfirmation {
-  [self cancelFlowWithReason:CancelationReason::kUserCanceled];
+  [self cancelFlowWithReason:signin_ui::CancelationReason::kUserCanceled];
 }
 
 - (void)didFailToSwitchToProfile {
@@ -962,7 +948,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   _browserForAuthenticationFlowInProfile = newProfileBrowser;
   CHECK(!_signInInProfileCompletion);
   _signInInProfileCompletion = base::CallbackToBlock(
-      base::IgnoreArgs<SigninCoordinatorResult>(std::move(completion)));
+      base::IgnoreArgs<signin_ui::CancelationReason>(std::move(completion)));
 
   [self continueFlow];
 }

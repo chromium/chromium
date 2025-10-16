@@ -361,7 +361,8 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator
-                        withResult:(SigninCoordinatorResult)signinResult
+             withCancelationReason:
+                 (signin_ui::CancelationReason)cancelationReason
                     signedIdentity:(id<SystemIdentity>)signedIdentity
                    userTappedClose:(BOOL)userTappedClose {
   CHECK_EQ(mediator, _mediator);

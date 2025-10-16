@@ -202,17 +202,14 @@ class AuthenticationFlowTest : public PlatformTest,
     }
 
     signin_ui::SigninCompletionCallback sign_in_completion =
-        ^(SigninCoordinatorResult result) {
+        ^(signin_ui::CancelationReason cancelationReason) {
           run_loop_->Quit();
-          switch (result) {
-            case SigninCoordinatorResult::SigninCoordinatorResultSuccess:
+          switch (cancelationReason) {
+            case signin_ui::CancelationReason::kNotCanceled:
               signin_result_ = signin::Tribool::kTrue;
               break;
-            case SigninCoordinatorResult::SigninCoordinatorResultInterrupted:
-            case SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser:
-            case SigninCoordinatorResult::SigninCoordinatorResultDisabled:
-            case SigninCoordinatorResult::SigninCoordinatorUINotAvailable:
-            case SigninCoordinatorResult::SigninCoordinatorProfileSwitch:
+            case signin_ui::CancelationReason::kUserCanceled:
+            case signin_ui::CancelationReason::kFailed:
               signin_result_ = signin::Tribool::kFalse;
               break;
           }
@@ -225,8 +222,8 @@ class AuthenticationFlowTest : public PlatformTest,
               ChangeProfileContinuation continuation = base::BindOnce(
                   [](signin_ui::SigninCompletionCallback sign_in_completion,
                      SceneState* sceneState, base::OnceClosure closure) {
-                    sign_in_completion(SigninCoordinatorResult::
-                                           SigninCoordinatorResultSuccess);
+                    sign_in_completion(
+                        signin_ui::CancelationReason::kNotCanceled);
                     std::move(closure).Run();
                   },
                   sign_in_completion);

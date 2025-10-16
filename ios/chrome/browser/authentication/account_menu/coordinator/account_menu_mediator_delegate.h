@@ -22,7 +22,8 @@
 
 // Requests to dismiss the account menu.
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator
-                        withResult:(SigninCoordinatorResult)result
+             withCancelationReason:
+                 (signin_ui::CancelationReason)cancelationReason
                     signedIdentity:(id<SystemIdentity>)signedIdentity
                    userTappedClose:(BOOL)userTappedClose;
 

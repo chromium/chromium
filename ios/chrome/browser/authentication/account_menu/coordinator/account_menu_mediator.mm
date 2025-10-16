@@ -222,10 +222,11 @@
   // shutdown.
   _blockUpdates = YES;
   self.userInteractionsBlocked = YES;
-  [self.delegate mediatorWantsToBeDismissed:self
-                                 withResult:SigninCoordinatorResultInterrupted
-                             signedIdentity:nil
-                            userTappedClose:NO];
+  [self.delegate
+      mediatorWantsToBeDismissed:self
+           withCancelationReason:signin_ui::CancelationReason::kFailed
+                  signedIdentity:nil
+                 userTappedClose:NO];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
@@ -258,10 +259,11 @@
     (AccountMenuViewController*)viewController {
   CHECK_EQ(viewController, _consumer);
   self.userInteractionsBlocked = YES;
-  [_delegate mediatorWantsToBeDismissed:self
-                             withResult:SigninCoordinatorResultCanceledByUser
-                         signedIdentity:nil
-                        userTappedClose:YES];
+  [_delegate
+      mediatorWantsToBeDismissed:self
+           withCancelationReason:signin_ui::CancelationReason::kUserCanceled
+                  signedIdentity:nil
+                 userTappedClose:YES];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect {
@@ -405,10 +407,11 @@
     // By signing-out the user cancelled the option to signin in this menu.
     // TODO(crbug.com/400715119): Should consider add a signout result in
     // SigninCoordinatorResult.
-    [_delegate mediatorWantsToBeDismissed:self
-                               withResult:SigninCoordinatorResultCanceledByUser
-                           signedIdentity:nil
-                          userTappedClose:NO];
+    [_delegate
+        mediatorWantsToBeDismissed:self
+             withCancelationReason:signin_ui::CancelationReason::kUserCanceled
+                    signedIdentity:nil
+                   userTappedClose:NO];
   } else {
     // User had not signed-out. Allow to interact with the UI.
     self.userInteractionsBlocked = NO;
@@ -418,13 +421,16 @@
 
 #pragma mark - AuthenticationFlowDelegate
 
-- (void)authenticationFlowDidSignInInSameProfileWithResult:
-            (SigninCoordinatorResult)result
-                                                  identity:(id<SystemIdentity>)
-                                                               identity {
+- (void)
+    authenticationFlowDidSignInInSameProfileWithCancelationReason:
+        (signin_ui::CancelationReason)cancelationReason
+                                                         identity:
+                                                             (id<SystemIdentity>)
+                                                                 identity {
+  BOOL success =
+      cancelationReason == signin_ui::CancelationReason::kNotCanceled;
   [_delegate signinFinished];
-  if (_accessPoint == AccountMenuAccessPoint::kWeb &&
-      result == SigninCoordinatorResultSuccess) {
+  if (_accessPoint == AccountMenuAccessPoint::kWeb && success) {
     GetApplicationContext()->GetLocalState()->SetBoolean(
         prefs::kHasSwitchedAccountsViaWebFlow, true);
   }
@@ -434,12 +440,10 @@
   }
   CHECK(_primaryIdentityBeforeSignin, base::NotFatalUntil::M140);
   _authenticationFlow = nil;
-  BOOL success =
-      result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {
     CHECK(identity, base::NotFatalUntil::M145);
     [_delegate mediatorWantsToBeDismissed:self
-                               withResult:result
+                    withCancelationReason:cancelationReason
                            signedIdentity:identity
                           userTappedClose:NO];
   } else if (_accountManagerService->IsValidIdentity(
@@ -453,7 +457,7 @@
     [self restartUpdates];
   } else {
     [_delegate mediatorWantsToBeDismissed:self
-                               withResult:result
+                    withCancelationReason:cancelationReason
                            signedIdentity:nil
                           userTappedClose:NO];
   }

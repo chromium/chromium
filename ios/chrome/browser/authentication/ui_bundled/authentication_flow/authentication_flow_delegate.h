@@ -23,10 +23,12 @@ using ReadyForProfileSwitchingCompletion =
 @protocol AuthenticationFlowDelegate <NSObject>
 
 // Called at the end of the sign-in if the profile has not changed.
-- (void)authenticationFlowDidSignInInSameProfileWithResult:
-            (SigninCoordinatorResult)result
-                                                  identity:(id<SystemIdentity>)
-                                                               identity;
+- (void)
+    authenticationFlowDidSignInInSameProfileWithCancelationReason:
+        (signin_ui::CancelationReason)cancelationReason
+                                                         identity:
+                                                             (id<SystemIdentity>)
+                                                                 identity;
 
 // Called when the profile switching is going to happen. The delegate can
 // update the UI if needed before the profile switching.

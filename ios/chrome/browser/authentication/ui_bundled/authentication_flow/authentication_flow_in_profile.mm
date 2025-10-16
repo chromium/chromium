@@ -372,7 +372,7 @@ enum class AuthenticationFlowInProfileState {
   CHECK(_signInCompletion);
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
-  signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  signInCompletion(signin_ui::CancelationReason::kNotCanceled);
   [self continueFlow];
 }
 
@@ -420,7 +420,7 @@ enum class AuthenticationFlowInProfileState {
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
   // If the sign-in failed, the result is `SigninCoordinatorResultInterrupted`.
-  signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
+  signInCompletion(signin_ui::CancelationReason::kFailed);
   [self continueFlow];
 }
 

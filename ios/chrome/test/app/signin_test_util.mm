@@ -183,7 +183,7 @@ void SignIn(id<SystemIdentity> identity) {
     testRequestDelegate = nil;
   };
   signin_ui::SigninCompletionCallback callback =
-      ^(SigninCoordinatorResult result) {
+      ^(signin_ui::CancelationReason cancelationReason) {
         unsetVariables();
       };
   ChangeProfileContinuationProvider provider = base::BindRepeating(

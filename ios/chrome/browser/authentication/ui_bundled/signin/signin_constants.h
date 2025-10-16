@@ -33,6 +33,20 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   SigninCoordinatorProfileSwitch,
 };
 
+namespace signin_ui {
+
+// The result of a authentiaction.
+enum class CancelationReason {
+  // Not canceled.
+  kNotCanceled,
+  // Canceled by the user.
+  kUserCanceled,
+  // Canceled, but not by the user.
+  kFailed,
+};
+
+}  // namespace signin_ui
+
 // Called when the sign-in dialog is closed.
 // `result` is the sign-in result state.
 // `signinCompletionIdentity` the identity that was used if any.
