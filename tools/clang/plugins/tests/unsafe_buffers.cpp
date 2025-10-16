@@ -13,6 +13,8 @@
 
 #include <system_unsafe_buffers.h>
 
+#include <memory>
+
 #include "unsafe_buffers_clean.h"
 #include "unsafe_buffers_not_clean.h"
 #include "unsafe_buffers_not_clean_dir/clean_dir_1/not_clean_header.h"

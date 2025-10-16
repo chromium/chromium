@@ -1,6 +1,6 @@
 # Comment, then empty line with spaces.
 
-.buffers,libc # diagnostics to enable.
+.buffers,libc,unique_ptr # diagnostics to enable.
 
   # indented comment then top-level file.
 -unsafe_buffers_unchecked.cpp

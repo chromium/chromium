@@ -9,4 +9,8 @@ inline int disallowed_bad_stuff(int* i, unsigned s) {
   return i[s];  // This header is checked and makes an error.
 }
 
+inline int disallowed_bad_stuff(std::unique_ptr<int[]>& i, unsigned s) {
+  return i[s];  // This header is checked and makes an error.
+}
+
 #endif  // TOOLS_CLANG_PLUGINS_TESTS_UNSAFE_BUFFERS_NOT_CLEAN_H_

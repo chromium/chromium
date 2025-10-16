@@ -66,8 +66,8 @@ Empty lines are ignored.
 The `#` character introduces a comment until the end of the line.
 
 Lines starting with `.` declare which checks are to be enforced, as
-a comma-separated list of values. Currently allowed values are `buffers`
-and `libc`.
+a comma-separated list of values. Currently allowed values are `buffers`,
+`libc`, and `unique_ptr`.
 
 All other lines specify which paths are to be included/excluded.
 

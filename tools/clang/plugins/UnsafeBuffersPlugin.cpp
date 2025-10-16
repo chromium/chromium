@@ -46,7 +46,8 @@ class UnsafeBuffersConfig {
     // * Empty lines are ignored.
     // * Active lines consist of a one-character command followed by data.
     // * A line beginning with a `.` lists diagnostics to enable. These
-    //   are comma-separated and currently allow: `buffers`, `libc`.
+    //   are comma-separated and currently allow: `buffers`, `libc`, and
+    //   `unique_ptr`.
     // * A line beginning with a `$` gives the path from this file to
     //   the source tree root. Path prefixes in this file are interpreted
     //   relative to this value (default is that this file is in the root).
@@ -114,6 +115,9 @@ class UnsafeBuffersConfig {
         }
         if (operand.contains("libc")) {
           check_libc_calls = true;
+        }
+        if (operand.contains("unique_ptr")) {
+          check_unique_ptr = true;
         }
         continue;
       }
@@ -188,6 +192,7 @@ class UnsafeBuffersConfig {
 
   bool check_buffers = true;
   bool check_libc_calls = false;
+  bool check_unique_ptr = false;
 
  private:
   // `buffer` owns the memory for the strings in `prefix_map_`.
@@ -286,9 +291,14 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
         diag_id == clang::diag::warn_unsafe_buffer_libc_call ||
         diag_id == clang::diag::note_unsafe_buffer_printf_call;
 
+    const bool is_unique_ptr_diagnostic =
+        diag_id ==
+        clang::diag::warn_unsafe_buffer_usage_unique_ptr_array_access;
+
     const bool ignore_diagnostic =
         (is_buffers_diagnostic && !unsafe_buffers_config_.check_buffers) ||
-        (is_libc_diagnostic && !unsafe_buffers_config_.check_libc_calls);
+        (is_libc_diagnostic && !unsafe_buffers_config_.check_libc_calls) ||
+        (is_unique_ptr_diagnostic && !unsafe_buffers_config_.check_unique_ptr);
 
     if (ignore_diagnostic) {
       return;
@@ -296,7 +306,8 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
 
     const bool handle_diagnostic =
         (is_buffers_diagnostic && unsafe_buffers_config_.check_buffers) ||
-        (is_libc_diagnostic && unsafe_buffers_config_.check_libc_calls);
+        (is_libc_diagnostic && unsafe_buffers_config_.check_libc_calls) ||
+        (is_unique_ptr_diagnostic && unsafe_buffers_config_.check_unique_ptr);
 
     if (!handle_diagnostic) {
       return PassthroughDiagnostic(level, diag);
@@ -305,7 +316,7 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
     // Note that we promote from Remark directly to Error, rather than to
     // Warning, as -Werror will not get applied to whatever we choose here.
     const auto elevated_level =
-        (is_libc_diagnostic ||
+        (is_libc_diagnostic || is_unique_ptr_diagnostic ||
          diag_id == clang::diag::warn_unsafe_buffer_variable ||
          diag_id == clang::diag::warn_unsafe_buffer_operation)
             ? (engine_->getWarningsAsErrors()
