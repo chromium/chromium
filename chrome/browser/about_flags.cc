@@ -6155,6 +6155,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPinnedTabsTabletTabStripDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidPinnedTabsTabletTabStrip)},
 
+    // Home module pref refactor
+    {"home-module-pref-refactor",
+     flag_descriptions::kHomeModulePrefRefactorName,
+     flag_descriptions::kHomeModulePrefRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kHomeModulePrefRefactor)},
+
     {"hub-back-button", flag_descriptions::kHubBackButtonName,
      flag_descriptions::kHubBackButtonDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHubBackButton)},

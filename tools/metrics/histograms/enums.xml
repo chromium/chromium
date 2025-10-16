@@ -10927,6 +10927,7 @@ from previous Chrome versions.
   <int value="-1185656634" label="FileSystemProviderContentCache:enabled"/>
   <int value="-1185477291" label="ImeDecoderWithSandbox:enabled"/>
   <int value="-1184904651" label="enable-npapi"/>
+  <int value="-1184869659" label="HomeModulePrefRefactor:disabled"/>
   <int value="-1184775907" label="CommercePriceTrackingChipExperiment:enabled"/>
   <int value="-1184480269" label="LsdPermissionPrompt:enabled"/>
   <int value="-1183321008" label="ImeDecoderWithSandbox:disabled"/>
@@ -18977,6 +18978,7 @@ from previous Chrome versions.
   <int value="1675683700" label="PartitionVisitedLinkDatabase:enabled"/>
   <int value="1675848452" label="BluetoothQualityReport:disabled"/>
   <int value="1675857410" label="PrivateNetworkAccessNullIpAddress:enabled"/>
+  <int value="1676315168" label="HomeModulePrefRefactor:enabled"/>
   <int value="1676345689" label="IsolatedWebAppAllowlist:disabled"/>
   <int value="1676457528" label="AndroidProgressBarVisualUpdate:enabled"/>
   <int value="1677167062" label="AutomaticPasswordGeneration:enabled"/>

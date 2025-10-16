@@ -5267,6 +5267,11 @@ const char kHistoryPaneAndroidName[] = "History Pane Android";
 const char kHistoryPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays History.";
 
+const char kHomeModulePrefRefactorName[] = "Home module pref refactor";
+const char kHomeModulePrefRefactorDescription[] =
+    "Use UserPrefs for home module customization settings (for the "
+    "NTP).";
+
 const char kHubBackButtonName[] = "Hub back button";
 const char kHubBackButtonDescription[] =
     "Enables a back button on the hub for large screen devices.";

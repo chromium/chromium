@@ -3086,6 +3086,9 @@ extern const char kAndroidPinnedTabsDescription[];
 extern const char kAndroidPinnedTabsTabletTabStripName[];
 extern const char kAndroidPinnedTabsTabletTabStripDescription[];
 
+extern const char kHomeModulePrefRefactorName[];
+extern const char kHomeModulePrefRefactorDescription[];
+
 extern const char kHubBackButtonName[];
 extern const char kHubBackButtonDescription[];
 

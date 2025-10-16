@@ -452,6 +452,7 @@ public abstract class ChromeFeatureList {
     public static final String HISTORY_PANE_ANDROID = "HistoryPaneAndroid";
     public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID =
             "HomepageIsNewTabPagePolicyAndroid";
+    public static final String HOME_MODULE_PREF_REFACTOR = "HomeModulePrefRefactor";
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String HUB_BACK_BUTTON = "HubBackButton";
     public static final String HUB_SLIDE_ANIMATION = "HubSlideAnimation";
