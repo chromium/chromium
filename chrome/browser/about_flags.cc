@@ -1306,47 +1306,6 @@ const FeatureEntry::FeatureVariation kOmniboxStarterPackExpansionVariations[] =
      {"staging url", kOmniboxStarterPackExpansionStagingUrl,
       std::size(kOmniboxStarterPackExpansionStagingUrl), nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxSearchAggregatorProdParams[] = {
-    {"name", "Agentspace"},
-    {"shortcut", "agentspace"},
-    {"search_url",
-     "https://vertexaisearch.cloud.google.com/home/cid/"
-     "fdd1e98d-1f52-4407-98fd-80e27c61fbc9?q={searchTerms}"},
-    {"suggest_url",
-     "https://discoveryengine.googleapis.com/v1alpha/projects/670560280865/"
-     "locations/global/collections/default_collection/engines/"
-     "spark_dogfood_search_assistant_v1/completionConfig:completeQuery"}};
-const FeatureEntry::FeatureParam kOmniboxSearchAggregatorStagingParams[] = {
-    {"name", "Agentspace (staging)"},
-    {"shortcut", "agentspace"},
-    {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
-    {"search_url",
-     "https://vertexaisearch.cloud.google.com/home/cid/"
-     "3abd7045-7845-4f83-b204-e39fcbca3494?q={searchTerms}&mods=widget_staging_"
-     "api_mod"},
-    {"suggest_url",
-     "https://staging-discoveryengine.sandbox.googleapis.com/v1alpha/projects/"
-     "862721868538/locations/global/collections/default_collection/engines/"
-     "teamfood-v11/completionConfig:completeQuery"}};
-const FeatureEntry::FeatureParam kOmniboxSearchAggregatorDemoParams[] = {
-    {"name", "Neuravibe"},
-    {"shortcut", "neura"},
-    {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
-    {"search_url",
-     "https://vertexaisearch.cloud.google.com/home/cid/"
-     "8e21c7cd-cbfe-4162-baf4-3381fc43546e?q={searchTerms}"},
-    {"suggest_url",
-     "https://discoveryengine.googleapis.com/v1alpha/projects/977834784893/"
-     "locations/global/collections/default_collection/engines/"
-     "neuravibeenterprisesearch_1732204320742/completionConfig:completeQuery"}};
-const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
-    {"prod", kOmniboxSearchAggregatorProdParams,
-     std::size(kOmniboxSearchAggregatorProdParams), nullptr},
-    {"staging", kOmniboxSearchAggregatorStagingParams,
-     std::size(kOmniboxSearchAggregatorStagingParams), nullptr},
-    {"demo", kOmniboxSearchAggregatorDemoParams,
-     std::size(kOmniboxSearchAggregatorDemoParams), nullptr}};
-
 const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusTwoDayWindow[] = {
     {"OnFocusMostVisitedRecencyWindow", "1"},
 };
@@ -7089,11 +7048,8 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-enterprise-search-aggregator",
      flag_descriptions::kOmniboxSearchAggregatorName,
      flag_descriptions::kOmniboxSearchAggregatorDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox_feature_configs::SearchAggregatorProvider::
-             kSearchAggregatorProvider,
-         kOmniboxSearchAggregatorVariations,
-         "SearchAggregatorProvider")},
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::SearchAggregatorProvider::
+                            kSearchAggregatorProvider)},
 
     {"omnibox-adjust-indentation",
      flag_descriptions::kOmniboxAdjustIndentationName,
