@@ -1394,7 +1394,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   // attempt a toolbar reveal.
   ash::TabletModeControllerTestApi().EnterTabletMode();
   auto* const immersive_mode_controller =
-      boca_app_browser->GetImmersiveModeController();
+      ImmersiveModeController::From(boca_app_browser);
   const std::unique_ptr<ImmersiveRevealedLock> reveal_lock =
       immersive_mode_controller->GetRevealedLock(
           ImmersiveModeController::ANIMATE_REVEAL_NO);
@@ -1437,7 +1437,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
                                                                window_id);
   ASSERT_EQ(boca_app_browser->tab_strip_model()->active_index(), 0);
   auto* const immersive_mode_controller =
-      boca_app_browser->GetImmersiveModeController();
+      ImmersiveModeController::From(boca_app_browser);
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 
   // Pause the app again and verify immersive mode remains disabled.

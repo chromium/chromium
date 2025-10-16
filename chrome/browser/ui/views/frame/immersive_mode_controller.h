@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/observer_list.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserView;
+class BrowserWindowInterface;
 
 namespace gfx {
 class Rect;
@@ -38,6 +40,8 @@ class ImmersiveRevealedLock {
 // Currently, immersive mode is only available for Chrome OS and macOS.
 class ImmersiveModeController {
  public:
+  DECLARE_USER_DATA(ImmersiveModeController);
+
   enum AnimateReveal { ANIMATE_REVEAL_YES, ANIMATE_REVEAL_NO };
 
   class Observer {
@@ -61,12 +65,14 @@ class ImmersiveModeController {
     virtual ~Observer() = default;
   };
 
-  ImmersiveModeController();
+  explicit ImmersiveModeController(BrowserWindowInterface* browser);
 
   ImmersiveModeController(const ImmersiveModeController&) = delete;
   ImmersiveModeController& operator=(const ImmersiveModeController&) = delete;
 
   virtual ~ImmersiveModeController();
+
+  static ImmersiveModeController* From(BrowserWindowInterface* browser);
 
   // Must initialize after browser view has a Widget and native window.
   virtual void Init(BrowserView* browser_view) = 0;
@@ -135,6 +141,7 @@ class ImmersiveModeController {
 
  protected:
   base::ObserverList<Observer>::Unchecked observers_;
+  ui::ScopedUnownedUserData<ImmersiveModeController> scoped_unowned_user_data_;
 };
 
 class BrowserView;
@@ -143,7 +150,7 @@ namespace chrome {
 
 // Implemented in immersive_mode_controller_factory.cc.
 std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController(
-    const BrowserView* browser_view);
+    BrowserView* browser_view);
 
 }  // namespace chrome
 

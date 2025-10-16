@@ -1136,11 +1136,11 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
 }
 
 ImmersiveModeController* BrowserView::immersive_mode_controller() {
-  return browser_->GetFeatures().immersive_mode_controller();
+  return ImmersiveModeController::From(browser_);
 }
 
 const ImmersiveModeController* BrowserView::immersive_mode_controller() const {
-  return browser_->GetFeatures().immersive_mode_controller();
+  return ImmersiveModeController::From(browser_);
 }
 
 bool BrowserView::IsInSplitView() const {

@@ -55,7 +55,6 @@ class BrowserWindowFeatures;
 class DesktopBrowserWindowCapabilities;
 class ExclusiveAccessManager;
 class GURL;
-class ImmersiveModeController;
 class TabStripModel;
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -319,10 +318,6 @@ class BrowserWindowInterface : public content::PageNavigator {
 
   // This class is responsible for controlling fullscreen and pointer lock.
   virtual ExclusiveAccessManager* GetExclusiveAccessManager() = 0;
-
-  // This class is responsible for controlling the top chrome reveal state while
-  // in immersive fullscreen.
-  virtual ImmersiveModeController* GetImmersiveModeController() = 0;
 
   // This class manages actions that a user can take that are scoped to a
   // browser window (e.g. most of the 3-dot menu actions).

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -24,7 +25,7 @@ class ImmersiveModeControllerChromeos
       public FullscreenObserver,
       public aura::WindowObserver {
  public:
-  ImmersiveModeControllerChromeos();
+  explicit ImmersiveModeControllerChromeos(BrowserWindowInterface* browser);
 
   ImmersiveModeControllerChromeos(const ImmersiveModeControllerChromeos&) =
       delete;

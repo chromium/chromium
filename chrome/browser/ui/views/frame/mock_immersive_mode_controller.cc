@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/views/frame/mock_immersive_mode_controller.h"
 
-MockImmersiveModeController::MockImmersiveModeController() = default;
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+
+MockImmersiveModeController::MockImmersiveModeController(
+    BrowserWindowInterface* browser)
+    : ImmersiveModeController(browser) {}
 
 MockImmersiveModeController::~MockImmersiveModeController() {
   for (auto& observer : observers_) {

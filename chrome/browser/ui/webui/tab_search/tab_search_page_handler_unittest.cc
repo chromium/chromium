@@ -57,6 +57,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/color_utils.h"
 
@@ -1040,6 +1041,8 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
         tab_strip_model_delegate_.get(), testing_profile_.get());
 
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
+    ON_CALL(*browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(::testing::ReturnRef(user_data_host_));
     ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model_.get()));
 
@@ -1097,6 +1100,7 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
   }
 
  private:
+  ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<TabSearchTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;

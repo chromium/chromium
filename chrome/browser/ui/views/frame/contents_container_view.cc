@@ -418,7 +418,7 @@ void ContentsContainerView::UpdateCaptureContentsBorderLocation() {
   // Immersive top container might overlap with the blue border in fullscreen
   // mode - see crbug.com/1392733. By insetting the bounds rectangle we ensure
   // that the blue border is always placed below the top container.
-  if (browser_view_->browser()->GetImmersiveModeController()->IsRevealed()) {
+  if (ImmersiveModeController::From(browser_view_->browser())->IsRevealed()) {
     const int delta =
         browser_view_->top_container()->bounds().bottom() - rect.y();
     if (delta > 0) {

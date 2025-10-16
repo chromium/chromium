@@ -9,6 +9,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -63,7 +64,9 @@ class ImmersiveRevealedLockChromeos : public ImmersiveRevealedLock {
 
 }  // namespace
 
-ImmersiveModeControllerChromeos::ImmersiveModeControllerChromeos() = default;
+ImmersiveModeControllerChromeos::ImmersiveModeControllerChromeos(
+    BrowserWindowInterface* browser)
+    : ImmersiveModeController(browser) {}
 
 ImmersiveModeControllerChromeos::~ImmersiveModeControllerChromeos() = default;
 

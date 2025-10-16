@@ -681,7 +681,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
           side_panel_coordinator_->GetWindowRegistry());
 
   immersive_mode_controller_ =
-      chrome::CreateImmersiveModeController(browser_view);
+      GetUserDataFactory().CreateInstanceWithFactoryMethod(
+          *browser_, &chrome::CreateImmersiveModeController, browser_view);
 
   if (browser_view->GetIsNormalType()) {
 #if BUILDFLAG(ENABLE_GLIC)

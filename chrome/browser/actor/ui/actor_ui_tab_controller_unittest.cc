@@ -33,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace actor::ui {
@@ -75,18 +76,6 @@ class ActorUiTabControllerTest : public testing::Test {
         {{features::kGlicActorUiHandoffButtonName, "true"},
          {features::kGlicActorUiOverlayName, "true"}});
     profile_ = TestingProfile::Builder().Build();
-    immersive_mode_controller_ =
-        std::make_unique<MockImmersiveModeController>();
-    ON_CALL(*immersive_mode_controller(), IsEnabled())
-        .WillByDefault(Return(false));
-
-    actor_keyed_service_ = std::make_unique<ActorKeyedServiceFake>(profile());
-    std::unique_ptr<MockActorUiStateManager> ausm =
-        std::make_unique<MockActorUiStateManager>();
-    actor_keyed_service_->SetActorUiStateManagerForTesting(std::move(ausm));
-    auto controller_factory =
-        std::make_unique<MockActorUiTabControllerFactory>();
-    actor_ui_tab_controller_factory_ = controller_factory.get();
 
     ON_CALL(mock_tab_, GetBrowserWindowInterface())
         .WillByDefault(Return(&mock_browser_window_interface_));
@@ -98,8 +87,19 @@ class ActorUiTabControllerTest : public testing::Test {
         .WillByDefault(Return(&tab_strip_model_));
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(ReturnRef(user_data_host_));
-    ON_CALL(mock_browser_window_interface_, GetImmersiveModeController())
-        .WillByDefault(Return(immersive_mode_controller_.get()));
+
+    immersive_mode_controller_ = std::make_unique<MockImmersiveModeController>(
+        &mock_browser_window_interface_);
+    ON_CALL(*immersive_mode_controller(), IsEnabled())
+        .WillByDefault(Return(false));
+
+    actor_keyed_service_ = std::make_unique<ActorKeyedServiceFake>(profile());
+    std::unique_ptr<MockActorUiStateManager> ausm =
+        std::make_unique<MockActorUiStateManager>();
+    actor_keyed_service_->SetActorUiStateManagerForTesting(std::move(ausm));
+    auto controller_factory =
+        std::make_unique<MockActorUiTabControllerFactory>();
+    actor_ui_tab_controller_factory_ = controller_factory.get();
 
     window_controller_ = std::make_unique<ActorUiWindowController>(
         &mock_browser_window_interface_,

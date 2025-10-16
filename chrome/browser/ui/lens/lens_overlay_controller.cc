@@ -969,7 +969,7 @@ void LensOverlayController::ShowUI(
   // The preselection widget can cover top Chrome in immersive fullscreen.
   // Observer the reveal state to hide the widget when top Chrome is shown.
   immersive_mode_observer_.Observe(
-      tab_->GetBrowserWindowInterface()->GetImmersiveModeController());
+      ImmersiveModeController::From(tab_->GetBrowserWindowInterface()));
 
   pref_change_registrar_.Init(pref_service_);
 #if BUILDFLAG(IS_MAC)
@@ -2294,9 +2294,9 @@ void LensOverlayController::ShowPreselectionBubble() {
   const bool always_show_toolbar = false;
 #endif  // BUILDFLAG(IS_MAC)
 
-  if (!always_show_toolbar && tab_->GetBrowserWindowInterface()
-                                  ->GetImmersiveModeController()
-                                  ->IsRevealed()) {
+  if (!always_show_toolbar &&
+      ImmersiveModeController::From(tab_->GetBrowserWindowInterface())
+          ->IsRevealed()) {
     // If the immersive mode controller is revealing top chrome, do not show
     // the preselection bubble. The bubble will be shown once the reveal
     // finishes.
@@ -2335,8 +2335,7 @@ void LensOverlayController::ShowPreselectionBubble() {
   // z-order to floating UI element to ensure the widget is above the top
   // Chrome. Only do this if immersive mode is enabled to avoid issues with
   // the preselection widget covering other windows.
-  if (tab_->GetBrowserWindowInterface()
-          ->GetImmersiveModeController()
+  if (ImmersiveModeController::From(tab_->GetBrowserWindowInterface())
           ->IsEnabled()) {
     preselection_widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
   } else {

@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/test/views_test_utils.h"
 
@@ -170,8 +172,10 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
 
     browser_view_ = CreateFixedSizeView(kDefaultViewSize);
 
-    immersive_mode_controller_ =
-        std::make_unique<MockImmersiveModeController>();
+    EXPECT_CALL(browser_window_interface_, GetUnownedUserDataHost)
+        .WillRepeatedly(testing::ReturnRef(data_host_));
+    immersive_mode_controller_ = std::make_unique<MockImmersiveModeController>(
+        &browser_window_interface_);
     main_region_ =
         browser_view_->AddChildView(CreateFixedSizeView(kDefaultViewSize));
     main_container_ =
@@ -301,6 +305,8 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   raw_ptr<views::View> contents_scrim_view_;
   raw_ptr<views::View> lens_overlay_view_;
 
+  ui::UnownedUserDataHost data_host_;
+  MockBrowserWindowInterface browser_window_interface_;
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
 };
 

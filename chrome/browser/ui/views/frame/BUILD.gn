@@ -7,7 +7,10 @@ assert(!is_android)
 source_set("immersive_mode_controller") {
   sources = [ "immersive_mode_controller.h" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/base/unowned_user_data",
+  ]
 }
 
 static_library("test_support") {
@@ -20,6 +23,7 @@ static_library("test_support") {
   deps = [
     ":immersive_mode_controller",
     "//base",
+    "//chrome/browser/ui/browser_window",
     "//testing/gmock",
   ]
 }

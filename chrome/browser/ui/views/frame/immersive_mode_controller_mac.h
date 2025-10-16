@@ -21,9 +21,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac(
-    const BrowserView* browser_view);
-
 class ImmersiveModeControllerMac;
 
 // This class notifies the browser view to refresh layout whenever the overlay
@@ -70,7 +67,8 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // If `separate_tab_strip` is true, the tab strip is split out into its own
   // widget separate from the overlay view so that it can live in the title bar.
-  explicit ImmersiveModeControllerMac(bool separate_tab_strip);
+  explicit ImmersiveModeControllerMac(BrowserWindowInterface* window,
+                                      bool separate_tab_strip);
 
   ImmersiveModeControllerMac(const ImmersiveModeControllerMac&) = delete;
   ImmersiveModeControllerMac& operator=(const ImmersiveModeControllerMac&) =
@@ -174,7 +172,7 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   std::unique_ptr<views::BoundsAnimator> tab_bounds_animator_ = nullptr;
 
-  base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
+  base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_MAC_H_

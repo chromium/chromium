@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -73,8 +74,11 @@ ImmersiveModeControllerMac::RevealedLock::~RevealedLock() {
   }
 }
 
-ImmersiveModeControllerMac::ImmersiveModeControllerMac(bool separate_tab_strip)
-    : separate_tab_strip_(separate_tab_strip), weak_ptr_factory_(this) {}
+ImmersiveModeControllerMac::ImmersiveModeControllerMac(
+    BrowserWindowInterface* browser,
+    bool separate_tab_strip)
+    : ImmersiveModeController(browser),
+      separate_tab_strip_(separate_tab_strip) {}
 
 ImmersiveModeControllerMac::~ImmersiveModeControllerMac() {
   CHECK(!views::WidgetObserver::IsInObserverList());
@@ -564,12 +568,6 @@ views::View* ImmersiveModeFocusSearchMac::FindNextFocusableView(
       traverse_order.size();
   return focus_manager->GetNextFocusableView(
       nullptr, traverse_order[next_widget_ind], reverse, true);
-}
-
-std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac(
-    const BrowserView* browser_view) {
-  return std::make_unique<ImmersiveModeControllerMac>(
-      /*separate_tab_strip=*/browser_view->UsesImmersiveFullscreenTabbedMode());
 }
 
 ImmersiveModeOverlayWidgetObserver::ImmersiveModeOverlayWidgetObserver(

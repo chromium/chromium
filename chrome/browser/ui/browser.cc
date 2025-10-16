@@ -1225,10 +1225,6 @@ ExclusiveAccessManager* Browser::GetExclusiveAccessManager() {
   return GetFeatures().exclusive_access_manager();
 }
 
-ImmersiveModeController* Browser::GetImmersiveModeController() {
-  return GetBrowserView().immersive_mode_controller();
-}
-
 BrowserActions* Browser::GetActions() {
   return GetFeatures().browser_actions();
 }

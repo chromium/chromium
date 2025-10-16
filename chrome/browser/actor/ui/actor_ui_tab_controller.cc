@@ -206,7 +206,7 @@ void ActorUiTabController::InitializeImmersiveModeObserver() {
     return;
   }
   immersive_mode_observer_.Observe(
-      tab_->GetBrowserWindowInterface()->GetImmersiveModeController());
+      ImmersiveModeController::From(tab_->GetBrowserWindowInterface()));
 }
 
 void ActorUiTabController::OnImmersiveFullscreenEntered() {
@@ -255,8 +255,7 @@ bool ActorUiTabController::ComputeHandoffButtonVisibility() {
     return false;
   }
   InitializeImmersiveModeObserver();
-  if (tab_->GetBrowserWindowInterface()
-          ->GetImmersiveModeController()
+  if (ImmersiveModeController::From(tab_->GetBrowserWindowInterface())
           ->IsEnabled()) {
     return false;
   }

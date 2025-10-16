@@ -5,6 +5,11 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_stub.h"
 
 #include "base/notreached.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+
+ImmersiveModeControllerStub::ImmersiveModeControllerStub(
+    BrowserWindowInterface* browser)
+    : ImmersiveModeController(browser) {}
 
 void ImmersiveModeControllerStub::Init(BrowserView* browser_view) {}
 
