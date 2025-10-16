@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/location_bar/ui/badge/location_bar_badge_coordinator.h"
+#import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator.h"
 
-#import "ios/chrome/browser/location_bar/ui/badge/location_bar_badge_mediator.h"
-#import "ios/chrome/browser/location_bar/ui/badge/location_bar_badge_view_controller.h"
+#import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator.h"
+#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_view_controller.h"
 
 @implementation LocationBarBadgeCoordinator {
   LocationBarBadgeViewController* _viewController;

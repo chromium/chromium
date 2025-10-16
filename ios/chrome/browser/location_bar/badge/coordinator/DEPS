@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/badges/ui_bundled",
+  "+ios/chrome/browser/contextual_panel/entrypoint/ui",
+  "+ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h",
+]
