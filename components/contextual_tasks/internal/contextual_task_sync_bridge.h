@@ -35,12 +35,11 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
     Observer() = default;
     ~Observer() override = default;
 
-    virtual void OnContextualTaskDataStoreLoaded(
-        const std::vector<proto::ContextualTaskEntity>& task_entities) = 0;
+    virtual void OnContextualTaskDataStoreLoaded() = 0;
     virtual void OnTaskAddedOrUpdatedRemotely(
-        const std::vector<proto::ContextualTaskEntity>& task_entities) = 0;
+        const std::vector<ContextualTask>& tasks) = 0;
     virtual void OnTaskRemovedRemotely(
-        const std::vector<base::Uuid>& task_entities) = 0;
+        const std::vector<base::Uuid>& task_ids) = 0;
   };
 
   ContextualTaskSyncBridge(
@@ -76,6 +75,13 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
 
+  // Returns all contextual tasks.
+  virtual std::vector<ContextualTask> GetTasks() const;
+
+  // Gets a task by ID.
+  virtual std::optional<ContextualTask> GetTaskById(
+      const std::string& task_id) const;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -89,6 +95,11 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::DataTypeStore::RecordList> entries);
 
+  void InsertEntityProto(
+      const proto::ContextualTaskEntity& contextual_task_entity);
+  void UpdateEntityProto(
+      const proto::ContextualTaskEntity& contextual_task_entity);
+  void DeleteEntityProto(const std::string& guid);
   std::optional<proto::ContextualTaskEntity> GetEntityProto(
       const std::string& guid);
 
@@ -101,6 +112,13 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
 
   // In charge of actually persisting data to disk, or loading previous data.
   std::unique_ptr<syncer::DataTypeStore> data_type_store_;
+
+  // Groups all the ContextualTaskEntity by their task ID for easier assembling
+  // of ContextualTask object.
+  std::map<std::string, std::vector<proto::ContextualTaskEntity>>
+      task_id_to_entities_map_;
+
+  bool is_data_loaded_ = false;
 
   base::WeakPtrFactory<ContextualTaskSyncBridge> weak_ptr_factory_{this};
 };

@@ -26,6 +26,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,8 +51,36 @@ class MockAimEligibilityService : public AimEligibilityService {
   std::string GetLocale() const override { return "en-US"; }
 };
 
+class MockAiThreadSyncBridge : public AiThreadSyncBridge {
+ public:
+  MockAiThreadSyncBridge()
+      : AiThreadSyncBridge(
+            std::make_unique<
+                testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>>(),
+            syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest()) {}
+  ~MockAiThreadSyncBridge() override = default;
+
+  MOCK_METHOD(std::optional<Thread>,
+              GetThread,
+              (const std::string& server_id),
+              (const, override));
+};
+
+class MockContextualTaskSyncBridge : public ContextualTaskSyncBridge {
+ public:
+  MockContextualTaskSyncBridge()
+      : ContextualTaskSyncBridge(
+            std::make_unique<
+                testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>>(),
+            syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest()) {}
+  ~MockContextualTaskSyncBridge() override = default;
+
+  MOCK_METHOD(std::vector<ContextualTask>, GetTasks, (), (const, override));
+};
+
 class MockContextualTasksObserver : public ContextualTasksService::Observer {
  public:
+  MOCK_METHOD(void, OnInitialized, (), (override));
   MOCK_METHOD(void,
               OnTaskAdded,
               (const ContextualTask& task,
@@ -146,6 +175,22 @@ class ContextualTasksServiceImplTest : public testing::Test {
             &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result;
+  }
+
+  void CallOnThreadDataStoreLoaded() { service_->OnThreadDataStoreLoaded(); }
+
+  void CallOnContextualTaskDataStoreLoaded() {
+    service_->OnContextualTaskDataStoreLoaded();
+  }
+
+  void SetAiThreadSyncBridgeForTesting(
+      std::unique_ptr<AiThreadSyncBridge> bridge) {
+    service_->SetAiThreadSyncBridgeForTesting(std::move(bridge));
+  }
+
+  void SetContextualTaskSyncBridgeForTesting(
+      std::unique_ptr<ContextualTaskSyncBridge> bridge) {
+    service_->SetContextualTaskSyncBridgeForTesting(std::move(bridge));
   }
 
  protected:
@@ -788,6 +833,63 @@ TEST_F(ContextualTasksServiceImplTest, GetFeatureEligibility) {
   EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
       .WillOnce(Return(false));
   EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
+}
+
+TEST_F(ContextualTasksServiceImplTest, BuildContextualTasksFromLoadedData) {
+  auto mock_ai_thread_bridge =
+      std::make_unique<testing::NiceMock<MockAiThreadSyncBridge>>();
+  auto mock_contextual_task_bridge =
+      std::make_unique<testing::NiceMock<MockContextualTaskSyncBridge>>();
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  std::string thread_id = "thread_id";
+
+  ContextualTask task(task_id);
+  task.SetTitle("Task Title");
+  task.AddThread(Thread(ThreadType::kAiMode, thread_id, "", ""));
+
+  // Adding a task that doesn't have its thread in the AiThreadSyncBridge.
+  ContextualTask task_2(base::Uuid::GenerateRandomV4());
+  task_2.SetTitle("Task Without Thread Entity");
+  task_2.AddThread(Thread(ThreadType::kAiMode, "bad_thread_id", "", ""));
+
+  std::vector<ContextualTask> tasks = {task, task_2};
+  ON_CALL(*mock_contextual_task_bridge, GetTasks())
+      .WillByDefault(Return(tasks));
+
+  // Only the thread for the first task is returned by the AiThreadSyncBridge.
+  Thread thread(ThreadType::kAiMode, thread_id, "Thread Title",
+                "conversation_turn_id");
+  ON_CALL(*mock_ai_thread_bridge, GetThread(thread_id))
+      .WillByDefault(Return(thread));
+
+  SetAiThreadSyncBridgeForTesting(std::move(mock_ai_thread_bridge));
+  SetContextualTaskSyncBridgeForTesting(std::move(mock_contextual_task_bridge));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnInitialized()).WillOnce([&]() { run_loop.Quit(); });
+
+  service_->AddObserver(&observer_);
+
+  EXPECT_FALSE(service_->IsInitialized());
+
+  CallOnThreadDataStoreLoaded();
+  CallOnContextualTaskDataStoreLoaded();
+
+  run_loop.Run();
+
+  EXPECT_TRUE(service_->IsInitialized());
+
+  std::vector<ContextualTask> result_tasks = GetTasks();
+  ASSERT_EQ(1u, result_tasks.size());
+  EXPECT_EQ(task_id, result_tasks[0].GetTaskId());
+  EXPECT_EQ("Task Title", result_tasks[0].GetTitle());
+  std::optional<Thread> result_thread = result_tasks[0].GetThread();
+  ASSERT_TRUE(result_thread.has_value());
+  EXPECT_EQ(thread_id, result_thread->server_id);
+  EXPECT_EQ("Thread Title", result_thread->title);
+
+  service_->RemoveObserver(&observer_);
 }
 
 }  // namespace contextual_tasks

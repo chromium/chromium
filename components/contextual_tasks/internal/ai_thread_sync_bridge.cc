@@ -4,6 +4,7 @@
 
 #include "components/contextual_tasks/internal/ai_thread_sync_bridge.h"
 
+#include "base/functional/callback_helpers.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -70,6 +71,8 @@ AiThreadSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       data_type_store_->CreateWriteBatch();
+  std::vector<proto::AiThreadEntity> added_or_updated;
+  std::vector<base::Uuid> removed;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const sync_pb::EntitySpecifics& entity_specifics = change->data().specifics;
 
@@ -79,14 +82,16 @@ AiThreadSyncBridge::ApplyIncrementalSyncChanges(
         CHECK(entity_specifics.has_ai_thread());
         const proto::AiThreadEntity& entity =
             SpecificsToEntityProto(entity_specifics.ai_thread());
-
         ai_thread_entities_[change->storage_key()] = entity;
         batch->WriteData(change->storage_key(), entity.SerializeAsString());
+        added_or_updated.emplace_back(entity);
         break;
       }
       case syncer::EntityChange::ACTION_DELETE:
         ai_thread_entities_.erase(change->storage_key());
         batch->DeleteData(change->storage_key());
+        removed.emplace_back(
+            base::Uuid::ParseCaseInsensitive(change->storage_key()));
         break;
     }
   }
@@ -97,6 +102,10 @@ AiThreadSyncBridge::ApplyIncrementalSyncChanges(
       base::BindOnce(&AiThreadSyncBridge::OnDataTypeStoreCommit,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  for (auto& observer : observers_) {
+    observer.OnThreadAddedOrUpdatedRemotely(added_or_updated);
+    observer.OnThreadRemovedRemotely(removed);
+  }
   return std::nullopt;
 }
 
@@ -137,7 +146,19 @@ std::string AiThreadSyncBridge::GetStorageKey(
 }
 
 void AiThreadSyncBridge::ApplyDisableSyncChanges(
-    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {}
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  std::vector<base::Uuid> uuids;
+  for (const auto& [server_id, entity] : ai_thread_entities_) {
+    uuids.push_back(base::Uuid::ParseCaseInsensitive(server_id));
+  }
+  ai_thread_entities_.clear();
+  data_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  for (auto& observer : observers_) {
+    observer.OnThreadRemovedRemotely(uuids);
+  }
+}
 
 bool AiThreadSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
@@ -159,6 +180,17 @@ AiThreadSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
         std::move(trimmed_specifics);
   }
   return trimmed_entity_specifics;
+}
+
+std::optional<Thread> AiThreadSyncBridge::GetThread(
+    const std::string& server_id) const {
+  auto it = ai_thread_entities_.find(server_id);
+  if (it == ai_thread_entities_.end()) {
+    return std::nullopt;
+  }
+  sync_pb::AiThreadSpecifics specifics = it->second.specifics();
+  return Thread(ThreadType::kAiMode, server_id, specifics.title(),
+                specifics.conversation_turn_id());
 }
 
 void AiThreadSyncBridge::AddObserver(Observer* observer) {

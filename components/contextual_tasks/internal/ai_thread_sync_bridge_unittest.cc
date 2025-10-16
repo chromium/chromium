@@ -159,6 +159,30 @@ TEST_F(AiThreadSyncBridgeTest, ApplyIncrementalSyncChanges) {
   EXPECT_FALSE(data_batch->HasNext());
 }
 
+TEST_F(AiThreadSyncBridgeTest, GetThread) {
+  syncer::EntityChangeList entity_change_list;
+  sync_pb::AiThreadSpecifics specifics;
+  specifics.set_server_id("server_id_1");
+  specifics.set_title("Title 1");
+  specifics.set_conversation_turn_id("turn_id_1");
+  syncer::EntityData entity_data;
+  *entity_data.specifics.mutable_ai_thread() = specifics;
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateAdd("server_id_1", std::move(entity_data)));
+
+  bridge_->MergeFullSyncData(bridge_->CreateMetadataChangeList(),
+                             std::move(entity_change_list));
+
+  std::optional<Thread> thread = bridge_->GetThread("server_id_1");
+  ASSERT_TRUE(thread.has_value());
+  EXPECT_EQ(thread->server_id, "server_id_1");
+  EXPECT_EQ(thread->title, "Title 1");
+  EXPECT_EQ(thread->conversation_turn_id, "turn_id_1");
+
+  std::optional<Thread> not_found_thread = bridge_->GetThread("not_found");
+  EXPECT_FALSE(not_found_thread.has_value());
+}
+
 }  // namespace
 
 }  // namespace contextual_tasks

@@ -56,6 +56,10 @@ class ContextualTasksService : public KeyedService {
     // remove references before service destruction.
     virtual void OnWillBeDestroyed() {}
 
+    // The service is initialized and ready to take calls and return stored
+    // tasks and threads.
+    virtual void OnInitialized() {}
+
     // A new task was added at the given |source|.
     virtual void OnTaskAdded(const ContextualTask& task, TriggerSource source) {
     }
@@ -74,6 +78,9 @@ class ContextualTasksService : public KeyedService {
 
   // Returns whether there are any available backends that are eligible for use.
   virtual FeatureEligibility GetFeatureEligibility() = 0;
+
+  // Whether service is initialized.
+  virtual bool IsInitialized() = 0;
 
   // Methods for creating and managing tasks.
   virtual ContextualTask CreateTask() = 0;

@@ -35,9 +35,9 @@ class AiThreadSyncBridge : public syncer::DataTypeSyncBridge {
 
     virtual void OnThreadDataStoreLoaded() = 0;
     virtual void OnThreadAddedOrUpdatedRemotely(
-        const std::vector<Thread>& threads) = 0;
+        const std::vector<proto::AiThreadEntity>& thread_entities) = 0;
     virtual void OnThreadRemovedRemotely(
-        const std::vector<Thread>& threads) = 0;
+        const std::vector<base::Uuid>& thread_ids) = 0;
   };
 
   AiThreadSyncBridge(
@@ -72,6 +72,9 @@ class AiThreadSyncBridge : public syncer::DataTypeSyncBridge {
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
+
+  // Returns a thread by its ID.
+  virtual std::optional<Thread> GetThread(const std::string& server_id) const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

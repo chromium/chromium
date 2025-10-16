@@ -28,6 +28,7 @@ class ContextualTasksContextControllerImpl
 
   // ContextualTasksService implementation.
   FeatureEligibility GetFeatureEligibility() override;
+  bool IsInitialized() override;
   ContextualTask CreateTask() override;
   void GetTaskById(const base::Uuid& task_id,
                    base::OnceCallback<void(std::optional<ContextualTask>)>

@@ -90,6 +90,7 @@ class MockContextualTasksService : public ContextualTasksService {
               (),
               (override));
   MOCK_METHOD(FeatureEligibility, GetFeatureEligibility, (), (override));
+  MOCK_METHOD(bool, IsInitialized, (), (override));
 };
 
 class ContextualTasksContextControllerImplTest : public testing::Test {

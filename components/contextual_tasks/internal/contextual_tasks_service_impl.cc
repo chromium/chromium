@@ -27,16 +27,29 @@ namespace contextual_tasks {
 
 ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     version_info::Channel channel,
-    syncer::OnceDataTypeStoreFactory data_type_store_factory,
+    syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
     std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
     AimEligibilityService* aim_eligibility_service)
     : composite_context_decorator_(std::move(composite_context_decorator)),
       aim_eligibility_service_(aim_eligibility_service) {
-  auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-      syncer::AI_THREAD,
-      base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
+  const base::RepeatingClosure& dump_stack =
+      base::BindRepeating(&syncer::ReportUnrecoverableError, channel);
+  auto ai_thread_processor =
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+          syncer::AI_THREAD, dump_stack);
   ai_thread_sync_bridge_ = std::make_unique<AiThreadSyncBridge>(
-      std::move(processor), std::move(data_type_store_factory));
+      std::move(ai_thread_processor), data_type_store_factory);
+  auto contextual_task_processor =
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+          syncer::CONTEXTUAL_TASK, dump_stack);
+  contextual_task_sync_bridge_ = std::make_unique<ContextualTaskSyncBridge>(
+      std::move(contextual_task_processor), data_type_store_factory);
+
+  // Wait for both AiThreadSyncBridge and ContextualTaskSyncBridge to finish
+  // loading their data store.
+  on_data_loaded_barrier_ = base::BarrierClosure(
+      2, base::BindOnce(&ContextualTasksServiceImpl::OnDataStoresLoaded,
+                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 ContextualTasksServiceImpl::~ContextualTasksServiceImpl() {
@@ -48,6 +61,10 @@ ContextualTasksServiceImpl::~ContextualTasksServiceImpl() {
 FeatureEligibility ContextualTasksServiceImpl::GetFeatureEligibility() {
   return {base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks),
           aim_eligibility_service_->IsAimEligible()};
+}
+
+bool ContextualTasksServiceImpl::IsInitialized() {
+  return is_initialized_;
 }
 
 ContextualTask ContextualTasksServiceImpl::CreateTask() {
@@ -288,17 +305,39 @@ ContextualTasksServiceImpl::GetAiThreadControllerDelegate() {
   return ai_thread_sync_bridge_->change_processor()->GetControllerDelegate();
 }
 
-void ContextualTasksServiceImpl::OnThreadDataStoreLoaded() {}
+void ContextualTasksServiceImpl::SetAiThreadSyncBridgeForTesting(
+    std::unique_ptr<AiThreadSyncBridge> bridge) {
+  ai_thread_sync_bridge_ = std::move(bridge);
+}
+
+void ContextualTasksServiceImpl::SetContextualTaskSyncBridgeForTesting(
+    std::unique_ptr<ContextualTaskSyncBridge> bridge) {
+  contextual_task_sync_bridge_ = std::move(bridge);
+}
+
+void ContextualTasksServiceImpl::OnThreadDataStoreLoaded() {
+  on_data_loaded_barrier_.Run();
+}
 
 void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
-    const std::vector<Thread>& threads) {}
+    const std::vector<proto::AiThreadEntity>& threads) {}
 
 void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
-    const std::vector<Thread>& threads) {}
+    const std::vector<base::Uuid>& thread_ids) {}
 
 size_t ContextualTasksServiceImpl::GetTabIdMapSizeForTesting() const {
   return tab_to_task_.size();
 }
+
+void ContextualTasksServiceImpl::OnContextualTaskDataStoreLoaded() {
+  on_data_loaded_barrier_.Run();
+}
+
+void ContextualTasksServiceImpl::OnTaskAddedOrUpdatedRemotely(
+    const std::vector<ContextualTask>& task_entities) {}
+
+void ContextualTasksServiceImpl::OnTaskRemovedRemotely(
+    const std::vector<base::Uuid>& task_entities) {}
 
 void ContextualTasksServiceImpl::NotifyTaskAdded(const ContextualTask& task,
                                                  TriggerSource source) {
@@ -319,6 +358,44 @@ void ContextualTasksServiceImpl::NotifyTaskRemoved(const base::Uuid& task_id,
   for (auto& observer : observers_) {
     observer.OnTaskRemoved(task_id, source);
   }
+}
+
+void ContextualTasksServiceImpl::OnDataStoresLoaded() {
+  is_initialized_ = true;
+  std::vector<ContextualTask> tasks = BuildTasks();
+  for (const auto& task : tasks) {
+    tasks_.emplace(task.GetTaskId(), task);
+  }
+  for (auto& observer : observers_) {
+    observer.OnInitialized();
+  }
+}
+
+std::vector<ContextualTask> ContextualTasksServiceImpl::BuildTasks() const {
+  std::vector<ContextualTask> tasks = contextual_task_sync_bridge_->GetTasks();
+  auto it = tasks.begin();
+  while (it != tasks.end()) {
+    // If the task doesn't have a thread, filter it out here as there is no
+    // proper title to display it. It is also hard to differentiate between
+    // tasks without threads. The caller should use GetTaskById() to retrieve
+    // it.
+    if (!it->GetThread()) {
+      ++it;
+      continue;
+    }
+    std::string thread_id = it->GetThread()->server_id;
+    std::optional<Thread> thread = ai_thread_sync_bridge_->GetThread(thread_id);
+    // Thread could be empty if the threads bridge is not fully synced, or if
+    // the thread is deleted. In both cases we should not returning the task.
+    // and should either wait for the sync update or delete the task.
+    if (!thread) {
+      it = tasks.erase(it);
+    } else {
+      it->AddThread(thread.value());
+      ++it;
+    }
+  }
+  return tasks;
 }
 
 }  // namespace contextual_tasks

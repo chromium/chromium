@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/test/task_environment.h"
+#include "base/version_info/channel.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/test/data_type_store_test_util.h"
@@ -46,13 +47,10 @@ std::unique_ptr<syncer::EntityChange> CreateEntityChange(
 
 class MockObserver : public ContextualTaskSyncBridge::Observer {
  public:
-  MOCK_METHOD(void,
-              OnContextualTaskDataStoreLoaded,
-              (const std::vector<proto::ContextualTaskEntity>&),
-              (override));
+  MOCK_METHOD(void, OnContextualTaskDataStoreLoaded, (), (override));
   MOCK_METHOD(void,
               OnTaskAddedOrUpdatedRemotely,
-              (const std::vector<proto::ContextualTaskEntity>&),
+              (const std::vector<ContextualTask>&),
               (override));
   MOCK_METHOD(void,
               OnTaskRemovedRemotely,
@@ -135,14 +133,20 @@ TEST_F(ContextualTaskSyncBridgeTest,
   syncer::EntityChangeList change_list;
   change_list.push_back(CreateEntityChange("guid_add", "Added Title",
                                            syncer::EntityChange::ACTION_ADD));
-  change_list.push_back(CreateEntityChange(
+  change_list.push_back(CreateEntityChange("guid_existing", "Initial Title",
+                                           syncer::EntityChange::ACTION_ADD));
+  bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                       std::move(change_list));
+
+  syncer::EntityChangeList update_list;
+  update_list.push_back(CreateEntityChange(
       "guid_existing", "Updated Title", syncer::EntityChange::ACTION_UPDATE));
-  change_list.push_back(CreateEntityChange(
+  update_list.push_back(CreateEntityChange(
       "guid_delete", "", syncer::EntityChange::ACTION_DELETE));
 
   EXPECT_CALL(observer_, OnTaskAddedOrUpdatedRemotely(_))
-      .WillOnce([&](const std::vector<proto::ContextualTaskEntity>& entities) {
-        EXPECT_EQ(2u, entities.size());
+      .WillOnce([&](const std::vector<ContextualTask>& tasks) {
+        EXPECT_EQ(1u, tasks.size());
         barrier.Run();
       });
   EXPECT_CALL(observer_, OnTaskRemovedRemotely(_))
@@ -152,7 +156,7 @@ TEST_F(ContextualTaskSyncBridgeTest,
       });
 
   bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
-                                       std::move(change_list));
+                                       std::move(update_list));
   run_loop.Run();
 }
 
@@ -160,16 +164,70 @@ TEST_F(ContextualTaskSyncBridgeTest, OnDataTypeStoreLoaded) {
   auto store_factory =
       syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
   base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnContextualTaskDataStoreLoaded(_))
-      .WillOnce([&](const std::vector<proto::ContextualTaskEntity>& entities) {
-        EXPECT_EQ(0u, entities.size());
-        run_loop.Quit();
-      });
+  EXPECT_CALL(observer_, OnContextualTaskDataStoreLoaded()).WillOnce([&]() {
+    run_loop.Quit();
+  });
 
   bridge_ = std::make_unique<ContextualTaskSyncBridge>(
       mock_processor_.CreateForwardingProcessor(), std::move(store_factory));
   bridge_->AddObserver(&observer_);
   run_loop.Run();
+}
+
+TEST_F(ContextualTaskSyncBridgeTest, GetTasks) {
+  // Task ID, will be referenced by all the UrlResource to bind to the task.
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  std::string task_id_str = task_id.AsLowercaseString();
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(CreateEntityChange(task_id_str, "Task Title",
+                                           syncer::EntityChange::ACTION_ADD));
+
+  sync_pb::EntitySpecifics url_specifics;
+  // The top level GUID of UrlResource needs to be unique,
+  url_specifics.mutable_contextual_task()->set_guid(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  // Bind the url resource specifics to the task through the task ID.
+  url_specifics.mutable_contextual_task()
+      ->mutable_url_resource()
+      ->set_task_guid(task_id_str);
+  url_specifics.mutable_contextual_task()->mutable_url_resource()->set_url(
+      "https://example.com");
+  syncer::EntityData url_entity_data;
+  url_entity_data.specifics = url_specifics;
+  url_entity_data.name = "url";
+  change_list.push_back(syncer::EntityChange::CreateAdd(
+      url_specifics.contextual_task().guid(), std::move(url_entity_data)));
+
+  bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                       std::move(change_list));
+
+  std::vector<ContextualTask> tasks = bridge_->GetTasks();
+  ASSERT_EQ(1u, tasks.size());
+  EXPECT_EQ(task_id, tasks[0].GetTaskId());
+  EXPECT_EQ("Task Title", tasks[0].GetTitle());
+  ASSERT_EQ(1u, tasks[0].GetUrlResources().size());
+  EXPECT_EQ(GURL("https://example.com"), tasks[0].GetUrlResources()[0].url);
+}
+
+TEST_F(ContextualTaskSyncBridgeTest, GetTaskById) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  std::string task_id_str = task_id.AsLowercaseString();
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(CreateEntityChange(task_id_str, "Task Title",
+                                           syncer::EntityChange::ACTION_ADD));
+  bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                       std::move(change_list));
+
+  std::optional<ContextualTask> task = bridge_->GetTaskById(task_id_str);
+  ASSERT_TRUE(task.has_value());
+  EXPECT_EQ(task_id, task->GetTaskId());
+  EXPECT_EQ("Task Title", task->GetTitle());
+
+  std::optional<ContextualTask> not_found_task =
+      bridge_->GetTaskById(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  EXPECT_FALSE(not_found_task.has_value());
 }
 
 }  // namespace contextual_tasks

@@ -28,6 +28,10 @@ ContextualTasksContextControllerImpl::GetFeatureEligibility() {
   return service_->GetFeatureEligibility();
 }
 
+bool ContextualTasksContextControllerImpl::IsInitialized() {
+  return service_->IsInitialized();
+}
+
 ContextualTask ContextualTasksContextControllerImpl::CreateTask() {
   return service_->CreateTask();
 }

@@ -15,6 +15,67 @@ namespace contextual_tasks {
 
 namespace {
 
+// Create new EntityData object to contain specifics for writing changes.
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
+    const sync_pb::ContextualTaskSpecifics& specifics) {
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  *entity_data->specifics.mutable_contextual_task() = specifics;
+  entity_data->name = specifics.guid();
+  return entity_data;
+}
+
+// Extracts the task ID from a ContextualTaskEntity proto. A single contextual
+// task can be represented by multiple entities (e.g., one for the main task
+// and others for associated URL resources). This function ensures we can group
+// all related entities by a common task ID.
+std::string GetTaskIdFromContextualTaskEntity(
+    const proto::ContextualTaskEntity& entity) {
+  if (entity.specifics().has_contextual_task()) {
+    return entity.specifics().guid();
+  }
+
+  if (entity.specifics().has_url_resource()) {
+    return entity.specifics().url_resource().task_guid();
+  }
+
+  return std::string();
+}
+
+// Reconstructs a `ContextualTask` from its constituent entities. This
+// involves processing a list of `ContextualTaskEntity` protos, each
+// MUST be a part of the task (e.g., the main task details, an associated
+// URL), and assembling them into a single, coherent `ContextualTask` object.
+std::optional<ContextualTask> BuildTaskFromEntities(
+    const std::string& task_id_str,
+    const std::vector<proto::ContextualTaskEntity>& task_entities) {
+  ContextualTask task(base::Uuid::ParseCaseInsensitive(task_id_str));
+  bool has_contextual_task_specifics = false;
+  for (const auto& entity : task_entities) {
+    const auto& specifics = entity.specifics();
+    if (specifics.has_contextual_task()) {
+      const auto& task_proto = specifics.contextual_task();
+      task.SetTitle(task_proto.title());
+      if (task_proto.has_thread_id()) {
+        // TODO(crbug.com/445840627): Add thread type to
+        // ContextualTaskSpecifics.
+        task.AddThread(
+            Thread(ThreadType::kAiMode, task_proto.thread_id(), "", ""));
+      }
+      has_contextual_task_specifics = true;
+    } else if (specifics.has_url_resource()) {
+      const auto& url_resource_proto = specifics.url_resource();
+      task.AddUrlResource(
+          UrlResource(base::Uuid::ParseCaseInsensitive(specifics.guid()),
+                      GURL(url_resource_proto.url())));
+    }
+  }
+  if (has_contextual_task_specifics) {
+    return task;
+  } else {
+    return std::nullopt;
+  }
+}
+
 void ApplyEntityProtoToTrimmedSpecifics(
     const proto::ContextualTaskEntity& entity,
     sync_pb::ContextualTaskSpecifics* mutable_base_specifics) {
@@ -73,7 +134,7 @@ ContextualTaskSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       data_type_store_->CreateWriteBatch();
-  std::vector<proto::ContextualTaskEntity> added_or_updated;
+  std::vector<std::string> added_or_updated_guids;
   std::vector<base::Uuid> removed;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const sync_pb::EntitySpecifics& entity_specifics = change->data().specifics;
@@ -81,13 +142,19 @@ ContextualTaskSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_ADD:
       case syncer::EntityChange::ACTION_UPDATE: {
         CHECK(entity_specifics.has_contextual_task());
-        proto::ContextualTaskEntity entity =
+        const proto::ContextualTaskEntity& entity =
             SpecificsToEntityProto(entity_specifics.contextual_task());
-        added_or_updated.emplace_back(entity);
+        if (change->type() == syncer::EntityChange::ACTION_ADD) {
+          InsertEntityProto(entity);
+        } else {
+          UpdateEntityProto(entity);
+        }
+        added_or_updated_guids.emplace_back(change->storage_key());
         batch->WriteData(change->storage_key(), entity.SerializeAsString());
         break;
       }
       case syncer::EntityChange::ACTION_DELETE:
+        DeleteEntityProto(change->storage_key());
         removed.emplace_back(
             base::Uuid::ParseCaseInsensitive(change->storage_key()));
         batch->DeleteData(change->storage_key());
@@ -100,8 +167,16 @@ ContextualTaskSyncBridge::ApplyIncrementalSyncChanges(
       std::move(batch),
       base::BindOnce(&ContextualTaskSyncBridge::OnDataTypeStoreCommit,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  std::vector<ContextualTask> added_or_updated_task;
+  for (const std::string& guid : added_or_updated_guids) {
+    std::optional<ContextualTask> task = GetTaskById(guid);
+    if (task) {
+      added_or_updated_task.emplace_back(task.value());
+    }
+  }
   for (auto& observer : observers_) {
-    observer.OnTaskAddedOrUpdatedRemotely(added_or_updated);
+    observer.OnTaskAddedOrUpdatedRemotely(added_or_updated_task);
     observer.OnTaskRemovedRemotely(removed);
   }
 
@@ -128,6 +203,12 @@ std::unique_ptr<syncer::DataBatch> ContextualTaskSyncBridge::GetDataForCommit(
 std::unique_ptr<syncer::DataBatch>
 ContextualTaskSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const auto& [task_id, task_entities] : task_id_to_entities_map_) {
+    for (const auto& entity : task_entities) {
+      batch->Put(entity.specifics().guid(),
+                 CreateEntityDataFromSpecifics(entity.specifics()));
+    }
+  }
   return batch;
 }
 
@@ -143,8 +224,16 @@ std::string ContextualTaskSyncBridge::GetStorageKey(
 
 void ContextualTaskSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  std::vector<base::Uuid> uuids;
+  for (const auto& [task_id, entity] : task_id_to_entities_map_) {
+    uuids.push_back(base::Uuid::ParseCaseInsensitive(task_id));
+  }
+  task_id_to_entities_map_.clear();
   data_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
+  for (auto& observer : observers_) {
+    observer.OnTaskRemovedRemotely(uuids);
+  }
 }
 
 bool ContextualTaskSyncBridge::IsEntityDataValid(
@@ -181,6 +270,27 @@ ContextualTaskSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return trimmed_entity_specifics;
 }
 
+std::vector<ContextualTask> ContextualTaskSyncBridge::GetTasks() const {
+  std::vector<ContextualTask> tasks;
+  for (auto& [task_id, task_entities] : task_id_to_entities_map_) {
+    std::optional<ContextualTask> task =
+        BuildTaskFromEntities(task_id, task_entities);
+    if (task) {
+      tasks.emplace_back(task.value());
+    }
+  }
+  return tasks;
+}
+
+std::optional<ContextualTask> ContextualTaskSyncBridge::GetTaskById(
+    const std::string& task_guid) const {
+  auto it = task_id_to_entities_map_.find(task_guid);
+  if (it != task_id_to_entities_map_.end()) {
+    return BuildTaskFromEntities(task_guid, it->second);
+  }
+  return std::nullopt;
+}
+
 void ContextualTaskSyncBridge::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -212,18 +322,17 @@ void ContextualTaskSyncBridge::OnReadAllData(
     return;
   }
 
-  std::vector<proto::ContextualTaskEntity> loaded_entities;
   for (const auto& record : *entries) {
     proto::ContextualTaskEntity entity;
     if (!entity.ParseFromString(record.value)) {
       change_processor()->ReportError(*error);
       return;
     }
-    loaded_entities.emplace_back(std::move(entity));
+    InsertEntityProto(entity);
   }
 
   for (auto& observer : observers_) {
-    observer.OnContextualTaskDataStoreLoaded(loaded_entities);
+    observer.OnContextualTaskDataStoreLoaded();
   }
 
   data_type_store_->ReadAllMetadata(
@@ -231,8 +340,66 @@ void ContextualTaskSyncBridge::OnReadAllData(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ContextualTaskSyncBridge::InsertEntityProto(
+    const proto::ContextualTaskEntity& contextual_task_entity) {
+  std::string task_id =
+      GetTaskIdFromContextualTaskEntity(contextual_task_entity);
+  if (task_id.empty()) {
+    return;
+  }
+
+  auto it = task_id_to_entities_map_.find(task_id);
+  if (it != task_id_to_entities_map_.end()) {
+    it->second.emplace_back(contextual_task_entity);
+  } else {
+    task_id_to_entities_map_.emplace(
+        task_id,
+        std::vector<proto::ContextualTaskEntity>{contextual_task_entity});
+  }
+}
+
+void ContextualTaskSyncBridge::UpdateEntityProto(
+    const proto::ContextualTaskEntity& contextual_task_entity) {
+  std::string task_id =
+      GetTaskIdFromContextualTaskEntity(contextual_task_entity);
+
+  if (task_id.empty()) {
+    return;
+  }
+
+  auto it = task_id_to_entities_map_.find(task_id);
+  if (it == task_id_to_entities_map_.end()) {
+    return;
+  }
+
+  for (proto::ContextualTaskEntity& entity : it->second) {
+    if (entity.specifics().guid() ==
+        contextual_task_entity.specifics().guid()) {
+      entity = contextual_task_entity;
+    }
+  }
+}
+
+void ContextualTaskSyncBridge::DeleteEntityProto(const std::string& guid) {
+  for (auto& [task_id, task_entities] : task_id_to_entities_map_) {
+    for (auto it = task_entities.begin(); it != task_entities.end(); ++it) {
+      if (it->specifics().guid() == guid) {
+        task_entities.erase(it);
+        return;
+      }
+    }
+  }
+}
+
 std::optional<proto::ContextualTaskEntity>
 ContextualTaskSyncBridge::GetEntityProto(const std::string& guid) {
+  for (const auto& [task_id, task_entities] : task_id_to_entities_map_) {
+    for (const auto& task : task_entities) {
+      if (task.specifics().guid() == guid) {
+        return task;
+      }
+    }
+  }
   return std::nullopt;
 }
 
