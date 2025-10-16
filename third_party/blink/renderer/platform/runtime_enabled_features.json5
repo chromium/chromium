@@ -2902,11 +2902,6 @@
       status: "stable",
     },
     {
-      // Improved support for debugging CSSNestedDeclarations.
-      name: "InspectorGhostRules",
-      status: "stable",
-    },
-    {
       name: "InstalledApp",
       public: true,
       status: "stable",

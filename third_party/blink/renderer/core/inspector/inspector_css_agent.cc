@@ -1469,15 +1469,11 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   for (InspectorStyleSheet* stylesheet :
        css_style_sheet_to_inspector_style_sheet_.Values()) {
     stylesheet->SyncTextIfNeeded();
-    if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
-      ghost_sheets.push_back(stylesheet->PageStyleSheet());
-    }
+    ghost_sheets.push_back(stylesheet->PageStyleSheet());
   }
 
-  if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
-    ghost_rules.PopulateSheetsWithAssertion(std::move(ghost_sheets));
-    ghost_rules.Activate(document);
-  }
+  ghost_rules.PopulateSheetsWithAssertion(std::move(ghost_sheets));
+  ghost_rules.Activate(document);
 
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
       &document, /*within_selector_checking=*/false);
