@@ -268,12 +268,6 @@ GlicWidget* GlicInstanceCoordinatorImpl::GetGlicWidget() const {
   return nullptr;
 }
 
-gfx::NativeWindow GlicInstanceCoordinatorImpl::GetHostNativeWindow() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return gfx::NativeWindow{};
-}
-
 Browser* GlicInstanceCoordinatorImpl::attached_browser() {
   // Method should only be called on individual panels not the coordinator.
   // TODO: This can be called today, but it should not be.

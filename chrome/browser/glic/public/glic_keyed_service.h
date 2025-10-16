@@ -220,9 +220,6 @@ class GlicKeyedService : public KeyedService,
   base::CallbackListSubscription AddUserInputSubmittedCallback(
       base::RepeatingClosure callback);
 
-  void CaptureScreenshot(
-      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
-
   // Fetches the image for the context menu item (if possible, and potentially
   // scaling and reencoding) and sends the result to the web client as
   // additional data.
@@ -231,10 +228,6 @@ class GlicKeyedService : public KeyedService,
                          const ::GURL& src_url);
 
   AuthController& GetAuthController() { return *auth_controller_; }
-
-  GlicScreenshotCapturer& GetScreenshotCapturer() {
-    return *screenshot_capturer_;
-  }
 
   bool IsActiveWebContents(content::WebContents* contents);
 

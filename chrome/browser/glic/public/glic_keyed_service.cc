@@ -149,7 +149,6 @@ GlicKeyedService::GlicKeyedService(
                                                 contextual_cueing_service)),
       sharing_manager_(
           CreateSharingManager(profile, &window_controller(), metrics_.get())),
-      screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
@@ -737,11 +736,6 @@ void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {
 base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
     base::RepeatingClosure callback) {
   return user_input_submitted_callback_list_.Add(std::move(callback));
-}
-void GlicKeyedService::CaptureScreenshot(
-    mojom::WebClientHandler::CaptureScreenshotCallback callback) {
-  screenshot_capturer_->CaptureScreenshot(
-      window_controller().GetHostNativeWindow(), std::move(callback));
 }
 
 void GlicKeyedService::ShareContextImage(tabs::TabInterface* tab,

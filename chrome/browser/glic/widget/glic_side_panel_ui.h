@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
@@ -60,6 +61,9 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  void CaptureScreenshot(
+      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback)
+      override;
 
   // GlicUiEmbedder and Host::Delegate:
   bool IsShowing() const override;
@@ -85,6 +89,8 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   base::WeakPtr<GlicView> glic_view_;
   std::unique_ptr<LocalHotkeyManager> application_hotkey_manager_;
   std::unique_ptr<LocalHotkeyManager> glic_panel_hotkey_manager_;
+
+  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
 
   base::WeakPtrFactory<GlicSidePanelUi> weak_ptr_factory_{this};
 };

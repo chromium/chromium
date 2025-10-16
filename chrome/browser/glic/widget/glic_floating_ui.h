@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_FLOATING_UI_H_
 
 #include "base/time/time.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
@@ -64,6 +65,9 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  void CaptureScreenshot(
+      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback)
+      override;
   void ClosePanel() override;
 
   // GlicWindowEventObserver::Delegate:
@@ -109,6 +113,8 @@ class GlicFloatingUi : public GlicUiEmbedder,
 
   raw_ptr<Profile> profile_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
+
+  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
 
   base::WeakPtrFactory<GlicFloatingUi> weak_ptr_factory_{this};
 };

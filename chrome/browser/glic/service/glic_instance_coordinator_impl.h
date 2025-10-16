@@ -103,7 +103,6 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   base::WeakPtr<GlicInstanceCoordinatorImpl> GetWeakPtr();
 
   GlicWidget* GetGlicWidget() const override;
-  gfx::NativeWindow GetHostNativeWindow() override;
 
   Browser* attached_browser() override;
   State state() const override;

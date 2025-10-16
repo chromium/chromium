@@ -45,6 +45,11 @@ void EmptyEmbedderDelegate::SwitchConversation(
   std::move(callback).Run(std::nullopt);
 }
 
+void EmptyEmbedderDelegate::CaptureScreenshot(
+    glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
+  std::move(callback).Run(nullptr);
+}
+
 Host::PageHandlerInfo::PageHandlerInfo() = default;
 Host::PageHandlerInfo::~PageHandlerInfo() = default;
 Host::PageHandlerInfo::PageHandlerInfo(PageHandlerInfo&&) = default;
@@ -456,7 +461,6 @@ void Host::DetachPanel(GlicPageHandler* page_handler) {
 
 void Host::ClosePanel(GlicPageHandler* page_handler) {
   delegate_->ClosePanel();
-  glic_service().GetScreenshotCapturer().CloseScreenPicker();
 }
 
 void Host::SetPanelDraggableAreas(
@@ -472,6 +476,11 @@ void Host::SetMinimumWidgetSize(GlicPageHandler* page_handler,
   if (handler_info_ && handler_info_->page_handler == page_handler) {
     delegate_->SetMinimumWidgetSize(size);
   }
+}
+
+void Host::CaptureScreenshot(
+    glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
+  delegate_->CaptureScreenshot(std::move(callback));
 }
 
 bool Host::IsWidgetShowing(GlicWebClientAccess* client) const {

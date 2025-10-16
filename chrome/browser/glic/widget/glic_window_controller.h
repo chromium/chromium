@@ -113,8 +113,6 @@ class GlicWindowController {
   // Returns the widget that backs the glic window.
   virtual GlicWidget* GetGlicWidget() const = 0;
 
-  virtual gfx::NativeWindow GetHostNativeWindow() = 0;
-
   // Return the Browser to which the panel is attached, or null if detached.
   virtual Browser* attached_browser() = 0;
 

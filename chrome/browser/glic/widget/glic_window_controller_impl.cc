@@ -759,15 +759,6 @@ GlicWidget* GlicWindowControllerImpl::GetGlicWidget() const {
   return glic_widget_.get();
 }
 
-gfx::NativeWindow GlicWindowControllerImpl::GetHostNativeWindow() {
-  if (!glic_widget_) {
-    // TODO(b:440090981): Implement for side panel.
-    NOTIMPLEMENTED();
-    return gfx::NativeWindow();
-  }
-  return glic_widget_->GetNativeWindow();
-}
-
 void GlicWindowControllerImpl::AttachedBrowserDidClose(
     BrowserWindowInterface* browser) {
   Close();
@@ -1007,7 +998,9 @@ void GlicWindowControllerImpl::Close() {
 
 void GlicWindowControllerImpl::ClosePanel() {
   Close();
-  glic_service_->GetScreenshotCapturer().CloseScreenPicker();
+  if (screenshot_capturer_) {
+    screenshot_capturer_->CloseScreenPicker();
+  }
 }
 
 void GlicWindowControllerImpl::ResetAndHidePanel() {
@@ -1231,6 +1224,20 @@ void GlicWindowControllerImpl::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   std::move(callback).Run(mojom::SwitchConversationErrorReason::kUnknown);
+}
+
+void GlicWindowControllerImpl::CaptureScreenshot(
+    glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
+  if (!GetGlicWidget()) {
+    std::move(callback).Run(mojom::CaptureScreenshotResult::NewErrorReason(
+        mojom::CaptureScreenshotErrorReason::kUnknown));
+    return;
+  }
+  if (!screenshot_capturer_) {
+    screenshot_capturer_ = std::make_unique<GlicScreenshotCapturer>();
+  }
+  screenshot_capturer_->CaptureScreenshot(GetGlicWidget()->GetNativeWindow(),
+                                          std::move(callback));
 }
 
 bool GlicWindowControllerImpl::IsAttached() const {

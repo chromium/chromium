@@ -229,6 +229,9 @@ void GlicFloatingUi::Show() {
 }
 
 void GlicFloatingUi::Close() {
+  if (screenshot_capturer_) {
+    screenshot_capturer_->CloseScreenPicker();
+  }
   window_event_observer_.reset();
   glic_window_animator_.reset();
   glic_widget_observation_.Reset();
@@ -308,6 +311,15 @@ void GlicFloatingUi::SwitchConversation(
   delegate_->SwitchConversation(
       ShowOptions::ForFloating(GetGlicWidget()->GetWindowBoundsInScreen()),
       std::move(info), std::move(callback));
+}
+
+void GlicFloatingUi::CaptureScreenshot(
+    glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
+  if (!screenshot_capturer_) {
+    screenshot_capturer_ = std::make_unique<GlicScreenshotCapturer>();
+  }
+  screenshot_capturer_->CaptureScreenshot(GetGlicWidget()->GetNativeWindow(),
+                                          std::move(callback));
 }
 
 }  // namespace glic

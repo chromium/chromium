@@ -1018,7 +1018,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {
-    glic_service_->CaptureScreenshot(std::move(callback));
+    host().CaptureScreenshot(std::move(callback));
   }
 
   void SetAudioDucking(bool enabled,

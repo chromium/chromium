@@ -16,6 +16,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
@@ -115,7 +116,6 @@ class GlicWindowControllerImpl
 
   base::WeakPtr<views::View> GetView() override;
   GlicWidget* GetGlicWidget() const override;
-  gfx::NativeWindow GetHostNativeWindow() override;
 
   Browser* attached_browser() override;
   State state() const override;
@@ -150,6 +150,9 @@ class GlicWindowControllerImpl
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  void CaptureScreenshot(
+      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback)
+      override;
 
   // InstanceInterface implementation.
   mojom::PanelState GetPanelState() override;
@@ -398,6 +401,8 @@ class GlicWindowControllerImpl
   raw_ptr<GlicEnabling> enabling_;
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
   const InstanceId id_;
+
+  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
 
   base::WeakPtrFactory<GlicWindowControllerImpl> weak_ptr_factory_{this};
 };

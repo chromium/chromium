@@ -66,7 +66,11 @@ std::vector<uint8_t> ConvertFrameToJpeg(
 
 GlicScreenshotCapturer::GlicScreenshotCapturer() = default;
 
-GlicScreenshotCapturer::~GlicScreenshotCapturer() = default;
+GlicScreenshotCapturer::~GlicScreenshotCapturer() {
+  if (capture_callback_) {
+    SignalError(glic::mojom::CaptureScreenshotErrorReason::kUnknown);
+  }
+}
 
 void GlicScreenshotCapturer::CaptureScreenshot(
     gfx::NativeWindow parent_window,
