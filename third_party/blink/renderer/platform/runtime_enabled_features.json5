@@ -1437,12 +1437,6 @@
       status: "stable",
     },
     {
-      // Support for extended language ranges in :lang()
-      // https://chromestatus.com/feature/5071058079055872
-      name: "CSSLangExtendedRanges",
-      status: "experimental",
-    },
-    {
       name: "CSSLayoutAPI",
       status: "experimental",
     },

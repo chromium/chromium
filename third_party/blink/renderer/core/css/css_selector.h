@@ -498,11 +498,6 @@ class CORE_EXPORT CSSSelector {
   const AtomicString& Argument() const {
     return HasRareData() ? data_.rare_data_->argument_ : g_null_atom;
   }
-  // Returns the list of values of a parameterized selector. For example,
-  // :lang(en-US, de) returns a vector of strings containing "en-US" and "de".
-  const Vector<AtomicString>* ArgumentList() const {
-    return HasRareData() ? data_.rare_data_->argument_list_.get() : nullptr;
-  }
   const CSSSelectorList* SelectorList() const {
     return HasRareData() ? data_.rare_data_->selector_list_.Get() : nullptr;
   }
@@ -536,7 +531,6 @@ class CORE_EXPORT CSSSelector {
   bool IsASCIILower(const AtomicString& value);
   void SetValue(const AtomicString&, bool match_lower_case);
   void SetArgument(const AtomicString&);
-  void SetArgumentList(std::unique_ptr<Vector<AtomicString>>);
   void SetSelectorList(CSSSelectorList*);
   void SetIdentList(std::unique_ptr<Vector<AtomicString>>);
   void SetContainsPseudoInsideHasPseudoClass();
@@ -784,7 +778,6 @@ class CORE_EXPORT CSSSelector {
     } bits_;
     QualifiedName attribute_;  // Used for attribute selector
     AtomicString argument_;    // Used for :contains, :lang, :dir, etc.
-    std::unique_ptr<Vector<AtomicString>> argument_list_;  // Used for :lang
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
     std::unique_ptr<Vector<AtomicString>>
