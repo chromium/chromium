@@ -287,7 +287,7 @@
 }
 
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-               didCancelDownload:(web::DownloadTask*)download {
+              didCleanupDownload:(web::DownloadTask*)download {
   if (!_downloadTask) {
     // If the task was initially cancelled from this coordinator, it may already
     // be stopped. Test if the `_downloadTask` was already cleaned before this
@@ -343,7 +343,7 @@
                                   DownloadFileResult::NotStarted,
                                   DownloadFileResult::Count);
     base::RecordAction(base::UserMetricsAction("IOSDownloadClose"));
-    [self cancelDownload];
+    [self cleanupCurrentDownload];
     return;
   }
   base::RecordAction(
@@ -500,6 +500,19 @@
   [_storeKitCoordinator stop];
   _storeKitCoordinator.delegate = nil;
   _storeKitCoordinator = nil;
+}
+
+- (void)cleanupCurrentDownload {
+  if (!_downloadTask) {
+    return;
+  }
+  // Copy the task pointer before pause nullifies _downloadTask.
+  web::DownloadTask* downloadTask = _downloadTask;
+  [self pause];
+
+  DownloadManagerTabHelper* tabHelper =
+      DownloadManagerTabHelper::FromWebState(downloadTask->GetWebState());
+  tabHelper->CleanupCurrentDownload();
 }
 
 // Cancels the download task and stops the coordinator.

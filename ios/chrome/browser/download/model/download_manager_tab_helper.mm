@@ -158,6 +158,20 @@ web::DownloadTask* DownloadManagerTabHelper::GetActiveDownloadTask() {
   return task_.get();
 }
 
+void DownloadManagerTabHelper::CleanupCurrentDownload() {
+  if (delegate_ && delegate_started_) {
+    delegate_started_ = false;
+    [delegate_ downloadManagerTabHelper:this didCleanupDownload:task_.get()];
+  }
+
+  if (task_) {
+    task_->RemoveObserver(this);
+    // Defer task destruction to avoid clearing ObserverList during iteration.
+    ScheduleTaskDestruction();
+    task_final_file_path_.clear();
+  }
+}
+
 void DownloadManagerTabHelper::AdaptToFullscreen(bool adapt_to_fullscreen) {
   if (delegate_ && delegate_started_) {
     [delegate_ downloadManagerTabHelper:this
@@ -215,14 +229,7 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
   DCHECK_EQ(task, task_.get());
   switch (task->GetState()) {
     case web::DownloadTask::State::kCancelled:
-      if (delegate_ && delegate_started_) {
-        delegate_started_ = false;
-        [delegate_ downloadManagerTabHelper:this didCancelDownload:task_.get()];
-      }
-      task_->RemoveObserver(this);
-      // Defer task destruction to avoid clearing ObserverList during iteration.
-      ScheduleTaskDestruction();
-      task_final_file_path_.clear();
+      CleanupCurrentDownload();
       break;
     case web::DownloadTask::State::kInProgress:
       break;

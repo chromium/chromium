@@ -407,10 +407,10 @@ TEST_F(DownloadManagerCoordinatorTest, Close) {
   }
 
   // Verify that child view controller is removed, download task is set to null
-  // and download task is cancelled.
+  // and download task remains in its original state (cleanup doesn't cancel).
   EXPECT_EQ(0U, base_view_controller_.childViewControllers.count);
   EXPECT_FALSE(coordinator_.downloadTask);
-  EXPECT_EQ(web::DownloadTask::State::kCancelled, task->GetState());
+  EXPECT_EQ(web::DownloadTask::State::kNotStarted, task->GetState());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
       static_cast<base::HistogramBase::Sample32>(

@@ -66,6 +66,9 @@ class DownloadManagerTabHelper
   // Starts the current download task. Asserts that `task == task_`.
   virtual void StartDownload(web::DownloadTask* task);
 
+  // Cleans up current download resources and notifies delegate.
+  void CleanupCurrentDownload();
+
   // Sets whether the Download toolbar should adapt to the fullscreen state.
   virtual void AdaptToFullscreen(bool adapt_to_fullscreen);
 

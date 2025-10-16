@@ -68,7 +68,7 @@ using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
 }
 
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-               didCancelDownload:(web::DownloadTask*)download {
+              didCleanupDownload:(web::DownloadTask*)download {
   _state = std::make_unique<web::DownloadTask::State>(download->GetState());
 }
 

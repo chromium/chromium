@@ -45,9 +45,9 @@ typedef NS_ENUM(NSInteger, NewDownloadPolicy) {
                  didShowDownload:(web::DownloadTask*)download
                         animated:(BOOL)animated;
 
-// Informs the delegate that the download task was cancelled.
+// Informs the delegate that download task cleanup is complete.
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
-               didCancelDownload:(web::DownloadTask*)download;
+              didCleanupDownload:(web::DownloadTask*)download;
 
 // Informs the delegate that `download` was added to Save to Drive and will be
 // uploaded once the download has completed. This should lead the delegate to
