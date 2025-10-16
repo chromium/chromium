@@ -48,10 +48,12 @@
   opacity: 0;
 }
 
-#toolEnabledButton:hover .close-icon {
+#toolEnabledButton:hover .close-icon,
+#toolEnabledButton:focus .close-icon {
   opacity: 1;
 }
 
-#toolEnabledButton:hover .tool-icon {
+#toolEnabledButton:hover .tool-icon,
+#toolEnabledButton:focus .tool-icon {
   opacity: 0;
 }
