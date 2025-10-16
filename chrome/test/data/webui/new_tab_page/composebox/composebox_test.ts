@@ -48,6 +48,7 @@ suite('NewTabPageComposeboxTest', () => {
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
     searchboxCallbackRouterRemote =
         ComposeboxProxyImpl.getInstance()
             .searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
@@ -1613,6 +1614,7 @@ suite('NewTabPageComposeboxTest', () => {
   suite('Context menu', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
+        composeboxShowRecentTabChip: true,
         composeboxShowContextMenu: true,
       });
     });
@@ -1653,6 +1655,63 @@ suite('NewTabPageComposeboxTest', () => {
       assertEquals(files.length, 1);
       assertEquals(files[0]!.type, 'tab');
       assertEquals(files[0]!.name, sampleTabTitle);
+    });
+
+
+    test('shows recent tab chip when suggestions are available', async () => {
+      const tabInfo = {
+        tabId: 1,
+        title: 'Sample Tab',
+        url: {url: 'https://example.com'},
+        lastActive: {internalValue: 0n},
+      };
+      searchboxHandler.setResultFor(
+          'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
+      createComposeboxElement();
+      const contextElement = composeboxElement.$.context;
+
+      await microtasksFinished();
+      await contextElement.updateComplete;
+
+      const recentTabChip =
+          contextElement.shadowRoot.querySelector<HTMLElement>(
+              '#recentTabChip');
+      assertTrue(
+          recentTabChip !== null, 'recent tab chip should not be visible');
+    });
+
+    test('hides recent tab chip when tab is in context', async () => {
+      const tabInfo = {
+        tabId: 1,
+        title: 'Sample Tab',
+        url: {url: 'https://example.com'},
+        lastActive: {internalValue: 0n},
+      };
+      searchboxHandler.setResultFor(
+          'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
+      createComposeboxElement();
+      const contextElement = composeboxElement.$.context;
+      await microtasksFinished();
+      await contextElement.updateComplete;
+
+      let recentTabChip = contextElement.shadowRoot.querySelector<HTMLElement>(
+          '#recentTabChip');
+      assertTrue(recentTabChip !== null);
+
+      // Add the tab to the context.
+      searchboxHandler.setResultFor(
+          ADD_TAB_CONTEXT_FN,
+          Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+
+      recentTabChip.shadowRoot!.querySelector<HTMLElement>(
+                                   'cr-button')!.click();
+      await searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+      await microtasksFinished();
+
+      recentTabChip = contextElement.shadowRoot.querySelector<HTMLElement>(
+          '#recentTabChip');
+
+      assertTrue(recentTabChip === null);
     });
   });
 });

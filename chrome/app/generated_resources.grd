@@ -8597,6 +8597,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_DEEP_SEARCH" desc="The label for the deep search button in the context menu in the composebox as well as the chip that indicates that the user is in deep search mode.">
         Deep Search
       </message>
+      <message name="IDS_NTP_COMPOSE_ASK_ABOUT_THIS_TAB" desc="The text on a button that suggests the user can ask a question about the content of their most recent tab."  translateable="false">
+        Ask Google about previous tab
+      </message>
+      <message name="IDS_NTP_COMPOSE_ASK_ABOUT_THIS_TAB_ARIA_LABEL" desc="The aria-label for the button that suggests the user can ask a question about the content of their most recent tab. The $1 is a placeholder for the tab title." translateable="false">
+        Ask Google about previous tab: <ph name="TAB_TITLE">$1</ph>
+      </message>
       <message name="IDS_NTP_COMPOSE_CREATE_IMAGES" desc="The label for the create images button in the context menu in the composebox as well as the chip that indicates that the user is in create images mode.">
         Create images
       </message>

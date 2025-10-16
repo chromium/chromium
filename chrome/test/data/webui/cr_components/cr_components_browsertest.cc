@@ -250,3 +250,7 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextMenuEntrypoint) {
   RunTest("cr_components/composebox/context_menu_entrypoint_test.js",
           "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, RecentTabChip) {
+  RunTest("cr_components/composebox/recent_tab_chip_test.js", "mocha.run()");
+}

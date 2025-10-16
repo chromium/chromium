@@ -362,6 +362,9 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"createImages", IDS_NTP_COMPOSE_CREATE_IMAGES},
       {"composeDeepSearchPlaceholder", IDS_COMPOSE_DEEP_SEARCH_PLACEHOLDER},
       {"composeCreateImagePlaceholder", IDS_COMPOSE_CREATE_IMAGE_PLACEHOLDER},
+      {"askAboutThisTab", IDS_NTP_COMPOSE_ASK_ABOUT_THIS_TAB},
+      {"askAboutThisTabAriaLabel",
+       IDS_NTP_COMPOSE_ASK_ABOUT_THIS_TAB_ARIA_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString("searchboxComposePlaceholder",
