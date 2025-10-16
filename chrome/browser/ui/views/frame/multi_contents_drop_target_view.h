@@ -85,7 +85,9 @@ class MultiContentsDropTargetView : public views::View,
   int GetPreferredWidth(int web_contents_width) const;
   // Returns the maximum width that a view should be for the given web
   // contents width.
-  static int GetMaxWidth(int web_contents_width, DropTargetState state);
+  static int GetMaxWidth(int web_contents_width,
+                         DropTargetState state,
+                         DragType drag_type);
 
   // views::View
   void SetVisible(bool visible) override;

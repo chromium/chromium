@@ -117,6 +117,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "drop_target_show_delay",
                    base::Milliseconds(500));
 BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSideBySideShowDropTargetForLinkDelay,
+                   &kSideBySide,
+                   "drop_target_for_link_show_delay",
+                   base::Milliseconds(1400));
+BASE_FEATURE_PARAM(base::TimeDelta,
                    kSideBySideHideDropTargetDelay,
                    &kSideBySide,
                    "drop_target_hide_delay",
@@ -141,6 +146,11 @@ BASE_FEATURE_PARAM(int,
                    &kSideBySide,
                    "drop_target_width_percentage",
                    30);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetForLinkTargetWidthPercentage,
+                   &kSideBySide,
+                   "drop_target_for_link_width_percentage",
+                   15);
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetHideForOSWidth,
                    &kSideBySide,

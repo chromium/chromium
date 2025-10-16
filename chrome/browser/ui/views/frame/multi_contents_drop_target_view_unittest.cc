@@ -294,6 +294,36 @@ TEST_F(DropTargetViewTest, GetPreferredWidth) {
   MultiContentsDropTargetView* view = drop_target_view();
   view->Show(MultiContentsDropTargetView::DropSide::START,
              MultiContentsDropTargetView::DropTargetState::kFull,
+             MultiContentsDropTargetView::DragType::kTab);
+  EXPECT_TRUE(view->GetVisible());
+
+  // Width is clamped to the minimum.
+  EXPECT_EQ(100, view->GetPreferredWidth(400));
+
+  // Width is clamped to the maximum.
+  EXPECT_EQ(400, view->GetPreferredWidth(3000));
+
+  // Width is 20% of the web contents width.
+  EXPECT_EQ(200, view->GetPreferredWidth(1000));
+
+  // When hidden, width should be 0.
+  view->Hide();
+  EXPECT_FALSE(view->GetVisible());
+  EXPECT_EQ(0, view->GetPreferredWidth(1000));
+}
+
+TEST_F(DropTargetViewTest, GetPreferredWidthForLink) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSideBySide,
+      {{features::kSideBySideDropTargetMinWidth.name, "100"},
+       {features::kSideBySideDropTargetMaxWidth.name, "400"},
+       {features::kSideBySideDropTargetForLinkTargetWidthPercentage.name,
+        "20"}});
+
+  MultiContentsDropTargetView* view = drop_target_view();
+  view->Show(MultiContentsDropTargetView::DropSide::START,
+             MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_TRUE(view->GetVisible());
 
@@ -332,7 +362,7 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithAnimation) {
 
   view->Show(MultiContentsDropTargetView::DropSide::START,
              MultiContentsDropTargetView::DropTargetState::kFull,
-             MultiContentsDropTargetView::DragType::kLink);
+             MultiContentsDropTargetView::DragType::kTab);
 
   animation.SetStartTime(now);
   animation.Step(now + base::Seconds(15));
@@ -359,7 +389,8 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithStates) {
       {{features::kSideBySide,
         {{features::kSideBySideDropTargetMinWidth.name, "100"},
          {features::kSideBySideDropTargetMaxWidth.name, "400"},
-         {features::kSideBySideDropTargetTargetWidthPercentage.name, "20"}}},
+         {features::kSideBySideDropTargetForLinkTargetWidthPercentage.name,
+          "20"}}},
        {features::kSideBySideDropTargetNudge,
         {{features::kSideBySideDropTargetNudgeMinWidth.name, "50"},
          {features::kSideBySideDropTargetNudgeMaxWidth.name, "100"},

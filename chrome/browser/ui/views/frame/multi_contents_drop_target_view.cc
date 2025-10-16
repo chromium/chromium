@@ -142,7 +142,8 @@ bool MultiContentsDropTargetView::IsClosing() const {
 
 // static
 int MultiContentsDropTargetView::GetMaxWidth(int web_contents_width,
-                                             DropTargetState state) {
+                                             DropTargetState state,
+                                             DragType drag_type) {
   int min_width = 0;
   int max_width = 0;
   int percentage = 0;
@@ -165,7 +166,11 @@ int MultiContentsDropTargetView::GetMaxWidth(int web_contents_width,
     case DropTargetState::kFull:
       min_width = features::kSideBySideDropTargetMinWidth.Get();
       max_width = features::kSideBySideDropTargetMaxWidth.Get();
-      percentage = features::kSideBySideDropTargetTargetWidthPercentage.Get();
+      percentage =
+          drag_type == DragType::kTab
+              ? features::kSideBySideDropTargetTargetWidthPercentage.Get()
+              : features::kSideBySideDropTargetForLinkTargetWidthPercentage
+                    .Get();
       break;
     default:
       NOTREACHED();
@@ -186,8 +191,10 @@ int MultiContentsDropTargetView::GetPreferredWidth(
   }
 
   CHECK(state_.has_value());
+  CHECK(drag_type_.has_value());
 
-  const int target_full_width = GetMaxWidth(web_contents_width, *state_);
+  const int target_full_width =
+      GetMaxWidth(web_contents_width, *state_, drag_type_.value());
   const int animation_start_width = animate_expand_starting_width_.value_or(0);
   return animation_start_width +
          (GetAnimationValue() * (target_full_width - animation_start_width));

@@ -272,7 +272,7 @@ void MultiContentsViewDropTargetController::HandleDragUpdate(
 
   const int drop_entry_point_width = MultiContentsDropTargetView::GetMaxWidth(
       drop_target_parent_view_->width(),
-      MultiContentsDropTargetView::DropTargetState::kFull);
+      MultiContentsDropTargetView::DropTargetState::kFull, drag_type);
   if (point_in_view.x() >=
       drop_target_parent_view_->width() - drop_entry_point_width) {
     StartOrUpdateDropTargetTimer(
@@ -347,8 +347,11 @@ void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
   show_drop_target_timer_.emplace(drop_side, drag_type);
 
   show_drop_target_timer_->timer.Start(
-      FROM_HERE, features::kSideBySideShowDropTargetDelay.Get(), this,
-      &MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget);
+      FROM_HERE,
+      drag_type == MultiContentsDropTargetView::DragType::kTab
+          ? features::kSideBySideShowDropTargetDelay.Get()
+          : features::kSideBySideShowDropTargetForLinkDelay.Get(),
+      this, &MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget);
 }
 
 void MultiContentsViewDropTargetController::ResetDropTargetTimers() {
