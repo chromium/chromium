@@ -39,9 +39,9 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.content.R;
 import org.chromium.content.browser.input.ChromiumBaseInputConnection;
 import org.chromium.content.browser.input.ImeTestUtils;
-import org.chromium.content.browser.selection.SelectActionMenuHelper.DefaultItemOrder;
 import org.chromium.content.browser.selection.SelectActionMenuHelper.GroupItemOrder;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
@@ -380,13 +380,13 @@ public class ContentTextSelectionTest {
         // Default items. Subtracting 1 to adjust the 1-based indices of the DefaultItemOrder
         // constants to the 0-based indices of arrays.
         SelectionMenuItem[] defaultItems = menuGroups[0].items.toArray(new SelectionMenuItem[0]);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
+
+        // We should only see paste and select all in the default items group. Paste should appear
+        // first.
+        Assert.assertEquals(2, defaultItems.length);
+        Assert.assertEquals(R.id.select_action_menu_paste, defaultItems[0].id);
+        Assert.assertEquals(R.id.select_action_menu_select_all, defaultItems[1].id);
+
         // The additional non selection (secondary assist) menu item we created is
         // added to the menu.
         Assert.assertEquals(
@@ -427,13 +427,12 @@ public class ContentTextSelectionTest {
         Assert.assertTrue(menuGroups[0].items.first().isEnabled);
         // Default items.
         SelectionMenuItem[] defaultItems = menuGroups[1].items.toArray(new SelectionMenuItem[0]);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
+        Assert.assertEquals(4, defaultItems.length);
+        Assert.assertEquals(R.id.select_action_menu_cut, defaultItems[0].id);
+        Assert.assertEquals(R.id.select_action_menu_copy, defaultItems[1].id);
+        Assert.assertEquals(R.id.select_action_menu_paste, defaultItems[2].id);
+        Assert.assertEquals(R.id.select_action_menu_select_all, defaultItems[3].id);
+
         // The text processing menu item we created is added to the menu.
         Assert.assertEquals(
                 "testTextProcessingItem",
@@ -486,20 +485,23 @@ public class ContentTextSelectionTest {
 
         // MENU_ITEM_SHARE and MENU_ITEM_WEB_SEARCH are added to the menu by default but can
         // be removed if there are no activities that can resolve their intents on the system.
-        // So check if they're present first.
+        // If they are allowed, increase how many items we expect in the menu.
+        int nextIndex = 0;
+        Assert.assertEquals(R.id.select_action_menu_copy, defaultItems[nextIndex].id);
+        nextIndex++;
         if (mSelectionPopupController.isSelectActionModeAllowed(
                 ActionModeCallbackHelper.MENU_ITEM_SHARE)) {
-            Assert.assertTrue(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
+            Assert.assertEquals(R.id.select_action_menu_share, defaultItems[nextIndex].id);
+            nextIndex++;
         }
+        Assert.assertEquals(R.id.select_action_menu_select_all, defaultItems[nextIndex].id);
+        nextIndex++;
         if (mSelectionPopupController.isSelectActionModeAllowed(
                 ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH)) {
-            Assert.assertTrue(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
+            Assert.assertEquals(R.id.select_action_menu_web_search, defaultItems[nextIndex].id);
+            nextIndex++;
         }
-        Assert.assertTrue(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
+        Assert.assertEquals(nextIndex, defaultItems.length);
 
         // The text processing menu item we created is added to the menu.
         Assert.assertEquals(
