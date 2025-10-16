@@ -661,6 +661,8 @@ source_set("memory_buffer_sources") {
     sources += [
       "mac/io_surface.cc",
       "mac/io_surface.h",
+      "mac/mtl_shared_event_fence.h",
+      "mac/mtl_shared_event_fence.mm",
     ]
 
     public_deps += [

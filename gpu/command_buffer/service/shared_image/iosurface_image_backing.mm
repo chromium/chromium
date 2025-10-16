@@ -42,6 +42,7 @@
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gfx/mac/mtl_shared_event_fence.h"
 #include "ui/gl/egl_surface_io_surface.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
@@ -865,6 +866,8 @@ class IOSurfaceImageBacking::OverlayRepresentation final
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
   gfx::ScopedIOSurface GetIOSurface() const override;
+  std::vector<gfx::MTLSharedEventFence> GetBackpressureFences()
+      const override;
   bool IsInUseByWindowServer() const override;
 
   gfx::ScopedIOSurface io_surface_;
@@ -911,6 +914,19 @@ void IOSurfaceImageBacking::OverlayRepresentation::EndReadAccess(
 gfx::ScopedIOSurface
 IOSurfaceImageBacking::OverlayRepresentation::GetIOSurface() const {
   return io_surface_;
+}
+
+std::vector<gfx::MTLSharedEventFence>
+IOSurfaceImageBacking::OverlayRepresentation::GetBackpressureFences() const {
+  auto* iosurface_backing = static_cast<IOSurfaceImageBacking*>(backing());
+  AutoLock auto_lock(iosurface_backing);
+
+  std::vector<gfx::MTLSharedEventFence> backpressure_fences;
+  for (const auto& [shared_event, signaled_value] :
+       iosurface_backing->exclusive_shared_events_) {
+    backpressure_fences.emplace_back(shared_event.get(), signaled_value);
+  }
+  return backpressure_fences;
 }
 
 bool IOSurfaceImageBacking::OverlayRepresentation::IsInUseByWindowServer()

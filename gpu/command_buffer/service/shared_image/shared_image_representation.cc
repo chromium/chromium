@@ -892,6 +892,10 @@ OverlayImageRepresentation::GetDCLayerOverlayImage() {
 gfx::ScopedIOSurface OverlayImageRepresentation::GetIOSurface() const {
   return gfx::ScopedIOSurface();
 }
+std::vector<gfx::MTLSharedEventFence>
+OverlayImageRepresentation::GetBackpressureFences() const {
+  return {};
+}
 bool OverlayImageRepresentation::IsInUseByWindowServer() const {
   return false;
 }

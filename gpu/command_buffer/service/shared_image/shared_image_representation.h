@@ -48,6 +48,7 @@ class VulkanImplementation;
 
 #if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
+#include "ui/gfx/mac/mtl_shared_event_fence.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -992,6 +993,9 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
     gfx::ScopedIOSurface GetIOSurface() const {
       return representation()->GetIOSurface();
     }
+    std::vector<gfx::MTLSharedEventFence> GetBackpressureFences() const {
+      return representation()->GetBackpressureFences();
+    }
     bool IsInUseByWindowServer() const {
       return representation()->IsInUseByWindowServer();
     }
@@ -1039,6 +1043,7 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
   virtual std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 #elif BUILDFLAG(IS_APPLE)
   virtual gfx::ScopedIOSurface GetIOSurface() const;
+  virtual std::vector<gfx::MTLSharedEventFence> GetBackpressureFences() const;
   // Return true if the macOS WindowServer is currently using the underlying
   // storage for the image.
   virtual bool IsInUseByWindowServer() const;
