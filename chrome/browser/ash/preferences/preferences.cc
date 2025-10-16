@@ -170,7 +170,6 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
                              base::Value::List());
   registry->RegisterListPref(prefs::kDnsOverHttpsIncludedDomains,
                              base::Value::List());
-  registry->RegisterBooleanPref(prefs::kSilentPrintingEnabled, false);
 
   RegisterLocalStatePrefs(registry);
 }

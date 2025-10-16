@@ -1744,10 +1744,6 @@ inline constexpr char kAssistantTimeOfLastInteraction[] =
 // Whether the user is allowed to disconnect and configure VPN connections.
 inline constexpr char kVpnConfigAllowed[] = "vpn_config_allowed";
 
-// A boolean pref that indicates whether silent printing is enabled.
-inline constexpr char kSilentPrintingEnabled[] =
-    "ash.printing.silent_printing_enabled";
-
 // A boolean pref that indicates whether power peak shift is enabled.
 // Ignored unless powerd is configured to honor charging-related prefs.
 inline constexpr char kPowerPeakShiftEnabled[] = "ash.power.peak_shift_enabled";

@@ -826,6 +826,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSignedHTTPExchangeEnabled,
     prefs::kSignedHTTPExchangeEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kSilentPrintingEnabled,
+    prefs::kSilentPrintingEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kSitePerProcess,
     prefs::kSitePerProcess,
     base::Value::Type::BOOLEAN },
@@ -893,7 +896,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPasswordManagerPasskeysEnabled,
     password_manager::prefs::kCredentialsEnablePasskeys,
     base::Value::Type::BOOLEAN },
-#endif // BUILDFLAG(IS_ANDROID)
+#endif // !BUILDFLAG(IS_ANDROID)
   { key::kWebAuthenticationRemoteDesktopAllowedOrigins,
     webauthn::pref_names::kRemoteDesktopAllowedOrigins,
     base::Value::Type::LIST },
@@ -1857,9 +1860,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGenAIInlineImageSettings,
     ash::prefs::kLobsterEnterprisePolicySettings,
     base::Value::Type::INTEGER},
-  { key::kSilentPrintingEnabled,
-    ash::prefs::kSilentPrintingEnabled,
-    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)

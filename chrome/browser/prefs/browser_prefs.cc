@@ -2023,6 +2023,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kNonMilestoneUpdateToastVersion, "");
+  registry->RegisterBooleanPref(prefs::kSilentPrintingEnabled, false);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // This is intentionally last.

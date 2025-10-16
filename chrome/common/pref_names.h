@@ -3829,6 +3829,10 @@ inline constexpr char kEnterpriseHardwarePlatformAPIEnabled[] =
 inline constexpr char kSignedHTTPExchangeEnabled[] =
     "web_package.signed_exchange.enabled";
 
+// A boolean pref that indicates whether silent printing is enabled.
+inline constexpr char kSilentPrintingEnabled[] =
+    "printing.silent_printing_enabled";
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Enum that specifies client certificate management permissions for user. It
 // can have one of the following values.

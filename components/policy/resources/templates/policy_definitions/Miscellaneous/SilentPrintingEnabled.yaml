@@ -26,5 +26,6 @@ schema:
   type: boolean
 future_on:
 - chrome_os
+- chrome.*
 tags: []
 type: main
