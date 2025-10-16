@@ -136,6 +136,7 @@ RTCRtpReceiver* RTCRtpTransceiver::receiver() const {
 bool RTCRtpTransceiver::stopped() const {
   // Non-standard attribute reflecting being "stopping", whether or not we are
   // "stopped" per current_direction_.
+  // TODO(hbos): deprecate and remove.
   return direction_ == V8RTCRtpTransceiverDirection::Enum::kStopped;
 }
 

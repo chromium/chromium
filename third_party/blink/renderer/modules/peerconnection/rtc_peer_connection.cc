@@ -2463,7 +2463,9 @@ void RTCPeerConnection::DidModifyTransceivers(
     // stream was added containing the receiver's track.
     if (is_remote_description_or_rollback &&
         ((!previously_had_recv && transceiver->FiredDirectionHasRecv()) ||
-         add_list_prev_size != add_list.size())) {
+         add_list_prev_size != add_list.size()) &&
+        transceiver->currentDirection() !=
+            V8RTCRtpTransceiverDirection::Enum::kStopped) {
       // "Process the addition of a remote track".
       // https://w3c.github.io/webrtc-pc/#process-remote-track-addition
       track_events.push_back(transceiver);
