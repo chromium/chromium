@@ -3134,10 +3134,7 @@
    "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
    "expiry_milestone": 149
   },
-  {"name": "enable-chromeos-soda-languages",
-   "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
-   "expiry_milestone": 140
-  },
+
   {
     "name": "enable-cleanup-legacy-tabstate",
     "owners": [ "davidjm@google.com", "clank-tab-dev@google.com" ],
@@ -3912,10 +3909,6 @@
     // Used for testing libinput to check if it works better than the gestures
     // library to handle touchpad.
     "expiry_milestone": -1
-  },
-  {"name": "enable-live-caption-multilang",
-   "owners": ["evliu@google.com", "robsc@chromium.org", "amoylan@chromium.org"],
-   "expiry_milestone": 140
   },
   {
     "name": "enable-location-provider-manager",

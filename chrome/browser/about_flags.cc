@@ -8048,10 +8048,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableCrOSLiveTranslateName,
      flag_descriptions::kEnableCrOSLiveTranslateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(media::kLiveTranslate)},
-    {"enable-chromeos-soda-languages",
-     flag_descriptions::kEnableCrOSSodaLanguagesName,
-     flag_descriptions::kEnableCrOSSodaLanguagesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(speech::kCrosExpandSodaLanguages)},
+
     {"enable-chromeos-soda-conch",
      flag_descriptions::kEnableCrOSSodaConchLanguagesName,
      flag_descriptions::kEnableCrOSSodaConchLanguagesDescription, kOsCrOS,

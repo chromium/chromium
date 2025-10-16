@@ -3279,9 +3279,6 @@ extern const char kEnableMediaLinkHelpersDescription[];
 extern const char kEnableCrOSLiveTranslateName[];
 extern const char kEnableCrOSLiveTranslateDescription[];
 
-extern const char kEnableCrOSSodaLanguagesName[];
-extern const char kEnableCrOSSodaLanguagesDescription[];
-
 extern const char kEnableCrOSSodaConchLanguagesName[];
 extern const char kEnableCrOSSodaConchLanguagesDescription[];
 

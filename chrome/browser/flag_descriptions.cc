@@ -5817,11 +5817,6 @@ const char kEnableCrOSLiveTranslateDescription[] =
     "Enables the live translate feature on ChromeOS which allows for live "
     "translation of captions into a target language.";
 
-const char kEnableCrOSSodaLanguagesName[] = "SODA language expansion";
-const char kEnableCrOSSodaLanguagesDescription[] =
-    "Enable language expansion for SODA on device to "
-    "impact dictation and Live Captions.";
-
 const char kEnableCrOSSodaConchLanguagesName[] = "SODA Conch Languages.";
 const char kEnableCrOSSodaConchLanguagesDescription[] =
     "Enable Conch specific SODA language models.";
