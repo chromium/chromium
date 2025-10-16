@@ -2675,12 +2675,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens settings.
 - (void)openSettings {
   if (self.engagementTracker) {
-    if (!IsBlueDotOnToolsMenuButtoneEnabled() &&
-        self.settingsDestination.badge == BadgeTypePromo) {
-      self.engagementTracker->NotifyEvent(
-          feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
-      [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
-    }
     self.engagementTracker->NotifyEvent(
         feature_engagement::events::kSettingsOnOverflowMenuUsed);
   }

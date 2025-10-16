@@ -758,12 +758,6 @@ bool IsHomeMemoryImprovementsEnabled() {
 BASE_FEATURE(kEnableTraitCollectionRegistration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBlueDotOnToolsMenuButton, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsBlueDotOnToolsMenuButtoneEnabled() {
-  return base::FeatureList::IsEnabled(kBlueDotOnToolsMenuButton);
-}
-
 BASE_FEATURE(kSeparateProfilesForManagedAccounts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

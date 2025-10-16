@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_help_coordinator.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -15,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -74,7 +72,6 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   SceneState* scene_state_;
@@ -86,7 +83,6 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
 
 // Test that blue dot is set on foreground.
 TEST_F(PopupMenuHelpCoordinatorTest, ShowBlueDotSetOnForeground) {
-  scoped_feature_list_.InitAndEnableFeature(kBlueDotOnToolsMenuButton);
   ON_CALL(
       *tracker_,
       ShouldTriggerHelpUI(testing::Ref(
@@ -104,7 +100,6 @@ TEST_F(PopupMenuHelpCoordinatorTest, ShowBlueDotSetOnForeground) {
 
 // Test that blue dot is not set on foreground when FET feature is not eligible.
 TEST_F(PopupMenuHelpCoordinatorTest, DontShowBlueDotSetOnForeground) {
-  scoped_feature_list_.InitAndEnableFeature(kBlueDotOnToolsMenuButton);
   ON_CALL(
       *tracker_,
       ShouldTriggerHelpUI(testing::Ref(

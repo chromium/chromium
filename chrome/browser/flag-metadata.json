@@ -1305,10 +1305,6 @@
     "owners": [ "jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
     "expiry_milestone": 144
   },
-  {  "name": "blue-dot-on-tools-menu-button",
-     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
-     "expiry_milestone": 135
-   },
   {
     "name": "bluetooth-audio-le-audio-only",
     "owners": ["jrwu@chromium.org", "chromeos-audio@google.com" ],

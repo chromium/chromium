@@ -301,12 +301,6 @@ const char kBestOfAppFREDescription[] =
     "When enabled, displays some views during the FRE highlighting the best "
     "features in the app.";
 
-const char kBlueDotOnToolsMenuButtonName[] =
-    "Show blue dot promo on tools menu button";
-const char kBlueDotOnToolsMenuButtonDescription[] =
-    "When enabled, blue dot promo on tools menu button will be displayed to "
-    "user";
-
 const char kBottomOmniboxEvolutionName[] = "Bottom Omnibox Evolution";
 const char kBottomOmniboxEvolutionDescription[] =
     "Enables improvements in the bottom omnibox UX and animations.";
