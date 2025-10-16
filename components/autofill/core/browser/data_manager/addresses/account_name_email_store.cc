@@ -38,7 +38,8 @@ bool AutofillProfileMatchesAccountInfo(const AutofillProfile& profile,
 
 void RemoveNickname(std::string& name) {
   static base::NoDestructor<std::unique_ptr<const RE2>> nickname_pattern(
-      std::make_unique<const RE2>(R"(\s+\([^)]*\)$|\s+\"[^\"]*\")"));
+      std::make_unique<const RE2>(
+          features::kAutofillNameAndEmailProfileNicknameRegex.Get()));
   RE2::GlobalReplace(&name, **nickname_pattern, "");
 
   name = base::UTF16ToUTF8(base::TrimWhitespace(base::UTF8ToUTF16(name),

@@ -398,6 +398,12 @@ BASE_FEATURE(kAutofillEnableSupportForNameAndEmail,
 const base::FeatureParam<int> kAutofillNameAndEmailProfileNotSelectedThreshold{
     &kAutofillEnableSupportForNameAndEmail, "rejection_threshold", 10};
 
+// The pattern used to remove nicknames from the account full name before
+// creating the kAccountNameEmail profile.
+const base::FeatureParam<std::string> kAutofillNameAndEmailProfileNicknameRegex{
+    &kAutofillEnableSupportForNameAndEmail, "nickname_regex",
+    R"(\s+\([^)]*\)$|\s+\"[^\"]*\")"};
+
 // When enabled, the autofill suggestion labels are more descriptive and
 // relevant.
 // TODO(crbug.com/380273791): Cleanup when launched.
