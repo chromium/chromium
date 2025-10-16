@@ -269,14 +269,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void RemoveArcApp(const std::string& app_id) {
-    ArcApps* arc_apps = ArcAppsFactory::GetForProfile(profile());
-    ASSERT_TRUE(arc_apps);
-    arc_apps->OnAppRemoved(app_id);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   void VerifyOptionalBool(std::optional<bool> source,
                           std::optional<bool> target) {
     if (source.has_value()) {
@@ -452,42 +444,50 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           /*allow_close=*/true,
           /*has_badge=*/false, /*paused=*/false,
           /*allow_window_mode_selection=*/std::nullopt);
-      // Simulate the app is removed.
-      RemoveArcApp(app_id);
-      VerifyAppIsRemoved(app_id);
     }
   }
   VerifyAppTypeIsInitialized(AppType::kArc);
 
-  // Verify the initialization process again with a new ArcApps object.
-  std::unique_ptr<ArcApps> arc_apps = std::make_unique<ArcApps>(
-      AppServiceProxyFactory::GetForProfile(profile()));
-  ASSERT_TRUE(arc_apps.get());
-  // Call `OnInitialized` manually as ArcSessionManager is already initialized.
-  // TODO(crbug.com/446582547): Fix this test and avoid this call. We should
-  // destroy/reinitialize objects to simulate a restart instead of just
-  // recreating another ArcApps. Do not copy & paste this pattern.
-  arc_apps->OnInitialized();
+  arc_test.TearDown();
+}
 
+TEST_F(PublisherTest, ArcAppsRemoveApps) {
+  ArcAppTest arc_test;
+  arc_test.SetUp(profile());
+
+  // Install fake apps.
+  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
+  AddArcPackage(arc_test, arc_test.fake_apps());
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
   for (const auto& app_id : prefs->GetAppIds()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
     if (app_info) {
-      VerifyApp(
-          AppType::kArc, app_id, app_info->name, Readiness::kReady,
-          app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
-          app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
-          {}, app_info->last_launch_time, app_info->install_time,
-          MakeFakePermissions(),
-          /*is_platform_app=*/false,
-          /*recommendable=*/true, /*searchable=*/true,
-          /*show_in_launcher=*/true, /*show_in_shelf=*/true,
-          /*show_in_search=*/true, /*show_in_management=*/true,
-          /*handles_intents=*/true,
-          /*allow_uninstall=*/app_info->ready && !app_info->sticky,
-          /*allow_close=*/true,
-          /*has_badge=*/false, /*paused=*/false,
-          /*allow_window_mode_selection=*/std::nullopt);
+      // Simulate app is removed.
+      prefs->RemoveApp(app_id);
 
+      // Verify it is marked removed on the registry cache.
+      VerifyAppIsRemoved(app_id);
+    }
+  }
+
+  arc_test.TearDown();
+}
+
+TEST_F(PublisherTest, ArcAppsSetLaunchTime) {
+  ArcAppTest arc_test;
+  arc_test.SetUp(profile());
+
+  // Install fake apps.
+  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
+  AddArcPackage(arc_test, arc_test.fake_apps());
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
+  for (const auto& app_id : prefs->GetAppIds()) {
+    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
+    if (app_info) {
       // Test OnAppLastLaunchTimeUpdated.
       const base::Time before_time = base::Time::Now();
       prefs->SetLastLaunchTime(app_id);
@@ -501,10 +501,6 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           MakeFakePermissions());
     }
   }
-
-  // TODO(crbug.com/446582547): Fix this test and avoid this call.
-  arc_apps->OnShutdown();
-  arc_apps.reset();
 
   arc_test.TearDown();
 }
