@@ -63,6 +63,11 @@ void EtwConsumer::ConsumeEvents() {
   Consume();
 }
 
+void EtwConsumer::Flush(std::function<void()> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  trace_writer_->Flush(std::move(callback));
+}
+
 // static
 void EtwConsumer::ProcessEventRecord(EVENT_RECORD* event_record) {
   // https://learn.microsoft.com/en-us/windows/win32/etw/nt-kernel-logger-constants

@@ -53,6 +53,12 @@ class TRACING_EXPORT EtwConsumer
   // trace session is stopped.
   void ConsumeEvents();
 
+  // Calls Flush() on the trace writer to ensure that pending data is committed.
+  // |callback| is an optional callback, when non-null it will request the
+  // service to ACK the flush and will be invoked after the service has
+  // acknowledged it.
+  void Flush(std::function<void()> callback);
+
   // base::win::EtwTraceConsumerBase<>:
   static void ProcessEventRecord(EVENT_RECORD* event_record);
   static bool ProcessBuffer(EVENT_TRACE_LOGFILE* buffer);
