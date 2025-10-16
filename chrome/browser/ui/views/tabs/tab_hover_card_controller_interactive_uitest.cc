@@ -117,14 +117,17 @@ class TabHoverCardInteractiveUiTest
           MemorySaverInteractiveTestMixin<InteractiveBrowserTest>>,
       public test::TabHoverCardTestUtil {
  public:
-  ~TabHoverCardInteractiveUiTest() override = default;
-
-  void SetUp() override {
-    set_open_about_blank_on_browser_launch(true);
+  TabHoverCardInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kTabHoverCardImages,
          data_sharing::features::kDataSharingFeature},
         {});
+  }
+
+  ~TabHoverCardInteractiveUiTest() override = default;
+
+  void SetUp() override {
+    set_open_about_blank_on_browser_launch(true);
     MemorySaverInteractiveTestMixin::SetUp();
   }
 
@@ -526,8 +529,7 @@ class TabHoverCardFadeFooterWithDiscardInteractiveUiTest
     : public TabHoverCardFadeFooterInteractiveUiTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  void SetUp() override {
-    TabHoverCardFadeFooterInteractiveUiTest::SetUp();
+  TabHoverCardFadeFooterWithDiscardInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatureState(features::kWebContentsDiscard,
                                               GetParam());
   }
