@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,42 +16,42 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/display_switches.h"
 
-// TODO(crbug.com/447629531): Migrate the methods under tests and their tests to
-// ContextualSearchboxHandler.
-class TestSearchboxHandler : public SearchboxHandler {
+class TestSearchboxHandler : public ContextualSearchboxHandler {
  public:
   TestSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      MetricsReporter* metrics_reporter,
-      std::unique_ptr<OmniboxController> controller)
-      : SearchboxHandler(std::move(pending_page_handler),
-                         profile,
-                         web_contents,
-                         metrics_reporter,
-                         std::move(controller)) {}
+      std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
+      std::unique_ptr<ComposeboxQueryController> query_controller)
+      : ContextualSearchboxHandler(std::move(pending_page_handler),
+                                   profile,
+                                   web_contents,
+                                   /*metrics_reporter=*/nullptr,
+                                   std::move(metrics_recorder),
+                                   std::make_unique<OmniboxController>(
+                                       /*view=*/nullptr,
+                                       std::make_unique<TestOmniboxClient>()),
+                                   std::move(query_controller)) {}
 
   ~TestSearchboxHandler() override = default;
 
   void OnThumbnailRemoved() override {}
 };
 
-class SearchboxHandlerBrowserTest : public InProcessBrowserTest {
+class ContextualSearchboxHandlerBrowserTest : public InProcessBrowserTest {
  protected:
   testing::NiceMock<MockSearchboxPage> page_;
   std::unique_ptr<TestSearchboxHandler> handler_;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    auto omnibox_controller = std::make_unique<OmniboxController>(
-        /*view=*/nullptr, std::make_unique<TestOmniboxClient>(),
-        kAutocompleteDefaultStopTimerDuration);
     handler_ = std::make_unique<TestSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         browser()->profile(),
         /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
-        /*metrics_reporter=*/nullptr, std::move(omnibox_controller));
+        /*metrics_recorder=*/nullptr,
+        /*query_controller=*/nullptr);
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -64,7 +64,7 @@ class SearchboxHandlerBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override { handler_.reset(); }
 };
 
-IN_PROC_BROWSER_TEST_F(SearchboxHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
                        CreateTabPreviewEncodingOptions_NotScaled) {
   // When no device scale factor is applied, physical pixels should translate to
   // CSS pixels at a 1:1 ratio.
@@ -80,16 +80,17 @@ IN_PROC_BROWSER_TEST_F(SearchboxHandlerBrowserTest,
   EXPECT_EQ(options->max_height, expected_height);
 }
 
-class SearchboxHandlerBrowserTestDSF2 : public SearchboxHandlerBrowserTest {
+class ContextualSearchboxHandlerBrowserTestDSF2
+    : public ContextualSearchboxHandlerBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    SearchboxHandlerBrowserTest::SetUpCommandLine(command_line);
+    ContextualSearchboxHandlerBrowserTest::SetUpCommandLine(command_line);
     command_line->RemoveSwitch(switches::kForceDeviceScaleFactor);
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SearchboxHandlerBrowserTestDSF2,
+IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTestDSF2,
                        CreateTabPreviewEncodingOptions_Scaled) {
   // 60 physical pixels translates to 30 CSS pixels when the device scale factor
   // = 2 (2 physical pixels : 1 CSS pixel);

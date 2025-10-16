@@ -25,9 +25,11 @@
 
 class MetricsReporter;
 class Profile;
+class SkBitmap;
 
 namespace lens {
 struct ContextualInputData;
+struct ImageEncodingOptions;
 }
 
 namespace tabs {
@@ -66,6 +68,8 @@ class ContextualSearchboxHandler
                    bool ctrl_key,
                    bool meta_key,
                    bool shift_key) override;
+  void GetRecentTabs(GetRecentTabsCallback callback) override;
+  void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override;
 
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(
@@ -83,6 +87,13 @@ class ContextualSearchboxHandler
       const std::string& query_text,
       WindowOpenDisposition disposition,
       std::map<std::string, std::string> additional_params);
+  FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerBrowserTest,
+                           CreateTabPreviewEncodingOptions_NotScaled);
+  FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerBrowserTestDSF2,
+                           CreateTabPreviewEncodingOptions_Scaled);
+
+  std::optional<lens::ImageEncodingOptions> CreateTabPreviewEncodingOptions(
+      content::WebContents* web_contents);
 
  private:
   void OnGetTabPageContext(
@@ -90,6 +101,9 @@ class ContextualSearchboxHandler
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
   void OpenUrl(GURL url, const WindowOpenDisposition disposition);
+
+  void OnPreviewReceived(GetTabPreviewCallback callback,
+                         const SkBitmap& preview_bitmap);
 
   void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
