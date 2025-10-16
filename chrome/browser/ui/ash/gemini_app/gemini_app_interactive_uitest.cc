@@ -610,8 +610,9 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest,
                        PRE_PreferredAppForSupportedLinks) {}
 
 // Verifies that the Gemini app is the preferred app for supported links.
+// TODO(https://crbug.com/452684140): Re-enable when test is fixed.
 IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest,
-                       PreferredAppForSupportedLinks) {
+                       DISABLED_PreferredAppForSupportedLinks) {
   // Browser.
   Browser* gemini_app_browser = nullptr;
 
