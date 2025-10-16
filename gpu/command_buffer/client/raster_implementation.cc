@@ -1839,29 +1839,6 @@ void RasterImplementation::OnAsyncYUVReadbackDone(
   }
 }
 
-void RasterImplementation::IssueImageDecodeCacheEntryCreation(
-    base::span<const uint8_t> encoded_data,
-    const gfx::Size& output_size,
-    uint32_t transfer_cache_entry_id,
-    const gfx::ColorSpace& target_color_space,
-    bool needs_mips,
-    SyncToken* decode_sync_token,
-    ClientDiscardableHandle handle) {
-  DCHECK(gpu_control_);
-  DCHECK(image_decode_accelerator_);
-  DCHECK(handle.IsValid());
-
-  // Insert a sync token to signal that |handle|'s buffer has been registered.
-  SyncToken sync_token;
-  GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-  // Send the decode request to the service.
-  *decode_sync_token = image_decode_accelerator_->ScheduleImageDecode(
-      encoded_data, output_size, gpu_control_->GetCommandBufferID(),
-      transfer_cache_entry_id, handle.shm_id(), handle.byte_offset(),
-      sync_token.release_count(), target_color_space, needs_mips);
-}
-
 void RasterImplementation::TraceBeginCHROMIUM(const char* category_name,
                                               const char* trace_name) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
