@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(!is_android)
 
-source_set("feature_flag") {
+source_set("headers") {
   sources = [ "webui_browser.h" ]
 }
 
@@ -21,7 +21,7 @@ source_set("webui_browser") {
   ]
   public_deps = [
     ":browser_mojo_bindings",
-    ":feature_flag",
+    ":headers",
     "//base",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/location_bar",

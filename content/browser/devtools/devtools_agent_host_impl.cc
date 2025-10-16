@@ -143,6 +143,7 @@ const char DevToolsAgentHost::kTypeOther[] = "other";
 const char DevToolsAgentHost::kTypeAuctionWorklet[] = "auction_worklet";
 const char DevToolsAgentHost::kTypeAssistiveTechnology[] =
     "assistive_technology";
+const char DevToolsAgentHost::kTypeBrowserUI[] = "browser_ui";
 int DevToolsAgentHostImpl::s_force_creation_count_ = 0;
 
 // static

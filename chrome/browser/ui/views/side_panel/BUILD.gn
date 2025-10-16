@@ -166,7 +166,7 @@ source_set("side_panel") {
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/top_chrome",
-    "//chrome/browser/ui/webui_browser:feature_flag",
+    "//chrome/browser/ui/webui_browser:headers",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/accessibility:reading",

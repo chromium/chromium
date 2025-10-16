@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_DEVTOOLS_MANAGER_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
@@ -44,6 +45,24 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
 
   // Returns whether embedder allows to inspect given |rfh|.
   virtual bool AllowInspectingRenderFrameHost(RenderFrameHost* rfh);
+
+  // Returns classification override for the `web_contents` about whether it
+  // should be treated as a Tab target.
+  // Returns:
+  //   - std::nullopt if the delegate doesn't want to override the default
+  //     behavior, which means a kTypeTab target for WebContents and a frame
+  //     target for its main frame will be reported when enumerating all
+  //     targets.
+  //   - true if the target should be treated as a Tab with no parent even if
+  //     it is an inner WebContents that might be treated as kTypeGuest by
+  //     default. A kTypeTab target for WebContents and a frame target with
+  //     type determined by GetTargetType() will be reported when enumerating
+  //     all targets.
+  //   - false if the target should not be treated as a Tab, which means no
+  //     target is reported for the WebContents when enumerating all targets.
+  //     Its main frame target will be reported as normal.
+  virtual std::optional<bool> ShouldReportAsTabTarget(
+      WebContents* web_contents);
 
   // Chrome Devtools Protocol Target type to use. Before MPArch frame targets
   // were used, which correspond to the primary outermost frame in the

@@ -35,6 +35,11 @@ bool DevToolsManagerDelegate::AllowInspectingRenderFrameHost(
   return true;
 }
 
+std::optional<bool> DevToolsManagerDelegate::ShouldReportAsTabTarget(
+    WebContents* web_contents) {
+  return std::nullopt;
+}
+
 DevToolsAgentHost::List DevToolsManagerDelegate::RemoteDebuggingTargets(
     DevToolsManagerDelegate::TargetType target_type) {
   return DevToolsAgentHost::GetOrCreateAll();

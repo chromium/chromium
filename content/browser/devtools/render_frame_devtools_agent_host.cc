@@ -766,11 +766,17 @@ std::string RenderFrameDevToolsAgentHost::GetParentId() {
 
   WebContentsImpl* contents = static_cast<WebContentsImpl*>(web_contents());
   if (!contents) {
-    return "";
+    return std::string();
   }
 
   if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     if (WebContents* outer_contents = contents->GetOuterWebContents()) {
+      auto* delegate = DevToolsManager::GetInstance()->delegate();
+      if (delegate &&
+          delegate->ShouldReportAsTabTarget(web_contents()).value_or(false)) {
+        // Delegates wants to report it as Tab, report as top level target.
+        return std::string();
+      }
       return DevToolsAgentHost::GetOrCreateFor(outer_contents)->GetId();
     }
   } else {
@@ -779,7 +785,7 @@ std::string RenderFrameDevToolsAgentHost::GetParentId() {
       return DevToolsAgentHost::GetOrCreateFor(contents)->GetId();
     }
   }
-  return "";
+  return std::string();
 }
 
 std::string RenderFrameDevToolsAgentHost::GetOpenerId() {
@@ -819,7 +825,14 @@ std::string RenderFrameDevToolsAgentHost::GetType() {
   if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     if (web_contents() &&
         static_cast<WebContentsImpl*>(web_contents())->GetOuterWebContents()) {
-      return kTypeGuest;
+      auto* delegate = DevToolsManager::GetInstance()->delegate();
+      // If delegate does not indicate that it should be reported as Tab, report
+      // the default kTypeGuest. Otherwise, continue with code below to get
+      // target type from delegate.
+      if (!delegate ||
+          !delegate->ShouldReportAsTabTarget(web_contents()).value_or(false)) {
+        return kTypeGuest;
+      }
     }
   } else {
     if (frame_tree_node_ &&

@@ -52,7 +52,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views/side_panel",
-    "//chrome/browser/ui/webui_browser:feature_flag",
+    "//chrome/browser/ui/webui_browser:headers",
     "//components/data_sharing/public:features",
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/common:features",

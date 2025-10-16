@@ -5835,6 +5835,26 @@
       "reillyg@chromium.org"
     ]
   },
+  "Run selected WPTs with webui browser.",
+  {
+    "prefix": "webui-browser",
+    "owners": [
+      "lzhao@microsoft.com",
+      "kerenzhu@chromium.org",
+      "tluk@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html"
+    ],
+    "args": [
+      "--enable-features=AttachUnownedInnerWebContents,Webium"
+    ],
+    "expires": "Sep 15, 2026"
+  },
   {
     "prefix": "wide-gamut",
     "owners": [

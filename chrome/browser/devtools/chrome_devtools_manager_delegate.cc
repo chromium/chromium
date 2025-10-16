@@ -30,7 +30,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -42,6 +42,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
@@ -269,12 +270,17 @@ void ChromeDevToolsManagerDelegate::HandleCommand(
 
 std::string ChromeDevToolsManagerDelegate::GetTargetType(
     content::WebContents* web_contents) {
+  if (webui_browser::IsBrowserUIWebContents(web_contents)) {
+    return DevToolsAgentHost::kTypeBrowserUI;
+  }
+
   if (IsIsolatedWebApp(web_contents)) {
     return ChromeDevToolsManagerDelegate::kTypeApp;
   }
 
-  if (base::Contains(AllTabContentses(), web_contents))
+  if (tabs::TabInterface::MaybeGetFromContents(web_contents)) {
     return DevToolsAgentHost::kTypePage;
+  }
 
   std::string extension_name;
   std::string extension_type;
@@ -287,6 +293,23 @@ std::string ChromeDevToolsManagerDelegate::GetTargetType(
   }
 
   return DevToolsAgentHost::kTypeOther;
+}
+
+std::optional<bool> ChromeDevToolsManagerDelegate::ShouldReportAsTabTarget(
+    content::WebContents* web_contents) {
+  if (webui_browser::IsBrowserUIWebContents(web_contents)) {
+    // Return false for browser UI so its WebContents is not reported as Tab.
+    // Browser UI is not a Tab and can not be interacted as a Tab. Reporting
+    // browser UI WebContents as Tab target will confuse tools such as test
+    // drivers and cause them to fail.
+    return false;
+  }
+
+  if (tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+    return true;
+  }
+
+  return std::nullopt;
 }
 
 std::string ChromeDevToolsManagerDelegate::GetTargetTitle(
