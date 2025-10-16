@@ -32,9 +32,6 @@ class BrowserAutofillManager;
 // One instance per frame, owned by the BrowserAutofillManager.
 class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
  public:
-  using GetOtpSuggestionsCallback =
-      base::OnceCallback<void(std::vector<std::string>)>;
-
   OtpManagerImpl(BrowserAutofillManager& owner,
                  one_time_tokens::OneTimeTokenService* one_time_token_service);
   OtpManagerImpl(const OtpManagerImpl&) = delete;
