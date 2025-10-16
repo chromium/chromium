@@ -133,6 +133,7 @@ InterpolationValue AttachBoxes(InterpolationValue&& value,
           MakeGarbageCollected<GeometryBoxBasicShapeNonInterpolableValue>(
               non_interpolable, geometry_box);
       break;
+    case CSSPropertyID::kBorderShape:
     case CSSPropertyID::kOffsetPath:
       value.non_interpolable_value =
           MakeGarbageCollected<CoordBoxBasicShapeNonInterpolableValue>(

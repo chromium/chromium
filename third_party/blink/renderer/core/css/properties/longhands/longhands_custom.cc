@@ -2021,24 +2021,42 @@ const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   const StyleBorderShape& border_shape = *style.BorderShape();
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  const CSSValue* outer_shape =
-      ValueForBasicShape(style, &border_shape.OuterShape());
-  list->Append(*outer_shape);
+
+  const CSSValue* outer = nullptr;
+  const CSSValue* inner = nullptr;
+
+  // Outer shape and coord box
+  CSSValue* outer_shape = ValueForBasicShape(style, &border_shape.OuterShape());
   GeometryBox box = border_shape.OuterBox();
   if (box != GeometryBox::kBorderBox) {
-    list->Append(*CSSIdentifierValue::Create(box));
+    CSSValue* outer_box = CSSIdentifierValue::Create(box);
+    outer = MakeGarbageCollected<CSSValuePair>(
+        outer_shape, outer_box, CSSValuePair::kKeepIdenticalValues);
+  } else {
+    outer = outer_shape;
   }
-  if (!border_shape.HasSeparateInnerShape()) {
-    return list;
+
+  // Inner shape and coord box
+  if (border_shape.HasSeparateInnerShape()) {
+    CSSValue* inner_shape =
+        ValueForBasicShape(style, &border_shape.InnerShape());
+    box = border_shape.InnerBox();
+    if (box != GeometryBox::kBorderBox) {
+      CSSValue* inner_box = CSSIdentifierValue::Create(box);
+      inner = MakeGarbageCollected<CSSValuePair>(
+          inner_shape, inner_box, CSSValuePair::kKeepIdenticalValues);
+    } else {
+      inner = inner_shape;
+    }
   }
-  const CSSValue* inner_shape =
-      ValueForBasicShape(style, &border_shape.InnerShape());
-  list->Append(*inner_shape);
-  box = border_shape.InnerBox();
-  if (box != GeometryBox::kBorderBox) {
-    list->Append(*CSSIdentifierValue::Create(box));
+
+  if (!inner || base::ValuesEquivalent(inner, outer)) {
+    return outer;
   }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*outer);
+  list->Append(*inner);
   return list;
 }
 

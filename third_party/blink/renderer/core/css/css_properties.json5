@@ -2635,7 +2635,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSBorderShape",
       interpolable: true,
-      compositable: true,
+      compositable: false,
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/style_border_shape.h"],

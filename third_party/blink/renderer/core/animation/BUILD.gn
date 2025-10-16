@@ -78,6 +78,8 @@ blink_core_sources("animation") {
     "css_basic_shape_interpolation_type.h",
     "css_border_image_length_box_interpolation_type.cc",
     "css_border_image_length_box_interpolation_type.h",
+    "css_border_shape_interpolation_type.cc",
+    "css_border_shape_interpolation_type.h",
     "css_clip_interpolation_type.cc",
     "css_clip_interpolation_type.h",
     "css_color_interpolation_type.cc",

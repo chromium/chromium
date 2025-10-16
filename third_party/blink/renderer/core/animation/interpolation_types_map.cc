@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/css_aspect_ratio_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_basic_shape_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_border_image_length_box_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_border_shape_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_clip_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_content_visibility_interpolation_type.h"
@@ -425,6 +426,10 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kWebkitMaskBoxImageSlice:
         applicable_types->push_back(
             MakeGarbageCollected<CSSImageSliceInterpolationType>(property));
+        break;
+      case CSSPropertyID::kBorderShape:
+        applicable_types->push_back(
+            MakeGarbageCollected<CSSBorderShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kClipPath:
         applicable_types->push_back(
