@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -199,10 +200,13 @@ public class StripDragShadowView extends FrameLayout {
         mTitleView.setTextColor(TabUiThemeUtil.getTabTextColor(context, isIncognito));
 
         // Tab favicon
-        boolean fetchFaviconFromHistory = tab.isNativePage() || tab.getWebContents() == null;
-        mFaviconView.setImageBitmap(layerTitleCache.getOriginalFavicon(tab));
+        Bitmap tabFavicon = TabFavicon.getBitmap(tab);
+        boolean fetchFaviconFromHistory = tabFavicon == null;
         if (fetchFaviconFromHistory) {
+            mFaviconView.setImageBitmap(layerTitleCache.getDefaultFavicon(tab));
             layerTitleCache.fetchFaviconWithCallback(tab, this::onFaviconFetch);
+        } else {
+            mFaviconView.setImageBitmap(tabFavicon);
         }
 
         mFaviconUpdateTabObserver = getFaviconUpdateTabObserver();
@@ -436,12 +440,11 @@ public class StripDragShadowView extends FrameLayout {
         return new EmptyTabObserver() {
             @Override
             public void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
-                if (icon != null) {
-                    mFaviconView.setImageBitmap(icon);
-                } else {
-                    mFaviconView.setImageBitmap(
-                            mLayerTitleCacheSupplier.get().getOriginalFavicon(tab));
+                if (icon == null) {
+                    icon = TabFavicon.getBitmap(tab);
+                    if (icon == null) icon = mLayerTitleCacheSupplier.get().getDefaultFavicon(tab);
                 }
+                mFaviconView.setImageBitmap(icon);
                 mShadowUpdateHost.requestUpdate();
             }
         };

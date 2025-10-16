@@ -13,6 +13,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -23,6 +24,8 @@ import org.chromium.url.GURL;
 @NullMarked
 public class TabFavicon extends TabWebContentsUserData {
     private static final Class<TabFavicon> USER_DATA_KEY = TabFavicon.class;
+
+    private static @Nullable TabFavicon sInstanceForTesting;
 
     private final TabImpl mTab;
     private final long mNativeTabFavicon;
@@ -48,6 +51,7 @@ public class TabFavicon extends TabWebContentsUserData {
     private @Nullable GURL mFaviconTabUrl;
 
     static TabFavicon from(Tab tab) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
         TabFavicon favicon = get(tab);
         if (favicon == null) {
             favicon = tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabFavicon(tab));
@@ -56,6 +60,7 @@ public class TabFavicon extends TabWebContentsUserData {
     }
 
     private static @Nullable TabFavicon get(Tab tab) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
         if (tab == null || !tab.isInitialized()) return null;
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
@@ -98,7 +103,8 @@ public class TabFavicon extends TabWebContentsUserData {
      * @return The bitmap of the favicon scaled to 16x16dp. null if no favicon is specified or it
      *     requires the default favicon.
      */
-    private @Nullable Bitmap getFavicon() {
+    @VisibleForTesting
+    public @Nullable Bitmap getFavicon() {
         // If we have no content, are a native page, or have a pending navigation, return null.
         if (mTab.isNativePage()
                 || mTab.getWebContents() == null
@@ -200,6 +206,11 @@ public class TabFavicon extends TabWebContentsUserData {
             mFaviconTabUrlForNavigationTransition = mTab.getUrl();
         }
         return shouldUpdate;
+    }
+
+    public static void setInstanceForTesting(TabFavicon instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     @NativeMethods
