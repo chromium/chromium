@@ -18,23 +18,29 @@ namespace {
 
 #define SEPARATOR "======== output separator ========"
 
-const char kAllCommands[] = "shell:"
+const char kAllCommands[] =
+    "shell:"
     "getprop ro.product.model\n"
     "echo " SEPARATOR "\n"
     "dumpsys window policy\n"
+    "wm size\n"
     "echo " SEPARATOR "\n"
-    "ps\n"
+    "ps -e\n"
     "echo " SEPARATOR "\n"
     "cat /proc/net/unix\n"
     "echo " SEPARATOR "\n"
-    "dumpsys user\n";
+    "dumpsys user\n"
+    "echo " SEPARATOR "\n"
+    "dumpsys trust\n";
 
 const char kSeparator[] = SEPARATOR;
 
 #undef SEPARATOR
 
 const char kScreenSizePrefix[] = "mStable=";
+const char kWmScreenSizePrefix[] = "Physical size: ";
 const char kUserInfoPrefix[] = "UserInfo{";
+const char kLockStatePrefix[] = "deviceLocked=";
 
 const char kDevToolsSocketSuffix[] = "_devtools_remote";
 
@@ -43,6 +49,8 @@ const char kChromeDefaultSocket[] = "chrome_devtools_remote";
 
 const char kWebViewSocketPrefix[] = "webview_devtools_remote";
 const char kWebViewNameTemplate[] = "WebView in %s";
+
+const char kSocketNameTemplate[] = "stetho_%s_devtools_remote";
 
 struct BrowserDescriptor {
   const char* package;
@@ -126,7 +134,7 @@ void MapProcessesToPackages(const std::string& response,
   // USER PID PPID VSIZE RSS WCHAN PC ? NAME
   //
   for (std::string_view line : base::SplitStringPiece(
-           response, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+           response, "\r\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     std::vector<std::string> fields =
         base::SplitString(line, " \r", base::KEEP_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
@@ -150,7 +158,7 @@ StringMap MapSocketsToProcesses(const std::string& response) {
   // and containing the channel pattern ("_devtools_remote").
   StringMap socket_to_pid;
   for (std::string_view line : base::SplitStringPiece(
-           response, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+           response, "\r\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     std::vector<std::string> fields =
         base::SplitString(line, " \r", base::KEEP_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
@@ -178,35 +186,61 @@ StringMap MapSocketsToProcesses(const std::string& response) {
   return socket_to_pid;
 }
 
+gfx::Size ParseScreenSize(const std::vector<std::string_view>& numbers) {
+  int width;
+  int height;
+  if (numbers.size() != 2 || !base::StringToInt(numbers[0], &width) ||
+      !base::StringToInt(numbers[1], &height)) {
+    return gfx::Size();
+  }
+
+  return gfx::Size(width, height);
+}
+
 gfx::Size ParseScreenSize(std::string_view str) {
   std::vector<std::string_view> pairs = base::SplitStringPiece(
       str, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (pairs.size() != 2)
     return gfx::Size();
 
-  int width;
-  int height;
   std::vector<std::string_view> numbers =
       base::SplitStringPiece(pairs[1].substr(1, pairs[1].size() - 2), ",",
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (numbers.size() != 2 ||
-      !base::StringToInt(numbers[0], &width) ||
-      !base::StringToInt(numbers[1], &height))
-    return gfx::Size();
-
-  return gfx::Size(width, height);
+  return ParseScreenSize(numbers);
 }
 
 gfx::Size ParseWindowPolicyResponse(const std::string& response) {
   for (std::string_view line : base::SplitStringPiece(
-           response, "\r", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+           response, "\r\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     size_t pos = line.find(kScreenSizePrefix);
     if (pos != std::string_view::npos) {
       return ParseScreenSize(
           line.substr(pos + strlen(kScreenSizePrefix)));
     }
+    pos = line.find(kWmScreenSizePrefix);
+    if (pos != std::string_view::npos) {
+      size_t start = pos + strlen(kWmScreenSizePrefix);
+      std::vector<std::string_view> numbers = base::SplitStringPiece(
+          line.substr(start, line.size() - start), "x", base::KEEP_WHITESPACE,
+          base::SPLIT_WANT_NONEMPTY);
+      return ParseScreenSize(numbers);
+    }
   }
   return gfx::Size();
+}
+
+bool ParseDeviceLocked(const std::string& trust_dump) {
+  for (std::string_view line :
+       base::SplitStringPiece(trust_dump, "\r\n", base::KEEP_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    size_t pos = line.find(kLockStatePrefix);
+    if (pos != std::string_view::npos) {
+      return line.substr(pos + strlen(kLockStatePrefix), 1) == "1";
+    }
+  }
+  // If we can't parse, we'll assume we are not locked. The bug is not as bad as
+  // disabling the feature entirely.
+  return false;
 }
 
 StringMap MapIdsToUsers(const std::string& response) {
@@ -220,7 +254,7 @@ StringMap MapIdsToUsers(const std::string& response) {
   //     Last logged in: +17m26s287ms ago
   StringMap id_to_username;
   for (std::string_view line : base::SplitStringPiece(
-           response, "\r", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+           response, "\r\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     size_t pos = line.find(kUserInfoPrefix);
     if (pos != std::string::npos) {
       std::string_view fields = line.substr(pos + strlen(kUserInfoPrefix));
@@ -271,61 +305,81 @@ void ReceivedResponse(AndroidDeviceManager::DeviceInfoCallback callback,
                       int result,
                       const std::string& response) {
   AndroidDeviceManager::DeviceInfo device_info;
+  device_info.connected_state = AndroidDeviceManager::DeviceInfo::kUnknown;
   if (result < 0) {
     std::move(callback).Run(device_info);
     return;
   }
   std::vector<std::string> outputs = base::SplitStringUsingSubstr(
       response, kSeparator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (outputs.size() != 5) {
+  if (outputs.size() != 6) {
     std::move(callback).Run(device_info);
     return;
   }
-  device_info.connected = true;
+  device_info.connected_state = AndroidDeviceManager::DeviceInfo::kConnected;
   device_info.model = outputs[0];
   device_info.screen_size = ParseWindowPolicyResponse(outputs[1]);
-  StringMap pid_to_package;
-  StringMap pid_to_user;
-  MapProcessesToPackages(outputs[2], &pid_to_package, &pid_to_user);
-  StringMap socket_to_pid = MapSocketsToProcesses(outputs[3]);
-  StringMap id_to_username = MapIdsToUsers(outputs[4]);
-  std::set<std::string> used_pids;
-  for (const auto& pair : socket_to_pid)
-    used_pids.insert(pair.second);
+  bool is_locked = ParseDeviceLocked(outputs[5]);
+  if (is_locked) {
+    device_info.connected_state = AndroidDeviceManager::DeviceInfo::kLocked;
+  } else {
+    StringMap pid_to_package;
+    StringMap pid_to_user;
+    MapProcessesToPackages(outputs[2], &pid_to_package, &pid_to_user);
+    StringMap socket_to_pid = MapSocketsToProcesses(outputs[3]);
+    StringMap id_to_username = MapIdsToUsers(outputs[4]);
+    std::set<std::string> used_pids;
+    for (const auto& pair : socket_to_pid)
+      used_pids.insert(pair.second);
 
-  for (const auto& pair : pid_to_package) {
-    std::string pid = pair.first;
-    std::string package = pair.second;
-    if (used_pids.find(pid) == used_pids.end()) {
+    for (const auto& pair : pid_to_package) {
+      std::string pid = pair.first;
+      if (used_pids.find(pid) != used_pids.end())
+        continue;
+      std::string package = pair.second;
       const BrowserDescriptor* descriptor = FindBrowserDescriptor(package);
-      if (descriptor)
-        socket_to_pid[descriptor->socket] = pid;
+      std::string socket_name;
+      if (descriptor) {
+        socket_name = descriptor->socket;
+      } else {
+        socket_name = base::StringPrintf(kSocketNameTemplate, package.c_str());
+      }
+      auto sit = socket_to_pid.find(socket_name);
+      // Ignore packages where we have no socket.
+      if (sit != socket_to_pid.end()) {
+        // Ignore if we already have a pid, unless it's for user 0.
+        if (sit->second.empty() ||
+            pid_to_user[sit->second].starts_with("u0_")) {
+          sit->second = pid;
+        }
+      }
     }
+
+    for (const auto& pair : socket_to_pid) {
+      std::string socket = pair.first;
+      std::string pid = pair.second;
+      std::string package;
+      auto pit = pid_to_package.find(pid);
+      if (pit != pid_to_package.end()) {
+        package = pit->second;
+      }
+
+      AndroidDeviceManager::BrowserInfo browser_info;
+      browser_info.socket_name = socket;
+      browser_info.type = GetBrowserType(socket);
+      browser_info.display_name =
+          AndroidDeviceManager::GetBrowserName(socket, package);
+
+      auto uit = pid_to_user.find(pid);
+      if (uit != pid_to_user.end()) {
+        browser_info.user = GetUserName(uit->second, id_to_username);
+      }
+
+      device_info.browser_info.push_back(browser_info);
+    }
+    std::sort(device_info.browser_info.begin(), device_info.browser_info.end(),
+              &BrowserCompare);
   }
-
-  for (const auto& pair : socket_to_pid) {
-    std::string socket = pair.first;
-    std::string pid = pair.second;
-    std::string package;
-    auto pit = pid_to_package.find(pid);
-    if (pit != pid_to_package.end())
-      package = pit->second;
-
-    AndroidDeviceManager::BrowserInfo browser_info;
-    browser_info.socket_name = socket;
-    browser_info.type = GetBrowserType(socket);
-    browser_info.display_name =
-        AndroidDeviceManager::GetBrowserName(socket, package);
-
-    auto uit = pid_to_user.find(pid);
-    if (uit != pid_to_user.end())
-      browser_info.user = GetUserName(uit->second, id_to_username);
-
-    device_info.browser_info.push_back(browser_info);
-  }
-  std::sort(device_info.browser_info.begin(),
-            device_info.browser_info.end(),
-            &BrowserCompare);
   std::move(callback).Run(device_info);
 }
 

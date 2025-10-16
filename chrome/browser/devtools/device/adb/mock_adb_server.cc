@@ -45,9 +45,11 @@ const char kShellPrefix[] = "shell:";
 const char kOpenedUnixSocketsCommand[] = "cat /proc/net/unix";
 const char kDeviceModelCommand[] = "getprop ro.product.model";
 const char kDumpsysCommand[] = "dumpsys window policy";
-const char kListProcessesCommand[] = "ps";
+const char kListProcessesCommand[] = "ps -e";
 const char kListUsersCommand[] = "dumpsys user";
 const char kEchoCommandPrefix[] = "echo ";
+const char kTrustCommand[] = "dumpsys trust";
+const char kSizeCommand[] = "wm size";
 
 const char kSerialOnline[] = "01498B321301A00A";
 const char kSerialOffline[] = "01498B2B0D01300E";
@@ -200,6 +202,16 @@ char kSampleNodePage[] = "[ {\n"
     "   \"webSocketDebuggerUrl\": \"ws://192.168.86.1:33279/"
     "148b8b92-8ca0-43fd-b8c8-a351864644f8\""
     "} ]";
+
+const char kSampleTrust[] =
+    "Trust manager state:\n"
+    " User \"Owner\" (id=0, flags=0x4c13) (current): trustState=UNTRUSTED, "
+    "trustManaged=0, deviceLocked=0, isActiveUnlockRunning=0, "
+    "strongAuthRequired=0x0\n"
+    "   Enabled agents:\n"
+    "   Events:\n";
+
+const char kSampleSize[] = "Physical size: 720x1184\n";
 
 static constexpr int kBufferSize = 16 * 1024;
 static constexpr uint16_t kAdbPort = 5037;
@@ -640,6 +652,10 @@ void MockAndroidConnection::ProcessCommand(const std::string& command) {
         result += kSampleListProcesses;
       } else if (line == kListUsersCommand) {
         result += kSampleListUsers;
+      } else if (line == kTrustCommand) {
+        result += kSampleTrust;
+      } else if (line == kSizeCommand) {
+        result += kSampleSize;
       } else if (base::StartsWith(line, kEchoCommandPrefix,
                                   base::CompareCase::SENSITIVE)) {
         result += line.substr(sizeof(kEchoCommandPrefix) - 1);
