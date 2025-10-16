@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
+#include "net/http/http_cache.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -2430,6 +2431,13 @@ BASE_FEATURE(kURLPatternDummyURLCanonicalization,
 // heuristic where images occupying the full viewport are ignored.
 BASE_FEATURE(kUsePageViewportInLCP, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Use PersistentCache on either side of blink.mojom.CodeCacheHost. This feature
+// is dependent on net::HttpCache::IsSplitCacheEnabled() being true. Always use
+// IsPersistentCacheForCodeCacheEnabled() rather than querying this feature
+// directly.
+BASE_FEATURE(kUsePersistentCacheForCodeCache,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enabling this will cause parkable strings to use Snappy for compression iff
 // kCompressParkableStrings is enabled.
 BASE_FEATURE(kUseSnappyForParkableStrings, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2605,6 +2613,12 @@ bool IsFencedFramesEnabled() {
 bool IsParkableStringsToDiskEnabled() {
   // Always enabled as soon as compression is enabled.
   return base::FeatureList::IsEnabled(kCompressParkableStrings);
+}
+
+bool IsPersistentCacheForCodeCacheEnabled() {
+  // PersistentCache for CodeCache requires HTTP split cache.
+  return net::HttpCache::IsSplitCacheEnabled() &&
+         base::FeatureList::IsEnabled(kUsePersistentCacheForCodeCache);
 }
 
 bool IsSetIntervalWithoutClampEnabled() {

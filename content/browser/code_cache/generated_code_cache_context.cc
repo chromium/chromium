@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -22,7 +23,7 @@
 #include "content/public/common/content_features.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/http/http_cache.h"
-#include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -52,8 +53,7 @@ GeneratedCodeCacheContext::GeneratedCodeCacheContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kUsePersistentCacheForCodeCache)) {
+  if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
     // MayBlock() because disk operations are happening on-thread under the
     // experiment for now.
     // Dedicated because there doesn't seem to be a reason to not be
@@ -127,8 +127,8 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
 
   // Use a short name for the root directory due to max path length limits.
   base::FilePath persistent_cache_collection_path = path.AppendASCII("pc");
-  bool use_persistent_cache = base::FeatureList::IsEnabled(
-      blink::features::kUsePersistentCacheForCodeCache);
+  bool use_persistent_cache =
+      blink::features::IsPersistentCacheForCodeCacheEnabled();
   if (use_persistent_cache) {
     // Target the same amount of disk space used for persistent_cache as is used
     // for disk_cache.

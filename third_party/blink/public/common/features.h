@@ -1790,6 +1790,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kURLPatternDummyURLCanonicalization);
 // heuristic where images occupying the full viewport are ignored.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUsePageViewportInLCP);
 
+// Always use IsPersistentCacheForCodeCacheEnabled() rather than checking this
+// feature directly.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUsePersistentCacheForCodeCache);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSnappyForParkableStrings);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseZstdForParkableStrings);
@@ -1881,6 +1885,8 @@ BLINK_COMMON_EXPORT bool DisplayWarningDeprecateURNIframesUseFencedFrames();
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 
 BLINK_COMMON_EXPORT bool IsParkableStringsToDiskEnabled();
+
+BLINK_COMMON_EXPORT bool IsPersistentCacheForCodeCacheEnabled();
 
 BLINK_COMMON_EXPORT bool IsSetIntervalWithoutClampEnabled();
 

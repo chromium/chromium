@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,9 +30,8 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/io_buffer.h"
-#include "net/http/http_cache.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
-#include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-data-view.h"
 #include "url/gurl.h"
@@ -338,10 +336,7 @@ bool CodeCacheHostImpl::IsPersistentCacheForCodeCacheEnabled(
     return false;
   }
 
-  // The feature is only compatible with split caches.
-  return base::FeatureList::IsEnabled(
-             blink::features::kUsePersistentCacheForCodeCache) &&
-         net::HttpCache::IsSplitCacheEnabled();
+  return blink::features::IsPersistentCacheForCodeCacheEnabled();
 }
 
 void CodeCacheHostImpl::DidGenerateCacheableMetadata(

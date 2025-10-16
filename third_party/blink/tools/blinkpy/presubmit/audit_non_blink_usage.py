@@ -2719,6 +2719,7 @@ _CONFIG = [
             'third_party/blink/common/features.cc',
         ],
         'allowed': [
+            'net::HttpCache',
             'network::features::kBrowsingTopics',
             'network::features::kInterestGroupStorage',
             'network::features::kSharedStorageAPI',
