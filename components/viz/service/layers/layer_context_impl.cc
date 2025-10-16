@@ -17,6 +17,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/traced_value.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/types/expected_macros.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
@@ -889,6 +891,7 @@ base::expected<void, std::string> CreateOrUpdateLayers(
     const std::vector<mojom::LayerPtr>& updates,
     std::optional<std::vector<int32_t>>& layer_order,
     cc::LayerTreeImpl& layers) {
+  TRACE_EVENT1("viz", "CreateOrUpdateLayers", "LayerCount", updates.size());
   if (!layer_order) {
     // No layer list changes. Only update existing layers.
     for (auto& wire : updates) {
@@ -1686,6 +1689,7 @@ void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
 
 base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     mojom::LayerTreeUpdatePtr update) {
+  TRACE_EVENT0("viz", "LayerContextImpl::DoUpdateDisplayTree");
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
 
   // We resize all property trees first, as layers and property tree nodes
@@ -1799,14 +1803,18 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   host_impl_->set_send_frame_token_to_embedder(
       update->send_frame_token_to_embedder);
 
-  for (const auto& tiling : update->tilings) {
-    if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
-      if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
-        return base::unexpected("Invalid tile update");
+  {
+    TRACE_EVENT1("viz", "DeserializeTilings", "TilingCount",
+                 update->tilings.size());
+    for (const auto& tiling : update->tilings) {
+      if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
+        if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
+          return base::unexpected("Invalid tile update");
+        }
+        RETURN_IF_ERROR(DeserializeTiling(
+            host_impl_.get(), static_cast<cc::TileDisplayLayerImpl&>(*layer),
+            *tiling, /*update_damage=*/false));
       }
-      RETURN_IF_ERROR(DeserializeTiling(
-          host_impl_.get(), static_cast<cc::TileDisplayLayerImpl&>(*layer),
-          *tiling, /*update_damage=*/false));
     }
   }
 
@@ -1965,6 +1973,7 @@ void LayerContextImpl::DoDraw(const BeginFrameArgs& begin_frame_args,
 void LayerContextImpl::DoDrawInternal(
     const BeginFrameArgs& begin_frame_args,
     base::TimeTicks start_update_display_tree) {
+  TRACE_EVENT0("viz", "LayerContextImpl::DoDrawInternal");
   if (!host_impl_->CanDraw()) {
     return;
   }
