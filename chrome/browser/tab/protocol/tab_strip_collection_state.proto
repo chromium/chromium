@@ -10,6 +10,11 @@ option java_package = "org.chromium.chrome.browser.tabs.proto";
 
 // Stores the state of a TabStripCollection.
 message TabStripCollectionState {
+  // Contains information about the window associated with this collection.
   optional int32 window_id = 1;
-  optional bool incognito_status = 2;
+
+  // Represents the type of tab model.
+  // Tied to TabModelType in
+  // chrome/browser/android/tab_storage_packager_android.h.
+  optional int32 tab_model_type = 2;
 }

@@ -11,7 +11,9 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/android_tab_package.h"
 #include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
@@ -37,7 +39,7 @@ enum class TabModelType {
 // This class is the Android implementation of the TabStoragePackager.
 class TabStoragePackagerAndroid : public TabStoragePackager {
  public:
-  TabStoragePackagerAndroid();
+  explicit TabStoragePackagerAndroid(Profile* profile);
   ~TabStoragePackagerAndroid() override;
 
   TabStoragePackagerAndroid(const TabStoragePackagerAndroid&) = delete;
@@ -73,6 +75,7 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
  private:
   // A reference to the Java version of this class.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace tabs

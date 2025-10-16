@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/tab_storage_packager_android.h"
 
+#include <jni.h>
+
 #include <memory>
 #include <utility>
 
@@ -15,6 +17,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/android/tab_group_features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/android_tab_package.h"
 #include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/protocol/tab_group_collection_state.pb.h"
@@ -64,7 +67,8 @@ class TabStripCollectionStorageData : public Payload {
   tabs_pb::TabStripCollectionState state_;
 };
 
-TabStoragePackagerAndroid::TabStoragePackagerAndroid() {
+TabStoragePackagerAndroid::TabStoragePackagerAndroid(Profile* profile)
+    : profile_(profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(
       Java_TabStoragePackager_create(env, reinterpret_cast<intptr_t>(this)));
@@ -86,7 +90,7 @@ TabStoragePackagerAndroid::PackageTabStripCollectionData(
     StorageIdMapping& mapping) {
   JNIEnv* env = base::android::AttachCurrentThread();
   long ptr_value = Java_TabStoragePackager_packageTabStripCollection(
-      env, java_obj_, collection);
+      env, java_obj_, profile_, collection);
   TabStripCollectionStorageData* data =
       reinterpret_cast<TabStripCollectionStorageData*>(ptr_value);
 
@@ -153,11 +157,10 @@ long TabStoragePackagerAndroid::ConsolidateTabStripCollectionData(
     JNIEnv* env,
     jint window_id,
     jint j_tab_model_type) {
-  TabModelType tab_model_type = static_cast<TabModelType>(j_tab_model_type);
-
   tabs_pb::TabStripCollectionState state;
+
   state.set_window_id(window_id);
-  state.set_incognito_status(tab_model_type == TabModelType::kIncognito);
+  state.set_tab_model_type(j_tab_model_type);
 
   TabStripCollectionStorageData* data =
       new TabStripCollectionStorageData(state);

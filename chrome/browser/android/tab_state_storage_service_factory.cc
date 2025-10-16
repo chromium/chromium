@@ -63,7 +63,7 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<TabStateStorageBackend>(profile->GetPath());
   std::unique_ptr<TabStoragePackager> packager;
 #if BUILDFLAG(IS_ANDROID)
-  packager = std::make_unique<TabStoragePackagerAndroid>();
+  packager = std::make_unique<TabStoragePackagerAndroid>(profile);
 #endif
   return std::make_unique<TabStateStorageService>(std::move(tab_backend),
                                                   std::move(packager));
