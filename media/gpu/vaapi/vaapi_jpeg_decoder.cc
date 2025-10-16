@@ -270,12 +270,6 @@ SkYUVColorSpace VaapiJpegDecoder::GetYUVColorSpace() const {
   return SkYUVColorSpace::kJPEG_SkYUVColorSpace;
 }
 
-// static
-std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
-VaapiJpegDecoder::GetSupportedProfile() {
-  return std::nullopt;
-}
-
 std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
     uint32_t preferred_image_fourcc,
     VaapiImageDecodeStatus* status) {

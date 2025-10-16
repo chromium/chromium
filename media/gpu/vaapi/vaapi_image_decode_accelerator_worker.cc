@@ -37,31 +37,7 @@ namespace media {
 // static
 std::unique_ptr<VaapiImageDecodeAcceleratorWorker>
 VaapiImageDecodeAcceleratorWorker::Create() {
-  VaapiImageDecoderVector decoders;
-  gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles;
-
-  std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
-      jpeg_decoder_supported_profile = VaapiJpegDecoder::GetSupportedProfile();
-  if (jpeg_decoder_supported_profile) {
-    decoders.push_back(std::make_unique<VaapiJpegDecoder>());
-    supported_profiles.push_back(*jpeg_decoder_supported_profile);
-  }
-
-  std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
-      webp_decoder_supported_profile = VaapiWebPDecoder::GetSupportedProfile();
-  if (webp_decoder_supported_profile) {
-    decoders.push_back(std::make_unique<VaapiWebPDecoder>());
-    supported_profiles.push_back(*webp_decoder_supported_profile);
-  }
-
-  // If there are no decoders due to no supported profiles found, return
-  // nullptr.
-  if (decoders.empty()) {
-    return nullptr;
-  }
-
-  return base::WrapUnique(new VaapiImageDecodeAcceleratorWorker(
-      std::move(decoders), std::move(supported_profiles)));
+  return nullptr;
 }
 
 VaapiImageDecodeAcceleratorWorker::VaapiImageDecodeAcceleratorWorker(

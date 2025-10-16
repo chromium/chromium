@@ -86,12 +86,6 @@ SkYUVColorSpace VaapiWebPDecoder::GetYUVColorSpace() const {
   return SkYUVColorSpace::kRec601_SkYUVColorSpace;
 }
 
-// static
-std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
-VaapiWebPDecoder::GetSupportedProfile() {
-  return std::nullopt;
-}
-
 VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(
     base::span<const uint8_t> encoded_image) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
