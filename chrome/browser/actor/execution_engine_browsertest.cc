@@ -456,6 +456,44 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, PromptToConfirmDownload) {
   EXPECT_TRUE(response->result->get_permission_granted());
 }
 
+class ExecutionEngineDangerousContentBrowserTest
+    : public ExecutionEngineBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExecutionEngineDangerousContentBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        kGlicBlockNavigationToDangerousContentTypes,
+        should_block_dangerous_navigations());
+  }
+
+  bool should_block_dangerous_navigations() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineDangerousContentBrowserTest,
+                       BlockNavigationToJson) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL json_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/test.json");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", json_url)));
+
+  ClickTarget("#link",
+              should_block_dangerous_navigations()
+                  ? mojom::ActionResultCode::kTriggeredNavigationBlocked
+                  : mojom::ActionResultCode::kOk);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(),
+            should_block_dangerous_navigations() ? start_url : json_url);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineDangerousContentBrowserTest,
+                         testing::Bool());
 class ExecutionEngineOriginGatingBrowserTest
     : public ExecutionEngineBrowserTest,
       public testing::WithParamInterface<bool> {
