@@ -381,6 +381,11 @@ BASE_EXPORT std::wstring_view UnicodeStringToView(const UNICODE_STRING& ustr);
 BASE_EXPORT bool ViewToUnicodeString(std::wstring_view str,
                                      UNICODE_STRING& ustr);
 
+// Enables strict handle checking for the current process.
+// See
+// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_strict_handle_check_policy.
+BASE_EXPORT bool EnableStrictHandleCheckingForCurrentProcess();
+
 // Allows changing the domain enrolled state for the life time of the object.
 // The original state is restored upon destruction.
 class BASE_EXPORT ScopedDomainStateForTesting {

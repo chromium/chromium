@@ -27,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner.h"
+#include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -106,6 +107,13 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   // values.
   base::CommandLine command_line(
       base::GetMultiProcessTestChildBaseCommandLine().GetProgram());
+
+#if BUILDFLAG(IS_WIN)
+  // Some mojo unit tests launch child processes and send invalid handles to
+  // them which would usually cause a STATUS_INVALID_HANDLE (0xC0000008) to be
+  // raised, so this disables that for child test processes only.
+  command_line.AppendSwitch(::switches::kDisableStrictHandleCheckingForTesting);
+#endif  // BUILDFLAG(IS_WIN)
 
   std::set<std::string> uninherited_args;
   uninherited_args.insert("mojo-platform-channel-handle");

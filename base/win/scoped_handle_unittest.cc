@@ -189,11 +189,10 @@ TEST(TakeHandleOfTypeTest, CurrentProcess) {
   ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
 }
 
-TEST(TakeHandleOfTypeTest, CrazyHandle) {
-  auto handle_or_error =
-      TakeHandleOfType(Uint32ToHandle(0x12345678U), L"Process");
-  ASSERT_FALSE(handle_or_error.has_value());
-  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+TEST(TakeHandleOfTypeDeathTest, CrazyHandle) {
+  EXPECT_DEATH_IF_SUPPORTED(
+      std::ignore = TakeHandleOfType(Uint32ToHandle(0x12345678U), L"Process"),
+      "Received fatal exception 0xc0000008");
 }
 
 TEST(TakeHandleOfTypeTest, ValidTypeMatch) {

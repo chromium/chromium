@@ -11,6 +11,7 @@
 #include <ntstatus.h>
 
 #include <string_view>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -22,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/threading/platform_thread.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
@@ -295,10 +297,10 @@ TEST(GetObjectTypeNameTest, CurrentProcess) {
   ASSERT_EQ(name_or_error.error(), STATUS_INVALID_HANDLE);
 }
 
-TEST(GetObjectTypeNameTest, CrazyHandle) {
-  auto name_or_error = GetObjectTypeName(Uint32ToHandle(0x12345678U));
-  ASSERT_FALSE(name_or_error.has_value());
-  ASSERT_EQ(name_or_error.error(), STATUS_INVALID_HANDLE);
+TEST(GetObjectTypeNameDeathTest, CrazyHandle) {
+  EXPECT_DEATH_IF_SUPPORTED(
+      std::ignore = GetObjectTypeName(Uint32ToHandle(0x12345678U)),
+      "Received fatal exception 0xc0000008");
 }
 
 TEST(GetObjectTypeNameTest, ProcessHandle) {
@@ -442,6 +444,17 @@ TEST(BaseWinUtilTest, ViewToUnicodeString) {
   long_str += L"A";
   UNICODE_STRING invalid = {};
   EXPECT_FALSE(ViewToUnicodeString(long_str, invalid));
+}
+
+// This policy is set in `TestSuite::Initialize` for all tests so this test
+// checks that it takes effect here.
+TEST(BaseWinUtilTest, StrictHandleChecks) {
+  PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY policy = {};
+  ASSERT_TRUE(::GetProcessMitigationPolicy(::GetCurrentProcess(),
+                                           ProcessStrictHandleCheckPolicy,
+                                           &policy, sizeof(policy)));
+  EXPECT_TRUE(policy.HandleExceptionsPermanentlyEnabled);
+  EXPECT_TRUE(policy.RaiseExceptionOnInvalidHandleReference);
 }
 
 }  // namespace win

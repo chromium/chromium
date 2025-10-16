@@ -226,6 +226,8 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
   logging::LogEventProvider::Initialize(kContentShellProviderName);
 
   v8_crashpad_support::SetUp();
+
+  base::win::EnableStrictHandleCheckingForCurrentProcess();
 #endif
 
 #if BUILDFLAG(IS_MAC)

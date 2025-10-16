@@ -1259,6 +1259,15 @@ bool ViewToUnicodeString(std::wstring_view str, UNICODE_STRING& ustr) {
   return true;
 }
 
+bool EnableStrictHandleCheckingForCurrentProcess() {
+  PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY policy = {};
+  policy.HandleExceptionsPermanentlyEnabled =
+      policy.RaiseExceptionOnInvalidHandleReference = true;
+
+  return ::SetProcessMitigationPolicy(ProcessStrictHandleCheckPolicy, &policy,
+                                      sizeof(policy));
+}
+
 ScopedDomainStateForTesting::ScopedDomainStateForTesting(bool state)
     : initial_state_(IsEnrolledToDomain()) {
   *GetDomainEnrollmentStateStorage() = state;

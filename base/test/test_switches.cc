@@ -154,3 +154,10 @@ const char switches::kEnableRunIOSUnittestsWithXCTest[] =
 const char switches::kWriteCompiledTestsJsonToWritablePath[] =
     "write-compiled-tests-json-to-writable-path";
 #endif
+
+#if BUILDFLAG(IS_WIN)
+// Disable strict handle checking for the test process, for testing. This can be
+// used if it's expected that a test process will use an invalid handle.
+const char switches::kDisableStrictHandleCheckingForTesting[] =
+    "disable-strict-handle-checking-for-testing";
+#endif  // BUILDFLAG(IS_WIN)
