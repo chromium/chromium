@@ -333,6 +333,8 @@ class Backend {
 #endif  // IS_WIN
                 .set_preload(true)
                 .set_wal_mode(true)
+                .set_no_sync_on_wal_mode(
+                    net::features::kSqlDiskCacheSynchronousOff.Get())
                 .set_wal_commit_callback(base::BindRepeating(
                     &Backend::OnCommitCallback,
                     // This callback is only called while the `db_` instance

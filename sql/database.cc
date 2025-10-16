@@ -2091,13 +2091,28 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     // Needs to be performed after setting exclusive locking mode. Otherwise can
     // fail if underlying VFS doesn't support shared memory.
     if (UseWALMode()) {
-      // Set the synchronous flag to NORMAL. This means that writers don't flush
-      // the WAL file after every write. The WAL file is only flushed on a
-      // checkpoint. In this case, transactions might lose durability on a power
-      // loss (but still durable after an application crash).
+      // Set the synchronous flag, which controls how aggressively SQLite writes
+      // data to disk.
+      //
+      // If `no_sync_on_wal_mode_` is true, this is set to OFF. With
+      // synchronous=OFF, SQLite hands data to the OS for writing but doesn't
+      // wait for it to complete. This is very fast, but an OS crash or power
+      // failure can lead to database corruption. Data is safe from an
+      // application crash.
+      //
+      // Otherwise, this is set to NORMAL. In WAL mode, synchronous=NORMAL means
+      // SQLite syncs at critical moments (like checkpoints), but not for every
+      // individual transaction. An OS crash or power failure may cause the loss
+      // of transactions that occurred since the last checkpoint, but the
+      // database file itself will not be corrupted.
+      // See https://www.sqlite.org/pragma.html#pragma_synchronous for more
+      // details.
+      //
       // TODO(shuagga@microsoft.com): Evaluate if this loss of durability is a
       // concern.
-      if (!Execute("PRAGMA synchronous=NORMAL")) {
+      if (!Execute(options_.no_sync_on_wal_mode_
+                       ? base::cstring_view("PRAGMA synchronous=OFF")
+                       : base::cstring_view("PRAGMA synchronous=NORMAL"))) {
         RecordOpenDatabaseFailureReason(
             histogram_tag_, OpenDatabaseFailedReason::kPragmaSynchronousFailed);
         return false;
