@@ -6,7 +6,6 @@ import("//build/config/features.gni")
 import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/services/on_device_translation/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -208,15 +207,6 @@ static_library("utility") {
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
     ]
-
-    if (enable_cros_libassistant) {
-      deps += [
-        "//chromeos/ash/services/assistant/audio_decoder:lib",
-        "//chromeos/ash/services/assistant/public/mojom",
-        "//chromeos/ash/services/libassistant",
-        "//chromeos/ash/services/libassistant/public/mojom",
-      ]
-    }
 
     assert(enable_pdf)
     deps += [ "//chrome/services/pdf:lib" ]

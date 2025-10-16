@@ -113,7 +113,6 @@ static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #include "chrome/services/pdf/pdf_service.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/sharing/sharing_impl.h"
-#include "chromeos/ash/components/assistant/buildflags.h"  // nogncheck
 #include "chromeos/ash/components/local_search_service/local_search_service.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
@@ -133,11 +132,6 @@ static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #include "chromeos/constants/chromeos_features.h"  // nogncheck
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
-
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/ash/services/assistant/audio_decoder/assistant_audio_decoder_factory.h"  // nogncheck
-#include "chromeos/ash/services/libassistant/libassistant_service.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
@@ -398,22 +392,6 @@ auto RunQuickPairService(
       std::move(receiver));
 }
 
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-auto RunAssistantAudioDecoder(
-    mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
-        receiver) {
-  return std::make_unique<ash::assistant::AssistantAudioDecoderFactory>(
-      std::move(receiver));
-}
-
-auto RunLibassistantService(
-    mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
-        receiver) {
-  return std::make_unique<ash::libassistant::LibassistantService>(
-      std::move(receiver));
-}
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-
 auto RunQuickAnswersSpellCheckService(
     mojo::PendingReceiver<quick_answers::mojom::SpellCheckService> receiver) {
   return std::make_unique<quick_answers::SpellCheckService>(
@@ -538,10 +516,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunLocalSearchService);
   services.Add(RunQuickPairService);
   services.Add(RunBabelOrcaTachyonParsingService);
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-  services.Add(RunAssistantAudioDecoder);
-  services.Add(RunLibassistantService);
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   services.Add(RunQuickAnswersSpellCheckService);
   services.Add(RunMahiContentExtractionServiceFactory);
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"

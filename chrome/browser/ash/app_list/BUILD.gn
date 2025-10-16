@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 assert(is_chromeos)

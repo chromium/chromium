@@ -24,10 +24,6 @@
 #include "sandbox/policy/sandbox_type.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
@@ -92,9 +88,6 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
       sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
       sandbox_type_ == sandbox::mojom::Sandbox::kNearby ||
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-      sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -159,9 +152,6 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
       sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
       sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
       sandbox_type_ == sandbox::mojom::Sandbox::kNearby ||
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-      sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

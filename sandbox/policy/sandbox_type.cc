@@ -12,10 +12,6 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/buildflags.h"  // nogncheck
 #include "media/media_buildflags.h"  // nogncheck
@@ -80,9 +76,6 @@ constexpr char kHardwareVideoEncodingSandbox[] = "hardware_video_encoding";
 constexpr char kImeSandbox[] = "ime";
 constexpr char kTtsSandbox[] = "tts";
 constexpr char kNearbySandbox[] = "nearby";
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-constexpr char kLibassistantSandbox[] = "libassistant";
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
@@ -157,9 +150,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kIme:
     case Sandbox::kTts:
     case Sandbox::kNearby:
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case Sandbox::kLibassistant:
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
     case Sandbox::kMirroring:
@@ -312,10 +302,6 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return kTtsSandbox;
     case Sandbox::kNearby:
       return kNearbySandbox;
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case Sandbox::kLibassistant:
-      return kLibassistantSandbox;
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
       // The following are not utility processes so should not occur.
     case Sandbox::kRenderer:
@@ -440,11 +426,6 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   if (sandbox_string == kNearbySandbox) {
     return Sandbox::kNearby;
   }
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-  if (sandbox_string == kLibassistantSandbox) {
-    return Sandbox::kLibassistant;
-  }
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
   NOTREACHED()
       << "Command line does not provide a valid sandbox configuration: "

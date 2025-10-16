@@ -25,10 +25,6 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
@@ -134,9 +130,6 @@ class UtilityProcessSandboxBrowserTest
       case Sandbox::kIme:
       case Sandbox::kTts:
       case Sandbox::kNearby:
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-      case Sandbox::kLibassistant:
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_LINUX)
       case Sandbox::kVideoEffects:

@@ -126,10 +126,6 @@ enum Sandbox {
   // Text-to-speech.
   [EnableIf=is_chromeos] kTts,
 
-  // Hosts the Libassistant service on ChromeOS Ash, only used for
-  // Chrome branded builds.
-  [EnableIf=enable_cros_libassistant] kLibassistant,
-
   // Like kUtility but allows access to IOSurface on macOS.
   [EnableIf=is_mac] kMirroring,
 

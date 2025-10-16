@@ -74,7 +74,6 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/attestation/stub_attestation_features.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
