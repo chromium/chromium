@@ -1239,12 +1239,6 @@
       status: "stable",
     },
     {
-      // Support for the anchor-scope property.
-      // https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
-      name: "CSSAnchorScope",
-      status: "stable",
-    },
-    {
       // An anchor-positioned element should stay within its containing block,
       // and not "escape" beyond the fragmentation context root and use the
       // bounding box of the fragmented anchor with fragmentation applied.

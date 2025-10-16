@@ -1915,7 +1915,6 @@
       converter: "ConvertAnchorScope",
       keywords: ["none", "all"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSAnchorScope",
       valid_for_permission_element: true,
       invalidate: ["layout"],
     },
