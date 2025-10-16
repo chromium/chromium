@@ -9,6 +9,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "media/base/media_switches.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/permissions/android/core_jni/PermissionsAndroidFeatureMap_jni.h"
@@ -26,6 +27,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kOsAdditionalSecurityPermissionKillSwitch,
     &content_settings::features::kApproximateGeolocationPermission,
     &media::kAutoPictureInPictureAndroid,
+    &blink::features::kPermissionElement,
+    &blink::features::kBypassPepcSecurityForTesting,
+    &blink::features::kGeolocationElement,
 };
 
 // static

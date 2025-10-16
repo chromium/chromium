@@ -45,6 +45,7 @@ public abstract class PermissionsAndroidFeatureList {
             "AndroidCancelPermissionPromptOnTouchOutside";
 
     public static final String PERMISSION_ELEMENT = "PermissionElement";
+    public static final String GEOLOCATION_ELEMENT = "GeolocationElement";
     public static final String BYPASS_PEPC_SECURITY_FOR_TESTING = "BypassPepcSecurityForTesting";
 
     public static final String OS_ADDITIONAL_SECURITY_PERMISSION_KILL_SWITCH =

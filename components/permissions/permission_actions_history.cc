@@ -77,7 +77,9 @@ base::Value::Dict GetOriginActionHistoryData(HostContentSettingsMap* settings,
 
 base::Value::Dict* EnsurePermissionDict(base::Value::Dict& origin_dict,
                                         ContentSettingsType content_type) {
-  CHECK(content_type == ContentSettingsType::GEOLOCATION &&
+  // TODO(crbug.com/450467541): Support approximate location.
+  CHECK((content_type == ContentSettingsType::GEOLOCATION ||
+         content_type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) &&
         base::FeatureList::IsEnabled(blink::features::kGeolocationElement));
   return origin_dict.EnsureDict(
       PermissionUtil::GetPermissionString(content_type));

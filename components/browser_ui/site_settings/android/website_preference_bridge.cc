@@ -44,6 +44,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -87,6 +88,7 @@ using content_settings::CookieControlsUtil;
 using content_settings::PermissionSettingsRegistry;
 using content_settings::ToContentSetting;
 using content_settings::ToPermissionOption;
+using permissions::PermissionActionsHistory;
 using permissions::PermissionDecisionAutoBlocker;
 
 namespace {
@@ -112,6 +114,12 @@ PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
     BrowserContext* browser_context) {
   return permissions::PermissionsClient::Get()
       ->GetPermissionDecisionAutoBlocker(browser_context);
+}
+
+PermissionActionsHistory* GetPermissionActionsHistory(
+    BrowserContext* browser_context) {
+  return permissions::PermissionsClient::Get()->GetPermissionActionsHistory(
+      browser_context);
 }
 
 ScopedJavaLocalRef<jstring> ConvertOriginToJavaString(
@@ -299,6 +307,11 @@ void SetPermissionSettingForOrigin(
   if (setting != CONTENT_SETTING_BLOCK) {
     GetPermissionDecisionAutoBlocker(browser_context)
         ->RemoveEmbargoAndResetCounts(origin_url, content_type);
+  }
+
+  if (setting != CONTENT_SETTING_ALLOW) {
+    GetPermissionActionsHistory(browser_context)
+        ->ResetHeuristicData(origin_url, content_type);
   }
 
   permissions::PermissionUmaUtil::ScopedRevocationReporter
@@ -527,6 +540,13 @@ static void JNI_WebsitePreferenceBridge_SetGeolocationSettingForOrigin(
         ->RemoveEmbargoAndResetCounts(origin_url, type);
   }
 
+  // Clear heuristic data if the new setting isn't allow.
+  if (!setting || std::get<GeolocationSetting>(*setting).approximate !=
+                      PermissionOption::kAllowed) {
+    GetPermissionActionsHistory(browser_context)
+        ->ResetHeuristicData(origin_url, type);
+  }
+
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
           browser_context, origin_url, embedder_url, type,
@@ -558,6 +578,33 @@ static void JNI_WebsitePreferenceBridge_SetEphemeralGrantForTesting(  // IN-TEST
           url::GURLAndroid::ToNativeGURL(env, jprimary_url),
           url::GURLAndroid::ToNativeGURL(env, jsecondary_url), type, setting,
           constraints);
+}
+
+static jboolean
+JNI_WebsitePreferenceBridge_HasHeuristicDataForTesting(  // IN-TEST
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    const JavaParamRef<jstring>& jorigin,
+    jint content_settings_type) {
+  GURL origin_url(ConvertJavaStringToUTF8(env, jorigin));
+  ContentSettingsType type =
+      static_cast<ContentSettingsType>(content_settings_type);
+  return GetPermissionActionsHistory(unwrap(jbrowser_context_handle))
+             ->GetTemporaryGrantCountForTesting(origin_url, type) > 0;
+}
+
+static void
+JNI_WebsitePreferenceBridge_RecordHeuristicActionForTesting(  // IN-TEST
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    const JavaParamRef<jstring>& jorigin,
+    jint content_settings_type,
+    jint action) {
+  GURL origin_url(ConvertJavaStringToUTF8(env, jorigin));
+  ContentSettingsType type =
+      static_cast<ContentSettingsType>(content_settings_type);
+  GetPermissionActionsHistory(unwrap(jbrowser_context_handle))
+      ->RecordTemporaryGrant(origin_url, type);
 }
 
 static void JNI_WebsitePreferenceBridge_GetOriginsForPermission(
@@ -1075,6 +1122,13 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingDefaultScope(
             primary_url,
             static_cast<ContentSettingsType>(content_settings_type));
   }
+
+  if (setting != CONTENT_SETTING_ALLOW) {
+    GetPermissionActionsHistory(unwrap(jbrowser_context_handle))
+        ->ResetHeuristicData(primary_url, static_cast<ContentSettingsType>(
+                                              content_settings_type));
+  }
+
   GetHostContentSettingsMap(jbrowser_context_handle)
       ->SetContentSettingDefaultScope(
           primary_url, url::GURLAndroid::ToNativeGURL(env, jsecondary_url),
@@ -1097,6 +1151,12 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingCustomScope(
         ->RemoveEmbargoAndResetCounts(
             primary_url,
             static_cast<ContentSettingsType>(content_settings_type));
+  }
+
+  if (setting != CONTENT_SETTING_ALLOW && primary_url.is_valid()) {
+    GetPermissionActionsHistory(unwrap(jbrowser_context_handle))
+        ->ResetHeuristicData(primary_url, static_cast<ContentSettingsType>(
+                                              content_settings_type));
   }
 
   std::string secondary_pattern_string =

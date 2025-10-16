@@ -510,6 +510,18 @@ public class WebsitePreferenceBridge {
         return WebsitePreferenceBridgeJni.get().toHostOnlyPattern(pattern);
     }
 
+    public static boolean hasHeuristicDataForTesting(
+            BrowserContextHandle browserContextHandle, String origin, int type) {
+        return WebsitePreferenceBridgeJni.get()
+                .hasHeuristicDataForTesting(browserContextHandle, origin, type);
+    }
+
+    public static void recordHeuristicActionForTesting(
+            BrowserContextHandle browserContextHandle, String origin, int type, int action) {
+        WebsitePreferenceBridgeJni.get()
+                .recordHeuristicActionForTesting(browserContextHandle, origin, type, action);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isNotificationEmbargoedForOrigin(
@@ -605,6 +617,12 @@ public class WebsitePreferenceBridge {
                 @ContentSettingsType.EnumType int contentSettingsType,
                 GURL origin,
                 GURL embedder);
+
+        boolean hasHeuristicDataForTesting( // IN-TEST
+                BrowserContextHandle browserContextHandle, String origin, int type);
+
+        void recordHeuristicActionForTesting( // IN-TEST
+                BrowserContextHandle browserContextHandle, String origin, int type, int action);
 
         boolean isDSEOrigin(BrowserContextHandle browserContextHandle, String origin);
 
