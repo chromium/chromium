@@ -174,6 +174,9 @@ class LensSearchController {
   // Returns true if Lens is currently active on this tab.
   bool IsActive();
 
+  // Returns true if either the overlay or the side panel is showing.
+  bool IsShowingUI();
+
   // Returns true if Lens is currently off on this tab.
   bool IsOff();
 

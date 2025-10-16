@@ -2262,6 +2262,69 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_FALSE(browser()->GetWebView()->GetEnabled());
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       BackgroundAndForegroundUISidePanelOnly) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  auto* search_controller =
+      static_cast<LensSearchControllerFake*>(GetLensSearchController());
+  ASSERT_EQ(controller->state(), State::kOff);
+  // Tab contents web view should be enabled.
+  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+
+  // Grab the index of the currently active tab so we can return to it later.
+  int active_controller_tab_index =
+      browser()->tab_strip_model()->active_index();
+
+  // Issue a text search request to open the side panel without the overlay.
+  search_controller->IssueTextSearchRequest(
+      LensOverlayInvocationSource::kContentAreaContextMenuText, "query", {},
+      AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/false);
+
+  // Wait for the side panel to be visible.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return coordinator->IsSidePanelShowing(); }));
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // The lens overlay controller should be off.
+  ASSERT_EQ(controller->state(), State::kOff);
+  // Tab contents web view should be enabled.
+  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+
+  // Opening a new tab should background the lens session.
+  WaitForPaint(kDocumentWithNamedElement,
+               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+                   ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Overlay controller state should remain off.
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Side panel should not be showing
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !coordinator->IsSidePanelShowing(); }));
+  // Tab contents web view should be enabled.
+  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+
+  // Returning back to the previous tab should restore the side panel.
+  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+
+  // Overlay should still be off.
+  ASSERT_EQ(controller->state(), State::kOff);
+  // Side panel should come back when returning to previous tab.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return coordinator->IsSidePanelShowing(); }));
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+  // Tab contents web view should be enabled.
+  ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+}
+
 // TODO(crbug.com/413042395): This test is not testing overlay logic, but
 // instead the side panel logic. Therefore, this test should be moved to a side
 // panel browsertest file.

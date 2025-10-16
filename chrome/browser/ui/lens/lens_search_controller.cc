@@ -445,6 +445,13 @@ bool LensSearchController::IsActive() {
   return state_ == State::kActive;
 }
 
+bool LensSearchController::IsShowingUI() {
+  CHECK(lens_overlay_controller_);
+  CHECK(lens_overlay_side_panel_coordinator_);
+  return lens_overlay_controller_->IsOverlayShowing() ||
+         lens_overlay_side_panel_coordinator_->IsEntryShowing();
+}
+
 bool LensSearchController::IsOff() {
   return state_ == State::kOff;
 }
@@ -820,10 +827,9 @@ void LensSearchController::TabWillEnterBackground(tabs::TabInterface* tab) {
     return;
   }
 
-  // If the overlay is not active when the tab is backgrounded, then the entire
-  // Lens session should be closed. Note that the overlay is considered active
-  // when it is hidden and the side panel is open.
-  if (!lens_overlay_controller_->IsOverlayActive()) {
+  // If no Lens UI is showing when the tab is backgrounded, then the entire Lens
+  // session should be closed.
+  if (!IsShowingUI()) {
     CloseLensSync(
         lens::LensOverlayDismissalSource::kTabBackgroundedWhileScreenshotting);
     return;
