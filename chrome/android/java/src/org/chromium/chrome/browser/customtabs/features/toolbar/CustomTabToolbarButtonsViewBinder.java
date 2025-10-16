@@ -46,7 +46,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -298,8 +297,7 @@ public class CustomTabToolbarButtonsViewBinder
         if (posParams.availableWidth >= defaultButtonWidth
                 && model.get(SIDE_SHEET_MAXIMIZE_BUTTON).visible) {
             ImageButton sideSheetMaximizeButton = view.ensureSideSheetMaximizeButtonInflated();
-            var sideSheetMaximizeButtonData = model.get(SIDE_SHEET_MAXIMIZE_BUTTON);
-            prepareSideSheetMaximizeButton(view, sideSheetMaximizeButtonData, model.get(TINT));
+            prepareSideSheetMaximizeButton(view, model);
 
             // The maximize button is currently end aligned.
             positionButton(
@@ -578,31 +576,26 @@ public class CustomTabToolbarButtonsViewBinder
         return locationBarMinWidth;
     }
 
-    private static void prepareSideSheetMaximizeButton(
-            CustomTabToolbar view, SideSheetMaximizeButtonData data, ColorStateList tint) {
+    private static void prepareSideSheetMaximizeButton(CustomTabToolbar view, PropertyModel model) {
+        var data = model.get(SIDE_SHEET_MAXIMIZE_BUTTON);
         ImageButton button = view.findViewById(R.id.custom_tabs_sidepanel_maximize);
-        if (button == null && data.visible) {
-            LayoutInflater.from(view.getContext())
-                    .inflate(R.layout.custom_tabs_sidepanel_maximize, view, true);
-            button = view.findViewById(R.id.custom_tabs_sidepanel_maximize);
-        }
-
-        if (button == null) return;
-        if (!data.visible) {
-            button.setVisibility(View.GONE);
-            return;
-        }
-
+        assert button != null;
         button.setVisibility(View.VISIBLE);
-        boolean maximized = data.maximized;
-        var callback = data.callback;
-        button.setOnClickListener(
-                v -> setSideSheetMaximizeButtonDrawable((ImageButton) v, callback.onClick(), null));
-        setSideSheetMaximizeButtonDrawable(button, maximized, tint);
+        setSideSheetMaximizeButtonDrawable(button, data.maximized, model.get(TINT));
+        button.setOnClickListener(v -> sideSheetMaximizeButtonCallback(model));
+    }
+
+    private static void sideSheetMaximizeButtonCallback(PropertyModel model) {
+        var data = model.get(SIDE_SHEET_MAXIMIZE_BUTTON);
+        var newData =
+                new CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData(
+                        data.visible, !data.maximized, data.callback);
+        model.set(SIDE_SHEET_MAXIMIZE_BUTTON, newData);
+        data.callback.onClick();
     }
 
     private static void setSideSheetMaximizeButtonDrawable(
-            ImageButton button, boolean maximized, @Nullable ColorStateList tint) {
+            ImageButton button, boolean maximized, ColorStateList tint) {
         @DrawableRes
         int drawableId = maximized ? R.drawable.ic_fullscreen_exit : R.drawable.ic_fullscreen_enter;
         int buttonDescId =
@@ -610,11 +603,8 @@ public class CustomTabToolbarButtonsViewBinder
                         ? R.string.custom_tab_side_sheet_minimize
                         : R.string.custom_tab_side_sheet_maximize;
 
-        if (button.getDrawable() == null) {
-            var drawable = UiUtils.getTintedDrawable(button.getContext(), drawableId, tint);
-            button.setImageDrawable(drawable);
-        }
-
+        var drawable = UiUtils.getTintedDrawable(button.getContext(), drawableId, tint);
+        button.setImageDrawable(drawable);
         button.setContentDescription(button.getContext().getString(buttonDescId));
     }
 
