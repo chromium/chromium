@@ -95,40 +95,44 @@ void FieldToMapKeyFunction(const FieldDescriptor* field, Printer* printer) {
 }
 
 void FieldToValueFunction(const FieldDescriptor* field, Printer* printer) {
+  using enum FieldDescriptor::CppType;
   using enum FieldDescriptor::Type;
   using enum FieldDescriptor::CppStringType;
   auto conversion_function = [&]() -> std::string {
-    switch (field->type()) {
-      case TYPE_DOUBLE:
-      case TYPE_FLOAT:
+    switch (field->cpp_type()) {
+      case CPPTYPE_DOUBLE:
+      case CPPTYPE_FLOAT:
         return "static_cast<double>";
-      case TYPE_INT32:
-      case TYPE_INT64:
-      case TYPE_UINT64:
-      case TYPE_UINT32:
-      case TYPE_FIXED64:
-      case TYPE_FIXED32:
-      case TYPE_SFIXED64:
-      case TYPE_SFIXED32:
-      case TYPE_SINT64:
-      case TYPE_SINT32:
+      case CPPTYPE_INT32:
+        // No function needed.
+        return "";
+      case CPPTYPE_UINT32:
+      case CPPTYPE_INT64:
+      case CPPTYPE_UINT64:
         return "::proto_extras::ToNumericTypeForValue";
-      case TYPE_BOOL:
+      case CPPTYPE_BOOL:
         return "static_cast<bool>";
-      case TYPE_STRING:
-        return "static_cast<std::string>";
-      case TYPE_BYTES:
+      case CPPTYPE_STRING: {
+        bool output_bytes = field->type() == TYPE_BYTES;
         switch (field->cpp_string_type()) {
           case kView:
           case kString:
-            return "base::Base64Encode";
+            if (output_bytes) {
+              return "base::Base64Encode";
+            } else {
+              // No function needed.
+              return "";
+            }
           case kCord:
+            CHECK(output_bytes) << "kCord is only supported for bytes fields.";
+            // If cord support is enabled for strings, this should probably
+            // return "std::string".
             return "::proto_extras::Base64EncodeCord";
         }
-      case TYPE_ENUM:
+      }
+      case CPPTYPE_ENUM:
         return base::StrCat({QualifiedClassName(field->enum_type()), "_Name"});
-      case TYPE_MESSAGE:
-      case TYPE_GROUP:
+      case CPPTYPE_MESSAGE:
         // The Serialize function for the message is in the namespace of the
         // nested message itself.
         return base::StrCat({Namespace(field->message_type()), "::Serialize"});
@@ -574,7 +578,8 @@ $function_definitions$
 void MaybeSerialize(const std::optional<$m$>& opt_message,
                     std::string_view output_dictionary_field_name,
                     base::DictValue& output_dictionary);
-)", "m", message_type);
+)",
+          "m", message_type);
     }
     if (options.generate_stream_operator) {
       printer->Print(
