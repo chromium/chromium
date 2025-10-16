@@ -248,6 +248,10 @@ bool DrawVideoFrameIntoResourceProvider(
   DCHECK(resource_provider);
   DCHECK(gfx::Rect(resource_provider->Size()).Contains(dest_rect));
 
+  // This method should only be called with context providers supporting OOP-R.
+  CHECK(!raster_context_provider ||
+        raster_context_provider->ContextCapabilities().gpu_rasterization);
+
   // A VF created from MappableSI will have a mappable shared image but might
   // not be intended for rendering in the tests.
   // |frame.IsTexturableForTesting()| here checks whether the tests have
