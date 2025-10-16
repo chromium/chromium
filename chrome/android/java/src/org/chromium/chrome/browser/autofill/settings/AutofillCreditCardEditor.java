@@ -91,7 +91,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
         }
 
         if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            v.findViewById(R.id.autofill_credit_card_editor_billing_address_spinner)
+            v.findViewById(R.id.autofill_credit_card_editor_legacy_dropdown_container)
                     .setVisibility(View.GONE);
             v.findViewById(R.id.autofill_credit_card_editor_billing_address_outlined_layout)
                     .setVisibility(View.VISIBLE);
