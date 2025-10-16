@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -112,7 +113,7 @@ void LayoutWebAppWindowTitleCommon(const gfx::Rect& available_space,
 // through the widget, native widget, and desktop window tree host.
 class BrowserFrameViewWin::CaptionButtonMetrics : public views::WidgetObserver {
  public:
-  CaptionButtonMetrics() = default;
+  explicit CaptionButtonMetrics(BrowserFrameViewWin& frame) : frame_(frame) {}
   CaptionButtonMetrics(const CaptionButtonMetrics&) = delete;
   void operator=(const CaptionButtonMetrics&) = delete;
   ~CaptionButtonMetrics() override = default;
@@ -133,8 +134,12 @@ class BrowserFrameViewWin::CaptionButtonMetrics : public views::WidgetObserver {
 
   void OnDeviceScaleFactorChanged() { minimize_button_metrics_.OnDpiChanged(); }
 
-  int GetMinimizeButtonOffset() const {
-    return minimize_button_metrics_.GetMinimizeButtonOffsetX();
+  int GetCaptionButtonWidth() const {
+    const int offset = minimize_button_metrics_.GetMinimizeButtonOffsetX();
+    if (frame_->CaptionButtonsOnLeadingEdge()) {
+      return offset;
+    }
+    return frame_->width() - offset;
   }
 
   // views::WidgetObserver:
@@ -161,6 +166,7 @@ class BrowserFrameViewWin::CaptionButtonMetrics : public views::WidgetObserver {
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
   MinimizeButtonMetrics minimize_button_metrics_;
+  const raw_ref<BrowserFrameViewWin> frame_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -169,7 +175,7 @@ class BrowserFrameViewWin::CaptionButtonMetrics : public views::WidgetObserver {
 BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* widget,
                                          BrowserView* browser_view)
     : BrowserFrameView(widget, browser_view),
-      caption_button_metrics_(std::make_unique<CaptionButtonMetrics>()) {
+      caption_button_metrics_(std::make_unique<CaptionButtonMetrics>(*this)) {
   // We initialize all fields despite some of them being unused in some modes,
   // since it's possible for modes to flip dynamically (e.g. if the user enables
   // a high-contrast theme). Throbber icons are only used when ShowSystemIcon()
@@ -718,14 +724,14 @@ int BrowserFrameViewWin::CaptionButtonsRegionWidth() const {
   std::optional<int> system_caption_buttons_width;
   if (!base::FeatureList::IsEnabled(kAvoidUnnecessaryGetMinimizeButtonOffset)) {
     system_caption_buttons_width =
-        caption_button_metrics_->GetMinimizeButtonOffset();
+        caption_button_metrics_->GetCaptionButtonWidth();
   }
 
   int total_width = caption_button_container_->size().width();
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
     if (!system_caption_buttons_width.has_value()) {
       system_caption_buttons_width =
-          caption_button_metrics_->GetMinimizeButtonOffset();
+          caption_button_metrics_->GetCaptionButtonWidth();
     }
     total_width += system_caption_buttons_width.value();
   }
@@ -923,7 +929,7 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
   const int system_caption_buttons_width =
       ShouldBrowserCustomDrawTitlebar(browser_view())
           ? 0
-          : caption_button_metrics_->GetMinimizeButtonOffset();
+          : caption_button_metrics_->GetCaptionButtonWidth();
 
   const int height =
       !browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()
