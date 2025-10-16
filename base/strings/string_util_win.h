@@ -186,6 +186,11 @@ BASE_EXPORT bool EndsWith(
     std::wstring_view search_for,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 
+BASE_EXPORT std::optional<std::wstring_view> RemovePrefix(
+    std::wstring_view string,
+    std::wstring_view prefix,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+
 BASE_EXPORT void ReplaceFirstSubstringAfterOffset(
     std::wstring* str,
     size_t start_offset,

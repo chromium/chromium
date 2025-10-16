@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
@@ -75,27 +76,18 @@ namespace {
 // `kGoogleChromeScheme` feature is enabled. Returns true if the prefix was
 // stripped.
 bool StripGoogleChromeScheme(base::FilePath::StringViewType& arg) {
-  if (!base::FeatureList::IsEnabled(features::kGoogleChromeScheme)) {
-    return false;
-  }
-
-  const base::FilePath scheme_prefix =
-      base::FilePath::FromASCII(chrome::kGoogleChromeURLScheme);
-  if (!base::StartsWith(arg, scheme_prefix.value(),
-                        base::CompareCase::INSENSITIVE_ASCII)) {
-    return false;
-  }
-
-  const base::FilePath separator =
-      base::FilePath::FromASCII(url::kStandardSchemeSeparator);
-  base::FilePath::StringViewType rest =
-      arg.substr(scheme_prefix.value().length());
-  if (base::StartsWith(rest, separator.value(),
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    arg = rest.substr(separator.value().length());
+  const base::FilePath kFullPrefixPath = base::FilePath::FromASCII(base::StrCat(
+      {chrome::kGoogleChromeURLScheme, url::kStandardSchemeSeparator}));
+  // Note: we enabled the feature flag condition later
+  // we want to activate the experiment when it is relevant for better
+  // stats collection. We plan to remove this flag once we establish it works
+  // fine.
+  if (auto suffix = base::RemovePrefix(arg, kFullPrefixPath.value(),
+                                       base::CompareCase::INSENSITIVE_ASCII);
+      suffix && base::FeatureList::IsEnabled(features::kGoogleChromeScheme)) {
+    arg = *suffix;
     return true;
   }
-
   return false;
 }
 
@@ -454,30 +446,29 @@ StartupTabProviderImpl::ParseTabFromCommandLineArg(
     if (url.is_valid()) {
       return {CommandLineTabsPresent::kYes, std::move(url)};
     }
-  } else {
-    // Otherwise, fall through to treating it as a URL; stripping off the
-    // `kGoogleChromeScheme` if present.
+  }
+  // Otherwise, fall through to treating it as a URL; stripping off the
+  // `kGoogleChromeScheme` if present.
+    else if (!StripGoogleChromeScheme(arg) || !arg.empty()) {
     // This will create a file URL or a regular URL.
-    if (!StripGoogleChromeScheme(arg) || !arg.empty()) {
-      base::FilePath arg_path(arg);
-      GURL url(base::FilePath(arg_path).MaybeAsASCII());
+    const base::FilePath arg_path(arg);
+    GURL url(arg_path.MaybeAsASCII());
 
-      // This call can (in rare circumstances) block the UI thread.
-      // FixupRelativeFile may access to current working directory, which is a
-      // blocking API. http://crbug.com/60641
-      // http://crbug.com/371030: Only use URLFixerUpper if we don't have a
-      // valid URL, otherwise we will look in the current directory for a file
-      // named 'about' if the browser was started with a about:foo argument.
-      // http://crbug.com/424991: Always use URLFixerUpper on file:// URLs,
-      // otherwise we wouldn't correctly handle '#' in a file name.
-      if (!url.is_valid() || url.SchemeIsFile()) {
-	base::ScopedAllowBlocking allow_blocking;
-	url = url_formatter::FixupRelativeFile(cur_dir, arg_path);
-      }
+    // This call can (in rare circumstances) block the UI thread.
+    // FixupRelativeFile may access to current working directory, which is a
+    // blocking API. http://crbug.com/60641
+    // http://crbug.com/371030: Only use URLFixerUpper if we don't have a
+    // valid URL, otherwise we will look in the current directory for a file
+    // named 'about' if the browser was started with a about:foo argument.
+    // http://crbug.com/424991: Always use URLFixerUpper on file:// URLs,
+    // otherwise we wouldn't correctly handle '#' in a file name.
+    if (!url.is_valid() || url.SchemeIsFile()) {
+      base::ScopedAllowBlocking allow_blocking;
+      url = url_formatter::FixupRelativeFile(cur_dir, arg_path);
+    }
 
-      if (ValidateUrl(url)) {
-	return {CommandLineTabsPresent::kYes, std::move(url)};
-      }
+    if (ValidateUrl(url)) {
+      return {CommandLineTabsPresent::kYes, std::move(url)};
     }
   }
   return {CommandLineTabsPresent::kNo, GURL()};

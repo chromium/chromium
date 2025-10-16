@@ -93,6 +93,16 @@ bool EndsWith(std::wstring_view str,
   return internal::EndsWithT(str, search_for, case_sensitivity);
 }
 
+std::optional<std::wstring_view> RemovePrefix(std::wstring_view string,
+                                              std::wstring_view prefix,
+                                              CompareCase case_sensitivity) {
+  if (!StartsWith(string, prefix, case_sensitivity)) {
+    return std::nullopt;
+  }
+  string.remove_prefix(prefix.size());
+  return string;
+}
+
 void ReplaceFirstSubstringAfterOffset(std::wstring* str,
                                       size_t start_offset,
                                       std::wstring_view find_this,

@@ -353,9 +353,6 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
     &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(4)};
 
-// Enables the `google-chrome://` URI scheme.
-BASE_FEATURE(kGoogleChromeScheme, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // An artificial delay before signalling the tools that the page has become
 // stable.
 const base::FeatureParam<base::TimeDelta>
@@ -811,6 +808,9 @@ const base::FeatureParam<bool> kGlicEntrypointVariationsHighlightNudge{
 BASE_FEATURE(kGlicShareImage, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+// Enables the `google-chrome://` URI scheme.
+BASE_FEATURE(kGoogleChromeScheme, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Force Privacy Guide to be available even if it would be unavailable
 // otherwise. This is meant for development and test purposes only.
