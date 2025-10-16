@@ -154,6 +154,19 @@ void AutofillAiLogger::OnDidFillField(const FormStructure& form,
                             AutofillAiUkmLogger::EventType::kFieldFilled);
 }
 
+void AutofillAiLogger::OnSaveOrUpdatePromptResult(
+    AutofillClient::AutofillAiPromptTypes prompt_type,
+    EntityType entity_type,
+    EntityInstance::RecordType record_type,
+    uint64_t form_session_id,
+    const std::string& domain,
+    AutofillClient::EntitySaveOrUpdatePromptResult result,
+    ukm::SourceId ukm_source_id) {
+  ukm_logger_.LogSaveOrUpdatePromptResult(prompt_type, entity_type, record_type,
+                                          form_session_id, domain, result,
+                                          ukm_source_id);
+}
+
 void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
                                          ukm::SourceId ukm_source_id,
                                          bool submission_state,
@@ -232,19 +245,6 @@ void AutofillAiLogger::RecordFunnelMetrics(
     LogFunnelMetric("CorrectionAfterFill", type_str, submission_state,
                     combined_state.edited_autofilled_field);
   }
-}
-
-void AutofillAiLogger::OnSaveOrUpdatePromptResult(
-    AutofillClient::AutofillAiPromptTypes prompt_type,
-    EntityType entity_type,
-    EntityInstance::RecordType record_type,
-    uint64_t form_session_id,
-    const std::string& domain,
-    AutofillClient::EntitySaveOrUpdatePromptResult result,
-    ukm::SourceId ukm_source_id) {
-  ukm_logger_.LogSaveOrUpdatePromptResult(prompt_type, entity_type, record_type,
-                                          form_session_id, domain, result,
-                                          ukm_source_id);
 }
 
 void AutofillAiLogger::RecordKeyMetrics(
