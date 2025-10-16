@@ -250,8 +250,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   void UpdateAccessibleName();
 
-  bool IsTranslateHeaderEnabled() const;
-
   bool IsScrollabilityEnabled() const;
   void ResetScrollIfLocked(gfx::PointF current_offset,
                            views::ScrollView* scrollable);

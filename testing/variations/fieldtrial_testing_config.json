@@ -15118,8 +15118,7 @@
                 {
                     "name": "Enabled_2024_04_15",
                     "enable_features": [
-                        "CrosExpandSodaLanguages",
-                        "LiveCaptionMultiLanguage"
+                        "CrosExpandSodaLanguages"
                     ]
                 }
             ]
@@ -15140,26 +15139,6 @@
                     },
                     "enable_features": [
                         "LiveCaptionExperimentalLanguages"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LiveCaptionMultiLanguageRollout": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "available_languages": "en-US,fr-FR,it-IT,de-DE"
-                    },
-                    "enable_features": [
-                        "LiveCaptionMultiLanguage"
                     ]
                 }
             ]

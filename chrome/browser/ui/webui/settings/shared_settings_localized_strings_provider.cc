@@ -132,12 +132,6 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
   AddLiveCaptionSectionStrings(html_source);
 }
 
-// Live Caption subtitle depends on whether multi-language is supported.
-int GetLiveCaptionSubtitle(const bool multi_language) {
-  return multi_language
-             ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE
-             : IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY;
-}
 
 void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedString(
@@ -153,20 +147,14 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
       "captionsMaskOffensiveWordsTitle",
       IDS_SETTINGS_CAPTIONS_MASK_OFFENSIVE_WORDS_TITLE);
 
-  const bool liveCaptionMultiLanguageEnabled =
-      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage);
-
   const bool liveTranslateEnabled = media::IsLiveTranslateEnabled();
 
-  const int live_caption_subtitle_message =
-      GetLiveCaptionSubtitle(liveCaptionMultiLanguageEnabled);
-
-  html_source->AddLocalizedString("captionsEnableLiveCaptionSubtitle",
-                                  live_caption_subtitle_message);
+  html_source->AddLocalizedString(
+      "captionsEnableLiveCaptionSubtitle",
+      IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE);
   html_source->AddBoolean("enableLiveCaption",
                           captions::IsLiveCaptionFeatureSupported());
-  html_source->AddBoolean("enableLiveCaptionMultiLanguage",
-                          liveCaptionMultiLanguageEnabled);
+  html_source->AddBoolean("enableLiveCaptionMultiLanguage", true);
 
   html_source->AddBoolean("enableLiveTranslate", liveTranslateEnabled);
 }

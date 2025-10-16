@@ -1427,9 +1427,6 @@ class AccessibilityDetailedViewSodaTest
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
     std::vector<base::test::FeatureRef> enabled_features(
         {ash::features::kOnDeviceSpeechRecognition});
-    if (GetParam() == SodaFeature::kLiveCaption) {
-      enabled_features.push_back(media::kLiveCaptionMultiLanguage);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();

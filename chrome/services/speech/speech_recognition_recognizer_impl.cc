@@ -585,8 +585,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config_msg_.set_enable_speaker_change_detection(
       base::FeatureList::IsEnabled(media::kSpeakerChangeDetection));
   config_msg_.set_mask_offensive_words(mask_offensive_words_);
-  if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
-      config_paths_.size() > 0) {
+  if (config_paths_.size() > 0) {
     auto* multilang_config = config_msg_.mutable_multilang_config();
     multilang_config->set_rewind_when_switching_language(true);
     auto& multilang_language_pack_directory =

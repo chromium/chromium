@@ -833,9 +833,6 @@ BASE_FEATURE(kLiveCaptionUseGreedyTextStabilizer,
 // recognition results.
 BASE_FEATURE(kLiveCaptionUseWaitK, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Live Caption can be used in multiple languages, as opposed to just English.
-BASE_FEATURE(kLiveCaptionMultiLanguage, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable experimental Live Caption languages.
 BASE_FEATURE(kLiveCaptionExperimentalLanguages,
              base::FEATURE_DISABLED_BY_DEFAULT);

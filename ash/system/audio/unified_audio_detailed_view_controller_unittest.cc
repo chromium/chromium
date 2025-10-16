@@ -939,9 +939,7 @@ class UnifiedAudioDetailedViewControllerSodaTest
     // `ChromeBrowserMainPartsAsh` initializes). Create it here so that
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kOnDeviceSpeechRecognition,
-         media::kLiveCaptionMultiLanguage},
-        {});
+        {ash::features::kOnDeviceSpeechRecognition}, {});
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();
 

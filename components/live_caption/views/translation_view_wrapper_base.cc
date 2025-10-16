@@ -228,13 +228,6 @@ void TranslationViewWrapperBase::SetTextColor(
 }
 
 void TranslationViewWrapperBase::UpdateLanguageLabel() {
-  // We update the language text and set it whenever live translate OR
-  // multilingual live captions are enabled. We early out when both are
-  // disabled.
-  if (!caption_bubble_settings()->IsLiveTranslateFeatureEnabled() &&
-      !base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    return;
-  }
   UpdateLanguageLabelInternal();
 }
 

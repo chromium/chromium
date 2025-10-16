@@ -779,10 +779,8 @@ void CaptionBubble::Init() {
   collapse_button_ =
       content_container->AddChildView(std::move(collapse_button));
 
-  if (IsTranslateHeaderEnabled()) {
-    translation_view_wrapper_->Init(translate_header_container,
-                                    /*delegate=*/this);
-  }
+  translation_view_wrapper_->Init(translate_header_container,
+                                  /*delegate=*/this);
 
   std::unique_ptr<views::BoxLayout> right_header_container_layout =
       std::make_unique<views::BoxLayout>(
@@ -836,22 +834,19 @@ void CaptionBubble::Init() {
   header_container_ = AddChildViewRaw(std::move(header_container));
   AddChildViewRaw(std::move(content_container));
 
-  if (IsTranslateHeaderEnabled()) {
-    std::vector<raw_ptr<views::View, VectorExperimental>> buttons =
-        GetButtons();
-    for (views::View* button : buttons) {
-      button->SetPaintToLayer();
-      button->layer()->SetFillsBoundsOpaquely(false);
-      button->layer()->SetOpacity(0);
-    }
-
-    translate_header_container_->SetPaintToLayer();
-    translate_header_container_->layer()->SetFillsBoundsOpaquely(false);
-    translate_header_container_->layer()->SetOpacity(0);
-    download_progress_label_->SetPaintToLayer();
-    download_progress_label_->layer()->SetFillsBoundsOpaquely(false);
-    download_progress_label_->layer()->SetOpacity(0);
+  std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
+  for (views::View* button : buttons) {
+    button->SetPaintToLayer();
+    button->layer()->SetFillsBoundsOpaquely(false);
+    button->layer()->SetOpacity(0);
   }
+
+  translate_header_container_->SetPaintToLayer();
+  translate_header_container_->layer()->SetFillsBoundsOpaquely(false);
+  translate_header_container_->layer()->SetOpacity(0);
+  download_progress_label_->SetPaintToLayer();
+  download_progress_label_->layer()->SetFillsBoundsOpaquely(false);
+  download_progress_label_->layer()->SetOpacity(0);
 
   UpdateContentSize();
   UpdateAccessibleName();
@@ -887,10 +882,8 @@ bool CaptionBubble::ShouldShowCloseButton() const {
 std::unique_ptr<views::FrameView> CaptionBubble::CreateFrameView(
     views::Widget* widget) {
   std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
-  if (IsTranslateHeaderEnabled()) {
-    caption_bubble_event_observer_ =
-        std::make_unique<CaptionBubbleEventObserver>(this, widget);
-  }
+  caption_bubble_event_observer_ =
+      std::make_unique<CaptionBubbleEventObserver>(this, widget);
 
   if (IsScrollabilityEnabled()) {
     buttons.emplace_back(scroll_lock_button_.get());
@@ -908,9 +901,7 @@ void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
     active = true;
   }
 
-  if (IsTranslateHeaderEnabled()) {
-    UpdateControlsVisibility(active);
-  }
+  UpdateControlsVisibility(active);
 }
 
 std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
@@ -1024,16 +1015,13 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
 }
 
 void CaptionBubble::AnimationProgressed(const gfx::Animation* animation) {
-  if (IsTranslateHeaderEnabled()) {
-    std::vector<raw_ptr<views::View, VectorExperimental>> buttons =
-        GetButtons();
-    for (views::View* button : buttons) {
-      button->layer()->SetOpacity(animation->GetCurrentValue());
-    }
-    translate_header_container_->layer()->SetOpacity(
-        animation->GetCurrentValue());
-    download_progress_label_->layer()->SetOpacity(animation->GetCurrentValue());
+  std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
+  for (views::View* button : buttons) {
+    button->layer()->SetOpacity(animation->GetCurrentValue());
   }
+  translate_header_container_->layer()->SetOpacity(
+      animation->GetCurrentValue());
+  download_progress_label_->layer()->SetOpacity(animation->GetCurrentValue());
 
   if (IsScrollabilityEnabled()) {
     scroll_lock_button_->layer()->SetOpacity(animation->GetCurrentValue());
@@ -1082,16 +1070,11 @@ void CaptionBubble::OnDownloadProgressTextChanged() {
 }
 
 void CaptionBubble::OnLanguagePackInstalled() {
-  if (IsTranslateHeaderEnabled()) {
-    download_progress_label_->SetVisible(false);
-    label_->SetVisible(true);
-  }
+  download_progress_label_->SetVisible(false);
+  label_->SetVisible(true);
 }
 
 void CaptionBubble::OnAutoDetectedLanguageChanged() {
-  if (!IsTranslateHeaderEnabled()) {
-    return;
-  }
   std::string auto_detected_language_code =
       model_->GetAutoDetectedLanguageCode();
   translation_view_wrapper_->OnAutoDetectedLanguageChanged(
@@ -1279,14 +1262,13 @@ void CaptionBubble::SetTextSizeAndFontFamily() {
   label_->SetLineHeight(kLineHeightDip * textScaleFactor);
   label_->SetMaximumWidth(kMaxWidthDip * textScaleFactor - kSidePaddingDip * 2);
   title_->SetLineHeight(kLineHeightDip * textScaleFactor);
-  if (IsTranslateHeaderEnabled()) {
-    download_progress_label_->SetLineHeight(kLiveTranslateLabelLineHeightDip *
-                                            textScaleFactor);
-    download_progress_label_->SetFontList(
-        GetFontList(kLiveTranslateLabelFontSizePx));
-    translation_view_wrapper_->SetTextSizeAndFontFamily(
-        textScaleFactor, GetFontList(kLiveTranslateLabelFontSizePx));
-  }
+
+  download_progress_label_->SetLineHeight(kLiveTranslateLabelLineHeightDip *
+                                          textScaleFactor);
+  download_progress_label_->SetFontList(
+      GetFontList(kLiveTranslateLabelFontSizePx));
+  translation_view_wrapper_->SetTextSizeAndFontFamily(
+      textScaleFactor, GetFontList(kLiveTranslateLabelFontSizePx));
   generic_error_text_->SetLineHeight(kLineHeightDip * textScaleFactor);
   generic_error_icon_->SetImageSize(
       gfx::Size(kErrorImageSizeDip * textScaleFactor,
@@ -1336,10 +1318,8 @@ void CaptionBubble::SetTextColor() {
   generic_error_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kErrorOutlineIcon, primary_color));
 
-  if (IsTranslateHeaderEnabled()) {
-    translation_view_wrapper_->SetTextColor(
-        language_label_color, language_label_border_color, header_color);
-  }
+  translation_view_wrapper_->SetTextColor(
+      language_label_color, language_label_border_color, header_color);
 
 #if BUILDFLAG(IS_WIN)
 
@@ -1506,9 +1486,7 @@ void CaptionBubble::UpdateContentSize() {
       gfx::Size(left_header_width, button_size.height()));
   download_progress_label_->SetPreferredSize(gfx::Size(width, content_height));
 
-  if (IsTranslateHeaderEnabled()) {
-    translation_view_wrapper_->UpdateContentSize();
-  }
+  translation_view_wrapper_->UpdateContentSize();
 
 #if BUILDFLAG(IS_WIN)
   // The Media Foundation renderer error message should not scale with the
@@ -1606,12 +1584,10 @@ CaptionBubble::GetButtons() {
       back_to_tab_button_.get(), close_button_.get(), expand_button_.get(),
       collapse_button_.get()};
 
-  if (IsTranslateHeaderEnabled()) {
-    std::vector<raw_ptr<views::View, VectorExperimental>> language_buttons =
-        translation_view_wrapper_->GetButtons();
-    buttons.insert(buttons.end(), language_buttons.begin(),
-                   language_buttons.end());
-  }
+  std::vector<raw_ptr<views::View, VectorExperimental>> language_buttons =
+      translation_view_wrapper_->GetButtons();
+  buttons.insert(buttons.end(), language_buttons.begin(),
+                 language_buttons.end());
 
   return buttons;
 }
@@ -1679,11 +1655,6 @@ void CaptionBubble::OnTitleTextChanged() {
 
 void CaptionBubble::UpdateAccessibleName() {
   GetViewAccessibility().SetName(std::u16string(title_->GetText()));
-}
-
-bool CaptionBubble::IsTranslateHeaderEnabled() const {
-  return caption_bubble_settings_->IsLiveTranslateFeatureEnabled() ||
-         base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage);
 }
 
 bool CaptionBubble::IsScrollabilityEnabled() const {

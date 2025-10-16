@@ -183,21 +183,11 @@ void LiveCaptionController::OnSodaInstalled(
   }
 }
 
+// SODA install errors are observed and handled in the Settings WebUI:
+// chrome/browser/ui/webui/settings/captions_handler.cc
 void LiveCaptionController::OnSodaInstallError(
     speech::LanguageCode language_code,
-    speech::SodaInstaller::ErrorCode error_code) {
-  // Check that language code matches the selected language for Live Caption or
-  // is LanguageCode::kNone (signifying the SODA binary failed).
-  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs()) &&
-      language_code != speech::LanguageCode::kNone) {
-    return;
-  }
-  // If LC is enabled, turn it back off so the UI switch toggles off.  It's okay
-  // if there are other caption observers; they simply won't get any captions.
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    profile_prefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
-  }
-}
+    speech::SodaInstaller::ErrorCode error_code) {}
 
 const std::string LiveCaptionController::GetLanguageCode() const {
   return prefs::GetLiveCaptionLanguageCode(profile_prefs());

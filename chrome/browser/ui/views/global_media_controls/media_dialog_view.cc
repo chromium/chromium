@@ -82,10 +82,6 @@ static constexpr int kImageWidthDip = 20;
 static constexpr int kVerticalMarginDip = 10;
 
 std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    return l10n_util::GetStringUTF16(
-        IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_ENGLISH_ONLY);
-  }
   // The selected language is only shown when Live Caption is enabled.
   if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
     std::u16string language = speech::GetLanguageDisplayName(
