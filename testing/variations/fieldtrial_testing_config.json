@@ -16069,6 +16069,21 @@
             ]
         }
     ],
+    "NTPBackgroundCustomization": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NTPBackgroundCustomization"
+                    ]
+                }
+            ]
+        }
+    ],
     "NavigationThrottleRegistryAttributeCache": [
         {
             "platforms": [

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/constants.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -1365,6 +1366,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
 
+  // Scroll to bring all toggles into view.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kHomeCustomizationMainViewAccessibilityIdentifier)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
   // Check for a toggle cell for Shortcuts and Magic Stack, and ensure that
   // they're all on.
   [[EarlGrey
@@ -1402,6 +1409,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kHomeCustomizationMainViewAccessibilityIdentifier)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID([HomeCustomizationHelper
                      navigationBarTitleForPage:CustomizationMenuPage::kMain])]
@@ -1455,6 +1466,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
+
+  // Scroll to bring toggles into view.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kHomeCustomizationMainViewAccessibilityIdentifier)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Tap the Most Visited cell which shouldn't prompt a navigation.
   [[EarlGrey selectElementWithMatcher:
