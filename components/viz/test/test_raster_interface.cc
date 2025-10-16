@@ -87,15 +87,6 @@ void TestRasterInterface::GetQueryObjectui64vEXT(GLuint id,
   }
 }
 
-gpu::SyncToken TestRasterInterface::ScheduleImageDecode(
-    base::span<const uint8_t> encoded_data,
-    const gfx::Size& output_size,
-    uint32_t transfer_cache_entry_id,
-    const gfx::ColorSpace& target_color_space,
-    bool needs_mips) {
-  return gpu::SyncToken();
-}
-
 void TestRasterInterface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
   // Don't return a valid sync token if context is lost. This matches behavior
   // of CommandBufferProxyImpl.

@@ -108,11 +108,6 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
                       const ScrollOffsetMap* raster_inducing_scroll_offsets,
                       size_t* max_op_size_hint) override {}
   void EndRasterCHROMIUM() override {}
-  gpu::SyncToken ScheduleImageDecode(base::span<const uint8_t> encoded_data,
-                                     const gfx::Size& output_size,
-                                     uint32_t transfer_cache_entry_id,
-                                     const gfx::ColorSpace& target_color_space,
-                                     bool needs_mips) override;
   void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,

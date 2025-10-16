@@ -93,9 +93,7 @@ class ContextSupport {
   virtual bool IsWebPDecodeAccelerationSupported() const = 0;
 
   // Determines if |image_metadata| corresponds to an image that can be decoded
-  // using hardware decode acceleration. If this method returns true, then the
-  // client can be confident that a call to
-  // RasterInterface::ScheduleImageDecode() will succeed.
+  // using hardware decode acceleration.
   virtual bool CanDecodeWithHardwareAcceleration(
       const cc::ImageHeaderMetadata* image_metadata) const = 0;
 

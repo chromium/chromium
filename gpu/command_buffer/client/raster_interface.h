@@ -116,17 +116,6 @@ class RasterInterface : public InterfaceBase {
       const ScrollOffsetMap* raster_inducing_scroll_offsets,
       size_t* max_op_size_hint) = 0;
 
-  // Schedules a hardware-accelerated image decode and a sync token that's
-  // released when the image decode is complete. If the decode could not be
-  // scheduled, an empty sync token is returned. This method should only be
-  // called if ContextSupport::CanDecodeWithHardwareAcceleration() returns true.
-  virtual SyncToken ScheduleImageDecode(
-      base::span<const uint8_t> encoded_data,
-      const gfx::Size& output_size,
-      uint32_t transfer_cache_entry_id,
-      const gfx::ColorSpace& target_color_space,
-      bool needs_mips) = 0;
-
   // Starts an asynchronous readback of `source_mailbox` into caller-owned
   // memory represented by `out`.
   // `dst_row_bytes` is a per row stride expected in the `out` buffer.

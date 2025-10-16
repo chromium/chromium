@@ -101,13 +101,6 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
                       size_t* max_op_size_hint) override;
   void EndRasterCHROMIUM() override;
 
-  // Image decode acceleration.
-  SyncToken ScheduleImageDecode(base::span<const uint8_t> encoded_data,
-                                const gfx::Size& output_size,
-                                uint32_t transfer_cache_entry_id,
-                                const gfx::ColorSpace& target_color_space,
-                                bool needs_mips) override;
-
   void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,

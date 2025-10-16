@@ -1491,25 +1491,6 @@ void RasterImplementation::EndRasterCHROMIUM() {
   skottie_serialization_history_.RequestInactiveAnimationsPurge();
 }
 
-SyncToken RasterImplementation::ScheduleImageDecode(
-    base::span<const uint8_t> encoded_data,
-    const gfx::Size& output_size,
-    uint32_t transfer_cache_entry_id,
-    const gfx::ColorSpace& target_color_space,
-    bool needs_mips) {
-  // It's safe to use base::Unretained(this) here because
-  // StartTransferCacheEntry() will call the callback before returning.
-  SyncToken decode_sync_token;
-  transfer_cache_.StartTransferCacheEntry(
-      static_cast<uint32_t>(cc::TransferCacheEntryType::kImage),
-      transfer_cache_entry_id,
-      base::BindOnce(&RasterImplementation::IssueImageDecodeCacheEntryCreation,
-                     base::Unretained(this), encoded_data, output_size,
-                     transfer_cache_entry_id, target_color_space, needs_mips,
-                     &decode_sync_token));
-  return decode_sync_token;
-}
-
 bool RasterImplementation::ReadbackImagePixelsINTERNAL(
     const gpu::Mailbox& source_mailbox,
     const SkImageInfo& dst_info,

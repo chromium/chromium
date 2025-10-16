@@ -279,15 +279,6 @@ void RasterImplementationGLES::EndRasterCHROMIUM() {
   NOTREACHED();
 }
 
-SyncToken RasterImplementationGLES::ScheduleImageDecode(
-    base::span<const uint8_t> encoded_data,
-    const gfx::Size& output_size,
-    uint32_t transfer_cache_entry_id,
-    const gfx::ColorSpace& target_color_space,
-    bool needs_mips) {
-  NOTREACHED();
-}
-
 void RasterImplementationGLES::ReadbackARGBPixelsAsync(
     const gpu::Mailbox& source_mailbox,
     GLenum source_target,

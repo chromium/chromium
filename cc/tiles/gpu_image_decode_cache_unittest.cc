@@ -194,33 +194,6 @@ class MockRasterImplementation : public gpu::raster::RasterImplementationGLES {
                                     gpu::ContextSupport* support)
       : RasterImplementationGLES(gl, support, gpu::Capabilities()) {}
   ~MockRasterImplementation() override = default;
-
-  gpu::SyncToken ScheduleImageDecode(base::span<const uint8_t> encoded_data,
-                                     const gfx::Size& output_size,
-                                     uint32_t transfer_cache_entry_id,
-                                     const gfx::ColorSpace& target_color_space,
-                                     bool needs_mips) override {
-    DoScheduleImageDecode(output_size, transfer_cache_entry_id,
-                          target_color_space, needs_mips);
-    if (!next_accelerated_decode_fails_) {
-      return gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
-                            gpu::CommandBufferId::FromUnsafeValue(1u),
-                            next_release_count_++);
-    }
-    return gpu::SyncToken();
-  }
-
-  void SetAcceleratedDecodingFailed() { next_accelerated_decode_fails_ = true; }
-
-  MOCK_METHOD4(DoScheduleImageDecode,
-               void(const gfx::Size& /* output_size */,
-                    uint32_t /* transfer_cache_entry_id */,
-                    const gfx::ColorSpace& /* target_color_space */,
-                    bool /* needs_mips */));
-
- private:
-  bool next_accelerated_decode_fails_ = false;
-  uint64_t next_release_count_ = 1u;
 };
 
 class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
