@@ -209,6 +209,12 @@ class ExecutionEngine : public ToolDelegate {
       UserConfirmationDialogCallback callback,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
+  bool ShouldGateNavigationInternal(
+      content::NavigationHandle& navigation_handle,
+      UserConfirmationDialogCallback callback);
+  void LogNavigationGating(content::NavigationHandle& navigation_handle,
+                           bool applied_gate);
+
   State state_ = State::kInit;
 
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;

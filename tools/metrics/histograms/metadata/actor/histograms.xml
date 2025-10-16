@@ -129,6 +129,74 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.NavigationGating.AllowListSize" units="origins"
+    expires_after="2026-03-30">
+  <owner>dylancutler@google.com</owner>
+  <owner>johannhof@google.com</owner>
+  <summary>
+    Records the size of the allow list of origins which the actor can navigate
+    to for the given task. These origins come from server actions or when a
+    navigation confirmation request is granted. Recorded every time the actor
+    navigates the main frame.
+  </summary>
+</histogram>
+
+<histogram name="Actor.NavigationGating.AppliedGate" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>dylancutler@google.com</owner>
+  <owner>johannhof@google.com</owner>
+  <summary>
+    Records whether navigation gating was applied when the actor tried to
+    navigate the main frame. True means that gating was applied and the
+    navigation was deferred until confirmation. False means the navigation was
+    allowed to continue without gating. Recorded whenever the actor navigates
+    the main frame.
+  </summary>
+</histogram>
+
+<histogram name="Actor.NavigationGating.CrossOrigin" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>dylancutler@google.com</owner>
+  <owner>johannhof@google.com</owner>
+  <summary>
+    Records when actor navigation gating is applied to a cross-origin
+    navigation. Recorded when the actor navigates the main frame and origin
+    gating applies.
+  </summary>
+</histogram>
+
+<histogram name="Actor.NavigationGating.CrossSite" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>dylancutler@google.com</owner>
+  <owner>johannhof@google.com</owner>
+  <summary>
+    Records when actor navigation gating is applied to a cross-site navigation.
+    Recorded when the actor navigates the main frame and origin gating applies.
+  </summary>
+</histogram>
+
+<histogram name="Actor.NavigationGating.PermissionGranted" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>dylancutler@google.com</owner>
+  <owner>johannhof@google.com</owner>
+  <summary>
+    Records when actor is given permission to continue navigating after
+    navigation gating has already applied. Recorded when the browser receives
+    the response from its confirmation request.
+  </summary>
+</histogram>
+
+<histogram name="Actor.NavigationGating.TimeElapsedForGating" units="ms"
+    expires_after="2026-03-30">
+  <owner>dylancutler@google.com</owner>
+  <owner>johannhof@google.com</owner>
+  <summary>
+    Records how long origin gating processing is taking when it decides if an
+    actor can navigate to a new origin. Recorded when the actor navigates the
+    main frame.
+  </summary>
+</histogram>
+
 <histogram name="Actor.PageContext.APC.Duration" units="ms"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>

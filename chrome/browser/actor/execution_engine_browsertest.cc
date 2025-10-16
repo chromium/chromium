@@ -490,6 +490,9 @@ class ExecutionEngineOriginGatingBrowserTest
                     }));
   }
 
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription user_confirmation_dialog_subscription_;
@@ -518,14 +521,35 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
               origin_gating_enabled()
                   ? mojom::ActionResultCode::kTriggeredNavigationBlocked
                   : mojom::ActionResultCode::kOk);
+
+  // The first navigation should log that gating was not applied. The second
+  // should log that gating was applied.
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
+                                      false, origin_gating_enabled() ? 1 : 0);
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
+                                      true, origin_gating_enabled() ? 1 : 0);
+  // Should log that there was one same-site navigation and one cross-site
+  // navigation.
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.CrossOrigin",
+                                      false, origin_gating_enabled() ? 1 : 0);
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.CrossOrigin",
+                                      true, origin_gating_enabled() ? 1 : 0);
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.CrossSite", false,
+                                      origin_gating_enabled() ? 1 : 0);
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.CrossSite", true,
+                                      origin_gating_enabled() ? 1 : 0);
+  // Should log that permission was *denied* once.
+  histogram_tester_.ExpectBucketCount(
+      "Actor.NavigationGating.PermissionGranted", false,
+      origin_gating_enabled() ? 1 : 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        GateCrossOriginNavigations_Granted) {
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL second_url =
-      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "www.example.com", "/actor/link.html");
+  const GURL second_url = embedded_https_test_server().GetURL(
+      "foo.example.com", "/actor/blank.html");
 
   CreateMockPromptIPCResponse(url::Origin::Create(second_url),
                               /*permission_granted=*/true);
@@ -540,6 +564,25 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", second_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  // The first navigation should log that gating was not applied. The second
+  // should log that gating was applied.
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
+                                      false, origin_gating_enabled() ? 1 : 0);
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
+                                      true, origin_gating_enabled() ? 1 : 0);
+  // Should log that there was only a cross-origin navigation and not a
+  // cross-site navigation.
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.CrossOrigin",
+                                      false, origin_gating_enabled() ? 1 : 0);
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.CrossOrigin",
+                                      true, origin_gating_enabled() ? 1 : 0);
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.CrossSite", false,
+                                      origin_gating_enabled() ? 2 : 0);
+  // Should log that permission was *granted* once.
+  histogram_tester_.ExpectBucketCount(
+      "Actor.NavigationGating.PermissionGranted", true,
+      origin_gating_enabled() ? 1 : 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
@@ -637,6 +680,18 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   // Expect the navigation to be blocked by origin gating.
   ExpectErrorResult(result2,
                     mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  // All but the last navigation should not have gating applied.
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
+                                      false, 3);
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
+                                      true, 1);
+  // Should log that permission was denied the one time it was prompted.
+  histogram_tester_.ExpectBucketCount(
+      "Actor.NavigationGating.PermissionGranted", false, 1);
+  // Should log the allow-list has 2 entries at the end of the first task.
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AllowListSize", 2,
+                                      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
