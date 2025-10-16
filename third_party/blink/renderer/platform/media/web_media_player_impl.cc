@@ -2924,6 +2924,7 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
   }
 
   bool old_uses_audio_service = UsesAudioService(renderer_type_);
+  const auto old_renderer_type = renderer_type_;
   renderer_type_ = renderer_factory_selector_->GetCurrentRendererType();
 
   // TODO(crbug.com/40261162): Support codec changing for Media Foundation.
@@ -2937,6 +2938,13 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
 
   media_metrics_provider_->SetRendererType(renderer_type_);
   media_log_->SetProperty<MediaLogProperty::kRendererName>(renderer_type_);
+
+  // Recreate the watch time reporter if renderer type is changed so that
+  // WatchTimeReporter constructor can take PlaybackProperties with the updated
+  // renderer type.
+  if (old_renderer_type != renderer_type_ && watch_time_reporter_) {
+    CreateWatchTimeReporter();
+  }
 
   return renderer_factory_selector_->GetCurrentFactory()->CreateRenderer(
       media_task_runner_, worker_task_runner_, audio_source_provider_.get(),
