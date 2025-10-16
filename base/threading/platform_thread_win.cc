@@ -543,7 +543,7 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
       DPCHECK(false) << "::GetThreadPriority error";
   }
 
-  NOTREACHED() << "::GetThreadPriority returned " << priority << ".";
+  return ThreadPriorityForTest::kNormal;
 }
 
 // static
