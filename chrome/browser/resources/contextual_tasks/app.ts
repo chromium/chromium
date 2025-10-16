@@ -8,6 +8,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import '//resources/cr_components/composebox/composebox.js';
 
 export class ContextualTasksAppElement extends CrLitElement {
   static get is() {

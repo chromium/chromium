@@ -12,6 +12,7 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -20,7 +21,8 @@ class BrowserContext;
 inline constexpr char kContextualTasksUiHost[] = "contextual-tasks";
 
 class ContextualTasksUI : public TopChromeWebUIController,
-                          public contextual_tasks::mojom::PageHandlerFactory {
+                          public contextual_tasks::mojom::PageHandlerFactory,
+                          public composebox::mojom::PageHandlerFactory {
  public:
   explicit ContextualTasksUI(content::WebUI* web_ui);
   ContextualTasksUI(const ContextualTasksUI&) = delete;
@@ -39,11 +41,31 @@ class ContextualTasksUI : public TopChromeWebUIController,
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>
           pending_receiver);
 
+  // composebox::mojom::PageHandlerFactory
+  // Instantiates the implementor of the composebox::mojom::PageHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void CreatePageHandler(
+      mojo::PendingRemote<composebox::mojom::Page> pending_page,
+      mojo::PendingReceiver<composebox::mojom::PageHandler>
+          pending_page_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>
+          pending_searchbox_handler) override;
+
+  // Instantiates the implementor of the
+  // composebox::mojom::PageHandlerFactory mojo interface passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
+
   static constexpr std::string_view GetWebUIName() { return "ContextualTasks"; }
 
  private:
-  mojo::Receiver<contextual_tasks::mojom::PageHandlerFactory> factory_receiver_{
-      this};
+  mojo::Receiver<composebox::mojom::PageHandlerFactory>
+      composebox_page_handler_factory_receiver_{this};
+
+  mojo::Receiver<contextual_tasks::mojom::PageHandlerFactory>
+      contextual_tasks_page_handler_factory_receiver_{this};
 
   std::unique_ptr<contextual_tasks::mojom::PageHandler> page_handler_;
 

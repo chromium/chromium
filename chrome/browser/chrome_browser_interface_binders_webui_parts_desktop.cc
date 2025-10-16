@@ -425,12 +425,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
         file_suggestion::mojom::MicrosoftFilesPageHandler, NewTabPageUI>(map);
   }
 
-  if (ntp_composebox::IsNtpComposeboxEnabled(Profile::FromBrowserContext(
-          render_frame_host->GetProcess()->GetBrowserContext()))) {
-    RegisterWebUIControllerInterfaceBinder<
-        composebox::mojom::PageHandlerFactory, NewTabPageUI>(map);
-  }
-
   RegisterWebUIControllerInterfaceBinder<
       reading_list::mojom::PageHandlerFactory, ReadingListUI>(map);
   RegisterWebUIControllerInterfaceBinder<
@@ -543,7 +537,24 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<::app_home::mojom::PageHandlerFactory,
                                          webapps::AppHomeUI>(map);
 
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+  const bool is_ntp_composebox_enabled =
+      ntp_composebox::IsNtpComposeboxEnabled(Profile::FromBrowserContext(
+          render_frame_host->GetProcess()->GetBrowserContext()));
+  const bool is_contextual_tasks_enabled =
+      base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+  if (is_ntp_composebox_enabled && is_contextual_tasks_enabled) {
+    RegisterWebUIControllerInterfaceBinder<
+        composebox::mojom::PageHandlerFactory, NewTabPageUI, ContextualTasksUI>(
+        map);
+  } else if (is_contextual_tasks_enabled) {
+    RegisterWebUIControllerInterfaceBinder<
+        composebox::mojom::PageHandlerFactory, ContextualTasksUI>(map);
+  } else if (is_ntp_composebox_enabled) {
+    RegisterWebUIControllerInterfaceBinder<
+        composebox::mojom::PageHandlerFactory, NewTabPageUI>(map);
+  }
+
+  if (is_contextual_tasks_enabled) {
     RegisterWebUIControllerInterfaceBinder<
         contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
   }

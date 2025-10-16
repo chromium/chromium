@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
+
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ContextualTasksAppElement} from './app.js';
@@ -13,6 +15,10 @@ export function getHtml(this: ContextualTasksAppElement) {
     Contextual Tasks UI
   </div>
   <webview id="threadFrame" src="${this.threadUrl_}"></webview>
+  <div id="composeboxContainer">
+    <ntp-composebox id="composebox">
+    </ntp-composebox>
+  </div>
   <!--_html_template_end_-->`;
 }
 // clang-format on

@@ -69,6 +69,8 @@ source_set("internal") {
 if (!is_android) {
   source_set("ui") {
     sources = [
+      "contextual_tasks_composebox_handler.cc",
+      "contextual_tasks_composebox_handler.h",
       "contextual_tasks_page_handler.cc",
       "contextual_tasks_page_handler.h",
       "contextual_tasks_side_panel_coordinator.cc",
@@ -92,15 +94,21 @@ if (!is_android) {
     ]
 
     deps = [
+      ":contextual_tasks",
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/contextual_tasks:resources",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui",
+      "//chrome/browser/ui/webui/new_tab_page/composebox",
+      "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome",
       "//components/contextual_tasks/public:feature_list",
       "//components/keyed_service/core",
+      "//components/omnibox/browser:mojo_bindings",
+      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     ]
   }
 

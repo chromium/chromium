@@ -30,6 +30,7 @@ build_webui("build") {
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

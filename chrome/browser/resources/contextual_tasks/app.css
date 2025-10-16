@@ -23,3 +23,11 @@
   flex-grow: 1;
   overflow: hidden;
 }
+
+#composeboxContainer {
+  height: 64px;
+  inset-block-end: 0;
+  min-height: var(--composebox-collapsed-height);
+  position: absolute;
+  width: 100%;
+}
