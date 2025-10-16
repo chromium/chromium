@@ -2211,19 +2211,14 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile,
   if (settings_.TreesInVizInClientProcess() &&
       !static_cast<PictureLayerImpl&>(*layer_impl)
            .should_batch_updated_tiles()) {
-    gpu::SharedImageInterface* sii = nullptr;
-    if (viz::RasterContextProvider* context_provider =
-            layer_tree_frame_sink_->context_provider()) {
-      sii = context_provider->SharedImageInterface();
-    }
-
     // In TreesInViz mode, send this tile update directly to Viz only if the
     // layer is not batching its updates. A layer stops batching updates
     // (should_batch_updated_tiles() becomes false) after it has been
     // successfully sent to Viz via UpdateDisplayTree().
     layer_context_->UpdateDisplayTile(
         static_cast<PictureLayerImpl&>(*layer_impl), *tile,
-        *resource_provider(), sii, update_damage);
+        *resource_provider(),
+        layer_tree_frame_sink_->shared_image_interface().get(), update_damage);
   }
 
   if (set_needs_redraw && !client_->IsInsideDraw() &&
@@ -3373,15 +3368,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata = std::move(metadata);
 
-  gpu::SharedImageInterface* sii = nullptr;
-  if (auto* context_provider = layer_tree_frame_sink_->context_provider()) {
-    sii = context_provider->SharedImageInterface();
-  } else {
-    sii = layer_tree_frame_sink_->shared_image_interface().get();
-  }
-
-  resource_provider_->PrepareSendToParent(resources,
-                                          &compositor_frame.resource_list, sii);
+  resource_provider_->PrepareSendToParent(
+      resources, &compositor_frame.resource_list,
+      layer_tree_frame_sink_->shared_image_interface().get());
 
   compositor_frame.render_pass_list = std::move(frame->render_passes);
 
@@ -3430,15 +3419,10 @@ base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
   DCHECK(settings_.TreesInVizInClientProcess());
   DCHECK(layer_context_);
 
-  gpu::SharedImageInterface* sii = nullptr;
-  if (viz::RasterContextProvider* context_provider =
-          layer_tree_frame_sink_->context_provider()) {
-    sii = context_provider->SharedImageInterface();
-  }
-
   return layer_context_->UpdateDisplayTreeFrom(
-      *active_tree(), *resource_provider(), sii, viewport_damage_rect_,
-      target_local_surface_id_);
+      *active_tree(), *resource_provider(),
+      layer_tree_frame_sink_->shared_image_interface().get(),
+      viewport_damage_rect_, target_local_surface_id_);
 }
 
 int LayerTreeHostImpl::RequestedMSAASampleCount() const {
@@ -3479,10 +3463,7 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
 
     // Software compositor always uses BGRA 8888 format for tiles.
     raster_caps_.tile_format = viz::SinglePlaneFormat::kBGRA_8888;
-    raster_caps_.ui_rgba_format =
-        layer_tree_frame_sink_->shared_image_interface()
-            ? viz::SinglePlaneFormat::kBGRA_8888
-            : viz::SinglePlaneFormat::kRGBA_8888;
+    raster_caps_.ui_rgba_format = viz::SinglePlaneFormat::kBGRA_8888;
     return;
   }
 
@@ -5603,10 +5584,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> shared_mapping;
 
   if (layer_tree_frame_sink_->context_provider()) {
-    viz::RasterContextProvider* context_provider =
-        layer_tree_frame_sink_->context_provider();
     const auto& shared_image_caps =
-        context_provider->SharedImageInterface()->GetCapabilities();
+        layer_tree_frame_sink_->shared_image_interface()->GetCapabilities();
     const bool overlay_candidate =
         settings_.use_gpu_memory_buffer_resources &&
         shared_image_caps.supports_scanout_shared_images &&
@@ -5634,9 +5613,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     // If not scaled, we can copy the pixels 1:1 from the source bitmap to our
     // destination backing of a texture or shared bitmap.
     if (layer_tree_frame_sink_->context_provider()) {
-      viz::RasterContextProvider* context_provider =
-          layer_tree_frame_sink_->context_provider();
-      auto* sii = context_provider->SharedImageInterface();
+      auto sii = layer_tree_frame_sink_->shared_image_interface();
       client_shared_image = sii->CreateSharedImage(
           {format, upload_size, color_space, shared_image_usage,
            "LayerTreeHostUIResourceBitmap"},
@@ -5702,9 +5679,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     if (layer_tree_frame_sink_->context_provider()) {
       SkPixmap pixmap;
       scaled_surface->peekPixels(&pixmap);
-      viz::RasterContextProvider* context_provider =
-          layer_tree_frame_sink_->context_provider();
-      auto* sii = context_provider->SharedImageInterface();
+      auto sii = layer_tree_frame_sink_->shared_image_interface();
       client_shared_image = sii->CreateSharedImage(
           {format, upload_size, color_space, shared_image_usage,
            "LayerTreeHostUIResourceScaledBitmap"},

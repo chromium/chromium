@@ -65,8 +65,9 @@ LayerTreeFrameSink::LayerTreeFrameSink(
 }
 
 LayerTreeFrameSink::~LayerTreeFrameSink() {
-  if (client_)
+  if (client_) {
     DetachFromClient();
+  }
 }
 
 base::WeakPtr<LayerTreeFrameSink> LayerTreeFrameSink::GetWeakPtr() {
@@ -201,6 +202,10 @@ void LayerTreeFrameSink::GpuChannelLostOnClientThread() {
 
 scoped_refptr<gpu::SharedImageInterface>
 LayerTreeFrameSink::shared_image_interface() const {
+  if (context_provider_) {
+    return context_provider_->SharedImageInterface();
+  }
+
   return shared_image_interface_;
 }
 
