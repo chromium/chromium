@@ -630,9 +630,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   protected getRestoreButtonText_(): string {
     return loadTimeData.getString(
-        this.customLinksEnabled_ || this.enterpriseShortcutsEnabled_ ?
-            'restoreDefaultLinks' :
-            'restoreThumbnailsShort');
+        this.enterpriseShortcutsEnabled_ ? 'restoreDefaultEnterpriseShortcuts' :
+            this.customLinksEnabled_     ? 'restoreDefaultLinks' :
+                                           'restoreThumbnailsShort');
   }
 
   protected getTileTitleDirectionClass_(tile: MostVisitedTile): string {
