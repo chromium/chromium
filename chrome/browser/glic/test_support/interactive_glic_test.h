@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -591,6 +592,39 @@ class InteractiveGlicTestMixin : public T {
       // Not supported for single-instance, as warming is disabled by feature
       // flag.
     }
+  }
+
+  // Same as `Api::AddInstrumentedTabWithOpener()`, but sets the `opener` to
+  // the current glic instance web contents. This is useful to bind the glic
+  // instance from the active tab to the newly created tab.
+  InteractiveBrowserTestApi::MultiStep AddInstrumentedTabWithOpener(
+      ui::ElementIdentifier id,
+      GURL url,
+      std::optional<int> at_index = std::nullopt) {
+    auto steps = Api::Steps(
+        Api::InstrumentNextTab(id),
+        Api::WithElement(
+            ui::test::internal::kInteractiveTestPivotElementId,
+            base::BindLambdaForTesting([this, url,
+                                        at_index](ui::TrackedElement* el) {
+              Browser* const browser_ptr = browser();
+              CHECK(browser_ptr) << "No browser";
+              CHECK(GetHost());
+              NavigateParams navigate_params(
+                  browser_ptr, url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+              navigate_params.tabstrip_index = at_index.value_or(-1);
+              navigate_params.disposition =
+                  WindowOpenDisposition::NEW_FOREGROUND_TAB;
+              navigate_params.opener =
+                  GetHost()->webui_contents()->GetPrimaryMainFrame();
+              CHECK(Navigate(&navigate_params));
+            })),
+        Api::WaitForWebContentsReady(id));
+    Api::AddDescriptionPrefix(
+        steps, base::StringPrintf("AddInstrumentedTabWithOpener( %s, %s, %d, )",
+                                  id.GetName().c_str(), url.spec().c_str(),
+                                  at_index.value_or(-1)));
+    return steps;
   }
 
  protected:

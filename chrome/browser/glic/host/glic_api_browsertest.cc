@@ -1258,7 +1258,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetFocusedTabStateV2WithNavigation) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Confirm that the observer is notified through getFocusedTabState of the
   // initial state, i.e. the first page navigation.
   ExecuteJsTest();
@@ -1273,7 +1272,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 
   // Open a new tab and navigate to a another page.
-  RunTestSequence(AddInstrumentedTab(
+  RunTestSequence(AddInstrumentedTabWithOpener(
       kSecondTab, InProcessBrowserTest::embedded_test_server()->GetURL(
                       "/glic/browser_tests/test.html")));
 
@@ -2138,7 +2137,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 // TODO(crbug.com/441588906): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        DISABLED_testFetchInactiveTabScreenshot) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // Untested on multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
+
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
   ExecuteJsTest();
