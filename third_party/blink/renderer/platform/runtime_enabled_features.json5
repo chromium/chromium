@@ -5210,7 +5210,7 @@
       // Adapt Trusted Types to its new spec, as part of HTML.
       // Tracking bug: 330516530
       name: "TrustedTypesHTML",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "TrustedTypesUseCodeLike",
