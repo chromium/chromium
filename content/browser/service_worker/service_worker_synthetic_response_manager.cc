@@ -41,7 +41,8 @@ constexpr char kHistogramSyntheticResponseReloadReason[] =
 enum class SyntheticResponseReloadReason {
   kCachedResponseHeadCleared = 0,
   kHeaderInconsistent = 1,
-  kMaxValue = kHeaderInconsistent,
+  kRedirect = 2,
+  kMaxValue = kRedirect,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:SyntheticResponseReloadReason)
 
@@ -272,12 +273,15 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
               "ServiceWorkerSyntheticResponseManager::StartRequest");
   CHECK(!request.client_side_content_decoding_enabled);
   response_callback_ = std::move(receive_response_callback);
+  redirect_callback_ = std::move(receive_redirect_callback);
   complete_callback_ = std::move(complete_callback);
   client_ = std::make_unique<SyntheticResponseURLLoaderClient>(
       base::BindRepeating(
           &ServiceWorkerSyntheticResponseManager::OnReceiveResponse,
           weak_factory_.GetWeakPtr()),
-      std::move(receive_redirect_callback),
+      base::BindRepeating(
+          &ServiceWorkerSyntheticResponseManager::OnReceiveRedirect,
+          weak_factory_.GetWeakPtr()),
       base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnComplete,
                      weak_factory_.GetWeakPtr()));
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_to_pass;
@@ -316,6 +320,7 @@ void ServiceWorkerSyntheticResponseManager::StartSyntheticResponse(
       ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse,
       std::move(response), std::move(stream_handle), std::move(timing),
       version_);
+  did_start_synthetic_response = true;
 }
 
 void ServiceWorkerSyntheticResponseManager::MaybeSetResponseHead(
@@ -385,6 +390,23 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
           .Run(std::move(response_head), std::move(body));
       break;
   }
+}
+
+void ServiceWorkerSyntheticResponseManager::OnReceiveRedirect(
+    const net::RedirectInfo& redirect_info,
+    network::mojom::URLResponseHeadPtr response_head) {
+  if (did_start_synthetic_response) {
+    // If the response is already returned from the stored data, that means the
+    // renderer may already have received `OnReceiveResponse`. Sending
+    // `OnReceiveRedirect` after `OnReceiveResponse` brings errors in that case.
+    // Instead, we reload the navigation as a fallback. In the next navigation,
+    // the synthetic response is not enabled because it's a reload navigation.
+    version_->ResetResponseHeadForSyntheticResponse();
+    NotifyReloading();
+    RecordReloadReason(SyntheticResponseReloadReason::kRedirect);
+    return;
+  }
+  std::move(redirect_callback_).Run(redirect_info, std::move(response_head));
 }
 
 void ServiceWorkerSyntheticResponseManager::OnComplete(
