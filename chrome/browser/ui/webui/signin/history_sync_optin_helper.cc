@@ -25,6 +25,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -150,6 +152,10 @@ std::string_view GetHistorySyncSkipReasonMetricName(
         kManagementProfileCreationConflict:
       // In this situation the entire flow is aborted.
       return "Aborted";
+    case HistorySyncOptinHelper::HistorySyncSkipReason::
+        kResumeFlowInNewManagedProfile:
+      // The flow is resumed on a new profile, no metrics need to be recorded.
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -166,7 +172,7 @@ std::string_view UserChoiceToStringMetric(
     case HistorySyncOptinHelper::ScreenChoiceResult::kScreenSkipped:
       // When the screen is skipped the metrics are recorded via a different
       // method.
-      break;
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -377,9 +383,9 @@ void HistorySyncOptinHelper::NotifyFlowFinishedWithHistorySyncScreenSkipped(
     HistorySyncSkipReason skip_reason) {
   CHECK(!is_history_sync_step_complete_);
   is_history_sync_step_complete_ = true;
-
-  RecordMetricsForSkippedHistoryScreen(skip_reason, access_point());
-
+  if (skip_reason != HistorySyncSkipReason::kResumeFlowInNewManagedProfile) {
+    RecordMetricsForSkippedHistoryScreen(skip_reason, access_point());
+  }
   // Observer notification must be the last step, as the observer
   // may delete this helper (see HistorySyncOptinService).
   for (Observer& observer : observers_) {
@@ -396,25 +402,39 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
   if (maybe_managed_account == signin::Tribool::kTrue) {
     maybe_managed_account_ = maybe_managed_account;
 
-    DetermineManagementStatusAndShowManagementScreens();
-    switch (management_status_state_) {
-      case ManagementStatusState::kManagementDisclaimerInProgress:
-        // The management flow is responsible for progressing the flow.
-        return;
-      case ManagementStatusState::kFlowAborted:
-        NotifyFlowFinishedWithHistorySyncScreenSkipped(
-            HistorySyncSkipReason::kManagementProfileCreationConflict);
-        return;
-      case ManagementStatusState::kManagementDisclaimerNotStarted:
-        // `DetermineManagementStatusAndShowManagementScreens` has updated the
-        // managed disclaimer's state.
-        NOTREACHED();
-      case ManagementStatusState::kManagementDisclaimerComplete:
-        // We expect that this method is called for a second time for a managed
-        // user only when the management handling (accepting management, profile
-        // creation) is complete.
-        break;
+    if (management_status_state_ !=
+        ManagementStatusState::kManagementDisclaimerComplete) {
+      // Updates the `management_status_state_`.
+      DetermineManagementStatusAndShowManagementScreens();
+      switch (management_status_state_) {
+        case ManagementStatusState::kManagementDisclaimerInProgress:
+        case ManagementStatusState::kManagementDisclaimerComplete:
+          // kManagementDisclaimerInProgress: The management flow is
+          // responsible for progressing an ongoing flow
+          // kManagementDisclaimerComplete: We expect to follow up call to
+          // ResumeShowHistorySyncOptinScreenFlow with the state marked
+          // complete.
+          return;
+        case ManagementStatusState::kFlowAborted:
+          NotifyFlowFinishedWithHistorySyncScreenSkipped(
+              HistorySyncSkipReason::kManagementProfileCreationConflict);
+          return;
+        case ManagementStatusState::kManagementDisclaimerNotStarted:
+          // `DetermineManagementStatusAndShowManagementScreens` has updated the
+          // managed disclaimer's state.
+          NOTREACHED();
+      }
     }
+  }
+
+  AwaitSyncStartupAndShowHistorySyncScreen();
+}
+
+void HistorySyncOptinHelper::AwaitSyncStartupAndShowHistorySyncScreen() {
+  if (AccountIsManaged(account_info()) == signin::Tribool::kTrue) {
+    CHECK_EQ(management_status_state_,
+             HistorySyncOptinHelper::ManagementStatusState::
+                 kManagementDisclaimerComplete);
   }
   // For managed users the polices are fetched when the user accepts
   // management, which is done as part of
@@ -435,8 +455,11 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
 }
 
 void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
+  CHECK(!is_history_sync_screen_attempted_);
+  is_history_sync_screen_attempted_ = true;
   signin_util::ShouldShowHistorySyncOptinResult result =
       signin_util::ShouldShowHistorySyncOptinScreen(*profile_.get());
+
   if (result == signin_util::ShouldShowHistorySyncOptinResult::kShow) {
     base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Started"));
     base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Started",
@@ -506,7 +529,9 @@ HistorySyncOptinHelperInBrowser::~HistorySyncOptinHelperInBrowser() = default;
 
 void HistorySyncOptinHelperInBrowser::
     DetermineManagementStatusAndShowManagementScreens() {
-  if (profile_management_disclaimer_service_) {
+  if (management_status_state_ !=
+      HistorySyncOptinHelper::ManagementStatusState::
+          kManagementDisclaimerNotStarted) {
     return;
   }
   CHECK(management_status_state_ ==
@@ -553,19 +578,45 @@ void HistorySyncOptinHelperInBrowser::OnManagementAccepted(
   // HistorySyncOptinHelperInBrowser since we only reach this method
   // if the user is managed.
   CHECK_EQ(maybe_managed_account(), signin::Tribool::kTrue);
+
+  if (!chosen_profile) {
+    // Note, if we need the exact reason we need to modify the disclaimer
+    // service to provide this. However both valid reasons are treated the same
+    // so using the management rejection is sufficient.
+    FinishFlowWithoutHistorySyncOptin(
+        HistorySyncSkipReason::kManagementRejected);
+    return;
+  }
   management_status_state_ = HistorySyncOptinHelper::ManagementStatusState::
       kManagementDisclaimerComplete;
 
-  if (chosen_profile) {
-    SetProfile(chosen_profile);
-    ResumeShowHistorySyncOptinScreenFlow(signin::Tribool::kTrue);
+  if (profile() == chosen_profile) {
+    AwaitSyncStartupAndShowHistorySyncScreen();
     return;
   }
 
-  // Note, if we need the exact reason we need to modify the disclaimer service
-  // to provide this. However both valid reasons are treated the same so using
-  // the management rejection is sufficient.
-  FinishFlowWithoutHistorySyncOptin(HistorySyncSkipReason::kManagementRejected);
+  // Resume the flow in the new profile.
+  HistorySyncOptinService* history_sync_optin_service =
+      HistorySyncOptinServiceFactory::GetForProfile(chosen_profile);
+  CHECK(history_sync_optin_service);
+  history_sync_optin_service
+      ->ResumeShowHistorySyncOptinScreenFlowForManagedUser(
+          account_info(),
+          std::make_unique<HistorySyncOptinServiceDefaultDelegate>(),
+          access_point());
+
+  NotifyFlowFinishedWithHistorySyncScreenSkipped(
+      HistorySyncSkipReason::kResumeFlowInNewManagedProfile);
+}
+
+void HistorySyncOptinHelperInBrowser::
+    ResumeShowHistorySyncOptinScreenFlowForManagedAccount(
+        const AccountInfo& managed_account_info) {
+  CHECK_EQ(account_info().account_id, managed_account_info.account_id);
+  CHECK(AccountIsManaged(account_info()) == signin::Tribool::kTrue);
+  management_status_state_ = HistorySyncOptinHelper::ManagementStatusState::
+      kManagementDisclaimerComplete;
+  AwaitSyncStartupAndShowHistorySyncScreen();
 }
 
 // HistorySyncOptinHelperInProfilePicker
@@ -661,4 +712,11 @@ void HistorySyncOptinHelperInProfilePicker::
       kManagementDisclaimerComplete;
   CHECK(policy_helper_);
   policy_helper_->FetchPolicies();
+}
+
+void HistorySyncOptinHelperInProfilePicker::
+    ResumeShowHistorySyncOptinScreenFlowForManagedAccount(
+        const AccountInfo& managed_account_info) {
+  // This method is only used for the browser case.
+  NOTREACHED();
 }

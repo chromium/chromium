@@ -48,7 +48,19 @@ class HistorySyncOptinService : public KeyedService,
       std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
       signin_metrics::AccessPoint access_point);
 
+  bool ResumeShowHistorySyncOptinScreenFlowForManagedUser(
+      const AccountInfo& account_info,
+      std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
+      signin_metrics::AccessPoint access_point);
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(HistorySyncOptinServiceTest,
+                           FlowInProgressDuringOriginalProfileTeardown);
+
+  bool Initialize(const AccountInfo& account_info,
+                  std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
+                  signin_metrics::AccessPoint access_point);
+
   // KeyedService implementation:
   void Shutdown() override;
 
@@ -61,8 +73,15 @@ class HistorySyncOptinService : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
+  void SetDelegateForTesting(
+      std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate);
+
   std::unique_ptr<HistorySyncOptinHelper::Delegate>
       history_sync_optin_delegate_ = nullptr;
+
+  std::unique_ptr<HistorySyncOptinHelper::Delegate>
+      history_sync_optin_delegate_for_testing_ = nullptr;
+
   std::unique_ptr<HistorySyncOptinHelper> history_sync_optin_helper_ = nullptr;
   raw_ptr<Profile> profile_;
 
