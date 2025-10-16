@@ -45,6 +45,7 @@ void PopulateUIWindow(UIWindow* window) {
   UILabel* label = [[UILabel alloc] initWithFrame:bounds];
   label.text = NSProcessInfo.processInfo.processName;
   label.textAlignment = NSTextAlignmentCenter;
+  label.textColor = UIColor.blackColor;
   [window addSubview:label];
 
   // An NSInternalInconsistencyException is thrown if the app doesn't have a
