@@ -60,6 +60,10 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
                              IpProtectionTokenCountEvent event,
                              int count) override;
   void TokenDemandDuringBatchGeneration(int count) override;
+  void RecordStreamCreationAttemptedMetrics(
+      const net::ProxyChain& proxy_chain,
+      base::TimeDelta duration,
+      base::optional_ref<int> net_error) override;
 };
 
 }  // namespace ip_protection

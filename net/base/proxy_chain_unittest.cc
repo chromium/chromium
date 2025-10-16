@@ -795,6 +795,53 @@ TEST(ProxyChainTest, UnpickleTwoProxiesIpProtection) {
   EXPECT_EQ(proxy_chain, *proxy_chain_from_pickle);
 }
 
+TEST(ProxyChainTest, GetHistogramSuffix) {
+  // Test IP Protection chains.
+
+  // Test direct IPP chain.
+  EXPECT_EQ(ProxyChain::ForIpProtection({}).GetHistogramSuffix(), "Chain0");
+
+  auto https_server =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  auto quic_server = ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_QUIC);
+
+  // Test single-proxy IPP chains.
+  EXPECT_EQ(ProxyChain::ForIpProtection({https_server}).GetHistogramSuffix(),
+            "Chain0.HTTPS");
+  EXPECT_EQ(ProxyChain::ForIpProtection({https_server}, 2).GetHistogramSuffix(),
+            "Chain2.HTTPS");
+  EXPECT_EQ(ProxyChain::ForIpProtection({quic_server}).GetHistogramSuffix(),
+            "Chain0.QUIC");
+  EXPECT_EQ(ProxyChain::ForIpProtection({quic_server}, 3).GetHistogramSuffix(),
+            "Chain3.QUIC");
+
+  // Test multi-proxy IPP chains.
+  EXPECT_EQ(ProxyChain::ForIpProtection({https_server, https_server})
+                .GetHistogramSuffix(),
+            "Chain0.HTTPS");
+  EXPECT_EQ(ProxyChain::ForIpProtection({quic_server, quic_server})
+                .GetHistogramSuffix(),
+            "Chain0.QUIC");
+
+  // Test non-IP Protection chains.
+
+  // Test direct non-IPP chain.
+  EXPECT_EQ(ProxyChain::Direct().GetHistogramSuffix(), "Direct");
+
+  // Test single-proxy non-IPP chains.
+  EXPECT_EQ(ProxyChain({https_server}).GetHistogramSuffix(), "HTTPS");
+
+  auto socks_server =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_SOCKS5);
+  EXPECT_EQ(ProxyChain({socks_server}).GetHistogramSuffix(), "SOCKS5");
+
+  if (kAreNonIppMultiProxyChainsValid) {
+    // Test multi-proxy non-IPP chains.
+    EXPECT_EQ(ProxyChain({https_server, https_server}).GetHistogramSuffix(),
+              "HTTPS");
+  }
+}
+
 }  // namespace
 
 }  // namespace net

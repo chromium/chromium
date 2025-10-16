@@ -12,6 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/http/alternate_protocol_usage.h"
@@ -273,6 +274,8 @@ class HttpStreamFactory::JobController
   // when the reason is unknown.
   AlternateProtocolUsage CalculateAlternateProtocolUsage(Job* job) const;
 
+  void NotifyOnStreamCreationAttempted(base::optional_ref<int> net_error);
+
   // Called when a Job encountered a network error that could be resolved by
   // trying a new proxy configuration. If there is another proxy configuration
   // to try then this method sets |next_state_| appropriately and returns either
@@ -395,6 +398,10 @@ class HttpStreamFactory::JobController
   int num_streams_ = 0;
   HttpStreamRequest::StreamType stream_type_;
   RequestPriority priority_ = IDLE;
+
+  // Used to measure how long it takes to create a stream.
+  base::TimeTicks stream_creation_attempt_start_time_;
+
   const NetLogWithSource net_log_;
 
   base::WeakPtrFactory<JobController> ptr_factory_{this};

@@ -205,6 +205,20 @@ class NET_EXPORT ProxyChain {
 
   std::string ToDebugString() const;
 
+  // Returns a string suffix for histogram names.
+  //
+  // For IP Protection chains, the format is "Chain{ID}" for direct chains, and
+  // "Chain{ID}.{Protocol}" otherwise, where {ID} is the
+  // `ip_protection_chain_id()` and {Protocol} is the scheme of the first
+  // proxy. For example, "Chain0" or "Chain1.HTTPS".
+  // For other chains, the format is "Direct" for direct connections, or the
+  // scheme of the proxies in the chain for proxy connections. For example,
+  // "HTTPS" or "SOCKS5".
+  //
+  // This format should not be changed without updating the metrics that use
+  // this.
+  std::string GetHistogramSuffix() const;
+
  private:
   explicit ProxyChain(std::vector<ProxyServer> proxy_server_list,
                       int ip_protection_chain_id,

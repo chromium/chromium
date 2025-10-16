@@ -73,6 +73,9 @@ class IpProtectionProxyDelegate : public net::ProxyDelegate {
       const std::string scheme,
       const std::vector<std::string>& dns_aliases,
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
+  void OnStreamCreationAttempted(const net::ProxyChain& proxy_chain,
+                                 base::TimeDelta duration,
+                                 base::optional_ref<int> net_error) override;
 
  private:
   friend class IpProtectionProxyDelegateTest;

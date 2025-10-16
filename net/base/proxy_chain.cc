@@ -11,6 +11,8 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/buildflag.h"
 #include "net/base/proxy_server.h"
@@ -161,6 +163,39 @@ std::string ProxyChain::ToDebugString() const {
     debug_string += base::StringPrintf(" (Opaque data %d)", *opaque_data_);
   }
   return debug_string;
+}
+
+std::string ProxyChain::GetHistogramSuffix() const {
+  auto scheme_to_string = [](ProxyServer::Scheme scheme) {
+    switch (scheme) {
+      case ProxyServer::SCHEME_INVALID:
+        return "INVALID";
+      case ProxyServer::SCHEME_HTTP:
+        return "HTTP";
+      case ProxyServer::SCHEME_SOCKS4:
+        return "SOCKS4";
+      case ProxyServer::SCHEME_SOCKS5:
+        return "SOCKS5";
+      case ProxyServer::SCHEME_HTTPS:
+        return "HTTPS";
+      case ProxyServer::SCHEME_QUIC:
+        return "QUIC";
+    }
+  };
+
+  if (is_for_ip_protection()) {
+    return base::StrCat(
+        {"Chain", base::NumberToString(ip_protection_chain_id()),
+         is_direct()
+             ? ""
+             : base::StrCat({".", scheme_to_string(First().scheme())})});
+  }
+
+  if (is_direct()) {
+    return "Direct";
+  }
+
+  return scheme_to_string(First().scheme());
 }
 
 ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list,

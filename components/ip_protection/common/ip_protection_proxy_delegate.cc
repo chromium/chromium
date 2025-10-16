@@ -453,4 +453,16 @@ std::optional<std::string> IpProtectionProxyDelegate::GetPRTHeaderValue(
   return net::structured_headers::SerializeItem(item);
 }
 
+void IpProtectionProxyDelegate::OnStreamCreationAttempted(
+    const net::ProxyChain& proxy_chain,
+    base::TimeDelta duration,
+    base::optional_ref<int> net_error) {
+  if (!proxy_chain.is_for_ip_protection()) {
+    return;
+  }
+
+  Telemetry().RecordStreamCreationAttemptedMetrics(proxy_chain, duration,
+                                                   net_error);
+}
+
 }  // namespace ip_protection

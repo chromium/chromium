@@ -10,6 +10,11 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
+
+namespace net {
+class ProxyChain;
+}
 
 namespace ip_protection {
 
@@ -236,6 +241,11 @@ class IpProtectionTelemetry {
   // Records the number of tokens that were demanded while a token fetch was in
   // flight.
   virtual void TokenDemandDuringBatchGeneration(int count) = 0;
+
+  virtual void RecordStreamCreationAttemptedMetrics(
+      const net::ProxyChain& proxy_chain,
+      base::TimeDelta duration,
+      base::optional_ref<int> net_error) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each

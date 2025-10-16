@@ -5,6 +5,8 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -52,11 +54,13 @@ const std::string_view kResponseBody = "Test Content";
 constexpr std::string_view kConnectToProxyBHeaders =
     "CONNECT proxy-b:443 HTTP/1.1\r\n"
     "Host: proxy-b:443\r\n"
-    "Proxy-Connection: keep-alive\r\n\r\n";
+    "Proxy-Connection: keep-alive\r\n"
+    "Authorization: a-token\r\n\r\n";
 constexpr std::string_view kConnectToProxyDHeaders =
     "CONNECT proxy-d:443 HTTP/1.1\r\n"
     "Host: proxy-d:443\r\n"
-    "Proxy-Connection: keep-alive\r\n\r\n";
+    "Proxy-Connection: keep-alive\r\n"
+    "Authorization: a-token\r\n\r\n";
 
 constexpr std::string_view kConnectToProxyResponse =
     "HTTP/1.1 200 Connection Established\r\n\r\n";
@@ -64,24 +68,31 @@ constexpr std::string_view kConnectToProxyResponse =
 constexpr std::string_view kConnectToDestinationHeaders =
     "CONNECT www.example.com:80 HTTP/1.1\r\n"
     "Host: www.example.com:80\r\n"
-    "Proxy-Connection: keep-alive\r\n\r\n";
+    "Proxy-Connection: keep-alive\r\n"
+    "Authorization: a-token\r\n\r\n";
 constexpr std::string_view kConnectToDestinationResponse =
     "HTTP/1.1 200 Connection Established\r\n\r\n";
 
-net::ProxyChain GetIpProtectionProxyChain() {
+net::ProxyChain GetProxyChain1() {
   return net::ProxyChain::ForIpProtection(
       {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxy-a", 443),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxy-b", 443)});
+                                               "proxy-b", 443)},
+      /*chain_id=*/1);
 }
 
-net::ProxyChain GetIpProtectionProxyChain2() {
+net::ProxyChain GetProxyChain2() {
   return net::ProxyChain::ForIpProtection(
       {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxy-c", 443),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxy-d", 443)});
+                                               "proxy-d", 443)},
+      /*chain_id=*/2);
+}
+
+net::ProxyChain GetProxyChainDirect() {
+  return net::ProxyChain::ForIpProtection({});
 }
 
 // A wrapper around SocketDataProvider that owns the reads and writes.
@@ -218,11 +229,12 @@ class UrlRequestContextWrapper {
   UrlRequestContextWrapper() {
     auto context_builder = net::CreateTestURLRequestContextBuilder();
     context_builder->set_client_socket_factory_for_testing(&socket_factory_);
-    auto proxy_resolution_service =
-        net::ConfiguredProxyResolutionService::CreateDirect();
-    proxy_resolution_service->SetProxyDelegate(&proxy_delegate_);
+
+    context_builder->set_proxy_delegate(
+        std::make_unique<IpProtectionProxyDelegate>(&ipp_core_));
+
     context_builder->set_proxy_resolution_service(
-        std::move(proxy_resolution_service));
+        net::ConfiguredProxyResolutionService::CreateDirect());
 
     context_ = context_builder->Build();
   }
@@ -254,7 +266,6 @@ class UrlRequestContextWrapper {
   std::vector<SocketDataWrapper> socket_data_providers_;
   net::MockClientSocketFactory socket_factory_;
   MockIpProtectionCore ipp_core_;
-  IpProtectionProxyDelegate proxy_delegate_{&ipp_core_};
   std::unique_ptr<net::URLRequestContext> context_;
 };
 
@@ -271,8 +282,8 @@ class IpProtectionUrlRequestHttpJobTest : public testing::Test {
     kDirectOnly,
   };
 
-  void CheckRequestMetrics(const base::HistogramTester& histograms,
-                           RequestMetricsExpectations expectations) {
+  void CheckPerRequestMetrics(const base::HistogramTester& histograms,
+                              RequestMetricsExpectations expectations) {
     using enum RequestMetricsExpectations;
     // These are always recorded for any IPP-eligible request.
     EXPECT_THAT(
@@ -319,18 +330,108 @@ class IpProtectionUrlRequestHttpJobTest : public testing::Test {
               (expectations == kDirectFallback) ? 1u : 0u);
   }
 
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  void CheckPerChainMetrics(
+      const base::HistogramTester& histograms,
+      base::optional_ref<const net::ProxyChain> used_chain,
+      base::span<const net::ProxyChain> failed_chains) {
+    if (used_chain.has_value()) {
+      const std::string suffix = used_chain->GetHistogramSuffix();
+      histograms.ExpectTotalCount(
+          base::StrCat({"Net.IpProtection.StreamCreationSuccessTime.", suffix}),
+          1);
+    }
+
+    for (const auto& chain : failed_chains) {
+      const std::string suffix = chain.GetHistogramSuffix();
+      histograms.ExpectTotalCount(
+          base::StrCat({"Net.IpProtection.StreamCreationErrorTime.", suffix}),
+          1);
+      histograms.ExpectTotalCount(
+          base::StrCat({"Net.IpProtection.StreamCreationError.", suffix}), 1);
+    }
+
+    // Check that no extra histograms were recorded.
+    EXPECT_THAT(histograms.GetAllSamplesForPrefix(
+                    "Net.IpProtection.StreamCreationSuccessTime."),
+                ::testing::SizeIs(used_chain.has_value() ? 1 : 0));
+    EXPECT_THAT(histograms.GetAllSamplesForPrefix(
+                    "Net.IpProtection.StreamCreationErrorTime."),
+                ::testing::SizeIs(failed_chains.size()));
+    EXPECT_THAT(histograms.GetAllSamplesForPrefix(
+                    "Net.IpProtection.StreamCreationError."),
+                ::testing::SizeIs(failed_chains.size()));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list{
+      net::features::kEnableIpProtectionProxy};
+  base::test::TaskEnvironment task_environment_;
 };
 
 }  // namespace
 
-TEST_F(IpProtectionUrlRequestHttpJobTest, FallbackToDirect) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      net::features::kEnableIpProtectionProxy);
-
+TEST_F(IpProtectionUrlRequestHttpJobTest, SuccessFirstChain) {
   UrlRequestContextWrapper request_context;
-  request_context.ipp_core().SetProxyList({GetIpProtectionProxyChain()});
+  request_context.ipp_core().SetProxyList({GetProxyChain1(), GetProxyChain2()});
+
+  // Mock a request to the proxy chain that succeeds.
+  auto proxy_data = CreateProxiedRequestSucceedsSocketData(GetProxyChain1());
+  request_context.AddSocketData(proxy_data);
+
+  base::HistogramTester histograms;
+  net::TestDelegate delegate;
+  std::unique_ptr<net::URLRequest> request =
+      request_context.CreateRequest(GURL(kUrl), &delegate);
+  request->Start();
+  ASSERT_TRUE(request->is_pending());
+  delegate.RunUntilComplete();
+
+  ASSERT_THAT(delegate.request_status(), IsOk());
+  EXPECT_EQ(12, request->received_response_content_length());
+  EXPECT_EQ(kResponseHeaders.size() + kResponseBody.size(),
+            base::checked_cast<size_t>(request->GetTotalReceivedBytes()));
+  EXPECT_EQ(kSimpleGetMockWrite.size(),
+            base::checked_cast<size_t>(request->GetTotalSentBytes()));
+
+  EXPECT_EQ(GetProxyChain1(), request->proxy_chain());
+  CheckPerRequestMetrics(histograms, RequestMetricsExpectations::kSuccess);
+  CheckPerChainMetrics(histograms, GetProxyChain1(), {});
+}
+
+TEST_F(IpProtectionUrlRequestHttpJobTest, SuccessSecondChain) {
+  UrlRequestContextWrapper request_context;
+  request_context.ipp_core().SetProxyList({GetProxyChain1(), GetProxyChain2()});
+
+  // Mock a request to the proxy that fails.
+  auto connect_data = CreateRequestFailsSocketData();
+  request_context.AddSocketData(connect_data);
+  // Mock a request to the proxy chain that succeeds.
+  auto proxy_data = CreateProxiedRequestSucceedsSocketData(GetProxyChain2());
+  request_context.AddSocketData(proxy_data);
+
+  base::HistogramTester histograms;
+  net::TestDelegate delegate;
+  std::unique_ptr<net::URLRequest> request =
+      request_context.CreateRequest(GURL(kUrl), &delegate);
+  request->Start();
+  ASSERT_TRUE(request->is_pending());
+  delegate.RunUntilComplete();
+
+  ASSERT_THAT(delegate.request_status(), IsOk());
+  EXPECT_EQ(12, request->received_response_content_length());
+  EXPECT_EQ(kResponseHeaders.size() + kResponseBody.size(),
+            base::checked_cast<size_t>(request->GetTotalReceivedBytes()));
+  EXPECT_EQ(kSimpleGetMockWrite.size(),
+            base::checked_cast<size_t>(request->GetTotalSentBytes()));
+
+  EXPECT_EQ(GetProxyChain2(), request->proxy_chain());
+  CheckPerRequestMetrics(histograms, RequestMetricsExpectations::kSuccess);
+  CheckPerChainMetrics(histograms, GetProxyChain2(), {GetProxyChain1()});
+}
+
+TEST_F(IpProtectionUrlRequestHttpJobTest, FallbackToDirect) {
+  UrlRequestContextWrapper request_context;
+  request_context.ipp_core().SetProxyList({GetProxyChain1()});
 
   // Mock a request to the proxy that fails.
   auto connect_data = CreateRequestFailsSocketData();
@@ -356,14 +457,13 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, FallbackToDirect) {
 
   // Since we fall back to direct, after trying the proxy chain, we expect a
   // direct IP Protection proxy chain.
-  EXPECT_EQ(net::ProxyChain::ForIpProtection({}), request->proxy_chain());
-  CheckRequestMetrics(histograms, RequestMetricsExpectations::kDirectFallback);
+  EXPECT_EQ(GetProxyChainDirect(), request->proxy_chain());
+  CheckPerRequestMetrics(histograms,
+                         RequestMetricsExpectations::kDirectFallback);
+  CheckPerChainMetrics(histograms, GetProxyChainDirect(), {GetProxyChain1()});
 }
 
 TEST_F(IpProtectionUrlRequestHttpJobTest, NoProxies) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      net::features::kEnableIpProtectionProxy);
-
   UrlRequestContextWrapper request_context;
   request_context.ipp_core().SetProxyList({});
 
@@ -387,7 +487,8 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, NoProxies) {
             request->GetTotalReceivedBytes());
 
   EXPECT_EQ(net::ProxyChain::Direct(), request->proxy_chain());
-  CheckRequestMetrics(histograms, RequestMetricsExpectations::kDirectOnly);
+  CheckPerRequestMetrics(histograms, RequestMetricsExpectations::kDirectOnly);
+  CheckPerChainMetrics(histograms, std::nullopt, {});
 }
 
 TEST_F(IpProtectionUrlRequestHttpJobTest, DirectOnlyFeatureParam) {
@@ -399,7 +500,7 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, DirectOnlyFeatureParam) {
       });
 
   UrlRequestContextWrapper request_context;
-  request_context.ipp_core().SetProxyList({GetIpProtectionProxyChain()});
+  request_context.ipp_core().SetProxyList({GetProxyChain1()});
 
   // Mock a direct request that succeeds.
   auto direct_data = CreateDirectRequestSucceedsSocketData();
@@ -420,17 +521,14 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, DirectOnlyFeatureParam) {
   EXPECT_EQ(CountReadBytes(direct_data.reads),
             request->GetTotalReceivedBytes());
 
-  EXPECT_EQ(net::ProxyChain::ForIpProtection({}), request->proxy_chain());
-  CheckRequestMetrics(histograms, RequestMetricsExpectations::kSuccess);
+  EXPECT_EQ(GetProxyChainDirect(), request->proxy_chain());
+  CheckPerRequestMetrics(histograms, RequestMetricsExpectations::kSuccess);
+  CheckPerChainMetrics(histograms, GetProxyChainDirect(), {});
 }
 
 TEST_F(IpProtectionUrlRequestHttpJobTest, AllBadProxyChains) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      net::features::kEnableIpProtectionProxy);
-
   UrlRequestContextWrapper request_context;
-  request_context.ipp_core().SetProxyList(
-      {GetIpProtectionProxyChain(), GetIpProtectionProxyChain2()});
+  request_context.ipp_core().SetProxyList({GetProxyChain1(), GetProxyChain2()});
 
   {
     // Mock a request to the proxy that fails.
@@ -454,11 +552,13 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, AllBadProxyChains) {
     delegate.RunUntilComplete();
 
     EXPECT_THAT(delegate.request_status(), IsOk());
-    EXPECT_EQ(net::ProxyChain::ForIpProtection({}), request->proxy_chain());
+    EXPECT_EQ(GetProxyChainDirect(), request->proxy_chain());
     EXPECT_THAT(request_context.proxy_resolution_service().proxy_retry_info(),
-                Contains(Key(GetIpProtectionProxyChain())));
-    CheckRequestMetrics(histograms,
-                        RequestMetricsExpectations::kDirectFallback);
+                Contains(Key(GetProxyChain1())));
+    CheckPerRequestMetrics(histograms,
+                           RequestMetricsExpectations::kDirectFallback);
+    CheckPerChainMetrics(histograms, GetProxyChainDirect(),
+                         {GetProxyChain1(), GetProxyChain2()});
   }
 
   // Mock a direct request that succeeds.
@@ -477,16 +577,13 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, AllBadProxyChains) {
   EXPECT_THAT(delegate.request_status(), IsOk());
 
   EXPECT_EQ(net::ProxyChain::Direct(), request->proxy_chain());
-  CheckRequestMetrics(histograms, RequestMetricsExpectations::kDirectOnly);
+  CheckPerRequestMetrics(histograms, RequestMetricsExpectations::kDirectOnly);
+  CheckPerChainMetrics(histograms, std::nullopt, {});
 }
 
 TEST_F(IpProtectionUrlRequestHttpJobTest, OneBadProxyChain) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      net::features::kEnableIpProtectionProxy);
-
   UrlRequestContextWrapper request_context;
-  request_context.ipp_core().SetProxyList(
-      {GetIpProtectionProxyChain(), GetIpProtectionProxyChain2()});
+  request_context.ipp_core().SetProxyList({GetProxyChain1(), GetProxyChain2()});
 
   {
     // Mock a request to the ProxyChain that fails. This proxy chain will be
@@ -495,8 +592,7 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, OneBadProxyChain) {
     request_context.AddSocketData(connect_data);
 
     // Mock a request to the proxy chain that succeeds.
-    auto proxy_data =
-        CreateProxiedRequestSucceedsSocketData(GetIpProtectionProxyChain2());
+    auto proxy_data = CreateProxiedRequestSucceedsSocketData(GetProxyChain2());
     request_context.AddSocketData(proxy_data);
 
     base::HistogramTester histograms;
@@ -508,10 +604,11 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, OneBadProxyChain) {
     delegate.RunUntilComplete();
 
     ASSERT_THAT(delegate.request_status(), IsOk());
-    EXPECT_EQ(GetIpProtectionProxyChain2(), request->proxy_chain());
+    EXPECT_EQ(GetProxyChain2(), request->proxy_chain());
     EXPECT_THAT(request_context.proxy_resolution_service().proxy_retry_info(),
-                Contains(Key(GetIpProtectionProxyChain())));
-    CheckRequestMetrics(histograms, RequestMetricsExpectations::kSuccess);
+                Contains(Key(GetProxyChain1())));
+    CheckPerRequestMetrics(histograms, RequestMetricsExpectations::kSuccess);
+    CheckPerChainMetrics(histograms, GetProxyChain2(), {GetProxyChain1()});
   }
 
   // Mock a request to the proxy that fails.
@@ -521,6 +618,7 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, OneBadProxyChain) {
   auto direct_data = CreateRequestFailsSocketData();
   request_context.AddSocketData(direct_data);
 
+  base::HistogramTester histograms;
   net::TestDelegate delegate;
   std::unique_ptr<net::URLRequest> request =
       request_context.CreateRequest(GURL(kUrl), &delegate);
@@ -533,7 +631,9 @@ TEST_F(IpProtectionUrlRequestHttpJobTest, OneBadProxyChain) {
   // from the proxy list. We shouldn't fall back and the request should fail.
   EXPECT_THAT(delegate.request_status(),
               net::test::IsError(net::ERR_CONNECTION_RESET));
-  EXPECT_EQ(net::ProxyChain::ForIpProtection({}), request->proxy_chain());
+  EXPECT_EQ(GetProxyChainDirect(), request->proxy_chain());
+  CheckPerChainMetrics(histograms, {},
+                       {GetProxyChain2(), GetProxyChainDirect()});
 }
 
 }  // namespace ip_protection

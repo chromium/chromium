@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -305,6 +306,26 @@ void IpProtectionTelemetryUma::RecordTokenCountEvent(
 void IpProtectionTelemetryUma::TokenDemandDuringBatchGeneration(int count) {
   base::UmaHistogramCounts100(
       "NetworkService.IpProtection.TokenDemandDuringBatchGeneration", count);
+}
+
+void IpProtectionTelemetryUma::RecordStreamCreationAttemptedMetrics(
+    const net::ProxyChain& proxy_chain,
+    base::TimeDelta duration,
+    base::optional_ref<int> net_error) {
+  CHECK(proxy_chain.is_for_ip_protection());
+  const std::string suffix = proxy_chain.GetHistogramSuffix();
+
+  base::UmaHistogramTimes(
+      base::StrCat({"Net.IpProtection.StreamCreation",
+                    net_error.has_value() ? "ErrorTime." : "SuccessTime.",
+                    suffix}),
+      duration);
+
+  if (net_error.has_value()) {
+    base::UmaHistogramSparse(
+        base::StrCat({"Net.IpProtection.StreamCreationError.", suffix}),
+        net_error.value());
+  }
 }
 
 }  // namespace ip_protection

@@ -269,6 +269,45 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.IpProtection.StreamCreationError.{Chain}"
+    enum="NetErrorCodes" expires_after="2026-06-21">
+  <owner>ortuno@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    The net error code when creating a stream for a given IP Protection proxy
+    chain fails.
+  </summary>
+  <token key="Chain">
+    <variant name="Chain0"/>
+    <variant name="Chain1.HTTPS"/>
+    <variant name="Chain1.QUIC"/>
+    <variant name="Chain2.HTTPS"/>
+    <variant name="Chain2.QUIC"/>
+  </token>
+</histogram>
+
+<histogram name="Net.IpProtection.StreamCreation{Result}Time.{Chain}"
+    units="ms" expires_after="2026-06-21">
+  <owner>ortuno@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Time it takes to create a stream for a given IP Protection proxy chain. This
+    is measured from when the attempt to create the stream starts until
+    {Result}.
+  </summary>
+  <token key="Result">
+    <variant name="Error"/>
+    <variant name="Success"/>
+  </token>
+  <token key="Chain">
+    <variant name="Chain0"/>
+    <variant name="Chain1.HTTPS"/>
+    <variant name="Chain1.QUIC"/>
+    <variant name="Chain2.HTTPS"/>
+    <variant name="Chain2.QUIC"/>
+  </token>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.EmptyTokenCache2"
     enum="IpProtectionProxyLayer" expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>
