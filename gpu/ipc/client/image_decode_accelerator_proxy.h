@@ -63,42 +63,8 @@ class GPU_IPC_CLIENT_EXPORT ImageDecodeAcceleratorProxy
   bool IsImageSupported(
       const cc::ImageHeaderMetadata* image_metadata) const override;
 
-  // Determines if hardware decode acceleration is supported for JPEG images.
-  bool IsJpegDecodeAccelerationSupported() const override;
-
-  // Determines if hardware decode acceleration is supported for WebP images.
-  bool IsWebPDecodeAccelerationSupported() const override;
-
-  // Schedules a hardware-accelerated image decode on the GPU process. The image
-  // in |encoded_data| is decoded and scaled to |output_size|. Upon completion
-  // and after the sync token corresponding to
-  // |discardable_handle_release_count| has been released, a service-side
-  // transfer cache entry will be created with the decoded data using
-  // |transfer_cache_entry_id|, |discardable_handle_shm_id|, and
-  // |discardable_handle_shm_offset|. The |raster_decoder_command_buffer_id| is
-  // used to look up the appropriate command buffer and create the transfer
-  // cache entry correctly. Note that it is assumed that
-  // |discardable_handle_release_count| is associated to
-  // |raster_decoder_command_buffer_id|. Returns a sync token that will be
-  // released after the decode is done and the service-side transfer cache entry
-  // is created.
-  SyncToken ScheduleImageDecode(
-      base::span<const uint8_t> encoded_data,
-      const gfx::Size& output_size,
-      CommandBufferId raster_decoder_command_buffer_id,
-      uint32_t transfer_cache_entry_id,
-      int32_t discardable_handle_shm_id,
-      uint32_t discardable_handle_shm_offset,
-      uint64_t discardable_handle_release_count,
-      const gfx::ColorSpace& target_color_space,
-      bool needs_mips) override;
-
  private:
   const raw_ptr<GpuChannelHost> host_;
-  const int32_t route_id_;
-
-  base::Lock lock_;
-  uint64_t next_release_count_ GUARDED_BY(lock_) = 0;
 };
 
 }  // namespace gpu

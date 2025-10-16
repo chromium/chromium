@@ -91,7 +91,7 @@ bool IsSupportedJpegImage(
 
 ImageDecodeAcceleratorProxy::ImageDecodeAcceleratorProxy(GpuChannelHost* host,
                                                          int32_t route_id)
-    : host_(host), route_id_(route_id) {}
+    : host_(host) {}
 
 ImageDecodeAcceleratorProxy::~ImageDecodeAcceleratorProxy() {}
 
@@ -155,67 +155,6 @@ bool ImageDecodeAcceleratorProxy::IsImageSupported(
       NOTREACHED();
   }
   return false;
-}
-
-bool ImageDecodeAcceleratorProxy::IsJpegDecodeAccelerationSupported() const {
-  const auto& profiles =
-      host_->gpu_info().image_decode_accelerator_supported_profiles;
-  for (const auto& profile : profiles) {
-    if (profile.image_type == ImageDecodeAcceleratorType::kJpeg)
-      return true;
-  }
-  return false;
-}
-
-bool ImageDecodeAcceleratorProxy::IsWebPDecodeAccelerationSupported() const {
-  const auto& profiles =
-      host_->gpu_info().image_decode_accelerator_supported_profiles;
-  for (const auto& profile : profiles) {
-    if (profile.image_type == ImageDecodeAcceleratorType::kWebP)
-      return true;
-  }
-  return false;
-}
-
-SyncToken ImageDecodeAcceleratorProxy::ScheduleImageDecode(
-    base::span<const uint8_t> encoded_data,
-    const gfx::Size& output_size,
-    CommandBufferId raster_decoder_command_buffer_id,
-    uint32_t transfer_cache_entry_id,
-    int32_t discardable_handle_shm_id,
-    uint32_t discardable_handle_shm_offset,
-    uint64_t discardable_handle_release_count,
-    const gfx::ColorSpace& target_color_space,
-    bool needs_mips) {
-  DCHECK(host_);
-  DCHECK_EQ(host_->channel_id(),
-            ChannelIdFromCommandBufferId(raster_decoder_command_buffer_id));
-
-  auto params = mojom::ScheduleImageDecodeParams::New();
-  params->encoded_data.assign(encoded_data.begin(), encoded_data.end());
-  params->output_size = output_size;
-  params->raster_decoder_route_id =
-      RouteIdFromCommandBufferId(raster_decoder_command_buffer_id);
-  params->transfer_cache_entry_id = transfer_cache_entry_id;
-  params->discardable_handle_shm_id = discardable_handle_shm_id;
-  params->discardable_handle_shm_offset = discardable_handle_shm_offset;
-  params->discardable_handle_release_count = discardable_handle_release_count;
-  params->target_color_space = target_color_space;
-  params->needs_mips = needs_mips;
-
-  base::AutoLock lock(lock_);
-  const uint64_t release_count = ++next_release_count_;
-  // Note: we send the message under the lock to guarantee monotonicity of the
-  // release counts as seen by the service.
-  // The EnsureFlush() call makes sure that the sync token corresponding to
-  // |discardable_handle_release_count| is visible to the service before
-  // processing the image decode request.
-  host_->EnsureFlush(UINT32_MAX);
-  host_->GetGpuChannel().ScheduleImageDecode(std::move(params), release_count);
-  return SyncToken(
-      CommandBufferNamespace::GPU_IO,
-      CommandBufferIdFromChannelAndRoute(host_->channel_id(), route_id_),
-      release_count);
 }
 
 }  // namespace gpu

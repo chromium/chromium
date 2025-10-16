@@ -28,12 +28,6 @@ namespace gpu {
 namespace {
 
 constexpr int kChannelId = 5;
-constexpr int32_t kRasterCmdBufferRouteId = 3;
-constexpr gfx::Size kOutputSize(2, 2);
-
-MATCHER_P(ImageDecodeParamsEqualTo, expected_params, "") {
-  return arg->Equals(expected_params);
-}
 
 class TestGpuChannelHost : public GpuChannelHost {
  public:
@@ -75,50 +69,6 @@ class ImageDecodeAcceleratorProxyTest : public ::testing::Test {
   scoped_refptr<TestGpuChannelHost> gpu_channel_host_;
   ImageDecodeAcceleratorProxy proxy_;
 };
-
-TEST_F(ImageDecodeAcceleratorProxyTest, ScheduleImageDecodeSendsMessage) {
-  const uint8_t image[4] = {1, 2, 3, 4};
-  base::span<const uint8_t> encoded_data =
-      UNSAFE_TODO(base::span<const uint8_t>(image, std::size(image)));
-
-  const gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-
-  mojom::ScheduleImageDecodeParams expected_params;
-  expected_params.encoded_data.assign(encoded_data.begin(), encoded_data.end());
-  expected_params.output_size = kOutputSize;
-  expected_params.raster_decoder_route_id = kRasterCmdBufferRouteId;
-  expected_params.transfer_cache_entry_id = 1u;
-  expected_params.discardable_handle_shm_id = 2;
-  expected_params.discardable_handle_shm_offset = 3u;
-  expected_params.discardable_handle_release_count = 4u;
-  expected_params.target_color_space = color_space;
-  expected_params.needs_mips = false;
-
-  const uint64_t kExpectedReleaseCount = 1u;
-  EXPECT_CALL(mock_gpu_channel_,
-              ScheduleImageDecode(ImageDecodeParamsEqualTo(expected_params),
-                                  Eq(kExpectedReleaseCount)))
-      .Times(1);
-
-  SyncToken token = proxy_.ScheduleImageDecode(
-      encoded_data, kOutputSize,
-      CommandBufferIdFromChannelAndRoute(kChannelId, kRasterCmdBufferRouteId),
-      /*transfer_cache_entry_id=*/1u,
-      /*discardable_handle_shm_id=*/2,
-      /*discardable_handle_shm_offset=*/3u,
-      /*discardable_handle_release_count=*/4u, color_space,
-      /*needs_mips=*/false);
-
-  task_environment_.RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(gpu_channel_host_.get());
-
-  EXPECT_EQ(ChannelIdFromCommandBufferId(token.command_buffer_id()),
-            kChannelId);
-  EXPECT_EQ(
-      RouteIdFromCommandBufferId(token.command_buffer_id()),
-      static_cast<int32_t>(GpuChannelReservedRoutes::kImageDecodeAccelerator));
-  EXPECT_EQ(token.release_count(), 1u);
-}
 
 class ImageDecodeAcceleratorProxySubsamplingTest
     : public testing::TestWithParam<cc::YUVSubsampling> {

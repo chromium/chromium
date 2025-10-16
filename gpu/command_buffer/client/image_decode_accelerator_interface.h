@@ -15,11 +15,6 @@ namespace cc {
 struct ImageHeaderMetadata;
 }
 
-namespace gfx {
-class ColorSpace;
-class Size;
-}  // namespace gfx
-
 namespace gpu {
 
 // TODO(andrescj): move API documentation from ImageDecodeAcceleratorProxy to
@@ -30,21 +25,6 @@ class ImageDecodeAcceleratorInterface {
 
   virtual bool IsImageSupported(
       const cc::ImageHeaderMetadata* image_metadata) const = 0;
-
-  virtual bool IsJpegDecodeAccelerationSupported() const = 0;
-
-  virtual bool IsWebPDecodeAccelerationSupported() const = 0;
-
-  virtual SyncToken ScheduleImageDecode(
-      base::span<const uint8_t> encoded_data,
-      const gfx::Size& output_size,
-      CommandBufferId raster_decoder_command_buffer_id,
-      uint32_t transfer_cache_entry_id,
-      int32_t discardable_handle_shm_id,
-      uint32_t discardable_handle_shm_offset,
-      uint64_t discardable_handle_release_count,
-      const gfx::ColorSpace& target_color_space,
-      bool needs_mips) = 0;
 };
 
 }  // namespace gpu
