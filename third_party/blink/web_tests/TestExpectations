@@ -2793,7 +2793,7 @@ crbug.com/431542979 virtual/speech-with-unified-autoplay/external/wpt/speech-api
 crbug.com/431592647 external/wpt/webdriver/tests/bidi/browser/create_user_context/accept_insecure_certs.py [ Failure ]
 crbug.com/431592647 external/wpt/webdriver/tests/bidi/browser/create_user_context/create_user_context.py [ Failure ]
 crbug.com/431592647 external/wpt/webdriver/tests/bidi/browser/create_user_context/proxy.py [ Failure ]
-crbug.com/431592647 external/wpt/webdriver/tests/bidi/browser/create_user_context/unhandled_prompt_behavior.py [ Failure ]
+crbug.com/431592647 external/wpt/webdriver/tests/bidi/browser/create_user_context/unhandled_prompt_behavior.py [ Failure Timeout ]
 crbug.com/431592647 external/wpt/webdriver/tests/bidi/browser/get_user_contexts/get_user_contexts.py [ Failure ]
 crbug.com/431592647 external/wpt/webdriver/tests/bidi/browsing_context/create/reference_context.py [ Failure ]
 crbug.com/431592647 external/wpt/webdriver/tests/bidi/browsing_context/create/user_context.py [ Failure ]
@@ -2979,6 +2979,17 @@ external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/download_
 # Flaky output
 crbug.com/450876665 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Failure Pass ]
 
+# Flaky output
+crbug.com/452662753 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_drag.py [ Failure ]
+
+# Various flaky timeouts on the debug builder. Note that some timeouts actually
+# surface as failures because `webdriver.error.TimeoutException` is thrown.
+crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browsing_context/load/load.py [ Pass Failure ]
+crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browsing_context/reload/wait.py [ Pass Timeout ]
+crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Pass Timeout ]
+crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/classic/find_elements_from_element/user_prompts.py [ Pass Failure ]
+crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browser/set_download_behavior/user_context.py [ Pass Timeout ]
+
 # ====== New tests from wpt-importer added here ======
 external/wpt/html/browsers/history/the-location-interface/location_replace_session_history.html [ Timeout ]
 crbug.com/452414676 external/wpt/navigation-api/navigate-event/replaceState-inside-back-handler-infinite.optional.html [ Timeout ]
@@ -2998,9 +3009,12 @@ crbug.com/452414677 [ Linux ] external/wpt/wasm/core/multi-memory/memory_trap1.w
 crbug.com/452414677 [ Linux ] external/wpt/wasm/core/multi-memory/traps0.wast.js.html [ Crash ]
 crbug.com/452414677 [ Linux ] external/wpt/wasm/core/ref_as_non_null.wast.js.html [ Crash ]
 crbug.com/452423000 external/wpt/webdriver/tests/bidi/external/permissions/set_permission/set_permission.py [ Failure ]
-crbug.com/452423000 external/wpt/webdriver/tests/bidi/network/set_extra_headers/contexts.py [ Failure ]
+crbug.com/452423000 [ Release ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/contexts.py [ Failure ]
+# Stalls after DCHECK-ing:
+#   [1680069:1:1016/112803.228728:FATAL:third_party/blink/renderer/core/inspector/main_thread_debugger.cc:309] DCHECK failed: !frame->IsProvisional().
+crbug.com/452423000 [ Debug ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/contexts.py [ Timeout ]
 crbug.com/452423000 external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers.py [ Failure ]
-crbug.com/452423000 external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure ]
+crbug.com/452423000 [ Release ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure ]
 crbug.com/452423000 external/wpt/webdriver/tests/bidi/network/set_extra_headers/user_contexts.py [ Failure ]
 crbug.com/451655444 external/wpt/webdriver/tests/bidi/network/get_data/persistence.py [ Failure ]
 crbug.com/451655444 external/wpt/webdriver/tests/bidi/network/set_extra_headers/invalid.py [ Failure ]
@@ -3676,7 +3690,7 @@ crbug.com/412326639 [ Mac13 ] virtual/view-transition-wide-gamut/external/wpt/cs
 
 crbug.com/411576891 [ Linux ] external/wpt/webdriver/tests/classic/minimize_window/minimize.py [ Failure ]
 crbug.com/409809138 [ Win11 ] external/wpt/custom-elements/revamped-scoped-registry/ShadowRoot-init-customElementRegistry.tentative.html [ Pass Timeout ]
-crbug.com/409850360 external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py [ Pass Timeout ]
+crbug.com/409850360 external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py [ Failure Pass Timeout ]
 crbug.com/408539325 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
 crbug.com/408039461 [ Win11-arm64 ] external/wpt/css/css-text/white-space/control-chars-01D.html [ Failure ]
 crbug.com/408034113 [ Win11-arm64 ] external/wpt/service-workers/service-worker/fetch-mixed-content-to-inscope.https.html [ Crash ]
@@ -9388,7 +9402,7 @@ crbug.com/379474211 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text
 crbug.com/390068099 [ Mac ] fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Failure Pass ]
 
 # Gardener 2025-01-15
-crbug.com/389960979 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure ]  # Randomized context ID
+crbug.com/389960979 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure Timeout ]  # Randomized context ID
 crbug.com/390162925 [ Win10.20h2 ] virtual/gpu-rasterization/images/png-suite/test.html [ Failure ]
 crbug.com/383667702 [ Linux ] external/wpt/html/interaction/focus/the-autofocus-attribute/spin-by-blocking-style-sheet.html [ Failure ]
 
