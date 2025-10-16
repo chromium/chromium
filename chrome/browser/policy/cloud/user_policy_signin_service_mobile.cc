@@ -33,6 +33,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -49,6 +50,26 @@ namespace em = enterprise_management;
 
 namespace policy {
 
+ProfileManagerObserverBridge::ProfileManagerObserverBridge(
+    UserPolicySigninService* user_policy_signin_service)
+    : user_policy_signin_service_(user_policy_signin_service) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (profile_manager) {
+    profile_manager_observation_.Observe(profile_manager);
+  }
+}
+
+ProfileManagerObserverBridge::~ProfileManagerObserverBridge() = default;
+
+void ProfileManagerObserverBridge::OnProfileAdded(Profile* profile) {
+  user_policy_signin_service_->OnProfileReady(profile);
+}
+
+void ProfileManagerObserverBridge::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
+  user_policy_signin_service_->OnProfileAttributesStorageDestroying();
+}
+
 UserPolicySigninService::UserPolicySigninService(
     Profile* profile,
     PrefService* local_state,
@@ -63,13 +84,16 @@ UserPolicySigninService::UserPolicySigninService(
                                   system_url_loader_factory),
       profile_prefs_(profile->GetPrefs()),
       profile_(profile) {
-  if (ProfileManager* profile_manager = g_browser_process->profile_manager())
-    profile_manager_observation_.Observe(profile_manager);
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
+    observed_profile_.Observe(&profile_manager->GetProfileAttributesStorage());
+  }
 }
 
 UserPolicySigninService::~UserPolicySigninService() = default;
 
 void UserPolicySigninService::ShutdownCloudPolicyManager() {
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "UserPolicySigninService::ShutdownCloudPolicyManager";
   CancelPendingRegistration();
   auto* remote_command_service =
       enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
@@ -81,9 +105,10 @@ void UserPolicySigninService::ShutdownCloudPolicyManager() {
 }
 
 void UserPolicySigninService::Shutdown() {
-  profile_manager_observation_.Reset();
-  if (identity_manager())
+  observed_profile_.Reset();
+  if (identity_manager()) {
     identity_manager()->RemoveObserver(this);
+  }
   CancelPendingRegistration();
   UserPolicySigninServiceBase::Shutdown();
 }
@@ -91,11 +116,13 @@ void UserPolicySigninService::Shutdown() {
 void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   if (!IsSignoutEvent(event)) {
+    if (CanApplyPolicies(/*check_for_refresh_token=*/true)) {
+      TryInitializeForSignedInUser();
+    }
     return;
   }
 
-  if (ProfileManager* profile_manager =
-          g_browser_process->profile_manager()) {
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
     // `ProfileManager` may be null in tests.
     UpdateProfileAttributesWhenSignout(profile_, profile_manager);
   }
@@ -117,22 +144,76 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
   ShutdownCloudPolicyManager();
 }
 
-void UserPolicySigninService::OnProfileAdded(Profile* profile) {
-  if (profile && profile == profile_)
-    InitializeOnProfileReady(profile);
+void UserPolicySigninService::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  // Ignore OAuth tokens or those for any account but the primary one.
+  if (account_info.account_id !=
+          identity_manager()->GetPrimaryAccountId(consent_level()) ||
+      !CanApplyPolicies(/*check_for_refresh_token=*/true)) {
+    return;
+  }
+
+  // ProfileOAuth2TokenService now has a refresh token for the primary account
+  // so initialize the CloudPolicyManager.
+  TryInitializeForSignedInUser();
 }
 
-void UserPolicySigninService::OnProfileManagerDestroying() {
-  profile_manager_observation_.Reset();
+void UserPolicySigninService::OnProfileReady(Profile* profile) {
+  if (profile && profile == profile_) {
+    InitializeOnProfileReady(profile);
+  }
+}
+
+void UserPolicySigninService::OnProfileAttributesStorageDestroying() {
+  observed_profile_.Reset();
+}
+
+void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
+    const base::FilePath& profile_path) {
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "UserPolicySigninService::OnProfileUserManagementAcceptanceChanged - "
+         "CanApplyPolicies: "
+      << CanApplyPolicies(/*check_for_refresh_token=*/true);
+  if (CanApplyPolicies(/*check_for_refresh_token=*/true)) {
+    TryInitializeForSignedInUser();
+  }
+}
+
+void UserPolicySigninService::TryInitializeForSignedInUser() {
+  if (!base::FeatureList::IsEnabled(
+          policy::features::
+              kInitializePoliciesForSignedInUserInNewEntryPoints)) {
+    return;
+  }
+
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "UserPolicySigninService::TryInitializeForSignedInUser";
+  CHECK(CanApplyPolicies(/*check_for_refresh_token=*/true));
+
+  // If using a TestingProfile with no CloudPolicyManager, skip
+  // initialization.
+  if (!policy_manager()) {
+    LOG_POLICY(WARNING, POLICY_FETCHING)
+        << "Skipping initialization for tests due to missing components.";
+    return;
+  }
+
+  InitializeForSignedInUser(
+      AccountIdFromAccountInfo(
+          identity_manager()->GetPrimaryAccountInfo(consent_level())),
+      profile_->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
   DCHECK_EQ(profile, profile_);
-
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "UserPolicySigninService::InitializeOnProfileReady";
   // If using a TestingProfile with no IdentityManager or
   // CloudPolicyManager, skip initialization.
   if (!policy_manager() || !identity_manager()) {
-    DVLOG(1) << "Skipping initialization for tests due to missing components.";
+    LOG_POLICY(WARNING, POLICY_FETCHING)
+        << "Skipping initialization for tests due to missing components.";
     return;
   }
 
@@ -154,13 +235,24 @@ void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
 }
 
 bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
-  if (!CanApplyPoliciesForSignedInUser(check_for_refresh_token, consent_level(),
-                                       identity_manager())) {
+  bool can_apply_policies_for_signed_in_user = CanApplyPoliciesForSignedInUser(
+      check_for_refresh_token, consent_level(), identity_manager());
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "UserPolicySigninService::CanApplyPolicies - for signed in user: "
+      << can_apply_policies_for_signed_in_user;
+  if (!can_apply_policies_for_signed_in_user) {
     return false;
   }
 
-  return (profile_can_be_managed_for_testing_ ||
-          enterprise_util::ProfileCanBeManaged(profile_));
+  if (profile_can_be_managed_for_testing_) {
+    return true;
+  }
+
+  bool profile_can_be_managed = enterprise_util::ProfileCanBeManaged(profile_);
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "UserPolicySigninService::CanApplyPolicies - for profile: "
+      << profile_can_be_managed;
+  return profile_can_be_managed;
 }
 
 void UserPolicySigninService::InitializeCloudPolicyManager(
@@ -217,8 +309,9 @@ base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
   // next check time. Otherwise, delay checking until the next check time.
   base::Time now = base::Time::Now();
   base::TimeDelta try_registration_delay = base::Seconds(5);
-  if (now > last_check_time && now < next_check_time)
+  if (now > last_check_time && now < next_check_time) {
     try_registration_delay = next_check_time - now;
+  }
 
   return try_registration_delay;
 }

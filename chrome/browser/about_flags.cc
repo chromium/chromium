@@ -9457,6 +9457,16 @@ const FeatureEntry kFeatureEntries[] = {
          kPolicyRegistrationDelayVariations,
          "CustomPolicyRegistrationDelay")},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"try-initialize-policy-service-for-signed-in-user-in-new-entry-points",
+     flag_descriptions::kInitializePoliciesForSignedInUserInNewEntryPointsName,
+     flag_descriptions::
+         kInitializePoliciesForSignedInUserInNewEntryPointsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         policy::features::kInitializePoliciesForSignedInUserInNewEntryPoints)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"focus-follows-cursor", flag_descriptions::kFocusFollowsCursorName,
      flag_descriptions::kFocusFollowsCursorDescription, kOsCrOS,

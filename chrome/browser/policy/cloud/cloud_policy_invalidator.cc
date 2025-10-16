@@ -21,6 +21,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/policy_invalidation_util.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {
@@ -276,7 +277,8 @@ void CloudPolicyInvalidator::OnInvalidationReceived(
   CHECK(policy_invalidation_handler_.IsCoreReady())
       << "Policy invalidation received when CloudPolicyCore is disconnected.";
 
-  VLOG(1) << "Received incoming invalidation: " << invalidation.version();
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "Received incoming invalidation: " << invalidation.version();
 
   policy_invalidation_handler_.HandleInvalidation(invalidation);
 }

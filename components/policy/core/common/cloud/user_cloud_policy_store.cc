@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/proto/policy_signing_key.pb.h"
@@ -44,12 +45,13 @@ const size_t kKeySizeLimit = 16 * 1024;
 
 bool WriteStringToFile(const base::FilePath path, const std::string& data) {
   if (!base::CreateDirectory(path.DirName())) {
-    DLOG(WARNING) << "Failed to create directory " << path.DirName().value();
+    DLOG_POLICY(WARNING, POLICY_FETCHING)
+        << "Failed to create directory " << path.DirName().value();
     return false;
   }
 
   if (!base::WriteFile(path, data)) {
-    DLOG(WARNING) << "Failed to write " << path.value();
+    DLOG_POLICY(WARNING, POLICY_FETCHING) << "Failed to write " << path.value();
     return false;
   }
 

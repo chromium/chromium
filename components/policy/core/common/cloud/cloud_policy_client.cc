@@ -708,7 +708,7 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   CHECK(is_registered());
   CHECK(!types_to_fetch_.empty());
 
-  VLOG(2) << "Policy fetch starting";
+  VLOG_POLICY(2, POLICY_FETCHING) << "Policy fetch starting";
   auto params = DMServerJobConfiguration::CreateParams::WithClient(
       DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH, this);
   params.auth_data = DMAuth::FromDMToken(dm_token_);

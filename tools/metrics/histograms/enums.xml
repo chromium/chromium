@@ -13964,6 +13964,8 @@ from previous Chrome versions.
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
   <int value="-96820962"
       label="ExperimentalAccessibilitySelectToSpeakVoiceSwitching:enabled"/>
+  <int value="-96752091"
+      label="InitializePoliciesForSignedInUserInNewEntryPoints:disabled"/>
   <int value="-95160434" label="AdvancedPeripheralsSupport:disabled"/>
   <int value="-95018838" label="BuiltInHlsPlayer:enabled"/>
   <int value="-94535722" label="TimeOfDayWallpaper:enabled"/>
@@ -16336,6 +16338,8 @@ from previous Chrome versions.
   <int value="740056959" label="ImeServiceConnectable:enabled"/>
   <int value="740148650" label="ShoppingAlternateServer:enabled"/>
   <int value="740224525" label="ResponsiveToolbar:disabled"/>
+  <int value="740446128"
+      label="InitializePoliciesForSignedInUserInNewEntryPoints:enabled"/>
   <int value="740516371" label="ViewTransitionOnNavigation:enabled"/>
   <int value="740619684" label="ExtensionsToolbarMenu:enabled"/>
   <int value="741219332" label="ShareByDefaultInCCT:enabled"/>

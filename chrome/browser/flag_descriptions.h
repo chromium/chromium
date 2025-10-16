@@ -1087,6 +1087,12 @@ extern const char kForceUiDirectionDescription[];
 extern const char kPolicyRegistrationDelayName[];
 extern const char kPolicyRegistrationDelayDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kInitializePoliciesForSignedInUserInNewEntryPointsName[];
+extern const char
+    kInitializePoliciesForSignedInUserInNewEntryPointsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kMediaRemotingWithoutFullscreenName[];
 extern const char kMediaRemotingWithoutFullscreenDescription[];
 

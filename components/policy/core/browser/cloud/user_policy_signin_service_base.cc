@@ -226,6 +226,8 @@ bool UserPolicySigninServiceBase::ShouldLoadPolicyForUser(
 void UserPolicySigninServiceBase::InitializeForSignedInUser(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory) {
+  VLOG_POLICY(1, POLICY_FETCHING)
+      << "UserPolicySigninServiceBase::InitializeForSignedInUser";
   if (user_policy_manager_) {
     DCHECK(account_id.is_valid());
     bool should_load_policies =
@@ -410,7 +412,7 @@ void UserPolicySigninServiceBase::
   // it means that there is no cached policy and so we need to initiate a new
   // client registration.
   if (manager->IsClientRegistered()) {
-    DVLOG_POLICY(1, POLICY_FETCHING)
+    LOG_POLICY(WARNING, POLICY_FETCHING)
         << "Client already registered - not fetching DMToken";
     if (should_record_re_register_event) {
       base::UmaHistogramEnumeration(
@@ -426,7 +428,7 @@ void UserPolicySigninServiceBase::
     // No token yet. This can only happen on Desktop platforms which should
     // listen to OnRefreshTokenUpdatedForAccount() and will re-attempt
     // registration once the token is available.
-    DLOG_POLICY(WARNING, POLICY_AUTH)
+    LOG_POLICY(WARNING, POLICY_AUTH)
         << "No OAuth Refresh Token - delaying policy download";
     return;
   }

@@ -2170,6 +2170,13 @@ const char kPolicyRegistrationDelayName[] = "Policy Registration Delay";
 const char kPolicyRegistrationDelayDescription[] =
     "Enables a configurable delay for policy registration.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kInitializePoliciesForSignedInUserInNewEntryPointsName[] =
+    "Initialize policy for signed in user in new entry points";
+const char kInitializePoliciesForSignedInUserInNewEntryPointsDescription[] =
+    "Enables policy initialization for signed in users in new entry points.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kMediaRemotingWithoutFullscreenName[] =
     "Media Remoting without videos in fullscreen mode";
 const char kMediaRemotingWithoutFullscreenDescription[] =

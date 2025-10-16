@@ -28,6 +28,7 @@
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/policy_bundle.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
@@ -194,7 +195,7 @@ ComponentCloudPolicyService::Backend::~Backend() {
 
 void ComponentCloudPolicyService::Backend::ClearCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Clearing cache";
+  DVLOG_POLICY(1, POLICY_FETCHING) << "Clearing cache";
   store_.Clear();
   has_credentials_set_ = false;
 }
@@ -209,8 +210,9 @@ void ComponentCloudPolicyService::Backend::SetCredentials(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!username.empty());
   DCHECK(!dm_token.empty());
-  DVLOG(1) << "Updating credentials: username = " << username
-           << ", public_key_version = " << public_key_version;
+  DVLOG_POLICY(1, POLICY_FETCHING)
+      << "Updating credentials: username = " << username
+      << ", public_key_version = " << public_key_version;
   store_.SetCredentials(username, gaia_id, dm_token, device_id, public_key,
                         public_key_version);
   has_credentials_set_ = true;
@@ -284,8 +286,9 @@ void ComponentCloudPolicyService::Backend::UpdateWithLastFetchedPolicy() {
   if (!has_credentials_set_ || !last_fetched_policy_ || !initialized_)
     return;
 
-  DVLOG(1) << "Processing the last fetched policies (count = "
-           << last_fetched_policy_->size() << ")";
+  DVLOG_POLICY(1, POLICY_FETCHING)
+      << "Processing the last fetched policies (count = "
+      << last_fetched_policy_->size() << ")";
 
   // Purge any components that don't have a policy configured at the server.
   // Note that this is less secure than the data integrity validation, since
@@ -494,7 +497,8 @@ void ComponentCloudPolicyService::UpdateFromClient() {
   for (const auto& response : core_->client()->last_policy_fetch_responses()) {
     PolicyNamespace ns;
     if (!ToPolicyNamespace(response.first, &ns)) {
-      DVLOG(1) << "Ignored policy with type = " << response.first.first;
+      DVLOG_POLICY(1, POLICY_FETCHING)
+          << "Ignored policy with type = " << response.first.first;
       continue;
     }
     (*valid_responses)[ns] = response.second;
@@ -555,8 +559,9 @@ void ComponentCloudPolicyService::FilterAndInstallPolicy() {
                                     /*drop_invalid_component_policies=*/false);
 
   policy_installed_ = true;
-  DVLOG(1) << "Installed policy (count = "
-           << std::distance(policy_.begin(), policy_.end()) << ")";
+  DVLOG_POLICY(1, POLICY_FETCHING)
+      << "Installed policy (count = "
+      << std::distance(policy_.begin(), policy_.end()) << ")";
   delegate_->OnComponentCloudPolicyUpdated();
 }
 

@@ -10030,6 +10030,13 @@
     "expiry_milestone": 150
   },
   {
+    "name": "try-initialize-policy-service-for-signed-in-user-in-new-entry-points",
+    "owners": [
+      "ydago@chromium.org"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ui-automation-provider",
     "owners": [
       "benjamin.beaudry@microsoft.com",

@@ -28,6 +28,12 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kEnhancedSecurityEventFields);
 // Controls if we can use the cec flag in PolicyData.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kUseCECFlagInPolicyData);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables policy initialization for signed-in users in new entry points.
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kInitializePoliciesForSignedInUserInNewEntryPoints);
+#endif
+
 // Enables a configurable delay for policy registration.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kCustomPolicyRegistrationDelay);
 POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
