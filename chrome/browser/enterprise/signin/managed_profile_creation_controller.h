@@ -32,6 +32,7 @@ enum class ManagedProfileCreationFailureReason {
   kProfileCreationFailed,
   kNewProfileWasDeleted,
   kSourceProfileDeleted,
+  kPrimaryAccountNotSet
 };
 
 using ManagedProfileCreationControllerCallback = base::OnceCallback<

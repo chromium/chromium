@@ -209,6 +209,19 @@ void ManagedProfileCreationController::OnProfileSeparationPoliciesReceived(
   // The fetcher must be deleted after `policies` have been used to avoid a use
   // after free.
   account_level_signin_restriction_policy_fetcher_.reset();
+
+  // If the user is not allowed to sign in, we should not show the disclaimer.
+  if (!source_profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+    // If the profile creation is required by policy, we should sign the user
+    // out since they cannot sign in to Chrome.
+    if (profile_creation_required_by_policy_) {
+      Signout();
+    } else {
+      std::move(callback_).Run(base::ok(nullptr),
+                               profile_creation_required_by_policy_);
+    }
+    return;
+  }
   ShowManagementDisclaimer();
 }
 
@@ -379,6 +392,29 @@ void ManagedProfileCreationController::OnNewSignedInProfileCreated(
         profile_creation_required_by_policy_);
     return;
   }
+
+  const CoreAccountId new_profile_primary_account_id =
+      IdentityManagerFactory::GetForProfile(new_profile)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .account_id;
+
+  // If the account failed to move into the new profile, we should not proceed.
+  if (new_profile_primary_account_id.empty()) {
+    // If the profile creation is required by policy, we should sign the user
+    // out since they failed to sign in to Chrome.
+    if (profile_creation_required_by_policy_) {
+      Signout();
+    } else {
+      std::move(callback_).Run(
+          base::unexpected(
+              ManagedProfileCreationFailureReason::kPrimaryAccountNotSet),
+          profile_creation_required_by_policy_);
+    }
+    return;
+  }
+
+  CHECK_EQ(new_profile_primary_account_id, account_info_.account_id);
+
   final_profile_ = new_profile;
   final_profile_observation_.Observe(final_profile_);
 
@@ -411,11 +447,6 @@ void ManagedProfileCreationController::OnNewSignedInProfileCreated(
                                   profile_creation_required_by_policy_));
     return;
   }
-
-  CHECK_EQ(account_info_.account_id,
-           IdentityManagerFactory::GetForProfile(new_profile)
-               ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-               .account_id);
 
   startup_helper_ = std::make_unique<DiceInterceptedSessionStartupHelper>(
       new_profile, is_new_profile, account_info_.account_id, nullptr);

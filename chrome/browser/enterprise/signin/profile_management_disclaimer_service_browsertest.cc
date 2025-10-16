@@ -26,6 +26,7 @@
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -573,10 +574,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(kManagementDisclaimerTestParams),
                          [](const auto& info) { return info.param.test_name; });
 
-class ProfileManagementDisclaimerServiceCachingBrowserTest
+class ProfileManagementDisclaimerServiceBrowserTest
     : public SigninBrowserTestBase {
  public:
-  ProfileManagementDisclaimerServiceCachingBrowserTest()
+  ProfileManagementDisclaimerServiceBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/true) {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -584,7 +585,7 @@ class ProfileManagementDisclaimerServiceCachingBrowserTest
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ProfileManagementDisclaimerServiceCachingBrowserTest::
+                &ProfileManagementDisclaimerServiceBrowserTest::
                     OnWillCreateBrowserContextServices,
                 base::Unretained(this)));
   }
@@ -602,6 +603,25 @@ class ProfileManagementDisclaimerServiceCachingBrowserTest
     ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                                      test_url_loader_factory()));
+  }
+
+  AccountInfo MakeValidAccountInfoForAccount(const std::string& email,
+                                             const std::string& hosted_domain) {
+    AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+    // Fill the account info, in particular for the hosted_domain field.
+    account_info.full_name = "fullname";
+    account_info.given_name = "givenname";
+    account_info.hosted_domain = hosted_domain;
+    account_info.locale = "en";
+    account_info.picture_url = "https://example.com";
+
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    bool is_managed = hosted_domain != kNoHostedDomainFound;
+    mutator.set_is_subject_to_enterprise_features(is_managed);
+
+    DCHECK(account_info.IsValid());
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+    return account_info;
   }
 
   AccountInfo MakeValidPrimaryAccountInfoAvailableAndUpdate(
@@ -640,9 +660,9 @@ class ProfileManagementDisclaimerServiceCachingBrowserTest
   static base::Time fake_time_;
 };
 
-base::Time ProfileManagementDisclaimerServiceCachingBrowserTest::fake_time_;
+base::Time ProfileManagementDisclaimerServiceBrowserTest::fake_time_;
 
-IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
                        SuccessCaching) {
   auto* disclaimer_service = GetDisclaimerService();
 
@@ -720,8 +740,8 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
                    .has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
-                       FirstFailureRetry) {
+IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
+                       CachingFirstFailureRetry) {
   SetMockTime(base::Time::Now());
   base::subtle::ScopedTimeClockOverrides time_override(
       &GetMockTime,  // Override for base::Time::Now()
@@ -829,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
 // be disabled while waiting for the policy registration to complete. In this
 // case, it should not crash.
 IN_PROC_BROWSER_TEST_F(
-    ProfileManagementDisclaimerServiceCachingBrowserTest,
+    ProfileManagementDisclaimerServiceBrowserTest,
     ManagementDisclaimerDisabledWhileWaitingForPolicyRegistration) {
   SetMockTime(base::Time::Now());
   base::subtle::ScopedTimeClockOverrides time_override(
@@ -900,5 +920,83 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_TRUE(future.Wait());
     Profile* new_profile = future.Get<Profile*>();
     ASSERT_FALSE(new_profile);
+  }
+}
+
+// Regression test for crbug.com/449662629. It is possible for the disclaimer to
+// be disabled while waiting for the policy registration to complete. In this
+// case, it should not crash.
+IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
+                       BrowserSigninDisabledProfileSeparationSuggested) {
+  auto* disclaimer_service = GetDisclaimerService();
+
+  // User accepts the disclaimer.
+  disclaimer_service->SetUserChoiceForTesting(
+      signin::SigninChoice::SIGNIN_CHOICE_CONTINUE);
+  disclaimer_service->SetProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies());
+
+  // Ensure registration succeeds.
+  static_cast<policy::FakeUserPolicySigninService*>(
+      policy::UserPolicySigninServiceFactory::GetForProfile(GetProfile()))
+      ->UpdateDMTokenAndClientId("dm_token", "client_id");
+
+  // This should trigger the failure to register.
+  AccountInfo account_info =
+      MakeValidAccountInfoForAccount("bob@example.com", "example.com");
+  base::RunLoop().RunUntilIdle();
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  {
+    base::test::TestFuture<Profile*, bool> future;
+    disclaimer_service->EnsureManagedProfileForAccount(
+        account_info.account_id,
+        signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
+        future.GetCallback());
+
+    ASSERT_TRUE(future.Wait());
+    Profile* new_profile = future.Get<Profile*>();
+    ASSERT_FALSE(new_profile);
+    EXPECT_TRUE(GetIdentityManager(GetProfile())
+                    ->HasAccountWithRefreshToken(account_info.account_id));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
+                       BrowserSigninDisabledProfileSeparationEnforced) {
+  auto* disclaimer_service = GetDisclaimerService();
+
+  // User accepts the disclaimer.
+  disclaimer_service->SetUserChoiceForTesting(
+      signin::SigninChoice::SIGNIN_CHOICE_CONTINUE);
+  disclaimer_service->SetProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies(
+          /*profile_separation_settings=*/policy::ProfileSeparationSettings::
+              ENFORCED,
+          /*profile_separation_data_migration_settings=*/std::nullopt));
+
+  // Ensure registration succeeds.
+  static_cast<policy::FakeUserPolicySigninService*>(
+      policy::UserPolicySigninServiceFactory::GetForProfile(GetProfile()))
+      ->UpdateDMTokenAndClientId("dm_token", "client_id");
+
+  // This should trigger the failure to register.
+  AccountInfo account_info =
+      MakeValidAccountInfoForAccount("bob@example.com", "example.com");
+  base::RunLoop().RunUntilIdle();
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  {
+    base::test::TestFuture<Profile*, bool> future;
+    disclaimer_service->EnsureManagedProfileForAccount(
+        account_info.account_id,
+        signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
+        future.GetCallback());
+
+    ASSERT_TRUE(future.Wait());
+    Profile* new_profile = future.Get<Profile*>();
+    ASSERT_FALSE(new_profile);
+    EXPECT_FALSE(GetIdentityManager(GetProfile())
+                     ->HasAccountWithRefreshToken(account_info.account_id));
   }
 }
