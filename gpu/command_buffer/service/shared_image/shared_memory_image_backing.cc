@@ -110,12 +110,12 @@ SharedImageBackingType SharedMemoryImageBacking::GetType() const {
 }
 
 gfx::Rect SharedMemoryImageBacking::ClearedRect() const {
-  NOTREACHED();
+  // SharedMemoryImageBacking is always considered as fully cleared since we
+  // create it only when we need a mappable backing.
+  return gfx::Rect(size());
 }
 
-void SharedMemoryImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
-  NOTREACHED();
-}
+void SharedMemoryImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 
 gfx::GpuMemoryBufferHandle
 SharedMemoryImageBacking::GetGpuMemoryBufferHandle() {
