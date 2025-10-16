@@ -13,6 +13,7 @@ import './cards.js';
 import './categories.js';
 import './customize_toolbar/toolbar.js';
 import './footer.js';
+import './tools.js';
 import './shortcuts.js';
 import './themes.js';
 import './wallpaper_search/wallpaper_search.js';
@@ -84,6 +85,7 @@ export class AppElement extends AppElementBase {
       selectedCollection_: {type: Object},
       extensionPolicyEnabled_: {type: Boolean},
       extensionsCardEnabled_: {type: Boolean},
+      ntpNextFeaturesEnabled_: {type: Boolean},
       footerEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
       newTabPageType_: {type: NewTabPageType},
@@ -106,6 +108,8 @@ export class AppElement extends AppElementBase {
   protected accessor selectedCollection_: BackgroundCollection|null = null;
   protected accessor extensionsCardEnabled_: boolean =
       loadTimeData.getBoolean('extensionsCardEnabled');
+  protected accessor ntpNextFeaturesEnabled_: boolean =
+      loadTimeData.getBoolean('ntpNextFeaturesEnabled');
   protected accessor extensionPolicyEnabled_: boolean = false;
   protected accessor footerEnabled_: boolean =
       loadTimeData.getBoolean('footerEnabled');

@@ -100,6 +100,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"cardsHeader", IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL},
       {"categoriesHeader", IDS_NTP_CUSTOMIZE_THEMES_HEADER},
       {"footerHeader", IDS_NTP_CUSTOMIZE_FOOTER_HEADER},
+      {"toolsHeader", IDS_NTP_CUSTOMIZE_TOOLS_HEADER},
       {"shortcutsHeader", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
       {"toolbarHeader", IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL},
       {"extensionsHeader", IDS_NTP_CUSTOMIZE_MENU_EXTENSIONS_LABEL},
@@ -135,6 +136,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"managedBySearchEngine", IDS_NTP_MANAGED_BY_SEARCH_ENGINE},
       {"newTabPageManagedByA11yLabel",
        IDS_NTP_CUSTOMIZE_CHROME_MANAGED_NEW_TAB_PAGE_ACCESSIBILITY},
+      // Tools strings.
+      {"showChipsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CHIPS_LABEL},
       // Shortcut strings.
       {"topSites", IDS_NTP_CUSTOMIZE_MOST_VISITED_LABEL},
       {"myShortcuts", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_LABEL},
@@ -273,6 +276,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeSidePanelExtensionsCard));
 
+  source->AddBoolean(
+      "ntpNextFeaturesEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
   source->AddBoolean("wallpaperSearchEnabled", wallpaper_search_enabled);
   source->AddBoolean(
       "wallpaperSearchInspirationCardEnabled",

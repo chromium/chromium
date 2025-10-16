@@ -33,6 +33,15 @@ export function getHtml(this: AppElement) {
       </sp-heading>
       <cr-icon icon="cr:chevron-right" slot="suffix-icon"></cr-icon>
     </cr-button>
+    ${this.ntpNextFeaturesEnabled_ ? html`
+      <hr class="sp-cards-separator">
+      <div id="tools" class="section sp-card">
+        <sp-heading hide-back-button>
+          <h2 slot="heading">$i18n{toolsHeader}</h2>
+        </sp-heading>
+        <customize-chrome-tools></customize-chrome-tools>
+      </div>
+    ` : ''}
      ${this.isSourceTabFirstPartyNtp_() ? html`<hr class="sp-cards-separator">
     <div id="shortcuts" class="section sp-card">
       <sp-heading hide-back-button>

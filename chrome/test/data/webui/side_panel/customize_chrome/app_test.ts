@@ -230,6 +230,23 @@ suite('AppTest', () => {
     });
   });
 
+  [true, false].forEach((flagEnabled) => {
+    suite(`NtpNextFeaturesEnabled_${flagEnabled}`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          'ntpNextFeaturesEnabled': flagEnabled,
+        });
+      });
+
+      test(`ntp next features does ${flagEnabled ? '' : 'not '}show the
+        Tool Chips Toggle section in Customize Chrome side panel`, () => {
+        assertEquals(
+            !!customizeChromeApp.shadowRoot.querySelector('#tools'),
+            flagEnabled);
+      });
+    });
+  });
+
   test('source tab type should update the cards', async () => {
     const idsControlledByIsSourceTabFirstPartyNtp = [
       '#shortcuts',
