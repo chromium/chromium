@@ -77,6 +77,8 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
 
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
                          mojo::ScopedDataPipeConsumerHandle body);
+  void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                         network::mojom::URLResponseHeadPtr response_head);
   void OnComplete(const network::URLLoaderCompletionStatus& status);
 
   void MaybeSetResponseHead(
@@ -108,10 +110,12 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   std::unique_ptr<SyntheticResponseURLLoaderClient> client_;
   scoped_refptr<ServiceWorkerVersion> version_;
   OnReceiveResponseCallback response_callback_;
+  OnReceiveRedirectCallback redirect_callback_;
   OnCompleteCallback complete_callback_;
   std::optional<RaceNetworkRequestWriteBufferManager> write_buffer_manager_;
   mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback_;
   std::optional<RaceNetworkRequestSimpleBufferManager> simple_buffer_manager_;
+  bool did_start_synthetic_response = false;
 
   static bool dry_run_mode_for_testing_;
 
