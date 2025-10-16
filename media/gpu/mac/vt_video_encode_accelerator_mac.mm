@@ -1132,10 +1132,21 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
     }
   }
 
+  // Configuring the number of reference frames to 1, which will produce
+  // bitstream that follows WebRTC SVC spec for L1T2.
   if (@available(macOS 13.0, iOS 16.0, *)) {
-    // Configuring the number of reference frames to 1, which will produce
-    // bitstream that follows WebRTC SVC spec for L1T2.
-    if (session_property_setter.IsSupported(
+    bool skip_set_reference_buffer_count = false;
+    if (@available(macOS 26, *)) {
+      // We see that setting kVTCompressionPropertyKey_ReferenceBufferCount=1
+      // causes frame drops on Mac OS Tahoe when encoding H264,
+      // that's why we skip it. More info: http://crbug.com/450596068
+      // Using an extra flag here because @available checks can't be combined
+      // with other conditions in the same if statement,
+      // see the `unsupported-availability-guard` warning.
+      skip_set_reference_buffer_count = (codec == VideoCodec::kH264);
+    }
+    if (!skip_set_reference_buffer_count &&
+        session_property_setter.IsSupported(
             kVTCompressionPropertyKey_ReferenceBufferCount)) {
       if (!session_property_setter.Set(
               kVTCompressionPropertyKey_ReferenceBufferCount, 1)) {
