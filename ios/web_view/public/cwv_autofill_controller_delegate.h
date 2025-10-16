@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVCreditCardVerifier;
 @class CWVPassword;
 @class CWVCardUnmaskChallengeOption;
+@class CWVVCNEnrollmentManager;
 
 // User decision for saving / updating an autofill profile.
 typedef NS_ENUM(NSInteger, CWVAutofillProfileUserDecision) {
@@ -265,6 +266,15 @@ typedef void (^ProceduralBlock)(void);
             (CWVAutofillController*)autofillController
                        riskDataHandler:(void (^)(NSString*))handler;
 
+// Called when a credit card is eligible for Virtual Card Number (VCN)
+// enrollment. This typically occurs after a card is successfully used or saved.
+//
+// The delegate should use the provided |enrollmentManager| to present the
+// enrollment UI to the user. This flow includes displaying legal text and
+// handling the user's decision to accept or decline.
+- (void)autofillController:(CWVAutofillController*)autofillController
+    enrollCreditCardWithVCNEnrollmentManager:
+        (CWVVCNEnrollmentManager*)enrollmentManager;
 @end
 
 NS_ASSUME_NONNULL_END

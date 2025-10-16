@@ -19,6 +19,7 @@
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -46,6 +47,7 @@
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_verifier_internal.h"
+#import "ios/web_view/internal/autofill/cwv_vcn_enrollment_manager_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
@@ -109,12 +111,16 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   SharedPasswordController* _passwordController;
 
   // The current credit card saver. Can be nil if no save attempt is pending.
-  // Held weak because |_delegate| is responsible for maintaing its lifetime.
+  // Held weak because |_delegate| is responsible for maintaining its lifetime.
   __weak CWVCreditCardSaver* _saver;
 
   // The current credit card verifier. Can be nil if no verification is pending.
-  // Held weak because |_delegate| is responsible for maintaing its lifetime.
+  // Held weak because |_delegate| is responsible for maintaining its lifetime.
   __weak CWVCreditCardVerifier* _verifier;
+
+  // The current VCNEnrollmentManager. Can be nil if no enrollment is pending.
+  // Held weak because |_delegate| is responsible for maintaining its lifetime.
+  __weak CWVVCNEnrollmentManager* _enrollmentManager;
 
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
@@ -633,6 +639,41 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
         closeProgressDialogWithConfirmation:showConfirmation
                                  completion:block];
   }
+}
+
+- (void)showVirtualCardEnrollmentWithEnrollmentFields:
+            (const autofill::VirtualCardEnrollmentFields&)enrollmentFields
+                                       acceptCallback:
+                                           (base::OnceClosure)acceptCallback
+                                      declineCallback:
+                                          (base::OnceClosure)declineCallback {
+  if ([_delegate
+          respondsToSelector:@selector(autofillController:
+                                 enrollCreditCardWithVCNEnrollmentManager:)]) {
+    autofill::LegalMessageLines allLegalMessages;
+
+    std::ranges::copy(enrollmentFields.google_legal_message,
+        std::back_inserter(allLegalMessages));
+
+    std::ranges::copy(enrollmentFields.issuer_legal_message,
+        std::back_inserter(allLegalMessages));
+
+    CWVVCNEnrollmentManager* enrollmentManager =
+        [[CWVVCNEnrollmentManager alloc]
+            initWithCreditCard:enrollmentFields.credit_card
+             legalMessageLines:allLegalMessages
+                enrollCallback:std::move(acceptCallback)
+               declineCallback:std::move(declineCallback)];
+
+    [_delegate autofillController:self
+        enrollCreditCardWithVCNEnrollmentManager:enrollmentManager];
+
+    _enrollmentManager = enrollmentManager;
+  }
+}
+
+- (void)handleVirtualCardEnrollmentResult:(BOOL)cardEnrolled {
+  [_enrollmentManager handleCreditCardVCNEnrollmentCompleted:cardEnrolled];
 }
 
 #pragma mark - AutofillDriverIOSBridge

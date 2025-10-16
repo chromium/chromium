@@ -78,6 +78,17 @@ class CreditCard;
                                              const std::string&)>)acceptCallback
                                     cancelCallback:
                                         (base::OnceClosure)cancelCallback;
+
+// Bridge for PaymentsAutofillClient's method `ShowVirtualCardEnrollDialog`.
+- (void)showVirtualCardEnrollmentWithEnrollmentFields:
+            (const autofill::VirtualCardEnrollmentFields&)enrollmentFields
+                                       acceptCallback:
+                                           (base::OnceClosure)acceptCallback
+                                      declineCallback:
+                                          (base::OnceClosure)declineCallback;
+
+// Bridge for PaymentsAutofillClient's method `VirtualCardEnrollCompleted`.
+- (void)handleVirtualCardEnrollmentResult:(BOOL)cardEnrolled;
 @end
 
 #endif  // IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_AUTOFILL_CLIENT_IOS_BRIDGE_H_

@@ -6,12 +6,16 @@
 
 #import <memory>
 
+#import "base/ios/block_types.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/mock_callback.h"
+#import "base/test/test_future.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#import "components/autofill/core/browser/payments/test_legal_message_line.h"
+#import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/mock_autocomplete_history_manager.h"
 #import "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -46,6 +50,7 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 #import "ios/web_view/internal/autofill/cwv_card_unmask_challenge_option_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/internal/autofill/cwv_vcn_enrollment_manager_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -154,6 +159,7 @@ class CWVAutofillControllerTest : public web::WebTest {
   std::unique_ptr<autofill::TestFormActivityTabHelper>
       form_activity_tab_helper_;
   WebViewPasswordManagerClient* password_manager_client_;
+  CWVVCNEnrollmentManager* _retainedEnrollmentManager;
 };
 
 // Tests CWVAutofillController fetch suggestions for profiles.
@@ -667,10 +673,9 @@ TEST_F(CWVAutofillControllerTest, LoadRiskDataViaDelegate) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
-  base::MockOnceCallback<void(const std::string&)> mockCallback;
   const std::string kRiskData = "TestRiskDataString";
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<std::string> risk_data_future;
 
   OCMExpect([delegate
       autofillControllerLoadRiskData:autofill_controller_
@@ -680,15 +685,133 @@ TEST_F(CWVAutofillControllerTest, LoadRiskDataViaDelegate) {
                        return YES;
                      }]]);
 
-  EXPECT_CALL(mockCallback, Run(kRiskData))
-      .WillOnce(
-          [&run_loop](const std::string&) { run_loop.Quit(); });
+  [autofill_controller_
+      loadRiskData:risk_data_future.GetCallback<const std::string&>()];
 
-  [autofill_controller_ loadRiskData:mockCallback.Get()];
+  const std::string actualRiskData = risk_data_future.Get();
 
-  run_loop.Run();
+  EXPECT_EQ(kRiskData, actualRiskData);
 
   [delegate verify];
+}
+
+// Tests that the delegate is called for VCN enrollment and handles acceptance.
+TEST_F(CWVAutofillControllerTest, VirtualCardEnrollmentAccepted) {
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
+
+  autofill::VirtualCardEnrollmentFields enrollmentFields;
+  enrollmentFields.credit_card = autofill::test::GetCreditCard();
+  autofill::TestLegalMessageLine google_line("Google message");
+  enrollmentFields.google_legal_message.push_back(google_line);
+  autofill::TestLegalMessageLine issuer_line("Issuer message");
+  enrollmentFields.issuer_legal_message.push_back(issuer_line);
+
+  base::MockOnceCallback<void()> acceptCallback;
+  base::MockOnceCallback<void()> declineCallback;
+
+  OCMExpect([delegate autofillController:autofill_controller_
+                enrollCreditCardWithVCNEnrollmentManager:
+                    [OCMArg isKindOfClass:[CWVVCNEnrollmentManager class]]])
+      .andDo(^(NSInvocation* invocation) {
+        __unsafe_unretained CWVVCNEnrollmentManager* manager;
+        [invocation getArgument:&manager atIndex:3];
+        _retainedEnrollmentManager = manager;
+      });
+
+  [autofill_controller_
+      showVirtualCardEnrollmentWithEnrollmentFields:enrollmentFields
+                                     acceptCallback:acceptCallback.Get()
+                                    declineCallback:declineCallback.Get()];
+
+  [delegate verify];
+  ASSERT_NE(_retainedEnrollmentManager, nil);
+
+  EXPECT_CALL(acceptCallback, Run());
+  EXPECT_CALL(declineCallback, Run()).Times(0);
+
+  __block BOOL enrollment_completion_handler_called = NO;
+  [_retainedEnrollmentManager enrollWithCompletionHandler:^(BOOL success) {
+    EXPECT_TRUE(success);
+    enrollment_completion_handler_called = YES;
+  }];
+
+  [autofill_controller_ handleVirtualCardEnrollmentResult:YES];
+
+  EXPECT_TRUE(enrollment_completion_handler_called);
+}
+
+// Tests that the delegate is called for VCN enrollment and handles declination.
+TEST_F(CWVAutofillControllerTest, VirtualCardEnrollmentDeclined) {
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
+
+  autofill::VirtualCardEnrollmentFields enrollmentFields;
+  enrollmentFields.credit_card = autofill::test::GetCreditCard();
+
+  base::MockOnceCallback<void()> acceptCallback;
+  base::MockOnceCallback<void()> declineCallback;
+
+  OCMExpect([delegate autofillController:autofill_controller_
+                enrollCreditCardWithVCNEnrollmentManager:
+                    [OCMArg isKindOfClass:[CWVVCNEnrollmentManager class]]])
+      .andDo(^(NSInvocation* invocation) {
+        __unsafe_unretained CWVVCNEnrollmentManager* manager;
+        [invocation getArgument:&manager atIndex:3];
+        _retainedEnrollmentManager = manager;
+      });
+
+  [autofill_controller_
+      showVirtualCardEnrollmentWithEnrollmentFields:enrollmentFields
+                                     acceptCallback:acceptCallback.Get()
+                                    declineCallback:declineCallback.Get()];
+
+  [delegate verify];
+  ASSERT_NE(_retainedEnrollmentManager, nil);
+
+  EXPECT_CALL(acceptCallback, Run()).Times(0);
+  EXPECT_CALL(declineCallback, Run());
+
+  [_retainedEnrollmentManager decline];
+}
+
+// Tests that the decline callback is invoked if the enrollment manager is
+// deallocated before a decision is made.
+TEST_F(CWVAutofillControllerTest,
+       VirtualCardEnrollmentImplicitlyDeclinedOnDealloc) {
+  autofill::VirtualCardEnrollmentFields enrollmentFields;
+  enrollmentFields.credit_card = autofill::test::GetCreditCard();
+
+  base::MockOnceCallback<void()> acceptCallback;
+  base::MockOnceCallback<void()> declineCallback;
+
+  EXPECT_CALL(acceptCallback, Run()).Times(0);
+  EXPECT_CALL(declineCallback, Run());
+
+  @autoreleasepool {
+    id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+    autofill_controller_.delegate = delegate;
+
+    __block CWVVCNEnrollmentManager* strongManager = nil;
+
+    OCMExpect([delegate autofillController:autofill_controller_
+                  enrollCreditCardWithVCNEnrollmentManager:
+                      [OCMArg isKindOfClass:[CWVVCNEnrollmentManager class]]])
+        .andDo(^(NSInvocation* invocation) {
+          __unsafe_unretained CWVVCNEnrollmentManager* manager;
+          [invocation getArgument:&manager atIndex:3];
+          strongManager = manager;
+        });
+
+    [autofill_controller_
+        showVirtualCardEnrollmentWithEnrollmentFields:enrollmentFields
+                                       acceptCallback:acceptCallback.Get()
+                                      declineCallback:declineCallback.Get()];
+
+    [delegate verify];
+
+    strongManager = nil;
+  }
 }
 }  // namespace
 }  // namespace ios_web_view
