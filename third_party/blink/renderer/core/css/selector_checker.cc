@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
@@ -631,6 +632,8 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoHostHasNonAutoAppearance:
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
+    case CSSSelector::kPseudoMenulistPopoverWithMenubarAnchor:
+    case CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor:
     case CSSSelector::kPseudoMultiSelectFocus:
     case CSSSelector::kPseudoOpen:
     case CSSSelector::kPseudoPastCue:
@@ -2694,6 +2697,22 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return select->PopupIsVisible();
       } else if (auto* input = DynamicTo<HTMLInputElement>(element)) {
         return input->IsPickerVisible();
+      }
+      return false;
+    case CSSSelector::kPseudoMenulistPopoverWithMenubarAnchor:
+      if (auto* menulist = DynamicTo<HTMLMenuListElement>(element)) {
+        if (auto* menuitem_anchor = DynamicTo<HTMLMenuItemElement>(
+                menulist->GetPopoverData()->invoker())) {
+          return menuitem_anchor->OwnerMenuBarElement();
+        }
+      }
+      return false;
+    case CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor:
+      if (auto* menulist = DynamicTo<HTMLMenuListElement>(element)) {
+        if (auto* menuitem_anchor = DynamicTo<HTMLMenuItemElement>(
+                menulist->GetPopoverData()->invoker())) {
+          return menuitem_anchor->OwnerMenuListElement();
+        }
       }
       return false;
     case CSSSelector::kPseudoFullscreen:

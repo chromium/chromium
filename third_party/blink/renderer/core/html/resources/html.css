@@ -2301,6 +2301,17 @@ select::-internal-select-autofill-preview-text {
 
   menulist {
     display: block;
+    position: absolute;
+  }
+
+  menulist:-internal-menulist-popover-with-menubar-anchor {
+    /* Below and span-right, by default. */
+    position-area: block-end span-inline-end;
+  }
+
+  menulist:-internal-menulist-popover-with-menulist-anchor {
+    /* To the right, with its top aligned to the implicit anchor's top */
+    position-area: inline-end span-block-end;
   }
 
   menuitem {
