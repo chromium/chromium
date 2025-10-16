@@ -142,8 +142,11 @@ std::optional<std::u16string> GetBookmarkParentName(
     bookmarks::BookmarkModel* model,
     const GURL& url);
 
-// Gets the explicit "shopping collection" bookmark folder. There can only be
-// one shopping collection per profile.
+// Gets the explicit "shopping collection" bookmark folder.
+// The behavior depends on whether the user is signed in or syncing. When
+// syncing, this returns the syncing `other_node`. When signed in, this returns
+// the `account_other_node` if it exists, or null. The caller is responsible for
+// checking if the returned folder exists.
 const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
     bookmarks::BookmarkModel* model,
     bool create_if_needed = false);

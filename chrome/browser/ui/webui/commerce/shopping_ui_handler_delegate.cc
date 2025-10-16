@@ -70,15 +70,16 @@ ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
   const bookmarks::BookmarkNode* existing_node =
       bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
           web_contents->GetLastCommittedURL());
-  if (existing_node != nullptr) {
+  if (existing_node != nullptr &&
+      !bookmark_model_->IsLocalOnlyNode(*existing_node)) {
     return existing_node;
   }
   GURL url;
   std::u16string title;
-  if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title)) {
-    const bookmarks::BookmarkNode* parent =
-        commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_, true);
+  const bookmarks::BookmarkNode* parent =
+      commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_, true);
 
+  if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title) && parent) {
     return bookmark_model_->AddNewURL(parent, parent->children().size(), title,
                                       url);
   }

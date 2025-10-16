@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/mojom/shared.mojom.h"
@@ -70,9 +72,18 @@ void PriceTrackingHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
 
 void PriceTrackingHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
   if (track) {
+    const bookmarks::BookmarkNode* parent = GetOrAddBookmarkForCurrentUrl();
+    // TODO(crbug.com/451578902): The parent should always exist once the side
+    // panel is updated accordingly, so we can then turn this into a CHECK
+    // instead.
+    if (!parent) {
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+
     // If the product on the page isn't already tracked, create a bookmark for
     // it and start tracking.
-    TrackPriceForBookmark(GetOrAddBookmarkForCurrentUrl()->id());
+    TrackPriceForBookmark(parent->id());
     commerce::metrics::RecordShoppingActionUKM(
         GetCurrentTabUkmSourceId(),
         commerce::metrics::ShoppingAction::kPriceTracked);
@@ -341,15 +352,16 @@ PriceTrackingHandler::GetOrAddBookmarkForCurrentUrl() {
   const bookmarks::BookmarkNode* existing_node =
       bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
           web_contents->GetLastCommittedURL());
-  if (existing_node != nullptr) {
+  if (existing_node != nullptr &&
+      !bookmark_model_->IsLocalOnlyNode(*existing_node)) {
     return existing_node;
   }
   GURL url;
   std::u16string title;
-  if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title)) {
-    const bookmarks::BookmarkNode* parent =
-        commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_, true);
+  const bookmarks::BookmarkNode* parent =
+      commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_, true);
 
+  if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title) && parent) {
     return bookmark_model_->AddNewURL(parent, parent->children().size(), title,
                                       url);
   }
