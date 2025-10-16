@@ -40,6 +40,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".RecentTabs" summary="Recent (offline) tabs"/>
 </variants>
 
+<variants name="InputComponentType">
+  <variant name="Composebox"/>
+  <variant name="Realbox"/>
+</variants>
+
 <variants name="ModuleToggleState">
   <variant name="TurnOffModule"/>
   <variant name="TurnOnModule"/>
@@ -2593,6 +2598,21 @@ chromium-metrics-reviews@google.com.
     search engine, Incognito and Guest mode NTPs are not considered 1P and don't
     log this histogram.
   </summary>
+</histogram>
+
+<histogram name="NewTabPage.{InputComponentType}.ContextMenuEntry.Clicked"
+    enum="BooleanOccurred" expires_after="2026-03-29">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Number of times the context menu entrypoint on the {InputComponentType} was
+    clicked. Recorded when the context menu is clicked. This does not mean that
+    a file was added, just simply that the entrypoint was clicked.
+  </summary>
+  <token key="InputComponentType" variants="InputComponentType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 </histograms>

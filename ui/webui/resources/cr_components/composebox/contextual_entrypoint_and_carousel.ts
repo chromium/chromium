@@ -104,11 +104,13 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
       },
       tabSuggestions_: {type: Array},
+      entrypointName: {type: String},
     };
   }
 
   accessor showDropdown: boolean = false;
   accessor realboxLayoutMode: string = '';
+  accessor entrypointName: string = '';
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
   protected accessor contextMenuEnabled_: boolean =
