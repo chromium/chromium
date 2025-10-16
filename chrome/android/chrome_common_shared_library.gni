@@ -32,6 +32,8 @@ template("chrome_common_shared_library") {
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_webview = defined(invoker.is_webview) && invoker.is_webview
+  _use_webview_orderfile =
+      defined(invoker.use_webview_orderfile) && invoker.use_webview_orderfile
   _collect_inputs_only =
       defined(invoker.collect_inputs_only) && invoker.collect_inputs_only
 
@@ -93,7 +95,12 @@ template("chrome_common_shared_library") {
       configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [ "//build/config/compiler:thinlto_optimize_max" ]
     }
-    configs += [ "//build/config/compiler:chrome_orderfile_config" ]
+
+    if (_use_webview_orderfile) {
+      configs += [ "//android_webview:webview_orderfile_config" ]
+    } else {
+      configs += [ "//build/config/compiler:chrome_orderfile_config" ]
+    }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.

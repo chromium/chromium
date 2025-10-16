@@ -1283,6 +1283,55 @@ group("android_webview") {
   ]
 }
 
+declare_args() {
+  # Location of the orderfile to use for WebView. If empty, no orderfile will be
+  # linked.
+  webview_orderfile_path = ""
+
+  # Calculate the orderfile path for the standalone WebView
+  # The orderfile is trained on PGO builds (for arm64) and AFDO builds (for
+  # arm32), so apply them only in these cases.
+  if (((current_cpu == "arm64" || current_cpu == "x64") &&
+       chrome_pgo_phase == 2) ||
+      ((current_cpu == "arm" || current_cpu == "x86") &&
+       chrome_pgo_phase == 0 && is_official_build)) {
+    if (enable_chrome_android_internal) {
+      # We generate separate orderfiles for 32-bit and 64-bit architectures
+      # to improve performance and reduce memory usage.
+      # - WebView and Chrome ARM64, see https://crbug.com/41490637.
+      # - WebView and Chrome x86, see https://crbug.com/967343.
+      # *IMPORTANT*: The x86 and x64 architectures are used to test orderfile
+      # logic more easily on an emulator, so the decision to use the arm64
+      # orderfile for x64 (instead of arm32) is somewhat arbitrary. We just
+      # needed to use some real orderfile.
+      if (is_desktop_android && current_cpu == "x64") {
+        # For Android Desktop x64, orderfile is disabled, see
+        # https://crbug.com/422005929.
+        webview_orderfile_path = ""
+      } else if (current_cpu == "arm64" || current_cpu == "x64") {
+        webview_orderfile_path =
+            "//android_webview/tools/orderfiles/arm64/orderfile.arm64.out"
+      } else if (current_cpu == "arm" || current_cpu == "x86") {
+        webview_orderfile_path =
+            "//android_webview/tools/orderfiles/arm/orderfile.arm.out"
+      }
+    }
+  }
+}
+
+config("webview_orderfile_config") {
+  if (webview_orderfile_path != "") {
+    assert(use_lld)
+    _rebased_orderfile = rebase_path(webview_orderfile_path, root_build_dir)
+    ldflags = [
+      "-Wl,--symbol-ordering-file",
+      "-Wl,$_rebased_orderfile",
+      "-Wl,--no-warn-symbol-ordering",
+    ]
+    inputs = [ webview_orderfile_path ]
+  }
+}
+
 template("webview_chromium_library") {
   chrome_common_shared_library(target_name) {
     forward_variables_from(invoker, "*")
@@ -1309,6 +1358,7 @@ template("webview_chromium_library") {
 
 # The shared library used by standalone WebView.
 webview_chromium_library("libwebviewchromium") {
+  use_webview_orderfile = true
 }
 
 if (_is_default_toolchain && enable_resource_allowlist_generation) {
