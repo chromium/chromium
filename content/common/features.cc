@@ -277,7 +277,7 @@ BASE_FEATURE(
 
 // Killswitch for prefetch devtools UA override (crbug.com/422193319).
 BASE_FEATURE(kPrefetchDevtoolsUserAgentOverride,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When true, duplicate navigations are ignored only if they are initiated
 // with a user gesture.
