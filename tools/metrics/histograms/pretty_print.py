@@ -150,23 +150,22 @@ def PrettyPrintEnums(raw_xml):
   return top_level_content + formatted_xml
 
 def main():
-  """Pretty-prints the histograms or enums xml file at given relative path.
+  """Pretty-prints the histograms or enums xml file.
 
-  Args:
-    filepath: The relative path to xml file.
-    --non-interactive: (Optional) Does not print log info messages and does not
-        prompt user to accept the diff.
-    --presubmit: (Optional) Simply prints a message if the input is not
-        formatted correctly instead of modifying the file.
-    --diff: (Optional) Prints diff to stdout rather than modifying the file.
-    --cleanup: (Optional) Removes any backup file created during the execution.
+  If no filepath is provided, formats both enums.xml and histograms.xml
+  in this script's directory.
 
   Example usage:
+    pretty_print.py
     pretty_print.py metadata/Fingerprint/histograms.xml
     pretty_print.py enums.xml --cleanup
   """
-  parser = argparse.ArgumentParser()
-  parser.add_argument('filepath', help="relative path to XML file")
+  parser = argparse.ArgumentParser(description=main.__doc__)
+  parser.add_argument('filepath',
+                      nargs='?',
+                      default=None,
+                      help="Relative path to XML file. If not specified, "
+                      "formats both enums.xml and histograms.xml.")
   # The following optional flags are used by common/presubmit_util.py
   parser.add_argument('--non-interactive', action="store_true")
   parser.add_argument('--presubmit', action="store_true")
@@ -176,23 +175,24 @@ def main():
                       help="Remove the backup file after a successful run.")
   args = parser.parse_args()
 
-  status = 0
+  exit_code = 0
+
   if 'enums.xml' in args.filepath:
-    status = presubmit_util.DoPresubmit(sys.argv, args.filepath,
-                                        'enums.before.pretty-print.xml',
-                                        PrettyPrintEnums)
-
+    pretty_fn = PrettyPrintEnums
+    backup_filename = 'enums.before.pretty-print.xml'
   elif 'histograms' in args.filepath:
-    # Specify the individual directory of histograms.xml.
-    status = presubmit_util.DoPresubmit(
-        sys.argv,
-        args.filepath,
-        # The backup filename should be
-        # 'path/to/histograms.before.pretty-print.xml'.
-        '.before.pretty-print.'.join(args.filepath.rsplit('.', 1)),
-        PrettyPrintHistograms)
+    pretty_fn = PrettyPrintHistograms
+    backup_filename = '.before.pretty-print.'.join(args.filepath.rsplit('.', 1))
+  else:
+    parser.error('File path must contain "enums.xml" or "histograms": %s' %
+                 args.filepath)
 
-  sys.exit(status)
+  status = presubmit_util.DoPresubmit(args, args.filepath, backup_filename,
+                                      pretty_fn)
+  if status != 0:
+    exit_code = status
+
+  sys.exit(exit_code)
 
 
 if __name__ == '__main__':
