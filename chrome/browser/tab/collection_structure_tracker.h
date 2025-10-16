@@ -25,8 +25,12 @@ class CollectionStructureTracker {
   CollectionStructureTracker& operator=(const CollectionStructureTracker&) =
       delete;
 
+  // Saves the entire collection and its descendants to the service.
+  void FullSave();
+
  private:
   raw_ptr<TabStripCollection> collection_;
+  raw_ptr<TabStateStorageService> service_;
   std::unique_ptr<CollectionStorageObserver> observer_;
 };
 

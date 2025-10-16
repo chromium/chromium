@@ -34,12 +34,20 @@ public class CollectionStructureTracker implements Destroyable {
         mNativePtr = 0;
     }
 
+    /** Fully synchronizes the state of the collection and descendants with the storage layer. */
+    public void fullSave() {
+        assert mNativePtr != 0;
+        CollectionStructureTrackerJni.get().fullSave(mNativePtr);
+    }
+
     @NativeMethods
     interface Natives {
         long init(
                 CollectionStructureTracker self,
                 @JniType("Profile*") Profile profile,
                 @JniType("tabs::TabStripCollection*") TabStripCollection collection);
+
+        void fullSave(long nativeCollectionStructureTrackerAndroid);
 
         void destroy(long nativeCollectionStructureTrackerAndroid);
     }

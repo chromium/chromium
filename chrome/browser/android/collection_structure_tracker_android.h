@@ -28,11 +28,13 @@ class CollectionStructureTrackerAndroid {
   CollectionStructureTrackerAndroid& operator=(
       const CollectionStructureTrackerAndroid&) = delete;
 
+  void FullSave(JNIEnv* env);
+
   // Should only be destroyed through Java object.
   void Destroy(JNIEnv* env);
 
  private:
-  std::unique_ptr<CollectionStructureTracker> synchronizer_;
+  std::unique_ptr<CollectionStructureTracker> tracker_;
 };
 
 }  // namespace tabs

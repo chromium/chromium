@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/collection_structure_tracker_android.h"
 
+#include <jni.h>
+
 #include <memory>
 
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
@@ -21,21 +23,24 @@ CollectionStructureTrackerAndroid::CollectionStructureTrackerAndroid(
     tabs::TabStripCollection* collection) {
   TabStateStorageService* service =
       TabStateStorageServiceFactory::GetForProfile(profile);
-  synchronizer_ =
-      std::make_unique<CollectionStructureTracker>(collection, service);
+  tracker_ = std::make_unique<CollectionStructureTracker>(collection, service);
 }
 
 CollectionStructureTrackerAndroid::~CollectionStructureTrackerAndroid() =
     default;
+
+void CollectionStructureTrackerAndroid::FullSave(JNIEnv* env) {
+  tracker_->FullSave();
+}
 
 static jlong JNI_CollectionStructureTracker_Init(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& j_object,
     Profile* profile,
     tabs::TabStripCollection* collection) {
-  CollectionStructureTrackerAndroid* synchronizer =
+  CollectionStructureTrackerAndroid* tracker =
       new CollectionStructureTrackerAndroid(profile, collection);
-  return reinterpret_cast<intptr_t>(synchronizer);
+  return reinterpret_cast<intptr_t>(tracker);
 }
 
 void CollectionStructureTrackerAndroid::Destroy(JNIEnv* env) {
