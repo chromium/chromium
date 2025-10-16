@@ -9049,7 +9049,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"keyboard-and-pointer-lock-prompt",
      "Keyboard and Pointer Lock prompt",
-     "Requesting to use the keyboard or pointer lock API causes a permission prompt to be shown.", kOsDesktop,
+     "Requesting to use the keyboard lock API causes a permission prompt to be shown, while the pointer lock API is disabled.", kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kKeyboardLockPrompt)},
 
     {"press-and-hold-esc-to-exit-browser-fullscreen",
