@@ -523,7 +523,7 @@ try_.builder(
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
         location_filters = [
-            "chrome/browser/.+(ui|browser)test.+",
+            "chrome/browser/.+uitest.+",
             "chrome/browser/ui/views/.+test.+",
             "chrome/browser/ui/views/tabs/.+",
             "testing/xvfb\\.py",
