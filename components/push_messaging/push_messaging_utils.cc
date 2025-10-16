@@ -15,20 +15,16 @@ namespace push_messaging {
 std::string GetGcmEndpointForChannel(version_info::Channel channel) {
   if (base::FeatureList::IsEnabled(
           features::kPushMessagingGcmEndpointWebpushPath)) {
-    if (base::FeatureList::IsEnabled(
-            features::kPushMessagingGcmEndpointEnvironment)) {
       if (channel != version_info::Channel::STABLE) {
         return kPushMessagingStagingWebpushEndpoint;
       }
-    }
     return kPushMessagingWebpushEndpoint;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kPushMessagingGcmEndpointEnvironment)) {
+
     if (channel != version_info::Channel::STABLE) {
       return kPushMessagingStagingGcmEndpoint;
     }
-  }
+
   return kPushMessagingGcmEndpoint;
 }
 

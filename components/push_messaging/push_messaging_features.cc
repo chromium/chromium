@@ -14,9 +14,6 @@ BASE_FEATURE(kPushMessagingDisallowSenderIDs,
 BASE_FEATURE(kPushSubscriptionWithExpirationTime,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPushMessagingGcmEndpointEnvironment,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPushMessagingGcmEndpointWebpushPath,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

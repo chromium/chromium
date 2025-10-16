@@ -17,10 +17,6 @@ BASE_DECLARE_FEATURE(kPushMessagingDisallowSenderIDs);
 // /chrome/browser/push_messaging/push_messaging_constants.h
 BASE_DECLARE_FEATURE(kPushSubscriptionWithExpirationTime);
 
-// Feature flag to control which environment |kPushMessagingGcmEndpoint|
-// corresponds to.
-BASE_DECLARE_FEATURE(kPushMessagingGcmEndpointEnvironment);
-
 // Feature flag to control use of new /wp/ path based Webpush endpoints.
 BASE_DECLARE_FEATURE(kPushMessagingGcmEndpointWebpushPath);
 
