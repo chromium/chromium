@@ -9006,6 +9006,25 @@
             ]
         }
     ],
+    "DisableCookieDeprecationFacilitatedTestingLabels": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LabelsOff",
+                    "disable_features": [
+                        "CookieDeprecationFacilitatedTestingLabels"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableGeoLanguageModel": [
         {
             "platforms": [
