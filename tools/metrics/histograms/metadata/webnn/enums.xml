@@ -135,6 +135,9 @@ MLGraphOperatorUma in //third_party/blink/renderer/modules/ml/webnn/ml_graph_bui
   <int value="90" label="Where"/>
   <int value="91" label="Reverse"/>
   <int value="92" label="NotEqual"/>
+  <int value="93" label="RoundEven"/>
+  <int value="94" label="IsNaN"/>
+  <int value="95" label="IsInfinite"/>
 </enum>
 
 </enums>
