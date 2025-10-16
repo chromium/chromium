@@ -79,8 +79,8 @@ public class NewTabAnimationUtils {
      */
     public static void updateRects(
             @RectStart int rectStart, boolean isRtl, Rect initialRect, Rect finalRect) {
-        int initialWidth = Math.round(finalRect.width() * INITIAL_SCALE);
-        int initialHeight = Math.round(finalRect.height() * INITIAL_SCALE);
+        int initialWidth = Math.max(1, Math.round(finalRect.width() * INITIAL_SCALE));
+        int initialHeight = Math.max(1, Math.round(finalRect.height() * INITIAL_SCALE));
         int finalWidth = Math.round(finalRect.width() * FINAL_SCALE);
         int finalHeight = Math.round(finalRect.height() * FINAL_SCALE);
 
