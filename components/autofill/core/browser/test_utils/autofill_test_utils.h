@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_testing_pref_service.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 
 class PrefService;
@@ -236,6 +237,9 @@ CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit();
 // Returns a set of merchant origin webpages used for a merchant credit card
 // benefit.
 base::flat_set<url::Origin> GetOriginsForMerchantBenefit();
+
+// Prevents kAccountNameEmail profile from being created.
+void HideAccountNameEmailProfile(PrefService* pref_service, AccountInfo info);
 
 // Adds `card` with a set `issuer_id`, `benefit` and `benefit_source` to
 // `personal_data`. Also configures a category benefit with the

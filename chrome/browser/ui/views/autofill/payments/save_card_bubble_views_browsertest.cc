@@ -64,6 +64,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -358,9 +359,12 @@ class SaveCardBubbleViewsFullFormBrowserTest
     EXPECT_FALSE(FindViewInBubbleById(DialogViewId::EXPIRATION_DATE_LABEL));
   }
 
-  void SetUpForEditableExpirationDate() {
-    // Start sync.
-    ASSERT_TRUE(SetupSync());
+  bool SetupSyncAndHideAccountNameEmailProfile() {
+    if (!SetupSync()) {
+      return false;
+    }
+    HideAccountNameEmailProfile();
+    return true;
   }
 
   void CloseAllTabs() {
@@ -774,6 +778,15 @@ class SaveCardBubbleViewsFullFormBrowserTest
         std::make_unique<EventWaiter<DialogEvent>>(std::move(event_sequence));
   }
 
+  void HideAccountNameEmailProfile() {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(GetProfile(0));
+    autofill::test::HideAccountNameEmailProfile(
+        GetProfile(0)->GetPrefs(), identity_manager->FindExtendedAccountInfo(
+                                       identity_manager->GetPrimaryAccountInfo(
+                                           signin::ConsentLevel::kSignin)));
+  }
+
   [[nodiscard]] testing::AssertionResult WaitForObservedEvent() {
     return event_waiter_->Wait();
   }
@@ -820,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 // other dialog buttons.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                        Upload_ClickingSave_ShowsLoadingView) {
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -861,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 // UPLOAD_IN_PROGRESS state, the loading view will be shown.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                        Upload_InProgress_ShowsLoadingView) {
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1022,7 +1035,7 @@ IN_PROC_BROWSER_TEST_P(
     // TODO(crbug.com/40913383): Flaky on multiple platforms.
     DISABLED_Upload_ClickingSaveClosesBubble) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1135,6 +1148,7 @@ IN_PROC_BROWSER_TEST_F(
   secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(0), test_url_loader_factory(), "user1@gmail.com");
   SetAccountFullName("John Smith");
+  HideAccountNameEmailProfile();
 
   ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
             GetSyncService(0)->GetTransportState());
@@ -1185,7 +1199,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_NotTransportMode_InfoTextIconDoesNotExist) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1201,7 +1215,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_ClickingNoThanksClosesBubble) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1224,7 +1238,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_ClickingCloseClosesBubble) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1239,7 +1253,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_ShouldNotRequestCardholderNameInHappyPath) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1254,7 +1268,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillFormWithoutName();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1279,7 +1293,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     DISABLED_Upload_SubmittingFormWithConflictingNamesRequestsCardholderNameIfExpOn) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submit first shipping address form with a conflicting name.
   FillFormWithConflictingName();
@@ -1297,12 +1311,13 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SaveButtonIsDisabledIfNoCardholderNameAndCardholderNameRequested) {
-  // Start sync. SetupSync() usually seeds account information, including the
-  // full name, so a workaround for that is to sign in first.
+  // Start sync. SetupSyncAndHideAccountNameEmailProfile() usually seeds account
+  // information, including the full name, so a workaround for that is to sign
+  // in first.
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(GetProfile(0)), "user1@gmail.com",
       signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submitting the form should still show the upload save bubble and legal
   // footer, along with a textfield specifically requesting the cardholder name.
@@ -1334,9 +1349,10 @@ IN_PROC_BROWSER_TEST_P(
   base::HistogramTester histogram_tester;
 
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
   // Set the user's full name.
   SetAccountFullName("John Smith");
+  HideAccountNameEmailProfile();
 
   // Submitting the form should still show the upload save bubble and legal
   // footer, along with a textfield specifically requesting the cardholder name.
@@ -1364,12 +1380,13 @@ IN_PROC_BROWSER_TEST_P(
     Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing) {
   base::HistogramTester histogram_tester;
 
-  // Start sync. SetupSync() usually seeds account information, including the
-  // full name, so a workaround for that is to sign in first.
+  // Start sync. SetupSyncAndHideAccountNameEmailProfile() usually seeds account
+  // information, including the full name, so a workaround for that is to sign
+  // in first.
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(GetProfile(0)), "user1@gmail.com",
       signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submitting the form should still show the upload save bubble and legal
   // footer, along with a textfield specifically requesting the cardholder name.
@@ -1400,7 +1417,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldOfferLocalSaveIfPaymentsDeclines) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Set up the Payments RPC.
   SetUploadDetailsRpcPaymentsDeclines();
@@ -1428,7 +1445,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldOfferLocalSaveIfPaymentsFails) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Set up the Payments RPC.
   SetUploadDetailsRpcServerError();
@@ -1456,7 +1473,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_CanOfferToSaveEvenIfNothingFoundIfPaymentsAccepts) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submitting the form, even with only card number and expiration date, should
   // start the flow of asking Payments if Chrome should offer to save the card
@@ -1472,7 +1489,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_CanOfferToSaveDynamicForm) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Set up the Payments RPC.
   SetUploadDetailsRpcPaymentsAccepts();
@@ -1498,7 +1515,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldNotOfferToSaveIfNothingFoundAndPaymentsDeclines) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Set up the Payments RPC.
   SetUploadDetailsRpcPaymentsDeclines();
@@ -1522,7 +1539,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfCvcNotFound) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submitting the form should still start the flow of asking Payments if
   // Chrome should offer to save the card to Google, even though CVC is missing.
@@ -1538,7 +1555,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfInvalidCvcFound) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submitting the form should still start the flow of asking Payments if
   // Chrome should offer to save the card to Google, even though the provided
@@ -1557,7 +1574,7 @@ IN_PROC_BROWSER_TEST_P(
     // TODO(crbug.com/40913383): Flaky on multiple platforms.
     DISABLED_Logic_ShouldAttemptToOfferToSaveIfNameNotFound) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submitting the form should still start the flow of asking Payments if
   // Chrome should offer to save the card to Google, even though name is
@@ -1575,7 +1592,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfNamesConflict) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submitting the form should still start the flow of asking Payments if
   // Chrome should offer to save the card to Google, even though the name
@@ -1593,7 +1610,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfAddressNotFound) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submitting the form should still start the flow of asking Payments if
   // Chrome should offer to save the card to Google, even though billing address
@@ -1611,7 +1628,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfPostalCodesConflict) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
   // Add one address to the profile. This address should have a different
   // zipcode than the one to be filled in the form below.
   AutofillProfile address_profile = test::GetFullProfile();
@@ -1639,7 +1656,7 @@ IN_PROC_BROWSER_TEST_P(
   base::HistogramTester histogram_tester;
 
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1659,7 +1676,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithMissingExpirationDateRequestsExpirationDate) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   FillFormWithoutExpirationDate();
   SubmitFormAndWaitForCardUploadSaveBubble();
   VerifyExpirationDateDropdownsAreVisible();
@@ -1670,7 +1687,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithExpiredExpirationDateRequestsExpirationDate) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   FillFormWithSpecificExpirationDate("08", "2000");
   SubmitFormAndWaitForCardUploadSaveBubble();
   VerifyExpirationDateDropdownsAreVisible();
@@ -1681,7 +1698,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_ShouldNotRequestExpirationDateInHappyPath) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
   EXPECT_TRUE(
@@ -1700,7 +1717,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SaveButtonStatusResetBetweenExpirationDateSelectionChanges) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   FillFormWithoutExpirationDate();
   SubmitFormAndWaitForCardUploadSaveBubble();
   VerifyExpirationDateDropdownsAreVisible();
@@ -1732,7 +1749,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SaveButtonIsDisabledIfExpiredExpirationDateAndExpirationDateRequested) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   FillFormWithoutExpirationDate();
   SubmitFormAndWaitForCardUploadSaveBubble();
   VerifyExpirationDateDropdownsAreVisible();
@@ -1759,7 +1776,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     // TODO(crbug.com/40913383): Flaky on multiple platforms.
     DISABLED_Upload_SubmittingFormWithMissingExpirationDateMonthAndWithValidYear) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   // Submit the form with a year value, but not a month value.
   FillFormWithExpirationYearOnly(test::NextYear());
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1779,7 +1796,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     // TODO(crbug.com/40913383): Flaky on multiple platforms.
     DISABLED_Upload_SubmittingFormWithMissingExpirationDateYearAndWithMonth) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   // Submit the form with a month value, but not a year value.
   FillFormWithExpirationMonthOnly("12");
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1797,7 +1814,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithExpirationDateMonthAndWithYearIsOutOfRange) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   // Fill form but with an expiration year ten years in the future which is out
   // of the range of |year_input_dropdown_|.
   FillFormWithExpirationYearOnly(test::TenYearsFromNow());
@@ -1815,7 +1832,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithExpirationDateMonthAndYearExpired) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   // Fill form with a valid month but a passed year.
   FillFormWithSpecificExpirationDate("08", "2000");
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1833,7 +1850,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithExpirationDateMonthAndCurrentYear) {
-  SetUpForEditableExpirationDate();
+  SetupSyncAndHideAccountNameEmailProfile();
   const base::Time kJune2017 =
       base::Time::FromSecondsSinceUnixEpoch(1497552271);
   autofill::TestAutofillClock test_clock;
@@ -1897,7 +1914,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     StrikeDatabase_Upload_AddStrikeIfBubbleDeclined) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1920,7 +1937,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     StrikeDatabase_Upload_AddStrikeIfBubbleIgnored) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -2015,7 +2032,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     StrikeDatabase_Upload_FullFlowTest) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
   for (int i = 0; i < credit_card_save_manager()
@@ -2099,7 +2116,7 @@ IN_PROC_BROWSER_TEST_P(
   AddTestCreditCard(GetProfile(0), card);
 
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -2119,7 +2136,7 @@ IN_PROC_BROWSER_TEST_P(
   AddTestCreditCard(GetProfile(0), card);
 
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -2135,9 +2152,10 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
   // Set the user's full name.
   SetAccountFullName("John Smith");
+  HideAccountNameEmailProfile();
 
   // Submitting the form should still show the upload save bubble and legal
   // footer, along with a textfield specifically requesting the cardholder name.
@@ -2168,9 +2186,10 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
   // Set the user's full name.
   SetAccountFullName("John Smith");
+  HideAccountNameEmailProfile();
 
   // Submitting the form should still show the upload save bubble and legal
   // footer, along with a textfield specifically requesting the cardholder name.
@@ -2197,7 +2216,7 @@ IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested) {
   // Start sync.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   // Submitting the form should still show the upload save bubble and legal
   // footer, along with a textfield specifically requesting the cardholder name.
@@ -2326,7 +2345,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     UploadBubble_CheckForAccountChipFooter) {
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
 
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();

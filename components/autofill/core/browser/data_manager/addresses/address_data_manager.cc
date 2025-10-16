@@ -186,9 +186,7 @@ void AddressDataManager::OnWebDataServiceRequestDone(
     // are generally caught by an identity observer. But if the account info
     // becomes available before the initial load has finished, the additional
     // call here is necessary to apply these updates.
-    // TODO(crbug.com/356845298): Clean up after launch.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForNameAndEmail)) {
+    if (account_name_email_store_) {
       account_name_email_store_->MaybeUpdateOrCreateAccountNameEmail();
     } else {
       // In case the feature got disabled the profile should be cleaned up.
