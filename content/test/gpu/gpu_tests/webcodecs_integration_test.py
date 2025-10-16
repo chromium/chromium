@@ -485,7 +485,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--use-fake-ui-for-media-stream',
         '--enable-blink-features=SharedArrayBuffer',
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
-    ]
+    ] + cba.ENABLE_WEBGPU_FOR_TESTING
 
     if enable_d3d12_encoder:
       args.append('--enable-features=D3D12VideoEncodeAccelerator')

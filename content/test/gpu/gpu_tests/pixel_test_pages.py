@@ -699,7 +699,9 @@ class PixelTestPages():
       VULKAN_SWIFTSHADER = 2
 
     def webgpu_pages_helper(base_name, mode):
-      webgpu_args = [cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES]
+      webgpu_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
+          cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+      ]
       video_frame_query_params = '?sourceType=hw_decoder'
       if mode == Mode.WEBGPU_SWIFTSHADER:
         base_name += '_WebGPUSwiftShader'
@@ -712,7 +714,7 @@ class PixelTestPages():
         webgpu_args += [
             '--enable-features=Vulkan', '--use-angle=swiftshader',
             '--use-vulkan=swiftshader', '--use-webgpu-adapter=swiftshader',
-            '--disable-vulkan-surface', '--enable-unsafe-webgpu'
+            '--disable-vulkan-surface'
         ]
         video_frame_query_params = '?sourceType=sw_decoder'
 
@@ -811,7 +813,9 @@ class PixelTestPages():
 
   @staticmethod
   def WebGPUCanvasCapturePages(base_name) -> list[PixelTestPage]:
-    webgpu_args = [cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES]
+    webgpu_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
+        cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+    ]
 
     browser_args_canvas_one_copy_capture = webgpu_args + [
         '--enable-features=OneCopyCanvasCapture'
@@ -857,7 +861,9 @@ class PixelTestPages():
 
   @staticmethod
   def WebGPUDeviceDestroyPages(base_name) -> list[PixelTestPage]:
-    webgpu_args = [cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES]
+    webgpu_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
+        cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+    ]
 
     standard_crop = ca.NonWhiteContentCropAction(
         initial_crop=ca.FixedRectCropAction(0, 0, 320, 210))

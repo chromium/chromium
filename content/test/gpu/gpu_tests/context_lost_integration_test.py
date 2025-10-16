@@ -368,7 +368,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _ContextLost_WebGPUContextLostFromGPUProcessExit(self,
                                                        test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
     self._NavigateAndWaitForLoad(test_path)
     self.tab.EvaluateJavaScript(
         'chrome.gpuBenchmarking.terminateGpuProcessNormally()')
@@ -381,7 +381,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _ContextLost_WebGPUStressRequestDeviceAndRemoveLoop(
       self, test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
     self._NavigateAndWaitForLoad(test_path)
 
     # Test runs for 90 seconds; wait for 120 seconds.
@@ -751,7 +751,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _ContextLost_WebGPUBlockedAfterJSNavigation(self, test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
     self._NavigateAndWaitForLoad(test_path)
 
     tab = self.tab
@@ -801,7 +801,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     'Success' state while the second run only needs to reach 'Loaded' state to
     verify that a WebGPU has been unblocked.
     """
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
     # Make sure the tab loaded and initially got a WebGPU device.
     self._NavigateAndWaitForLoad(test_path)
     tab = self.tab
@@ -834,7 +834,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _GpuNormalTermination_WebGPUNotBlocked(self, test_path: str) -> None:
     """Tests that normal GPU process termination does not block WebGPU.
     """
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
     self._NavigateAndWaitForLoad(test_path)
     tab = self.tab
 

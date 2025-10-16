@@ -795,7 +795,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'hold on the high-performance GPU')
 
   def _GpuProcess_webgpu_iframe_removed(self, test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs([])
+    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
     self._NavigateAndWait(test_path)
 
   @classmethod

@@ -18,7 +18,7 @@ from gpu_tests.util import host_information
 # Can be changed to functools.cache on Python 3.9+.
 @functools.lru_cache(maxsize=None)
 def _GetWebGpuCacheTestBrowserArgs() -> list[str]:
-  browser_args = [
+  browser_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
       cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
       '--enable-features=WebGPUBlobCache',
   ]

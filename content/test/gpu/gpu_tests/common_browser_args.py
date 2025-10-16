@@ -35,3 +35,8 @@ ENSURE_FORCED_COLOR_PROFILE = '--ensure-forced-color-profile'
 FORCE_BROWSER_CRASH_ON_GPU_CRASH = '--force-browser-crash-on-gpu-crash'
 FORCE_COLOR_PROFILE_SRGB = '--force-color-profile=srgb'
 TEST_TYPE_GPU = '--test-type=gpu'
+
+# Combinations of flags for specific purpose.
+ENABLE_WEBGPU_FOR_TESTING = [
+    '--enable-unsafe-webgpu', '--enable-webgpu-developer-features'
+]

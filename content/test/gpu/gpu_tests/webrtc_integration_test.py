@@ -62,7 +62,7 @@ class WebRTCIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--use-fake-device-for-media-stream',
         '--use-fake-ui-for-media-stream',
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
-    ]
+    ] + cba.ENABLE_WEBGPU_FOR_TESTING
 
     # If we don't call CustomizeBrowserArgs cls.platform is None
     cls.CustomizeBrowserArgs(args)
