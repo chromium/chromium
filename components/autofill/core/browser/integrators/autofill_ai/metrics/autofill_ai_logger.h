@@ -83,31 +83,40 @@ class AutofillAiLogger {
     bool edited_autofilled_field = false;
   };
 
-  void RecordFunnelMetrics(const std::map<EntityType, FunnelState>& states,
+  using FormFunnelStateMap =
+      std::map<EntityType, std::map<EntityInstance::RecordType, FunnelState>>;
+
+  void RecordFunnelMetrics(const FormFunnelStateMap& funnel_states,
                            DenseSet<EntityType> relevant_entities,
                            bool submission_state) const;
   void RecordKeyMetrics(DenseSet<EntityType> relevant_entities,
-                        const std::map<EntityType, FunnelState>& states) const;
-  void RecordNumberOfFieldsFilled(
-      const FormStructure& form,
-      const std::map<EntityType, FunnelState>& states,
-      bool opt_in_status) const;
+                        const FormFunnelStateMap& funnel_states) const;
+  void RecordNumberOfFieldsFilled(const FormStructure& form,
+                                  const FormFunnelStateMap& funnel_states,
+                                  bool opt_in_status) const;
 
-  // Records the funnel state for each form and entity type separately. See the
-  // documentation of `FunnelState` for more information about what is recorded.
-  std::map<FormGlobalId, std::map<EntityType, FunnelState>> form_states_;
+  // Compresses `funnel_states` into a single `FunnelState` object by
+  // essentially taking the logical OR of all its boolean members.
+  FunnelState CombineStates(const std::map<EntityInstance::RecordType,
+                                           FunnelState>& funnel_states) const;
+
+  // Records the funnel state for each form and entity type and record type
+  // separately. See the documentation of `FunnelState` for more information
+  // about what is recorded.
+  std::map<FormGlobalId, FormFunnelStateMap> form_states_;
 
   // Records the IDs of forms that were submitted throughout the lifetime of
   // this object.
   std::set<FormGlobalId> submitted_forms_;
 
-  // Records the last filled `EntityType` for each field. This information is
-  // currently unavailable in `AutofillField`, because
+  // Records the last filled entity type and record type for each field. This
+  // information is currently unavailable in `AutofillField`, because
   // `AutofillField::filling_product_` isn't accurate enough when it comes to
   // AutofillAi entities, which are all aggregated into
   // `FillingProduct::kAutofillAi`.
   // TODO(crbug.com/432650464): Update this state on Undo operations.
-  std::map<FieldGlobalId, EntityType> last_filled_entity_;
+  std::map<FieldGlobalId, std::pair<EntityType, EntityInstance::RecordType>>
+      last_filled_entity_;
 
   AutofillAiUkmLogger ukm_logger_;
 };
