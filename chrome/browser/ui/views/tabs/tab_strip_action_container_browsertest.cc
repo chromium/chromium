@@ -575,6 +575,39 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                    ->width_factor_for_testing());
 }
 
+// TODO(crbug.com/451697169): Fix this test for Windows and Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#define MAYBE_GlicLabelEnablementFollowsWindowActivation \
+  DISABLED_GlicLabelEnablementFollowsWindowActivation
+#else
+#define MAYBE_GlicLabelEnablementFollowsWindowActivation \
+  GlicLabelEnablementFollowsWindowActivation
+#endif
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
+                       MAYBE_GlicLabelEnablementFollowsWindowActivation) {
+  tab_strip_action_container()->GetWidget()->Activate();
+  EXPECT_TRUE(tab_strip_action_container()
+                  ->GetGlicButton()
+                  ->GetLabelEnabledForTesting());
+
+  // Create/activate a different widget (just calling Deactivate() on the
+  // browser window isn't enough, since it will have no effect if there isn't
+  // another window to become active.)
+  auto widget_2 = std::make_unique<views::Widget>(
+      views::Widget::InitParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                views::Widget::InitParams::TYPE_WINDOW));
+  widget_2->Activate();
+  EXPECT_FALSE(tab_strip_action_container()
+                   ->GetGlicButton()
+                   ->GetLabelEnabledForTesting());
+
+  // Activate the browser. The button label should be enabled again.
+  tab_strip_action_container()->GetWidget()->Activate();
+  EXPECT_TRUE(tab_strip_action_container()
+                  ->GetGlicButton()
+                  ->GetLabelEnabledForTesting());
+}
+
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        LogsWhenGlicActorTaskIconClicked) {
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
