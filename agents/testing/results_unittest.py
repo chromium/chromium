@@ -29,12 +29,12 @@ class TestResultTest(unittest.TestCase):
                                      success=True,
                                      duration=1,
                                      test_log='',
-                                     token_usage={})
+                                     metrics={})
         result2 = results.TestResult(test_file=pathlib.Path('b'),
                                      success=True,
                                      duration=1,
                                      test_log='',
-                                     token_usage={})
+                                     metrics={})
         self.assertLess(result1, result2)
 
     def test_lt_greater_than(self):
@@ -42,12 +42,12 @@ class TestResultTest(unittest.TestCase):
                                      success=True,
                                      duration=1,
                                      test_log='',
-                                     token_usage={})
+                                     metrics={})
         result2 = results.TestResult(test_file=pathlib.Path('a'),
                                      success=True,
                                      duration=1,
                                      test_log='',
-                                     token_usage={})
+                                     metrics={})
         self.assertGreater(result1, result2)
 
     def test_lt_equal(self):
@@ -55,12 +55,12 @@ class TestResultTest(unittest.TestCase):
                                      success=True,
                                      duration=1,
                                      test_log='',
-                                     token_usage={})
+                                     metrics={})
         result2 = results.TestResult(test_file=pathlib.Path('a'),
                                      success=False,
                                      duration=2,
                                      test_log='log',
-                                     token_usage={})
+                                     metrics={})
         self.assertFalse(result1 < result2)
         self.assertFalse(result2 < result1)
 
@@ -69,17 +69,17 @@ class TestResultTest(unittest.TestCase):
                                       success=True,
                                       duration=1,
                                       test_log='',
-                                      token_usage={})
+                                      metrics={})
         result_a = results.TestResult(test_file=pathlib.Path('a'),
                                       success=True,
                                       duration=1,
                                       test_log='',
-                                      token_usage={})
+                                      metrics={})
         result_c = results.TestResult(test_file=pathlib.Path('c'),
                                       success=True,
                                       duration=1,
                                       test_log='',
-                                      token_usage={})
+                                      metrics={})
         result_list = [result_b, result_c, result_a]
         self.assertEqual(sorted(result_list), [result_a, result_b, result_c])
 
@@ -93,7 +93,7 @@ class ReportResultTest(unittest.TestCase):
             success=True,
             duration=1.23,
             test_log='log',
-            token_usage={},
+            metrics={},
         )
         results.report_result(mock_client, test_result)
         mock_client.Post.assert_called_once_with(
@@ -116,7 +116,7 @@ class ReportResultTest(unittest.TestCase):
             success=False,
             duration=1.23,
             test_log='log',
-            token_usage={},
+            metrics={},
         )
         results.report_result(mock_client, test_result)
         mock_client.Post.assert_called_once_with(
@@ -221,7 +221,7 @@ class ResultThreadTest(unittest.TestCase):
                                          success=True,
                                          duration=1.0,
                                          test_log='log',
-                                         token_usage={})
+                                         metrics={})
         thread = self._run_test_with_results([test_result])
 
         self.assertEqual(thread.total_results_reported.get(), 1)
@@ -232,7 +232,7 @@ class ResultThreadTest(unittest.TestCase):
                                          success=False,
                                          duration=1.0,
                                          test_log='log',
-                                         token_usage={})
+                                         metrics={})
         thread = self._run_test_with_results([test_result])
 
         self.assertEqual(thread.total_results_reported.get(), 1)
@@ -245,17 +245,17 @@ class ResultThreadTest(unittest.TestCase):
                                success=True,
                                duration=1.0,
                                test_log='log1',
-                               token_usage={}),
+                               metrics={}),
             results.TestResult(test_file='test2.yaml',
                                success=False,
                                duration=2.0,
                                test_log='log2',
-                               token_usage={}),
+                               metrics={}),
             results.TestResult(test_file='test3.yaml',
                                success=True,
                                duration=3.0,
                                test_log='log3',
-                               token_usage={}),
+                               metrics={}),
         ]
         thread = self._run_test_with_results(results_to_send)
 
@@ -298,7 +298,7 @@ class ResultThreadTest(unittest.TestCase):
                                          success=True,
                                          duration=1.0,
                                          test_log='log',
-                                         token_usage={})
+                                         metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_stdout.write.assert_called_once_with('log')
@@ -309,7 +309,7 @@ class ResultThreadTest(unittest.TestCase):
                                          success=True,
                                          duration=1.0,
                                          test_log='log',
-                                         token_usage={})
+                                         metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_stdout.write.assert_not_called()
@@ -320,7 +320,7 @@ class ResultThreadTest(unittest.TestCase):
                                          success=False,
                                          duration=1.0,
                                          test_log='log',
-                                         token_usage={})
+                                         metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_stdout.write.assert_called_once_with('log')
@@ -331,7 +331,7 @@ class ResultThreadTest(unittest.TestCase):
                                          success=True,
                                          duration=1.0,
                                          test_log='log',
-                                         token_usage={})
+                                         metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_report_result.assert_not_called()
@@ -343,7 +343,7 @@ class ResultThreadTest(unittest.TestCase):
                                          success=True,
                                          duration=1.0,
                                          test_log='log',
-                                         token_usage={})
+                                         metrics={})
         self._run_test_with_results([test_result])
 
         self.mock_report_result.assert_called_once_with(
