@@ -129,6 +129,7 @@ source_set("browser") {
     "//components/network_session_configurator/browser",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core/request_header",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
     "//components/optimization_guide/public/mojom",
     "//components/payments/content/icon",
@@ -218,7 +219,7 @@ source_set("browser") {
     "//media/mojo:buildflags",
     "//media/mojo/clients",
     "//media/mojo/mojom",
-    "//media/mojo/mojom:web_speech_recognition",
+    "//media/mojo/mojom:speech_recognition",
     "//media/mojo/services",
     "//media/webrtc",
     "//mojo/core/embedder",
@@ -3517,6 +3518,8 @@ source_set("browser") {
 
     if (!is_fuchsia) {
       sources += [
+        "speech/on_device_speech_recognition_engine_impl.cc",
+        "speech/on_device_speech_recognition_engine_impl.h",
         "speech/soda_speech_recognition_engine_impl.cc",
         "speech/soda_speech_recognition_engine_impl.h",
       ]
