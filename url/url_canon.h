@@ -574,26 +574,22 @@ void CanonicalizeNonSpecialHostVerbose(std::u16string_view spec,
 // the input is unescaped and name-prepped, etc. It should not normally be
 // necessary or wise to call this directly.
 COMPONENT_EXPORT(URL)
-void CanonicalizeIPAddress(const char* spec,
-                           const Component& host,
+void CanonicalizeIPAddress(std::string_view host_view,
                            CanonOutput* output,
                            CanonHostInfo* host_info);
 COMPONENT_EXPORT(URL)
-void CanonicalizeIPAddress(const char16_t* spec,
-                           const Component& host,
+void CanonicalizeIPAddress(std::u16string_view host_view,
                            CanonOutput* output,
                            CanonHostInfo* host_info);
 
 // Similar to CanonicalizeIPAddress, but supports only IPv6 address.
 COMPONENT_EXPORT(URL)
-void CanonicalizeIPv6Address(const char* spec,
-                             const Component& host,
+void CanonicalizeIPv6Address(std::string_view host_view,
                              CanonOutput& output,
                              CanonHostInfo& host_info);
 
 COMPONENT_EXPORT(URL)
-void CanonicalizeIPv6Address(const char16_t* spec,
-                             const Component& host,
+void CanonicalizeIPv6Address(std::string_view host_view,
                              CanonOutput& output,
                              CanonHostInfo& host_info);
 

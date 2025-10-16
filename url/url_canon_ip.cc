@@ -20,13 +20,13 @@ namespace {
 
 // Return true if we've made a final IPV4/BROKEN decision, false if the result
 // is NEUTRAL, and we could use a second opinion.
-template<typename CHAR, typename UCHAR>
-bool DoCanonicalizeIPv4Address(const CHAR* spec,
-                               const Component& host,
+template <typename CHAR, typename UCHAR>
+bool DoCanonicalizeIPv4Address(std::basic_string_view<CHAR> host_view,
                                CanonOutput* output,
                                CanonHostInfo* host_info) {
-  host_info->family = IPv4AddressToNumber(
-      spec, host, host_info->address, &host_info->num_ipv4_components);
+  host_info->family =
+      IPv4AddressToNumber(host_view.data(), Component(0, host_view.length()),
+                          host_info->address, &host_info->num_ipv4_components);
 
   switch (host_info->family) {
     case CanonHostInfo::IPV4:
@@ -81,17 +81,17 @@ void ChooseIPv6ContractionRange(const unsigned char address[16],
 
 // Return true if we've made a final IPV6/BROKEN decision, false if the result
 // is NEUTRAL, and we could use a second opinion.
-template<typename CHAR, typename UCHAR>
-bool DoCanonicalizeIPv6Address(const CHAR* spec,
-                               const Component& host,
+template <typename CHAR, typename UCHAR>
+bool DoCanonicalizeIPv6Address(std::basic_string_view<CHAR> host_view,
                                CanonOutput* output,
                                CanonHostInfo* host_info) {
   // Turn the IP address into a 128 bit number.
-  if (!IPv6AddressToNumber(spec, host, host_info->address)) {
+  if (!IPv6AddressToNumber(host_view.data(), Component(0, host_view.length()),
+                           host_info->address)) {
     // If it's not an IPv6 address, scan for characters that should *only*
     // exist in an IPv6 address.
-    for (int i = host.begin; i < host.end(); i++) {
-      switch (UNSAFE_TODO(spec[i])) {
+    for (CHAR ch : host_view) {
+      switch (ch) {
         case '[':
         case ']':
         case ':':
@@ -168,44 +168,43 @@ void AppendIPv6Address(const unsigned char address[16], CanonOutput* output) {
   }
 }
 
-void CanonicalizeIPAddress(const char* spec,
-                           const Component& host,
+void CanonicalizeIPAddress(std::string_view host_view,
                            CanonOutput* output,
                            CanonHostInfo* host_info) {
-  if (DoCanonicalizeIPv4Address<char, unsigned char>(
-          spec, host, output, host_info))
+  if (DoCanonicalizeIPv4Address<char, unsigned char>(host_view, output,
+                                                     host_info)) {
     return;
-  if (DoCanonicalizeIPv6Address<char, unsigned char>(
-          spec, host, output, host_info))
+  }
+  if (DoCanonicalizeIPv6Address<char, unsigned char>(host_view, output,
+                                                     host_info)) {
     return;
+  }
 }
 
-void CanonicalizeIPAddress(const char16_t* spec,
-                           const Component& host,
+void CanonicalizeIPAddress(std::u16string_view host_view,
                            CanonOutput* output,
                            CanonHostInfo* host_info) {
-  if (DoCanonicalizeIPv4Address<char16_t, char16_t>(spec, host, output,
-                                                    host_info))
+  if (DoCanonicalizeIPv4Address<char16_t, char16_t>(host_view, output,
+                                                    host_info)) {
     return;
-  if (DoCanonicalizeIPv6Address<char16_t, char16_t>(spec, host, output,
-                                                    host_info))
+  }
+  if (DoCanonicalizeIPv6Address<char16_t, char16_t>(host_view, output,
+                                                    host_info)) {
     return;
+  }
 }
 
-void CanonicalizeIPv6Address(const char* spec,
-                             const Component& host,
+void CanonicalizeIPv6Address(std::string_view host_view,
                              CanonOutput& output,
                              CanonHostInfo& host_info) {
-  DoCanonicalizeIPv6Address<char, unsigned char>(spec, host, &output,
+  DoCanonicalizeIPv6Address<char, unsigned char>(host_view, &output,
                                                  &host_info);
 }
 
-void CanonicalizeIPv6Address(const char16_t* spec,
-                             const Component& host,
+void CanonicalizeIPv6Address(std::u16string_view host_view,
                              CanonOutput& output,
                              CanonHostInfo& host_info) {
-  DoCanonicalizeIPv6Address<char16_t, char16_t>(spec, host, &output,
-                                                &host_info);
+  DoCanonicalizeIPv6Address<char16_t, char16_t>(host_view, &output, &host_info);
 }
 
 }  // namespace url

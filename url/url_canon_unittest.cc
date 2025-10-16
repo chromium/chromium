@@ -963,12 +963,10 @@ TEST_F(URLCanonTest, IPv4) {
     SCOPED_TRACE(test_case.input8);
 
     // 8-bit version.
-    Component component(0, static_cast<int>(strlen(test_case.input8)));
-
     std::string out_str1;
     StdStringCanonOutput output1(&out_str1);
     CanonHostInfo host_info;
-    CanonicalizeIPAddress(test_case.input8, component, &output1, &host_info);
+    CanonicalizeIPAddress(test_case.input8, &output1, &host_info);
     output1.Complete();
 
     EXPECT_EQ(test_case.expected_family, host_info.family);
@@ -986,11 +984,10 @@ TEST_F(URLCanonTest, IPv4) {
     // 16-bit version.
     std::u16string input16(
         test_utils::TruncateWStringToUTF16(test_case.input16));
-    component = Component(0, static_cast<int>(input16.length()));
 
     std::string out_str2;
     StdStringCanonOutput output2(&out_str2);
-    CanonicalizeIPAddress(input16.c_str(), component, &output2, &host_info);
+    CanonicalizeIPAddress(input16, &output2, &host_info);
     output2.Complete();
 
     EXPECT_EQ(test_case.expected_family, host_info.family);
@@ -1167,12 +1164,10 @@ TEST_F(URLCanonTest, IPv6) {
 
   for (size_t i = 0; i < std::size(cases); i++) {
     // 8-bit version.
-    Component component(0, static_cast<int>(strlen(cases[i].input8)));
-
     std::string out_str1;
     StdStringCanonOutput output1(&out_str1);
     CanonHostInfo host_info;
-    CanonicalizeIPAddress(cases[i].input8, component, &output1, &host_info);
+    CanonicalizeIPAddress(cases[i].input8, &output1, &host_info);
     output1.Complete();
 
     EXPECT_EQ(cases[i].expected_family, host_info.family);
@@ -1190,11 +1185,10 @@ TEST_F(URLCanonTest, IPv6) {
     // 16-bit version.
     std::u16string input16(
         test_utils::TruncateWStringToUTF16(cases[i].input16));
-    component = Component(0, static_cast<int>(input16.length()));
 
     std::string out_str2;
     StdStringCanonOutput output2(&out_str2);
-    CanonicalizeIPAddress(input16.c_str(), component, &output2, &host_info);
+    CanonicalizeIPAddress(input16, &output2, &host_info);
     output2.Complete();
 
     EXPECT_EQ(cases[i].expected_family, host_info.family);
@@ -1215,11 +1209,10 @@ TEST_F(URLCanonTest, IPEmpty) {
   CanonHostInfo host_info;
 
   // This tests tests.
-  const char spec[] = "192.168.0.1";
-  CanonicalizeIPAddress(spec, Component(), &output1, &host_info);
+  CanonicalizeIPAddress(std::string_view(), &output1, &host_info);
   EXPECT_FALSE(host_info.IsIPAddress());
 
-  CanonicalizeIPAddress(spec, Component(0, 0), &output1, &host_info);
+  CanonicalizeIPAddress("", &output1, &host_info);
   EXPECT_FALSE(host_info.IsIPAddress());
 }
 

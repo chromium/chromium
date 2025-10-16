@@ -797,8 +797,7 @@ bool DomainIs(std::string_view canonical_host,
 bool HostIsIPAddress(std::string_view host) {
   STACK_UNINITIALIZED url::RawCanonOutputT<char, 128> ignored_output;
   url::CanonHostInfo host_info;
-  url::CanonicalizeIPAddress(host.data(), Component(0, host.length()),
-                             &ignored_output, &host_info);
+  url::CanonicalizeIPAddress(host, &ignored_output, &host_info);
   return host_info.IsIPAddress();
 }
 

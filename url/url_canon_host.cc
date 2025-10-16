@@ -546,16 +546,14 @@ void DoHost(std::basic_string_view<CHAR> spec,
     // should not cause an allocation.
     RawCanonOutput<64> canon_ip;
 
+    std::string_view output_view =
+        output.view().substr(output_begin, output.length() - output_begin);
     if constexpr (canon_mode == CanonMode::kSpecialURL ||
                   canon_mode == CanonMode::kFileURL) {
-      CanonicalizeIPAddress(output.data(),
-                            MakeRange(output_begin, output.length()), &canon_ip,
-                            &host_info);
+      CanonicalizeIPAddress(output_view, &canon_ip, &host_info);
     } else {
       // Non-special URLs support only IPv6.
-      CanonicalizeIPv6Address(output.data(),
-                              MakeRange(output_begin, output.length()),
-                              canon_ip, host_info);
+      CanonicalizeIPv6Address(output_view, canon_ip, host_info);
     }
 
     // If we got an IPv4/IPv6 address, copy the canonical form back to the
