@@ -305,6 +305,19 @@ void SharedWorkerHost::Start(
     worker_client_security_state_ = DeriveClientSecurityState(
         policies, PrivateNetworkRequestContext::kWorker);
 
+    // Check for policy overrides on LNA. For shared workers, we apply
+    // policy overrides based on the renderer_origin() when the shared worker
+    // was started.
+    // TODO(crbug.com/452389539): Centralize these policy overrides.
+    BrowserContext* context = GetProcessHost()->GetBrowserContext();
+    url::Origin origin = instance_.renderer_origin();
+    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
+        client->ShouldOverridePrivateNetworkRequestPolicy(context, origin);
+    worker_client_security_state_->private_network_request_policy =
+        OverrideLocalNetworkAccessPolicy(
+            worker_client_security_state_->private_network_request_policy,
+            policy_override);
+
     policy_container_host =
         base::MakeRefCounted<PolicyContainerHost>(std::move(policies));
 

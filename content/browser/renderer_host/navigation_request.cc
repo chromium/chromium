@@ -8490,6 +8490,7 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
       frame_tree_node_->navigator().controller().GetBrowserContext();
 
   url::Origin origin = GetOriginToCommit().value();
+  // TODO(crbug.com/452389539): Centralize these policy overrides.
   ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
       client->ShouldOverridePrivateNetworkRequestPolicy(context, origin);
 
@@ -10035,6 +10036,22 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
       network::mojom::ClientSecurityStatePtr state = DeriveClientSecurityState(
           *policy_container_builder_->InitiatorPolicies(),
           PrivateNetworkRequestContext::kSubframeNavigation);
+
+      // Check for policy overrides on LNA. For subframe navigations, we apply
+      // policy overrides based on the initiator.
+      // TODO(crbug.com/452389539): Centralize these policy overrides.
+      if (GetInitiatorOrigin()) {
+        ContentBrowserClient* client = GetContentClient()->browser();
+        BrowserContext* context =
+            frame_tree_node_->navigator().controller().GetBrowserContext();
+        url::Origin origin = GetInitiatorOrigin().value();
+        ContentBrowserClient::PrivateNetworkRequestPolicyOverride
+            policy_override = client->ShouldOverridePrivateNetworkRequestPolicy(
+                context, origin);
+        state->private_network_request_policy =
+            OverrideLocalNetworkAccessPolicy(
+                state->private_network_request_policy, policy_override);
+      }
 
       // Remove the initiator's COEP, it is unused. For iframes, the parent's
       // COEP should be used: that is checked in `EnforceCOEP()`. The value

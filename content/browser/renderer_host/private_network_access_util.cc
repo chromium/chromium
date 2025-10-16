@@ -388,4 +388,21 @@ network::mojom::PrivateNetworkRequestPolicy OverrideToWarnInsteadOfBlock(
   }
 }
 
+network::mojom::PrivateNetworkRequestPolicy OverrideLocalNetworkAccessPolicy(
+    network::mojom::PrivateNetworkRequestPolicy policy,
+    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override) {
+  switch (policy_override) {
+    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::kDefault:
+      return policy;
+    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::kForceAllow:
+      return network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+        kBlockInsteadOfWarn:
+      return OverrideToBlockInsteadOfWarn(policy);
+    case content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+        kWarnInsteadOfBlock:
+      return OverrideToWarnInsteadOfBlock(policy);
+  }
+}
+
 }  // namespace content

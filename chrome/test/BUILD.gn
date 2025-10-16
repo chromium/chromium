@@ -3337,6 +3337,7 @@ if (!is_android) {
       "../browser/local_network_access/local_network_access_browsertest_base.cc",
       "../browser/local_network_access/local_network_access_browsertest_base.h",
       "../browser/local_network_access/local_network_access_iframe_browsertest.cc",
+      "../browser/local_network_access/local_network_access_override_browsertest.cc",
       "../browser/locale_tests_browsertest.cc",
       "../browser/login_detection/login_detection_browsertest.cc",
       "../browser/lookalikes/lookalike_url_navigation_throttle_browsertest.cc",

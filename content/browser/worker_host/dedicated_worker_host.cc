@@ -459,6 +459,20 @@ void DedicatedWorkerHost::DidStartScriptLoad(
               worker_client_security_state_->is_web_secure_context,
               allow_non_secure_local_network_access,
               PrivateNetworkRequestContext::kWorker);
+
+      // Check for policy overrides on LNA. For dedicated workers, we apply
+      // policy based on origin of the document that owns the worker.
+      // TODO(crbug.com/452389539): Centralize these policy overrides.
+      ContentBrowserClient* client = GetContentClient()->browser();
+      BrowserContext* context = ancestor_render_frame_host->GetBrowserContext();
+      url::Origin origin = ancestor_render_frame_host->GetLastCommittedOrigin();
+      ContentBrowserClient::PrivateNetworkRequestPolicyOverride
+          policy_override = client->ShouldOverridePrivateNetworkRequestPolicy(
+              context, origin);
+      worker_client_security_state_->private_network_request_policy =
+          OverrideLocalNetworkAccessPolicy(
+              worker_client_security_state_->private_network_request_policy,
+              policy_override);
     } else {
       // Preserve incorrect functionality if PNA is not enabled.
       worker_client_security_state_ =
