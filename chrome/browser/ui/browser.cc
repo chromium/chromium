@@ -1330,6 +1330,19 @@ void Browser::OnWindowClosing() {
     return;
   }
 
+  // Application should shutdown on last window close if the user is explicitly
+  // trying to quit, or if there is nothing keeping the browser alive (such as
+  // AppController on the Mac, or BackgroundContentsService for background
+  // pages).
+  bool should_quit_if_last_browser =
+      browser_shutdown::IsTryingToQuit() ||
+      KeepAliveRegistry::GetInstance()->IsKeepingAliveOnlyByBrowserOrigin();
+
+  if (should_quit_if_last_browser && ShouldStartShutdown()) {
+    browser_shutdown::OnShutdownStarting(
+        browser_shutdown::ShutdownType::kWindowClose);
+  }
+
   // Don't use GetForProfileIfExisting here, we want to force creation of the
   // session service so that user can restore what was open.
   SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
@@ -1360,24 +1373,6 @@ void Browser::OnWindowClosing() {
     // If there are no tabs, then a task will be scheduled (by views) to delete
     // this Browser.
     is_delete_scheduled_ = true;
-
-    // Application should shutdown on last window close if the user is
-    // explicitly trying to quit, or if there is nothing keeping the browser
-    // alive (such as AppController on the Mac, or BackgroundContentsService for
-    // background pages).
-    const bool should_quit_if_last_browser =
-        browser_shutdown::IsTryingToQuit() ||
-        KeepAliveRegistry::GetInstance()->IsKeepingAliveOnlyByBrowserOrigin();
-
-    // Below will not consider browsers for which delete has already been
-    // scheduled.
-    const bool is_last_browser =
-        !GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-
-    if (should_quit_if_last_browser && is_last_browser) {
-      browser_shutdown::OnShutdownStarting(
-          browser_shutdown::ShutdownType::kWindowClose);
-    }
 
     // At this point the browser has successfully closed and is scheduled for
     // deletion.
@@ -3775,6 +3770,16 @@ bool Browser::IsBrowserClosing() const {
       browser_list->currently_closing_browsers();
 
   return base::Contains(closing_browsers, this) || removed_from_browserlist;
+}
+
+bool Browser::ShouldStartShutdown() const {
+  if (IsBrowserClosing()) {
+    return false;
+  }
+
+  const size_t closing_browsers_count =
+      BrowserList::GetInstance()->currently_closing_browsers().size();
+  return BrowserList::GetInstance()->size() == closing_browsers_count + 1u;
 }
 
 bool Browser::ShouldCreateBackgroundContents(
