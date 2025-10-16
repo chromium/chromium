@@ -721,16 +721,6 @@ unsigned int RasterImplementation::GetTransferBufferFreeSize() const {
   return transfer_buffer_->GetFreeSize();
 }
 
-bool RasterImplementation::IsJpegDecodeAccelerationSupported() const {
-  return image_decode_accelerator_ &&
-         image_decode_accelerator_->IsJpegDecodeAccelerationSupported();
-}
-
-bool RasterImplementation::IsWebPDecodeAccelerationSupported() const {
-  return image_decode_accelerator_ &&
-         image_decode_accelerator_->IsWebPDecodeAccelerationSupported();
-}
-
 bool RasterImplementation::CanDecodeWithHardwareAcceleration(
     const cc::ImageHeaderMetadata* image_metadata) const {
   return image_decode_accelerator_ &&

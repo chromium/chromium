@@ -6883,14 +6883,6 @@ unsigned int GLES2Implementation::GetTransferBufferFreeSize() const {
   NOTREACHED();
 }
 
-bool GLES2Implementation::IsJpegDecodeAccelerationSupported() const {
-  NOTREACHED();
-}
-
-bool GLES2Implementation::IsWebPDecodeAccelerationSupported() const {
-  NOTREACHED();
-}
-
 bool GLES2Implementation::CanDecodeWithHardwareAcceleration(
     const cc::ImageHeaderMetadata* image_metadata) const {
   NOTREACHED();

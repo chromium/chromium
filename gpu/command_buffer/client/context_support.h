@@ -86,12 +86,6 @@ class ContextSupport {
 
   virtual unsigned int GetTransferBufferFreeSize() const = 0;
 
-  // Determines if hardware decode acceleration is supported for JPEG images.
-  virtual bool IsJpegDecodeAccelerationSupported() const = 0;
-
-  // Determines if hardware decode acceleration is supported for WebP images.
-  virtual bool IsWebPDecodeAccelerationSupported() const = 0;
-
   // Determines if |image_metadata| corresponds to an image that can be decoded
   // using hardware decode acceleration.
   virtual bool CanDecodeWithHardwareAcceleration(

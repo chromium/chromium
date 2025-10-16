@@ -139,8 +139,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
       const std::vector<std::pair<uint32_t, uint32_t>>& entries) override;
   void DeleteTransferCacheEntry(uint32_t type, uint32_t id) override;
   unsigned int GetTransferBufferFreeSize() const override;
-  bool IsJpegDecodeAccelerationSupported() const override;
-  bool IsWebPDecodeAccelerationSupported() const override;
   bool CanDecodeWithHardwareAcceleration(
       const cc::ImageHeaderMetadata* image_metadata) const override;
 

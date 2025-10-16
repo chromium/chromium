@@ -119,14 +119,6 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
     transfer_cache_helper_->DeleteEntryDirect(MakeEntryKey(type, id));
   }
 
-  bool IsJpegDecodeAccelerationSupported() const override {
-    return advertise_accelerated_decoding_;
-  }
-
-  bool IsWebPDecodeAccelerationSupported() const override {
-    return advertise_accelerated_decoding_;
-  }
-
   bool CanDecodeWithHardwareAcceleration(
       const ImageHeaderMetadata* image_metadata) const override {
     // Only advertise hardware accelerated decoding for the current use cases

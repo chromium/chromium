@@ -103,12 +103,6 @@ unsigned int TestContextSupport::GetTransferBufferFreeSize() const {
   NOTIMPLEMENTED();
   return 0;
 }
-bool TestContextSupport::IsJpegDecodeAccelerationSupported() const {
-  return false;
-}
-bool TestContextSupport::IsWebPDecodeAccelerationSupported() const {
-  return false;
-}
 bool TestContextSupport::CanDecodeWithHardwareAcceleration(
     const cc::ImageHeaderMetadata* image_metadata) const {
   return false;
