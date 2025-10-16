@@ -1982,6 +1982,11 @@ extern const char kProfileCreationDeclineSigninCTAExperimentName[];
 extern const char kProfileCreationDeclineSigninCTAExperimentDescription[];
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+extern const char kShowProfilePickerToAllUsersExperimentName[];
+extern const char kShowProfilePickerToAllUsersExperimentDescription[];
+#endif
+
 extern const char kBackdropFilterMirrorEdgeName[];
 extern const char kBackdropFilterMirrorEdgeDescription[];
 

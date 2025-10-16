@@ -8389,6 +8389,8 @@ from previous Chrome versions.
   <int value="-2080657940" label="DirectActions:disabled"/>
   <int value="-2080504230" label="TabHoverCards:disabled"/>
   <int value="-2080227937" label="ImeTrayHideVoiceButton:enabled"/>
+  <int value="-2079404182"
+      label="ShowProfilePickerToAllUsersExperiment:disabled"/>
   <int value="-2079347889" label="CCTBeforeUnload:disabled"/>
   <int value="-2077268643" label="disable-device-enumeration"/>
   <int value="-2076848010" label="NtpComposebox:disabled"/>
@@ -19456,6 +19458,8 @@ from previous Chrome versions.
   <int value="1831593339" label="stop-in-background:disabled"/>
   <int value="1831777433" label="query-tiles-rank-tiles"/>
   <int value="1831835753" label="MaterialDesignIncognitoNTP:enabled"/>
+  <int value="1832318871"
+      label="ShowProfilePickerToAllUsersExperiment:enabled"/>
   <int value="1832418387"
       label="LensSearchSidePanelDefaultWidthChange:disabled"/>
   <int value="1832552562" label="EnableVirtualKeyboardUkm:enabled"/>

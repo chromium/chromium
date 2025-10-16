@@ -3934,6 +3934,14 @@ const char kProfileCreationDeclineSigninCTAExperimentDescription[] =
     "sign in CTA string in profile creation entry points";
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kShowProfilePickerToAllUsersExperimentName[] =
+    "Show profile picker to all users";
+const char kShowProfilePickerToAllUsersExperimentDescription[] =
+    "As part of the Growth experiments, show the profile picker to users who "
+    "only have one profile";
+#endif
+
 const char kBackdropFilterMirrorEdgeName[] = "Backdrop Filter Mirror Edge";
 const char kBackdropFilterMirrorEdgeDescription[] =
     "When sampling being the backdrop edge for backdrop-filter, samples "

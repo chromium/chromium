@@ -9293,6 +9293,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "show-profile-picker-to-all-users-experiment",
+    "owners": [ "saskekun@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "show-ready-to-pay-debug-info",
     "owners": [ "//components/payments/OWNERS" ],
     "expiry_milestone": 150
