@@ -531,6 +531,8 @@ crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverag
 crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
 crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
+# WebGL: INVALID_ENUM: getShaderParameter
+crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 ####################
 # Linux failures   #
