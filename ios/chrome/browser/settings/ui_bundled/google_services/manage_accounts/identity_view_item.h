@@ -7,12 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+class GaiaId;
+
 // Item to exchange identities between the mediator and the view controller.
 @interface IdentityViewItem : NSObject
 
 @property(nonatomic, copy) NSString* userEmail;
 @property(nonatomic, copy) NSString* userFullName;
-@property(nonatomic, copy) NSString* gaiaID;
+@property(nonatomic, assign) GaiaId gaiaID;
 @property(nonatomic, copy) UIImage* avatar;
 @property(nonatomic, copy) NSString* accessibilityIdentifier;
 @property(nonatomic, assign) BOOL managed;

@@ -72,7 +72,7 @@
 
 #pragma mark - AccountsModelIdentityDataSource
 
-- (id<SystemIdentity>)identityWithGaiaID:(NSString*)gaiaID {
+- (id<SystemIdentity>)identityWithGaiaID:(const GaiaId&)gaiaID {
   return _accountManagerService->GetIdentityOnDeviceWithGaiaID(gaiaID);
 }
 
@@ -104,7 +104,7 @@
 
 #pragma mark - ManageAccountsMutator
 
-- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID
+- (void)requestRemoveIdentityWithGaiaID:(const GaiaId&)gaiaID
                                itemView:(UIView*)itemView {
   [self.delegate handleRemoveIdentity:[self identityWithGaiaID:gaiaID]
                              itemView:itemView];
@@ -159,7 +159,7 @@
   IdentityViewItem* identityViewItem = [[IdentityViewItem alloc] init];
   identityViewItem.userEmail = identity.userEmail;
   identityViewItem.userFullName = identity.userFullName;
-  identityViewItem.gaiaID = identity.gaiaID;
+  identityViewItem.gaiaID = identity.gaiaId;
   identityViewItem.managed = [self isIdentityKnownToBeManaged:identity];
   IdentityAvatarSize avatarSize = IdentityAvatarSize::Regular;
   identityViewItem.avatar = [self identityAvatarWithSizeForIdentity:identity

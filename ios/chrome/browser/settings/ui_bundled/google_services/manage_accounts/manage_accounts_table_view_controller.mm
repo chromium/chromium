@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_model_identity_data_source.h"
@@ -43,7 +44,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 @interface ManageAccountsTableViewController () {
   // Enable lookup of item corresponding to a given IdentityViewItem GAIA ID
   // string.
-  NSDictionary<NSString*, TableViewItem*>* _identityMap;
+  base::flat_map<GaiaId, TableViewItem*> _identityMap;
 
   // If YES, offers the sign-out button on the UI.
   BOOL _offerSignout;
@@ -82,8 +83,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
   TableViewModel* model = self.tableViewModel;
 
-  NSMutableDictionary<NSString*, TableViewItem*>* mutableIdentityMap =
-      [[NSMutableDictionary alloc] init];
+  base::flat_map<GaiaId, TableViewItem*> mutableIdentityMap;
 
   NSString* authenticatedEmail =
       [self.modelIdentityDataSource primaryIdentityViewItem].userEmail;
@@ -109,7 +109,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
     }
     [model addItem:accountItem toSectionWithIdentifier:sectionNumber];
     [model addItem:removeAccountItem toSectionWithIdentifier:sectionNumber];
-    [mutableIdentityMap setObject:accountItem forKey:identityViewItem.gaiaID];
+    mutableIdentityMap[identityViewItem.gaiaID] = accountItem;
   }
 
   TableViewItem* addAccountItem = [self addAccountItem];
@@ -243,7 +243,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 - (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem {
   TableViewAccountItem* item =
       base::apple::ObjCCastStrict<TableViewAccountItem>(
-          [_identityMap objectForKey:identityViewItem.gaiaID]);
+          _identityMap[identityViewItem.gaiaID]);
   if (!item) {
     return;
   }
@@ -261,13 +261,13 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
 #pragma mark - ManageAccountsConsumer
 
-- (NSString*)gaiaIDWithAccountItem:(TableViewItem*)accountItem {
-  for (NSString* gaiaID in _identityMap) {
-    if ([_identityMap[gaiaID] isEqual:accountItem]) {
-      return gaiaID;
+- (const GaiaId)gaiaIDWithAccountItem:(TableViewItem*)accountItem {
+  for (const std::pair<GaiaId, TableViewItem*>& id_item : _identityMap) {
+    if (id_item.second == accountItem) {
+      return id_item.first;
     }
   }
-  return nil;
+  return GaiaId();
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

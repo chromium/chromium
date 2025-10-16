@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MUTATOR_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MUTATOR_H_
 
+class GaiaId;
+
 @protocol ManageAccountsMutator <NSObject>
 
 // Called when remove identity is tapped.
-- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID
+- (void)requestRemoveIdentityWithGaiaID:(const GaiaId&)gaiaID
                                itemView:(UIView*)itemView;
 
 // Called when the user taps to add account from the accounts management UI.
