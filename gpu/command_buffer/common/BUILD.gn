@@ -76,8 +76,6 @@ source_set("common_sources") {
     "id_allocator.h",
     "mailbox_holder.cc",
     "mailbox_holder.h",
-    "presentation_feedback_utils.cc",
-    "presentation_feedback_utils.h",
     "scheduling_priority.cc",
     "scheduling_priority.h",
     "shared_image_capabilities.cc",
