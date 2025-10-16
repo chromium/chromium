@@ -42,7 +42,6 @@ import("//printing/buildflags/buildflags.gni")
 import("//remoting/remoting_enable.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
-import("//services/video_effects/args.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -6480,7 +6479,6 @@ test("unit_tests") {
     "../browser/media/webrtc/capture_policy_utils_unittest.cc",
     "../browser/media/webrtc/media_device_salt_service_factory_unittest.cc",
     "../browser/media/webrtc/media_stream_device_permission_context_unittest.cc",
-    "../browser/media_effects/media_effects_service_factory_unittest.cc",
     "../browser/metrics/chrome_browser_main_extra_parts_metrics_unittest.cc",
     "../browser/metrics/chrome_metrics_extensions_helper_unittest.cc",
     "../browser/metrics/chrome_metrics_service_accessor_unittest.cc",
@@ -7132,7 +7130,6 @@ test("unit_tests") {
     "//components/lookalikes/core",
     "//components/lookalikes/core:safety_tips",
     "//components/media_device_salt",
-    "//components/media_effects",
     "//components/media_router/common/providers/cast/channel",
     "//components/media_router/common/providers/cast/channel:test_support",
     "//components/memory_pressure:test_support",
@@ -7460,13 +7457,6 @@ test("unit_tests") {
       "//components/compose/core/browser",
       "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
-    ]
-  }
-
-  if (enable_video_effects) {
-    deps += [
-      "//services/video_effects/public/cpp:video_effects_service_host",
-      "//services/video_effects/test:test_support",
     ]
   }
 
@@ -8678,7 +8668,6 @@ test("unit_tests") {
       "//components/lens:buildflags",
       "//components/lens:lens_mojo",
       "//components/manta",
-      "//components/media_effects",
       "//components/media_effects/test:test_support",
       "//components/media_message_center:test_support",
       "//components/media_router/common:test_support",
@@ -8729,10 +8718,6 @@ test("unit_tests") {
       "//ui/webui/resources/js/browser_command:mojo_bindings",
       "//ui/webui/tracked_element:unit_tests",
     ]
-
-    if (enable_video_effects) {
-      deps += [ "//services/video_effects/test:test_support" ]
-    }
 
     data += [ "//chromeos/ash/experiences/arc/test/data/icons/" ]
 

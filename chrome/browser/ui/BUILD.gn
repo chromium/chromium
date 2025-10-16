@@ -2976,7 +2976,6 @@ static_library("ui") {
       "//components/country_codes",
       "//services/audio/public/mojom",
       "//services/video_capture/public/mojom",
-      "//services/video_effects/buildflags",
     ]
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
@@ -4717,7 +4716,6 @@ static_library("ui") {
       "//components/input",
       "//components/live_caption",
       "//components/live_caption:constants",
-      "//components/media_effects",
       "//components/media_message_center",
       "//components/media_message_center/vector_icons",
       "//components/offline_items_collection/core",

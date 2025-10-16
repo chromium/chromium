@@ -26,8 +26,6 @@ include_rules = [
   "+services/shape_detection/public/mojom",
   "+services/tracing/public",
   "+services/video_capture/public/mojom",
-  "+services/video_effects/public/cpp/buildflags.h",
-  "+services/video_effects/public/mojom",
   "+services/viz/public/mojom",
   "+third_party/jni_zero",
   "+third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h",

@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//services/video_effects/args.gni")
-
 source_set("media_effects") {
-  public_deps = [ "//services/video_effects/public/mojom" ]
   deps = [
     "//base",
     "//components/keyed_service/content",
@@ -20,15 +17,7 @@ source_set("media_effects") {
   sources = [
     "media_device_info.cc",
     "media_device_info.h",
-    "media_effects_service.cc",
-    "media_effects_service.h",
   ]
-
-  if (enable_video_effects) {
-    sources += [ "media_effects_model_provider.h" ]
-
-    deps += [ "//services/video_effects/public/cpp:video_effects_service_host" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -44,17 +33,5 @@ source_set("unit_tests") {
     "//third_party/mediapipe",
   ]
 
-  if (enable_video_effects) {
-    deps += [
-      "//services/video_effects/public/cpp:video_effects_service_host",
-      "//services/video_effects/test:test_support",
-    ]
-  }
-
-  sources = [
-    "media_device_info_unittest.cc",
-    "media_effects_mediapipe_unittests.cc",
-    "media_effects_service_unittest.cc",
-  ]
-  configs += [ "//third_party/mediapipe:mediapipe_internal_config" ]
+  sources = [ "media_device_info_unittest.cc" ]
 }
