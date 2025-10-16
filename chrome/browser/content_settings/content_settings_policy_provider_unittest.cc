@@ -45,18 +45,16 @@ TEST_F(PolicyProviderTest, DefaultGeolocationContentSetting) {
       profile.GetTestingPrefService();
   PolicyProvider provider(prefs);
 
-  std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
-      ContentSettingsType::GEOLOCATION, false,
-      content_settings::PartitionKey::GetDefaultForTesting()));
+  std::unique_ptr<RuleIterator> rule_iterator(
+      provider.GetRuleIterator(ContentSettingsType::GEOLOCATION, false));
   EXPECT_FALSE(rule_iterator);
 
   // Change the managed value of the default geolocation setting
   prefs->SetManagedPref(prefs::kManagedDefaultGeolocationSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
-  rule_iterator = provider.GetRuleIterator(
-      ContentSettingsType::GEOLOCATION, false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  rule_iterator =
+      provider.GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
   ASSERT_TRUE(rule_iterator);
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<Rule> rule = rule_iterator->Next();
@@ -80,8 +78,7 @@ TEST_F(PolicyProviderTest, GeolocationWithOptionsContentSetting) {
   PolicyProvider provider(prefs);
 
   std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
-      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false,
-      content_settings::PartitionKey::GetDefaultForTesting()));
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false));
   EXPECT_FALSE(rule_iterator);
 
   // Change the managed value of the default geolocation setting
@@ -89,8 +86,7 @@ TEST_F(PolicyProviderTest, GeolocationWithOptionsContentSetting) {
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
   rule_iterator = provider.GetRuleIterator(
-      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false);
   ASSERT_TRUE(rule_iterator);
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<Rule> rule = rule_iterator->Next();
@@ -118,9 +114,8 @@ TEST_F(PolicyProviderTest, ManagedDefaultContentSettings) {
   prefs->SetManagedPref(prefs::kManagedDefaultCookiesSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
-  std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
-      ContentSettingsType::COOKIES, false,
-      content_settings::PartitionKey::GetDefaultForTesting()));
+  std::unique_ptr<RuleIterator> rule_iterator(
+      provider.GetRuleIterator(ContentSettingsType::COOKIES, false));
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
@@ -194,8 +189,7 @@ TEST_F(PolicyProviderTest, GettingManagedContentSettings) {
   // SetWebsiteSetting does nothing.
   bool owned = provider.SetWebsiteSetting(
       yt_url_pattern, yt_url_pattern, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{});
   EXPECT_FALSE(owned);
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(&provider, youtube_url, youtube_url,
@@ -314,9 +308,8 @@ TEST_F(PolicyProviderTest, InvalidManagedDefaultContentSetting) {
 
   // The setting provided in the cookies pref is not valid for cookies. It
   // should be ignored.
-  std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
-      ContentSettingsType::COOKIES, false,
-      content_settings::PartitionKey::GetDefaultForTesting()));
+  std::unique_ptr<RuleIterator> rule_iterator(
+      provider.GetRuleIterator(ContentSettingsType::COOKIES, false));
   EXPECT_FALSE(rule_iterator);
 
   provider.ShutdownOnUIThread();

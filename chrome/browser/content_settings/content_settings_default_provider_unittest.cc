@@ -59,8 +59,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultValues) {
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                          ContentSettingsType::COOKIES, false));
@@ -71,8 +70,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultValues) {
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
@@ -101,8 +99,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultPermissionSettings) {
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION_WITH_OPTIONS, block_setting.Clone(),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   EXPECT_EQ(block_setting,
             TestUtils::GetContentSettingValue(
                 &provider_, GURL(), GURL(),
@@ -111,8 +108,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultPermissionSettings) {
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION_WITH_OPTIONS, base::Value(),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
 
   EXPECT_EQ(default_setting,
             TestUtils::GetContentSettingValue(
@@ -131,8 +127,7 @@ TEST_F(ContentSettingsDefaultProviderTest, IgnoreNonDefaultSettings) {
       ContentSettingsPattern::FromURL(primary_url),
       ContentSettingsPattern::FromURL(secondary_url),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   EXPECT_FALSE(owned);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider_, primary_url, secondary_url,
@@ -147,16 +142,14 @@ TEST_F(ContentSettingsDefaultProviderTest, Observer) {
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
 
   EXPECT_CALL(mock_observer,
               OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
 }
 
 TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
@@ -165,8 +158,7 @@ TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                          ContentSettingsType::COOKIES, false));
@@ -258,8 +250,7 @@ TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                          ContentSettingsType::COOKIES,
@@ -274,8 +265,7 @@ TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
   bool owned = otr_provider.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   EXPECT_TRUE(owned);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),

@@ -82,19 +82,16 @@ SupervisedUserContentSettingsProvider::
 std::unique_ptr<content_settings::RuleIterator>
 SupervisedUserContentSettingsProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool incognito,
-    const content_settings::PartitionKey& partition_key) const {
+    bool incognito) const {
   base::AutoLock auto_lock(lock_);
   return value_map_.GetRuleIterator(content_type);
 }
 
 std::unique_ptr<content_settings::Rule>
-SupervisedUserContentSettingsProvider::GetRule(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType content_type,
-    bool off_the_record,
-    const content_settings::PartitionKey& partition_key) const {
+SupervisedUserContentSettingsProvider::GetRule(const GURL& primary_url,
+                                               const GURL& secondary_url,
+                                               ContentSettingsType content_type,
+                                               bool off_the_record) const {
   base::AutoLock auto_lock(lock_);
   auto setting = value_map_.GetPermissionSetting(content_type);
   if (setting) {
@@ -159,14 +156,12 @@ bool SupervisedUserContentSettingsProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& value,
-    const content_settings::ContentSettingConstraints& constraints,
-    const content_settings::PartitionKey& partition_key) {
+    const content_settings::ContentSettingConstraints& constraints) {
   return false;
 }
 
 void SupervisedUserContentSettingsProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type,
-    const content_settings::PartitionKey& partition_key) {}
+    ContentSettingsType content_type) {}
 
 void SupervisedUserContentSettingsProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());

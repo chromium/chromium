@@ -32,8 +32,7 @@ ComponentExtensionContentSettingsProvider::
 std::unique_ptr<content_settings::RuleIterator>
 ComponentExtensionContentSettingsProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool off_the_record,
-    const content_settings::PartitionKey& partition_key) const {
+    bool off_the_record) const {
   return allowlist_ ? allowlist_->GetRuleIterator(content_type) : nullptr;
 }
 
@@ -42,8 +41,7 @@ ComponentExtensionContentSettingsProvider::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    bool off_the_record,
-    const content_settings::PartitionKey& partition_key) const {
+    bool off_the_record) const {
   return allowlist_
              ? allowlist_->GetRule(primary_url, secondary_url, content_type)
              : nullptr;
@@ -54,16 +52,14 @@ bool ComponentExtensionContentSettingsProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& value,
-    const content_settings::ContentSettingConstraints& constraints,
-    const content_settings::PartitionKey& partition_key) {
+    const content_settings::ContentSettingConstraints& constraints) {
   // ComponentExtensionContentSettingsProvider doesn't support settings Website
   // settings.
   return false;
 }
 
 void ComponentExtensionContentSettingsProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type,
-    const content_settings::PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   // ComponentExtensionContentSettingsProvider doesn't support changing content
   // settings directly.
 }

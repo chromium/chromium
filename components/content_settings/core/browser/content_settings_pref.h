@@ -16,9 +16,8 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/content_settings/core/browser/content_settings_partitioned_origin_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/content_settings/core/browser/content_settings_provider.h"
-#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
@@ -42,15 +41,13 @@ class ContentSettingsPref {
  public:
   typedef base::RepeatingCallback<void(const ContentSettingsPattern&,
                                        const ContentSettingsPattern&,
-                                       ContentSettingsType,
-                                       const PartitionKey*)>
+                                       ContentSettingsType)>
       NotifyObserversCallback;
 
   ContentSettingsPref(ContentSettingsType content_type,
                       PrefService* prefs,
                       PrefChangeRegistrar* registrar,
                       const std::string& pref_name,
-                      const std::string& partitioned_pref_name,
                       bool off_the_record,
                       bool restore_session,
                       NotifyObserversCallback notify_callback);
@@ -61,22 +58,18 @@ class ContentSettingsPref {
   ~ContentSettingsPref();
 
   // Returns nullptr to indicate the RuleIterator is empty.
-  std::unique_ptr<RuleIterator> GetRuleIterator(
-      bool off_the_record,
-      const PartitionKey& partition_key) const;
+  std::unique_ptr<RuleIterator> GetRuleIterator(bool off_the_record) const;
 
   std::unique_ptr<Rule> GetRule(const GURL& primary_url,
                                 const GURL& secondary_url,
-                                bool off_the_record,
-                                const PartitionKey& partition_key) const;
+                                bool off_the_record) const;
 
   void SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
                          base::Value value,
-                         RuleMetaData metadata,
-                         const PartitionKey& partition_key);
+                         RuleMetaData metadata);
 
-  void ClearAllContentSettingsRules(const PartitionKey& partition_key);
+  void ClearAllContentSettingsRules();
 
   // Resets pointers that should be released in ShutdownOnUIThread().
   void OnShutdown();
@@ -92,11 +85,10 @@ class ContentSettingsPref {
   // Reads all content settings exceptions from the preference and loads them
   // into the |value_map_|. The |value_map_| is cleared first.
   void ReadContentSettingsFromPref();
-  // A helper function to read the pref for one partition.
-  void ReadContentSettingsFromPrefForPartition(
-      const PartitionKey& partition_key,
-      const base::Value::Dict& partition,
-      prefs::DictionaryValueUpdate* mutable_partition)
+  // A helper function to read settings from a dictionary.
+  void ReadSettingsFromDictionary(
+      const base::Value::Dict& all_settings_dictionary,
+      prefs::DictionaryValueUpdate* mutable_settings)
       EXCLUSIVE_LOCKS_REQUIRED(value_map_.GetLock());
   // Helper function to determine if the setting should be removed.
   bool ShouldRemoveSetting(base::Time expiration,
@@ -112,8 +104,7 @@ class ContentSettingsPref {
   void UpdatePref(const ContentSettingsPattern& primary_pattern,
                   const ContentSettingsPattern& secondary_pattern,
                   base::Value value,
-                  const RuleMetaData& metadata,
-                  const PartitionKey& partition_key);
+                  const RuleMetaData& metadata);
 
   // In the debug mode, asserts that |lock_| is not held by this thread. It's
   // ok if some other thread holds |lock_|, as long as it will eventually
@@ -129,23 +120,7 @@ class ContentSettingsPref {
   // Owned by the PrefProvider.
   raw_ptr<PrefChangeRegistrar> registrar_;
 
-  // For backward compatibility, we store the data in two pref entries.
-  //
-  // - `pref_name_` will be used to store the exceptions for the default
-  //   partition. The value is a dict mapping from pattern pairs to the
-  //   settings. So, nothing has changed for this pref entry, and it is backward
-  //   compatible.
-  // - `partitioned_pref_name_` is a new pref entry, and it will be used to
-  //   store the exceptions for all non-default partitions. The value is a dict
-  //   mapping from a serialized `PartitionKey` to the data for this partition.
-  //   The data for a partition has exactly the same format as `pref_name_`'s
-  //   (i.e. a dict mapping from pattern pairs to the settings).
-  //
-  // Pottentially, we can deprecate `pref_name_` and use
-  // `partitioned_pref_name_` to store all the data. But this will require
-  // careful migration to avoid issues such as loss of data.
   const std::string pref_name_;
-  const std::string partitioned_pref_name_;
 
   bool off_the_record_;
 
@@ -155,9 +130,9 @@ class ContentSettingsPref {
   // notifications from the preferences service that we triggered ourself.
   bool updating_preferences_;
 
-  PartitionedOriginValueMap value_map_;
+  OriginValueMap value_map_;
 
-  PartitionedOriginValueMap off_the_record_value_map_;
+  OriginValueMap off_the_record_value_map_;
 
   NotifyObserversCallback notify_callback_;
 

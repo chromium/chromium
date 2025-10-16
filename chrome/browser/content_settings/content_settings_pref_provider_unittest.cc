@@ -31,7 +31,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
-#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
@@ -145,8 +144,7 @@ TEST_F(PrefProviderTest, Observer) {
 
   pref_content_settings_provider.SetWebsiteSetting(
       pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_ALLOW), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_ALLOW), {});
 
   pref_content_settings_provider.ShutdownOnUIThread();
 }
@@ -253,8 +251,7 @@ TEST_F(PrefProviderTest, Incognito) {
       ContentSettingsPattern::FromString("[*.]example.com");
   pref_content_settings_provider.SetWebsiteSetting(
       pattern, pattern, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_ALLOW), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_ALLOW), {});
 
   GURL host("http://example.com/");
   // The value should of course be visible in the regular PrefProvider.
@@ -294,10 +291,9 @@ TEST_F(PrefProviderTest, GetContentSettingsValue) {
                                &provider, primary_url, primary_url,
                                ContentSettingsType::COOKIES, false));
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::COOKIES,
+                             base::Value(CONTENT_SETTING_BLOCK), {});
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::COOKIES, false));
@@ -306,10 +302,8 @@ TEST_F(PrefProviderTest, GetContentSettingsValue) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             IntToContentSetting(value.GetIfInt().value_or(-1)));
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::COOKIES,
-      base::Value(), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::COOKIES, base::Value(), {});
   EXPECT_EQ(base::Value(), TestUtils::GetContentSettingValue(
                                &provider, primary_url, primary_url,
                                ContentSettingsType::COOKIES, false));
@@ -340,8 +334,7 @@ TEST_F(PrefProviderTest, Patterns) {
                                    host1, ContentSettingsType::COOKIES, false));
   pref_content_settings_provider.SetWebsiteSetting(
       pattern1, pattern1, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_BLOCK), {});
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&pref_content_settings_provider, host1,
@@ -357,8 +350,7 @@ TEST_F(PrefProviderTest, Patterns) {
                                    host3, ContentSettingsType::COOKIES, false));
   pref_content_settings_provider.SetWebsiteSetting(
       pattern2, pattern2, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_BLOCK), {});
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&pref_content_settings_provider, host3,
@@ -370,8 +362,7 @@ TEST_F(PrefProviderTest, Patterns) {
                                    host4, ContentSettingsType::COOKIES, false));
   pref_content_settings_provider.SetWebsiteSetting(
       pattern3, pattern3, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_BLOCK), {});
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&pref_content_settings_provider, host4,
@@ -434,14 +425,12 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
     ContentSettingConstraints constraints;
     constraints.set_session_model(mojom::SessionModel::USER_SESSION);
 
-    normal_provider.SetWebsiteSetting(
-        pattern_1, wildcard, ContentSettingsType::COOKIES,
-        base::Value(CONTENT_SETTING_ALLOW), {},
-        content_settings::PartitionKey::GetDefaultForTesting());
+    normal_provider.SetWebsiteSetting(pattern_1, wildcard,
+                                      ContentSettingsType::COOKIES,
+                                      base::Value(CONTENT_SETTING_ALLOW), {});
     normal_provider.SetWebsiteSetting(
         pattern_3, pattern_3, ContentSettingsType::COOKIES,
-        base::Value(CONTENT_SETTING_BLOCK), constraints,
-        content_settings::PartitionKey::GetDefaultForTesting());
+        base::Value(CONTENT_SETTING_BLOCK), constraints);
   }
   {
     // Durable and not expired
@@ -450,8 +439,7 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
     constraints.set_session_model(mojom::SessionModel::DURABLE);
     normal_provider.SetWebsiteSetting(
         pattern_4, pattern_4, ContentSettingsType::COOKIES,
-        base::Value(CONTENT_SETTING_BLOCK), constraints,
-        content_settings::PartitionKey::GetDefaultForTesting());
+        base::Value(CONTENT_SETTING_BLOCK), constraints);
   }
   {
     // Durable but expired
@@ -460,15 +448,13 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
     constraints.set_session_model(mojom::SessionModel::DURABLE);
     normal_provider.SetWebsiteSetting(
         pattern_5, pattern_5, ContentSettingsType::COOKIES,
-        base::Value(CONTENT_SETTING_BLOCK), constraints,
-        content_settings::PartitionKey::GetDefaultForTesting());
+        base::Value(CONTENT_SETTING_BLOCK), constraints);
   }
   // Non-OTR provider, Non-OTR iterator has one setting (pattern 1) using
   // default params and one scoped to a UserSession lifetime model.
   {
-    std::unique_ptr<RuleIterator> it(normal_provider.GetRuleIterator(
-        ContentSettingsType::COOKIES, false,
-        content_settings::PartitionKey::GetDefaultForTesting()));
+    std::unique_ptr<RuleIterator> it(
+        normal_provider.GetRuleIterator(ContentSettingsType::COOKIES, false));
     EXPECT_TRUE(it->HasNext());
     EXPECT_EQ(pattern_5, it->Next()->primary_pattern);
     EXPECT_TRUE(it->HasNext());
@@ -482,9 +468,8 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
 
   // Non-OTR provider, OTR iterator has no settings.
   {
-    std::unique_ptr<RuleIterator> it(normal_provider.GetRuleIterator(
-        ContentSettingsType::COOKIES, true,
-        content_settings::PartitionKey::GetDefaultForTesting()));
+    std::unique_ptr<RuleIterator> it(
+        normal_provider.GetRuleIterator(ContentSettingsType::COOKIES, true));
     EXPECT_FALSE(it);
   }
 
@@ -493,16 +478,14 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
                                   /*store_last_modified=*/true,
                                   /*restore_session=*/false);
 
-  incognito_provider.SetWebsiteSetting(
-      pattern_2, wildcard, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_ALLOW), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+  incognito_provider.SetWebsiteSetting(pattern_2, wildcard,
+                                       ContentSettingsType::COOKIES,
+                                       base::Value(CONTENT_SETTING_ALLOW), {});
 
   // OTR provider, non-OTR iterator has two settings (pattern 1/3).
   {
     std::unique_ptr<RuleIterator> it(incognito_provider.GetRuleIterator(
-        ContentSettingsType::COOKIES, false,
-        content_settings::PartitionKey::GetDefaultForTesting()));
+        ContentSettingsType::COOKIES, false));
     EXPECT_TRUE(it->HasNext());
     EXPECT_EQ(pattern_3, it->Next()->primary_pattern);
     EXPECT_TRUE(it->HasNext());
@@ -514,9 +497,8 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
 
   // OTR provider, OTR iterator has one setting (pattern 2).
   {
-    std::unique_ptr<RuleIterator> it(incognito_provider.GetRuleIterator(
-        ContentSettingsType::COOKIES, true,
-        content_settings::PartitionKey::GetDefaultForTesting()));
+    std::unique_ptr<RuleIterator> it(
+        incognito_provider.GetRuleIterator(ContentSettingsType::COOKIES, true));
     EXPECT_TRUE(it->HasNext());
     EXPECT_EQ(pattern_2, it->Next()->primary_pattern);
     EXPECT_FALSE(it->HasNext());
@@ -540,28 +522,20 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
                         /*restore_session=*/false);
 
   // Non-empty pattern, syncable, empty resource identifier.
-  provider.SetWebsiteSetting(
-      pattern, wildcard, ContentSettingsType::JAVASCRIPT,
-
-      value.Clone(), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(pattern, wildcard, ContentSettingsType::JAVASCRIPT,
+                             value.Clone(), {});
 
   // Non-empty pattern, non-syncable, empty resource identifier.
   provider.SetWebsiteSetting(
-      pattern, wildcard, ContentSettingsType::GEOLOCATION, value.Clone(), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      pattern, wildcard, ContentSettingsType::GEOLOCATION, value.Clone(), {});
 
   // Non-empty pattern, syncable, empty resource identifier.
-  provider.SetWebsiteSetting(
-      pattern, wildcard, ContentSettingsType::COOKIES,
-
-      value.Clone(), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(pattern, wildcard, ContentSettingsType::COOKIES,
+                             value.Clone(), {});
 
   // Non-empty pattern, non-syncable, empty resource identifier.
   provider.SetWebsiteSetting(
-      pattern, wildcard, ContentSettingsType::NOTIFICATIONS, value.Clone(), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      pattern, wildcard, ContentSettingsType::NOTIFICATIONS, value.Clone(), {});
 
   // Test that the preferences for images, geolocation and plugins get cleared.
   WebsiteSettingsRegistry* registry = WebsiteSettingsRegistry::GetInstance();
@@ -576,12 +550,8 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
     ASSERT_FALSE(dictionary.empty());
   }
 
-  provider.ClearAllContentSettingsRules(
-      ContentSettingsType::JAVASCRIPT,
-      content_settings::PartitionKey::GetDefaultForTesting());
-  provider.ClearAllContentSettingsRules(
-      ContentSettingsType::GEOLOCATION,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.ClearAllContentSettingsRules(ContentSettingsType::JAVASCRIPT);
+  provider.ClearAllContentSettingsRules(ContentSettingsType::GEOLOCATION);
 
   // Ensure they become empty afterwards.
   for (const char* pref : cleared_prefs) {
@@ -623,14 +593,12 @@ TEST_F(PrefProviderTest, LastModified) {
 
   base::Time t1 = test_clock.Now();
 
-  provider.SetWebsiteSetting(
-      pattern_1, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
-  provider.SetWebsiteSetting(
-      pattern_2, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(pattern_1, ContentSettingsPattern::Wildcard(),
+                             ContentSettingsType::COOKIES,
+                             base::Value(CONTENT_SETTING_ALLOW), {});
+  provider.SetWebsiteSetting(pattern_2, ContentSettingsPattern::Wildcard(),
+                             ContentSettingsType::COOKIES,
+                             base::Value(CONTENT_SETTING_ALLOW), {});
   // Make sure that the timestamps for pattern_1 and patter_2 are before |t2|.
   test_clock.Advance(base::Seconds(1));
   base::Time t2 = test_clock.Now();
@@ -643,11 +611,9 @@ TEST_F(PrefProviderTest, LastModified) {
   EXPECT_EQ(t1, last_modified);
 
   // A change for pattern_1, which will update the last_modified timestamp.
-  ;
-  provider.SetWebsiteSetting(
-      pattern_1, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK), {},
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(pattern_1, ContentSettingsPattern::Wildcard(),
+                             ContentSettingsType::COOKIES,
+                             base::Value(CONTENT_SETTING_BLOCK), {});
 
   last_modified = TestUtils::GetLastModified(&provider, url1, url1,
                                              ContentSettingsType::COOKIES);
@@ -696,10 +662,9 @@ TEST_F(PrefProviderTest, SessionScopeSettingsDontPersist) {
   ContentSettingConstraints constraints;
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -748,10 +713,9 @@ TEST_F(PrefProviderTest, SessionScopeSettingsRestoreSession) {
   ContentSettingConstraints constraints;
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -791,10 +755,9 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiry) {
   constraints.set_lifetime(base::Seconds(123));
   constraints.set_session_model(mojom::SessionModel::DURABLE);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -833,10 +796,9 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryPersists) {
   constraints.set_lifetime(base::Seconds(123));
   constraints.set_session_model(mojom::SessionModel::DURABLE);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -886,10 +848,9 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryAfterRestore) {
   constraints.set_lifetime(base::Seconds(123));
   constraints.set_session_model(mojom::SessionModel::DURABLE);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -933,10 +894,9 @@ TEST_F(PrefProviderTest, ScopeSessionToDurablePersists) {
   ContentSettingConstraints constraints;
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -944,10 +904,9 @@ TEST_F(PrefProviderTest, ScopeSessionToDurablePersists) {
 
   // Update to Durable and expect that the setting is still there.
   constraints.set_session_model(mojom::SessionModel::DURABLE);
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -980,10 +939,9 @@ TEST_F(PrefProviderTest, ScopeDurableToSessionDrops) {
   ContentSettingConstraints constraints;
   constraints.set_session_model(mojom::SessionModel::DURABLE);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -991,10 +949,9 @@ TEST_F(PrefProviderTest, ScopeDurableToSessionDrops) {
 
   // Update to Durable and expect that the setting is still there.
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -1031,16 +988,14 @@ TEST_F(PrefProviderTest, LastVisitedTimeIsTracked) {
 
   // Set one setting with track_last_visit_for_autoexpiration enabled and one
   // disabled.
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::MEDIASTREAM_CAMERA,
-      base::Value(CONTENT_SETTING_ALLOW), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::MEDIASTREAM_CAMERA,
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
 
   constraints.set_track_last_visit_for_autoexpiration(true);
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::GEOLOCATION,
-      base::Value(CONTENT_SETTING_ALLOW), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::GEOLOCATION,
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
   RuleMetaData metadata;
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(
@@ -1077,8 +1032,7 @@ TEST_F(PrefProviderTest, RenewContentSetting) {
 
   ASSERT_TRUE(provider.SetWebsiteSetting(
       primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_ALLOW), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting()));
+      base::Value(CONTENT_SETTING_ALLOW), constraints));
 
   RuleMetaData metadata;
   EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
@@ -1098,13 +1052,13 @@ TEST_F(PrefProviderTest, RenewContentSetting) {
   EXPECT_EQ(metadata.expiration(), clock.Now() + base::Days(1));
 
   // Wrong ContentSetting, doesn't match.
-  EXPECT_FALSE(provider.RenewContentSetting(
-      primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
-      CONTENT_SETTING_BLOCK, PartitionKey::GetDefaultForTesting()));
+  EXPECT_FALSE(provider.RenewContentSetting(primary_url, primary_url,
+                                            ContentSettingsType::STORAGE_ACCESS,
+                                            CONTENT_SETTING_BLOCK));
 
-  EXPECT_TRUE(provider.RenewContentSetting(
-      primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
-      CONTENT_SETTING_ALLOW, PartitionKey::GetDefaultForTesting()));
+  EXPECT_TRUE(provider.RenewContentSetting(primary_url, primary_url,
+                                           ContentSettingsType::STORAGE_ACCESS,
+                                           CONTENT_SETTING_ALLOW));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
                                        &provider, primary_url, primary_url,
@@ -1127,10 +1081,9 @@ TEST_F(PrefProviderTest, LastVisitedTimeStoredOnDisk) {
   ContentSettingConstraints constraints;
   constraints.set_track_last_visit_for_autoexpiration(true);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::GEOLOCATION,
-      base::Value(CONTENT_SETTING_ALLOW), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::GEOLOCATION,
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
   RuleMetaData metadata;
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -1169,10 +1122,9 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
   ContentSettingConstraints constraints;
   constraints.set_track_last_visit_for_autoexpiration(true);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::GEOLOCATION,
-      base::Value(CONTENT_SETTING_ALLOW), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::GEOLOCATION,
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
   RuleMetaData metadata;
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -1183,8 +1135,7 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
 
   clock.Advance(base::Days(20));
   provider.UpdateLastVisitTime(primary_pattern, primary_pattern,
-                               ContentSettingsType::GEOLOCATION,
-                               PartitionKey::GetDefaultForTesting());
+                               ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
@@ -1194,8 +1145,7 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
 
   // Test resetting the last_visited time.
   provider.ResetLastVisitTime(primary_pattern, primary_pattern,
-                              ContentSettingsType::GEOLOCATION,
-                              PartitionKey::GetDefaultForTesting());
+                              ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
@@ -1220,10 +1170,9 @@ TEST_F(PrefProviderTest, MigrateOnFeatureEnabled) {
     PrefProvider provider(prefs, /*off_the_record=*/false,
                           /*store_last_modified=*/true,
                           /*restore_session=*/false);
-    provider.SetWebsiteSetting(
-        pattern, pattern, ContentSettingsType::GEOLOCATION,
-        base::Value(CONTENT_SETTING_ALLOW), {},
-        content_settings::PartitionKey::GetDefaultForTesting());
+    provider.SetWebsiteSetting(pattern, pattern,
+                               ContentSettingsType::GEOLOCATION,
+                               base::Value(CONTENT_SETTING_ALLOW), {});
     provider.ShutdownOnUIThread();
   }
 
@@ -1273,7 +1222,7 @@ TEST_F(PrefProviderTest, MigrateBackOnFeatureDisabled) {
         pattern, pattern, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
         info->delegate().ToValue(GeolocationSetting{
             PermissionOption::kAllowed, PermissionOption::kAllowed}),
-        {}, content_settings::PartitionKey::GetDefaultForTesting());
+        {});
     provider.ShutdownOnUIThread();
   }
 

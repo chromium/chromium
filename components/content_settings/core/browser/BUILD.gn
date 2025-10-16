@@ -18,8 +18,6 @@ static_library("browser") {
     "content_settings_observer.h",
     "content_settings_origin_value_map.cc",
     "content_settings_origin_value_map.h",
-    "content_settings_partitioned_origin_value_map.cc",
-    "content_settings_partitioned_origin_value_map.h",
     "content_settings_policy_provider.cc",
     "content_settings_policy_provider.h",
     "content_settings_pref.cc",
@@ -120,7 +118,6 @@ source_set("cookie_settings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_settings_partitioned_origin_value_map_unittest.cc",
     "content_settings_pref_unittest.cc",
     "content_settings_registry_unittest.cc",
     "content_settings_rule_unittest.cc",
@@ -151,7 +148,6 @@ source_set("unit_tests") {
     "//components/tpcd/metadata/browser",
     "//extensions/buildflags",
     "//net",
-    "//services/preferences/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

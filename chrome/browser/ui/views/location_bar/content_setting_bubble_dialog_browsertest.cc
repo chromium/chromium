@@ -227,12 +227,11 @@ void ContentSettingBubbleDialogTest::OverrideContentSettingsProvider(
   if (GetParam() == content_settings::ProviderType::kDefaultProvider) {
     for (auto* info :
          *content_settings::WebsiteSettingsRegistry::GetInstance()) {
-      provider->SetWebsiteSetting(
-          ContentSettingsPattern::Wildcard(),
-          ContentSettingsPattern::Wildcard(), info->type(),
-          info->initial_default_value().Clone(),
-          /*constraints=*/{},
-          content_settings::PartitionKey::GetDefaultForTesting());
+      provider->SetWebsiteSetting(ContentSettingsPattern::Wildcard(),
+                                  ContentSettingsPattern::Wildcard(),
+                                  info->type(),
+                                  info->initial_default_value().Clone(),
+                                  /*constraints=*/{});
     }
   }
 
@@ -241,8 +240,7 @@ void ContentSettingBubbleDialogTest::OverrideContentSettingsProvider(
     provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
         type, base::Value(ContentSetting::CONTENT_SETTING_BLOCK),
-        /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
+        /*constraints=*/{});
   }
 
   // WINDOW_MANAGEMENT is observed fairly early on, so we need to make sure it's
@@ -251,8 +249,7 @@ void ContentSettingBubbleDialogTest::OverrideContentSettingsProvider(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::WINDOW_MANAGEMENT,
       base::Value(ContentSetting::CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
 
   content_settings::TestUtils::OverrideProvider(map, std::move(provider),
                                                 GetParam());

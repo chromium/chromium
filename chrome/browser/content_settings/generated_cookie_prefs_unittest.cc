@@ -98,8 +98,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), ProviderType::kCustomExtensionProvider);
   std::optional<extensions::api::settings_private::PrefObject> pref_object =
@@ -111,8 +110,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), ProviderType::kSupervisedProvider);
   pref_object = pref->GetPrefObject();
@@ -123,8 +121,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   content_settings::TestUtils::OverrideProvider(map, std::move(provider),
                                                 ProviderType::kPolicyProvider);
   pref_object = pref->GetPrefObject();

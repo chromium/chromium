@@ -190,8 +190,7 @@ bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& in_value,
-    const ContentSettingConstraints& constraints,
-    const PartitionKey& partition_key) {
+    const ContentSettingConstraints& constraints) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -232,8 +231,7 @@ bool DefaultProvider::SetWebsiteSetting(
 
 std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool off_the_record,
-    const PartitionKey& partition_key) const {
+    bool off_the_record) const {
   // The default provider never has off-the-record-specific settings.
   if (off_the_record)
     return nullptr;
@@ -246,12 +244,10 @@ std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
   return std::make_unique<SingleValueWildcardRuleIterator>(it->second.Clone());
 }
 
-std::unique_ptr<Rule> DefaultProvider::GetRule(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType content_type,
-    bool off_the_record,
-    const PartitionKey& partition_key) const {
+std::unique_ptr<Rule> DefaultProvider::GetRule(const GURL& primary_url,
+                                               const GURL& secondary_url,
+                                               ContentSettingsType content_type,
+                                               bool off_the_record) const {
   // The default provider never has off-the-record-specific settings.
   if (off_the_record) {
     return nullptr;
@@ -273,8 +269,7 @@ std::unique_ptr<Rule> DefaultProvider::GetRule(
 }
 
 void DefaultProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type,
-    const PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   // TODO(markusheintz): This method is only called when the
   // |DesktopNotificationService| calls |ClearAllSettingsForType| method on the
   // |HostContentSettingsMap|. Don't implement this method yet, otherwise the

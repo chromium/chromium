@@ -39,7 +39,6 @@
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -554,8 +553,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     provider->SetWebsiteSetting(
         ContentSettingsPattern::FromURL(url),
         ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-        base::Value(content_setting), /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
+        base::Value(content_setting), /*constraints=*/{});
   }
 
   void AddSimpleModule(const content::ToRenderFrameHost& execution_target) {

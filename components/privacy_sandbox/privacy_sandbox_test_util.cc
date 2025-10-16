@@ -124,8 +124,7 @@ void ApplyTestState(
       user_content_setting_provider->SetWebsiteSetting(
           ContentSettingsPattern::Wildcard(),
           ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-          base::Value(content_setting), /*constraints=*/{},
-          content_settings::PartitionKey::GetDefaultForTesting());
+          base::Value(content_setting), /*constraints=*/{});
       return;
     }
     case (StateKey::kSiteDataUserExceptions): {
@@ -136,8 +135,7 @@ void ApplyTestState(
         user_content_setting_provider->SetWebsiteSetting(
             ContentSettingsPattern::FromString(primary_pattern),
             ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-            base::Value(content_setting), /*constraints=*/{},
-            content_settings::PartitionKey::GetDefaultForTesting());
+            base::Value(content_setting), /*constraints=*/{});
       }
       return;
     }

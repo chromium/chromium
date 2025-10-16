@@ -23,7 +23,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
-#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_uma_util.h"
@@ -50,10 +49,8 @@ OneTimePermissionProvider::~OneTimePermissionProvider() {
 // TODO(b/307193732): handle the PartitionKey in all relevant methods, including
 // when we call NotifyObservers().
 std::unique_ptr<content_settings::RuleIterator>
-OneTimePermissionProvider::GetRuleIterator(
-    ContentSettingsType content_type,
-    bool incognito,
-    const content_settings::PartitionKey& partition_key) const {
+OneTimePermissionProvider::GetRuleIterator(ContentSettingsType content_type,
+                                           bool incognito) const {
   if (!permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
           content_type)) {
     return nullptr;
@@ -65,8 +62,7 @@ std::unique_ptr<content_settings::Rule> OneTimePermissionProvider::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    bool off_the_record,
-    const content_settings::PartitionKey& partition_key) const {
+    bool off_the_record) const {
   if (!permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
           content_type)) {
     return nullptr;
@@ -81,8 +77,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_settings_type,
     base::Value&& value,
-    const content_settings::ContentSettingConstraints& constraints,
-    const content_settings::PartitionKey& partition_key) {
+    const content_settings::ContentSettingConstraints& constraints) {
   if (!permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
           content_settings_type)) {
     return false;
@@ -176,8 +171,7 @@ bool OneTimePermissionProvider::UpdateLastUsedTime(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    const base::Time time,
-    const content_settings::PartitionKey& partition_key) {
+    const base::Time time) {
   // Last used time is not tracked for one-time permissions.
   return false;
 }
@@ -185,8 +179,7 @@ bool OneTimePermissionProvider::UpdateLastUsedTime(
 bool OneTimePermissionProvider::ResetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const content_settings::PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   // LastVisit time is not currently tracked for one-time permissions.
   return false;
 }
@@ -194,8 +187,7 @@ bool OneTimePermissionProvider::ResetLastVisitTime(
 bool OneTimePermissionProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const content_settings::PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   // LastVisit time is not tracked for one-time permissions.
   return false;
 }
@@ -204,15 +196,13 @@ std::optional<base::TimeDelta> OneTimePermissionProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType type,
-    std::optional<ContentSetting> setting_to_match,
-    const content_settings::PartitionKey& partition_key) {
+    std::optional<ContentSetting> setting_to_match) {
   // Setting renewal is not supported for one-time permissions.
   return std::nullopt;
 }
 
 void OneTimePermissionProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type,
-    const content_settings::PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   if (permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
           content_type)) {
     return;
@@ -232,8 +222,7 @@ void OneTimePermissionProvider::SetClockForTesting(const base::Clock* clock) {
 void OneTimePermissionProvider::ExpireWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_settings_type,
-    const content_settings::PartitionKey& partition_key) {
+    ContentSettingsType content_settings_type) {
   // Custom scope because NotifyObservers also requires value_map_'s exclusive
   // lock.
   {

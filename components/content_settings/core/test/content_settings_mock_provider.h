@@ -26,28 +26,21 @@ class MockProvider : public ObservableProvider {
 
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool off_the_record,
-      const PartitionKey& partition_key =
-          PartitionKey::WipGetDefault()) const override;
-  std::unique_ptr<Rule> GetRule(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      bool off_the_record,
-      const PartitionKey& partition_key) const override;
+      bool off_the_record) const override;
+  std::unique_ptr<Rule> GetRule(const GURL& primary_url,
+                                const GURL& secondary_url,
+                                ContentSettingsType content_type,
+                                bool off_the_record) const override;
 
-  bool SetWebsiteSetting(const ContentSettingsPattern& requesting_url_pattern,
-                         const ContentSettingsPattern& embedding_url_pattern,
-                         ContentSettingsType content_type,
-                         base::Value&& value,
-                         const ContentSettingConstraints& constraints = {},
-                         const PartitionKey& partition_key =
-                             PartitionKey::GetDefaultForTesting()) override;
-
-  void ClearAllContentSettingsRules(
+  bool SetWebsiteSetting(
+      const ContentSettingsPattern& requesting_url_pattern,
+      const ContentSettingsPattern& embedding_url_pattern,
       ContentSettingsType content_type,
-      const PartitionKey& partition_key =
-          PartitionKey::WipGetDefault()) override {}
+      base::Value&& value,
+      const ContentSettingConstraints& constraints = {}) override;
+
+  void ClearAllContentSettingsRules(ContentSettingsType content_type) override {
+  }
 
   void ShutdownOnUIThread() override;
 

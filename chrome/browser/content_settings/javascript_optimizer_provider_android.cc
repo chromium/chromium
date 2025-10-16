@@ -46,8 +46,7 @@ JavascriptOptimizerProviderAndroid::~JavascriptOptimizerProviderAndroid() =
 std::unique_ptr<content_settings::RuleIterator>
 JavascriptOptimizerProviderAndroid::GetRuleIterator(
     ContentSettingsType content_type,
-    bool off_the_record,
-    const content_settings::PartitionKey& partition_key) const {
+    bool off_the_record) const {
   if (content_type != ContentSettingsType::JAVASCRIPT_OPTIMIZER) {
     return nullptr;
   }
@@ -59,12 +58,10 @@ JavascriptOptimizerProviderAndroid::GetRuleIterator(
 }
 
 std::unique_ptr<content_settings::Rule>
-JavascriptOptimizerProviderAndroid::GetRule(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType content_type,
-    bool off_the_record,
-    const content_settings::PartitionKey& partition_key) const {
+JavascriptOptimizerProviderAndroid::GetRule(const GURL& primary_url,
+                                            const GURL& secondary_url,
+                                            ContentSettingsType content_type,
+                                            bool off_the_record) const {
   if (content_type != ContentSettingsType::JAVASCRIPT_OPTIMIZER) {
     return nullptr;
   }
@@ -82,14 +79,12 @@ bool JavascriptOptimizerProviderAndroid::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& value,
-    const content_settings::ContentSettingConstraints& constraints,
-    const content_settings::PartitionKey& partition_key) {
+    const content_settings::ContentSettingConstraints& constraints) {
   return false;
 }
 
 void JavascriptOptimizerProviderAndroid::ClearAllContentSettingsRules(
-    ContentSettingsType content_type,
-    const content_settings::PartitionKey& partition_key) {}
+    ContentSettingsType content_type) {}
 
 void JavascriptOptimizerProviderAndroid::ShutdownOnUIThread() {
   CHECK(CalledOnValidThread());

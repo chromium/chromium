@@ -29,7 +29,6 @@
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
-#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
@@ -142,7 +141,6 @@ ContentSettingsPref::ContentSettingsPref(
     PrefService* prefs,
     PrefChangeRegistrar* registrar,
     const std::string& pref_name,
-    const std::string& partitioned_pref_name,
     bool off_the_record,
     bool restore_session,
     NotifyObserversCallback notify_callback)
@@ -150,7 +148,6 @@ ContentSettingsPref::ContentSettingsPref(
       prefs_(prefs),
       registrar_(registrar),
       pref_name_(pref_name),
-      partitioned_pref_name_(partitioned_pref_name),
       off_the_record_(off_the_record),
       restore_session_(restore_session),
       updating_preferences_(false),
@@ -160,45 +157,37 @@ ContentSettingsPref::ContentSettingsPref(
   content_settings::ContentSettingsRegistry::GetInstance();
   ReadContentSettingsFromPref();
 
-  for (const auto& path : {pref_name_, partitioned_pref_name_}) {
-    registrar_->Add(path,
-                    base::BindRepeating(&ContentSettingsPref::OnPrefChanged,
-                                        base::Unretained(this)));
-  }
+  registrar_->Add(pref_name_,
+                  base::BindRepeating(&ContentSettingsPref::OnPrefChanged,
+                                      base::Unretained(this)));
 }
 
 ContentSettingsPref::~ContentSettingsPref() = default;
 
 std::unique_ptr<RuleIterator> ContentSettingsPref::GetRuleIterator(
-    bool off_the_record,
-    const PartitionKey& partition_key) const {
+    bool off_the_record) const {
   if (off_the_record)
-    return off_the_record_value_map_.GetRuleIterator(content_type_,
-                                                     partition_key);
-  return value_map_.GetRuleIterator(content_type_, partition_key);
+    return off_the_record_value_map_.GetRuleIterator(content_type_);
+  return value_map_.GetRuleIterator(content_type_);
 }
 
-std::unique_ptr<Rule> ContentSettingsPref::GetRule(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    bool off_the_record,
-    const PartitionKey& partition_key) const {
+std::unique_ptr<Rule> ContentSettingsPref::GetRule(const GURL& primary_url,
+                                                   const GURL& secondary_url,
+                                                   bool off_the_record) const {
   if (off_the_record) {
     base::AutoLock auto_lock(off_the_record_value_map_.GetLock());
     return off_the_record_value_map_.GetRule(primary_url, secondary_url,
-                                             content_type_, partition_key);
+                                             content_type_);
   }
   base::AutoLock auto_lock(value_map_.GetLock());
-  return value_map_.GetRule(primary_url, secondary_url, content_type_,
-                            partition_key);
+  return value_map_.GetRule(primary_url, secondary_url, content_type_);
 }
 
 void ContentSettingsPref::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     base::Value value,
-    RuleMetaData metadata,
-    const PartitionKey& partition_key) {
+    RuleMetaData metadata) {
   DCHECK(value.is_none() || IsValueAllowedForType(value, content_type_))
       << value.DebugString() << " " << content_type_;
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -216,28 +205,26 @@ void ContentSettingsPref::SetWebsiteSetting(
     if (!value.is_none()) {
       if (!map_to_modify->SetValue(primary_pattern, secondary_pattern,
                                    content_type_, value.Clone(),
-                                   metadata.Clone(), partition_key)) {
+                                   metadata.Clone())) {
         return;
       }
     } else {
       if (!map_to_modify->DeleteValue(primary_pattern, secondary_pattern,
-                                      content_type_, partition_key)) {
+                                      content_type_)) {
         return;
       }
     }
   }
   // Update the content settings preference.
-  if (!off_the_record_ && !partition_key.in_memory()) {
+  if (!off_the_record_) {
     UpdatePref(primary_pattern, secondary_pattern, std::move(value),
-               std::move(metadata), partition_key);
+               std::move(metadata));
   }
 
-  notify_callback_.Run(primary_pattern, secondary_pattern, content_type_,
-                       &partition_key);
+  notify_callback_.Run(primary_pattern, secondary_pattern, content_type_);
 }
 
-void ContentSettingsPref::ClearAllContentSettingsRules(
-    const PartitionKey& partition_key) {
+void ContentSettingsPref::ClearAllContentSettingsRules() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -248,23 +235,17 @@ void ContentSettingsPref::ClearAllContentSettingsRules(
 
   {
     base::AutoLock auto_lock(map_to_modify->GetLock());
-    map_to_modify->DeleteValues(content_type_, partition_key);
+    map_to_modify->DeleteValues(content_type_);
   }
 
-  if (!off_the_record_ && !partition_key.in_memory()) {
+  if (!off_the_record_) {
     base::AutoReset<bool> auto_reset(&updating_preferences_, true);
-    if (partition_key.is_default()) {
-      prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_name_);
-      update->Clear();
-    } else {
-      prefs::ScopedDictionaryPrefUpdate update(prefs_, partitioned_pref_name_);
-      update->RemoveWithoutPathExpansion(partition_key.Serialize(), nullptr);
-    }
+    prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_name_);
+    update->Clear();
   }
 
   notify_callback_.Run(ContentSettingsPattern::Wildcard(),
-                       ContentSettingsPattern::Wildcard(), content_type_,
-                       &partition_key);
+                       ContentSettingsPattern::Wildcard(), content_type_);
 }
 
 void ContentSettingsPref::OnShutdown() {
@@ -296,68 +277,22 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
 
   value_map_.clear();
 
-  // Read for the default PartitionKey.
-  {
-    std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update;
-    std::unique_ptr<prefs::DictionaryValueUpdate> mutable_partition;
-    // Don't create `update` in off the record mode to avoid accidentally
-    // modifying the pref.
-    if (!off_the_record_) {
-      update = std::make_unique<prefs::ScopedDictionaryPrefUpdate>(prefs_,
-                                                                   pref_name_);
-      mutable_partition = update->Get();
-    }
-    ReadContentSettingsFromPrefForPartition(
-        PartitionKey(), prefs_->GetDict(pref_name_), mutable_partition.get());
+  std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update;
+  std::unique_ptr<prefs::DictionaryValueUpdate> mutable_settings;
+  // Don't create `update` in off the record mode to avoid accidentally
+  // modifying the pref.
+  if (!off_the_record_) {
+    update =
+        std::make_unique<prefs::ScopedDictionaryPrefUpdate>(prefs_, pref_name_);
+    mutable_settings = update->Get();
   }
-
-  // Read for non-default PartitionKeys.
-  {
-    std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update;
-    // Don't create `update` in off the record mode to avoid accidentally
-    // modifying the pref.
-    if (!off_the_record_) {
-      update = std::make_unique<prefs::ScopedDictionaryPrefUpdate>(
-          prefs_, partitioned_pref_name_);
-    }
-
-    std::vector<std::string> partitions_to_remove;
-
-    const auto& partitions = prefs_->GetDict(partitioned_pref_name_);
-    for (const auto&& [key, value] : partitions) {
-      auto partition_key = PartitionKey::Deserialize(key);
-      if (!partition_key.has_value()) {
-        LOG(ERROR) << "failed to deserialize partition key " << key;
-        partitions_to_remove.emplace_back(key);
-        continue;
-      }
-
-      std::unique_ptr<prefs::DictionaryValueUpdate> mutable_partition;
-      if (update) {
-        (*update)->GetDictionaryWithoutPathExpansion(key, &mutable_partition);
-      }
-      ReadContentSettingsFromPrefForPartition(*partition_key, value.GetDict(),
-                                              mutable_partition.get());
-
-      if (mutable_partition && mutable_partition->empty()) {
-        partitions_to_remove.push_back(key);
-      }
-    }
-
-    if (update) {
-      CHECK(!off_the_record_);
-      for (auto partition : partitions_to_remove) {
-        (*update)->RemoveWithoutPathExpansion(partition, nullptr);
-      }
-    }
-  }
+  ReadSettingsFromDictionary(prefs_->GetDict(pref_name_),
+                             mutable_settings.get());
 }
 
-void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
-    const PartitionKey& partition_key,
-    const base::Value::Dict& partition,
-    prefs::DictionaryValueUpdate* mutable_partition) {
-  CHECK(!partition_key.in_memory());
+void ContentSettingsPref::ReadSettingsFromDictionary(
+    const base::Value::Dict& all_settings_dictionary,
+    prefs::DictionaryValueUpdate* mutable_settings) {
   // Accumulates non-canonical pattern strings found in Prefs for which the
   // corresponding canonical pattern is also in Prefs. In these cases the
   // canonical version takes priority, and the non-canonical pattern is removed.
@@ -376,7 +311,7 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
   // patterns is to be re-keyed under the canonical pattern.
   base::StringPairs non_canonical_patterns_to_canonical_pattern;
 
-  for (const auto&& i : partition) {
+  for (const auto&& i : all_settings_dictionary) {
     const std::string& pattern_str(i.first);
     PatternPair pattern_pair = ParsePatternString(pattern_str);
     if (!pattern_pair.first.IsValid() || !pattern_pair.second.IsValid()) {
@@ -389,7 +324,7 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
         CreatePatternString(pattern_pair.first, pattern_pair.second);
     DCHECK(!canonicalized_pattern_str.empty());
     if (canonicalized_pattern_str != pattern_str) {
-      if (partition.Find(canonicalized_pattern_str)) {
+      if (all_settings_dictionary.Find(canonicalized_pattern_str)) {
         non_canonical_patterns_to_remove.push_back(pattern_str);
         continue;
       } else {
@@ -456,7 +391,7 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
 
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,
-                          value->Clone(), std::move(metadata), partition_key);
+                          value->Clone(), std::move(metadata));
     }
   }
 
@@ -467,17 +402,17 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
   // regular profile will have canonicalized the stored pref data.
   if (!off_the_record_) {
     for (const auto& pattern : non_canonical_patterns_to_remove) {
-      mutable_partition->RemoveWithoutPathExpansion(pattern, nullptr);
+      mutable_settings->RemoveWithoutPathExpansion(pattern, nullptr);
     }
 
     for (const auto& pattern : expired_patterns_to_remove) {
-      mutable_partition->RemoveWithoutPathExpansion(pattern, nullptr);
+      mutable_settings->RemoveWithoutPathExpansion(pattern, nullptr);
     }
 
     for (const auto& pattern : expired_permission_usage_to_remove) {
-      if (mutable_partition->HasKey(pattern)) {
+      if (mutable_settings->HasKey(pattern)) {
         std::unique_ptr<prefs::DictionaryValueUpdate> dict;
-        mutable_partition->GetDictionaryWithoutPathExpansion(pattern, &dict);
+        mutable_settings->GetDictionaryWithoutPathExpansion(pattern, &dict);
         dict->RemoveWithoutPathExpansion(kLastUsedKey, nullptr);
       }
     }
@@ -485,9 +420,9 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
     for (const auto& old_to_new_pattern :
          non_canonical_patterns_to_canonical_pattern) {
       base::Value pattern_settings_dictionary;
-      mutable_partition->RemoveWithoutPathExpansion(
+      mutable_settings->RemoveWithoutPathExpansion(
           old_to_new_pattern.first, &pattern_settings_dictionary);
-      mutable_partition->SetWithoutPathExpansion(
+      mutable_settings->SetWithoutPathExpansion(
           old_to_new_pattern.second, std::move(pattern_settings_dictionary));
     }
   }
@@ -528,45 +463,24 @@ void ContentSettingsPref::OnPrefChanged() {
   ReadContentSettingsFromPref();
 
   notify_callback_.Run(ContentSettingsPattern::Wildcard(),
-                       ContentSettingsPattern::Wildcard(), content_type_,
-                       nullptr);
+                       ContentSettingsPattern::Wildcard(), content_type_);
 }
 
 void ContentSettingsPref::UpdatePref(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     base::Value value,
-    const RuleMetaData& metadata,
-    const PartitionKey& partition_key) {
+    const RuleMetaData& metadata) {
   // Ensure that |lock_| is not held by this thread, since this function will
   // send out notifications (by |~ScopedDictionaryPrefUpdate|).
   AssertLockNotHeld();
   CHECK(!off_the_record_);
-  CHECK(!partition_key.in_memory());
 
   base::AutoReset<bool> auto_reset(&updating_preferences_, true);
   {
-    prefs::ScopedDictionaryPrefUpdate update(
-        prefs_,
-        partition_key.is_default() ? pref_name_ : partitioned_pref_name_);
-    std::unique_ptr<prefs::DictionaryValueUpdate> pattern_pairs_settings;
-    const auto serialized_partition_key = partition_key.Serialize();
-    if (partition_key.is_default()) {
-      pattern_pairs_settings = update.Get();
-    } else {
-      if (!update->GetDictionaryWithoutPathExpansion(serialized_partition_key,
-                                                     &pattern_pairs_settings)) {
-        // The partition does not have any data.
-
-        if (value.is_none()) {
-          // Nothing to do.
-          return;
-        } else {
-          pattern_pairs_settings = update->SetDictionaryWithoutPathExpansion(
-              serialized_partition_key, base::Value::Dict());
-        }
-      }
-    }
+    prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_name_);
+    std::unique_ptr<prefs::DictionaryValueUpdate> pattern_pairs_settings =
+        update.Get();
 
     // Get settings dictionary for the given patterns.
     std::string pattern_str(
@@ -636,9 +550,6 @@ void ContentSettingsPref::UpdatePref(
     // Remove the settings dictionary if it is empty.
     if (settings_dictionary->empty()) {
       pattern_pairs_settings->RemoveWithoutPathExpansion(pattern_str, nullptr);
-    }
-    if (!partition_key.is_default() && pattern_pairs_settings->empty()) {
-      update->RemoveWithoutPathExpansion(serialized_partition_key, nullptr);
     }
   }
 }

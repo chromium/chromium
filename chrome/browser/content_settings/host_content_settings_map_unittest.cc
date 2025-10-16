@@ -88,49 +88,41 @@ class MockUserModifiableProvider
     : public content_settings::UserModifiableProvider {
  public:
   ~MockUserModifiableProvider() override = default;
-  MOCK_CONST_METHOD3(GetRuleIterator,
-                     std::unique_ptr<content_settings::RuleIterator>(
-                         ContentSettingsType,
-                         bool,
-                         const content_settings::PartitionKey&));
+  MOCK_CONST_METHOD2(
+      GetRuleIterator,
+      std::unique_ptr<content_settings::RuleIterator>(ContentSettingsType,
+                                                      bool));
 
-  MOCK_METHOD6(SetWebsiteSetting,
+  MOCK_METHOD5(SetWebsiteSetting,
                bool(const ContentSettingsPattern&,
                     const ContentSettingsPattern&,
                     ContentSettingsType,
                     base::Value&&,
-                    const content_settings::ContentSettingConstraints&,
-                    const content_settings::PartitionKey&));
+                    const content_settings::ContentSettingConstraints&));
 
-  MOCK_METHOD2(ClearAllContentSettingsRules,
-               void(ContentSettingsType,
-                    const content_settings::PartitionKey&));
+  MOCK_METHOD1(ClearAllContentSettingsRules, void(ContentSettingsType));
 
   MOCK_METHOD0(ShutdownOnUIThread, void());
 
-  MOCK_METHOD5(UpdateLastUsedTime,
+  MOCK_METHOD4(UpdateLastUsedTime,
                bool(const GURL& primary_url,
                     const GURL& secondary_url,
                     ContentSettingsType content_type,
-                    const base::Time time,
-                    const content_settings::PartitionKey& partition_key));
-  MOCK_METHOD4(UpdateLastVisitTime,
+                    const base::Time time));
+  MOCK_METHOD3(UpdateLastVisitTime,
                bool(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,
-                    ContentSettingsType content_type,
-                    const content_settings::PartitionKey& partition_key));
-  MOCK_METHOD4(ResetLastVisitTime,
+                    ContentSettingsType content_type));
+  MOCK_METHOD3(ResetLastVisitTime,
                bool(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,
-                    ContentSettingsType content_type,
-                    const content_settings::PartitionKey& partition_key));
-  MOCK_METHOD5(RenewContentSetting,
+                    ContentSettingsType content_type));
+  MOCK_METHOD4(RenewContentSetting,
                std::optional<base::TimeDelta>(
                    const GURL& primary_url,
                    const GURL& secondary_url,
                    ContentSettingsType content_type,
-                   std::optional<ContentSetting> setting_to_match,
-                   const content_settings::PartitionKey& partition_key));
+                   std::optional<ContentSetting> setting_to_match));
 
   MOCK_METHOD1(SetClockForTesting, void(const base::Clock*));
 };
