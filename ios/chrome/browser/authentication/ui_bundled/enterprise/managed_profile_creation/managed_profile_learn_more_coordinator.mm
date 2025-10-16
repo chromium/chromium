@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/learn_more_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_learn_more_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/learn_more_table_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_learn_more_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
-@interface LearnMoreCoordinator () <
-    LearnMoreTableViewControllerPresentationDelegate,
+@interface ManagedProfileLearnMoreCoordinator () <
+    ManagedProfileLearnMoreViewControllerPresentationDelegate,
     UIAdaptivePresentationControllerDelegate>
 @end
 
-@implementation LearnMoreCoordinator {
+@implementation ManagedProfileLearnMoreCoordinator {
   NSString* _userEmail;
   NSString* _hostedDomain;
-  LearnMoreTableViewController* _viewController;
+  ManagedProfileLearnMoreViewController* _viewController;
   UINavigationController* _navigationController;
 }
 
@@ -36,9 +36,9 @@
 - (void)start {
   [super start];
   // Creates the view controller.
-  _viewController =
-      [[LearnMoreTableViewController alloc] initWithUserEmail:_userEmail
-                                                 hostedDomain:_hostedDomain];
+  _viewController = [[ManagedProfileLearnMoreViewController alloc]
+      initWithUserEmail:_userEmail
+           hostedDomain:_hostedDomain];
   _viewController.presentationDelegate = self;
   // Creates the navigation controller and present.
   _navigationController = [[UINavigationController alloc]
@@ -69,10 +69,10 @@
   [self.delegate removeLearnMoreCoordinator:self];
 }
 
-#pragma mark - LearnMoreTableViewControllerPresentationDelegate
+#pragma mark - ManagedProfileLearnMoreViewControllerPresentationDelegate
 
-- (void)dismissLearnMoreTableViewController:
-    (LearnMoreTableViewController*)viewController {
+- (void)dismissManagedProfileLearnMoreViewController:
+    (ManagedProfileLearnMoreViewController*)viewController {
   CHECK_EQ(_viewController, viewController);
   [self.delegate removeLearnMoreCoordinator:self];
 }

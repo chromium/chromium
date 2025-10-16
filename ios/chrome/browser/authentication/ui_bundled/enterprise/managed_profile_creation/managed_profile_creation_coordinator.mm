@@ -9,9 +9,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/browsing_data_migration_view_controller.h"
-#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/learn_more_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_learn_more_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -24,7 +24,7 @@
 @interface ManagedProfileCreationCoordinator () <
     ManagedProfileCreationMediatorDelegate,
     ManagedProfileCreationViewControllerDelegate,
-    LearnMoreCoordinatorDelegate,
+    ManagedProfileLearnMoreCoordinatorDelegate,
     UINavigationControllerDelegate>
 @end
 
@@ -42,7 +42,7 @@
   UINavigationController* _navigationController;
   ManagedProfileCreationMediator* _mediator;
   BrowsingDataMigrationViewController* _browsingDataMigrationViewController;
-  LearnMoreCoordinator* _learnMoreCoordinator;
+  ManagedProfileLearnMoreCoordinator* _learnMoreCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -174,9 +174,10 @@
   }
 }
 
-#pragma mark - LearnMoreCoordinatorDelegate
+#pragma mark - ManagedProfileLearnMoreCoordinatorDelegate
 
-- (void)removeLearnMoreCoordinator:(LearnMoreCoordinator*)coordinator {
+- (void)removeLearnMoreCoordinator:
+    (ManagedProfileLearnMoreCoordinator*)coordinator {
   DCHECK(_learnMoreCoordinator);
   DCHECK_EQ(_learnMoreCoordinator, coordinator);
   [self stopLearnMoreCoordinator];
@@ -198,7 +199,7 @@
 
 - (void)showLearnMorePage {
   DCHECK(!_learnMoreCoordinator);
-  _learnMoreCoordinator = [[LearnMoreCoordinator alloc]
+  _learnMoreCoordinator = [[ManagedProfileLearnMoreCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
                        userEmail:_identity.userEmail
