@@ -306,7 +306,7 @@ ContouredRect ClipPathClipper::RoundedReferenceBox(GeometryBox geometry_box,
   ContouredRect contoured_border_box_rect =
       ContouredBorderGeometry::ContouredBorder(box.StyleRef(), border_box_rect);
   if (geometry_box == GeometryBox::kMarginBox) {
-    contoured_border_box_rect.OutsetForMarginOrShadow(
+    contoured_border_box_rect.OutsetWithCornerCorrection(
         gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
   } else {
     contoured_border_box_rect.Outset(

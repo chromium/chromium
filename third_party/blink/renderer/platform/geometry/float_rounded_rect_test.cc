@@ -33,6 +33,8 @@
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
 
@@ -184,14 +186,28 @@ TEST(FloatRoundedRectTest, InsetWithPartialZeroRadii) {
       r);
 }
 
-TEST(FloatRoundedRectTest, OutsetForMarginOrShadow) {
+TEST(FloatRoundedRectTest, OutsetWithCornerCorrection) {
   FloatRoundedRect r(gfx::RectF(0, 0, 200, 200), gfx::SizeF(4, 8),
                      gfx::SizeF(12, 16), gfx::SizeF(0, 32), gfx::SizeF(64, 0));
-  r.OutsetForMarginOrShadow(32);
-  EXPECT_EQ(FloatRoundedRect(
-                gfx::RectF(-32, -32, 264, 264), gfx::SizeF(14.5625f, 26.5f),
-                gfx::SizeF(36.1875f, 44), gfx::SizeF(0, 64), gfx::SizeF(96, 0)),
-            r);
+  r.OutsetWithCornerCorrection(32);
+  EXPECT_RECTF_EQ(r.Rect(), gfx::RectF(-32, -32, 264, 264));
+  EXPECT_SIZEF_NEAR(r.GetRadii().TopLeft(), gfx::SizeF(14.5639, 26.5009f),
+                    0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().TopRight(), gfx::SizeF(36.201f, 44.0069f),
+                    0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().BottomLeft(), gfx::SizeF(0, 64), 0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().BottomRight(), gfx::SizeF(96, 0), 0.01f);
+}
+
+TEST(FloatRoundedRectTest, OutsetWithCornerCorrectionNonUniform) {
+  FloatRoundedRect r(gfx::RectF(0, 0, 200, 100), gfx::SizeF(50, 8),
+                     gfx::SizeF(12, 56), gfx::SizeF(0, 32), gfx::SizeF(64, 0));
+  r.OutsetWithCornerCorrection(32);
+  EXPECT_RECTF_EQ(r.Rect(), gfx::RectF(-32, -32, 264, 164));
+  EXPECT_SIZEF_NEAR(r.GetRadii().TopLeft(), gfx::SizeF(82, 26.5553), 0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().TopRight(), gfx::SizeF(36.201f, 88), 0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().BottomLeft(), gfx::SizeF(0, 64), 0.01f);
+  EXPECT_SIZEF_NEAR(r.GetRadii().BottomRight(), gfx::SizeF(96, 0), 0.01f);
 }
 
 TEST(FloatRoundedRectTest, InsetToBeNonRenderable) {

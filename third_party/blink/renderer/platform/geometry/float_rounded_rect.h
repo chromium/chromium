@@ -118,7 +118,10 @@ class PLATFORM_EXPORT FloatRoundedRect {
    private:
     friend class FloatRoundedRect;
     void Outset(const gfx::OutsetsF& outsets);
-    void OutsetForMarginOrShadow(const gfx::OutsetsF&);
+    void OutsetWithCornerCorrection(const gfx::OutsetsF&);
+    void OutsetWithCornerCorrectionUsingCoverageFactor(
+        const gfx::OutsetsF&,
+        const gfx::SizeF& box_size);
     void OutsetForShapeMargin(float outset);
 
     gfx::SizeF top_left_;
@@ -164,18 +167,9 @@ class PLATFORM_EXPORT FloatRoundedRect {
   void Inset(const gfx::InsetsF& insets) { Outset(insets.ToOutsets()); }
   void Inset(float inset) { Inset(gfx::InsetsF(inset)); }
 
-  // Inflates (or shrinks if |outset| is negative) the rect and the corners
-  // based on the margin edge algorithm in
-  // https://drafts.csswg.org/css-backgrounds-3/#corner-shaping which is the
-  // same as the shadow spread algorithm in
-  // https://drafts.csswg.org/css-backgrounds-3/#shadow-shape.
-  // TODO(wangxianzhu): Consider merging this into Outset()/Inset() to apply
-  // the margin/shadow algorithm to all outsets except shape-margin. For now
-  // this is blocked by a problem of the algorithm
-  // (https://github.com/w3c/csswg-drafts/issues/7103).
-  void OutsetForMarginOrShadow(const gfx::OutsetsF& outsets);
-  void OutsetForMarginOrShadow(float outset) {
-    OutsetForMarginOrShadow(gfx::OutsetsF(outset));
+  void OutsetWithCornerCorrection(const gfx::OutsetsF& outsets);
+  void OutsetWithCornerCorrection(float outset) {
+    OutsetWithCornerCorrection(gfx::OutsetsF(outset));
   }
 
   // Inflates the rounded rect by the specified amount on each side and corner

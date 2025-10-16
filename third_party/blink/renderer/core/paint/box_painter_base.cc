@@ -86,7 +86,7 @@ void ApplySpreadToShadowShape(ContouredRect& shadow_shape, float spread) {
   if (spread == 0)
     return;
 
-  shadow_shape.OutsetForMarginOrShadow(spread);
+  shadow_shape.OutsetWithCornerCorrection(spread);
   shadow_shape.ConstrainRadii();
 }
 

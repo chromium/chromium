@@ -224,6 +224,15 @@ struct DecomposedTransform;
                                                 const char* rhs_expr,
                                                 const SizeF& lhs,
                                                 const SizeF& rhs);
+#define EXPECT_SIZEF_NEAR(a, b, abs_error) \
+  EXPECT_PRED_FORMAT3(::gfx::AssertSizeFloatNear, a, b, abs_error)
+
+::testing::AssertionResult AssertSizeFloatNear(const char* lhs_expr,
+                                               const char* rhs_expr,
+                                               const char* abs_error_expr,
+                                               const SizeF& lhs,
+                                               const SizeF& rhs,
+                                               float abs_error);
 
 #define EXPECT_SKSIZE_EQ(a, b) \
   EXPECT_PRED_FORMAT2(::gfx::AssertSkSizeFloatEqual, a, b)

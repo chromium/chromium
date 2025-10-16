@@ -242,8 +242,8 @@ class PLATFORM_EXPORT ContouredRect {
   void Move(const gfx::Vector2dF& offset) { rect_.Move(offset); }
   void Inset(const gfx::InsetsF& insets) { rect_.Inset(insets); }
   void Inset(float inset) { rect_.Inset(inset); }
-  void OutsetForMarginOrShadow(float outset) {
-    OutsetForMarginOrShadow(gfx::OutsetsF(outset));
+  void OutsetWithCornerCorrection(float outset) {
+    OutsetWithCornerCorrection(gfx::OutsetsF(outset));
   }
 
   void OutsetForShapeMargin(float outset) {
@@ -255,7 +255,7 @@ class PLATFORM_EXPORT ContouredRect {
                       float& max_x_intercept) const;
 
   void Outset(const gfx::OutsetsF& outsets) { rect_.Outset(outsets); }
-  void OutsetForMarginOrShadow(const gfx::OutsetsF&);
+  void OutsetWithCornerCorrection(const gfx::OutsetsF&);
 
   void ConstrainRadii() { rect_.ConstrainRadii(); }
 
