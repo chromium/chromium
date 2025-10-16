@@ -475,6 +475,8 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   // "en" locale can be problematic on some systems, pre-win10 at least.
   if (app_locale == "en")
     app_locale = "en-GB";
+  if (app_locale == "pl-PL")
+    app_locale = "pl";
   base::FilePath locale_file_path = GetOverriddenPakPath();
   if (locale_file_path.empty())
     locale_file_path = GetLocaleFilePath(app_locale);
