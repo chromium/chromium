@@ -57,7 +57,11 @@ class VideoAcceleratorUtil {
 
     // Encoders known to support temporal layers.
     private static final Set<String> TEMPORAL_SVC_SUPPORTING_ENCODERS =
-            Set.of("c2.qti.avc.encoder", "c2.exynos.h264.encoder");
+            Set.of(
+                    "c2.qti.avc.encoder",
+                    "c2.exynos.h264.encoder",
+                    "c2.cros-codecs.vaapi.avc.encoder",
+                    "c2.cros-codecs.vaapi.vp9.encoder");
 
     // Possible supported resolutions.
     private static final Resolution[] SUPPORTED_RESOLUTIONS = {
