@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/android/rules.gni")
+import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
@@ -1010,6 +1011,21 @@ if (enable_new_texture_compressor) {
     deps = [
       ":texture_compressor",
       "//testing/rust_gtest_interop",
+    ]
+
+    # Required for #[feature(portable_simd)]
+    configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+    rustflags = [ "-Zallow-features=portable_simd" ]
+  }
+
+  rust_executable("texture_compressor_cli") {
+    testonly = true
+    crate_root = "texture_compressor/main.rs"
+    sources = [ "texture_compressor/main.rs" ]
+
+    deps = [
+      ":texture_compressor",
+      "//third_party/rust/png/v0_18:lib",
     ]
 
     # Required for #[feature(portable_simd)]
