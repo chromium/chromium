@@ -1,0 +1,163 @@
+//
+// Copyright 2024 The Project Oak Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package oak.session.v1;
+
+import "proto/session/messages.proto";
+
+option java_multiple_files = true;
+option java_package = "com.google.oak.session.v1";
+
+// Assertion that an attesting party is making to the verifying peer. Assertion
+// represents a claim that the attesting party is making to the verifying party,
+// which the verifying party can use to make a decision on whether to proceed
+// with establishing a secure session. and must contain all evidence needed to
+// verify the assertion.
+message Assertion {
+  // Bytes of the assertion. We make no assumption about the format used: it can
+  // be a serialized proto, JWT or any other data that the peer can use to make
+  // the pass/fail decision about the assertion.
+  bytes content = 1;
+}
+
+// Request message for the remote attestation.
+message AttestRequest {
+  // Maps unique IDs of attestation type to the corresponding evidence,
+  // where the evidence is presented as the EndorsedEvidence proto. To be
+  // deprecated and replaced with assertions
+  map<string, oak.session.v1.EndorsedEvidence> endorsed_evidence = 1;
+  // Maps unique IDs of attestation type to the assertions. Until
+  // endorsed_evidence is deprecated both endorsed_evidence and assertions can
+  // be provided, it is up to the peer to disambiguate between the two.
+  map<string, Assertion> assertions = 2;
+}
+
+// Response message for the remote attestation.
+message AttestResponse {
+  // Maps unique IDs of attestation type to the corresponding evidence,
+  // where the evidence is presented as the EndorsedEvidence proto. To be
+  // deprecated and replaced with assertions
+  map<string, oak.session.v1.EndorsedEvidence> endorsed_evidence = 1;
+  // Maps unique IDs of attestation type to the assertions. Until
+  // endorsed_evidence is deprecated both endorsed_evidence and assertions can
+  // be provided, it is up to the peer to disambiguate between the two.
+  map<string, Assertion> assertions = 2;
+}
+
+// Noise handshake message containing fields for all handshake patterns.
+// <http://www.noiseprotocol.org/noise.html#handshake-patterns>
+message NoiseHandshakeMessage {
+  // Noise Protocol ephemeral public key 'e'.
+  // <http://www.noiseprotocol.org/noise.html#overview-of-handshake-state-machine>
+  bytes ephemeral_public_key = 1;
+  // Noise Protocol static public key 's'.
+  // <http://www.noiseprotocol.org/noise.html#overview-of-handshake-state-machine>
+  //
+  // Note: For some Noise patterns (such as XX and IX) static public key may be
+  // encrypted with the chaining key to hide peer's identity.
+  // <http://www.noiseprotocol.org/noise.html#handshake-patterns>
+  bytes static_public_key = 2;
+  // Payload encrypted with the current chaining key.
+  bytes ciphertext = 3;
+}
+
+// Message that binds the Noise session (and optionally other data) to the
+// Attestation Evidence.
+message SessionBinding {
+  // Representation the serialized message cryptographically bound to the
+  // handshake and the associated data (e.g., a signature).
+  bytes binding = 1;
+}
+
+// Request message for the crypto handshake request needed to establish a set of
+// session keys.
+message HandshakeRequest {
+  oneof handshake_type {
+    NoiseHandshakeMessage noise_handshake_message = 1;
+  }
+  reserved 2;
+  // Bindings to the attestation evidence, per attestation type.
+  map<string, SessionBinding> attestation_bindings = 3;
+  // Bindings to the provided assertions, per attestation type.
+  map<string, SessionBinding> assertion_bindings = 4;
+}
+
+// Response message for the crypto handshake request needed to establish a set
+// of session keys.
+message HandshakeResponse {
+  oneof handshake_type {
+    NoiseHandshakeMessage noise_handshake_message = 1;
+  }
+  reserved 2;
+  // Bindings to the attestation evidence, per attestation type.
+  map<string, SessionBinding> attestation_bindings = 3;
+  // Bindings to the provided assertions, per attestation type.
+  map<string, SessionBinding> assertion_bindings = 4;
+}
+
+// Message for encrypted data exchange after a secure session is established.
+message EncryptedMessage {
+  bytes ciphertext = 1;
+  optional bytes associated_data = 2;
+  optional bytes nonce = 3;
+}
+
+// Message with decrypted content (not to be transmitted over the wire).
+message PlaintextMessage {
+  bytes plaintext = 1;
+}
+
+// Request message for the Oak protocol attested secure session.
+// This message is a wrapper containing different message types including:
+// attestation, handshake and encrypted data exchange.
+message SessionRequest {
+  oneof request {
+    AttestRequest attest_request = 1;
+    HandshakeRequest handshake_request = 2;
+    EncryptedMessage encrypted_message = 3;
+  }
+}
+
+// Wrapper around SessionRequest that is used in cases where it is necessary to
+// identify a contiguous session across multiple invocations/streams.
+//
+// This message is intended for cases where it's not possible to maintain a gRPC
+// stream for the lifetime of the encryption channel. The `session_id` is an
+// arbitrary identifier that can be used to look up a previously created
+// `ServerSession` instances cached by the server.
+//
+//  This shouldn't be used for general session ID needs; for example, to track
+//  sessions that span multiple servers. In that case, create your own
+//  ID-containing envelope, place that inside the encrypted message.
+message SessionRequestWithSessionId {
+  // Unique string to identify the session. This should be at least 128 bits of
+  // unique information.
+  bytes session_id = 1;
+  SessionRequest request = 2;
+}
+
+// Response message for the Oak protocol attested secure session.
+// This message is a wrapper containing different message types including:
+// attestation, handshake and encrypted data exchange.
+message SessionResponse {
+  oneof response {
+    AttestResponse attest_response = 1;
+    HandshakeResponse handshake_response = 2;
+    EncryptedMessage encrypted_message = 3;
+  }
+}

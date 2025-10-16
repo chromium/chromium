@@ -12,7 +12,10 @@ proto_library("oak_proto") {
     "chromium/proto/chromium_types/any.proto",
     "chromium/proto/chromium_types/timestamp.proto",
     "chromium/proto/crypto/certificate.proto",
+    "chromium/proto/crypto/crypto.proto",
     "chromium/proto/digest.proto",
+    "chromium/proto/session/messages.proto",
+    "chromium/proto/session/session.proto",
     "chromium/proto/variant.proto",
   ]
   proto_in_dir = "chromium"

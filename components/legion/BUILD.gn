@@ -26,6 +26,7 @@ source_set("legion") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/oak:oak_proto",
   ]
 }
 
