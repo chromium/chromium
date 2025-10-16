@@ -562,6 +562,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     return soft_navigation_heuristics_.Get();
   }
 
+  void requestResize(ExceptionState&);
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
