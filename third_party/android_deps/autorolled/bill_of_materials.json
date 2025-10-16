@@ -1477,7 +1477,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.33.0-RC2"
+        "version": "4.33.0"
     },
     {
         "name": "protobuf-lite",
