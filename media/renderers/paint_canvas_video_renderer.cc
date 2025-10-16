@@ -249,11 +249,8 @@ size_t NumConvertVideoFrameToRGBPixelsTasks(const VideoFrame* video_frame) {
 }
 
 void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
-                                      void* rgb_pixels,
-                                      size_t row_bytes,
-                                      bool premultiply_alpha,
+                                      const SkPixmap& dst_pixmap,
                                       libyuv::FilterMode filter,
-                                      SkColorType dst_color_type,
                                       size_t task_index,
                                       size_t n_tasks,
                                       base::RepeatingClosure* done) {
@@ -278,6 +275,8 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   if (task_index + 1 == n_tasks) {
     rows += height % rows_per_chunk;
   }
+  const auto chunk_subrect_of_visible_rect =
+      SkIRect::MakeXYWH(0, chunk_start * rows_per_chunk, width, rows);
 
   struct PlaneMetaData {
     size_t stride;
@@ -301,8 +300,10 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     }
   }
 
-  uint8_t* pixels = static_cast<uint8_t*>(rgb_pixels) +
-                    row_bytes * chunk_start * rows_per_chunk;
+  SkPixmap dst_chunk_pixmap;
+  bool dst_extract_subset_result = dst_pixmap.extractSubset(
+      &dst_chunk_pixmap, chunk_subrect_of_visible_rect);
+  CHECK(dst_extract_subset_result);
 
   if (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB ||
       format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR ||
@@ -314,18 +315,18 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
                                                   : kUnpremul_SkAlphaType),
         plane_meta[VideoFrame::Plane::kARGB].data,
         plane_meta[VideoFrame::Plane::kARGB].stride);
-    SkPixmap dst_pm(
-        SkImageInfo::Make(
-            width, rows, dst_color_type,
-            premultiply_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType),
-        pixels, row_bytes);
-    src_pm.readPixels(dst_pm);
+    src_pm.readPixels(dst_chunk_pixmap);
     done->Run();
     return;
   }
 
   // At this point, the dest must be N32 for YUV formats to write.
-  CHECK_EQ(dst_color_type, kN32_SkColorType);
+  CHECK_EQ(dst_pixmap.colorType(), kN32_SkColorType);
+  uint8_t* const pixels =
+      reinterpret_cast<uint8_t*>(dst_chunk_pixmap.writable_addr());
+  const size_t row_bytes = dst_chunk_pixmap.rowBytes();
+  const bool premultiply_alpha =
+      dst_chunk_pixmap.alphaType() == kPremul_SkAlphaType;
 
   // TODO(crbug.com/41380578): This should default to BT.709 color space.
   auto yuv_cs = kRec601_SkYUVColorSpace;
@@ -1275,6 +1276,13 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     NOTREACHED() << "Cannot extract pixels from non-CPU frame formats.";
   }
 
+  SkPixmap dst_pixmap(
+      SkImageInfo::Make(
+          gfx::SizeToSkISize(video_frame->visible_rect().size()),
+          dst_color_type,
+          premultiply_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType),
+      rgb_pixels, row_bytes);
+
   scoped_refptr<VideoFrame> temporary_frame;
   // TODO(thomasanderson): Parallelize converting these formats.
   switch (video_frame->format()) {
@@ -1298,8 +1306,9 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     case PIXEL_FORMAT_Y16:
       // Since it is grayscale conversion, we disregard
       // SK_PMCOLOR_BYTE_ORDER and always use GL_RGBA.
-      FlipAndConvertY16(video_frame, static_cast<uint8_t*>(rgb_pixels), GL_RGBA,
-                        GL_UNSIGNED_BYTE, false /*flip_y*/, row_bytes);
+      FlipAndConvertY16(
+          video_frame, reinterpret_cast<uint8_t*>(dst_pixmap.writable_addr()),
+          GL_RGBA, GL_UNSIGNED_BYTE, false /*flip_y*/, dst_pixmap.rowBytes());
       return;
     default:
       break;
@@ -1316,13 +1325,11 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
   for (size_t i = 1; i < n_tasks; ++i) {
     base::ThreadPool::PostTask(
         FROM_HERE, base::BindOnce(ConvertVideoFrameToRGBPixelsTask,
-                                  base::Unretained(video_frame), rgb_pixels,
-                                  row_bytes, premultiply_alpha, libyuv_filter,
-                                  dst_color_type, i, n_tasks, &barrier));
+                                  base::Unretained(video_frame), dst_pixmap,
+                                  libyuv_filter, i, n_tasks, &barrier));
   }
-  ConvertVideoFrameToRGBPixelsTask(video_frame, rgb_pixels, row_bytes,
-                                   premultiply_alpha, libyuv_filter,
-                                   dst_color_type, 0, n_tasks, &barrier);
+  ConvertVideoFrameToRGBPixelsTask(video_frame, dst_pixmap, libyuv_filter, 0,
+                                   n_tasks, &barrier);
   {
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
     event.Wait();
