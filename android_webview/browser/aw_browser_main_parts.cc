@@ -338,6 +338,9 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
     case ApkType::STANDALONE:
       apk_type_string = "Standalone";
       break;
+    case ApkType::UNKNOWN:
+      apk_type_string = "Unknown";
+      break;
   }
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, kWebViewApkTypeTrial, apk_type_string,
