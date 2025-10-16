@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -11,6 +13,8 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -62,6 +66,11 @@ void Click(views::View* clickable_view) {
                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
 }
 
+bool GetShowDefaultSearchEngineResetNotificationValue(Browser* browser) {
+  return browser->profile()->GetPrefs()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification);
+}
+
 }  // namespace
 
 class DseResetDialogBrowserTest : public DialogBrowserTest {
@@ -71,27 +80,45 @@ class DseResetDialogBrowserTest : public DialogBrowserTest {
         switches::kResetTamperedDefaultSearchEngine);
   }
 
+  void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kShowDefaultSearchEngineResetNotification, true);
+  }
+
   void ShowUi(const std::string& name) override {
     search_engines::MaybeShowSearchEngineResetNotification(
         browser(), AutocompleteMatch::Type::SEARCH_WHAT_YOU_TYPED);
+
+    views::BubbleDialogDelegate* bubble = GetDseResetBubble(browser());
+    ASSERT_NE(nullptr, bubble);
+    ASSERT_NE(nullptr, bubble->GetWidget());
+
+    views::test::WidgetVisibleWaiter(bubble->GetWidget()).Wait();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Verifies the dialog is shown correctly using the DialogBrowserTest framework.
-IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, InvokeUi_Show) {
+// Verifies the dialog is shown correctly using the DialogBrowserTest
+// framework.
+IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, ShowAndVerifyUi) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(GetShowDefaultSearchEngineResetNotificationValue(browser()));
+
   ShowAndVerifyUi();
+  EXPECT_FALSE(GetShowDefaultSearchEngineResetNotificationValue(browser()));
+
+  histograms.ExpectUniqueSample(
+      "Search.DefaultSearchEngineResetNotificationShown", true, 1);
 }
 
 // Verifies the "Got It" button closes the dialog.
 IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, GotItButtonClosesDialog) {
   ShowUi("default");
-  views::BubbleDialogDelegate* bubble = GetDseResetBubble(browser());
-  ASSERT_NE(nullptr, bubble);
-  ASSERT_NE(nullptr, bubble->GetWidget());
 
+  views::BubbleDialogDelegate* bubble = GetDseResetBubble(browser());
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   // The "Got It" button is the dialog's OK button.
   bubble->AcceptDialog();
@@ -103,9 +130,8 @@ IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, GotItButtonClosesDialog) {
 // Verifies the "Learn More" button opens a new tab with the correct URL.
 IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, LearnMoreButtonOpensNewTab) {
   ShowUi("default");
-  views::BubbleDialogDelegate* bubble = GetDseResetBubble(browser());
-  ASSERT_NE(nullptr, bubble);
 
+  views::BubbleDialogDelegate* bubble = GetDseResetBubble(browser());
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
   // The "Learn More" button is the dialog's "extra" view.
@@ -122,6 +148,28 @@ IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, LearnMoreButtonOpensNewTab) {
       "https://support.google.com/chrome/answer/"
       "3296214#zippy=%2Cchrome-reset-my-browser-settings");
   EXPECT_EQ(kExpectedLearnMoreUrl, new_tab->GetVisibleURL());
+  EXPECT_FALSE(GetShowDefaultSearchEngineResetNotificationValue(browser()));
+
+  // The dialog should not close when the learn more link is clicked.
+  EXPECT_NE(nullptr, GetDseResetBubble(browser()));
+}
+
+// Verifies the dialog is not shown if the controlling pref is false.
+IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, DialogNotShownIfPrefIsFalse) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification, false);
+
+  search_engines::MaybeShowSearchEngineResetNotification(
+      browser(), AutocompleteMatch::Type::SEARCH_WHAT_YOU_TYPED);
+
+  EXPECT_EQ(nullptr, GetDseResetBubble(browser()));
+}
+
+// Verifies the dialog is not shown for non-search match types (e.g., a URL).
+IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, DialogNotShownForUrlMatch) {
+  search_engines::MaybeShowSearchEngineResetNotification(
+      browser(), AutocompleteMatch::Type::URL_WHAT_YOU_TYPED);
+  EXPECT_EQ(nullptr, GetDseResetBubble(browser()));
 }
 
 // Test fixture where the controlling feature is disabled.
@@ -139,28 +187,12 @@ class DseResetDialogFeatureDisabledBrowserTest : public InProcessBrowserTest {
 // Verifies the dialog is not shown when the feature flag is disabled.
 IN_PROC_BROWSER_TEST_F(DseResetDialogFeatureDisabledBrowserTest,
                        DialogNotShown) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification, true);
+
   search_engines::MaybeShowSearchEngineResetNotification(
       browser(), AutocompleteMatch::Type::SEARCH_WHAT_YOU_TYPED);
-  EXPECT_EQ(nullptr, GetDseResetBubble(browser()));
-}
 
-// Test fixture for testing different autocomplete match types.
-class DseResetDialogMatchTypesBrowserTest : public InProcessBrowserTest {
- public:
-  DseResetDialogMatchTypesBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        switches::kResetTamperedDefaultSearchEngine);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Verifies the dialog is not shown for non-search match types (e.g., a URL).
-IN_PROC_BROWSER_TEST_F(DseResetDialogMatchTypesBrowserTest,
-                       DialogNotShownForUrlMatch) {
-  search_engines::MaybeShowSearchEngineResetNotification(
-      browser(), AutocompleteMatch::Type::URL_WHAT_YOU_TYPED);
   EXPECT_EQ(nullptr, GetDseResetBubble(browser()));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

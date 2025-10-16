@@ -77,6 +77,10 @@ inline constexpr char kDefaultSearchProviderContextMenuAccessAllowed[] =
 inline constexpr char kDefaultSearchProviderEnabled[] =
     "default_search_provider.enabled";
 
+// Whether to show the default search engine reset notification.
+inline constexpr char kShowDefaultSearchEngineResetNotification[] =
+    "default_search_provider.show_reset_notification";
+
 // The dictionary key used when the default search providers are given
 // in the preferences file. Normally they are copied from the main
 // preferences file.

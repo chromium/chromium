@@ -979,6 +979,22 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.DefaultSearchEngineResetNotificationShown"
+    enum="BooleanShown" expires_after="2026-09-30">
+  <owner>fikremengistu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records if the Default Search Engine (DSE) reset notification dialog is
+    shown to a user. It is recorded once, at the moment the notification dialog
+    is created. This occurs on the first omnibox search query that a user
+    performs after their DSE has been automatically reset for security. The
+    dialog will NOT be shown if, following a security reset, the user changes
+    the DSE before the dialog is shown.
+
+    This metric is recorded exclusively on macOS and Windows operating systems.
+  </summary>
+</histogram>
+
 <histogram name="Search.DefaultSearchProviderType2{Population}"
     enum="OmniboxSearchEngineType" expires_after="2026-02-22">
   <owner>mpearson@chromium.org</owner>

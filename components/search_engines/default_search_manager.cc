@@ -148,6 +148,8 @@ void DefaultSearchManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kDefaultSearchProviderDataPrefName);
   registry->RegisterDictionaryPref(kMirroredDefaultSearchProviderDataPrefName);
+  registry->RegisterBooleanPref(
+      prefs::kShowDefaultSearchEngineResetNotification, false);
 }
 
 // static
@@ -273,6 +275,20 @@ void DefaultSearchManager::OnDefaultSearchPrefChanged() {
   pref_service_->SetDict(kMirroredDefaultSearchProviderDataPrefName,
                          url_dict.Clone());
 
+  if (base::FeatureList::IsEnabled(
+          switches::kResetTamperedDefaultSearchEngine)) {
+    if (url_dict.empty() && HasRecentPrefReset()) {
+      pref_service_->SetBoolean(
+          prefs::kShowDefaultSearchEngineResetNotification, true);
+    } else {
+      // Cancel the pending notification if, following a security based DSE
+      // reset, the DSE is changed by the user before the dialog is shown. In
+      // other cases, this is a harmless no-op as the pref is already false.
+      pref_service_->SetBoolean(
+          prefs::kShowDefaultSearchEngineResetNotification, false);
+    }
+  }
+
   // The effective DSE may have changed unless we were using the fallback source
   // both before and after the above load.
   if (!source_was_fallback || (GetDefaultSearchEngineSource() != FROM_FALLBACK))
@@ -378,6 +394,8 @@ void DefaultSearchManager::HandleDefaultSearchEngineTampering(
   } else if (url_dict.empty()) {  // DSE reset by HMAC check.
     if (HasRecentPrefReset()) {   // HMAC reset occurred recently.
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::kRecentHmacReset;
+      pref_service_->SetBoolean(
+          prefs::kShowDefaultSearchEngineResetNotification, true);
     } else {
       // HMAC reset occurred long ago, but mirrored pref was never cleared.
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::kStaleHmacReset;
@@ -390,6 +408,8 @@ void DefaultSearchManager::HandleDefaultSearchEngineTampering(
       pref_service_->ClearPref(kDefaultSearchProviderDataPrefName);
       // Clear the mirrored pref to eliminate future mismatch.
       pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
+      pref_service_->SetBoolean(
+          prefs::kShowDefaultSearchEngineResetNotification, true);
     } else {
       outcome = DefaultSearchEngineMirrorCheckOutcomeType::
           kResetSkippedForEnterpriseDevice;

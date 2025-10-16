@@ -494,10 +494,42 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchReset) {
               kMirrorCheckReset),
       1);
 
+  // Ensure the notification is shown.
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification));
+
   // The DSE should now be the fallback.
   DefaultSearchManager::Source source;
   manager->GetDefaultSearchEngine(&source);
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
+}
+
+TEST_F(DefaultSearchManagerTest, UserDseChangeDisablesResetNotification) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
+
+  auto user_data = set_default_search_provider_data_pref("search_engine_A");
+  set_mirrored_default_search_provider_data_pref("search_engine_B");
+
+  auto manager = create_manager();
+
+  // The DSE was reset and notification dialog will show.
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification));
+  DefaultSearchManager::Source source;
+  manager->GetDefaultSearchEngine(&source);
+  EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
+
+  // Change the DSE (before the notification is shown).
+  set_default_search_provider_data_pref("search_engine_A");
+
+  // The DSE should have been changed.
+  ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+
+  // Ensure the notification is not shown.
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -532,6 +564,10 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
               kResetSkippedForEnterpriseDevice),
       1);
 
+  // Ensure the notification is not shown.
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification));
+
   // The DSE should not have been changed.
   DefaultSearchManager::Source source;
   ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
@@ -564,6 +600,10 @@ TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfFeatureDisabled) {
   // Nothing recorded in DefaultSearchEngineTamperingReset metric.
   histograms.ExpectTotalCount(
       DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric, 0);
+
+  // Ensure the notification is not shown.
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification));
 
   // The DSE should not have been changed.
   DefaultSearchManager::Source source;
@@ -602,6 +642,10 @@ TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfPrefsMatch) {
           DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
               kNoTamperingDetected),
       1);
+
+  // Ensure the notification is not shown.
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification));
 
   // The DSE should not have been changed.
   DefaultSearchManager::Source source;
@@ -645,6 +689,10 @@ TEST_F(DefaultSearchManagerTest, RecentHmacReset) {
           DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
               kRecentHmacReset),
       1);
+
+  // Ensure the notification is shown.
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification));
 }
 
 TEST_F(DefaultSearchManagerTest, StaleHmacReset) {
@@ -683,5 +731,39 @@ TEST_F(DefaultSearchManagerTest, StaleHmacReset) {
           DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
               kStaleHmacReset),
       1);
+
+  // Ensure the notification is not shown.
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification));
+}
+
+TEST_F(DefaultSearchManagerTest, EncryptionResetShowsNotification) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
+  base::HistogramTester histograms;
+
+  // Set up matching prefs so that no reset happens on initialization.
+  auto user_data = set_default_search_provider_data_pref("search_engine_A");
+  pref_service()->SetDict(
+      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
+      TemplateURLDataToDictionary(*user_data));
+
+  auto manager = create_manager();
+
+  // Verify that no reset occurred on initialization.
+  EXPECT_FALSE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+
+  // Simulate an encryption-based reset by setting the reset time
+  // and clearing the main DSE pref.
+  PrefHashFilter::SetResetTime(pref_service());
+  pref_service()->ClearPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+
+  // Ensure the notification is shown.
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      prefs::kShowDefaultSearchEngineResetNotification));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
