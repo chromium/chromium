@@ -10,9 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/compositor/compositor_export.h"
-#include "ui/compositor/layer.h"
 
 namespace ui {
+
+class Layer;
 
 class COMPOSITOR_EXPORT LayerOwner {
  public:
@@ -28,7 +29,8 @@ class COMPOSITOR_EXPORT LayerOwner {
     virtual ~Observer() = default;
   };
 
-  explicit LayerOwner(std::unique_ptr<Layer> layer = nullptr);
+  explicit LayerOwner();
+  explicit LayerOwner(std::unique_ptr<Layer> layer);
 
   LayerOwner(const LayerOwner&) = delete;
   LayerOwner& operator=(const LayerOwner&) = delete;
