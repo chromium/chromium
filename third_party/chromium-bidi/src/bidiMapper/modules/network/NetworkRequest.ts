@@ -245,16 +245,45 @@ export class NetworkRequest {
     return cookies;
   }
 
-  get bodySize() {
-    let bodySize = 0;
-    if (typeof this.#requestOverrides?.bodySize === 'number') {
-      bodySize = this.#requestOverrides.bodySize;
-    } else {
-      bodySize = bidiBodySizeFromCdpPostDataEntries(
-        this.#request.info?.request.postDataEntries ?? [],
+  #getBodySizeFromHeaders(
+    headers: Protocol.Network.Headers | undefined,
+  ): number | undefined {
+    if (headers === undefined) {
+      return undefined;
+    }
+
+    if (headers['Content-Length'] !== undefined) {
+      const bodySize = Number.parseInt(headers['Content-Length']);
+      if (Number.isInteger(bodySize)) {
+        return bodySize;
+      }
+      this.#logger?.(
+        LogType.debugError,
+        "Unexpected non-integer 'Content-Length' header",
       );
     }
-    return bodySize;
+
+    // TODO: process `Transfer-Encoding: chunked` case properly.
+
+    return undefined;
+  }
+
+  get bodySize() {
+    if (typeof this.#requestOverrides?.bodySize === 'number') {
+      return this.#requestOverrides.bodySize;
+    }
+    if (this.#request.info?.request.postDataEntries !== undefined) {
+      return bidiBodySizeFromCdpPostDataEntries(
+        this.#request.info?.request.postDataEntries,
+      );
+    }
+
+    // Try to guess the body size based on the `Content-Length` header.
+    return (
+      this.#getBodySizeFromHeaders(this.#request.info?.request.headers) ??
+      this.#getBodySizeFromHeaders(this.#request.extraInfo?.headers) ??
+      0
+    );
   }
 
   get #context(): string | null {

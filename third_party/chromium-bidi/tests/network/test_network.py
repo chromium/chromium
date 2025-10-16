@@ -13,6 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import json
+
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR, AnyOr
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
@@ -27,7 +29,7 @@ def compute_response_headers_size(headers) -> int:
 
 
 @pytest.mark.asyncio
-async def test_network_before_request_sent_event_emitted(
+async def test_network_before_request_sent_event_navigation(
         websocket, context_id, url_base):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
@@ -235,7 +237,7 @@ async def test_network_response_completed_event_emitted(
         })
 
     resp = await wait_for_event(websocket, "network.responseCompleted")
-    headersSize = compute_response_headers_size(
+    headers_size = compute_response_headers_size(
         resp["params"]["response"]["headers"])
 
     assert resp == AnyExtending({
@@ -266,7 +268,7 @@ async def test_network_response_completed_event_emitted(
                 "headers": ANY_LIST,
                 "mimeType": AnyOr("", "text/html"),
                 "bytesReceived": ANY_NUMBER,
-                "headersSize": headersSize,
+                "headersSize": headers_size,
                 "bodySize": 0,
                 "content": {
                     "size": 0
@@ -292,7 +294,7 @@ async def test_network_response_started_event_emitted(websocket, context_id,
         })
 
     resp = await read_JSON_message(websocket)
-    headersSize = compute_response_headers_size(
+    headers_size = compute_response_headers_size(
         resp["params"]["response"]["headers"])
 
     assert resp == AnyExtending({
@@ -323,7 +325,7 @@ async def test_network_response_started_event_emitted(websocket, context_id,
                 "headers": ANY_LIST,
                 "mimeType": AnyOr("", "text/html"),
                 "bytesReceived": ANY_NUMBER,
-                "headersSize": headersSize,
+                "headersSize": headers_size,
                 "bodySize": 0,
                 "content": {
                     "size": 0
@@ -592,4 +594,62 @@ async def test_network_preflight(websocket, context_id, html, url_example,
             },
         },
         'type': 'event',
+    })
+
+
+@pytest.mark.asyncio
+async def test_network_before_request_sent_event_fetch_post(
+        websocket, context_id, url_example, url_echo):
+
+    await goto_url(websocket, context_id, url_example)
+
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    body = json.dumps({'foo': 'bar'})
+
+    # Initiate a non-trivial CORS request.
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""
+                    fetch('{url_echo}', {{
+                    method: 'POST',
+                    body: '{body}',
+                    }})
+                """,
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+            }
+        })
+
+    resp = await wait_for_event(websocket, "network.beforeRequestSent")
+
+    assert resp == AnyExtending({
+        'type': 'event',
+        "method": "network.beforeRequestSent",
+        "params": {
+            "isBlocked": False,
+            "context": context_id,
+            "navigation": None,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": url_echo,
+                "method": "POST",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": ANY_NUMBER,
+                "bodySize": len(body),
+                "timings": ANY_DICT,
+                "initiatorType": "fetch",
+                "destination": "",
+            },
+            "initiator": {
+                "type": "script"
+            },
+            "timestamp": ANY_TIMESTAMP
+        }
     })
