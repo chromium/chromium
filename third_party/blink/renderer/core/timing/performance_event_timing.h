@@ -129,7 +129,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   void SetInteractionId(uint64_t interaction_id);
 
-  const AtomicString& targetIdentifier() const;
+  const AtomicString& targetSelector() const;
 
   bool HasKnownInteractionID() const;
 
@@ -172,7 +172,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   mutable DOMHighResTimeStamp processing_end_ = 0;
   bool cancelable_;
   WeakMember<Node> target_;
-  AtomicString target_identifier_;
+  AtomicString target_selector_;
   std::optional<uint64_t> interaction_id_ = std::nullopt;
   uint32_t interaction_offset_ = 0;
 

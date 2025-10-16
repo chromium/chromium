@@ -125,7 +125,7 @@ Node* PerformanceEventTiming::target() const {
 }
 
 void PerformanceEventTiming::SetTarget(EventTarget* target) {
-  target_identifier_ = EventTargetToString(target);
+  target_selector_ = EventTargetToString(target);
   target_ = target ? target->ToNode() : nullptr;
 }
 
@@ -141,8 +141,8 @@ void PerformanceEventTiming::SetInteractionId(uint64_t interaction_id) {
   interaction_id_ = interaction_id;
 }
 
-const AtomicString& PerformanceEventTiming::targetIdentifier() const {
-  return target_identifier_;
+const AtomicString& PerformanceEventTiming::targetSelector() const {
+  return target_selector_;
 }
 
 bool PerformanceEventTiming::HasKnownInteractionID() const {
@@ -199,8 +199,8 @@ void PerformanceEventTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("processingStart", processingStart());
   builder.AddNumber("processingEnd", processingEnd());
   builder.AddBoolean("cancelable", cancelable_);
-  if (RuntimeEnabledFeatures::EventTimingTargetIdentifierEnabled()) {
-    builder.AddString("targetIdentifier", targetIdentifier());
+  if (RuntimeEnabledFeatures::EventTimingTargetSelectorEnabled()) {
+    builder.AddString("targetSelector", targetSelector());
   }
 }
 
