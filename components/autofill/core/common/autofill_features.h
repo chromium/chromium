@@ -182,6 +182,8 @@ BASE_DECLARE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillFixFormTracking);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillUseChildrenAndReformatMergeMode);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseSubmittedFormInHtmlSubmission);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPreferSavedFormAsSubmittedForm);

@@ -440,6 +440,13 @@ BASE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission,
 // TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillFixFormTracking, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the MergeMode::kMergeChildrenAndReformatIfNeeded will be added to
+// the StreetAddressNode, StreetLocationNode and HouseNumberAndApartmentNode's
+// merge mode.
+// TODO(crbug.com/447111009): Remove when launched.
+BASE_FEATURE(kAutofillUseChildrenAndReformatMergeMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Uses AutofillAgent::GetSubmittedForm() in HTML submissions.
 // See `AutofillAgent::GetSubmittedForm()` for more documentation.
 // TODO(crbug.com/40281981): Remove when launched.
@@ -537,11 +544,10 @@ BASE_FEATURE_PARAM(bool,
 // special cases. See
 // `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
 BASE_FEATURE_PARAM(bool,
-    kAutofillModelPredictionsSmallFormRules,
-    &kAutofillModelPredictions,
-    "small_form_rules",
-    false);
-
+                   kAutofillModelPredictionsSmallFormRules,
+                   &kAutofillModelPredictions,
+                   "small_form_rules",
+                   false);
 
 // If enabled, a pre-filled field will not be filled.
 BASE_FEATURE(kAutofillSkipPreFilledFields, base::FEATURE_ENABLED_BY_DEFAULT);

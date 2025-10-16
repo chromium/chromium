@@ -111,8 +111,10 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
       return std::make_unique<AddressNode>(std::move(children));
     case ADDRESS_HOME_ADMIN_LEVEL2:
       return std::make_unique<AdminLevel2Node>(std::move(children));
-    case ADDRESS_HOME_APT_NUM:
+    case ADDRESS_HOME_APT:
       return std::make_unique<ApartmentNode>(std::move(children));
+    case ADDRESS_HOME_APT_NUM:
+      return std::make_unique<ApartmentNumNode>(std::move(children));
     case ADDRESS_HOME_BETWEEN_STREETS:
       return std::make_unique<BetweenStreetsNode>(std::move(children));
     case ADDRESS_HOME_BETWEEN_STREETS_1:
@@ -129,6 +131,8 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
       return std::make_unique<FloorNode>(std::move(children));
     case ADDRESS_HOME_HOUSE_NUMBER:
       return std::make_unique<HouseNumberNode>(std::move(children));
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+      return std::make_unique<HouseNumberAndApartmentNode>(std::move(children));
     case ADDRESS_HOME_LANDMARK:
       return std::make_unique<LandmarkNode>(std::move(children));
     case ADDRESS_HOME_SORTING_CODE:
@@ -156,9 +160,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_LINE3:
-    case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_TYPE:
-    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
     case ADDRESS_HOME_OTHER_SUBUNIT:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:

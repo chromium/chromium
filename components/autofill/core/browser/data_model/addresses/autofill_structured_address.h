@@ -33,6 +33,13 @@ class HouseNumberNode : public AddressComponent {
       const AddressCountryCode& common_country_code) const override;
 };
 
+// A node that represents the house number and apartment.
+class HouseNumberAndApartmentNode : public AddressComponent {
+ public:
+  explicit HouseNumberAndApartmentNode(SubcomponentsList children);
+  ~HouseNumberAndApartmentNode() override;
+};
+
 // Contains the specific location in the street (e.g. street name and house
 // number info.)
 class StreetLocationNode : public AddressComponent {
@@ -48,11 +55,18 @@ class FloorNode : public AddressComponent {
   ~FloorNode() override;
 };
 
-// The number of the apartment.
+// The apartment node.
 class ApartmentNode : public AddressComponent {
  public:
   explicit ApartmentNode(SubcomponentsList children);
   ~ApartmentNode() override;
+};
+
+// The number of the apartment.
+class ApartmentNumNode : public AddressComponent {
+ public:
+  explicit ApartmentNumNode(SubcomponentsList children);
+  ~ApartmentNumNode() override;
 };
 
 // The SubPremise normally contains the floor and the apartment number.
