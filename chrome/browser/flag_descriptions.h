@@ -1586,6 +1586,9 @@ extern const char kOmniboxZpsSuggestionLimitDescription[];
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];
 extern const char kOmniboxUIMaxAutocompleteMatchesDescription[];
 
+extern const char kWebUIOmniboxAimPopupName[];
+extern const char kWebUIOmniboxAimPopupDescription[];
+
 extern const char kWebUIOmniboxFullPopupName[];
 extern const char kWebUIOmniboxFullPopupDescription[];
 

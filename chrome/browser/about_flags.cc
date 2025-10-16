@@ -10161,13 +10161,17 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(external_intents::kExternalNavigationDebugLogs)},
 #endif
 
-    {"webui-omnibox-popup", flag_descriptions::kWebUIOmniboxPopupName,
-     flag_descriptions::kWebUIOmniboxPopupDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
+    {"webui-omnibox-aim-popup", flag_descriptions::kWebUIOmniboxAimPopupName,
+     flag_descriptions::kWebUIOmniboxAimPopupDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxAimPopup)},
 
     {"webui-omnibox-full-popup", flag_descriptions::kWebUIOmniboxFullPopupName,
      flag_descriptions::kWebUIOmniboxFullPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxFullPopup)},
+
+    {"webui-omnibox-popup", flag_descriptions::kWebUIOmniboxPopupName,
+     flag_descriptions::kWebUIOmniboxPopupDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
 
     {"webui-omnibox-popup-debug",
      flag_descriptions::kWebUIOmniboxPopupDebugName,

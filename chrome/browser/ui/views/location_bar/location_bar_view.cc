@@ -314,7 +314,8 @@ void LocationBarView::Init() {
   omnibox_view_->Init();
 
   const bool web_ui_popup_dropdown_only =
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) &&
+      (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) ||
+       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) &&
       !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
 
   if ((web_ui_popup_dropdown_only &&

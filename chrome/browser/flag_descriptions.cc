@@ -3092,6 +3092,12 @@ const char kOmniboxZpsSuggestionLimitDescription[] =
     "Enables limits on the total number of suggestions, as well as separate "
     "limits for search and URL suggestions in the omnibox.";
 
+const char kWebUIOmniboxAimPopupName[] = "WebUI Omnibox AIM Popup";
+const char kWebUIOmniboxAimPopupDescription[] =
+    "If enabled, using certain trigger operations the omnibox suggestions "
+    "popup transition to showing the AI-Mode "
+    "compose-box input and suggestions.";
+
 const char kWebUIOmniboxFullPopupName[] = "WebUI Omnibox Full Popup";
 const char kWebUIOmniboxFullPopupDescription[] =
     "If enabled, shows the omnibox suggestions and the search input in the "
