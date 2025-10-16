@@ -33,7 +33,9 @@ enum class BubbleType {
   kPassword = 8,
   // Denotes bubble for walletable pass detection consent.
   kWalletablePassConsent = 9,
-  kMaxValue = kWalletablePassConsent
+  // Denotes bubble for walletable pass save.
+  kWalletablePassSave = 10,
+  kMaxValue = kWalletablePassSave
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillBubbleType)
 

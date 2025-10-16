@@ -26,8 +26,6 @@ class WalletablePassConsentBubbleController
   ~WalletablePassConsentBubbleController() override;
 
   // BubbleControllerBase:
-  void OnBubbleDiscarded() override {}
-  bool CanBeReshown() const override;
   autofill::BubbleType GetBubbleType() const override;
   base::WeakPtr<autofill::BubbleControllerBase> GetBubbleControllerBaseWeakPtr()
       override;
@@ -38,7 +36,7 @@ class WalletablePassConsentBubbleController
 
   // Shows the consent bubble. `callback` will be run when the user makes a
   // decision.
-  void ShowConsentBubble(
+  void SetUpAndShowConsentBubble(
       WalletablePassClient::WalletablePassBubbleResultCallback callback);
 
  protected:

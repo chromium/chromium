@@ -12,6 +12,10 @@ source_set("wallet") {
     "walletable_pass_consent_bubble_controller.h",
     "walletable_pass_consent_bubble_view.cc",
     "walletable_pass_consent_bubble_view.h",
+    "walletable_pass_save_bubble_controller.cc",
+    "walletable_pass_save_bubble_controller.h",
+    "walletable_pass_save_bubble_view.cc",
+    "walletable_pass_save_bubble_view.h",
   ]
 
   deps = [

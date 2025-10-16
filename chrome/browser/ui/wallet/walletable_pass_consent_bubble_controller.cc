@@ -22,20 +22,13 @@ autofill::BubbleType WalletablePassConsentBubbleController::GetBubbleType()
 }
 
 void WalletablePassConsentBubbleController::ShowBubble() {
-  if (IsShowingBubble()) {
-    return;
-  }
   // TODO(crbug.com/445826875): Create and set the actual bubble view here.
 }
 
-void WalletablePassConsentBubbleController::ShowConsentBubble(
+void WalletablePassConsentBubbleController::SetUpAndShowConsentBubble(
     WalletablePassClient::WalletablePassBubbleResultCallback callback) {
   SetCallback(std::move(callback));
   QueueOrShowBubble();
-}
-
-bool WalletablePassConsentBubbleController::CanBeReshown() const {
-  return true;
 }
 
 base::WeakPtr<autofill::BubbleControllerBase>

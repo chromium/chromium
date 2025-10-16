@@ -2282,6 +2282,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
         summary="Virtual card enroll confirmation bubble."/>
     <variant name="WalletablePassConsent"
         summary="Walletable pass consent bubble."/>
+    <variant name="WalletablePassSave" summary="Walletable pass save bubble."/>
   </token>
 <!-- LINT.ThenChange(//chrome/browser/ui/autofill/bubble_manager_impl.cc:BubbleTypeToMetricSuffix) -->
 

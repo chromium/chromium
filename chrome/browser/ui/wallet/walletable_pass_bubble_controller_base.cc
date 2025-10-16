@@ -41,6 +41,10 @@ WalletablePassBubbleControllerBase::WalletablePassBubbleControllerBase(
 WalletablePassBubbleControllerBase::~WalletablePassBubbleControllerBase() =
     default;
 
+bool WalletablePassBubbleControllerBase::CanBeReshown() const {
+  return true;
+}
+
 bool WalletablePassBubbleControllerBase::IsShowingBubble() const {
   return bubble_view_ != nullptr;
 }

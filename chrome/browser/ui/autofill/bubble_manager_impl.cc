@@ -45,6 +45,8 @@ int GetPriorityForBubbleType(BubbleType type) {
       return 2;
     case BubbleType::kWalletablePassConsent:
       return 1;
+    case BubbleType::kWalletablePassSave:
+      return 0;
   }
   NOTREACHED();
 }
@@ -64,6 +66,7 @@ bool ShouldAlwaysPreemptSameType(BubbleType bubble_type) {
     case BubbleType::kSaveUpdateAddress:
     case BubbleType::kOfferNotification:
     case BubbleType::kWalletablePassConsent:
+    case BubbleType::kWalletablePassSave:
       return false;
   }
   NOTREACHED();
@@ -92,6 +95,8 @@ std::string_view BubbleTypeToMetricSuffix(BubbleType bubble_type) {
       return "Password";
     case BubbleType::kWalletablePassConsent:
       return "WalletablePassConsent";
+    case BubbleType::kWalletablePassSave:
+      return "WalletablePassSave";
   }
   NOTREACHED();
 }

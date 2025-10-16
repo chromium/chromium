@@ -10,6 +10,9 @@
 namespace optimization_guide {
 class OptimizationGuideDecider;
 class OptimizationGuideModelExecutor;
+namespace proto {
+class WalletablePass;
+}  // namespace proto
 }  // namespace optimization_guide
 
 namespace wallet {
@@ -45,6 +48,10 @@ class WalletablePassClient {
   GetOptimizationGuideModelExecutor() = 0;
 
   virtual void ShowWalletablePassConsentBubble(
+      WalletablePassBubbleResultCallback callback) = 0;
+
+  virtual void ShowWalletablePassSaveBubble(
+      const optimization_guide::proto::WalletablePass& pass,
       WalletablePassBubbleResultCallback callback) = 0;
 };
 

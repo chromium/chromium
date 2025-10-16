@@ -22,6 +22,7 @@ namespace wallet {
 
 class ContentWalletablePassIngestionController;
 class WalletablePassConsentBubbleController;
+class WalletablePassSaveBubbleController;
 
 // The Chrome implementation of `wallet::WalletablePassClient`.
 //
@@ -42,6 +43,9 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   GetOptimizationGuideModelExecutor() override;
   void ShowWalletablePassConsentBubble(
       WalletablePassBubbleResultCallback callback) override;
+  void ShowWalletablePassSaveBubble(
+      const optimization_guide::proto::WalletablePass& pass,
+      WalletablePassBubbleResultCallback callback) override;
 
  private:
   const raw_ref<tabs::TabInterface> tab_;
@@ -49,6 +53,7 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   ContentWalletablePassIngestionController controller_;
   std::unique_ptr<WalletablePassConsentBubbleController>
       consent_bubble_controller_;
+  std::unique_ptr<WalletablePassSaveBubbleController> save_bubble_controller_;
 };
 
 }  // namespace wallet
