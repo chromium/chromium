@@ -390,17 +390,22 @@ public class TopInsetCoordinatorUnitTest {
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
 
         // Tests the transition from Tab switcher to a NTP.
-        mTopInsetCoordinator.onTabSwitched(null);
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
+        assertTrue(mTopInsetCoordinator.getIsTabSwitcherShowingForTesting());
         mTopInsetCoordinator.onTabSwitched(mNtpTab);
+        assertTrue(mTopInsetCoordinator.getInTabSwitcherToNtpTransitionForTesting());
         clearInvocations(mInsetObserver);
 
         mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.BROWSING);
+        assertFalse(mTopInsetCoordinator.getIsTabSwitcherShowingForTesting());
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
         // Tests the transition from a NTP to Tab switcher.
         mTopInsetCoordinator.onTabSwitched(null);
+        assertFalse(mTopInsetCoordinator.getInTabSwitcherToNtpTransitionForTesting());
         clearInvocations(mInsetObserver);
         mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
+        assertTrue(mTopInsetCoordinator.getIsTabSwitcherShowingForTesting());
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
     }
 
