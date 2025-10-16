@@ -8027,11 +8027,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"enable-live-caption-multilang",
-     flag_descriptions::kEnableLiveCaptionMultilangName,
-     flag_descriptions::kEnableLiveCaptionMultilangDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kLiveCaptionMultiLanguage)},
-
     {"enable-headless-live-caption",
      flag_descriptions::kEnableHeadlessLiveCaptionName,
      flag_descriptions::kEnableHeadlessLiveCaptionDescription, kOsDesktop,

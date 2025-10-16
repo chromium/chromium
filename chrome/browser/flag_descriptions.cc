@@ -5763,11 +5763,6 @@ const char kCastMirroringTargetPlayoutDelay300ms[] = "300ms.";
 const char kCastMirroringTargetPlayoutDelay350ms[] = "350ms.";
 const char kCastMirroringTargetPlayoutDelay400ms[] = "400ms.";
 
-const char kEnableLiveCaptionMultilangName[] = "Multilingual Live Caption";
-const char kEnableLiveCaptionMultilangDescription[] =
-    "Enables the multilingual Live Caption Feature which allows "
-    "for many language choices and automated language choices.";
-
 const char kEnableHeadlessLiveCaptionName[] = "Headless Live Captions";
 const char kEnableHeadlessLiveCaptionDescription[] =
     "Enable features related to headless captions exploration. These are "

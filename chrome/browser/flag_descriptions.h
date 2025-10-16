@@ -3243,8 +3243,6 @@ extern const char kCastMirroringTargetPlayoutDelay400ms[];
 extern const char kCreateNewTabGroupAppMenuTopLevelName[];
 extern const char kCreateNewTabGroupAppMenuTopLevelDescription[];
 
-extern const char kEnableLiveCaptionMultilangName[];
-extern const char kEnableLiveCaptionMultilangDescription[];
 
 extern const char kEnableHeadlessLiveCaptionName[];
 extern const char kEnableHeadlessLiveCaptionDescription[];
