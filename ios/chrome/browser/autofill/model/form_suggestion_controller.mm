@@ -501,7 +501,7 @@ bool IsRequestDedupingAllowed() {
           fieldByFieldFillingTypeUsed:suggestion.fieldByFieldFillingTypeUsed
                        requiresReauth:suggestion.requiresReauth
            acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement];
-      // TODO(crbug.com/353663764): Include `featureForIPH` in the
+      // TODO(crbug.com/452315148): Include `featureForIPH` in the
       // `FormSuggestion` constructor.
       suggestionCopy.featureForIPH = suggestion.featureForIPH;
       [suggestionsCopy addObject:suggestionCopy];
