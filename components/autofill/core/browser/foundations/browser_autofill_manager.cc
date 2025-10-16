@@ -1121,9 +1121,36 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source,
     std::optional<PasswordSuggestionRequest> password_request) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
+  // still need to offer Autocomplete.
+  // TODO(crbug.com/433224307): Consider early returning here when the cache
+  // starts storing all forms and fields.
+  std::ignore = GetCachedFormAndField(form.global_id(), field_id,
+                                      &form_structure, &autofill_field);
+
   if (password_request.has_value()) {
     if (PasswordManagerDelegate* password_delegate =
             client().GetPasswordManagerDelegate(field_id)) {
+      // This block implements the following behavior: For an <input
+      // type="password"> field, do not show a dropdown if the current value is
+      // non empty (typically manually typed) or autofilled, and close any
+      // previously opened dropdown.
+      if (autofill_field &&
+          autofill_field->form_control_type() ==
+              FormControlType::kInputPassword &&
+          !autofill_field->value().empty() &&
+          !autofill_field->is_autofilled()) {
+        // Hiding the dialog is put behind this feature flag since the agent is
+        // also performing a hide.
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillAndPasswordsInSameSurface)) {
+          client().HideAutofillSuggestions(
+              SuggestionHidingReason::kFieldValueChanged);
+        }
+        return;
+      }
 #if !BUILDFLAG(IS_ANDROID)
       password_delegate->ShowSuggestions(password_request->field);
 #else
@@ -1138,15 +1165,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
     return;
   }
-
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
-  // still need to offer Autocomplete.
-  // TODO(crbug.com/433224307): Consider early returning here when the cache
-  // starts storing all forms and fields.
-  std::ignore = GetCachedFormAndField(form.global_id(), field_id,
-                                      &form_structure, &autofill_field);
 
   UpdateLoggersReadinessData();
 

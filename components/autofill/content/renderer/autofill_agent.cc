@@ -882,20 +882,22 @@ bool AutofillAgent::TryShowPasswordSuggestions(
     const WebInputElement& input,
     IsPasswordRequestManuallyTriggered manually_triggered_password_request,
     base::optional_ref<const PasswordSuggestionRequest> password_request) {
-  bool is_field_empty = input.IsAutofilled() || input.Value().IsEmpty();
-  bool is_password_field = input.FormControlTypeForAutofill() ==
-                           blink::mojom::FormControlType::kInputPassword;
-
-  // Show suggestions empty password fields or for username fields with
-  // matching suggestions - even if non-empty.
-  if (is_password_field && !is_field_empty) {
-    HidePopup();
-    return false;
-  }
-
   if (base::FeatureList::IsEnabled(
           features::kAutofillAndPasswordsInSameSurface)) {
     // No update to `is_popup_possibly_visible_` yet: it could still be open.
+    return false;
+  }
+
+  const bool is_field_empty_or_autofilled =
+      input.IsAutofilled() || input.Value().IsEmpty();
+  const bool is_password_field = input.FormControlTypeForAutofill() ==
+                                 blink::mojom::FormControlType::kInputPassword;
+
+  // Only show password suggestions on password-type fields if the field is
+  // either empty or autofilled. This will effectively close the popup on a
+  // password-type field once the user starts typing.
+  if (is_password_field && !is_field_empty_or_autofilled) {
+    HidePopup();
     return false;
   }
 
