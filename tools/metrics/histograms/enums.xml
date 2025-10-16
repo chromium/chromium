@@ -5512,6 +5512,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147174366" label="MSPR_E_NEEDS_INDIVIDUALIZATION"/>
   <int value="-2147174354" label="MSPR_E_UNABLE_TO_OPEN_DATA_STORE"/>
   <int value="-2147174250" label="MSPR_E_NO_DECRYPTOR_AVAILABLE"/>
+  <int value="-2147174218" label="MSPR_E_H264_FORMAT_ERROR (0x8004B8B6)"/>
   <int value="-2147174206" label="MSPR_E_INVALID_H264_CONTENT (0x8004B8C2)"/>
   <int value="-2147174205"
       label="MSPR_E_CDM_PERSISTENT_LICENSE_NOT_ALLOWED (0x8004B8C3)"/>
@@ -5527,6 +5528,8 @@ shown properly on the user-facing crash UI.
   <int value="-2147171352" label="DRM_E_LOGICERR"/>
   <int value="-2147169535" label="DRM_E_SOAPXML_XML_FORMAT (0x8004CB01)"/>
   <int value="-2147169008" label="DRM_E_TEE_INVALID_KEY_DATA"/>
+  <int value="-2147169007"
+      label="DRM_E_TEE_PROVISIONING_REQUIRED (0x8004CD11)"/>
   <int value="-2147169006" label="DRM_E_TEE_INVALID_HWDRM_STATE"/>
   <int value="-2147169004" label="DRM_E_TEE_CLOCK_NOT_SET"/>
   <int value="-2147168998"
@@ -5544,8 +5547,13 @@ shown properly on the user-facing crash UI.
   <int value="-2147167231" label="DRM_E_XB_INVALID_OBJECT"/>
   <int value="-2147167228" label="DRM_E_XB_UNKNOWN_ELEMENT_TYPE"/>
   <int value="-2147165581" label="DRM_E_H264_SH_PPS_NOT_FOUND"/>
-  <int value="-2147164882" label="DRM_E_* - OEM Specific (8004DD2E)"/>
-  <int value="-2147164862" label="DRM_E_* - OEM Specific (8004DD42)"/>
+  <int value="-2147165569"
+      label="DRM_E_H264_SH_CHROMA_WEIGHT_DENOM (0x8004DA7F)"/>
+  <int value="-2147165553" label="DRM_E_H264_SH_MODEL_NUMBER (0x8004DA8F)"/>
+  <int value="-2147164913" label="DRM_E_* - OEM Specific (0x8004DD0F)"/>
+  <int value="-2147164882" label="DRM_E_* - OEM Specific (0x8004DD2E)"/>
+  <int value="-2147164862" label="DRM_E_* - OEM Specific (0x8004DD42)"/>
+  <int value="-2147164714" label="DRM_E_* - OEM Specific (0x8004DDD6)"/>
   <int value="-2147157503" label="media::kErrorInitializeMediaFoundation"/>
   <int value="-2147157502" label="media::kErrorInitializeVideoWindowClass"/>
   <int value="-2147157501" label="media::kErrorCdmProxyReceivedInInvalidState"/>
