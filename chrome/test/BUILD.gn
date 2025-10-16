@@ -10858,6 +10858,8 @@ if (!is_android) {
       "interaction/interactive_browser_test.h",
       "interaction/interactive_browser_test_internal.cc",
       "interaction/interactive_browser_test_internal.h",
+      "interaction/interactive_browser_window_test.cc",
+      "interaction/interactive_browser_window_test.h",
       "interaction/tracked_element_webcontents.cc",
       "interaction/tracked_element_webcontents.h",
       "interaction/webcontents_interaction_test_util.cc",
