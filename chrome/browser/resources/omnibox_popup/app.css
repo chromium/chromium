@@ -9,8 +9,7 @@
 
 :host {
   --cr-searchbox-icon-container-size: 28px;
-  --cr-searchbox-match-icon-container-background-fallback:
-      var(--color-omnibox-results-background-hovered);
+  --cr-searchbox-match-icon-container-background-fallback: var(--color-omnibox-results-background-hovered);
   --cr-searchbox-match-padding: 6px;
   --cr-searchbox-match-padding-inline-start: 16px;
   --cr-searchbox-match-text-padding-inline-start: 12px;
@@ -22,21 +21,20 @@
   font-size: 14.6px; /* closely resembles the omnibox input font size. */
   /* Colors used in the cr-searchbox results dropdown */
   --color-searchbox-answer-icon-background: var(--color-omnibox-answer-icon-g-m3-background);
-  --color-searchbox-answer-icon-foreground: var(--color-omnibox-answer-icon-g-m3-foreground);
-  --color-searchbox-results-action-chip-focus-outline:
-      var(--color-omnibox-results-button-icon-selected);
+  --color-searchbox-answer-icon-foreground: var(--color-omnibox-results-starter-pack-icon);
+  --color-searchbox-results-action-chip-focus-outline: var(--color-omnibox-results-button-icon-selected);
   --color-searchbox-results-action-chip: var(--color-omnibox-results-button-border);
   --color-searchbox-results-action-chip-icon: var(--color-omnibox-results-button-icon);
-  --color-searchbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
   --color-searchbox-results-background: var(--color-omnibox-results-background);
-  --color-searchbox-results-button-hover:
-      var(--color-omnibox-results-button-ink-drop-row-hovered);
-  --color-searchbox-results-button-selected-hover:
-      var(--color-omnibox-results-button-ink-drop-row-selected);
+  --color-searchbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
+  --color-searchbox-results-background-selected: var(--color-omnibox-results-background-selected);
+  --color-searchbox-results-button-hover: var(--color-omnibox-results-button-ink-drop-row-hovered);
+  --color-searchbox-results-button-selected-hover: var(--color-omnibox-results-button-ink-drop-row-selected);
   --color-searchbox-results-dim-selected: var(--color-omnibox-results-text-dimmed-selected);
   --color-searchbox-results-focus-indicator: var(--color-omnibox-results-focus-indicator);
-  --color-searchbox-results-foreground-dimmed: var(--color-omnibox-results-text-dimmed);
   --color-searchbox-results-foreground: var(--color-omnibox-text);
+  --color-searchbox-results-foreground-dimmed: var(--color-omnibox-results-text-dimmed);
+  --color-searchbox-results-foreground-selected: var(--color-omnibox-results-text-selected);
   --color-searchbox-results-icon: var(--color-omnibox-results-icon);
   --color-searchbox-results-icon-container-background: unset;
   --color-searchbox-results-icon-focused-outline: var(--color-omnibox-results-focus-indicator);

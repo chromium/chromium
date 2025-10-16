@@ -40,6 +40,10 @@ cr-searchbox-match {
   color: var(--color-searchbox-results-foreground);
 }
 
+cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
+  color: var(--color-searchbox-results-foreground-selected);
+}
+
 .header {
   align-items: center;
   box-sizing: border-box;

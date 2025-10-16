@@ -74,9 +74,13 @@
   margin-inline-end: 0px;
 }
 
-.container:not(.actions):hover,
-:host(:is(:focus-visible, [selected]))  .container:not(.actions) {
+.container:not(.actions):hover {
   background-color: var(--color-searchbox-results-background-hovered);
+}
+
+:host(:is(:focus-visible, [selected]))  .container:not(.actions) {
+  background-color: var(--color-searchbox-results-background-selected,
+      var(--color-searchbox-results-background-hovered));
 }
 
 :host([enable-csb-motion-tweaks_][is-lens-searchbox_]) .container {
@@ -134,6 +138,11 @@
 /* Focus indicator only shown for vertically rendered matches. */
 :host-context(.vertical):host(:is(:focus-visible, [selected]:not(:focus-within))) #focus-indicator:not(.selected-within) {
   display: block;
+}
+
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #icon {
+  --color-searchbox-search-icon-background:
+      var(--color-searchbox-results-dim-selected);
 }
 
 #prefix {
