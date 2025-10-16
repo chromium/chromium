@@ -402,6 +402,10 @@ class TestAutofillClientTemplate : public T {
     return is_cvc_saving_supported_;
   }
 
+  bool IsCreditCardUploadEnabled() const override {
+    return is_credit_card_upload_enabled_;
+  }
+
   LogManager* GetCurrentLogManager() override { return log_manager_.get(); }
 
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
@@ -604,6 +608,10 @@ class TestAutofillClientTemplate : public T {
     is_cvc_saving_supported_ = is_cvc_saving_supported;
   }
 
+  void set_is_credit_card_upload_enabled(bool is_credit_card_upload_enabled) {
+    is_credit_card_upload_enabled_ = is_credit_card_upload_enabled;
+  }
+
   void set_crowdsourcing_manager(
       std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager) {
     crowdsourcing_manager_ = std::move(crowdsourcing_manager);
@@ -739,6 +747,8 @@ class TestAutofillClientTemplate : public T {
   bool is_showing_popup_ = false;
 
   bool is_cvc_saving_supported_ = true;
+
+  bool is_credit_card_upload_enabled_ = true;
 
   SuggestionHidingReason popup_hidden_reason_;
 

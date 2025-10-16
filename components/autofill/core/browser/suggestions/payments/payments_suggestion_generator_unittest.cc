@@ -309,6 +309,11 @@ class PaymentsSuggestionGeneratorTest
 
   const std::string& app_locale() { return payments_data().app_locale(); }
 
+  void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled) {
+    autofill_client().set_is_credit_card_upload_enabled(
+        credit_card_upload_enabled);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};

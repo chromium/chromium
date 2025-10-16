@@ -636,6 +636,10 @@ class AutofillClient {
   // clients (IosWebView) to opt out of the CVC saving feature.
   virtual bool IsCvcSavingSupported() const;
 
+  // Returns true if all the conditions for enabling the upload of credit card
+  // are satisfied.
+  virtual bool IsCreditCardUploadEnabled() const;
+
   // Returns a LogManager instance (for chrome://autofill-internals). Note that
   // the return value may change over the lifetime of an AutofillClient from
   // null to non-null, so callers should not store the result of this function,

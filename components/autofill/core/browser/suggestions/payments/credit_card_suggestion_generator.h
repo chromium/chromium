@@ -92,10 +92,6 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
           all_suggestion_data,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
-  void SetCreditCardUploadStatusForTest(bool value) {
-    credit_card_upload_enabled_for_test_ = value;
-  }
-
   void SetConsiderFromAsSecureForTest(bool value) {
     consider_form_as_secure_for_testing_ = value;
   }
@@ -156,7 +152,6 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   const std::vector<std::string> four_digit_combinations_in_dom_;
 
   // TODO(crbug.com/409962888): Make naming consistent after moving all logic.
-  std::optional<bool> credit_card_upload_enabled_for_test_;
   std::optional<bool> consider_form_as_secure_for_testing_;
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>

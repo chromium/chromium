@@ -965,10 +965,6 @@ bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
 
   return true;
 }
-
-// Used to manually enable credit card upload in tests.
-std::optional<bool> credit_card_upload_enabled_test_;
-
 }  // namespace
 
 BnplSuggestionUpdateResult::BnplSuggestionUpdateResult() = default;
@@ -1478,7 +1474,7 @@ Suggestion CreateSaveAndFillSuggestion(const AutofillClient& client,
   Suggestion save_and_fill(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE),
       SuggestionType::kSaveAndFillCreditCardEntry);
-  if (IsCreditCardUploadEnabled(client)) {
+  if (client.IsCreditCardUploadEnabled()) {
     save_and_fill.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_SERVER_SAVE_AND_FILL_SUGGESTION_DESCRIPTION))}};
     display_gpay_logo = true;
@@ -1592,21 +1588,6 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
     suggestion.trailing_icon = Suggestion::Icon::kGoogle;
   }
   return suggestions;
-}
-
-bool IsCreditCardUploadEnabled(const AutofillClient& client) {
-  if (credit_card_upload_enabled_test_.has_value()) {
-    return credit_card_upload_enabled_test_.value();
-  }
-  return ::autofill::IsCreditCardUploadEnabled(
-      client.GetSyncService(), *client.GetPrefs(),
-      client.GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCountryCodeForExperimentGroup(),
-      client.GetPersonalDataManager()
-          .payments_data_manager()
-          .GetPaymentsSigninStateForMetrics(),
-      const_cast<AutofillClient*>(&client)->GetCurrentLogManager());
 }
 
 bool IsCardSuggestionAcceptable(const CreditCard& card,
@@ -1738,10 +1719,6 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
 std::u16string GetBnplPriceLowerBoundForTest(
     const std::vector<BnplIssuer>& bnpl_issuers) {
   return GetBnplPriceLowerBound(bnpl_issuers);
-}
-
-void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled) {
-  credit_card_upload_enabled_test_ = credit_card_upload_enabled;
 }
 
 bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,

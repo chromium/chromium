@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -287,6 +288,18 @@ void AutofillClient::UpdateAutofillSuggestions(
 
 bool AutofillClient::IsCvcSavingSupported() const {
   return true;
+}
+
+bool AutofillClient::IsCreditCardUploadEnabled() const {
+  return ::autofill::IsCreditCardUploadEnabled(
+      GetSyncService(), *GetPrefs(),
+      GetPersonalDataManager()
+          .payments_data_manager()
+          .GetCountryCodeForExperimentGroup(),
+      GetPersonalDataManager()
+          .payments_data_manager()
+          .GetPaymentsSigninStateForMetrics(),
+      const_cast<AutofillClient*>(this)->GetCurrentLogManager());
 }
 
 void AutofillClient::set_test_addresses(
