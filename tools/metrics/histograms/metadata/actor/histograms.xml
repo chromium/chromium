@@ -275,18 +275,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Actor.Task.StateTransition.ActionCount.{ActorTaskState}_{ActorTaskState}"
+<histogram name="Actor.Task.StateTransition.ActionCount.{OldState}_{NewState}"
     units="count" expires_after="2026-08-11">
   <owner>kenok@google.com</owner>
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
-    Recorded when a task makes a state transition from the first
-    {ActorTaskState} to the second {ActorTaskState}. This captures the number of
-    actions the task took in the first {ActorTaskState}.
+    Recorded when a task makes a state transition from the first {OldState} to
+    the second {NewState}. This captures the number of actions the task took in
+    the first {OldState}.
   </summary>
-  <token key="ActorTaskState" variants="ActorTaskState"/>
+  <token key="OldState" variants="ActorTaskState"/>
+  <token key="NewState" variants="ActorTaskState"/>
 </histogram>
 
 <histogram name="Actor.Task.StateTransition.Duration.{ActorTaskState}"
