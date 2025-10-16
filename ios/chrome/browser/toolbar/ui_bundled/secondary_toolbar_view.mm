@@ -566,7 +566,7 @@ UIView* SecondaryToolbarLocationBarContainerView(
                                                 atIndex:1];
   } else {
     [self.locationBarContainer addSubview:locationBarView];
-    AddSameConstraints(self.locationBarView, self.locationBarContainer);
+    AddSameConstraints(locationBarView, self.locationBarContainer);
   }
 }
 
