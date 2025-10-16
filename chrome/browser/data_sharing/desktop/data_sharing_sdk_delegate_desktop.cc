@@ -148,14 +148,11 @@ void DataSharingSDKDelegateDesktop::MaybeLoadWebContents(
                                            /*extra_headers=*/std::string());
   }
 
-  // There are 2 cases the page handler is null.
-  // 1. web_contents_ is not created yet.
-  // 2. web_contents_ is created but the page handler is not created because the
-  // webpage is not loaded yet. Either case we need to add the callback to the
-  // queue and run it when page handler is ready.
+  // If the API is already initialized, run the callback here, otherwise add the
+  // callback to the queue and run it when `ApiInitComplete` is called.
   DataSharingUI* data_sharing_ui =
       static_cast<DataSharingUI*>(web_contents_->GetWebUI()->GetController());
-  if (data_sharing_ui->page_handler()) {
+  if (data_sharing_ui->IsApiInitialized()) {
     std::move(callback).Run(web_contents_.get());
   } else {
     data_sharing_ui->SetDelegate(this);

@@ -47,6 +47,10 @@ DataSharingPageHandler::DataSharingPageHandler(
 
 DataSharingPageHandler::~DataSharingPageHandler() = default;
 
+bool DataSharingPageHandler::IsApiInitialized() {
+  return api_initialized_;
+}
+
 void DataSharingPageHandler::ShowUI() {
   auto embedder = webui_controller_->embedder();
   if (embedder) {

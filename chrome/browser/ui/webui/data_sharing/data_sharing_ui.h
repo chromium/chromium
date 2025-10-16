@@ -61,6 +61,8 @@ class DataSharingUI : public UntrustedTopChromeWebUIController,
 
   void ApiInitComplete();
 
+  bool IsApiInitialized();
+
   void OnShareLinkRequested(
       const std::string& group_id,
       const std::string& access_token,
