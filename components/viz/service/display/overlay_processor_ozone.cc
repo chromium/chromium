@@ -460,8 +460,8 @@ void OverlayProcessorOzone::ReceiveHardwareCapabilities(
         hardware_capabilities.num_overlay_capable_planes);
 
     DCHECK(overlay_candidates_);
-    overlay_candidates_->SetSupportedBufferFormats(
-        std::move(hardware_capabilities.supported_buffer_formats));
+    overlay_candidates_->SetSupportedSharedImageFormats(
+        std::move(hardware_capabilities.supported_shared_image_formats));
   } else {
     // Default to attempting 1 overlay if we get an invalid response.
     max_overlays_considered_ = 1;

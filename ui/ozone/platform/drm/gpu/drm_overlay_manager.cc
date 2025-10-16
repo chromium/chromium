@@ -300,11 +300,11 @@ void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
   }
 }
 
-void DrmOverlayManager::SetSupportedBufferFormats(
+void DrmOverlayManager::SetSupportedSharedImageFormats(
     gfx::AcceleratedWidget widget,
-    base::flat_set<gfx::BufferFormat> supported_buffer_formats) {
-  per_widget_overlay_supported_buffer_formats_.insert_or_assign(
-      widget, std::move(supported_buffer_formats));
+    base::flat_set<viz::SharedImageFormat> supported_formats) {
+  per_widget_overlay_supported_formats_.insert_or_assign(
+      widget, std::move(supported_formats));
 }
 
 void DrmOverlayManager::OnPromotedOverlayTypes(
@@ -368,9 +368,8 @@ bool DrmOverlayManager::IsFormatSupported(
     viz::SharedImageFormat required_overlay_format,
     gfx::AcceleratedWidget widget) const {
   auto supported_formats_it =
-      per_widget_overlay_supported_buffer_formats_.find(widget);
-  if (supported_formats_it ==
-      per_widget_overlay_supported_buffer_formats_.end()) {
+      per_widget_overlay_supported_formats_.find(widget);
+  if (supported_formats_it == per_widget_overlay_supported_formats_.end()) {
     // Supported formats are unknown.
     return false;
   }
@@ -378,8 +377,7 @@ bool DrmOverlayManager::IsFormatSupported(
   auto format_it = std::ranges::find_if(
       supported_formats_it->second,
       [required_overlay_format](const auto& supported_format) {
-        return required_overlay_format ==
-               viz::GetSharedImageFormat(supported_format);
+        return required_overlay_format == supported_format;
       });
   return format_it != supported_formats_it->second.end();
 }

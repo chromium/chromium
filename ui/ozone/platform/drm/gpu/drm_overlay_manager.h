@@ -72,9 +72,9 @@ class DrmOverlayManager : public OverlayManagerOzone {
 
   // Should be called by the overlay processor once it gets hardware
   // capabilities.
-  void SetSupportedBufferFormats(
+  void SetSupportedSharedImageFormats(
       gfx::AcceleratedWidget widget,
-      base::flat_set<gfx::BufferFormat> supported_buffer_formats);
+      base::flat_set<viz::SharedImageFormat> supported_formats);
 
   // Should be called by the overlay processor to indicate what overlay types
   // are promoted. This is later used in |OnSwapBuffersComplete| to distinguish
@@ -142,8 +142,8 @@ class DrmOverlayManager : public OverlayManagerOzone {
   std::map<gfx::AcceleratedWidget, HardwareCapabilitiesCallback>
       hardware_capabilities_callbacks_;
 
-  base::flat_map<gfx::AcceleratedWidget, base::flat_set<gfx::BufferFormat>>
-      per_widget_overlay_supported_buffer_formats_;
+  base::flat_map<gfx::AcceleratedWidget, base::flat_set<viz::SharedImageFormat>>
+      per_widget_overlay_supported_formats_;
 
   // A simple queue of bools that helps to identify buffer swaps.
   base::circular_deque<std::vector<gfx::OverlayType>> in_flight_overlay_types_;

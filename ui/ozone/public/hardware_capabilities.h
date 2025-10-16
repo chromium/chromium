@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace ui {
@@ -29,8 +30,8 @@ struct COMPONENT_EXPORT(OZONE_BASE) HardwareCapabilities {
   // plane before presentation, so all transformations on the topmost plane
   // (e.g. translation, scaling) are erroneously applied to the CURSOR as well.
   bool has_independent_cursor_plane = true;
-  // Supported buffer formats for overlaying.
-  base::flat_set<gfx::BufferFormat> supported_buffer_formats;
+  // Supported shared image formats for overlaying.
+  base::flat_set<viz::SharedImageFormat> supported_shared_image_formats;
 };
 using HardwareCapabilitiesCallback =
     base::RepeatingCallback<void(HardwareCapabilities)>;

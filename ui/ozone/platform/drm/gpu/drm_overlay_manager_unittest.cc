@@ -93,10 +93,10 @@ class DrmOverlayManagerTest : public testing::Test {
   DrmOverlayManagerTest() = default;
 
   void SetUp() override {
-    manager_.SetSupportedBufferFormats(kPrimaryWidget,
-                                       {gfx::BufferFormat::YUV_420_BIPLANAR});
-    manager_.SetSupportedBufferFormats(kSecondaryWidget,
-                                       {gfx::BufferFormat::YUV_420_BIPLANAR});
+    manager_.SetSupportedSharedImageFormats(kPrimaryWidget,
+                                            {viz::MultiPlaneFormat::kNV12});
+    manager_.SetSupportedSharedImageFormats(kSecondaryWidget,
+                                            {viz::MultiPlaneFormat::kNV12});
   }
 
  protected:
@@ -446,14 +446,14 @@ TEST_F(DrmOverlayManagerTest, MultiClipRectUnderlaySupport) {
   EXPECT_TRUE(manager_.requests()[0][2].overlay_handled);
 }
 
-TEST_F(DrmOverlayManagerTest, SupportedBufferFormat) {
+TEST_F(DrmOverlayManagerTest, SupportedSharedImageFormat) {
   // Make the manager to use sync testing for convenience.
   TestDrmOverlayManager manager(true);
-  manager.SetSupportedBufferFormats(
+  manager.SetSupportedSharedImageFormats(
       kPrimaryWidget,
-      {gfx::BufferFormat::BGRA_8888, gfx::BufferFormat::RGBA_8888});
-  manager.SetSupportedBufferFormats(kSecondaryWidget,
-                                    {gfx::BufferFormat::YUV_420_BIPLANAR});
+      {viz::SinglePlaneFormat::kBGRA_8888, viz::SinglePlaneFormat::kRGBA_8888});
+  manager.SetSupportedSharedImageFormats(kSecondaryWidget,
+                                         {viz::MultiPlaneFormat::kNV12});
 
   std::vector<OverlaySurfaceCandidate> candidates = {
       CreateCandidate(gfx::Rect(0, 0, 150, 150), -1),
@@ -490,10 +490,10 @@ TEST_F(DrmOverlayManagerTest, SupportedBufferFormat) {
   reset_candidates(candidates);
 
   // Make primary widget support more buffer formats.
-  manager.SetSupportedBufferFormats(
+  manager.SetSupportedSharedImageFormats(
       kPrimaryWidget,
-      {gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferFormat::BGRA_8888,
-       gfx::BufferFormat::RGBA_8888});
+      {viz::MultiPlaneFormat::kNV12, viz::SinglePlaneFormat::kBGRA_8888,
+       viz::SinglePlaneFormat::kRGBA_8888});
 
   // Primary widget supports BGRA/RGBA and NV12 now.
   manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
@@ -513,8 +513,8 @@ TEST_F(DrmOverlayManagerTest, HandleFastPathFullScreenOverlays) {
   TestDrmOverlayManager manager(
       /*handle_overlays_swap_failure=*/true,
       /*allow_sync_and_real_buffer_page_flip_testing=*/true);
-  manager.SetSupportedBufferFormats(kPrimaryWidget,
-                                    {gfx::BufferFormat::YUV_420_BIPLANAR});
+  manager.SetSupportedSharedImageFormats(kPrimaryWidget,
+                                         {viz::MultiPlaneFormat::kNV12});
 
   // Check overlay support and expect fullscreen is handled without any requests
   // for overlays' validation sent.
