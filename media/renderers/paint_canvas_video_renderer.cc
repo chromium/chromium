@@ -248,111 +248,6 @@ size_t NumConvertVideoFrameToRGBPixelsTasks(const VideoFrame* video_frame) {
   return std::min<size_t>(n_tasks, base::SysInfo::NumberOfProcessors());
 }
 
-// Extracted helper for handling 8-bit RGBA family formats.
-void ConvertRGBA8FamilyToDest(uint8_t* pixels,
-                              size_t row_bytes,
-                              const uint8_t* src_data,
-                              size_t src_stride,
-                              int width,
-                              size_t rows,
-                              VideoPixelFormat format,
-                              bool premultiply_alpha) {
-  DCHECK_LE(width, static_cast<int>(row_bytes));
-
-  // Handle order swapping depending on the source and destination formats.
-  if ((OUTPUT_ARGB &&
-       (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB)) ||
-      (!OUTPUT_ARGB &&
-       (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR))) {
-    const uint8_t* data = src_data;
-    uint8_t* dest = pixels;
-    for (size_t i = 0; i < rows; i++) {
-      memcpy(dest, data, width * 4);
-      dest += row_bytes;
-      data += src_stride;
-    }
-  } else {
-    LIBYUV_ABGR_TO_ARGB(src_data, src_stride, pixels, row_bytes, width, rows);
-  }
-
-  // Handle `premultiply_alpha` if the source format has alpha. This could
-  // be more efficient if combined with order swapping (in the case that no
-  // swap is performed).
-  if (premultiply_alpha &&
-      (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_ABGR)) {
-    libyuv::ARGBAttenuate(pixels, row_bytes, pixels, row_bytes, width, rows);
-  }
-}
-
-// Extracted helper for handling RGBAF16 format.
-void ConvertRGBAF16ToDest(uint8_t* pixels,
-                          size_t row_bytes,
-                          const uint8_t* src_data,
-                          size_t src_stride,
-                          int width,
-                          size_t rows,
-                          bool premultiply_alpha,
-                          SkColorType dst_color_type) {
-  CHECK_LE(width, static_cast<int>(row_bytes));
-
-  auto data = base::span(src_data, src_stride * rows);
-  auto dest = base::span(pixels, row_bytes * rows);
-
-  for (size_t i = 0; i < rows; i++) {
-    auto bytes_len = static_cast<size_t>(width) * 8;
-    auto data_row = data.subspan(i * src_stride, bytes_len);
-    auto dest_row = dest.subspan(
-        i * row_bytes,
-        dst_color_type == kRGBA_F16_SkColorType ? bytes_len : bytes_len / 2);
-    if (premultiply_alpha || dst_color_type != kRGBA_F16_SkColorType) {
-      auto reader = base::SpanReader(data_row);
-      auto writer = base::SpanWriter(dest_row);
-      for (int w = 0; w < width; ++w) {
-        float r = fp16_ieee_to_fp32_value(
-            base::U16FromNativeEndian(*reader.Read<2>()));
-        float g = fp16_ieee_to_fp32_value(
-            base::U16FromNativeEndian(*reader.Read<2>()));
-        float b = fp16_ieee_to_fp32_value(
-            base::U16FromNativeEndian(*reader.Read<2>()));
-
-        uint16_t a_u16 = base::U16FromNativeEndian(*reader.Read<2>());
-        float a = fp16_ieee_to_fp32_value(a_u16);
-
-        // Apply premultiplied alpha
-        r *= a;
-        g *= a;
-        b *= a;
-
-        // Convert back to half-float
-        if (dst_color_type == kRGBA_F16_SkColorType) {
-          writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(r));
-          writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(g));
-          writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(b));
-          writer.WriteU16NativeEndian(a_u16);
-        } else if (dst_color_type == kN32_SkColorType) {
-          // Not very efficient and should be replaced if this becomes common.
-          constexpr uint8_t kFloatToUint8 = 255;
-#if OUTPUT_ARGB
-          writer.WriteU8NativeEndian(b * kFloatToUint8);
-          writer.WriteU8NativeEndian(g * kFloatToUint8);
-          writer.WriteU8NativeEndian(r * kFloatToUint8);
-#else
-          writer.WriteU8NativeEndian(r * kFloatToUint8);
-          writer.WriteU8NativeEndian(g * kFloatToUint8);
-          writer.WriteU8NativeEndian(b * kFloatToUint8);
-#endif
-          writer.WriteU8NativeEndian(a * kFloatToUint8);
-        } else {
-          NOTREACHED();
-        }
-      }
-    } else {
-      // Direct copy when no alpha processing needed
-      dest_row.copy_from(data_row);
-    }
-  }
-}
-
 void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
                                       void* rgb_pixels,
                                       size_t row_bytes,
@@ -410,22 +305,21 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
                     row_bytes * chunk_start * rows_per_chunk;
 
   if (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB ||
-      format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR) {
-    ConvertRGBA8FamilyToDest(pixels, row_bytes,
-                             plane_meta[VideoFrame::Plane::kARGB].data,
-                             plane_meta[VideoFrame::Plane::kARGB].stride, width,
-                             rows, format, premultiply_alpha);
-
-    done->Run();
-    return;
-  }
-
-  if (format == PIXEL_FORMAT_RGBAF16) {
-    ConvertRGBAF16ToDest(pixels, row_bytes,
-                         plane_meta[VideoFrame::Plane::kARGB].data,
-                         plane_meta[VideoFrame::Plane::kARGB].stride, width,
-                         rows, premultiply_alpha, dst_color_type);
-
+      format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR ||
+      format == PIXEL_FORMAT_RGBAF16) {
+    SkPixmap src_pm(
+        SkImageInfo::Make(width, rows,
+                          SkColorTypeForPlane(format, VideoFrame::Plane::kARGB),
+                          media::IsOpaque(format) ? kOpaque_SkAlphaType
+                                                  : kUnpremul_SkAlphaType),
+        plane_meta[VideoFrame::Plane::kARGB].data,
+        plane_meta[VideoFrame::Plane::kARGB].stride);
+    SkPixmap dst_pm(
+        SkImageInfo::Make(
+            width, rows, dst_color_type,
+            premultiply_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType),
+        pixels, row_bytes);
+    src_pm.readPixels(dst_pm);
     done->Run();
     return;
   }
