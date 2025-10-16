@@ -1892,17 +1892,61 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Ensures that pay over time option is added if `ShouldAppendBnplOption`
-// returns true.
+// Ensures the pay over time option is added if `ShouldAppendBnplOption` returns
+// true.
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
        MaybeAppendDesktopSuggestionsWithBnpl_ShouldAppendBnplOption) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableAmountExtraction,
+       features::kAutofillEnableBuyNowPayLaterSyncing,
+       features::kAutofillEnableBuyNowPayLater,
+       features::kAutofillEnableAiBasedAmountExtraction,
+       features::
+           kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString},
+      /*disabled_features=*/{});
+
+  payments_data().AddServerCreditCard(test::GetMaskedServerCard2());
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  // Setup a scenario where BNPL suggestion should be appended to the credit
+  // card suggestions.
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/true);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kBnplEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageCreditCard)));
+}
+
+// Ensures the pay over time option is added if `ShouldAppendBnplOption` returns
+// true, and a separator is not added if the updated suggestion flag is off.
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    MaybeAppendDesktopSuggestionsWithBnpl_ShouldAppendBnplOption_UpdatedSuggestionFlagOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
                             features::kAutofillEnableBuyNowPayLaterSyncing,
                             features::kAutofillEnableBuyNowPayLater,
                             features::kAutofillEnableAiBasedAmountExtraction},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{
+          features::
+              kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString});
 
   payments_data().AddServerCreditCard(test::GetMaskedServerCard2());
   payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
