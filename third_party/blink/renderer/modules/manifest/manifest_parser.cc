@@ -411,10 +411,14 @@ bool ManifestParser::Parse() {
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestProtocolHandlers);
   }
-  manifest_->scope_extensions = ParseScopeExtensions(root_object.get());
-  if (!manifest_->scope_extensions.empty()) {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kWebAppManifestScopeExtensions);
+
+  if (!(execution_context_ && execution_context_->IsIsolatedContext())) {
+    // TODO(crbug.com/383094092): Scope Extensions for IWAs are not defined yet.
+    manifest_->scope_extensions = ParseScopeExtensions(root_object.get());
+    if (!manifest_->scope_extensions.empty()) {
+      UseCounter::Count(execution_context_,
+                        WebFeature::kWebAppManifestScopeExtensions);
+    }
   }
   manifest_->lock_screen = ParseLockScreen(root_object.get());
   if (!manifest_->lock_screen.is_null()) {
