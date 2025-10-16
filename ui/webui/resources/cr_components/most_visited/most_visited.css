@@ -57,6 +57,7 @@
 }
 
 #addShortcutIcon,
+#showMoreIcon,
 .query-tile-icon {
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
@@ -64,7 +65,7 @@
   width: 24px;
 }
 
-#addShortcutIconContainer {
+.tile-icon-container {
   background-color:
       var(--add-shortcut-background-color, var(--tile-background-color));
   margin-inline-start: auto;
@@ -77,6 +78,12 @@
       var(--add-shortcut-foreground-color, var(--google-grey-900));
 }
 
+#showMoreIcon {
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/expand_content.svg);
+  background-color:
+      var(--add-shortcut-foreground-color, var(--google-grey-900));
+}
+
 .query-tile-icon {
   -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
   background-color: var(--google-grey-700);
@@ -84,12 +91,14 @@
 
 @media (forced-colors: active) {
   #addShortcutIcon,
+  #showMoreIcon,
   .query-tile-icon {
     background-color: ButtonText;
   }
 }
 
-:host([use-white-tile-icon_]) #addShortcutIcon {
+:host([use-white-tile-icon_]) #addShortcutIcon,
+:host([use-white-tile-icon_]) #showMoreIcon {
   background-color: white;
 }
 
@@ -98,7 +107,8 @@
 }
 
 .tile,
-#addShortcut {
+#addShortcut,
+#showMore {
   -webkit-tap-highlight-color: transparent;
   align-items: center;
   border-radius: 4px;
@@ -129,20 +139,23 @@
 }
 
 :host-context(.focus-outline-visible) .tile a:focus,
-:host-context(.focus-outline-visible) #addShortcut:focus {
+:host-context(.focus-outline-visible) #addShortcut:focus,
+:host-context(.focus-outline-visible) #showMore:focus {
   box-shadow: var(--most-visited-focus-shadow);
 }
 
 @media (forced-colors: active) {
   :host-context(.focus-outline-visible) .tile a:focus,
-  :host-context(.focus-outline-visible) #addShortcut:focus {
+  :host-context(.focus-outline-visible) #addShortcut:focus,
+  :host-context(.focus-outline-visible) #showMore:focus {
     /* Use outline instead of box-shadow (which does not work) in Windows
         HCM. */
     outline: var(--cr-focus-outline-hcm);
   }
 }
 
-#addShortcut {
+#addShortcut,
+#showMore {
   background-color: transparent;
   border: none;
   box-shadow: none;
@@ -152,6 +165,7 @@
 
 :host(:not([reordering_])) .tile:hover,
 :host(:not([reordering_])) #addShortcut:hover,
+:host(:not([reordering_])) #showMore:hover,
 .force-hover {
   background-color: var(--tile-hover-color);
 }

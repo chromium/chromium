@@ -320,6 +320,8 @@ const char kNtpWallpaperSearchButtonAnimationShownThresholdParam[] =
     "NtpWallpaperSearchButtonAnimationShownThresholdParam";
 const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
 const char kNtpMobilePromoTargetUrlParam[] = "NtpMobilePromoTargetUrlParam";
+const base::FeatureParam<int> kMaxTilesBeforeShowMore{
+    &ntp_features::kNtpNextFeatures, "max_tiles_before_show_more", 5};
 
 const base::FeatureParam<int> kNtpCustomizeChromePromoIPHMaxCount(
     &ntp_features::kNtpCustomizeChromePromo,
@@ -475,6 +477,10 @@ std::string GetMobilePromoTargetURL() {
       ntp_features::kNtpMobilePromo,
       ntp_features::kNtpMobilePromoTargetUrlParam);
   return (field_trial_url.empty()) ? kMobilePromoQRCodeURL : field_trial_url;
+}
+
+int GetMaxTilesBeforeShowMore() {
+  return kMaxTilesBeforeShowMore.Get();
 }
 
 }  // namespace ntp_features

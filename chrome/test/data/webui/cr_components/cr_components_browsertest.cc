@@ -188,6 +188,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, Theming) {
   RunTest("cr_components/most_visited_test.js", "runMochaSuite('Theming');");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShowMoreButton) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('ShowMoreButton');");
+}
+
 typedef WebUIMochaBrowserTest CrComponentsThemeColorPickerTest;
 IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeColor) {
   set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);

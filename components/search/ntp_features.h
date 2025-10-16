@@ -242,6 +242,10 @@ extern const base::FeatureParam<base::TimeDelta>
 // Parameter determing the max number of tab groups to show in the module.
 extern const base::FeatureParam<size_t> kNtpTabGroupsModuleMaxGroupCountParam;
 
+// Parameter determining the max number of MV tiles before the "Show more"
+// button is shown.
+extern const base::FeatureParam<int> kNtpNextMaxMVTilesBeforeShowMoreParam;
+
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
 
@@ -265,6 +269,10 @@ int GetWallpaperSearchButtonAnimationShownThreshold();
 int GetWallpaperSearchButtonHideCondition();
 
 std::string GetMobilePromoTargetURL();
+
+// Returns the max number of tiles to show before the "show more" button is
+// shown.
+int GetMaxTilesBeforeShowMore();
 
 }  // namespace ntp_features
 

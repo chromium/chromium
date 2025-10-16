@@ -207,6 +207,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       "prerenderOnPressEnabled",
       base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2));
 
+  source->AddInteger("maxTilesBeforeShowMore",
+                     ntp_features::GetMaxTilesBeforeShowMore());
+
   source->AddBoolean(
       "ntpNextFeaturesEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
@@ -289,6 +292,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"restoreThumbnailsShort", IDS_NEW_TAB_RESTORE_THUMBNAILS_SHORT_LINK},
       {"shortcutAlreadyExists", IDS_NTP_CUSTOM_LINKS_ALREADY_EXISTS},
       {"urlField", IDS_NTP_CUSTOM_LINKS_URL},
+      {"showMore", IDS_NTP_SHOW_MORE_BUTTON_LABEL},
 
       // Customize button and dialog.
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},

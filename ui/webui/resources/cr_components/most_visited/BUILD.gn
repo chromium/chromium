@@ -28,6 +28,8 @@ build_webui("build") {
   ]
   css_files = [ "most_visited.css" ]
 
+  static_files = [ "expand_content.svg" ]
+
   mojo_files_deps = [ ":mojom_ts__generator" ]
   mojo_files = [ "$target_gen_dir/most_visited.mojom-webui.ts" ]
 

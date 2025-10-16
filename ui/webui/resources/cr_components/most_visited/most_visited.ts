@@ -158,6 +158,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
       tiles_: {type: Array, state: true},
       toastContent_: {type: String, state: true},
 
+      ntpNextFeaturesEnabled_: {type: Boolean},
+      showAll_: {type: Boolean, state: true},
+      showShowMore_: {type: Boolean, state: true},
+
       visible_: {
         type: Boolean,
         reflect: true,
@@ -168,6 +172,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
   accessor theme: MostVisitedTheme|null = null;
   accessor reflowOnOverflow: boolean = false;
   accessor singleRow: boolean = false;
+  private accessor showAll_: boolean = false;
+  protected accessor showShowMore_: boolean = false;
   protected accessor useWhiteTileIcon_: boolean = false;
   protected accessor columnCount_: number = 3;
   protected accessor rowCount_: number = 1;
@@ -191,6 +197,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private accessor maxVisibleColumnCount_: number = 0;
   protected accessor tiles_: MostVisitedTile[] = [];
   protected accessor visible_: boolean = false;
+  protected accessor ntpNextFeaturesEnabled_: boolean =
+      loadTimeData.getBoolean('ntpNextFeaturesEnabled');
+  private maxTilesBeforeShowMore_: number =
+      loadTimeData.getInteger('maxTilesBeforeShowMore');
   private adding_: boolean = false;
   private callbackRouter_: MostVisitedPageCallbackRouter;
   private pageHandler_: MostVisitedPageHandlerRemote;
@@ -291,6 +301,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.tiles_ = this.info_.tiles.slice(0, this.maxTiles_);
     }
 
+    this.showShowMore_ = this.computeShowShowMore_();
     this.showAdd_ = this.computeShowAdd_();
     this.columnCount_ = this.computeColumnCount_();
     this.rowCount_ = this.computeRowCount_();
@@ -358,8 +369,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private computeColumnCount_(): number {
     const shortcutCount = this.tiles_ ? this.tiles_.length : 0;
     const canShowAdd = this.maxTiles_ > shortcutCount;
-    const tileCount =
-        Math.min(this.maxTiles_, shortcutCount + (canShowAdd ? 1 : 0));
+    const tileCount = Math.min(
+        this.maxTiles_,
+        shortcutCount + ((canShowAdd || this.showShowMore_) ? 1 : 0));
     const columnCount = tileCount <= this.maxVisibleColumnCount_ ?
         tileCount :
         Math.min(
@@ -375,7 +387,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
     if (this.reflowOnOverflow && this.tiles_) {
       return Math.ceil(
-          (this.tiles_.length + (this.showAdd_ ? 1 : 0)) / this.columnCount_);
+          (this.tiles_.length +
+           ((this.showAdd_ || this.showShowMore_) ? 1 : 0)) /
+          this.columnCount_);
     }
 
     if (this.singleRow) {
@@ -387,6 +401,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private computeMaxVisibleTiles_(): number {
+    if (this.ntpNextFeaturesEnabled_ && this.showShowMore_) {
+      return this.maxTilesBeforeShowMore_ + 1;
+    }
+
     if (this.reflowOnOverflow) {
       return this.maxTiles_;
     }
@@ -395,8 +413,20 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private computeShowAdd_(): boolean {
+    if (this.showShowMore_) {
+      return false;
+    }
     return this.customLinksEnabled_ && !this.enterpriseShortcutsEnabled_ &&
         this.tiles_ && this.tiles_.length < this.maxVisibleTiles_;
+  }
+
+  private computeShowShowMore_(): boolean {
+    return this.ntpNextFeaturesEnabled_ && !this.showAll_ && this.tiles_ &&
+        this.tiles_.length > this.maxTilesBeforeShowMore_;
+  }
+
+  protected onShowMoreClick_() {
+    this.showAll_ = true;
   }
 
   private computeDialogSaveDisabled_(): boolean {
@@ -611,7 +641,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected isHidden_(index: number): boolean {
-    if (this.reflowOnOverflow) {
+    if (this.reflowOnOverflow && !this.showShowMore_) {
       return false;
     }
 

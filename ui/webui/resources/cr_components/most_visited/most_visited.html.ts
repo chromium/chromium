@@ -56,11 +56,22 @@ export function getHtml(this: MostVisitedElement) {
       ?hidden="${!this.showAdd_}" @keydown="${this.onAddShortcutKeyDown_}"
       aria-label="${this.i18n('addLinkTitle')}"
       title="${this.i18n('addLinkTitle')}" noink>
-    <div id="addShortcutIconContainer" class="tile-icon">
+    <div class="tile-icon tile-icon-container">
       <div id="addShortcutIcon" draggable="false"></div>
     </div>
     <div class="tile-title">
       <span>${this.i18n('addLinkTitle')}</span>
+    </div>
+  </cr-button>
+  <cr-button id="showMore" tabindex="0" @click="${this.onShowMoreClick_}"
+      ?hidden="${!this.showShowMore_}"
+      aria-label="${this.i18n('showMore')}"
+      title="${this.i18n('showMore')}" noink>
+    <div class="tile-icon tile-icon-container">
+      <div id="showMoreIcon" draggable="false"></div>
+    </div>
+    <div class="tile-title">
+      <span>${this.i18n('showMore')}</span>
     </div>
   </cr-button>
   <cr-dialog id="dialog" @close="${this.onDialogClose_}">
