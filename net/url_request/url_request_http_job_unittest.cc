@@ -1511,7 +1511,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   const MockRead reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"
                "Accept-Ranges: bytes\r\n"
-               "Sec-Session-Registration: (ES256);path=\"new\";"
+               "Secure-Session-Registration: (ES256);path=\"new\";"
                "challenge=\"test\"\r\n"
                "Content-Length: 12\r\n\r\n"),
       MockRead("Test Content")};
@@ -1788,11 +1788,11 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                 "Accept-Language: en-us,fr\r\n\r\n")};
 
   const MockRead reads[] = {
-      MockRead(
-          "HTTP/1.1 200 OK\r\n"
-          "Accept-Ranges: bytes\r\n"
-          "Sec-Session-Challenge: \"session_identifier\";challenge=\"test\"\r\n"
-          "Content-Length: 12\r\n\r\n"),
+      MockRead("HTTP/1.1 200 OK\r\n"
+               "Accept-Ranges: bytes\r\n"
+               "Secure-Session-Challenge: "
+               "\"session_identifier\";challenge=\"test\"\r\n"
+               "Content-Length: 12\r\n\r\n"),
       MockRead("Test Content")};
 
   net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);

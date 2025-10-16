@@ -591,12 +591,12 @@ BASE_FEATURE_PARAM(int,
                    kDeviceBoundSessionsSchemaVersion,
                    &kDeviceBoundSessions,
                    "SchemaVersion",
-                   1);
+                   2);
 BASE_FEATURE_PARAM(bool,
                    kDeviceBoundSessionsOriginTrialFeedback,
                    &kDeviceBoundSessions,
                    "OriginTrialFeedback",
-                   false);
+                   true);
 
 BASE_FEATURE(kDeviceBoundSessionsFederatedRegistration,
              base::FEATURE_DISABLED_BY_DEFAULT);

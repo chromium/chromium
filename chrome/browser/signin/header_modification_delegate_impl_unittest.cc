@@ -119,7 +119,7 @@ void AddValidGoogleRegistrationHeader(TestResponseAdapter* response_adapter,
 void AddValidStandardRegistrationHeader(TestResponseAdapter* response_adapter,
                                         const std::string& registration_path) {
   response_adapter->AddHeader(
-      "Sec-Session-Registration",
+      "Secure-Session-Registration",
       base::StringPrintf("(ES256);path=\"%s\";challenge=\"Y2hhbGxlbmdl\"",
                          registration_path.c_str()));
 }
