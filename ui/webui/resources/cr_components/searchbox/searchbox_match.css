@@ -168,6 +168,19 @@
   white-space: nowrap;
 }
 
+#suggestion {
+  display: flex;
+  overflow: hidden;
+}
+
+:host([is-top-chrome-searchbox_]) #text-container #suggestion {
+  display: inline-block;
+  min-width: 0;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 :host([is-lens-searchbox_]) #text-container {
   display: -webkit-box;
   line-clamp: 2;
