@@ -215,7 +215,10 @@ class MockStudentScreenPresenter : public StudentScreenPresenter {
 
   MOCK_METHOD(void, Stop, (base::OnceCallback<void(bool)>), (override));
 
-  MOCK_METHOD(bool, IsPresenting, (), (override));
+  MOCK_METHOD(bool,
+              IsPresenting,
+              (std::optional<std::string_view>),
+              (override));
 };
 
 class MockTeacherScreenPresenter : public TeacherScreenPresenter {

@@ -140,6 +140,14 @@ class StudentScreenPresenterImplTest : public testing::Test {
   ::boca::UserIdentity student_identity_;
 };
 
+TEST_F(StudentScreenPresenterImplTest, IsPresentingInitiallyFalse) {
+  StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
+                                       kTeacherDeviceId,
+                                       url_loader_factory_.GetSafeWeakWrapper(),
+                                       identity_test_env_.identity_manager());
+  EXPECT_FALSE(presenter.IsPresenting(/*student_id=*/std::nullopt));
+}
+
 TEST_F(StudentScreenPresenterImplTest, StartSuccess) {
   base::test::TestFuture<bool> start_future;
   StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
@@ -153,6 +161,9 @@ TEST_F(StudentScreenPresenterImplTest, StartSuccess) {
       GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
 
   EXPECT_TRUE(start_future.Get());
+  EXPECT_TRUE(presenter.IsPresenting(/*student_id=*/std::nullopt));
+  EXPECT_TRUE(presenter.IsPresenting(student_identity_.gaia_id()));
+  EXPECT_FALSE(presenter.IsPresenting(/*student_id=*/"other-student-id"));
   ASSERT_TRUE(request_dict.has_value());
   EXPECT_EQ(*request_dict->FindString("sessionId"), kSessionId);
   VerifyUserDeviceInfo(
@@ -176,6 +187,8 @@ TEST_F(StudentScreenPresenterImplTest, StartFailure) {
   WaitAndRespond(GetStartReceiverUrl(kReceiverId), "",
                  net::HTTP_INTERNAL_SERVER_ERROR);
   EXPECT_FALSE(start_future1.Get());
+  EXPECT_FALSE(presenter.IsPresenting(/*student_id=*/std::nullopt));
+  EXPECT_FALSE(presenter.IsPresenting(student_identity_.gaia_id()));
 
   // Verify that a new request will be accepted.
   presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
@@ -188,6 +201,10 @@ TEST_F(StudentScreenPresenterImplTest, StartFailure) {
 TEST_F(StudentScreenPresenterImplTest, OverlappingStartWillFail) {
   base::test::TestFuture<bool> start_future1;
   base::test::TestFuture<bool> start_future2;
+  ::boca::UserIdentity other_student_identity;
+  other_student_identity.set_email("other@email.com");
+  other_student_identity.set_full_name("Other Name");
+  other_student_identity.set_gaia_id("other-gaia-id");
   StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
                                        kTeacherDeviceId,
                                        url_loader_factory_.GetSafeWeakWrapper(),
@@ -195,10 +212,13 @@ TEST_F(StudentScreenPresenterImplTest, OverlappingStartWillFail) {
   presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
                   start_future1.GetCallback(),
                   /*disconnected_cb=*/base::DoNothing());
-  presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
+  presenter.Start(kReceiverId, other_student_identity, kStudentDeviceId,
                   start_future2.GetCallback(),
                   /*disconnected_cb=*/base::DoNothing());
   EXPECT_FALSE(start_future2.Get());
+  EXPECT_TRUE(presenter.IsPresenting(/*student_id=*/std::nullopt));
+  EXPECT_TRUE(presenter.IsPresenting(student_identity_.gaia_id()));
+  EXPECT_FALSE(presenter.IsPresenting(other_student_identity.gaia_id()));
 
   WaitAndRespond(GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
   EXPECT_TRUE(start_future1.Get());

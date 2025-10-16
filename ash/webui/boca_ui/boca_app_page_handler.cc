@@ -646,7 +646,7 @@ void BocaAppHandler::EndViewScreenSession(
     EndViewScreenSessionCallback callback) {
   CHECK(spotlight_service_);
   if (student_screen_presenter() &&
-      student_screen_presenter()->IsPresenting()) {
+      student_screen_presenter()->IsPresenting(id)) {
     // Already ended and a presentation is in progress.
     std::move(callback).Run(std::nullopt);
     return;
@@ -807,7 +807,7 @@ void BocaAppHandler::PresentOwnScreen(const std::string& receiver_id,
     return;
   }
   if (student_screen_presenter() &&
-      student_screen_presenter()->IsPresenting()) {
+      student_screen_presenter()->IsPresenting(/*student_id=*/std::nullopt)) {
     LOG(ERROR) << "[Boca] trying to present teacher's own screen while "
                << "presenting student's screen";
     std::move(callback).Run(false);
@@ -898,7 +898,7 @@ void BocaAppHandler::OnSessionEnded(const std::string& session_id) {
   OnSessionConfigUpdated(
       mojom::ConfigResult::NewError(mojom::GetSessionError::kEmpty));
   if (student_screen_presenter() &&
-      student_screen_presenter()->IsPresenting()) {
+      student_screen_presenter()->IsPresenting(/*student_id=*/std::nullopt)) {
     // Ending the session should disconnect the student remoting so update the
     // UI.
     remote_->OnPresentStudentScreenEnded();

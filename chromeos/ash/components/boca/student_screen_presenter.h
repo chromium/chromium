@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_STUDENT_SCREEN_PRESENTER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_STUDENT_SCREEN_PRESENTER_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
@@ -32,7 +33,7 @@ class StudentScreenPresenter {
 
   virtual void Stop(base::OnceCallback<void(bool)> success_cb) = 0;
 
-  virtual bool IsPresenting() = 0;
+  virtual bool IsPresenting(std::optional<std::string_view> student_id) = 0;
 
  protected:
   StudentScreenPresenter() = default;

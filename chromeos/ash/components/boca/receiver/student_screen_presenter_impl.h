@@ -59,7 +59,7 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
              base::OnceClosure disconnected_cb) override;
   void CheckConnection() override;
   void Stop(base::OnceCallback<void(bool)> success_cb) override;
-  bool IsPresenting() override;
+  bool IsPresenting(std::optional<std::string_view> student_id) override;
 
  private:
   void OnStartResponse(base::OnceCallback<void(bool)> success_cb,
@@ -82,6 +82,7 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
   std::optional<std::string> receiver_id_;
   base::OnceClosure disconnected_cb_;
   std::optional<std::string> connection_id_;
+  std::optional<std::string> student_id_;
   std::unique_ptr<google_apis::RequestSender> start_connection_request_sender_;
   std::unique_ptr<google_apis::RequestSender> get_receiver_request_sender_;
   std::unique_ptr<google_apis::RequestSender> update_connection_request_sender_;

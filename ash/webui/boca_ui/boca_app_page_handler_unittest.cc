@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -370,7 +371,10 @@ class MockStudentScreenPresenter : public StudentScreenPresenter {
 
   MOCK_METHOD(void, Stop, (base::OnceCallback<void(bool)>), (override));
 
-  MOCK_METHOD(bool, IsPresenting, (), (override));
+  MOCK_METHOD(bool,
+              IsPresenting,
+              (std::optional<std::string_view>),
+              (override));
 };
 
 class MockTeacherScreenPresenter : public TeacherScreenPresenter {
@@ -2652,17 +2656,22 @@ TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionSucceeded) {
 
 TEST_F(BocaAppPageHandlerProducerTest,
        EndViewScreenSessionWhilePresentingStudentScreen) {
+  const std::string_view kEndViewScreenStudentId = "student-id";
   base::test::TestFuture<std::optional<mojom::EndViewScreenSessionError>>
       future;
   auto student_screen_presenter =
       std::make_unique<MockStudentScreenPresenter>();
   ON_CALL(*session_manager(), GetStudentScreenPresenter)
       .WillByDefault(Return(student_screen_presenter.get()));
-  ON_CALL(*student_screen_presenter, IsPresenting).WillByDefault(Return(true));
+  EXPECT_CALL(
+      *student_screen_presenter,
+      IsPresenting(std::optional<std::string_view>(kEndViewScreenStudentId)))
+      .WillOnce(Return(true));
   EXPECT_CALL(*session_manager(), EndSpotlightSession).Times(0);
   EXPECT_CALL(*spotlight_service(), UpdateViewScreenState).Times(0);
 
-  boca_app_handler()->EndViewScreenSession("student-id", future.GetCallback());
+  boca_app_handler()->EndViewScreenSession(std::string(kEndViewScreenStudentId),
+                                           future.GetCallback());
   EXPECT_FALSE(future.Get().has_value());
 }
 

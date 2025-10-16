@@ -76,12 +76,13 @@ void StudentScreenPresenterImpl::Start(
     std::string_view student_device_id,
     base::OnceCallback<void(bool)> success_cb,
     base::OnceClosure disconnected_cb) {
-  if (receiver_id_.has_value()) {
+  if (IsPresenting(/*student_id=*/std::nullopt)) {
     LOG(ERROR) << "[Boca] Trying to present more than one student screen";
     std::move(success_cb).Run(false);
     return;
   }
   receiver_id_ = receiver_id;
+  student_id_ = student_identity.gaia_id();
   disconnected_cb_ = std::move(disconnected_cb);
   start_connection_request_sender_ = CreateSender(
       url_loader_factory_, identity_manager_,
@@ -123,7 +124,7 @@ void StudentScreenPresenterImpl::CheckConnection() {
 
 void StudentScreenPresenterImpl::Stop(
     base::OnceCallback<void(bool)> success_cb) {
-  if (!IsPresenting()) {
+  if (!IsPresenting(/*student_id=*/std::nullopt)) {
     std::move(success_cb).Run(true);
     return;
   }
@@ -158,8 +159,10 @@ void StudentScreenPresenterImpl::Stop(
       std::move(stop_request));
 }
 
-bool StudentScreenPresenterImpl::IsPresenting() {
-  return receiver_id_.has_value();
+bool StudentScreenPresenterImpl::IsPresenting(
+    std::optional<std::string_view> student_id) {
+  return student_id_.has_value() &&
+         (!student_id.has_value() || student_id.value() == student_id_.value());
 }
 
 void StudentScreenPresenterImpl::OnStartResponse(
@@ -214,6 +217,7 @@ void StudentScreenPresenterImpl::OnStopResponse(
 void StudentScreenPresenterImpl::Reset() {
   receiver_id_.reset();
   connection_id_.reset();
+  student_id_.reset();
   disconnected_cb_.Reset();
   stop_request_in_progress_ = false;
   stopped_check_timer_.Stop();
