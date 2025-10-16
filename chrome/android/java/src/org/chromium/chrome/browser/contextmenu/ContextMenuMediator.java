@@ -37,7 +37,6 @@ public class ContextMenuMediator {
     private final ContextMenuHeaderCoordinator mContextMenuHeaderCoordinator;
     private final Callback<Integer> mOnItemClicked;
     private final Runnable mDismissDialog;
-    private final boolean mUsePopupWindow;
 
     /**
      * Returns a mediator ({@link ContextMenuMediator}) to be used for a context menu. See {@link
@@ -47,19 +46,16 @@ public class ContextMenuMediator {
      * @param headerCoordinator The {@link ContextMenuHeaderCoordinator} to use.
      * @param onItemClicked A callback that takes the MENU_ITEM_ID of an item, to use on click.
      * @param dismissDialog The {@link Runnable} to use to dismiss the context menu.
-     * @param isPopup Whether the context menu window should be shown as a popup.
      */
     /* package */ ContextMenuMediator(
             Activity activity,
             ContextMenuHeaderCoordinator headerCoordinator,
             Callback<Integer> onItemClicked,
-            Runnable dismissDialog,
-            boolean usePopupWindow) {
+            Runnable dismissDialog) {
         mActivity = activity;
         mContextMenuHeaderCoordinator = headerCoordinator;
         mOnItemClicked = onItemClicked;
         mDismissDialog = dismissDialog;
-        mUsePopupWindow = usePopupWindow;
     }
 
     /**
@@ -119,10 +115,8 @@ public class ContextMenuMediator {
 
         // Setup submenu navigation callbacks.
         hierarchicalMenuController.setupCallbacksRecursively(
-                /* headerModelList= */ null,
-                mModelList,
-                mDismissDialog,
-                /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
+                /* headerModelList= */ null, mModelList, mDismissDialog);
+
         // Add callbacks to all other first-level items.
         for (ListItem item : mModelList) {
             if (item.type == ListItemType.MENU_ITEM

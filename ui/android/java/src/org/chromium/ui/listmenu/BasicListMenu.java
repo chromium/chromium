@@ -241,6 +241,8 @@ public class BasicListMenu implements ListMenu {
      * If an item doesn't already have a click callback in its model, no click callback is added.
      *
      * @param dismissDialog The {@link Runnable} to run.
+     * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
+     *     true}) or flyout ({@code false}), overriding the default.
      * @param FlyoutHandler The {@link FlyoutHandler} to use for flyout menus.
      */
     public void setupCallbacksRecursively(
@@ -249,7 +251,9 @@ public class BasicListMenu implements ListMenu {
             @Nullable FlyoutHandler flyoutHandler) {
         HierarchicalMenuController hierarchicalMenuController =
                 new HierarchicalMenuController(
-                        new ListMenuUtils.ListMenuKeyProvider(), flyoutHandler);
+                        new ListMenuUtils.ListMenuKeyProvider(),
+                        flyoutHandler,
+                        drillDownOverrideValue);
 
         AccessibilityListObserver observer =
                 hierarchicalMenuController
@@ -263,7 +267,7 @@ public class BasicListMenu implements ListMenu {
         mContentModelList.addObserver(observer);
 
         hierarchicalMenuController.setupCallbacksRecursively(
-                mHeaderModelList, mContentModelList, dismissDialog, drillDownOverrideValue);
+                mHeaderModelList, mContentModelList, dismissDialog);
     }
 
     private void callDelegate(@Nullable Delegate delegate, PropertyModel model, View view) {

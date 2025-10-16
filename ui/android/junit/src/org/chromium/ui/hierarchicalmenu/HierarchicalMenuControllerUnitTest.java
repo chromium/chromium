@@ -84,7 +84,9 @@ public class HierarchicalMenuControllerUnitTest {
     public void setUp() {
         mController =
                 new HierarchicalMenuController(
-                        HierarchicalMenuTestUtils.createKeyProvider(), /* flyoutHandler= */ null);
+                        HierarchicalMenuTestUtils.createKeyProvider(),
+                        /* flyoutHandler= */ null,
+                        /* drillDownOverrideValue= */ true);
 
         mListItemWithModelClickCallback =
                 new ListItem(
@@ -145,10 +147,7 @@ public class HierarchicalMenuControllerUnitTest {
     @Test
     public void getItemList_submenuNavigation_noStaticHeader() {
         mController.setupCallbacksRecursively(
-                /* headerModelList= */ null,
-                mModelList,
-                mDismissDialog,
-                /* drillDownOverrideValue= */ true);
+                /* headerModelList= */ null, mModelList, mDismissDialog);
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
         assertEquals(
@@ -199,8 +198,7 @@ public class HierarchicalMenuControllerUnitTest {
     @Test
     public void getItemList_submenuNavigation_withStaticHeader() {
         // Begin test
-        mController.setupCallbacksRecursively(
-                mHeaderModelList, mModelList, mDismissDialog, /* drillDownOverrideValue= */ true);
+        mController.setupCallbacksRecursively(mHeaderModelList, mModelList, mDismissDialog);
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
         assertEquals(
@@ -290,10 +288,7 @@ public class HierarchicalMenuControllerUnitTest {
     @Test
     public void getItemList_withoutModelClickCallback_noClickCallbackAdded() {
         mController.setupCallbacksRecursively(
-                /* headerModelList= */ null,
-                mModelList,
-                mDismissDialog,
-                /* drillDownOverrideValue= */ true);
+                /* headerModelList= */ null, mModelList, mDismissDialog);
         boolean hasClickListener =
                 mListItemWithoutModelClickCallback.model.containsKey(CLICK_LISTENER);
         assertTrue(
@@ -311,10 +306,7 @@ public class HierarchicalMenuControllerUnitTest {
     @Test
     public void getItemList_withModelClickCallback_dismissAdded() {
         mController.setupCallbacksRecursively(
-                /* headerModelList= */ null,
-                mModelList,
-                mDismissDialog,
-                /* drillDownOverrideValue= */ true);
+                /* headerModelList= */ null, mModelList, mDismissDialog);
         mListItemWithModelClickCallback.model.get(CLICK_LISTENER).onClick(mListView);
         verify(mDismissDialog, times(1)).run();
     }
@@ -322,10 +314,7 @@ public class HierarchicalMenuControllerUnitTest {
     @Test
     public void getItemList_submenuNavigation_noOneByOneDataChange() {
         mController.setupCallbacksRecursively(
-                /* headerModelList= */ null,
-                mModelList,
-                mDismissDialog,
-                /* drillDownOverrideValue= */ true);
+                /* headerModelList= */ null, mModelList, mDismissDialog);
         mModelList.addObserver(mListObserver);
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
@@ -342,10 +331,10 @@ public class HierarchicalMenuControllerUnitTest {
                 mController
                 .new AccessibilityListObserver(
                         mParentView, mHeaderListView, mListView, mHeaderModelList, mModelList);
-        mController.setupCallbacksRecursively(
-                mHeaderModelList, mModelList, mDismissDialog, /* drillDownOverrideValue= */ true);
         mHeaderModelList.addObserver(observer);
         mModelList.addObserver(observer);
+
+        mController.setupCallbacksRecursively(mHeaderModelList, mModelList, mDismissDialog);
 
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
@@ -368,12 +357,10 @@ public class HierarchicalMenuControllerUnitTest {
                         mListView,
                         mHeaderModelList,
                         mModelList);
-        mController.setupCallbacksRecursively(
-                /* headerModelList= */ null,
-                mModelList,
-                mDismissDialog,
-                /* drillDownOverrideValue= */ true);
         mModelList.addObserver(observer);
+
+        mController.setupCallbacksRecursively(
+                /* headerModelList= */ null, mModelList, mDismissDialog);
 
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
@@ -483,7 +470,7 @@ public class HierarchicalMenuControllerUnitTest {
     }
 
     private void triggerHoverEnter(ListItem item, int level, List<ListItem> path) {
-        mController.handleHoverEvent(createHoverEnterEvent(), item, mListView, level, false, path);
+        mController.handleHoverEvent(createHoverEnterEvent(), item, mListView, level, path);
     }
 
     private MotionEvent createHoverEnterEvent() {

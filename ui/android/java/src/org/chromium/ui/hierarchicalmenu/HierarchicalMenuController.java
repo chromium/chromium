@@ -52,20 +52,27 @@ public class HierarchicalMenuController<T> {
     private @Nullable Handler mHoverExitDelayHandler;
     private @Nullable Runnable mPendingHoverExitRunnable;
 
+    private final @Nullable Boolean mDrillDownOverrideValue;
+
     /**
      * Creates an instance of the controller.
      *
      * @param keyProvider The {@link HierarchicalMenuKeyProvider} for the controller to use.
      * @param flyoutHandler The {@link FlyoutHandler} for the controller to use for displaying
      *     flyout popups.
+     * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
+     *     true}) or flyout ({@code false}), overriding the default.
      */
     public HierarchicalMenuController(
-            HierarchicalMenuKeyProvider keyProvider, @Nullable FlyoutHandler<T> flyoutHandler) {
+            HierarchicalMenuKeyProvider keyProvider,
+            @Nullable FlyoutHandler<T> flyoutHandler,
+            @Nullable Boolean drillDownOverrideValue) {
         mFlyoutController =
                 flyoutHandler != null
                         ? new FlyoutController<T>(flyoutHandler, keyProvider, this)
                         : null;
         mKeyProvider = keyProvider;
+        mDrillDownOverrideValue = drillDownOverrideValue;
     }
 
     /**
@@ -75,6 +82,28 @@ public class HierarchicalMenuController<T> {
      */
     public @Nullable FlyoutController<T> getFlyoutController() {
         return mFlyoutController;
+    }
+
+    /**
+     * Determines whether to use a drill-down menu style. Currently defaults to using drilldown
+     * unless an override value is given.
+     *
+     * @return True to use the drill-down style, false to use the flyout style.
+     */
+    public boolean shouldUseDrillDown() {
+        if (mDrillDownOverrideValue != null) {
+            if (!mDrillDownOverrideValue) {
+                assert mFlyoutController != null;
+            }
+            return mDrillDownOverrideValue;
+        }
+
+        if (mFlyoutController == null) {
+            return true;
+        }
+
+        // TODO(http://crbug.com/440938039): Return `false` when conditions qualify for flyout.
+        return true;
     }
 
     /**
@@ -125,8 +154,6 @@ public class HierarchicalMenuController<T> {
      * @param view The View associated with the hovered ListItem.
      * @param levelOfHoveredItem The depth of the item within the menu hierarchy (e.g., 0 for root
      *     items, 1 for sub-menu items).
-     * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
-     *     true}) or flyout ({@code false}), overriding the default.
      * @param highlightPath The complete list of items from the root of the menu to the currently
      *     hovered {@code item}, inclusive.
      * @return {@code true} if the hover event was handled (ACTION_HOVER_ENTER or
@@ -137,7 +164,6 @@ public class HierarchicalMenuController<T> {
             ListItem item,
             View view,
             int levelOfHoveredItem,
-            @Nullable Boolean drillDownOverrideValue,
             List<ListItem> highlightPath) {
         if (mPendingHoverExitRunnable != null) {
             assert mHoverExitDelayHandler != null;
@@ -146,16 +172,12 @@ public class HierarchicalMenuController<T> {
             mHoverExitDelayHandler = null;
         }
 
-        boolean shouldUseDrillDown =
-                mFlyoutController != null
-                        && FlyoutController.shouldUseDrillDown(drillDownOverrideValue);
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_HOVER_ENTER:
                 updateHighlights(highlightPath);
-                if (mFlyoutController != null && !shouldUseDrillDown) {
-                    mFlyoutController.onItemHovered(
-                            item, view, levelOfHoveredItem, drillDownOverrideValue, highlightPath);
+                if (!shouldUseDrillDown()) {
+                    assert mFlyoutController != null;
+                    mFlyoutController.onItemHovered(item, view, levelOfHoveredItem, highlightPath);
                 }
                 return true;
             case MotionEvent.ACTION_HOVER_EXIT:
@@ -165,7 +187,7 @@ public class HierarchicalMenuController<T> {
                 // receive an {@code ACTION_HOVER_ENTER} event on the flyout view. If we faithfully
                 // follow these, the parent item momentarily loses the hover style, so we ignore the
                 // first exit event in case it's immediately followed by an enter event.
-                if (mFlyoutController != null && !shouldUseDrillDown) {
+                if (!shouldUseDrillDown()) {
                     assert mFlyoutController != null;
                     mFlyoutController.cancelFlyoutDelay(view);
                 }
@@ -201,16 +223,10 @@ public class HierarchicalMenuController<T> {
      * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param item The menu item which was clicked.
-     * @param drillDownOverrideValue An optional override value. If non-null, we use drilldown if
-     *     it's true and flyout if it's false to display submenus. If null, we determine which to
-     *     use based on system conditions.
      */
     private void onItemWithSubmenuClicked(
-            @Nullable ModelList headerModelList,
-            ModelList contentModelList,
-            ListItem item,
-            @Nullable Boolean drillDownOverrideValue) {
-        if (!FlyoutController.shouldUseDrillDown(drillDownOverrideValue)) {
+            @Nullable ModelList headerModelList, ModelList contentModelList, ListItem item) {
+        if (!shouldUseDrillDown()) {
             return;
         }
 
@@ -308,9 +324,6 @@ public class HierarchicalMenuController<T> {
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param item The item to start with.
      * @param dismissDialog The {@link Runnable} to run.
-     * @param drillDownOverrideValue An optional override value. If non-null, we use drilldown if
-     *     it's true and flyout if it's false to display submenus. If null, this class determines
-     *     the appropriate style based on system conditions.
      */
     private void setupCallbacksRecursivelyForItem(
             @Nullable ModelList headerModelList,
@@ -318,7 +331,6 @@ public class HierarchicalMenuController<T> {
             ListItem item,
             Runnable dismissDialog,
             int levelOfHoveredItem,
-            @Nullable Boolean drillDownOverrideValue,
             List<ListItem> ancestorPath) {
         if (item.model == null) return;
 
@@ -332,12 +344,7 @@ public class HierarchicalMenuController<T> {
                     mKeyProvider.getHoverListenerKey(),
                     (view, event) -> {
                         return handleHoverEvent(
-                                event,
-                                item,
-                                view,
-                                levelOfHoveredItem,
-                                drillDownOverrideValue,
-                                highlightPath);
+                                event, item, view, levelOfHoveredItem, highlightPath);
                     });
 
             View.OnKeyListener originalListener = item.model.get(mKeyProvider.getKeyListenerKey());
@@ -345,9 +352,8 @@ public class HierarchicalMenuController<T> {
                     mKeyProvider.getKeyListenerKey(),
                     (view, keyCode, keyEvent) -> {
                         if (isGoBackward(keyEvent)) {
-                            if (mFlyoutController != null
-                                    && !FlyoutController.shouldUseDrillDown(
-                                            drillDownOverrideValue)) {
+                            if (!shouldUseDrillDown()) {
+                                assert mFlyoutController != null;
                                 mFlyoutController.exitFlyoutWithoutDelay(
                                         levelOfHoveredItem, view, highlightPath);
                             }
@@ -372,12 +378,8 @@ public class HierarchicalMenuController<T> {
                         if (existingListener != null) {
                             existingListener.onClick(view);
                         }
-                        if (FlyoutController.shouldUseDrillDown(drillDownOverrideValue)) {
-                            onItemWithSubmenuClicked(
-                                    headerModelList,
-                                    contentModelList,
-                                    item,
-                                    drillDownOverrideValue);
+                        if (shouldUseDrillDown()) {
+                            onItemWithSubmenuClicked(headerModelList, contentModelList, item);
                         } else if (mFlyoutController != null) {
                             // Allow for controlling flyout with keyboard for accessibility.
                             mFlyoutController.enterFlyoutWithoutDelay(
@@ -393,7 +395,6 @@ public class HierarchicalMenuController<T> {
                         submenuItem,
                         dismissDialog,
                         levelOfHoveredItem + 1,
-                        drillDownOverrideValue,
                         highlightPath);
             }
         } else {
@@ -413,15 +414,11 @@ public class HierarchicalMenuController<T> {
      * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param dismissDialog The {@link Runnable} to run.
-     * @param drillDownOverrideValue An optional override value. If non-null, we use drilldown if
-     *     it's true and flyout if it's false to display submenus. If null, this class determines
-     *     the appropriate style based on system conditions.
      */
     public void setupCallbacksRecursively(
             @Nullable ModelList headerModelList,
             ModelList contentModelList,
-            Runnable dismissDialog,
-            @Nullable Boolean drillDownOverrideValue) {
+            Runnable dismissDialog) {
         long time = SystemClock.elapsedRealtime();
         if (headerModelList != null) {
             for (ListItem listItem : headerModelList) {
@@ -431,7 +428,6 @@ public class HierarchicalMenuController<T> {
                         listItem,
                         dismissDialog,
                         /* levelOfHoveredItem= */ 0,
-                        drillDownOverrideValue,
                         new ArrayList<ListItem>());
             }
         }
@@ -442,7 +438,6 @@ public class HierarchicalMenuController<T> {
                     listItem,
                     dismissDialog,
                     /* levelOfHoveredItem= */ 0,
-                    drillDownOverrideValue,
                     new ArrayList<ListItem>());
         }
         RecordHistogram.recordTimesHistogram(

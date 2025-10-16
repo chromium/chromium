@@ -283,7 +283,9 @@ public abstract class TabOverflowMenuCoordinator<T> {
         mContext = context;
         mHierarchicalMenuController =
                 new HierarchicalMenuController(
-                        new ListMenuUtils.ListMenuKeyProvider(), /* flyoutHandler= */ null);
+                        new ListMenuUtils.ListMenuKeyProvider(),
+                        /* flyoutHandler= */ null,
+                        /* drillDownOverrideValue= */ true);
     }
 
     /**
@@ -532,8 +534,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                     if (mMenuHolder != null) {
                         mMenuHolder.dismiss();
                     }
-                },
-                /* drillDownOverrideValue= */ true);
+                });
     }
 
     public void configureMenuItemsForTesting(ModelList modelList, T id) {

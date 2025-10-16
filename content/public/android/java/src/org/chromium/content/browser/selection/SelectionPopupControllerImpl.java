@@ -387,7 +387,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
                             @Override
                             public void removeFlyoutWindows(int removeFromIndex) {}
-                        });
+                        },
+                        /* drillDownOverrideValue= */ true);
     }
 
     private void reset() {
@@ -799,10 +800,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
 
         mHierarchicalMenuController.setupCallbacksRecursively(
-                /* headerModelList= */ null,
-                items,
-                this::dismissMenu,
-                /* drillDownOverrideValue= */ true);
+                /* headerModelList= */ null, items, this::dismissMenu);
 
         SelectionDropdownMenuDelegate.ItemClickListener itemClickListener =
                 getDropdownItemClickListener(mDropdownMenuDelegate);

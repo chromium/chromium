@@ -77,7 +77,9 @@ public class FlyoutControllerUnitTest {
     public void setUp() {
         mHierarchicalMenuController =
                 new HierarchicalMenuController(
-                        HierarchicalMenuTestUtils.createKeyProvider(), /* flyoutHandler= */ null);
+                        HierarchicalMenuTestUtils.createKeyProvider(),
+                        /* flyoutHandler= */ null,
+                        /* drillDownOverrideValue= */ false);
 
         mFlyoutController =
                 new FlyoutController(
@@ -218,7 +220,7 @@ public class FlyoutControllerUnitTest {
     }
 
     private void triggerHoverEnter(ListItem item, int level, List<ListItem> path) {
-        mFlyoutController.onItemHovered(item, mListView, level, false, path);
+        mFlyoutController.onItemHovered(item, mListView, level, path);
     }
 
     private static void waitForUiDelay() {

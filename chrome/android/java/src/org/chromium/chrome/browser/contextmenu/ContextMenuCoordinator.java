@@ -81,7 +81,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     private WebContentsObserver mWebContentsObserver;
     private @Nullable ContextMenuChipController mChipController;
     private ContextMenuHeaderCoordinator mHeaderCoordinator;
-    private final HierarchicalMenuController mHierarchicalMenuController;
 
     private final List<ContextMenuListView> mListViews;
     private final float mTopContentOffsetPx;
@@ -121,8 +120,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mIsCustomItemPresent = isCustomItemPresent;
         mDialogs = new ArrayList<>();
         mListViews = new ArrayList<>();
-        mHierarchicalMenuController =
-                new HierarchicalMenuController(new ListMenuUtils.ListMenuKeyProvider(), this);
     }
 
     @Override
@@ -328,11 +325,13 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         mIsCustomItemPresent);
         ContextMenuMediator mediator =
                 new ContextMenuMediator(
-                        mActivity,
-                        mHeaderCoordinator,
-                        onItemClicked,
-                        this::dismiss,
-                        mUsePopupWindow);
+                        mActivity, mHeaderCoordinator, onItemClicked, this::dismiss);
+
+        HierarchicalMenuController hierarchicalMenuController =
+                new HierarchicalMenuController(
+                        new ListMenuUtils.ListMenuKeyProvider(),
+                        /* flyoutHandler= */ this,
+                        /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
 
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems =
@@ -342,7 +341,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         // preview the page before initiating any actions. This is not needed for
                         // actions performed on the current page.
                         /* hasHeader= */ !params.getOpenedFromHighlight() && !params.isPage(),
-                        mHierarchicalMenuController);
+                        hierarchicalMenuController);
 
         ModelListAdapter adapter = createAdapter(listItems);
 
@@ -362,7 +361,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mListViews.add(listView);
 
         listItems.addObserver(
-                mHierarchicalMenuController
+                hierarchicalMenuController
                 .new AccessibilityListObserver(
                         listView,
                         /* headerView= */ null,

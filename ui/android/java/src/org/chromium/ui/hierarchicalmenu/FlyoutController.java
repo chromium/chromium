@@ -140,18 +140,11 @@ public class FlyoutController<T> {
      * @param view The hovered view.
      * @param levelOfHoveredItem The depth of the item within the menu hierarchy (e.g., 0 for root
      *     items, 1 for sub-menu items).
-     * @param drillDownOverrideValue An optional override value. If non-null, this value is returned
-     *     directly. If null, the method determines the appropriate style based on system
-     *     conditions.
      * @param highlightPath The complete list of items from the root of the menu to the currently
      *     hovered {@code item}, inclusive.
      */
     public void onItemHovered(
-            ListItem item,
-            View view,
-            int levelOfHoveredItem,
-            @Nullable Boolean drillDownOverrideValue,
-            List<ListItem> highlightPath) {
+            ListItem item, View view, int levelOfHoveredItem, List<ListItem> highlightPath) {
         // Since we received a new `HOVER` event, we cancel the previous timer.
         cancelFlyoutDelay(view);
 
@@ -210,23 +203,5 @@ public class FlyoutController<T> {
             mFlyoutAfterDelayRunnable = null;
             mPendingFlyoutParentView = null;
         }
-    }
-
-    /**
-     * Determines whether to use a drill-down menu style. Currently defaults to using drilldown
-     * unless an override value is given.
-     *
-     * @param drillDownOverrideValue An optional override value. If non-null, this value is returned
-     *     directly. If null, the method determines the appropriate style based on system
-     *     conditions.
-     * @return True to use the drill-down style, false to use the flyout style.
-     */
-    public static boolean shouldUseDrillDown(@Nullable Boolean drillDownOverrideValue) {
-        if (drillDownOverrideValue != null) {
-            return drillDownOverrideValue;
-        }
-
-        // TODO(http://crbug.com/440938039): Return `false` when conditions qualify for flyout.
-        return true;
     }
 }

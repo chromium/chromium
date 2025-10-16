@@ -91,11 +91,7 @@ public class ContextMenuMediatorTest {
     public void setup() {
         mMediator =
                 new ContextMenuMediator(
-                        mActivity,
-                        mHeaderCoordinator,
-                        mClickCallback,
-                        mDismissDialog,
-                        /* usePopupWindow= */ false);
+                        mActivity, mHeaderCoordinator, mClickCallback, mDismissDialog);
 
         mListItemWithModelClickCallback =
                 new ListItem(
@@ -143,7 +139,10 @@ public class ContextMenuMediatorTest {
                                 .build());
 
         mHierarchicalMenuController =
-                new HierarchicalMenuController(new ListMenuUtils.ListMenuKeyProvider(), null);
+                new HierarchicalMenuController(
+                        new ListMenuUtils.ListMenuKeyProvider(),
+                        /* flyoutHandler= */ null,
+                        /* drillDownOverrideValue= */ true);
     }
 
     @Test
