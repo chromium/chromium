@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <string>
 #include <variant>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"

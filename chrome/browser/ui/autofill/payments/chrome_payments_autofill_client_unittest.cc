@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/functional/callback.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/touch_to_fill/autofill/android/mock_touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
@@ -32,8 +34,11 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_message_controller.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/android_bnpl_strategy.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "ui/android/window_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
@@ -47,15 +52,27 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Matcher;
 using ::testing::Ne;
 using ::testing::NotNull;
+using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
 
 namespace autofill {
 
 #if BUILDFLAG(IS_ANDROID)
+
+Matcher<payments::BnplIssuerContext> EqualsBnplIssuerContext(
+    BnplIssuer::IssuerId issuer_id,
+    payments::BnplIssuerEligibilityForPage eligibility) {
+  return AllOf(Field(&payments::BnplIssuerContext::issuer,
+                     Property(&BnplIssuer::issuer_id, Eq(issuer_id))),
+               Field(&payments::BnplIssuerContext::eligibility, eligibility));
+}
+
 class MockAutofillSaveCardBottomSheetBridge
     : public AutofillSaveCardBottomSheetBridge {
  public:
@@ -648,6 +665,26 @@ TEST_F(ChromePaymentsAutofillClientTest,
 
   chrome_payments_client()->ShowTouchToFillLoyaltyCard(/*delegate=*/nullptr,
                                                        {CreateLoyaltyCard()});
+}
+
+TEST_F(ChromePaymentsAutofillClientTest, ShowTouchToFillBnplIssuers) {
+  MockTouchToFillPaymentMethodController* ttf_payment_method_controller =
+      InjectMockTouchToFillPaymentMethodController();
+  const std::vector<payments::BnplIssuerContext> issuer_context = {
+      payments::BnplIssuerContext(
+          test::GetTestLinkedBnplIssuer(),
+          payments::BnplIssuerEligibilityForPage::kIsEligible)};
+
+  EXPECT_CALL(*ttf_payment_method_controller,
+              ShowBnplIssuers(ElementsAre(EqualsBnplIssuerContext(
+                                  issuer_context[0].issuer.issuer_id(),
+                                  issuer_context[0].eligibility)),
+                              /*app_locale=*/"en-US", _, _));
+
+  chrome_payments_client()->ShowTouchToFillBnplIssuers(
+      issuer_context, /*app_locale=*/"en-US",
+      /*selected_issuer_callback=*/base::DoNothing(),
+      /*cancel_callback=*/base::DoNothing());
 }
 
 #else   // !BUILDFLAG(IS_ANDROID)

@@ -7,9 +7,12 @@
 #import <optional>
 
 #import "base/check_deref.h"
+#import "base/containers/span.h"
 #import "base/functional/callback.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#import "components/autofill/core/browser/payments/bnpl_util.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
@@ -324,8 +327,10 @@ bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillProgress(
 }
 
 bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillBnplIssuers(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const BnplIssuerContext> bnpl_issuer_contexts) {
+    base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+    const std::string& app_locale,
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {
   return false;
 }
 

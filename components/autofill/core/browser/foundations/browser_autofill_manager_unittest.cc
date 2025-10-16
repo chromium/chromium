@@ -892,6 +892,10 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               SetCancelCallback,
               (base::OnceClosure cancel_callback),
               (override));
+  MOCK_METHOD(void,
+              SetSelectedIssuerCallback,
+              (base::OnceCallback<void(BnplIssuer)> selected_issuer_callback),
+              (override));
 };
 
 class MockFastCheckoutDelegate : public FastCheckoutDelegate {

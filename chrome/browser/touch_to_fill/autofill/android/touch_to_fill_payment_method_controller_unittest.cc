@@ -5,10 +5,13 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
@@ -17,6 +20,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -128,6 +132,14 @@ class MockTouchToFillDelegateAndroidImpl
               (std::string unique_id, bool is_virtual),
               (override));
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
+  MOCK_METHOD(void,
+              SetCancelCallback,
+              (base::OnceClosure cancel_callback),
+              (override));
+  MOCK_METHOD(void,
+              SetSelectedIssuerCallback,
+              (base::OnceCallback<void(BnplIssuer)> selected_issuer_callback),
+              (override));
 
  private:
   std::unique_ptr<TouchToFillKeyboardSuppressor> suppressor_;
@@ -398,7 +410,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest, ShowProgressScreenOnNewView) {
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowProgressScreenAbortsIfNoViewAvailable) {
-  EXPECT_CALL(*mock_view_, ShowProgressScreen(_)).Times(0);
+  EXPECT_CALL(*mock_view_, ShowProgressScreen).Times(0);
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowProgressScreen(
@@ -415,7 +427,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
                                  /*should_show_scan_credit_card=*/true));
-  EXPECT_CALL(*mock_view_, ShowProgressScreen(_)).Times(0);
+  EXPECT_CALL(*mock_view_, ShowProgressScreen).Times(0);
   EXPECT_CALL(*new_mock_view, ShowProgressScreen(&payment_method_controller()))
       .WillOnce(Return(true));
 
@@ -429,6 +441,9 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowBnplIssuersOnPreexistingView) {
+  base::MockOnceClosure mock_cancel_callback;
+  base::MockOnceCallback<void(autofill::BnplIssuer)>
+      mock_selected_issuer_callback;
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),
@@ -436,22 +451,31 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_CALL(*mock_view_,
               ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_)))
       .WillOnce(Return(true));
+  EXPECT_CALL(ttf_delegate(), SetCancelCallback);
+  EXPECT_CALL(ttf_delegate(), SetSelectedIssuerCallback);
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
-  payment_method_controller().ShowBnplIssuers(ttf_delegate().GetWeakPointer(),
-                                              bnpl_issuer_contexts_);
+  payment_method_controller().ShowBnplIssuers(
+      bnpl_issuer_contexts_, /*app_locale=*/"en-US",
+      mock_selected_issuer_callback.Get(), mock_cancel_callback.Get());
   OnAfterAskForValuesToFill();
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowBnplIssuersAbortsIfNoViewAvailable) {
-  EXPECT_CALL(*mock_view_, ShowBnplIssuers(_)).Times(0);
+  base::MockOnceClosure mock_cancel_callback;
+  base::MockOnceCallback<void(autofill::BnplIssuer)>
+      mock_selected_issuer_callback;
+  EXPECT_CALL(*mock_view_, ShowBnplIssuers).Times(0);
+  EXPECT_CALL(ttf_delegate(), SetCancelCallback).Times(0);
+  EXPECT_CALL(ttf_delegate(), SetSelectedIssuerCallback).Times(0);
 
   OnBeforeAskForValuesToFill();
-  payment_method_controller().ShowBnplIssuers(ttf_delegate().GetWeakPointer(),
-                                              bnpl_issuer_contexts_);
+  payment_method_controller().ShowBnplIssuers(
+      bnpl_issuer_contexts_, /*app_locale=*/"en-US",
+      mock_selected_issuer_callback.Get(), mock_cancel_callback.Get());
   OnAfterAskForValuesToFill();
 }
 

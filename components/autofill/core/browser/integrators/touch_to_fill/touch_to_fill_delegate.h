@@ -6,6 +6,7 @@
 #include <variant>
 
 #include "base/functional/callback.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -66,6 +67,8 @@ class TouchToFillDelegate {
       const FormStructure& submitted_form) = 0;
 
   virtual void SetCancelCallback(base::OnceClosure cancel_callback) = 0;
+  virtual void SetSelectedIssuerCallback(
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback) = 0;
 };
 
 }  // namespace autofill

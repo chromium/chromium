@@ -20,6 +20,7 @@ struct BnplIssuerContext;
 struct BnplIssuerTosDetail;
 }  // namespace payments
 
+class BnplIssuer;
 class ContentAutofillClient;
 class Iban;
 class LoyaltyCard;
@@ -85,15 +86,18 @@ class TouchToFillPaymentMethodController
       std::unique_ptr<TouchToFillPaymentMethodView> view,
       base::OnceClosure cancel_callback) = 0;
 
-  // Shows the Touch To Fill BNPL issuer selection screen. `delegate` will be
-  // notified of the user's decision. `bnpl_issuer_contexts` provides the BNPL
-  // issuers to suggest and the context needed to render them in the UI. Returns
-  // whether the surface was successfully shown.
-  // TODO(crbug.com/430575808): Pass in an `on_bnpl_flow_dismissed_by_user_`
-  // callback to be called whenever the BNPL UI is dismissed.
+  // Shows the Touch To Fill BNPL issuer selection screen.
+  // `bnpl_issuer_contexts` provides a read-only list of BNPL issuer contexts
+  // to be shown. `app_locale` provides the application's current language and
+  // region code for localization. `selected_issuer_callback` provides a
+  // one-time callback to be invoked when an issuer is selected.
+  // `cancel_callback` provides a one-time callback to be invoked to reset the
+  // BNPL flow. Returns whether the surface was successfully shown.
   virtual bool ShowBnplIssuers(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts) = 0;
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      const std::string& app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) = 0;
 
   // Shows the Touch To Fill error screen. If the TTF surface is already being
   // shown when this is called, `view` is optional and will override the

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@ class AutofillOfferManager;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
+class BnplIssuer;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 class AutofillProgressDialogController;
@@ -639,12 +641,18 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual bool ShowTouchToFillProgress(base::OnceClosure cancel_callback) = 0;
 
   // Shows the Touch To Fill surface with BNPL issuer information, if possible,
-  // returning `true` on success. `delegate` will be notified of events. This
-  // function is not implemented on iOS and iOS WebView, and should not be used
-  // on those platforms.
+  // returning `true` on success. `bnpl_issuer_contexts` provides a read-only
+  // list of BNPL issuer contexts to be shown. `app_locale` provides the
+  // application's current language and region code for localization.
+  // `selected_issuer_callback` provides a one-time callback to be invoked when
+  // an issuer is selected. `cancel_callback` provides a one-time callback to be
+  // invoked to reset the BNPL flow. This function is not implemented on iOS
+  // and iOS WebView, and should not be used on those platforms.
   virtual bool ShowTouchToFillBnplIssuers(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const BnplIssuerContext> bnpl_issuer_contexts) = 0;
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      const std::string& app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) = 0;
 
   // Shows the BNPL error screen, if possible, returning `true` on success.
   // Should be called only on Android if the feature is supported by the

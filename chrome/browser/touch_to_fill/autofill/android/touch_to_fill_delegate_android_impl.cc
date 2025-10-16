@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -101,6 +102,14 @@ TouchToFillDelegateAndroidImpl::DryRunResult::operator=(DryRunResult&&) =
     default;
 
 TouchToFillDelegateAndroidImpl::DryRunResult::~DryRunResult() = default;
+
+TouchToFillDelegateAndroidImpl::BnplCallbacks::BnplCallbacks() = default;
+TouchToFillDelegateAndroidImpl::BnplCallbacks::BnplCallbacks(BnplCallbacks&&) =
+    default;
+TouchToFillDelegateAndroidImpl::BnplCallbacks&
+TouchToFillDelegateAndroidImpl::BnplCallbacks::operator=(BnplCallbacks&&) =
+    default;
+TouchToFillDelegateAndroidImpl::BnplCallbacks::~BnplCallbacks() = default;
 
 TouchToFillDelegateAndroidImpl::TouchToFillDelegateAndroidImpl(
     BrowserAutofillManager* manager)
@@ -406,10 +415,10 @@ void TouchToFillDelegateAndroidImpl::LoyaltyCardSuggestionSelected(
 }
 
 void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {
-  if (dismissed_by_user && cancel_callback_) {
-    std::move(cancel_callback_).Run();
+  if (dismissed_by_user && bnpl_callbacks_.cancel_callback) {
+    std::move(bnpl_callbacks_.cancel_callback).Run();
   } else {
-    cancel_callback_.Reset();
+    bnpl_callbacks_.cancel_callback.Reset();
   }
 
   if (IsShowingTouchToFill()) {
@@ -467,7 +476,13 @@ void TouchToFillDelegateAndroidImpl::LogMetricsAfterSubmission(
 
 void TouchToFillDelegateAndroidImpl::SetCancelCallback(
     base::OnceClosure cancel_callback) {
-  cancel_callback_ = std::move(cancel_callback);
+  bnpl_callbacks_.cancel_callback = std::move(cancel_callback);
+}
+
+void TouchToFillDelegateAndroidImpl::SetSelectedIssuerCallback(
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback) {
+  bnpl_callbacks_.selected_issuer_callback =
+      std::move(selected_issuer_callback);
 }
 
 base::WeakPtr<TouchToFillDelegateAndroidImpl>

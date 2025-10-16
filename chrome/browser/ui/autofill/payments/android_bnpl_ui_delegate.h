@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
@@ -37,7 +38,7 @@ class AndroidBnplUiDelegate : public BnplUiDelegate {
   void ShowSelectBnplIssuerUi(
       std::vector<BnplIssuerContext> bnpl_issuer_context,
       std::string app_locale,
-      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   void DismissSelectBnplIssuerUi() override;
   void ShowBnplTosUi(BnplTosModel bnpl_tos_model,

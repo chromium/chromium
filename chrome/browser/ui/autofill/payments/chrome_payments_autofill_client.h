@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -47,6 +48,7 @@ class AutofillOfferData;
 class AutofillOfferManager;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
+class BnplIssuer;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 struct CardUnmaskChallengeOption;
 class CardUnmaskOtpInputDialogControllerImpl;
@@ -211,8 +213,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       bool is_amount_supported_by_any_issuer) override;
   bool ShowTouchToFillProgress(base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillBnplIssuers(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const BnplIssuerContext> bnpl_issuer_contexts) override;
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      const std::string& app_locale,
+      base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillError(base::WeakPtr<TouchToFillDelegate> delegate,
                             const AutofillErrorDialogContext& context) override;
   void HideTouchToFillPaymentMethod() override;

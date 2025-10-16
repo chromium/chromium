@@ -8,6 +8,7 @@
 #import <variant>
 
 #import "base/check_deref.h"
+#import "base/containers/span.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
@@ -16,11 +17,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#import "components/autofill/core/browser/payments/bnpl_util.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -540,8 +543,10 @@ bool IOSChromePaymentsAutofillClient::ShowTouchToFillProgress(
 }
 
 bool IOSChromePaymentsAutofillClient::ShowTouchToFillBnplIssuers(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const BnplIssuerContext> bnpl_issuer_contexts) {
+    base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+    const std::string& app_locale,
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {
   return false;
 }
 

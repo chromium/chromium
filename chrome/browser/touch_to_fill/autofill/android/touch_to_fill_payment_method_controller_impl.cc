@@ -5,10 +5,12 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -176,14 +178,18 @@ bool TouchToFillPaymentMethodControllerImpl::ShowProgressScreen(
 }
 
 bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuers(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts) {
+    base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+    const std::string& app_locale,
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {
   if (!view_ || !view_->ShowBnplIssuers(bnpl_issuer_contexts)) {
     ResetJavaObject();
     return false;
   }
-
-  delegate_ = std::move(delegate);
+  if (delegate_) {
+    delegate_->SetCancelCallback(std::move(cancel_callback));
+    delegate_->SetSelectedIssuerCallback(std::move(selected_issuer_callback));
+  }
   return true;
 }
 

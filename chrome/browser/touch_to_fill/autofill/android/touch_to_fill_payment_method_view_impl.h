@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 

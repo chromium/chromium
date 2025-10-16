@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
@@ -43,6 +44,7 @@ class AutofillClient;
 class AutofillDriver;
 #endif  // !BUILDFLAG(IS_IOS)
 class AutofillProgressDialogController;
+class BnplIssuer;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
 class CreditCardCvcAuthenticator;
@@ -190,8 +192,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       bool is_amount_supported_by_any_issuer) override;
   bool ShowTouchToFillProgress(base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillBnplIssuers(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const BnplIssuerContext> bnpl_issuer_contexts) override;
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      const std::string& app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillError(base::WeakPtr<TouchToFillDelegate> delegate,
                             const AutofillErrorDialogContext& context) override;
   void HideTouchToFillPaymentMethod() override;
