@@ -1524,7 +1524,7 @@ ManagePasswordsUIController::GetBubbleControllerBaseWeakPtr() {
 }
 
 bool ManagePasswordsUIController::CanBeReshown() const {
-  return true;
+  return GetState() != password_manager::ui::AUTO_SIGNIN_STATE;
 }
 
 void ManagePasswordsUIController::OnMouseEntered() {
