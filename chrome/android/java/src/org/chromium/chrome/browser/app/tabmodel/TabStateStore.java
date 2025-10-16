@@ -13,6 +13,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CollectionSaveForwarder;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
@@ -28,14 +29,14 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObserver;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.chromium.components.tabs.TabStripCollection;
 
 /** Orchestrates saving of tabs to the {@link TabStateStorageService}. */
 @NullMarked
@@ -158,9 +159,7 @@ public class TabStateStore implements TabPersistentStore {
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(/* isIncognito= */ false);
 
-        if (mFilter != null) {
-            mFilter.addTabGroupObserver(mVisualDataUpdateObserver);
-        }
+        initVisualDataTracking();
 
         // TODO(https://crbug.com/451614469): Watch for incognito as well eventually. But before
         // things are fully functional, do not write any incognito data to avoid regressing on
@@ -376,5 +375,24 @@ public class TabStateStore implements TabPersistentStore {
         CollectionSaveForwarder forwarder = mGroupForwarderMap.get(tabGroupId);
         if (forwarder == null) return;
         forwarder.save();
+    }
+
+    private void initVisualDataTracking() {
+        if (mFilter == null) return;
+
+        TabStripCollection collection = mFilter.getTabModel().getTabStripCollection();
+        if (collection == null) return;
+
+        Profile profile = mFilter.getTabModel().getProfile();
+        if (profile == null) return;
+
+        // Add forwarders for untracked groups.
+        for (Token groupId : mFilter.getAllTabGroupIds()) {
+            CollectionSaveForwarder forwarder =
+                    CollectionSaveForwarder.createForTabGroup(profile, groupId, collection);
+            mGroupForwarderMap.put(groupId, forwarder);
+        }
+
+        mFilter.addTabGroupObserver(mVisualDataUpdateObserver);
     }
 }
