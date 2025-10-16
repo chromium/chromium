@@ -1902,7 +1902,6 @@ if (is_android) {
       "//chrome/browser/password_manager/android:test_support",
       "//chrome/browser/password_manager/factories:password_factory_headers",
       "//chrome/browser/payments:browser_tests",
-      "//chrome/browser/permissions:android_browser_tests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/preloading:test_support",
