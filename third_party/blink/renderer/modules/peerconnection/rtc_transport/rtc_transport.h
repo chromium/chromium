@@ -20,11 +20,11 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_received_packet.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/api/datagram_connection.h"
 
 namespace blink {
+
 // Async adapter of webrtc::DatagramConnection to allow mocking out threading in
 // unittests.
 class AsyncDatagramConnection {
@@ -106,6 +106,7 @@ class MODULES_EXPORT RtcTransport final
   void Trace(Visitor* visitor) const override;
 
  private:
+  friend class RtcTransportTest;
   void ContinueInitialization(
       bool ice_controlling,
       webrtc::ServerAddresses stun_servers,
@@ -128,6 +129,7 @@ class MODULES_EXPORT RtcTransport final
   webrtc::Buffer digest_;
 
   // State related to calls which happen before initialization is complete.
+  Vector<webrtc::Candidate> pending_remote_candidates_;
   HeapVector<Member<RtcSendPacketParameters>> pending_send_packets_calls_;
   Member<RtcDtlsParameters> pending_dtls_parameters_;
 };

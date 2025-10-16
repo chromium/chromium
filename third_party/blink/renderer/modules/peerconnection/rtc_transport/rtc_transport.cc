@@ -392,6 +392,11 @@ void RtcTransport::OnInitialized(
     setRemoteDtlsParameters(pending_dtls_parameters_.Release());
   }
 
+  for (const auto& candidate : pending_remote_candidates_) {
+    async_datagram_connection_->AddRemoteCandidate(candidate);
+  }
+  pending_remote_candidates_.clear();
+
   if (!pending_send_packets_calls_.empty()) {
     sendPackets(pending_send_packets_calls_);
     pending_send_packets_calls_.clear();
@@ -421,7 +426,6 @@ void RtcTransport::OnPacketReceivedOnMainThread(
 
 void RtcTransport::addRemoteCandidate(RtcTransportICECandidateInit* init,
                                       ExceptionState& exception_state) {
-  DCHECK(initialized_);
   if (!init->hasType()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Missing type");
@@ -469,6 +473,11 @@ void RtcTransport::addRemoteCandidate(RtcTransportICECandidateInit* init,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "Only Host and Srflx candidates currently supported");
+    return;
+  }
+
+  if (!initialized_) {
+    pending_remote_candidates_.push_back(candidate);
     return;
   }
 

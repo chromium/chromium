@@ -125,6 +125,10 @@ class RtcTransportTest : public PageTestBase {
     ASSERT_FALSE(exception_state.HadException());
   }
 
+  void OnInitialized(std::unique_ptr<AsyncDatagramConnection> connection) {
+    transport_->OnInitialized(std::move(connection));
+  }
+
  protected:
   raw_ptr<MockAsyncDatagramConnection> mock_connection_;
   Persistent<RtcTransport> transport_;
@@ -154,6 +158,57 @@ TEST_F(RtcTransportTest, AddRemoteCandidate) {
       });
 
   transport_->addRemoteCandidate(init, ASSERT_NO_EXCEPTION);
+}
+
+TEST_F(RtcTransportTest, AddRemoteCandidateBeforeInitialization) {
+  auto* context = GetDocument().GetExecutionContext();
+  DummyExceptionStateForTesting exception_state;
+  transport_ = RtcTransport::CreateForTests(context, CreateRtcTransportConfig(),
+                                            exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  auto* init = RtcTransportICECandidateInit::Create();
+  init->setType(V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost));
+  init->setAddress("1.2.3.4");
+  init->setPort(1234);
+  init->setUsernameFragment("username");
+  init->setPassword("password");
+  transport_->addRemoteCandidate(init, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  auto mock_connection =
+      std::make_unique<testing::NiceMock<MockAsyncDatagramConnection>>();
+  mock_connection_ = mock_connection.get();
+
+  EXPECT_CALL(*mock_connection_, AddRemoteCandidate(testing::_))
+      .WillOnce([](const webrtc::Candidate& candidate) {
+        EXPECT_EQ(candidate.protocol(), "udp");
+        EXPECT_EQ(candidate.address().ToString(), "1.2.3.4:1234");
+        EXPECT_EQ(candidate.username(), "username");
+        EXPECT_EQ(candidate.password(), "password");
+        EXPECT_EQ(candidate.type(), webrtc::IceCandidateType::kHost);
+      });
+  OnInitialized(std::move(mock_connection));
+}
+
+TEST_F(RtcTransportTest, AddInvalidRemoteCandidateBeforeInitialization) {
+  auto* context = GetDocument().GetExecutionContext();
+  DummyExceptionStateForTesting exception_state;
+  transport_ = RtcTransport::CreateForTests(context, CreateRtcTransportConfig(),
+                                            exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  auto* init = RtcTransportICECandidateInit::Create();
+  init->setAddress("1.2.3.4");
+  init->setPort(1234);
+  init->setUsernameFragment("username");
+  init->setPassword("password");
+
+  transport_->addRemoteCandidate(init, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            static_cast<int>(DOMExceptionCode::kSyntaxError));
+  EXPECT_EQ("Missing type", exception_state.Message());
 }
 
 TEST_F(RtcTransportTest, SendPackets) {
