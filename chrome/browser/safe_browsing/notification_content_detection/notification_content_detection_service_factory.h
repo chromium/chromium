@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_SAFE_BROWSING_NOTIFICATION_CONTENT_DETECTION_NOTIFICATION_CONTENT_DETECTION_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+
+class OptimizationGuideKeyedService;
 
 namespace safe_browsing {
 class NotificationContentDetectionService;
