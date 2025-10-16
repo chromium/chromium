@@ -753,10 +753,6 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
                                   self.fakeOmnibox);
 }
 
-// TODO(crbug.com/41367911) The fakebox is currently a collection of views
-// spread between NewTabPageHeaderViewController and inside
-// NewTabPageHeaderView.  Post refresh this can be coalesced into one
-// control, and the KVO highlight logic below can be removed.
 - (void)observeValueForKeyPath:(NSString*)keyPath
                       ofObject:(id)object
                         change:(NSDictionary*)change
