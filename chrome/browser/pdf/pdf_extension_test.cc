@@ -96,6 +96,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
@@ -4130,18 +4131,24 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfIframe) {
 // be a PDF stream.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-  EXPECT_TRUE(
-      pdf::PdfViewerStreamManager::FromWebContents(GetActiveWebContents()));
+  WebContents* web_contents = GetActiveWebContents();
+  EXPECT_TRUE(pdf::PdfViewerStreamManager::FromWebContents(web_contents));
+
+  // Find the PDF extension frame, which is the parent of the content frame.
+  content::RenderFrameHost* pdf_extensions_frame =
+      pdf_frame_util::FindFullPagePdfExtensionHost(web_contents);
+  ASSERT_TRUE(pdf_extensions_frame);
+  content::RenderFrameDeletedObserver rfh_deleted_observer(
+      pdf_extensions_frame);
 
   // Replace the document.body. The embedder RFH will stay, but the extension
   // and content RFH will be deleted.
-  EXPECT_TRUE(
-      content::ExecJs(GetActiveWebContents(),
-                      "document.body = document.createElement('body');"));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents, "document.body = document.createElement('body');"));
 
+  rfh_deleted_observer.WaitUntilDeleted();
   // The stream should no longer exist.
-  EXPECT_FALSE(
-      pdf::PdfViewerStreamManager::FromWebContents(GetActiveWebContents()));
+  EXPECT_FALSE(pdf::PdfViewerStreamManager::FromWebContents(web_contents));
 }
 
 // If the document.body of the PDF viewer is replaced, any subframes appended

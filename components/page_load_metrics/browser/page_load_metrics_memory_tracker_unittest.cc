@@ -27,6 +27,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using performance_manager::v8_memory::V8DetailedMemoryExecutionContextData;
@@ -290,9 +291,11 @@ TEST_F(PageLoadMetricsMemoryTrackerTest, FrameDeleted_CorrectDeltasReceived) {
   SimulateMemoryMeasurementUpdate(main_frame, base::KiB(100));
   SimulateMemoryMeasurementUpdate(sub_frame, base::KiB(200));
 
+  content::RenderFrameDeletedObserver delete_observer(sub_frame);
   // Delete |sub_frame| and refresh the usage map. An update should have been
   // received that will make the usage corresponding to |sub_frame| zero.
   content::RenderFrameHostTester::For(sub_frame)->Detach();
+  delete_observer.WaitUntilDeleted();
 
   auto deltas_received = last_memory_deltas_received();
   EXPECT_EQ(3, num_updates_received());

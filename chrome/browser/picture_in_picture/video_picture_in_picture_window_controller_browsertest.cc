@@ -1086,9 +1086,11 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 
   EXPECT_EQ(false, EvalJs(iframe, "document.pictureInPictureElement == video"));
 
+  content::RenderFrameDeletedObserver deleted_observer(iframe);
   // Removing the iframe should not lead to the main frame leaving
   // Picture-in-Picture.
   ASSERT_TRUE(ExecJs(active_web_contents, "removeFrame();"));
+  deleted_observer.WaitUntilDeleted();
 
   EXPECT_EQ(1u, CollectAllRenderFrameHosts(active_web_contents).size());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
@@ -1147,7 +1149,9 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(true, EvalJs(iframe, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
+  content::RenderFrameDeletedObserver deleted_observer(iframe);
   ASSERT_TRUE(ExecJs(active_web_contents, "removeFrame();"));
+  deleted_observer.WaitUntilDeleted();
 
   EXPECT_EQ(1u, CollectAllRenderFrameHosts(active_web_contents).size());
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
@@ -1181,7 +1185,9 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(true, EvalJs(iframe, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
+  content::RenderFrameDeletedObserver deleted_observer(iframe);
   ASSERT_TRUE(ExecJs(active_web_contents, "removeFrame();"));
+  deleted_observer.WaitUntilDeleted();
 
   EXPECT_EQ(1u, CollectAllRenderFrameHosts(active_web_contents).size());
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());

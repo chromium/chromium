@@ -415,9 +415,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
       GetTestPdfViewerStreamManager()->GetStreamContainer(primary_main_frame));
 
   // Now detach the frame and observe that the stream manager is destroyed.
+  content::RenderFrameDeletedObserver deleted_observer(subframe_main_host);
   EXPECT_TRUE(
       ExecJs(primary_main_frame,
              "document.body.removeChild(document.querySelector('iframe'));"));
+  deleted_observer.WaitUntilDeleted();
 
   EXPECT_FALSE(GetPdfViewerStreamManager());
 }

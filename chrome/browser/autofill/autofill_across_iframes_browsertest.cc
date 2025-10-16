@@ -886,9 +886,13 @@ class AutofillAcrossIframesTest_DeletedFrame
     FormData form = form_structure.ToFormData();
     EXPECT_EQ(4u, form.fields().size());
     EXPECT_EQ(5u, num_frames());
+    content::RenderFrameHost* frame_to_delete =
+        content::ChildFrameAt(main_frame(), 1);
+    content::RenderFrameDeletedObserver deleted_observer(frame_to_delete);
     std::ignore = content::EvalJs(
         main_frame(),
         R"( document.getElementsByTagName('iframe')[1].remove(); )");
+    deleted_observer.WaitUntilDeleted();
     EXPECT_EQ(4u, num_frames());
     FillCard(main_frame(), form, trigger_field);
     test_api(form).Remove(1);
