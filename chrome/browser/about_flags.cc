@@ -9057,7 +9057,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"geolocation-element",
      flag_descriptions::kGeolocationPermissionControlName,
      flag_descriptions::kGeolocationPermissionControlDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsMac | kOsWin | kOsLinux | kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kGeolocationElement)},
 
     {"permission-promise-lifetime-modulation",
