@@ -48,28 +48,36 @@ PasswordFieldClassificationModelHandlerFactory::
 content::BrowserContext*
 PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+
   // `FieldClassificationModelHandler` is not supported without an
   // `OptimizationGuideKeyedService`.
-  return OptimizationGuideKeyedServiceFactory::GetForProfile(
-             Profile::FromBrowserContext(context))
-             ? context
-             : nullptr;
+  if (!OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+    return nullptr;
+  }
+
+  // Main feature is enabled, no need to check anything else.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormClientsideClassifier)) {
+    return context;
+  }
+
+  // Special case for Automated Password Change which uses a model in a very
+  // limited scope.
+  ChromePasswordChangeService* password_change_service =
+      PasswordChangeServiceFactory::GetForProfile(profile);
+  if (password_change_service &&
+      password_change_service->UserIsActivePasswordChangeUser()) {
+    return context;
+  }
+
+  return nullptr;
 }
 
 std::unique_ptr<KeyedService> PasswordFieldClassificationModelHandlerFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-
-  ChromePasswordChangeService* password_change_service =
-      PasswordChangeServiceFactory::GetForProfile(profile);
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordFormClientsideClassifier) &&
-      (!password_change_service ||
-       !password_change_service->UserIsActivePasswordChangeUser())) {
-    return nullptr;
-  }
-
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   autofill::MlLogRouter* log_router =
