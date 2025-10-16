@@ -2891,6 +2891,25 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertRaises(chromedriver.UnknownError,
                       self._driver.GetNetworkConditions)
 
+  '''Regression test for crbug.com/42323833
+  '''
+  def testDeleteEmulateNetworkConditionsAndNavigate(self):
+    initial_url = self.GetHttpUrlForFile('/initial.html')
+    self._http_server.SetDataForPath('/initial.html', bytes("""
+        <html>
+          <title>Initial</title>
+        </html>""", 'utf-8'))
+
+    # Set and delete network conditions
+    latency = 5
+    throughput = 1000
+    self._driver.SetNetworkConditions(latency, throughput, throughput)
+    self._driver.DeleteNetworkConditions()
+
+    # Navigate to a URL
+    self._driver.Load(initial_url)
+    self.assertTrue(self._driver.GetTitle(), "Initial")
+
   def testEmulateNetworkConditionsName(self):
     # DSL: 2Mbps throughput, 5ms RTT
     # latency = 5
