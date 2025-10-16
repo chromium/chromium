@@ -732,7 +732,7 @@ BASE_FEATURE(kAutofillUseStructuralSignatureInsteadOfSecondary,
 // to a bug, only forms identified by parsing are considered.
 // TODO(crbug.com/436171158): Clean up when launched.
 BASE_FEATURE(kAutofillConsiderServerOnlyFormsInKeyMetrics,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the field classification model uses runtime caching to not run
 // models on the same inputs multiple times.
