@@ -6,6 +6,7 @@ package org.chromium.base.supplier;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
@@ -27,7 +28,7 @@ import java.util.function.Supplier;
  * @param <E> The type of the wrapped object.
  */
 @NullMarked
-public class OneShotCallback<E> {
+public class OneShotCallback<E extends @Nullable Object> {
     private final Callback<E> mCallbackWrapper = new CallbackWrapper();
     private final WeakReference<ObservableSupplier<E>> mWeakSupplier;
     private final Callback<E> mCallback;
