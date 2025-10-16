@@ -394,10 +394,11 @@ ExternalTexture CreateExternalTexture(
     resource_color_space = media_video_frame->CompatRGBColorSpace();
   }
 
-  // Use RGBA_F16 canvas resource for HDR color space to prevent potential
-  // color info loss, and N32 for non-HDR.
-  auto sk_color_type =
-      resource_color_space.IsHDR() ? kRGBA_F16_SkColorType : kN32_SkColorType;
+  // High bit depth formats should also use F16, but do not yet.
+  auto sk_color_type = kN32_SkColorType;
+  if (media_video_frame->format() == media::PIXEL_FORMAT_RGBAF16) {
+    sk_color_type = kRGBA_F16_SkColorType;
+  }
 
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       device->GetDawnControlClient()->GetOrCreateCanvasResource(

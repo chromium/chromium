@@ -2001,6 +2001,7 @@ _CONFIG = [
             'gpu::webgpu::WEBGPU_MAILBOX_NONE',
             'gpu::webgpu::WebGPUInterface',
             'media::PIXEL_FORMAT_NV12',
+            'media::PIXEL_FORMAT_RGBAF16',
             'switches::kEnableUnsafeWebGPU',
         ],
     },
