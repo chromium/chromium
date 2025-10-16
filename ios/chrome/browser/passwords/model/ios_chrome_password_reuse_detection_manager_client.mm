@@ -16,6 +16,9 @@
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_interface.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_manager_log_router_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -74,8 +77,8 @@ bool IOSChromePasswordReuseDetectionManagerClient::IsHistorySyncAccountEmail(
   // Password reuse detection is tied to history sync.
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(bridge_.profile);
-  if (!sync_service || !sync_service->GetPreferredDataTypes().Has(
-                           syncer::HISTORY_DELETE_DIRECTIVES)) {
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kHistory)) {
     return false;
   }
   return password_manager::sync_util::IsSyncAccountEmail(
