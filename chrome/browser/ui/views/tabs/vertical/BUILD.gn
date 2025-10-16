@@ -33,8 +33,6 @@ source_set("vertical") {
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/tabs/tab_strip_api:mojom",
-    "//chrome/browser/ui/tabs/tab_strip_api/observation",
-    "//chrome/browser/ui/tabs/tab_strip_api/utilities",
     "//ui/base/metadata",
     "//ui/gfx/geometry",
     "//ui/views",

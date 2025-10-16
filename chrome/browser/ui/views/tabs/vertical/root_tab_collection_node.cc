@@ -13,7 +13,6 @@ RootTabCollectionNode::RootTabCollectionNode(
     CustomAddChildView add_node_to_parent_callback)
     : TabCollectionNode(std::move(add_node_to_parent_callback)) {
   CHECK(tab_strip_service);
-  service_observer_.Observe(tab_strip_service);
 
   auto result = tab_strip_service->GetTabs();
   CHECK(result.has_value());
@@ -21,27 +20,3 @@ RootTabCollectionNode::RootTabCollectionNode(
 }
 
 RootTabCollectionNode::~RootTabCollectionNode() = default;
-
-void RootTabCollectionNode::OnTabsCreated(
-    const tabs_api::mojom::OnTabsCreatedEventPtr& tabs_created_event) {
-  for (const auto& tab_created : tabs_created_event->tabs) {
-    TabCollectionNode* parent =
-        GetNodeForId(tab_created->position.parent_id().value());
-    parent->AddNewChild(
-        tabs_api::mojom::Data::NewTab(std::move(tab_created->tab)),
-        tab_created->position.index());
-  }
-}
-
-void RootTabCollectionNode::OnTabsClosed(
-    const tabs_api::mojom::OnTabsClosedEventPtr& tabs_closed_event) {}
-
-void RootTabCollectionNode::OnNodeMoved(
-    const tabs_api::mojom::OnNodeMovedEventPtr& node_moved_event) {}
-
-void RootTabCollectionNode::OnDataChanged(
-    const tabs_api::mojom::OnDataChangedEventPtr& data_changed_event) {}
-
-void RootTabCollectionNode::OnCollectionCreated(
-    const tabs_api::mojom::OnCollectionCreatedEventPtr&
-        collection_created_event) {}

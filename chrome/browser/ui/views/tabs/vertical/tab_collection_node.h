@@ -30,7 +30,6 @@ class TabCollectionNode {
       base::RepeatingCallback<std::unique_ptr<views::View>(TabCollectionNode*)>;
 
   TabCollectionNode();
-  explicit TabCollectionNode(tabs_api::mojom::DataPtr data);
   explicit TabCollectionNode(CustomAddChildView add_node_to_parent_callback);
   virtual ~TabCollectionNode();
 
@@ -40,13 +39,6 @@ class TabCollectionNode {
   void Initialize(tabs_api::mojom::ContainerPtr container,
                   views::View* parent_view,
                   CustomAddChildView add_node_to_parent_callback);
-
-  // Gets the collection under this subtree that has the associated node_id.
-  // Returns nullptr if no such node exists.
-  TabCollectionNode* GetNodeForId(const tabs_api::NodeId& node_id);
-
-  // Creates a new child with data and adds it at index.
-  void AddNewChild(tabs_api::mojom::DataPtr data, size_t index);
 
   const tabs_api::mojom::DataPtr& data() const { return data_; }
   const Children& children() const { return children_; }
@@ -67,14 +59,6 @@ class TabCollectionNode {
  protected:
   static std::unique_ptr<views::View> CreateViewForNode(
       TabCollectionNode* node_for_view);
-
-  // Creates node_view_, then returns the unique_ptr to the view.
-  std::unique_ptr<views::View> CreateAndSetView();
-
-  // Adds child_node_view to node_view_ and child_node to children_.
-  void AddChild(std::unique_ptr<views::View> child_node_view,
-                std::unique_ptr<TabCollectionNode> child_node,
-                size_t index);
 
   base::OnceClosureList on_will_destroy_callback_list_;
 
