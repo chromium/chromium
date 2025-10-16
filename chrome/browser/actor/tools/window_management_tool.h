@@ -47,9 +47,9 @@ class WindowManagementTool : public Tool, public BrowserListObserver {
 
   // BrowserListObserver
   void OnBrowserRemoved(Browser* browser) final;
-  void OnBrowserSetLastActive(Browser* browser) final;
 
  private:
+  void OnBrowserDidBecomeActive(BrowserWindowInterface* Browser);
   void OnInvokeFinished(mojom::ActionResultPtr result);
 
   Action action_;
@@ -62,6 +62,7 @@ class WindowManagementTool : public Tool, public BrowserListObserver {
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
+  base::CallbackListSubscription browser_did_become_active_subscription_;
 
   base::WeakPtrFactory<WindowManagementTool> weak_ptr_factory_{this};
 };
