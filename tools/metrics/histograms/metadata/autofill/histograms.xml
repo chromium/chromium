@@ -45,12 +45,10 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(Autofill.Ai.EntityType) -->
 
 <variants name="Autofill.Ai.EntityType">
-  <variant name=""
-      summary="Emitted for any kind of entities. Note that for a given
-               histogram, this variant will just be the accumulation of all
-               histogram records of the other variants."/>
   <variant name=".DriversLicense"
       summary="Emitted for driver's license forms only."/>
+  <variant name=".FlightReservation"
+      summary="Emitted for flight reservation forms only."/>
   <variant name=".KnownTravelerNumber"
       summary="Emitted for Known Traveler Number forms only."/>
   <variant name=".NationalIdCard"
@@ -1298,7 +1296,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
                  stored to fill it, this metric records whether the user saw
                  an Autofill AI suggestion or not."/>
   </token>
-  <token key="EntityGranularity" variants="Autofill.Ai.EntityType"/>
+  <token key="EntityGranularity" variants="Autofill.Ai.EntityType">
+    <variant name=""
+        summary="Emitted for any kind of entities. Note that for a given
+                 histogram, this variant will just be the accumulation of all
+                 histogram records of the other variants."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.Ai.KeyMetrics{KeyMetric}{EntityGranularity}"
@@ -1329,7 +1332,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
         summary="Records, at form submission, whether the user had Autofill
                  AI data to fill the form or not."/>
   </token>
-  <token key="EntityGranularity" variants="Autofill.Ai.EntityType"/>
+  <token key="EntityGranularity" variants="Autofill.Ai.EntityType">
+    <variant name=""
+        summary="Emitted for any kind of entities. Note that for a given
+                 histogram, this variant will just be the accumulation of all
+                 histogram records of the other variants."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.Ai.ModelExecutionStatus"
