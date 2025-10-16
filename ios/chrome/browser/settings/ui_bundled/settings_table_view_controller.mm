@@ -311,6 +311,9 @@ struct EnhancedSafeBrowsingActivePromoData
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
 
+  // Whether Gemini user consented.
+  BOOL _geminiUserConsented;
+
   // Tabs settings coordinator.
   TabsSettingsCoordinator* _tabsCoordinator;
 
@@ -387,6 +390,8 @@ struct EnhancedSafeBrowsingActivePromoData
         feature_engagement::TrackerFactory::GetForProfile(_profile);
 
     PrefService* prefService = _profile->GetPrefs();
+
+    _geminiUserConsented = prefService->GetBoolean(prefs::kIOSBwgConsent);
 
     _passwordCheckManager =
         IOSChromePasswordCheckManagerFactory::GetForProfile(_profile);
@@ -470,7 +475,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
   // Update the BWG new IPH badge here as it depends on the number of times it's
   // shown.
-  if (IsPageActionMenuEnabled()) {
+  if (IsPageActionMenuEnabled() && _geminiUserConsented) {
     [self updateBWGNewIPHBadge];
   }
 }
@@ -519,7 +524,8 @@ struct EnhancedSafeBrowsingActivePromoData
 
   // Advanced Section
   [model addSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  if (IsPageActionMenuEnabled()) {
+
+  if (IsPageActionMenuEnabled() && _geminiUserConsented) {
     [model addItem:[self BWGSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   }
