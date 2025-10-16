@@ -202,6 +202,14 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicFlow) {
       1);
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "ValidSuggestions.Reengagement",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "ValidSuggestions.FRE",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
       "EmptySuggestions",
       0);
 }
@@ -291,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   base::test::TestFuture<std::vector<std::string>> future;
   ContextualCueingServiceFactory::GetForProfile(browser()->profile())
       ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
-          web_contents, /*is_fre=*/false, /*supported_tools=*/{},
+          web_contents, /*is_fre=*/true, /*supported_tools=*/{},
           future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
@@ -299,6 +307,14 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
       "EmptySuggestions",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "EmptySuggestions.Reengagement",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
+      "EmptySuggestions.FRE",
       1);
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."

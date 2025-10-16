@@ -138,6 +138,7 @@ class ContextualCueingService
 
   // Callback invoked when pinned tabs suggestions are received.
   void OnPinnedTabsSuggestionsReceived(
+      bool is_fre,
       base::TimeTicks fetch_begin_time,
       ZeroStateSuggestionsRequest* pinned_tabs_request,
       GlicSuggestionsCallback callback,

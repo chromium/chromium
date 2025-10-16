@@ -33,12 +33,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContextualCueing.GlicSuggestions.MesFetchLatency" units="ms"
     expires_after="2026-03-22">
-  <owner>zekunjiang@google.com</owner>
-  <owner>rajendrant@google.com</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     Recorded every time a suggestion response is received from Model Execution
-    Service. Records the amount of time it takes to receivd the response, from
+    Service. Records the amount of time it takes to receive the response, from
     when the corresponding suggestion request is sent.
   </summary>
 </histogram>
@@ -67,15 +66,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContextualCueing.GlicSuggestions.SuggestionsFetchLatency.{ResultType}"
+    name="ContextualCueing.GlicSuggestions.SuggestionsFetchLatency.{ResultType}{EngagementType}"
     units="ms" expires_after="2026-03-22">
-  <owner>zekunjiang@google.com</owner>
-  <owner>rajendrant@google.com</owner>
   <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     Recorded every time something is returned as a result of invoking the
     suggestions fetch API. The results are split by the type of results returned
-    (e.g. results with no suggestions vs results with valid suggestions).
+    (e.g. results with no suggestions vs results with valid suggestions) and
+    engagement type (FRE v reengagement).
   </summary>
   <token key="ResultType">
     <variant name="EmptySuggestions"
@@ -85,13 +84,19 @@ chromium-metrics-reviews@google.com.
         summary="When valid suggestions are returned as a result of a
                  suggestions fetch"/>
   </token>
+  <token key="EngagementType">
+    <variant name="" summary=""/>
+    <variant name=".FRE" summary="When suggestions are fetched for the FRE"/>
+    <variant name=".Reengagement"
+        summary="When suggestions are fetched for reengagement"/>
+  </token>
 </histogram>
 
 <histogram
     name="ContextualCueing.NudgeDecision.{ContextualCueingOptimizationType}"
     enum="ContextualCueingNudgeDecision" expires_after="2026-03-08">
   <owner>sophiechang@chromium.org</owner>
-  <owner>rajendrant@google.com</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     The nudge decision for {ContextualCueingOptimizationType}. Recorded once per
     page load when the document has loaded.
@@ -102,8 +107,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContextualCueing.NudgeInteraction"
     enum="ContextualCueingNudgeInteraction" expires_after="2026-03-08">
+  <owner>sophiechang@google.com</owner>
   <owner>jeffreycohen@chromium.org</owner>
-  <owner>rajendrant@google.com</owner>
   <summary>
     The user interaction for a Contextual Cueing Nudge. Recorded when a user is
     shown or interacts with a contextual nudge.

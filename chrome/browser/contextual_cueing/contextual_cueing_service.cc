@@ -62,15 +62,24 @@ bool IsGlicTabContextEnabled(PrefService* pref_service) {
   return pref_service->GetBoolean(glic::prefs::kGlicTabContextEnabled);
 }
 
-void OnSuggestionsReceived(base::TimeTicks fetch_begin_time,
+void OnSuggestionsReceived(bool is_fre,
+                           base::TimeTicks fetch_begin_time,
                            GlicSuggestionsCallback callback,
                            std::vector<std::string> suggestions) {
-  base::UmaHistogramTimes(!suggestions.empty()
-                              ? "ContextualCueing.GlicSuggestions."
-                                "SuggestionsFetchLatency.ValidSuggestions"
-                              : "ContextualCueing.GlicSuggestions."
-                                "SuggestionsFetchLatency.EmptySuggestions",
-                          base::TimeTicks::Now() - fetch_begin_time);
+  base::TimeDelta suggestion_latency =
+      base::TimeTicks::Now() - fetch_begin_time;
+  std::string result_type =
+      suggestions.empty() ? "EmptySuggestions" : "ValidSuggestions";
+  std::string engagement_type = is_fre ? "FRE" : "Reengagement";
+  // Continue logging the original histogram.
+  base::UmaHistogramTimes(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency." + result_type,
+      suggestion_latency);
+  // Add another split by engagement type.
+  base::UmaHistogramTimes(
+      "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency." +
+          result_type + "." + engagement_type,
+      suggestion_latency);
 
   std::move(callback).Run(suggestions);
 }
@@ -393,8 +402,9 @@ void ContextualCueingService::
     zss_request_ptr = zss_request.get();
     zss_data->set_focused_tab_request(std::move(zss_request));
   }
-  zss_request_ptr->AddCallback(base::BindOnce(
-      &OnSuggestionsReceived, base::TimeTicks::Now(), std::move(callback)));
+  zss_request_ptr->AddCallback(base::BindOnce(&OnSuggestionsReceived, is_fre,
+                                              base::TimeTicks::Now(),
+                                              std::move(callback)));
 #else
   std::move(callback).Run({});
 #endif
@@ -437,7 +447,7 @@ bool ContextualCueingService::
       pinned_web_contents, is_fre, supported_tools, focused_tab);
   pinned_tabs_zero_state_suggestions_request_->AddCallback(base::BindOnce(
       &ContextualCueingService::OnPinnedTabsSuggestionsReceived,
-      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+      weak_ptr_factory_.GetWeakPtr(), is_fre, base::TimeTicks::Now(),
       pinned_tabs_zero_state_suggestions_request_.get(), std::move(callback)));
   return true;
 #else
@@ -447,12 +457,13 @@ bool ContextualCueingService::
 }
 
 void ContextualCueingService::OnPinnedTabsSuggestionsReceived(
+    bool is_fre,
     base::TimeTicks fetch_begin_time,
     ZeroStateSuggestionsRequest* pinned_tabs_request,
     GlicSuggestionsCallback callback,
     std::vector<std::string> suggestions) {
 #if BUILDFLAG(ENABLE_GLIC)
-  OnSuggestionsReceived(fetch_begin_time, std::move(callback),
+  OnSuggestionsReceived(is_fre, fetch_begin_time, std::move(callback),
                         std::move(suggestions));
 
   // Only destroy the outstanding pinned tabs request if it is the same.
