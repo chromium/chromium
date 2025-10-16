@@ -314,6 +314,7 @@ ntp-lens-upload-dialog {
   inset: 0;
   opacity: var(--ntp-scrim-opacity_);
   position: fixed;
+  transition: all 250ms ease;
   z-index: 1;
 }
 
