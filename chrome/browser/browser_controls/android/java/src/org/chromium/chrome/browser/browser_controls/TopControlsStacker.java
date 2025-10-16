@@ -59,10 +59,38 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     @IntDef({
         TopControlVisibility.VISIBLE,
         TopControlVisibility.HIDDEN,
+        TopControlVisibility.SHOWING_TOP_ANCHOR,
+        TopControlVisibility.SHOWING_BOTTOM_ANCHOR,
+        TopControlVisibility.HIDING_TOP_ANCHOR,
+        TopControlVisibility.HIDING_BOTTOM_ANCHOR
     })
     public @interface TopControlVisibility {
         int VISIBLE = 0;
         int HIDDEN = 1;
+
+        /**
+         * The current layer is going through animation from HIDDEN to VISIBLE. Layers below will
+         * move downwards until this layer is fully shown.
+         */
+        int SHOWING_TOP_ANCHOR = 3;
+
+        /**
+         * The current layer is going through animation from HIDDEN to VISIBLE. The layer will move
+         * downwards with layers below until fully shown.
+         */
+        int SHOWING_BOTTOM_ANCHOR = 4;
+
+        /**
+         * The current layer is going through animation from VISIBLE to HIDDEN. Layers below will
+         * shift upwards until fully cover the current layer.
+         */
+        int HIDING_TOP_ANCHOR = 5;
+
+        /**
+         * The current layer is going through animation from VISIBLE to HIDDEN. The layer will shift
+         * upwards until fully cover by the top layer
+         */
+        int HIDING_BOTTOM_ANCHOR = 6;
     }
 
     /** Enum that defines the scroll behavior of a top control. */
@@ -193,7 +221,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                 mBrowserControlsSizer.getTopControlOffset(),
                 mBrowserControlsSizer.getTopControlsMinHeightOffset(),
                 animate,
-                isVisibilityForced());
+                isBrowserControlsVisibilityForced());
 
         // Add more implementations here when necessary (e.g. offset calculation)
     }
@@ -217,7 +245,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             @TopControlType int currentType = STACK_ORDER[i];
             TopControlLayer layer = mControls.get(currentType);
 
-            if (layer != null && layer.getTopControlVisibility() == TopControlVisibility.VISIBLE) {
+            if (!isLayerHidden(layer)) {
                 return currentType == controlType;
             }
         }
@@ -231,8 +259,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         int minHeight = 0;
         for (@TopControlType int type : STACK_ORDER) {
             TopControlLayer layer = mControls.get(type);
-            if (layer == null || !layer.contributesToTotalHeight()) continue;
-            if (layer.getTopControlVisibility() != TopControlVisibility.VISIBLE) continue;
+            if (isLayerHidden(layer)) continue;
+            if (!layer.contributesToTotalHeight() || isLayerHiding(layer)) continue;
 
             totalHeight += layer.getTopControlHeight();
 
@@ -252,13 +280,18 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         mMinHeight = minHeight;
     }
 
+    // Calculate the layer's resting offsets assuming the top control is fully shown.
     private void recalculateLayerRestingOffsets() {
         int cumulativeHeight = 0;
         for (@TopControlType int type : STACK_ORDER) {
             TopControlLayer layer = mControls.get(type);
             if (layer == null) continue;
 
-            if (layer.getTopControlVisibility() == TopControlVisibility.HIDDEN) {
+            @TopControlVisibility int layerVisibility = layer.getTopControlVisibility();
+            if (layerVisibility == TopControlVisibility.HIDDEN
+                    || layerVisibility == TopControlVisibility.HIDING_TOP_ANCHOR
+                    || layerVisibility == TopControlVisibility.HIDING_BOTTOM_ANCHOR) {
+                // If a layer is hidden / hiding, it does not have a resting offset.
                 mLayerRestingOffsets.delete(type);
             } else {
                 mLayerRestingOffsets.put(type, cumulativeHeight);
@@ -339,6 +372,10 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             TopControlLayer layer = mControls.get(type);
             if (isLayerHidden(layer)) continue;
 
+            // If a layer is hiding, skip the layer, as the layer do not exists in the final
+            // stack order.
+            if (isLayerHiding(layer)) continue;
+
             boolean hasMinHeight = shouldLayerScrollOff(layer);
             int layerHeight = layer.contributesToTotalHeight() ? layer.getTopControlHeight() : 0;
 
@@ -401,11 +438,17 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     }
 
     @Contract("null -> true")
-    private boolean isLayerHidden(@Nullable TopControlLayer layer) {
+    private static boolean isLayerHidden(@Nullable TopControlLayer layer) {
         return layer == null || layer.getTopControlVisibility() == TopControlVisibility.HIDDEN;
     }
 
-    private boolean isVisibilityForced() {
+    private static boolean isLayerHiding(TopControlLayer layer) {
+        @TopControlVisibility int visibility = layer.getTopControlVisibility();
+        return visibility == TopControlVisibility.HIDING_TOP_ANCHOR
+                || visibility == TopControlVisibility.HIDING_BOTTOM_ANCHOR;
+    }
+
+    private boolean isBrowserControlsVisibilityForced() {
         return mBrowserControlsState == BrowserControlsState.HIDDEN
                 || mBrowserControlsState == BrowserControlsState.SHOWN;
     }
@@ -417,7 +460,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * most layer until the specified layer **(exclusive)**.
      *
      * <p><b>Warning:</b> The height returned might not be accurate during {@link
-     * #recalculateLayerSizes()}, so it should not be used to determine a layer's attribute.
+     * #repositionLayers(int, int, boolean, boolean)} ()}, so it should not be used to determine a
+     * layer's attribute.
      *
      * @param stopLayer the layer in the stack order to stop at.
      * @return the total height of the visible UI from the specified layer to the top, or {@link
