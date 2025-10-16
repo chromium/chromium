@@ -156,7 +156,7 @@ gfx::NativeWindow InteractiveBrowserTestPrivate::GetNativeWindowFromElement(
 gfx::NativeWindow InteractiveBrowserTestPrivate::GetNativeWindowFromContext(
     ui::ElementContext context) const {
   // Use the top-level browser window for the context (assuming there is one).
-  if (Browser* const browser =
+  if (auto* const browser =
           InteractionTestUtilBrowser::GetBrowserFromContext(context)) {
     if (BrowserView* const browser_view =
             BrowserView::GetBrowserViewForBrowser(browser)) {
@@ -171,7 +171,7 @@ std::string InteractiveBrowserTestPrivate::DebugDescribeContext(
   if (const auto* browser =
           InteractionTestUtilBrowser::GetBrowserFromContext(context)) {
     std::string type;
-    switch (browser->type()) {
+    switch (browser->GetType()) {
       case Browser::TYPE_APP:
         type = "App window";
         break;
@@ -191,17 +191,15 @@ std::string InteractiveBrowserTestPrivate::DebugDescribeContext(
         type = "Other browser window";
         break;
     }
-    if (browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP)) {
-      type += base::StringPrintf(", %d tab(s) (active: %d)",
-                                 browser->tab_strip_model()->count(),
-                                 browser->tab_strip_model()->active_index());
-    }
+    type += base::StringPrintf(", %d tab(s) (active: %d)",
+                               browser->GetTabStripModel()->count(),
+                               browser->GetTabStripModel()->active_index());
     return base::StringPrintf(
         "%s%s profile %s%s at %s",
-        (browser->window()->IsActive() ? "[ACTIVE] " : ""), type,
-        browser->profile()->GetDebugName(),
-        (browser->profile()->IsOffTheRecord() ? " (off-the-record)" : ""),
-        DebugDumpBounds(browser->window()->GetBounds()));
+        (browser->GetWindow()->IsActive() ? "[ACTIVE] " : ""), type,
+        browser->GetProfile()->GetDebugName(),
+        (browser->GetProfile()->IsOffTheRecord() ? " (off-the-record)" : ""),
+        DebugDumpBounds(browser->GetWindow()->GetBounds()));
   }
 
   return std::string();
@@ -219,7 +217,8 @@ InteractiveBrowserTestPrivate::DebugDumpElements(
       if (const auto* browser =
               InteractionTestUtilBrowser::GetBrowserFromContext(
                   el->context())) {
-        index = browser->tab_strip_model()->GetIndexOfWebContents(web_contents);
+        index =
+            browser->GetTabStripModel()->GetIndexOfWebContents(web_contents);
       }
       nodes.emplace_back(base::StringPrintf(
           "WebContents %s - %s at %s with URL \"%s\"",

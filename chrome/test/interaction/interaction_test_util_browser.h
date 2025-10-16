@@ -7,13 +7,12 @@
 
 #include <string>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/interaction/interaction_test_util.h"
 
 namespace ui {
 class TrackedElement;
 }  // namespace ui
-
-class Browser;
 
 class InteractionTestUtilBrowser {
  public:
@@ -25,7 +24,8 @@ class InteractionTestUtilBrowser {
 
   // Returns the browser that matches the given context, or nullptr if none
   // can be found.
-  static Browser* GetBrowserFromContext(ui::ElementContext context);
+  static BrowserWindowInterface* GetBrowserFromContext(
+      ui::ElementContext context);
 
   // Takes a screenshot based on the contents of `element` and compares with
   // Skia Gold. May return ActionResult::kKnownIncompatible on platforms and

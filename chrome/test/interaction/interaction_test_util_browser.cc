@@ -9,9 +9,7 @@
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -129,13 +127,13 @@ class InteractionTestUtilSimulatorBrowser
     // Browser accelerators must be sent via key events to the window on Mac or
     // they don't work properly. Dialog accelerators still appear to work the
     // same as on other platforms.
-    if (Browser* const browser =
-            InteractionTestUtilBrowser::GetBrowserFromContext(
-                element->context())) {
+    if (auto* const bwi = InteractionTestUtilBrowser::GetBrowserFromContext(
+            element->context())) {
       if (!ui_controls::SendKeyPress(
-              browser->window()->GetNativeWindow(), accelerator.key_code(),
-              accelerator.IsCtrlDown(), accelerator.IsShiftDown(),
-              accelerator.IsAltDown(), accelerator.IsCmdDown())) {
+              BrowserView::GetBrowserViewForBrowser(bwi)->GetNativeWindow(),
+              accelerator.key_code(), accelerator.IsCtrlDown(),
+              accelerator.IsShiftDown(), accelerator.IsAltDown(),
+              accelerator.IsCmdDown())) {
         LOG(ERROR) << "Failed to send accelerator"
                    << accelerator.GetShortcutText() << " to " << *element;
         return ui::test::ActionResult::kFailed;
@@ -297,7 +295,7 @@ class InteractionTestUtilSimulatorBrowser
       size_t index,
       InputType input_type,
       std::optional<size_t> expected_index_after_selection) override {
-    // This handler *explicitly* only handles Browser and TabStrip; it will
+    // This handler *explicitly* only handles browser and TabStrip; it will
     // reject any other element or View type.
     if (!tab_collection->IsA<views::TrackedElementViews>())
       return ui::test::ActionResult::kNotAttempted;
@@ -365,12 +363,13 @@ void InteractionTestUtilBrowser::PopulateSimulators(
 }
 
 // static
-Browser* InteractionTestUtilBrowser::GetBrowserFromContext(
+BrowserWindowInterface* InteractionTestUtilBrowser::GetBrowserFromContext(
     ui::ElementContext context) {
-  BrowserList* const browsers = BrowserList::GetInstance();
-  for (Browser* const browser : *browsers) {
-    if (BrowserElements::From(browser)->GetContext() == context) {
-      return browser;
+  for (auto* const bwi : GetAllBrowserWindowInterfaces()) {
+    if (auto* elements = BrowserElements::From(bwi)) {
+      if (elements->GetContext() == context) {
+        return bwi;
+      }
     }
   }
   return nullptr;

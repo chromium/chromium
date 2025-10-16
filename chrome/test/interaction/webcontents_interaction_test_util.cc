@@ -30,18 +30,18 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -63,9 +63,15 @@ class RenderFrameHost;
 
 namespace {
 
-content::WebContents* GetWebContents(Browser* browser,
+BrowserWindowInterface* GetBrowserWindowForWebContentsInTab(
+    content::WebContents* contents) {
+  auto* const tab = tabs::TabInterface::MaybeGetFromContents(contents);
+  return tab ? tab->GetBrowserWindowInterface() : nullptr;
+}
+
+content::WebContents* GetWebContents(BrowserWindowInterface* browser,
                                      std::optional<int> tab_index) {
-  auto* const model = browser->tab_strip_model();
+  auto* const model = browser->GetTabStripModel();
   return model->GetWebContentsAt(tab_index.value_or(model->active_index()));
 }
 
@@ -401,7 +407,7 @@ class TabWebContentsInteractionTestUtil : public WebContentsInteractionTestUtil,
  public:
   TabWebContentsInteractionTestUtil(content::WebContents* web_contents,
                                     ui::ElementIdentifier page_identifier);
-  TabWebContentsInteractionTestUtil(Browser* to_watch,
+  TabWebContentsInteractionTestUtil(BrowserWindowInterface* to_watch,
                                     ui::ElementIdentifier page_identifier);
   ~TabWebContentsInteractionTestUtil() override;
 
@@ -638,7 +644,7 @@ WebContentsInteractionTestUtil::ForExistingTabInContext(
 // static
 std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForExistingTabInBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ui::ElementIdentifier page_identifier,
     std::optional<int> tab_index) {
   return ForTabWebContents(GetWebContents(browser, tab_index), page_identifier);
@@ -667,7 +673,7 @@ std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForNextTabInContext(
     ui::ElementContext context,
     ui::ElementIdentifier page_identifier) {
-  Browser* const browser =
+  auto* const browser =
       InteractionTestUtilBrowser::GetBrowserFromContext(context);
   return ForNextTabInBrowser(browser, page_identifier);
 }
@@ -675,7 +681,7 @@ WebContentsInteractionTestUtil::ForNextTabInContext(
 // static
 std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForNextTabInBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ui::ElementIdentifier page_identifier) {
   CHECK(browser);
   return std::make_unique<TabWebContentsInteractionTestUtil>(browser,
@@ -987,14 +993,16 @@ class TabWebContentsInteractionTestUtil::NewTabWatcher
     : public TabStripModelObserver,
       public BrowserListObserver {
  public:
-  NewTabWatcher(TabWebContentsInteractionTestUtil* owner, Browser* browser)
+  NewTabWatcher(TabWebContentsInteractionTestUtil* owner,
+                BrowserWindowInterface* browser)
       : owner_(owner), browser_(browser) {
     if (browser_) {
-      browser_->tab_strip_model()->AddObserver(this);
+      browser_->GetTabStripModel()->AddObserver(this);
     } else {
       BrowserList::GetInstance()->AddObserver(this);
-      for (Browser* const open_browser : *BrowserList::GetInstance()) {
-        open_browser->tab_strip_model()->AddObserver(this);
+      for (BrowserWindowInterface* const open_browser :
+           *BrowserList::GetInstance()) {
+        open_browser->GetTabStripModel()->AddObserver(this);
       }
     }
   }
@@ -1003,13 +1011,13 @@ class TabWebContentsInteractionTestUtil::NewTabWatcher
     BrowserList::GetInstance()->RemoveObserver(this);
   }
 
-  Browser* browser() { return browser_; }
+  BrowserWindowInterface* browser() { return browser_; }
 
  private:
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override {
     CHECK(!browser_);
-    browser->tab_strip_model()->AddObserver(this);
+    browser->GetTabStripModel()->AddObserver(this);
   }
 
   void OnBrowserRemoved(Browser* browser) override { CHECK(!browser_); }
@@ -1025,12 +1033,13 @@ class TabWebContentsInteractionTestUtil::NewTabWatcher
 
     auto* const web_contents =
         change.GetInsert()->contents.front().contents.get();
-    CHECK(!browser_ || browser_ == chrome::FindBrowserWithTab(web_contents));
+    CHECK(!browser_ ||
+          browser_ == GetBrowserWindowForWebContentsInTab(web_contents));
     owner_->StartWatchingWebContents(web_contents);
   }
 
   const raw_ptr<TabWebContentsInteractionTestUtil> owner_;
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 };
 
 TabWebContentsInteractionTestUtil::TabWebContentsInteractionTestUtil(
@@ -1041,7 +1050,7 @@ TabWebContentsInteractionTestUtil::TabWebContentsInteractionTestUtil(
 }
 
 TabWebContentsInteractionTestUtil::TabWebContentsInteractionTestUtil(
-    Browser* to_watch,
+    BrowserWindowInterface* to_watch,
     ui::ElementIdentifier page_identifier)
     : WebContentsInteractionTestUtil(nullptr, page_identifier),
       new_tab_watcher_(std::make_unique<NewTabWatcher>(this, to_watch)) {}
@@ -1053,10 +1062,9 @@ void TabWebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
                                                          bool activate_tab) {
   // We use tertiary operator rather than value_or to avoid failing if we're in
   // a wait state.
-  Browser* browser = new_tab_watcher_
-                         ? new_tab_watcher_->browser()
-                         : chrome::FindBrowserWithTab(web_contents());
-  CHECK(browser);
+  BrowserWindowInterface* browser =
+      new_tab_watcher_ ? new_tab_watcher_->browser()
+                       : GetBrowserWindowForWebContentsInTab(web_contents());
   NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
   navigate_params.disposition = activate_tab
                                     ? WindowOpenDisposition::NEW_FOREGROUND_TAB
@@ -1070,7 +1078,7 @@ views::WebView* TabWebContentsInteractionTestUtil::GetWebView() const {
     return nullptr;
   }
 
-  Browser* const browser = InteractionTestUtilBrowser::GetBrowserFromContext(
+  auto* const browser = InteractionTestUtilBrowser::GetBrowserFromContext(
       current_element()->context());
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
@@ -1085,7 +1093,8 @@ views::WebView* TabWebContentsInteractionTestUtil::GetWebView() const {
 ui::ElementContext TabWebContentsInteractionTestUtil::GetElementContext()
     const {
   ui::ElementContext context;
-  if (Browser* const browser = chrome::FindBrowserWithTab(web_contents())) {
+  if (auto* const browser =
+          GetBrowserWindowForWebContentsInTab(web_contents())) {
     context = BrowserElements::From(browser)->GetContext();
   }
   return context;
@@ -1127,9 +1136,9 @@ void TabWebContentsInteractionTestUtil::OnTabStripModelChanged(
 void TabWebContentsInteractionTestUtil::StartWatchingWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents);
+  auto* const browser = GetBrowserWindowForWebContentsInTab(web_contents);
   CHECK(browser);
-  browser->tab_strip_model()->AddObserver(this);
+  browser->GetTabStripModel()->AddObserver(this);
   if (new_tab_watcher_) {
     new_tab_watcher_.reset();
     Observe(web_contents);
@@ -1266,7 +1275,7 @@ WebViewWebContentsInteractionTestUtil::WebViewWebContentsInteractionTestUtil(
     : WebContentsInteractionTestUtil(web_view->GetWebContents(),
                                      page_identifier) {
   CHECK(web_contents());
-  CHECK(!chrome::FindBrowserWithTab(web_contents()));
+  CHECK(!GetBrowserWindowForWebContentsInTab(web_contents()));
   web_view_data_ = std::make_unique<WebViewData>(this, web_view);
   web_view_data_->Init();
 }

@@ -972,11 +972,11 @@ Browser* InteractiveBrowserTestApi::GetBrowserFor(
   return std::visit(
       absl::Overload{[](AnyBrowser) -> Browser* { return nullptr; },
                      [current_context](CurrentBrowser) {
-                       Browser* const browser =
+                       auto* const browser =
                            InteractionTestUtilBrowser::GetBrowserFromContext(
                                current_context);
                        CHECK(browser) << "Current context is not a browser.";
-                       return browser;
+                       return browser->GetBrowserForMigrationOnly();
                      },
                      [](Browser* browser) {
                        CHECK(browser) << "BrowserSpecifier: Browser* is null.";
