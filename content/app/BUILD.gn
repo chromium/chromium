@@ -4,7 +4,6 @@
 
 import("//build/config/apple/mobile_config.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/features.gni")
 import("//third_party/tflite/features.gni")
 
 extra_configs = [

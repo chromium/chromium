@@ -7,7 +7,6 @@ import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
 if (enable_devtools_frontend) {
-  import("//build/config/features.gni")
   import("//chrome/common/features.gni")
   import("//tools/grit/grit_rule.gni")
 }

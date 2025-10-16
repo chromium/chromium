@@ -1,5 +1,3 @@
-import("//build/config/features.gni")
-
 static_library("page_info") {
   sources = [
     "page_info.cc",

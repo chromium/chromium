@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/features.gni")
 import("//content/public/common/features.gni")
 import("//pdf/features.gni")
 import("//services/screen_ai/buildflags/features.gni")

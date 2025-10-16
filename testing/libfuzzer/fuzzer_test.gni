@@ -4,7 +4,6 @@
 
 # Defines fuzzer_test.
 #
-import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 

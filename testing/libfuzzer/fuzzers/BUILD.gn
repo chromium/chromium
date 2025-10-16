@@ -4,7 +4,6 @@
 
 # Individual libfuzzer tests that didn't find their home yet.
 
-import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//v8/gni/v8.gni")

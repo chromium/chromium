@@ -9,7 +9,6 @@
 # Or equivalent 'use_afl' or 'use_centipede' options for those engines.
 
 import("//build/buildflag_header.gni")
-import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 

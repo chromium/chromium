@@ -4,7 +4,6 @@
 
 import("//build/config/cast.gni")
 import("//build/config/chromeos/args.gni")
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 
 declare_args() {

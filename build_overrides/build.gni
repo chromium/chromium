@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/cronet/config.gni")
-import("//build/config/features.gni")
 import("//build/config/gclient_args.gni")
 
 # Uncomment these to specify a different NDK location and version in

@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//google_apis/config.gni")
 import("//testing/test.gni")
