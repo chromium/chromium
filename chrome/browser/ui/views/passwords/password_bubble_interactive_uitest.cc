@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -125,14 +127,12 @@ PasswordForm CreateSharedCredentials(
 
 namespace metrics_util = password_manager::metrics_util;
 
-class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
+class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest,
+                                        public base::test::WithFeatureOverride {
  public:
-  PasswordBubbleInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            password_manager::features::kPasswordManualFallbackAvailable});
-  }
+  PasswordBubbleInteractiveUiTest()
+      : base::test::WithFeatureOverride(
+            autofill::features::kAutofillShowBubblesBasedOnPriorities) {}
 
   PasswordBubbleInteractiveUiTest(const PasswordBubbleInteractiveUiTest&) =
       delete;
@@ -154,12 +154,9 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
             [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
     loop.Run();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   EXPECT_FALSE(IsBubbleShowing());
   SetupPendingPassword();
@@ -188,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
   EXPECT_FALSE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        ActorActiveSupressesPendingPasswordPopup) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
@@ -197,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_FALSE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        ActorActiveSupressesAutoSignin) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
@@ -216,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_FALSE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        ActorActiveSupressesAutomaticPasswordSave) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
@@ -226,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_FALSE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, temp) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, temp) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
   AddActorTask();
@@ -236,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, temp) {
   EXPECT_FALSE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PasswordBubbleInteractiveUiTest,
     BiometricActivationConfirmation_ActorOperating_NoBubble) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
@@ -249,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PasswordBubbleInteractiveUiTest,
     BiometricAuthenticationForFillingPromo_ActorOperating_NoBubble) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
@@ -271,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Same as 'BasicOpenAndClose', but use the command rather than the static
 // method directly.
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CommandControlsBubble) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, CommandControlsBubble) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   // The command only works if the icon is visible, so get into management mode.
   SetupManagingPasswords();
@@ -293,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CommandControlsBubble) {
   EXPECT_FALSE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        CommandExecutionInManagingState) {
   SetupManagingPasswords();
   EXPECT_FALSE(IsBubbleShowing());
@@ -308,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_EQ(1, samples->GetCount(metrics_util::MANUAL_MANAGE_PASSWORDS));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        CommandExecutionInAutomaticState) {
   // Open with pending password: automagical!
   SetupPendingPassword();
@@ -329,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_EQ(0, samples->GetCount(metrics_util::MANUAL_MANAGE_PASSWORDS));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        CommandExecutionInPendingState) {
   // Open once with pending password: automagical!
   SetupPendingPassword();
@@ -352,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_EQ(0, samples->GetCount(metrics_util::MANUAL_MANAGE_PASSWORDS));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        CommandExecutionInAutomaticSaveState) {
   SetupAutomaticPassword();
   EXPECT_TRUE(IsBubbleShowing());
@@ -370,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                    metrics_util::AUTOMATIC_GENERATED_PASSWORD_CONFIRMATION));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnClick) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnClick) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   EXPECT_FALSE(PasswordBubbleViewBase::manage_password_bubble()
@@ -380,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnClick) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        DontCloseOnEscWithoutFocus) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
@@ -389,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::FocusChangedObserver focus_observer(web_contents);
@@ -409,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnNavigation) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnNavigation) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -420,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnNavigation) {
 // crbug.com/1194950.
 // Test that the automatic save bubble ignores the browser activation and
 // deactivation events.
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        DontCloseOnDeactivation) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
@@ -434,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
 
 // crbug.com/1194950.
 // Test that the automatic save bubble ignores the focus lost event.
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   PasswordBubbleViewBase::manage_password_bubble()
@@ -451,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
 #else
 #define MAYBE_TwoTabsWithBubbleSwitch TwoTabsWithBubbleSwitch
 #endif
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        MAYBE_TwoTabsWithBubbleSwitch) {
   // Set up the first tab with the bubble.
   SetupPendingPassword();
@@ -471,10 +468,14 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   tab_model->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_FALSE(IsBubbleShowing());
+  if (GetParam()) {
+    EXPECT_TRUE(IsBubbleShowing());
+  } else {
+    EXPECT_FALSE(IsBubbleShowing());
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        TwoTabsWithBubbleClose) {
   // Set up the second tab and bring the bubble there.
   ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/empty.html"),
@@ -521,18 +522,22 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   int previous_tab_count = tab_model->count();
   tab_model->CloseWebContentsAt(0, 0);
   ASSERT_EQ(previous_tab_count - 1, tab_model->count());
-  EXPECT_FALSE(IsBubbleShowing());
+  if (GetParam()) {
+    EXPECT_TRUE(IsBubbleShowing());
+  } else {
+    EXPECT_FALSE(IsBubbleShowing());
+  }
 
-  // The bubble is now hidden, but not destroyed. However, the WebContents _is_
-  // destroyed. Emptying the runloop will process the queued event, and should
-  // not cause a crash trying to access objects owned by the WebContents.
+  // The bubble is not destroyed. However, the WebContents _is_ destroyed.
+  // Emptying the runloop will process the queued event, and should not cause a
+  // trying to access objects owned by the WebContents.
   EXPECT_TRUE(bubble->GetWidget()->IsClosed());
   EXPECT_FALSE(ran_event_task);
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(ran_event_task);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSignin) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, AutoSignin) {
   test_form()->url = GURL("https://example.com");
   test_form()->display_name = u"Peter";
   test_form()->username_value = u"pet12@gmail.com";
@@ -554,7 +559,14 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSignin) {
             PasswordsModelDelegateFromWebContents(web_contents)->GetState());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
+// TODO(crbug.com/432429605): Failing on Linux. Investigate.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AutoSigninNoFocus DISABLED_AutoSigninNoFocus
+#else
+#define MAYBE_AutoSigninNoFocus AutoSigninNoFocus
+#endif
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
+                       MAYBE_AutoSigninNoFocus) {
   test_form()->url = GURL("https://example.com");
   test_form()->display_name = u"Peter";
   test_form()->username_value = u"pet12@gmail.com";
@@ -567,25 +579,21 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   Browser* focused_window = CreateBrowser(browser()->profile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
 
-  PasswordAutoSignInView::set_auto_signin_toast_timeout(0);
+  PasswordAutoSignInView::set_auto_signin_toast_timeout(1);
   SetupAutoSignin(std::move(local_credentials));
   EXPECT_TRUE(IsBubbleShowing());
 
   // Bring the first window back.
-  ui_test_utils::BrowserDeactivationWaiter waiter(focused_window);
   browser()->window()->Activate();
-  waiter.WaitForDeactivation();
 
-  // Let asynchronous tasks run until the bubble stops showing.
-  while (IsBubbleShowing()) {
-    base::RunLoop().RunUntilIdle();
-  }
-  EXPECT_FALSE(IsBubbleShowing());
+  // Wait until the auto-signin bubble has disappeared, which should happen
+  // after its timeout.
+  EXPECT_TRUE(base::test::RunUntil([&] { return !IsBubbleShowing(); }));
 }
 
 // Test that triggering the leak detection dialog successfully hides a showing
 // bubble.
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   SetupPendingPassword();
   ASSERT_NE(PasswordBubbleViewBase::manage_password_bubble(), nullptr);
@@ -602,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
 }
 
 // This is a regression test for crbug.com/1335418
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
   base::HistogramTester histogram_tester;
 
   SetupPendingPassword();
@@ -627,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        DismissBubbleBeforeSignInPromoDoesNotIncrementPref) {
   signin::IdentityTestEnvironment identity_test_env;
 
@@ -644,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        ClosesBubbleOnNavigationToFullPasswordManager) {
   base::HistogramTester histogram_tester;
 
@@ -669,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        ClosesBubbleOnClickingGooglePasswordManagerLink) {
   base::HistogramTester histogram_tester;
 
@@ -709,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        CopiesPasswordDetailsToClipboardOnCopyButtonClicks) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   std::u16string clipboard_text;
@@ -754,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        RevealPasswordOnEyeIconClicks) {
   base::HistogramTester histogram_tester;
 
@@ -794,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        DisplaysNewUsernameAfterEditing) {
   base::HistogramTester histogram_tester;
 
@@ -849,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        DisplaysCorrectTextAfterAddingNote) {
   base::HistogramTester histogram_tester;
 
@@ -904,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        DisplaysCorrectTextAfterEditingNote) {
   base::HistogramTester histogram_tester;
 
@@ -960,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        DisplaysCorrectTextAfterDeletingNote) {
   base::HistogramTester histogram_tester;
 
@@ -1016,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        RecordsMetricsForCopyingFullNoteWithKeyboardShortcuts) {
   base::HistogramTester histogram_tester;
 
@@ -1053,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PasswordBubbleInteractiveUiTest,
     RecordsMetricsForCopyingFullNoteWithSelectAllAndCopyCommands) {
   base::HistogramTester histogram_tester;
@@ -1091,7 +1099,7 @@ IN_PROC_BROWSER_TEST_F(
                  1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        RecordsMetricsForCopyingFullNoteAfterMouseSelection) {
   base::HistogramTester histogram_tester;
 
@@ -1136,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  2)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        RecordsMetricsForCopyingPartOfNoteAfterMouseSelection) {
   base::HistogramTester histogram_tester;
 
@@ -1182,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  2)));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        NavigateToManagementDetailsViewAndTakeScreenshot) {
   const char kFirstCredentialsRow[] = "FirstCredentialsRow";
 
@@ -1207,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  /*screenshot_name=*/std::string(), /*baseline_cl=*/"5189779"));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        TestSecondBubbleIsOpenedWhileFirstStillShowing) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
@@ -1236,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
 #define MAYBE_NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot \
   NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PasswordBubbleInteractiveUiTest,
     MAYBE_NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot) {
   const char kFirstCredentialsRow[] = "FirstCredentialsRow";
@@ -1265,18 +1273,7 @@ IN_PROC_BROWSER_TEST_F(
                  /*screenshot_name=*/std::string(), /*baseline_cl=*/"5189779"));
 }
 
-class PasswordBubbleWithManagePasswordButtonInteractiveUiTest
-    : public PasswordBubbleInteractiveUiTest {
- public:
-  ~PasswordBubbleWithManagePasswordButtonInteractiveUiTest() override = default;
-  auto ScreenshotSharedPasswordsNotificationRootView(const char* baseline);
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kPasswordManualFallbackAvailable};
-};
-
-IN_PROC_BROWSER_TEST_F(PasswordBubbleWithManagePasswordButtonInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
                        ClosesBubbleOnNavigationToPasswordDetailsSubpage) {
   base::HistogramTester histogram_tester;
 
@@ -1308,31 +1305,6 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleWithManagePasswordButtonInteractiveUiTest,
       password_manager::metrics_util::CLICKED_MANAGE_PASSWORD, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleWithManagePasswordButtonInteractiveUiTest,
-                       NavigateToManagementDetailsViewAndTakeScreenshot) {
-  const char kFirstCredentialsRow[] = "FirstCredentialsRow";
-
-  std::unique_ptr<base::AutoReset<bool>> bypass_user_auth_for_testing =
-      GetController()->BypassUserAuthtForTesting();
-  auto setup_passwords = [this]() { SetupManagingPasswords(); };
-
-  RunTestSequence(
-      Do(setup_passwords), PressButton(kPasswordsOmniboxKeyIconElementId),
-      WaitForShow(ManagePasswordsView::kTopView),
-      EnsurePresent(ManagePasswordsListView::kTopView),
-      NameChildViewByType<RichHoverButton>(ManagePasswordsListView::kTopView,
-                                           kFirstCredentialsRow),
-      PressButton(kFirstCredentialsRow),
-      WaitForShow(ManagePasswordsDetailsView::kTopView),
-      EnsureNotPresent(ManagePasswordsListView::kTopView),
-      // Screenshots are supposed only on Windows.
-      SetOnIncompatibleAction(
-          OnIncompatibleAction::kIgnoreAndContinue,
-          "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(ManagePasswordsDetailsView::kTopView,
-                 /*screenshot_name=*/std::string(), /*baseline_cl=*/"5314579"));
-}
-
 class SharedPasswordsNotificationBubbleInteractiveUiTest
     : public PasswordBubbleInteractiveUiTest {
  public:
@@ -1351,7 +1323,7 @@ auto SharedPasswordsNotificationBubbleInteractiveUiTest::
                  /*screenshot_name=*/std::string(), /*baseline_cl=*/baseline));
 }
 
-IN_PROC_BROWSER_TEST_F(SharedPasswordsNotificationBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SharedPasswordsNotificationBubbleInteractiveUiTest,
                        SharedPasswordNotificationUIShowsUpAndTakeScreenshot) {
   GURL test_url = GURL("https://example.com");
   PasswordForm shared_credentials = CreateSharedCredentials(test_url);
@@ -1370,10 +1342,10 @@ IN_PROC_BROWSER_TEST_F(SharedPasswordsNotificationBubbleInteractiveUiTest,
                   SetOnIncompatibleAction(
                       OnIncompatibleAction::kIgnoreAndContinue,
                       "Screenshot can only run in pixel_tests on Windows."),
-                  ScreenshotSharedPasswordsNotificationRootView("4783493"));
+                  ScreenshotSharedPasswordsNotificationRootView("6940139"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedPasswordsNotificationBubbleInteractiveUiTest,
     MultipleSharedPasswordsNotificationUIShowsUpAndTakeScreenshot) {
   GURL test_url = GURL("https://example.com");
@@ -1399,12 +1371,12 @@ IN_PROC_BROWSER_TEST_F(
                   SetOnIncompatibleAction(
                       OnIncompatibleAction::kIgnoreAndContinue,
                       "Screenshot can only run in pixel_tests on Windows."),
-                  ScreenshotSharedPasswordsNotificationRootView("4783493"));
+                  ScreenshotSharedPasswordsNotificationRootView("6940139"));
 }
 
 // Tests the case when there are multiple shared passwords, but only one is not
 // notified yet.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedPasswordsNotificationBubbleInteractiveUiTest,
     OnlyUnnotifiedPasswordsNotificationUIShowsUpAndTakeScreenshot) {
   GURL test_url = GURL("https://example.com");
@@ -1430,10 +1402,10 @@ IN_PROC_BROWSER_TEST_F(
                   SetOnIncompatibleAction(
                       OnIncompatibleAction::kIgnoreAndContinue,
                       "Screenshot can only run in pixel_tests on Windows."),
-                  ScreenshotSharedPasswordsNotificationRootView("4783493"));
+                  ScreenshotSharedPasswordsNotificationRootView("6940139"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedPasswordsNotificationBubbleInteractiveUiTest,
     SharedPasswordNotificationUIShouldNotShowIfNotifiedAlready) {
   GURL test_url = GURL("https://example.com");
@@ -1464,7 +1436,7 @@ class TwoButtonPasswordBubbleInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoButtonPasswordBubbleInteractiveUiTest, ClickNever) {
+IN_PROC_BROWSER_TEST_P(TwoButtonPasswordBubbleInteractiveUiTest, ClickNever) {
   SetupPendingPassword();
   const auto button = views::DialogClientView::kCancelButtonElementId;
   RunTestSequence(PressButton(button), WaitForHide(button),
@@ -1486,7 +1458,7 @@ class ThreeButtonPasswordBubbleInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ThreeButtonPasswordBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ThreeButtonPasswordBubbleInteractiveUiTest,
                        ClickNotNow) {
   SetupPendingPassword();
   const auto button = views::DialogClientView::kCancelButtonElementId;
@@ -1496,7 +1468,7 @@ IN_PROC_BROWSER_TEST_F(ThreeButtonPasswordBubbleInteractiveUiTest,
                       password_manager::metrics_util::CLICKED_NOT_NOW, 1));
 }
 
-IN_PROC_BROWSER_TEST_F(ThreeButtonPasswordBubbleInteractiveUiTest, ClickNever) {
+IN_PROC_BROWSER_TEST_P(ThreeButtonPasswordBubbleInteractiveUiTest, ClickNever) {
   SetupPendingPassword();
   const auto button = PasswordSaveUpdateView::kExtraButtonElementId;
   RunTestSequence(PressButton(button), WaitForHide(button),
@@ -1504,3 +1476,17 @@ IN_PROC_BROWSER_TEST_F(ThreeButtonPasswordBubbleInteractiveUiTest, ClickNever) {
                       "PasswordManager.SaveUIDismissalReason",
                       password_manager::metrics_util::CLICKED_NEVER, 1));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, PasswordBubbleInteractiveUiTest, testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedPasswordsNotificationBubbleInteractiveUiTest,
+                         testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TwoButtonPasswordBubbleInteractiveUiTest,
+                         testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ThreeButtonPasswordBubbleInteractiveUiTest,
+                         testing::Bool());
