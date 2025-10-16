@@ -28,6 +28,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
@@ -145,12 +146,19 @@ class PermissionRequestManager
   // Recreates a permission prompt.
   void RestorePrompt();
 
-  // Do NOT use this methods in production code. Use this methods in browser
+  // Do NOT use these methods in production code. Use these methods in browser
   // tests that need to accept or deny permissions when requested in
   // JavaScript. Your test needs to set this appropriately, and then the bubble
   // will proceed as desired as soon as Show() is called.
   void set_auto_response_for_test(AutoResponseType response) {
     auto_response_for_test_ = response;
+  }
+  void set_auto_response_prompt_options_for_test(PromptOptions prompt_options) {
+    CHECK_NE(auto_response_for_test_, AutoResponseType::NONE)
+        << "Call set_auto_response_for_test() before calling "
+           "set_auto_response_prompt_options_for_test, since this does not "
+           "have any effect otherwise.";
+    auto_response_prompt_options_for_test_ = std::move(prompt_options);
   }
 
   // WebContentsObserver:
@@ -536,6 +544,7 @@ class PermissionRequestManager
 
   base::ObserverList<Observer> observer_list_;
   AutoResponseType auto_response_for_test_ = NONE;
+  PromptOptions auto_response_prompt_options_for_test_ = std::monostate();
 
   // Suppress notification permission prompts in this tab, regardless of the
   // origin requesting the permission.
