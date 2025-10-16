@@ -2364,6 +2364,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/438220615
+      name: "FindAcrossParagraphsInTextarea",
+      status: "stable",
+    },
+    {
       name: "FindFirstMisspellingEndWhenNonEditable",
       status: "stable",
     },

@@ -1152,4 +1152,10 @@ TEST_F(FindBufferTest, OrphanRubyTextCrash) {
   EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"textd"));
 }
 
+TEST_F(FindBufferTest, TextareaMultilines) {
+  SetBodyContent("<textarea>line1\nline2\n</textarea>");
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"ne1 li"));
+}
+
 }  // namespace blink
