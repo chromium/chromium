@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
@@ -376,6 +377,15 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
     // revocation should only contain single origins.
     GURL url = GURL(item.primary_pattern.ToString());
     CHECK(url.is_valid());
+
+    // Do not revoke if user has ignored abusive revocation.
+    if (safety_hub_util::IsAbusiveNotificationRevocationIgnored(hcsm_.get(),
+                                                                url)) {
+      base::UmaHistogramEnumeration(
+          kRevocationResultHistogram,
+          RevocationResult::kAbusiveRevocationIgnored);
+      continue;
+    }
 
     auto it = notification_count_map.find(
         std::make_pair(item.primary_pattern, item.secondary_pattern));

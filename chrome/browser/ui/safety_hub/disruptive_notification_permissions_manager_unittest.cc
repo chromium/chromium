@@ -769,6 +769,26 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       IgnoredForAbusiveRevocation) {
+  base::HistogramTester t;
+  GURL url("https://www.example.com");
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url), GURL(url),
+      ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(base::Value::Dict().Set(safety_hub::kRevokedStatusDictKeyStr,
+                                          safety_hub::kIgnoreStr)));
+
+  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(url, 4);
+  site_engagement_service()->ResetBaseScoreForURL(url, 0);
+
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(GetRevokedPermissionsCount(), 0);
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kAbusiveRevocationIgnored, 1);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
        NotRevokedDefaultBlock) {
   base::HistogramTester t;
   hcsm()->SetContentSettingCustomScope(

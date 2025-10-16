@@ -62,7 +62,8 @@ class DisruptiveNotificationPermissionsManager
     // kAlreadyFalsePositive = 9,  // deprecated, now reported as kNotDisruptive
     kRevoke = 10,
     kIgnore = 11,
-    kMaxValue = kIgnore,
+    kAbusiveRevocationIgnored = 12,
+    kMaxValue = kAbusiveRevocationIgnored,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:DisruptiveNotificationRevocationResult)
 

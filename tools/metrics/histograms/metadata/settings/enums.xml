@@ -146,6 +146,7 @@ chromium-metrics-reviews@google.com.
              not disruptive)"/>
   <int value="10" label="Revoke"/>
   <int value="11" label="Ignore"/>
+  <int value="12" label="Site abusive revocation is ignored"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h:RevocationResult) -->
