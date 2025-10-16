@@ -40,6 +40,15 @@ namespace {
 // Accessibility ID of the Activity menu.
 NSString* kActivityMenuIdentifier = @"ActivityListView";
 
+// Scroll to the top of the Reading List.
+void ScrollToTop() {
+  XCUIApplication* springboardApplication = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.springboard"];
+  // The center of the status bar is in the notch. Aim at the bottom left.
+  [[springboardApplication.statusBars.firstMatch
+      coordinateWithNormalizedOffset:CGVectorMake(0.05, 0.95)] tap];
+}
+
 }  // namespace
 
 // Helper to test critical user journeys for Download Manager.
@@ -504,12 +513,15 @@ NSString* kActivityMenuIdentifier = @"ActivityListView";
 
 // Tests that a pdf that is displayed in the web view can be downloaded.
 // Only valid with "Save to drive" enabled.
-// TODO(crbug.com/416603589): Fix and re-enable this test.
-- (void)FLAKY_testDownloadDisplayedPDF {
+- (void)testDownloadDisplayedPDF {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/two_pages.pdf")];
   [ChromeEarlGrey waitForPageToFinishLoading];
   GREYAssert(WaitForDownloadButton(/*loading*/ true),
              @"Download button did not show up");
+  // On iOS17, the PDF is not loaded when the bar appear, and saddly, there is
+  // no event that happens when the PDF is actually ready. Add a timer as a
+  // best effort.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(3));
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
 
@@ -524,18 +536,10 @@ NSString* kActivityMenuIdentifier = @"ActivityListView";
                  }),
              @"Download bar did not hide on scroll");
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+  ScrollToTop();
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:DownloadButton()];
 
-  BOOL barAppeared = WaitForDownloadButton(/*loading*/ false);
-  if (!barAppeared) {
-    // Scrolling to top is sometimes not wnough to exit fullscreen. Give a
-    // second swipe to the bottom.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-        performAction:GREYSwipeFastInDirection(kGREYDirectionDown)];
-    GREYAssert(WaitForDownloadButton(/*loading*/ false),
-               @"Download button did not show up");
-  }
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
       performAction:grey_tap()];
 
