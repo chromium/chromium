@@ -1009,5 +1009,27 @@ extern int GetLensUpdatedFeedbackToastTimeoutMs();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayOptimizationFilterEnabled();
 
+// Enum for the parameter values.
+enum class LensAimSuggestionsType {
+  kNone,
+  kContextual,
+};
+
+// Flag to control the type of suggestions for Lens Aim.
+// Access this value using: kLensAimSuggestionsType.Get()
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<LensAimSuggestionsType>
+    kLensAimSuggestionsType;
+
+// String constants for LensAimSuggestionsType. These are used in the
+// Field Trial configuration.
+inline constexpr char kLensAimSuggestionsTypeNone[] = "None";
+inline constexpr char kLensAimSuggestionsTypeContextual[] = "Contextual";
+
+// Returns the string representation of LensAimSuggestionsType for
+// logging/telemetry.
+std::string_view LensAimSuggestionModeToString(
+    LensAimSuggestionsType type);
+
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

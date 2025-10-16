@@ -145,7 +145,8 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
                  //  when checking the sequence ids.
                  {"update-viewport-each-query", "false"},
              }},
-            {lens::features::kLensAimSuggestions, /*params=*/{}},
+            {lens::features::kLensAimSuggestions,
+             {{"lens-aim-suggestions-type", "Contextual"}}},
         },
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
 

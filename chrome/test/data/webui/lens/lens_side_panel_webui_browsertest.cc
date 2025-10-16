@@ -13,9 +13,11 @@ class LensSidePanelWebUIBrowserTest : public WebUIMochaBrowserTest {
   LensSidePanelWebUIBrowserTest() {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     set_test_loader_host(chrome::kChromeUILensSidePanelHost);
-    scoped_feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlay},
-        {lens::features::kLensOverlayContextualSearchbox});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay, {}},
+         {lens::features::kLensAimSuggestions,
+          {{"lens-aim-suggestions-type", "Contextual"}}}},
+        {});
   }
 
  private:

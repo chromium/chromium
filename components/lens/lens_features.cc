@@ -548,6 +548,32 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<std::string> kZeroStateCsbQuery{
     &kLensSearchZeroStateCsb, "zero-state-csb-query", ""};
 
+const base::FeatureParam<LensAimSuggestionsType>::Option
+    kLensAimSuggestionsTypeOptions[] = {
+        {LensAimSuggestionsType::kNone,
+         kLensAimSuggestionsTypeNone},
+        {LensAimSuggestionsType::kContextual,
+         kLensAimSuggestionsTypeContextual}};
+
+const base::FeatureParam<LensAimSuggestionsType>
+    kLensAimSuggestionsType(
+        &kLensAimSuggestions,            // Parent Feature
+        "lens-aim-suggestions-type",         // Parameter Name in Field Trial
+        LensAimSuggestionsType::kNone,  // Default Value
+        &kLensAimSuggestionsTypeOptions);
+
+std::string_view LensAimSuggestionModeToString(
+    LensAimSuggestionsType type) {
+  switch (type) {
+    case LensAimSuggestionsType::kNone:
+      return kLensAimSuggestionsTypeNone;
+    case LensAimSuggestionsType::kContextual:
+      return kLensAimSuggestionsTypeContextual;
+    default:
+      NOTREACHED();
+  }
+}
+
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
 }
@@ -1043,7 +1069,9 @@ bool GetShouldComposeboxContextualizeOnFocus() {
 }
 
 bool GetAimSuggestionsEnabled() {
-  return base::FeatureList::IsEnabled(kLensAimSuggestions);
+  return base::FeatureList::IsEnabled(kLensAimSuggestions) &&
+         kLensAimSuggestionsType.Get() !=
+             LensAimSuggestionsType::kNone;
 }
 
 bool ShouldCloseOverlayOnAimTransition() {

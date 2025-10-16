@@ -186,6 +186,9 @@ LensComposeboxController::GetSessionMetricsLogger() {
 
 lens::proto::LensOverlaySuggestInputs
 LensComposeboxController::GetLensSuggestInputs() const {
+  if (!lens::features::GetAimSuggestionsEnabled()) {
+    return lens::proto::LensOverlaySuggestInputs();
+  }
   return suggest_inputs_;
 }
 
