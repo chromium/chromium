@@ -1043,7 +1043,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabModelInitFixes =
             newCachedFlag(
                     TAB_MODEL_INIT_FIXES,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStorageSqlitePrototype =
             newCachedFlag(TAB_STORAGE_SQLITE_PROTOTYPE, false);
