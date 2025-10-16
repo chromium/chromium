@@ -118,6 +118,7 @@
     "chrome/app/resources/locale_settings_mac.grd": "Not UI strings; localized separately",
     "chrome/app/resources/locale_settings_win.grd": "Not UI strings; localized separately",
     "chromecast/app/resources/chromecast_settings.grd": "Not UI strings; localized separately",
+    "chrome/browser/actor/resources/browser_resources.grd": "Not set up for translation; messages are marked as not translateable",
     "components/components_locale_settings.grd": "Not UI strings; localized separately",
     "components/metrics/server_urls.grd": "Not UI strings; URLs of metrics endpoints",
     "components/plus_addresses/core/browser/resources/strings/plus_addresses_strings.grd": "UX research ongoing - strings are not yet finalized",

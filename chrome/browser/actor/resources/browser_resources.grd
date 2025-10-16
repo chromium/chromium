@@ -11,6 +11,12 @@
       <structure name="IDR_ACTOR_TAB_INDICATOR_SPINNER" file="tab_icon_indicator.json" type="lottie" compress="brotli" />
     </structures>
 
+    <!-- NOTE: file is currently marked as untranslatable in
+      translation_expectations.pyl, so changing the translateable attribute on
+      the following messages will have no effect until that .pyl file is
+      updated.
+    -->
+
     <messages>
       <message name="IDR_ACTOR_CHECK_TASK_NUDGE_LABEL" desc="[Placeholder Description]" translateable="false">
         Check your task
