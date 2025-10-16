@@ -6,9 +6,13 @@
 #define UI_EVENTS_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "ui/events/events_export.h"
+#include "ui/events/events_base_export.h"
 
 namespace ui {
+
+// Compensates gesture timeouts for the event processing latency.
+EVENTS_BASE_EXPORT
+BASE_DECLARE_FEATURE(kCompensateGestureDetectorTimeouts);
 
 // Until recently, Chrome on most platforms relied solely on a heuristic in
 // ui::KeyEvent construction to determine if they are repeat key events. Chrome
@@ -19,7 +23,7 @@ namespace ui {
 // This feature flag is used to gradually turn off this heuristic and also
 // serves as an emergency killswitch in case turning it off causes major
 // issues. See tracking bug https://crbug.com/411681432 for more info.
-EVENTS_EXPORT
+EVENTS_BASE_EXPORT
 BASE_DECLARE_FEATURE(kLegacyKeyRepeatSynthesis);
 
 }  // namespace ui

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/angle_conversions.h"
@@ -17,6 +18,7 @@
 #include "build/build_config.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/features.h"
 #include "ui/events/gesture_detection/gesture_listeners.h"
 #include "ui/events/velocity_tracker/motion_event.h"
 
@@ -73,10 +75,37 @@ class GestureDetector::TimeoutGestureHandler {
     Stop();
   }
 
-  void StartTimeout(TimeoutEvent event) {
-    timeout_timers_[event].Start(FROM_HERE, timeout_delays_[event],
-                                 gesture_detector_.get(),
-                                 timeout_callbacks_[event]);
+  void AddTimeoutToStart(TimeoutEvent event) {
+    timeouts_to_start_.emplace_back(event);
+  }
+
+  void Start(const base::TimeDelta event_processing_delay) {
+    if (timeouts_to_start_.empty()) {
+      return;
+    }
+
+    bool compensate_timeouts = false;
+    if (base::FeatureList::IsEnabled(ui::kCompensateGestureDetectorTimeouts)) {
+      bool has_only_positive_compensated_delays = true;
+      for (TimeoutEvent event : timeouts_to_start_) {
+        if ((timeout_delays_[event] - event_processing_delay).is_negative()) {
+          has_only_positive_compensated_delays = false;
+          break;
+        }
+      }
+      compensate_timeouts = has_only_positive_compensated_delays;
+    }
+
+    for (TimeoutEvent event : timeouts_to_start_) {
+      base::TimeDelta timeout_delay = timeout_delays_[event];
+      if (compensate_timeouts) {
+        timeout_delay -= event_processing_delay;
+      }
+      timeout_timers_[event].Start(FROM_HERE, timeout_delay,
+                                   gesture_detector_.get(),
+                                   timeout_callbacks_[event]);
+    }
+    timeouts_to_start_.clear();
   }
 
   void StopTimeout(TimeoutEvent event) { timeout_timers_[event].Stop(); }
@@ -97,6 +126,7 @@ class GestureDetector::TimeoutGestureHandler {
   std::array<base::OneShotTimer, TIMEOUT_EVENT_COUNT> timeout_timers_;
   std::array<ReceiverMethod, TIMEOUT_EVENT_COUNT> timeout_callbacks_;
   std::array<base::TimeDelta, TIMEOUT_EVENT_COUNT> timeout_delays_;
+  std::vector<TimeoutEvent> timeouts_to_start_;
 };
 
 GestureDetector::GestureDetector(
@@ -234,7 +264,7 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
         } else {
           // This is a first tap.
           DCHECK(double_tap_timeout_.is_positive());
-          timeout_handler_->StartTimeout(TAP);
+          timeout_handler_->AddTimeoutToStart(TAP);
         }
       } else {
         is_down_candidate_for_repeated_single_tap_ = is_repeated_tap;
@@ -252,14 +282,15 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
       two_finger_tap_allowed_for_gesture_ = two_finger_tap_enabled_;
       maximum_pointer_count_ = 1;
 
-      // Always start the SHOW_PRESS timer before the LONG_PRESS timer to
-      // ensure proper timeout ordering.
       if (showpress_enabled_)
-        timeout_handler_->StartTimeout(SHOW_PRESS);
+        timeout_handler_->AddTimeoutToStart(SHOW_PRESS);
       if (press_and_hold_enabled_) {
-        timeout_handler_->StartTimeout(SHORT_PRESS);
-        timeout_handler_->StartTimeout(LONG_PRESS);
+        timeout_handler_->AddTimeoutToStart(SHORT_PRESS);
+        timeout_handler_->AddTimeoutToStart(LONG_PRESS);
       }
+      const base::TimeDelta event_processing_delay =
+          base::TimeTicks::Now() - ev.GetEventTime();
+      timeout_handler_->Start(event_processing_delay);
 
       // Number of complete taps that have occurred in the current tap sequence.
       int previous_tap_count = is_down_candidate_for_repeated_single_tap_
