@@ -2215,7 +2215,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, HeaderlessSidePanel) {
   // Verify the side panel is showing with no header.
   EXPECT_TRUE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
-  EXPECT_FALSE(GetHeader()->GetVisible());
+  EXPECT_EQ(GetHeader(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
@@ -2247,7 +2247,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                    .has_value());
   EXPECT_TRUE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
-  EXPECT_FALSE(GetHeader()->GetVisible());
+  EXPECT_EQ(GetHeader(), nullptr);
 
   // Switch tabs and open a different side panel and verify the header is
   // showing.
@@ -2257,6 +2257,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator()->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_TRUE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
+  ASSERT_NE(GetHeader(), nullptr);
   EXPECT_TRUE(GetHeader()->GetVisible());
 
   // Verify the header is not showing if we switch back to the tab with the
@@ -2264,7 +2265,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
-  EXPECT_FALSE(GetHeader()->GetVisible());
+  EXPECT_EQ(GetHeader(), nullptr);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

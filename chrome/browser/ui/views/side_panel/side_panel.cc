@@ -451,10 +451,12 @@ void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
   // If a header view already exists make sure we remove it so that it is
   // replaced.
   if (header_view_) {
-    RemoveChildView(header_view_);
+    auto header_view = RemoveChildViewT(header_view_);
+    header_view_ = nullptr;
   }
   header_view_ = view.get();
   AddChildView(std::move(view));
+  header_view_->DeprecatedLayoutImmediately();
   static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
   // Update the border so that the insets include space for the header to be
   // placed on top of the border area.
@@ -463,19 +465,13 @@ void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
                                      gfx::Insets::TLBR(top_inset, 0, 0, 0)));
 }
 
-void SidePanel::SetHeaderVisibility(bool visible) {
-  if (!header_view_) {
-    return;
+void SidePanel::RemoveHeaderView() {
+  SetBorder(views::CreateEmptyBorder(GetBorderInsets().set_top(0)));
+  static_cast<BorderView*>(border_view_)->HeaderViewChanged(nullptr);
+  if (header_view_) {
+    auto header_view = RemoveChildViewT(header_view_);
+    header_view_ = nullptr;
   }
-  header_view_->SetVisible(visible);
-  static_cast<BorderView*>(border_view_)
-      ->HeaderViewChanged(visible ? header_view_ : nullptr);
-  // Update the border so that the insets include space for the header to be
-  // placed on top of the border area.
-  int top_inset =
-      (visible ? header_view_->height() : 0) - GetBorderInsets().top();
-  SetBorder(views::CreateEmptyBorder(GetBorderInsets() +
-                                     gfx::Insets::TLBR(top_inset, 0, 0, 0)));
 }
 
 void SidePanel::SetOutlineVisibility(bool visible) {

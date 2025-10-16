@@ -64,7 +64,8 @@ class SidePanel : public views::AccessiblePaneView,
   // pushing the other side panel content down.
   void AddHeaderView(std::unique_ptr<views::View> view);
 
-  void SetHeaderVisibility(bool visible);
+  void RemoveHeaderView();
+
   void SetOutlineVisibility(bool visible);
 
   // Gets the upper bound of the content area size if the side panel is shown

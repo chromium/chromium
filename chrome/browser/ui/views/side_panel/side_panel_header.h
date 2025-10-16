@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_HEADER_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_HEADER_H_
 
+#include <memory>
+
 #include "ui/views/view.h"
 
 namespace views {
+class ImageButton;
 class ImageView;
 class Label;
-class ImageButton;
 class ToggleImageButton;
 }  // namespace views
 
@@ -21,15 +23,19 @@ class SidePanelHeader : public views::View {
   METADATA_HEADER(SidePanelHeader, views::View)
 
  public:
-  using TogglePinStateCallback = base::RepeatingClosure;
-  using OpenInNewTabCallback = base::RepeatingClosure;
-  using OpenMoreInfoMenuCallback = base::RepeatingClosure;
-  using CloseSidePanelCallback = base::RepeatingClosure;
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual std::unique_ptr<views::ImageView> CreatePanelIcon() = 0;
+    virtual std::unique_ptr<views::Label> CreatePanelTitle() = 0;
+    virtual std::unique_ptr<views::ToggleImageButton> CreatePinButton() = 0;
+    virtual std::unique_ptr<views::ImageButton> CreateOpenNewTabButton() = 0;
+    virtual std::unique_ptr<views::ImageButton> CreateMoreInfoButton() = 0;
+    virtual std::unique_ptr<views::ImageButton> CreateCloseButton() = 0;
+  };
 
-  SidePanelHeader(TogglePinStateCallback toggle_pin_state_callback,
-                  OpenInNewTabCallback open_in_new_tab_callback,
-                  OpenMoreInfoMenuCallback open_more_info_menu_callback,
-                  CloseSidePanelCallback close_side_panel_callback);
+  explicit SidePanelHeader(
+      std::unique_ptr<Delegate> side_panel_header_delegate);
 
   ~SidePanelHeader() override;
 
@@ -50,6 +56,7 @@ class SidePanelHeader : public views::View {
   }
 
  private:
+  std::unique_ptr<Delegate> side_panel_header_delegate_;
   raw_ptr<views::ImageView> panel_icon_ = nullptr;
   raw_ptr<views::Label> panel_title_ = nullptr;
   raw_ptr<views::ToggleImageButton> header_pin_button_ = nullptr;

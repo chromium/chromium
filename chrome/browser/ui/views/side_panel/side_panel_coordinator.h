@@ -7,24 +7,14 @@
 
 #include <memory>
 #include <optional>
-#include <string_view>
 
 #include "base/callback_list.h"
-#include "base/feature_list.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_multi_source_observation.h"
-#include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_pinning_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
-#include "ui/actions/actions.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_observer.h"
 
 class BrowserView;
@@ -42,10 +32,8 @@ class View;
 // Existence and value of registries' active_entry() determines which entry is
 // visible for a given tab where the order of precedence is contextual
 // registry's active_entry() then global registry's.
-class SidePanelCoordinator final
-    : public SidePanelUIBase,
-      public views::ViewObserver,
-      public SidePanelToolbarPinningController::Observer {
+class SidePanelCoordinator final : public SidePanelUIBase,
+                                   public views::ViewObserver {
  public:
   explicit SidePanelCoordinator(BrowserView* browser_view);
   SidePanelCoordinator(const SidePanelCoordinator&) = delete;
@@ -106,27 +94,10 @@ class SidePanelCoordinator final
   // for global and contextual registries.
   void ClearCachedEntryViews(SidePanelEntry::PanelType type);
 
-  void UpdateSidePanelHeader(SidePanelEntry* entry);
-
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_from,
                                bool visible) override;
-
-  // Called when the action item associated with the side panel entry changes.
-  // The key is the unique key of the action item that has changed.
-  void OnActionItemChanged(UniqueKey key);
-
-  void MaybeQueuePinPromo(SidePanelEntryId id);
-  void ShowPinPromo();
-  void MaybeEndPinPromo(bool pinned);
-
-  // Opens the more info menu. This is called by the header button, when it's
-  // visible.
-  void OpenMoreInfoMenu();
-
-  // SidePanelToolbarPinningController::Observer:
-  void OnPinStateChanged() override;
 
   // Closes `promo_feature` if showing and if actual_id == promo_id, also
   // notifies the User Education system that the feature was used.
@@ -141,29 +112,8 @@ class SidePanelCoordinator final
 
   const raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
 
-  // This subscription is used to update the side panel title when the action
-  // item associated with the side panel entry changes.
-  base::CallbackListSubscription action_item_controller_subscription_;
-
-  // Model for the more info menu.
-  std::unique_ptr<ui::MenuModel> more_info_menu_model_;
-
-  // Runner for the more info menu.
-  std::unique_ptr<views::MenuRunner> menu_runner_;
-
-  // Provides delay on pinning promo.
-  base::OneShotTimer pin_promo_timer_;
-
-  // Set to the appropriate pin promo for the current side panel entry, or null
-  // if none. (Not set if e.g. already pinned.)
-  raw_ptr<const base::Feature> pending_pin_promo_ = nullptr;
-
   std::unique_ptr<SidePanelToolbarPinningController>
       side_panel_toolbar_pinning_controller_;
-
-  base::ScopedObservation<SidePanelToolbarPinningController,
-                          SidePanelToolbarPinningController::Observer>
-      side_panel_toolbar_pinning_controller_observation_{this};
 
   base::RepeatingCallbackList<void()> shown_callback_list_;
 };

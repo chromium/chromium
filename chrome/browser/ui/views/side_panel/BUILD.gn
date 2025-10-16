@@ -76,6 +76,8 @@ source_set("side_panel") {
     "side_panel_enums.h",
     "side_panel_header.cc",
     "side_panel_header.h",
+    "side_panel_header_controller.cc",
+    "side_panel_header_controller.h",
     "side_panel_prefs.cc",
     "side_panel_prefs.h",
     "side_panel_registry.cc",
