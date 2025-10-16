@@ -140,6 +140,15 @@ class LensSearchContextualizationController {
   // number of pages. `pdf_page_count` is only used for PDFs.
   void RecordDocumentMetrics(std::optional<uint32_t> pdf_page_count);
 
+  // Updates the query flow with the new page content bytes and/or screenshot. A
+  // request will only be sent if the bytes are different from the previous
+  // bytes sent or the screenshot is different from the previous screenshot.
+  void UpdatePageContext(std::vector<lens::PageContent> page_contents,
+                         lens::MimeType primary_content_type,
+                         std::optional<uint32_t> pdf_page_count,
+                         const SkBitmap& bitmap,
+                         std::optional<uint32_t> most_visible_page);
+
   // Posts a task to the background thread to calculate the OCR DOM similarity
   // and then records the result. Only records the similarity once per session.
   // Only records the similarity if the OCR text and page content are available.
@@ -235,16 +244,6 @@ class LensSearchContextualizationController {
       lens::MimeType primary_content_type,
       std::optional<uint32_t> pdf_page_count,
       const SkBitmap& bitmap);
-
-  // Updates the query flow with the new page content bytes and/or screenshot. A
-  // request will only be sent if the bytes are different from the previous
-  // bytes sent or the screenshot is different from the previous screenshot.
-  void UpdatePageContextualizationPart3(
-      std::vector<lens::PageContent> page_contents,
-      lens::MimeType primary_content_type,
-      std::optional<uint32_t> pdf_page_count,
-      const SkBitmap& bitmap,
-      std::optional<uint32_t> pdf_current_page);
 
   // Gets the inner text for contextualization if flag enabled. Otherwise skip
   // to MaybeGetAnnotatedPageContent().

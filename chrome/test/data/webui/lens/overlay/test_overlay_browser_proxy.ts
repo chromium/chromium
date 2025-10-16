@@ -47,6 +47,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'maybeShowTranslateFeaturePromo',
       'maybeCloseTranslateFeaturePromo',
       'fetchSupportedLanguages',
+      'finishReshowOverlay',
     ]);
   }
 
@@ -161,6 +162,10 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       sourceLanguages: structuredClone(this.sourceLanguagesToFetch),
       targetLanguages: structuredClone(this.targetLanguagesToFetch),
     });
+  }
+
+  finishReshowOverlay() {
+    this.methodCalled('finishReshowOverlay');
   }
 
   setLanguagesToFetchForTesting(

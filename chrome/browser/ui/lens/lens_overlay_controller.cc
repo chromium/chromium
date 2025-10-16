@@ -812,6 +812,14 @@ void LensOverlayController::FetchSupportedLanguages(
   languages_controller_->SendGetSupportedLanguagesRequest(std::move(callback));
 }
 
+void LensOverlayController::FinishReshowOverlay() {
+  content::RenderWidgetHost* live_page_widget_host = tab_->GetContents()
+                                                         ->GetPrimaryMainFrame()
+                                                         ->GetRenderViewHost()
+                                                         ->GetWidget();
+  lens_overlay_blur_layer_delegate_->Show(live_page_widget_host);
+}
+
 void LensOverlayController::TryShowTranslateFeaturePromo(
     ui::TrackedElement* element) {
   if (!element) {
@@ -1630,7 +1638,8 @@ void LensOverlayController::InitializeOverlay(
 
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
-  if (!pending_region_) {
+  if (!pending_region_ &&
+      !GetLensOverlaySidePanelCoordinator()->IsEntryShowing()) {
     ShowPreselectionBubble();
   }
 
@@ -1691,6 +1700,15 @@ void LensOverlayController::InitializeOverlay(
                   weak_factory_.GetWeakPtr()));
     }
 #endif
+  } else {
+    // If the query flow is already started, update the page content with
+    // the new viewport.
+    GetContextualizationController()->UpdatePageContext(
+        initialization_data_->page_contents_,
+        initialization_data_->primary_content_type_,
+        initialization_data_->pdf_page_count_,
+        initialization_data_->initial_screenshot_,
+        initialization_data_->last_retrieved_most_visible_page_);
   }
 
   // If there is a pending contextual search request, issue it now that the
@@ -1730,7 +1748,10 @@ void LensOverlayController::InitializeOverlayUI(
           ? lens::MimeType::kUnknown
           : init_data.primary_content_type_);
 
-  page_->ShouldShowContextualSearchBox(/*should_show=*/true);
+  // Only show the CSB if the side panel is not open.
+  bool is_side_panel_open =
+      GetLensOverlaySidePanelCoordinator()->IsEntryShowing();
+  page_->ShouldShowContextualSearchBox(!is_side_panel_open);
   // If should show CSB, and the CSB viewport thumbnail is enabled, send it now.
   if (lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail()) {
     GetLensSearchboxController()->HandleThumbnailCreatedBitmap(
@@ -1740,7 +1761,8 @@ void LensOverlayController::InitializeOverlayUI(
   // Send the initial document type to the overlay web UI.
   NotifyPageContentUpdated();
 
-  page_->ScreenshotDataReceived(init_data.initial_rgb_screenshot_);
+  page_->ScreenshotDataReceived(init_data.initial_rgb_screenshot_,
+                                is_side_panel_open);
   if (!init_data.objects_.empty()) {
     SendObjects(CopyObjects(init_data.objects_));
   }
@@ -2911,7 +2933,11 @@ void LensOverlayController::ReshowOverlayPart3(const SkBitmap& rgb_screenshot) {
   CHECK(initialization_data_);
   initialization_data_->initial_rgb_screenshot_ = rgb_screenshot;
   CHECK(page_);
-  page_->ScreenshotDataReceived(rgb_screenshot);
+  page_->OnOverlayReshown(rgb_screenshot);
+
+  if (lens_overlay_blur_layer_delegate_) {
+    lens_overlay_blur_layer_delegate_->Hide();
+  }
 
   state_ = side_panel_coordinator_->IsSidePanelShowing()
                ? State::kOverlayAndResults

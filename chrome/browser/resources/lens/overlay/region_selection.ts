@@ -168,6 +168,10 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
         (screenshot: ImageBitmap) => {
           renderScreenshot(this.$.highlightImgCanvas, screenshot);
         });
+    ScreenshotBitmapBrowserProxyImpl.getInstance().addOnOverlayReshownListener(
+        (screenshot: ImageBitmap) => {
+          renderScreenshot(this.$.highlightImgCanvas, screenshot);
+        });
     if (this.enableKeyboardSelection) {
       this.eventTracker_.add(
           document, 'post-selection-updated', (e: CustomEvent) => {

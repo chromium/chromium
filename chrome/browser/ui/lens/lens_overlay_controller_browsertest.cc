@@ -426,10 +426,12 @@ lens::LensOverlayObjectsResponse CreateTestObjectsResponse(
 
 class LensOverlayPageFake : public lens::mojom::LensPage {
  public:
-  void ScreenshotDataReceived(const SkBitmap& screenshot) override {
+  void ScreenshotDataReceived(const SkBitmap& screenshot,
+                              bool is_side_panel_open) override {
     last_received_screenshot_ = screenshot;
+    last_received_is_side_panel_open_ = is_side_panel_open;
     // Do the real call on the open WebUI we intercepted.
-    overlay_page_->ScreenshotDataReceived(screenshot);
+    overlay_page_->ScreenshotDataReceived(screenshot, is_side_panel_open);
   }
 
   void ObjectsReceived(
@@ -495,6 +497,10 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   void PageContentTypeChanged(
       lens::mojom::PageContentType new_page_content_type) override {}
 
+  void OnOverlayReshown(const SkBitmap& screenshot) override {
+    last_received_screenshot_ = screenshot;
+  }
+
   void Reset() {
     last_received_screenshot_.reset();
     last_received_theme_->reset();
@@ -509,6 +515,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     did_clear_region_selection_ = false;
     did_clear_text_selection_ = false;
     did_trigger_copy = false;
+    last_received_is_side_panel_open_.reset();
   }
 
   // The real side panel page that was opened by the lens overlay. Needed to
@@ -516,6 +523,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   mojo::Remote<lens::mojom::LensPage> overlay_page_;
 
   SkBitmap last_received_screenshot_;
+  std::optional<bool> last_received_is_side_panel_open_;
   std::optional<lens::mojom::OverlayThemePtr> last_received_theme_;
   std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
   bool last_received_should_show_contextual_searchbox_ = false;
@@ -9677,4 +9685,57 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
     return test_side_panel_coordinator->last_is_showing_ &&
            test_side_panel_coordinator->last_is_showing_.value();
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
+                       ScreenshotDataReceivedWithSidePanelOpen) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Issue a text search request to open the side panel without the overlay.
+  GetLensSearchController()->IssueTextSearchRequest(
+      LensOverlayInvocationSource::kContentAreaContextMenuText, "query", {},
+      AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/true);
+
+  // Wait for side panel to be visible.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return coordinator->IsSidePanelShowing(); }));
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+  ASSERT_TRUE(GetLensOverlaySidePanelCoordinator()->IsEntryShowing());
+
+  // Reset the query controller to verify a new request was sent with the
+  // screenshot.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+  fake_query_controller->ResetTestingState();
+
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+
+  // Showing UI should change the state to overlay and results eventually.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Flush for testing to make sure the mojo call has been processed.
+  fake_controller->FlushForTesting();
+  EXPECT_FALSE(
+      fake_controller->fake_overlay_page_.last_received_screenshot_.empty());
+  ASSERT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_is_side_panel_open_.has_value());
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_is_side_panel_open_.value());
+
+  // Verify the content bytes were included in a followup request.
+  auto page_content_request_payload =
+      fake_query_controller->last_sent_page_content_payload();
+  EXPECT_EQ(fake_query_controller->num_page_content_update_requests_sent(), 1);
 }

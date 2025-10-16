@@ -293,6 +293,10 @@
     display: none;
   }
 
+  :host([overlay-reshow-in-progress]) lens-selection-overlay {
+    opacity: 0;
+  }
+
   .app-container :not(lens-selection-overlay) {
     transition: opacity 150ms linear;
   }

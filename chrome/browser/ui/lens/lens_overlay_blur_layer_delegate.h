@@ -50,6 +50,14 @@ class LensOverlayBlurLayerDelegate : public ui::LayerOwner,
   // new layer size.
   void StopBackgroundImageCapture();
 
+  // Hides the blur layer. This will make the layer transparent until `Show()`
+  // is called.
+  void Hide();
+
+  // Shows the blur layer after it has been hidden. This will fetch a new
+  // screenshot and restart the blur effect.
+  void Show(content::RenderWidgetHost* background_view_host);
+
   bool IsCapturingBackgroundImageForTesting();
 
   // Fetches a new background screenshot to use for blurring.

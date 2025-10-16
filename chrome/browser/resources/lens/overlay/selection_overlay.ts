@@ -18,7 +18,7 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
@@ -56,6 +56,9 @@ export const CURSOR_SIZE_PIXEL = 32;
 
 // The cursor image url css variable name.
 export const CURSOR_IMG_URL = '--cursor-img-url';
+
+// The delay in milliseconds before the screenshot fade out.
+const FADE_OUT_DELAY_MS = 250;
 
 // Returns true if the event is a keystroke that should not activate a control.
 function shouldIgnoreKeyboardEvent(event: Event|undefined): boolean {
@@ -250,6 +253,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         reflectToAttribute: true,
         value: false,
       },
+      hideBackgroundImageCanvas: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
     };
   }
 
@@ -312,6 +320,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   declare private shimmerFadeOutComplete: boolean;
   // Whether the side panel is currently opened.
   declare private sidePanelOpened: boolean;
+  // Whether the background image canvas should currently be shown.
+  declare private hideBackgroundImageCanvas: boolean;
 
   // The border glow layer rendered on the selection overlay if it exists.
   private overlayBorderGlow: OverlayBorderGlowElement;
@@ -331,6 +341,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private cursorOffsetY: number = 6;
   private hasInitialFlashAnimationEnded = false;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
+  // The timeout ID for the background image fade out animation.
+  private backgroundImageFadeOutTimeoutId: number = -1;
 
   // The ID returned by requestAnimationFrame for the updateCursorPosition,
   // onPointerMove, and handleResize functions.
@@ -355,6 +367,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.browserProxy.callbackRouter.notifyOverlayClosing.addListener(() => {
         this.isClosing = true;
         this.removeDragListeners();
+
+        // Set a timeout to make the background image canvas hidden. This is
+        // done to prevent the old screenshot from flashing before rendering the
+        // new screenshot when the overlay is reshown.
+        clearTimeout(this.backgroundImageFadeOutTimeoutId);
+        this.backgroundImageFadeOutTimeoutId = setTimeout(() => {
+          this.hideBackgroundImageCanvas = true;
+        }, FADE_OUT_DELAY_MS);
       }),
       this.browserProxy.callbackRouter.onCopyCommand.addListener(
           this.onCopyCommand.bind(this)),
@@ -363,6 +383,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     ];
     ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
         this.screenshotDataReceived.bind(this));
+    ScreenshotBitmapBrowserProxyImpl.getInstance().addOnOverlayReshownListener(
+        this.onOverlayReshown.bind(this));
     this.eventTracker_.add(
         document, 'shimmer-fade-out-complete', (e: CustomEvent<boolean>) => {
           this.shimmerFadeOutComplete = e.detail;
@@ -689,8 +711,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private onImageRendered() {
     // Let the parent know it is safe to blur the background.
-    this.dispatchEvent(new CustomEvent(
-        'screenshot-rendered', {bubbles: true, composed: true}));
+    this.dispatchEvent(new CustomEvent('screenshot-rendered', {
+      bubbles: true,
+      composed: true,
+      detail: {isSidePanelOpen: this.sidePanelOpened},
+    }));
     this.browserProxy.handler.notifyOverlayInitialized();
   }
 
@@ -935,6 +960,59 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     overlayBorderGlow.handlePostSelectionUpdated();
   }
 
+  private updateCanvasSize(containerWidth: number, containerHeight: number) {
+    // Set our own canvas size while preserving the canvas aspect ratio.
+    const screenshotHeight = this.$.backgroundImageCanvas.height;
+    const screenshotWidth = this.$.backgroundImageCanvas.width;
+
+    const doesScreenshotFillContainer =
+        Math.abs(
+            containerWidth - (screenshotWidth / window.devicePixelRatio)) <=
+            SCREENSHOT_RESIZE_TOLERANCE_PIXELS &&
+        Math.abs(
+            containerHeight - (screenshotHeight / window.devicePixelRatio)) <=
+            SCREENSHOT_RESIZE_TOLERANCE_PIXELS;
+    const shouldApplyMargins =
+        !doesScreenshotFillContainer || this.sidePanelOpened;
+
+    // Apply margins if the page is resized / side panel is opened and not
+    // closing.
+    const margins = shouldApplyMargins && !this.isClosing ?
+        SCREENSHOT_FULLSIZE_MARGIN_PIXEL * 2 :
+        0;
+    const newContainerWidth = containerWidth - margins;
+    const newContainerHeight = containerHeight - margins;
+
+    // Get the aspect ratio to force the image to conform to.
+    const aspectRatio = this.$.backgroundImageCanvas.width /
+        this.$.backgroundImageCanvas.height;
+
+    // Calculate potential dimensions based on width and height
+    const widthBasedHeight = Math.round(newContainerWidth / aspectRatio);
+    const heightBasedWidth = Math.round(newContainerHeight * aspectRatio);
+
+    // Choose dimensions that fit within the container while preserving aspect
+    // ratio
+    if (widthBasedHeight <= newContainerHeight) {
+      // Width-based dimensions fit
+      this.canvasHeight = widthBasedHeight;
+      this.canvasWidth = newContainerWidth;
+    } else {
+      // Height-based dimensions fit
+      this.canvasWidth = heightBasedWidth;
+      this.canvasHeight = newContainerHeight;
+    }
+
+    this.isResized = shouldApplyMargins;
+    if (this.isResized) {
+      this.isInitialSize = false;
+      // The flash animation is cut short but animationend is never called if
+      // the overlay is resized before animationend is called. This is because
+      // the flash scrim is hidden on resize.
+      this.onInitialFlashAnimationEnd();
+    }
+  }
+
   private handleResize(entries: ResizeObserverEntry[]) {
     // Cancel a pending event to prevent multiple updates per frame.
     if (this.handleResizeRequestId) {
@@ -954,54 +1032,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         return;
       }
 
-      // Set our own canvas size while preserving the canvas aspect ratio.
-      const screenshotHeight = this.$.backgroundImageCanvas.height;
-      const screenshotWidth = this.$.backgroundImageCanvas.width;
-
-      const doesScreenshotFillContainer =
-          Math.abs(
-              newRect.width - (screenshotWidth / window.devicePixelRatio)) <=
-              SCREENSHOT_RESIZE_TOLERANCE_PIXELS &&
-          Math.abs(
-              newRect.height - (screenshotHeight / window.devicePixelRatio)) <=
-              SCREENSHOT_RESIZE_TOLERANCE_PIXELS;
-
-      // Apply margins if the page is resized and not closing.
-      const margins = !doesScreenshotFillContainer && !this.isClosing ?
-          SCREENSHOT_FULLSIZE_MARGIN_PIXEL * 2 :
-          0;
-      const containerWidth = newRect.width - margins;
-      const containerHeight = newRect.height - margins;
-
-      // Get the aspect ratio to force the image to conform to.
-      const aspectRatio = this.$.backgroundImageCanvas.width /
-          this.$.backgroundImageCanvas.height;
-
-      // Calculate potential dimensions based on width and height
-      const widthBasedHeight = Math.round(containerWidth / aspectRatio);
-      const heightBasedWidth = Math.round(containerHeight * aspectRatio);
-
-      // Choose dimensions that fit within the container while preserving aspect
-      // ratio
-      if (widthBasedHeight <= containerHeight) {
-        // Width-based dimensions fit
-        this.canvasHeight = widthBasedHeight;
-        this.canvasWidth = containerWidth;
-      } else {
-        // Height-based dimensions fit
-        this.canvasWidth = heightBasedWidth;
-        this.canvasHeight = containerHeight;
-      }
-
+      this.updateCanvasSize(newRect.width, newRect.height);
       this.positionSelectedRegionContextMenu();
-      this.isResized = !doesScreenshotFillContainer;
-      if (this.isResized) {
-        this.isInitialSize = false;
-        // The flash animation is cut short but animationend is never called if
-        // the overlay is resized before animationend is called. This is because
-        // the flash scrim is hidden on resize.
-        this.onInitialFlashAnimationEnd();
-      }
 
       // Update our cached selection overlay rect to the new bounds.
       this.updateSelectionOverlayRect();
@@ -1012,14 +1044,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       // resizing via polymer techniques.
       this.resizeSelectionCanvases(
           this.selectionOverlayRect.width, this.selectionOverlayRect.height);
-
-      // If the overlay was set to closed and a resize event is received,
-      // the overlay is no longer closing and instead being reshown.
-      if (this.isClosing) {
-        requestAnimationFrame(() => {
-          this.isClosing = false;
-        });
-      }
 
       this.handleResizeRequestId = undefined;
     });
@@ -1328,7 +1352,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
   }
 
-  private screenshotDataReceived(screenshotBitmap: ImageBitmap) {
+  private screenshotDataReceived(
+      screenshotBitmap: ImageBitmap, isSidePanelOpen: boolean) {
     renderScreenshot(this.$.backgroundImageCanvas, screenshotBitmap);
     // Start the canvas as the same dimensions as the viewport, since we are
     // assuming the screenshot takes up the viewport dimensions. Our resize
@@ -1336,26 +1361,43 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.canvasWidth = window.innerWidth;
     this.canvasHeight = window.innerHeight;
 
-    // If the screenshot was rendered before, this is a screenshot update
-    // and the overlay needs to be updated to the new bounds.
-    if (this.isScreenshotRendered) {
-      // Update our cached selection overlay rect to the new bounds.
-      this.updateSelectionOverlayRect();
-      this.resizeSelectionCanvases(
-          this.selectionOverlayRect.width, this.selectionOverlayRect.height);
-
-      // If the bitmap size does not match the viewport size, then do not remove
-      // the isClosing state. This will instead be done on resize.
-      if (this.canvasWidth === this.selectionOverlayRect.width &&
-          this.canvasHeight === this.selectionOverlayRect.height) {
-        this.isClosing = false;
-      }
-      return;
-    }
-
     // This is the first time the screenshot has been rendered.
     this.isScreenshotRendered = true;
+    if (isSidePanelOpen) {
+      // Reset the state of the selection overlay to represent the overlay being
+      // opened with the side panel open.
+      this.sidePanelOpened = true;
+      this.isResized = true;
+      this.isInitialSize = false;
+    }
     this.onImageRendered();
+  }
+
+  private onOverlayReshown(screenshotBitmap: ImageBitmap) {
+    // Clear the existing timeout if the overlay was reshown very quickly.
+    clearTimeout(this.backgroundImageFadeOutTimeoutId);
+
+    // Render the new screenshot.
+    renderScreenshot(this.$.backgroundImageCanvas, screenshotBitmap);
+
+    // Reset the state of the selection overlay to represent the overlay being
+    // opened with the side panel open.
+    this.isClosing = false;
+    this.sidePanelOpened = true;
+    this.hideBackgroundImageCanvas = true;
+
+    this.updateCanvasSize(window.innerWidth, window.innerHeight);
+
+    // Update our cached selection overlay rect to the new bounds.
+    this.updateSelectionOverlayRect();
+    this.resizeSelectionCanvases(
+        this.selectionOverlayRect.width, this.selectionOverlayRect.height);
+
+    // Allow the new screenshot to render / allow any resizing that needs to
+    // happen before finishing the reshow overlay flow.
+    afterNextRender(this.$.backgroundImageCanvas, () => {
+      this.onFinishReshowOverlay();
+    });
   }
 
   private getOverlayBorderGlow(): OverlayBorderGlowElement {
@@ -1401,6 +1443,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.closeButtonUsedRecorded = true;
     }
     this.browserProxy.handler.closeRequestedByOverlayCloseButton();
+  }
+
+  private onFinishReshowOverlay() {
+    this.hideBackgroundImageCanvas = false;
+    recordLensOverlaySelectionCloseButtonShown(INVOCATION_SOURCE);
+    this.dispatchEvent(new CustomEvent(
+        'on-finish-reshow-overlay', {bubbles: true, composed: true}));
   }
 
   /**
@@ -1467,6 +1516,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   setLanguagePickersOpenForTesting(open: boolean) {
     this.areLanguagePickersOpen = open;
+  }
+
+  getHideBackgroundImageCanvasForTesting() {
+    return this.hideBackgroundImageCanvas;
   }
 }
 

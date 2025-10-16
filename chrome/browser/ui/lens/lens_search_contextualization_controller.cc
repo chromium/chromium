@@ -429,19 +429,18 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart2(
           lens_search_controller_->GetTabInterface()->GetContents());
   if (pdf_helper) {
     pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
-        &LensSearchContextualizationController::UpdatePageContextualizationPart3,
+        &LensSearchContextualizationController::UpdatePageContext,
         weak_ptr_factory_.GetWeakPtr(), page_contents, primary_content_type,
         page_count, bitmap));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-  UpdatePageContextualizationPart3(page_contents, primary_content_type,
-                                   page_count, bitmap,
-                                   /*most_visible_page=*/std::nullopt);
+  UpdatePageContext(page_contents, primary_content_type, page_count, bitmap,
+                    /*most_visible_page=*/std::nullopt);
 }
 
-void LensSearchContextualizationController::UpdatePageContextualizationPart3(
+void LensSearchContextualizationController::UpdatePageContext(
     std::vector<lens::PageContent> page_contents,
     lens::MimeType primary_content_type,
     std::optional<uint32_t> page_count,
@@ -450,7 +449,7 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
   // It's possible the Lens session could have been closed while updating the
   // page context. Return early and do not run the callback as it should have
   // been cleared.
-  if (state_ == State::kOff || !on_page_context_updated_callback_) {
+  if (state_ == State::kOff) {
     return;
   }
 
@@ -506,7 +505,9 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
         // this will happen automatically as a result of the
         // SendUpdatedPageContent call below.
         GetQueryController()->MaybeRestartQueryFlow();
-        std::move(on_page_context_updated_callback_).Run();
+        if (on_page_context_updated_callback_) {
+          std::move(on_page_context_updated_callback_).Run();
+        }
         return;
       }
 
@@ -518,7 +519,9 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
           sending_bitmap ? bitmap : SkBitmap());
 
       // Run the callback that the page context has finished updating.
-      std::move(on_page_context_updated_callback_).Run();
+      if (on_page_context_updated_callback_) {
+        std::move(on_page_context_updated_callback_).Run();
+      }
       return;
     }
   }
@@ -562,7 +565,9 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
       ->OnFollowUpPageContentRetrieved(primary_content_type);
 
   // Run the callback that the page context has finished updating.
-  std::move(on_page_context_updated_callback_).Run();
+  if (on_page_context_updated_callback_) {
+    std::move(on_page_context_updated_callback_).Run();
+  }
 }
 
 void LensSearchContextualizationController::MaybeGetInnerText(

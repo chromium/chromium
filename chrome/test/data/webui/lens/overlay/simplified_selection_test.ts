@@ -16,6 +16,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-un
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {fakeScreenshotBitmap} from '../utils/image_utils.js';
 import {assertWithinThreshold} from '../utils/object_utils.js';
 import {addEmptyRegionTextToPage, addEmptyTextToPage, addGenericRegionWordsToPageNormalized, addGenericWordsToPageNormalized, addRegionTextToPage, createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
@@ -764,5 +765,47 @@ suite('SimplifiedSelection', function() {
         0,
         textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
             .length);
+  });
+
+  test('OnOverlayReshownClearsState', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+    // Add 3 words to the region text response.
+    await addGenericRegionWordsToPageNormalized(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+
+    assertFalse(textLayerElement.getHasActionedTextForTesting());
+    assertEquals(
+        2,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+
+    // Simulate an action.
+    textLayerElement.onCopyDetectedText(/*startIndex=*/ 0,
+                                        /*endIndex=*/ 2,
+                                        /*callback=*/ () => {});
+    assertTrue(textLayerElement.getHasActionedTextForTesting());
+
+    callbackRouterRemote.onOverlayReshown(fakeScreenshotBitmap(100, 100));
+    await flushTasks();
+    await waitAfterNextRender(textLayerElement);
+
+    assertFalse(textLayerElement.getHasActionedTextForTesting());
+    assertEquals(
+        0,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+
+    // Verify text responses are cleared by simulating a new selection and
+    // asserting no text is detected.
+    const showSelectedRegionContextMenuEventPromise =
+        eventToPromise('show-selected-region-context-menu', document.body);
+    callTextReceivedTimeout();
+    await dispatchDetectTextInRegionEvent();
+    const showSelectedRegionContextMenuEvent =
+        await showSelectedRegionContextMenuEventPromise;
+    assertEquals(
+        showSelectedRegionContextMenuEvent.detail.selectionStartIndex, -1);
+    assertEquals(
+        showSelectedRegionContextMenuEvent.detail.selectionEndIndex, -1);
   });
 });

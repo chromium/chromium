@@ -64,6 +64,22 @@ void LensOverlayBlurLayerDelegate::StopBackgroundImageCapture() {
   screenshot_timer_.Stop();
 }
 
+void LensOverlayBlurLayerDelegate::Hide() {
+  render_widget_host_observer_.Reset();
+  background_view_host_ = nullptr;
+
+  StopBackgroundImageCapture();
+  background_screenshot_.reset();
+  layer()->SchedulePaint(gfx::Rect(layer()->size()));
+}
+
+void LensOverlayBlurLayerDelegate::Show(
+    content::RenderWidgetHost* background_view_host) {
+  background_view_host_ = background_view_host;
+  render_widget_host_observer_.Observe(background_view_host);
+  StartBackgroundImageCapture();
+}
+
 bool LensOverlayBlurLayerDelegate::IsLiveBlurActive() {
   return screenshot_timer_.IsRunning();
 }

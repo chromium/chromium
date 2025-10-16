@@ -304,7 +304,7 @@ suite('SelectionOverlay', function() {
 
       // Send a fake screenshot of size 100x100.
       testBrowserProxy.page.screenshotDataReceived(
-          fakeScreenshotBitmap(100, 100));
+          fakeScreenshotBitmap(100, 100), /*isSidePanelOpen=*/ false);
       await waitForScreenshotRendered(selectionOverlayElement);
       await waitForScreenshotResize();
 
@@ -1199,4 +1199,5 @@ suite('SelectionOverlay', function() {
                           .getSuppressCopyAndSaveAsImageForTesting());
         });
   });
+
 });

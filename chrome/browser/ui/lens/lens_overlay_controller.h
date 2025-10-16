@@ -873,6 +873,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void MaybeCloseTranslateFeaturePromo(bool feature_engaged) override;
   void FetchSupportedLanguages(
       FetchSupportedLanguagesCallback callback) override;
+  void FinishReshowOverlay() override;
 
   // Tries to show the translate feature promo after the translate button
   // element is shown.

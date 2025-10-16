@@ -216,13 +216,19 @@ interface LensPageHandler {
   FetchSupportedLanguages() => (string browser_locale,
                                 array<Language> source_languages,
                                 array<Language> target_languages);
+
+  // Notifies the browser that the overlay WebUI is ready to be reshown so it
+  // can reshow the blur with the appropriate live page screenshot.
+  FinishReshowOverlay();
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
 interface LensPage {
-  // Pass screenshot data to WebUI.
+  // Pass screenshot data to WebUI and a parameter indicating whether the
+  // side panel is already open in order to update the UI.
   ScreenshotDataReceived(
-      skia.mojom.BitmapMappedFromTrustedProcess screenshot_data);
+      skia.mojom.BitmapMappedFromTrustedProcess screenshot_data,
+      bool is_side_panel_open);
 
   // Notifies the WebUI that the handshake to the Lens backend is complete.
   NotifyHandshakeComplete();
@@ -282,4 +288,7 @@ interface LensPage {
 
   // Suppress the ghost loader when tab is foregrounded.
   SuppressGhostLoader();
+
+  // Notifies the WebUI that the overlay is being reshown.
+  OnOverlayReshown(skia.mojom.BitmapMappedFromTrustedProcess screenshot_data);
 };

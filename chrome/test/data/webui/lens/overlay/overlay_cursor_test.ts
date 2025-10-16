@@ -65,7 +65,8 @@ suite('OverlayCursor', () => {
     tooltipEl = cursorTooltip.$.cursorTooltip;
 
     // Send a fake screenshot to unhide the selection overlay.
-    testBrowserProxy.page.screenshotDataReceived(fakeScreenshotBitmap());
+    testBrowserProxy.page.screenshotDataReceived(
+        fakeScreenshotBitmap(), /*isSidePanelOpen=*/ false);
     await waitForScreenshotRendered(selectionOverlayElement);
 
     // Since the size of the Selection Overlay is based on the screenshot which

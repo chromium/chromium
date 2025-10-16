@@ -100,6 +100,10 @@
     background-color: transparent;
   }
 
+  :host([hide-background-image-canvas]) #backgroundImageCanvas {
+    visibility: hidden;
+  }
+
   #selectionOverlay :not(#backgroundImageCanvas) {
     transition: opacity 150ms linear;
   }

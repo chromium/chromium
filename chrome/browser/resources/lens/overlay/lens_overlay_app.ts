@@ -227,6 +227,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         value: false,
         reflectToAttribute: true,
       },
+      overlayReshowInProgress: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -300,6 +305,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   declare private placeholderText: string;
   // Whether the translate language pickers are open.
   declare private areLanguagePickersOpen: boolean;
+  // Whether the overlay is currently being reshown.
+  declare private overlayReshowInProgress: boolean;
 
   // The performance tracker used to log performance metrics for the overlay.
   private performanceTracker: PerformanceTracker = new PerformanceTracker();
@@ -348,11 +355,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         this.isClosing = true;
         this.performanceTracker.endSession();
       }),
-      callbackRouter.screenshotDataReceived.addListener(() => {
-        // If the overlay was previously closed, then reset the state.
-        if (this.isClosing) {
-          this.isClosing = false;
-        }
+      callbackRouter.onOverlayReshown.addListener(() => {
+        this.isClosing = false;
+        this.sidePanelOpened = true;
+        this.overlayReshowInProgress = true;
+        this.performanceTracker.reset();
+        this.performanceTracker.startSession();
       }),
       callbackRouter.suppressGhostLoader.addListener(
           this.suppressGhostLoader_.bind(this)),
@@ -396,6 +404,15 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
     });
+    this.eventTracker_.add(
+        this.$.selectionOverlay, 'on-finish-reshow-overlay', () => {
+          if (!this.overlayReshowInProgress) {
+            return;
+          }
+
+          this.overlayReshowInProgress = false;
+          this.browserProxy.handler.finishReshowOverlay();
+        });
 
     this.performanceTracker.startSession();
   }
@@ -676,8 +693,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.isPointerDown = false;
   }
 
-  private onScreenshotRendered() {
+  private onScreenshotRendered(e: CustomEvent<{isSidePanelOpen: boolean}>) {
     this.isImageRendered = true;
+    this.sidePanelOpened = e.detail.isSidePanelOpen;
     // Focus the searchbox simultaneously with the initial flash animation.
     if (this.enableCsbMotionTweaks && this.autoFocusSearchbox &&
         this.isLensOverlayContextualSearchboxVisible) {
@@ -802,6 +820,14 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   handleEscapeSearchboxForTesting(e: CustomEvent) {
     this.handleEscapeSearchbox(e);
+  }
+
+  getSidePanelOpenedForTesting(): boolean {
+    return this.sidePanelOpened;
+  }
+
+  getOverlayReshowInProgressForTesting(): boolean {
+    return this.overlayReshowInProgress;
   }
 }
 
