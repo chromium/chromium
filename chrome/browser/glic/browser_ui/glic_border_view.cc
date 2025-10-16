@@ -161,7 +161,12 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
       // Force the border to show, regardless of other states. This gives the
       // actor priority over other signals.
       border_view_->StopShowing();
-      border_view_->Show();
+      // If the standalone border glow param is enabled, don't actually just
+      // suppress the glic_border_view from showing, as it is controlled by a
+      // different component.
+      if (!features::kGlicActorUiStandaloneBorderGlow.Get()) {
+        border_view_->Show();
+      }
     } else {
       // Revert to the last known state based on other signals like tab focus
       // or context access.

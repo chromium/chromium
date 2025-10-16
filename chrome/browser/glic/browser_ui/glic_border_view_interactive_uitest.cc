@@ -944,6 +944,57 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
   EXPECT_FALSE(border->GetVisible());
 }
 
+class GlicBorderViewStandaloneGlowUiTest : public GlicBorderViewUiTest {
+ public:
+  GlicBorderViewStandaloneGlowUiTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        features::kGlicActorUi,
+        {{features::kGlicActorUiStandaloneBorderGlow.name, "true"}});
+  }
+  ~GlicBorderViewStandaloneGlowUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicBorderViewStandaloneGlowUiTest,
+    ActorGlowHidesBorderWhenIndicatorIsOffAndStandaloneIsOn) {
+  auto* border = browser()
+                     ->window()
+                     ->AsBrowserView()
+                     ->GetActiveContentsContainerView()
+                     ->glic_border_view();
+  ASSERT_TRUE(border);
+  EXPECT_FALSE(border->GetVisible());
+
+  // Ensure the border is not showing initially.
+  EXPECT_FALSE(border->IsShowing());
+
+  // Get the actor keyed service.
+  auto* actor_keyed_service =
+      actor::ActorKeyedService::Get(browser()->profile());
+  ASSERT_TRUE(actor_keyed_service);
+
+  // Create a new task.
+  const actor::TaskId task_id = actor_keyed_service->CreateTask();
+  actor_keyed_service->GetTask(task_id)->AddTab(
+      browser()->GetActiveTabInterface()->GetHandle(), base::DoNothing());
+
+  // Perform an action to trigger the glow.
+  actor::PerformActionsFuture result_future;
+  std::vector<std::unique_ptr<actor::ToolRequest>> actions;
+  actions.push_back(actor::MakeWaitRequest());
+  actor_keyed_service->PerformActions(task_id, std::move(actions),
+                                      actor::ActorTaskMetadata(),
+                                      result_future.GetCallback());
+  EXPECT_EQ(result_future.Get<0>(), actor::mojom::ActionResultCode::kOk);
+
+  // Verify the border is not showing.
+  EXPECT_FALSE(border->IsShowing());
+  EXPECT_FALSE(border->GetVisible());
+}
+
 namespace {
 class GlicBorderViewFeatureDisabledBrowserTest : public GlicBorderViewUiTest {
  public:
