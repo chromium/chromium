@@ -129,17 +129,17 @@ bool IsOriginIsolatedSandboxedFrame(const UrlInfo& url_info) {
 bool CheckShouldDisableV8Optimization(
     BrowserContext* browser_context,
     const BrowsingInstanceId& browsing_instance_id,
-    const url::Origin& process_lock_origin) {
+    const GURL& process_lock_url) {
   std::optional<bool> are_v8_optimizations_disabled_result =
       ChildProcessSecurityPolicyImpl::GetInstance()
-          ->LookupAreV8OptimizationsDisabled(browsing_instance_id,
-                                             process_lock_origin);
+          ->LookupAreV8OptimizationsDisabled(
+              browsing_instance_id, url::Origin::Create(process_lock_url));
   if (are_v8_optimizations_disabled_result.has_value()) {
     return are_v8_optimizations_disabled_result.value();
   }
 
   return GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
-      browser_context, process_lock_origin.GetURL());
+      browser_context, process_lock_url);
 }
 
 }  // namespace
@@ -188,7 +188,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
   bool is_jit_disabled = GetContentClient()->browser()->IsJitDisabledForSite(
       browser_context, GURL());
   bool are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
-      browser_context, isolation_context.browsing_instance_id(), url::Origin());
+      browser_context, isolation_context.browsing_instance_id(), GURL());
 
   WebExposedIsolationLevel web_exposed_isolation_level =
       SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
@@ -305,7 +305,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                         browser_context, agent_cluster_url_or_default);
   are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
       browser_context, isolation_context.browsing_instance_id(),
-      url::Origin::Create(agent_cluster_url_or_default));
+      agent_cluster_url_or_default);
 
   if (!storage_partition_config.has_value()) {
     storage_partition_config =
