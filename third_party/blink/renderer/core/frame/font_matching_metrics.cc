@@ -84,13 +84,6 @@ void FontMatchingMetrics::ReportLocalFontExistenceByUniqueOrFamilyName(
   OnFontLookup();
 }
 
-void FontMatchingMetrics::ReportEmojiSegmentGlyphCoverage(
-    unsigned num_clusters,
-    unsigned num_broken_clusters) {
-  total_emoji_clusters_shaped_ += num_clusters;
-  total_broken_emoji_clusters_ += num_broken_clusters;
-}
-
 void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
   if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontExistenceByUniqueOrFamilyName)) {
@@ -112,16 +105,6 @@ void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
   builder.Record(ukm_recorder_);
 }
 
-void FontMatchingMetrics::PublishEmojiGlyphMetrics() {
-  DCHECK_LE(total_broken_emoji_clusters_, total_emoji_clusters_shaped_);
-  if (total_emoji_clusters_shaped_) {
-    double percentage = static_cast<double>(total_broken_emoji_clusters_) /
-                        total_emoji_clusters_shaped_;
-    UMA_HISTOGRAM_PERCENTAGE("Blink.Fonts.EmojiClusterBrokenness",
-                             static_cast<int>(round(percentage * 100)));
-  }
-}
-
 void FontMatchingMetrics::OnFontLookup() {
   if (!identifiability_metrics_timer_.IsActive()) {
     identifiability_metrics_timer_.StartOneShot(base::Minutes(1), FROM_HERE);
@@ -134,7 +117,6 @@ void FontMatchingMetrics::IdentifiabilityMetricsTimerFired(TimerBase*) {
 
 void FontMatchingMetrics::PublishAllMetrics() {
   PublishIdentifiabilityMetrics();
-  PublishEmojiGlyphMetrics();
 }
 
 }  // namespace blink

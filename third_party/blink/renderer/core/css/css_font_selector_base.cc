@@ -35,15 +35,6 @@ bool CSSFontSelectorBase::IsPlatformFamilyMatchAvailable(
                                                          family);
 }
 
-void CSSFontSelectorBase::ReportEmojiSegmentGlyphCoverage(
-    unsigned num_clusters,
-    unsigned num_broken_clusters) {
-  if (FontMatchingMetrics* font_matching_metrics = GetFontMatchingMetrics()) {
-    font_matching_metrics->ReportEmojiSegmentGlyphCoverage(num_clusters,
-                                                           num_broken_clusters);
-  }
-}
-
 void CSSFontSelectorBase::ReportSuccessfulFontFamilyMatch(
     const AtomicString& font_family_name) {
   if (FontMatchingMetrics* font_matching_metrics = GetFontMatchingMetrics()) {

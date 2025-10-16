@@ -45,9 +45,6 @@ class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
 
   void ReportNotDefGlyph() const override;
 
-  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
-                                       unsigned num_broken_clusters) override;
-
   void Trace(Visitor*) const override;
 
  protected:

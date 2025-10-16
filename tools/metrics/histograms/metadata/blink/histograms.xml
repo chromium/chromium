@@ -2587,19 +2587,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Fonts.EmojiClusterBrokenness" units="%"
-    expires_after="2024-04-30">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    Percentage of emoji clusters of all emoji clusters going through shaping
-    calls that are shaped as either .notdef/tofu glyphs or are shapes as more
-    than one glyph, which usually indicates that an emoji sequence was not
-    shaped correctly due to the emoji font not supporting it. Recorded per
-    page/worker and on page unload if the page contained emoji.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Fonts.FontServiceThread.MatchFamilyNameTime"
     units="microseconds" expires_after="2026-03-01">
   <owner>nidhijaju@chromium.org</owner>

@@ -91,12 +91,6 @@ class FontMatchingMetrics {
   // successfully match.
   void ReportFailedLocalFontMatch(const AtomicString& font_name);
 
-  // Reports for each shaped emoji segment the number of total clusters and the
-  // number of clusters that either contain a .notdef/tofu glyph or that is
-  // shaped as multiple glyphs, which means the emoji displays incorrectly.
-  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
-                                       unsigned num_broken_clusters);
-
   // Called on page unload and forces metrics to be flushed.
   void PublishAllMetrics();
 
@@ -107,11 +101,6 @@ class FontMatchingMetrics {
   // Publishes the font lookup events. Recorded on document shutdown/worker
   // destruction and every minute, as long as additional lookups are occurring.
   void PublishIdentifiabilityMetrics();
-
-  // Publishes the ratio of correctly shaped to incorrectly shaped emoji
-  // segments during the lifetime of this metrics recorder, which usually is
-  // coupled to the lifetime of a document or WorkerGlobalContext.
-  void PublishEmojiGlyphMetrics();
 
  private:
   void IdentifiabilityMetricsTimerFired(TimerBase*);
@@ -133,9 +122,6 @@ class FontMatchingMetrics {
       bool font_exists);
 
   TokenToTokenHashMap local_font_existence_by_unique_or_family_name_;
-
-  uint64_t total_emoji_clusters_shaped_ = 0;
-  uint64_t total_broken_emoji_clusters_ = 0;
 
   ukm::UkmRecorder* const ukm_recorder_;
   const ukm::SourceId source_id_;

@@ -90,7 +90,6 @@ class TestFontSelector : public FontSelector {
   void ReportSuccessfulLocalFontMatch(const AtomicString& font_name) override {}
   void ReportFailedLocalFontMatch(const AtomicString& font_name) override {}
   void ReportNotDefGlyph() const override {}
-  void ReportEmojiSegmentGlyphCoverage(unsigned, unsigned) override {}
   ExecutionContext* GetExecutionContext() const override { return nullptr; }
   FontFaceCache* GetFontFaceCache() override { return nullptr; }
 

@@ -248,17 +248,6 @@ void Font::ReportNotDefGlyph() const {
     fontSelector->ReportNotDefGlyph();
 }
 
-void Font::ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
-                                           unsigned num_broken_clusters) const {
-  FontSelector* fontSelector = EnsureFontFallbackList()->GetFontSelector();
-  // See ReportNotDefGlyph(), sometimes no fontSelector is available in non-DOM
-  // usages of Font.
-  if (fontSelector) {
-    fontSelector->ReportEmojiSegmentGlyphCoverage(num_clusters,
-                                                  num_broken_clusters);
-  }
-}
-
 void Font::WillUseFontData(const String& text) const {
   const FontDescription& font_description = GetFontDescription();
   const FontFamily& family = font_description.Family();
