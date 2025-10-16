@@ -677,6 +677,15 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="PHONE_HOME_WHOLE_NUMBER"/>
 </variants>
 
+<variants name="AutofillProfileRecordTypes">
+  <variant name="Account" summary="Synced cross-device account profile"/>
+  <variant name="AccountHome" summary="Read-only home address from account"/>
+  <variant name="AccountNameEmail"
+      summary="Read-only profile using account name and email"/>
+  <variant name="AccountWork" summary="Read-only work address from account"/>
+  <variant name="LocalOrSyncable" summary="Local or legacy-synced profile"/>
+</variants>
+
 <variants name="AutofillSaveCardDestination">
   <variant name="Local" summary="local"/>
   <variant name="Server" summary="server"/>
@@ -5552,7 +5561,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.ProfileDeleted.{DeletionType}"
+<histogram name="Autofill.ProfileDeleted.{DeletionType}.{RecordType}"
     enum="BooleanAutofillDeleteAddress" expires_after="2026-03-01">
   <owner>tchudakov@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5562,6 +5571,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     sums all of the above.
 
     {DeletionType}
+
+    {RecordType}
   </summary>
   <token key="DeletionType">
     <variant name="Any"
@@ -5581,6 +5592,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
         summary="This metric records how many users pressed the &quot;Delete
                  address&quot; button in chrome://settings, and whether they
                  canceled or confirmed the deletion."/>
+  </token>
+  <token key="RecordType" variants="AutofillProfileRecordTypes">
+    <variant name="Total"
+        summary="Any record type, it will contain deletions for all record
+                 types."/>
   </token>
 </histogram>
 

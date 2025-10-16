@@ -183,6 +183,8 @@ export async function createRemoveAddressDialog(
     autofillManager: TestAutofillManager):
     Promise<SettingsAddressRemoveConfirmationDialogElement> {
   const address = createAddressEntry();
+  address.metadata!.recordType =
+      chrome.autofillPrivate.AddressRecordType.ACCOUNT;
 
   // Override the AutofillManagerImpl for testing.
   autofillManager.data.addresses = [address];

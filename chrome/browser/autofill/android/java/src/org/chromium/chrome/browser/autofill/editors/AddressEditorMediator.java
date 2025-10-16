@@ -642,4 +642,26 @@ class AddressEditorMediator {
                         mContext.getString(R.string.payments_phone_invalid_validation_message))
                 .build();
     }
+
+    String getProfileRecordTypeSuffix() {
+        return getProfileRecordTypeSuffixFromProfile(mProfileToEdit);
+    }
+
+    private static String getProfileRecordTypeSuffixFromProfile(AutofillProfile profile) {
+        switch (profile.getRecordType()) {
+            case RecordType.LOCAL_OR_SYNCABLE:
+                return "LocalOrSyncable";
+            case RecordType.ACCOUNT:
+                return "Account";
+            case RecordType.ACCOUNT_HOME:
+                return "AccountHome";
+            case RecordType.ACCOUNT_WORK:
+                return "AccountWork";
+            case RecordType.ACCOUNT_NAME_EMAIL:
+                return "AccountNameEmail";
+            default:
+                // Other types are not expected for addresses.
+                return "Unknown";
+        }
+    }
 }

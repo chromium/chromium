@@ -497,8 +497,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileDeleted.KeyboardAccessory", 1, 1);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 1);
+      "Autofill.ProfileDeleted.KeyboardAccessory.Total", 1, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any.Total", 1,
+                                      1);
 }
 
 // Tests that the profile deletion metric is recorded as false (canceled) when
@@ -518,8 +519,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileDeleted.KeyboardAccessory", 0, 1);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 0, 1);
+      "Autofill.ProfileDeleted.KeyboardAccessory.Total", 0, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any.Total", 0,
+                                      1);
 }
 
 }  // namespace

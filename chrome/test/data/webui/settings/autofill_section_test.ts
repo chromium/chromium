@@ -736,11 +736,26 @@ suite('AutofillSectionAddressTests', function() {
 
     assertTrue(removeAddressDialog.wasConfirmed());
     assertEquals(
-        1, metricsTracker.count('Autofill.ProfileDeleted.Settings', true));
+        1,
+        metricsTracker.count('Autofill.ProfileDeleted.Settings.Account', true));
     assertEquals(
-        0, metricsTracker.count('Autofill.ProfileDeleted.Settings', false));
-    assertEquals(1, metricsTracker.count('Autofill.ProfileDeleted.Any', true));
-    assertEquals(0, metricsTracker.count('Autofill.ProfileDeleted.Any', false));
+        0,
+        metricsTracker.count(
+            'Autofill.ProfileDeleted.Settings.Account', false));
+    assertEquals(
+        1,
+        metricsTracker.count('Autofill.ProfileDeleted.Settings.Total', true));
+    assertEquals(
+        0,
+        metricsTracker.count('Autofill.ProfileDeleted.Settings.Total', false));
+    assertEquals(
+        1, metricsTracker.count('Autofill.ProfileDeleted.Any.Account', true));
+    assertEquals(
+        0, metricsTracker.count('Autofill.ProfileDeleted.Any.Account', false));
+    assertEquals(
+        1, metricsTracker.count('Autofill.ProfileDeleted.Any.Total', true));
+    assertEquals(
+        0, metricsTracker.count('Autofill.ProfileDeleted.Any.Total', false));
 
     const expected = new AutofillManagerExpectations();
     expected.requestedAddresses = 1;
@@ -763,11 +778,26 @@ suite('AutofillSectionAddressTests', function() {
     await eventToPromise('close', removeAddressDialog);
     assertFalse(removeAddressDialog.wasConfirmed());
     assertEquals(
-        0, metricsTracker.count('Autofill.ProfileDeleted.Settings', true));
+        0,
+        metricsTracker.count('Autofill.ProfileDeleted.Settings.Account', true));
     assertEquals(
-        1, metricsTracker.count('Autofill.ProfileDeleted.Settings', false));
-    assertEquals(0, metricsTracker.count('Autofill.ProfileDeleted.Any', true));
-    assertEquals(1, metricsTracker.count('Autofill.ProfileDeleted.Any', false));
+        1,
+        metricsTracker.count(
+            'Autofill.ProfileDeleted.Settings.Account', false));
+    assertEquals(
+        0,
+        metricsTracker.count('Autofill.ProfileDeleted.Settings.Total', true));
+    assertEquals(
+        1,
+        metricsTracker.count('Autofill.ProfileDeleted.Settings.Total', false));
+    assertEquals(
+        0, metricsTracker.count('Autofill.ProfileDeleted.Any.Account', true));
+    assertEquals(
+        1, metricsTracker.count('Autofill.ProfileDeleted.Any.Account', false));
+    assertEquals(
+        0, metricsTracker.count('Autofill.ProfileDeleted.Any.Total', true));
+    assertEquals(
+        1, metricsTracker.count('Autofill.ProfileDeleted.Any.Total', false));
 
     const expected = new AutofillManagerExpectations();
     expected.requestedAddresses = 1;

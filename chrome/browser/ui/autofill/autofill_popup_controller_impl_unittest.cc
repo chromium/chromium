@@ -838,10 +838,12 @@ TEST_F(AutofillPopupControllerImplTest,
       "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
   // Also no autofill metrics are emitted.
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup.Total", 1,
+                                      0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileDeleted.KeyboardAccessory", 1, 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
+      "Autofill.ProfileDeleted.KeyboardAccessory.Total", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any.Total", 1,
+                                      0);
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -856,10 +858,12 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_FALSE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup.Total", 1,
+                                      0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileDeleted.KeyboardAccessory", 1, 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
+      "Autofill.ProfileDeleted.KeyboardAccessory.Total", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any.Total", 1,
+                                      0);
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -874,15 +878,18 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any.Total", 1,
+                                      1);
   if constexpr (BUILDFLAG(IS_ANDROID)) {
-    histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
+    histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup.Total",
+                                        1, 0);
     histogram_tester.ExpectUniqueSample(
-        "Autofill.ProfileDeleted.KeyboardAccessory", 1, 1);
+        "Autofill.ProfileDeleted.KeyboardAccessory.Total", 1, 1);
   } else {
-    histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 1);
+    histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup.Total",
+                                        1, 1);
     histogram_tester.ExpectUniqueSample(
-        "Autofill.ProfileDeleted.KeyboardAccessory", 1, 0);
+        "Autofill.ProfileDeleted.KeyboardAccessory.Total", 1, 0);
   }
   // No autocomplete deletion metrics are emitted.
   histogram_tester.ExpectUniqueSample(
@@ -911,10 +918,12 @@ TEST_F(AutofillPopupControllerImplTest,
   histogram_tester.ExpectUniqueSample(
       "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup.Total", 1,
+                                      0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileDeleted.KeyboardAccessory", 1, 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
+      "Autofill.ProfileDeleted.KeyboardAccessory.Total", 1, 0);
+  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any.Total", 1,
+                                      0);
 }
 
 TEST_F(AutofillPopupControllerImplTest, UnselectingClearsPreview) {

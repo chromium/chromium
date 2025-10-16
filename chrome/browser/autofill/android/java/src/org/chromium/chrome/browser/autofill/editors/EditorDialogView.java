@@ -119,14 +119,16 @@ public class EditorDialogView extends AlwaysDismissedDialog
     private @Nullable Runnable mDoneRunnable;
     private @Nullable Runnable mCancelRunnable;
 
+    private @Nullable String mProfileRecordTypeSuffix;
+
     private boolean mValidateOnShow;
 
     @VisibleForTesting
-    public static final String PROFILE_DELETED_HISTOGRAM = "Autofill.ProfileDeleted.Any";
+    public static final String PROFILE_DELETED_HISTOGRAM = "Autofill.ProfileDeleted.Any.Total";
 
     @VisibleForTesting
     public static final String PROFILE_DELETED_SETTINGS_HISTOGRAM =
-            "Autofill.ProfileDeleted.Settings";
+            "Autofill.ProfileDeleted.Settings.Total";
 
     /**
      * Builds the editor dialog.
@@ -224,6 +226,15 @@ public class EditorDialogView extends AlwaysDismissedDialog
 
     public void setCancelRunnable(Runnable cancelRunnable) {
         mCancelRunnable = cancelRunnable;
+    }
+
+    /**
+     * Sets the suffix to be appended to the profile deletion histogram.
+     *
+     * @param suffix The suffix to append, e.g., the profile's record type.
+     */
+    public void setProfileRecordTypeSuffix(@Nullable String suffix) {
+        mProfileRecordTypeSuffix = suffix;
     }
 
     public void setValidateOnShow(boolean validateOnShow) {
@@ -656,10 +667,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                         .setNegativeButton(
                                 R.string.cancel,
                                 (dialog, which) -> {
-                                    RecordHistogram.recordBooleanHistogram(
-                                            PROFILE_DELETED_HISTOGRAM, false);
-                                    RecordHistogram.recordBooleanHistogram(
-                                            PROFILE_DELETED_SETTINGS_HISTOGRAM, false);
+                                    recordDeletionHistogram(false);
                                     dialog.cancel();
                                     mConfirmationDialog = null;
                                     if (sObserverForTest != null) {
@@ -669,10 +677,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                         .setPositiveButton(
                                 primaryButtonText,
                                 (dialog, which) -> {
-                                    RecordHistogram.recordBooleanHistogram(
-                                            PROFILE_DELETED_HISTOGRAM, true);
-                                    RecordHistogram.recordBooleanHistogram(
-                                            PROFILE_DELETED_SETTINGS_HISTOGRAM, true);
+                                    recordDeletionHistogram(true);
                                     handleDelete();
                                     mConfirmationDialog = null;
                                 })
@@ -715,5 +720,17 @@ public class EditorDialogView extends AlwaysDismissedDialog
                 getContext(),
                 R.drawable.ic_arrow_back_white_24dp,
                 R.color.default_icon_color_tint_list);
+    }
+
+    private void recordDeletionHistogram(boolean deleted) {
+        RecordHistogram.recordBooleanHistogram(PROFILE_DELETED_HISTOGRAM, deleted);
+        RecordHistogram.recordBooleanHistogram(PROFILE_DELETED_SETTINGS_HISTOGRAM, deleted);
+
+        if (mProfileRecordTypeSuffix != null && !mProfileRecordTypeSuffix.isEmpty()) {
+            RecordHistogram.recordBooleanHistogram(
+                    PROFILE_DELETED_HISTOGRAM + "." + mProfileRecordTypeSuffix, deleted);
+            RecordHistogram.recordBooleanHistogram(
+                    PROFILE_DELETED_SETTINGS_HISTOGRAM + "." + mProfileRecordTypeSuffix, deleted);
+        }
     }
 }
