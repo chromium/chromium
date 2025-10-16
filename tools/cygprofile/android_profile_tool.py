@@ -173,12 +173,15 @@ class AndroidProfileTool:
     self._DeleteDeviceData()
     return data
 
-  def CollectWebViewStartupProfile(self, apk: str,
+  def CollectWebViewStartupProfile(self,
+                                   apk: str,
+                                   arch: str,
                                    out_dir: Optional[str] = None):
     """Run the given benchmark and collect the generated profiles.
 
     Args:
       apk: The location of the webview apk file to profile.
+      arch: The target architecture to profile.
       out_dir: The output directory, to find the chromedriver binary.
 
     Returns:
@@ -213,7 +216,7 @@ class AndroidProfileTool:
     RunCommand([
         'tools/perf/cb',
         'embedder',
-        '--browser={browser:"clank/android_webview/tools/crossbench_config/cipd/arm64/Velvet_arm64.apk",driver:{type:"Android"' +
+        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{arch}/Velvet_{arch}.apk",driver:{{type:"Android"' +
         maybe_adb_bin_path +
         '}}',
     ] + maybe_driver_path + [
