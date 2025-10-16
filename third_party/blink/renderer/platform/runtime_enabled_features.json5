@@ -1574,7 +1574,7 @@
       // The '&' pseudo-class effectively behaves like :where(:scope)
       // when used in @scope rules.
       name: "CSSScopeifiedParentPseudoClass",
-      status: "experimental",
+      status: "stable",
     },
     {
       // The "@import scope(...)" syntax.
