@@ -2063,6 +2063,27 @@
       <message name="IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a calendar file.[iOS only]">
           Calendar file available
       </message>
+      <message name="IDS_IOS_DOWNLOAD_FILTER_ALL" desc="Filter label for showing all downloads [iOS only]">
+        All
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_FILTER_AUDIOS" desc="Filter label for showing audio downloads [iOS only]">
+        Audios
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_FILTER_DOCUMENTS" desc="Filter label for showing document downloads [iOS only]">
+        Documents
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_FILTER_IMAGES" desc="Filter label for showing image downloads [iOS only]">
+        Images
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_FILTER_OTHERS" desc="Filter label for showing other file type downloads [iOS only]">
+        Others
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_FILTER_PDFS" desc="Filter label for showing PDF downloads [iOS only]">
+        PDFs
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_FILTER_VIDEOS" desc="Filter label for showing video downloads [iOS only]">
+        Videos
+      </message>
       <message name="IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE" desc="Warning message displayed when the user downloads a file while on Incognito.[iOS only]">
           Anyone using this device can see downloaded files
       </message>
