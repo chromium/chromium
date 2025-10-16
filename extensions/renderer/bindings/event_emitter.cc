@@ -24,7 +24,7 @@ namespace {
 constexpr const char kEmitterKey[] = "emitter";
 constexpr const char kArgumentsKey[] = "arguments";
 constexpr const char kFilterKey[] = "filter";
-constexpr const char kPostDispatchCallbackFunctionKey[] =
+constexpr const char kOnDispatchedCallbackFunctionKey[] =
     "on_dispatched_callback";
 constexpr const char kEventEmitterTypeName[] = "Event";
 
@@ -327,7 +327,7 @@ void EventEmitter::DispatchAsync(
           .Set(kEmitterKey, GetWrapper(isolate).ToLocalChecked())
           .Set(kArgumentsKey, args_array.As<v8::Value>())
           .Set(kFilterKey, gin::ConvertToV8(isolate, filter_id))
-          .Set(kPostDispatchCallbackFunctionKey, on_dispatched_callback_value)
+          .Set(kOnDispatchedCallbackFunctionKey, on_dispatched_callback_value)
           .Build();
   v8::Local<v8::Function> function;
   // TODO(devlin): Function construction can fail in some weird cases (looking
@@ -392,12 +392,12 @@ void EventEmitter::DispatchAsyncHelper(
 
   v8::Local<v8::Value> on_dispatched_callback_value;
   if (!data->Get(context,
-                 gin::StringToSymbol(isolate, kPostDispatchCallbackFunctionKey))
+                 gin::StringToSymbol(isolate, kOnDispatchedCallbackFunctionKey))
            .ToLocal(&on_dispatched_callback_value)) {
     NOTREACHED();
   }
 
-  // No post dispatch callback function provided, so do not call it.
+  // No on dispatched callback function provided, so do not call it.
   if (on_dispatched_callback_value->IsUndefined()) {
     return;
   }

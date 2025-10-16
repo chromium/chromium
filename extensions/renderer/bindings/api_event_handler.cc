@@ -307,7 +307,7 @@ void APIEventHandler::FireEventInContext(
                   on_dispatched_callback);
   } else {
     DCHECK(on_dispatched_callback.IsEmpty())
-        << "Can't use an event post dispatch callback with argument massagers.";
+        << "Can't use an event on dispatched callback with argument massagers.";
 
     v8::HandleScope handle_scope(isolate);
     v8::Local<v8::Function> massager = massager_iter->second.Get(isolate);
