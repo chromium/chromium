@@ -61,6 +61,8 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -352,6 +354,28 @@ SkBitmap WebElement::ImageContents() {
   Image* image = GetImage();
   if (!image)
     return {};
+  scoped_refptr<SVGImageForContainer> svg_image_for_container;
+  if (RuntimeEnabledFeatures::SvgFallBackToContainerSizeEnabled()) {
+    if (auto* svg_image = blink::DynamicTo<SVGImage>(*image)) {
+      // Adapted from ImageElementBase::GetSourceImageFromCanvas.
+      Element* element = Unwrap<Element>();
+      const ComputedStyle* style = element->GetComputedStyle();
+      auto preferred_color_scheme = element->GetDocument()
+                                        .GetStyleEngine()
+                                        .ResolveColorSchemeForEmbedding(style);
+      const SVGImageViewInfo* view_info =
+          SVGImageForContainer::CreateViewInfo(*svg_image, *element);
+      const gfx::SizeF image_size = SVGImageForContainer::ConcreteObjectSize(
+          *svg_image, view_info, gfx::SizeF(GetClientSize()));
+      if (!image_size.IsEmpty()) {
+        svg_image_for_container = SVGImageForContainer::Create(
+            *svg_image, image_size, 1, view_info, preferred_color_scheme);
+      }
+    }
+  }
+  if (svg_image_for_container) {
+    image = svg_image_for_container.get();
+  }
   return image->AsSkBitmapForCurrentFrame(kRespectImageOrientation);
 }
 

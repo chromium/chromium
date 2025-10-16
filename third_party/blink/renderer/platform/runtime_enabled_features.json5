@@ -4819,6 +4819,10 @@
       status: "experimental",
     },
     {
+      name: "SvgFallBackToContainerSize",
+      status: "experimental",
+    },
+    {
       name: "SvgFilterPaintsForHiddenContent",
       status: "stable",
     },
