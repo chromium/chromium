@@ -234,8 +234,10 @@ std::string GetEventName(ScalableIph::Event event) {
 std::string GetParamValue(const base::Feature& feature,
                           const std::string& param_name) {
   std::unique_ptr<Config> config = GetConfig(feature);
-  if (config && config->params.contains(param_name)) {
-    return config->params.at(param_name);
+  if (config) {
+    if (auto it = config->params.find(param_name); it != config->params.end()) {
+      return it->second;
+    }
   }
 
   std::string fully_qualified_param_name =
