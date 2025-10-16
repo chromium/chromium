@@ -1308,8 +1308,11 @@ void VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
   media::PaintCanvasVideoRenderer::PaintParams paint_params;
   paint_params.dest_rect = gfx::RectF(src_rect.size());
   auto context_provider = GetRasterContextProvider();
-  renderer.Paint(std::move(frame), &canvas, flags, paint_params,
-                 context_provider.get());
+
+  // GetRasterContextProvider() returns the SharedGPUContext's provider, which
+  // always supports `gpu_rasterization`.
+  renderer.PaintOOPR(std::move(frame), &canvas, flags, paint_params,
+                     context_provider.get());
 }
 
 bool VideoFrame::CopyToAsync(
