@@ -7,7 +7,8 @@
     <template shadowrootmode="closed">
       <link rel="stylesheet" href="chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_embedder.css">
       <iframe name="$1" src="about:blank" type="$2" internalid="$3"
-          allow="fullscreen *">
+          allow="fullscreen *"></iframe>
+      <slot></slot>
     </template>
   </body>
 </html>
