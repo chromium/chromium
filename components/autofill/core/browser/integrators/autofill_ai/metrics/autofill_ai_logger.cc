@@ -96,21 +96,22 @@ void AutofillAiLogger::OnFormHasDataToFill(
 void AutofillAiLogger::OnSuggestionsShown(
     const FormStructure& form,
     const AutofillField& field,
-    DenseSet<EntityType> suggested_entity_types,
+    base::span<const EntityInstance* const> entities_suggested,
     ukm::SourceId ukm_source_id) {
-  for (EntityType type : suggested_entity_types) {
-    form_states_[form.global_id()][type].suggestions_shown = true;
-    ukm_logger_.LogFieldEvent(ukm_source_id, form, field, type,
+  for (const EntityInstance* const entity : entities_suggested) {
+    form_states_[form.global_id()][entity->type()].suggestions_shown = true;
+    ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity->type(),
                               AutofillAiUkmLogger::EventType::kSuggestionShown);
   }
 }
 
 void AutofillAiLogger::OnDidFillSuggestion(const FormStructure& form,
                                            const AutofillField& field,
-                                           EntityType entity_type,
+                                           const EntityInstance& entity_filled,
                                            ukm::SourceId ukm_source_id) {
-  form_states_[form.global_id()][entity_type].did_fill_suggestions = true;
-  ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_type,
+  form_states_[form.global_id()][entity_filled.type()].did_fill_suggestions =
+      true;
+  ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_filled.type(),
                             AutofillAiUkmLogger::EventType::kSuggestionFilled);
 }
 
@@ -130,10 +131,10 @@ void AutofillAiLogger::OnEditedAutofilledField(const FormStructure& form,
 
 void AutofillAiLogger::OnDidFillField(const FormStructure& form,
                                       const AutofillField& field,
-                                      EntityType entity_type,
+                                      const EntityInstance& entity_filled,
                                       ukm::SourceId ukm_source_id) {
-  last_filled_entity_.insert({field.global_id(), entity_type});
-  ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_type,
+  last_filled_entity_.insert({field.global_id(), entity_filled.type()});
+  ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_filled.type(),
                             AutofillAiUkmLogger::EventType::kFieldFilled);
 }
 

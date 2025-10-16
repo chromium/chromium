@@ -384,8 +384,12 @@ TEST_F(AutofillAiManagerTest,
       passport_entity, AttributeTypeName::kPassportName, /*app_locale=*/""));
   form_structure.field(1)->set_value(GetValueFromEntityForAttributeTypeName(
       passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
+
+  Suggestion passport_suggestion(SuggestionType::kFillAutofillAi);
+  passport_suggestion.payload =
+      Suggestion::AutofillAiPayload(passport_entity.guid());
   manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
-                               {EntityType(EntityTypeName::kPassport)}, {});
+                               {passport_suggestion}, {});
   manager().OnDidFillSuggestion(passport_entity, form_structure,
                                 *form_structure.field(0),
                                 /*filled_fiekds*/ {}, {});
@@ -415,8 +419,12 @@ TEST_F(AutofillAiManagerTest,
       passport_entity, AttributeTypeName::kPassportName, /*app_locale=*/""));
   form_structure.field(1)->set_value(GetValueFromEntityForAttributeTypeName(
       passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
+
+  Suggestion passport_suggestion(SuggestionType::kFillAutofillAi);
+  passport_suggestion.payload =
+      Suggestion::AutofillAiPayload(passport_entity.guid());
   manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
-                               {EntityType(EntityTypeName::kPassport)}, {});
+                               {passport_suggestion}, {});
 
   EXPECT_CALL(
       autofill_client(),
@@ -446,8 +454,12 @@ TEST_F(
   // Fill the passport number with a different value to trigger a save prompt
   // survey.
   form_structure.field(1)->set_value(u"12345");
+
+  Suggestion passport_suggestion(SuggestionType::kFillAutofillAi);
+  passport_suggestion.payload =
+      Suggestion::AutofillAiPayload(passport_entity.guid());
   manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
-                               {EntityType(EntityTypeName::kPassport)}, {});
+                               {passport_suggestion}, {});
   manager().OnDidFillSuggestion(passport_entity, form_structure,
                                 *form_structure.field(0),
                                 /*filled_fiekds*/ {}, {});

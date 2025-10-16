@@ -215,6 +215,7 @@ class EntityInstance final {
     // copy. Changes happening locally or on the Wallet server are synced among
     // all local storages sharing this entity.
     kServerWallet = 1,
+    kMaxValue = kServerWallet,
   };
 
   // `attributes` must be non-empty and their type must be identical to `type`.

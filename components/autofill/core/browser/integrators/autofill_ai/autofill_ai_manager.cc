@@ -169,17 +169,29 @@ AutofillAiManager::~AutofillAiManager() = default;
 void AutofillAiManager::OnSuggestionsShown(
     const FormStructure& form,
     const AutofillField& field,
-    DenseSet<EntityType> suggested_entity_types,
+    base::span<const Suggestion> shown_suggestions,
     ukm::SourceId ukm_source_id) {
-  logger_.OnSuggestionsShown(form, field, suggested_entity_types,
-                             ukm_source_id);
+  std::vector<const EntityInstance*> entities_suggested;
+  for (const Suggestion& suggestion : shown_suggestions) {
+    if (const auto* payload =
+            std::get_if<Suggestion::AutofillAiPayload>(&suggestion.payload)) {
+      if (base::optional_ref<const EntityInstance> entity =
+              client_->GetEntityDataManager()->GetEntityInstance(
+                  payload->guid)) {
+        entities_suggested.push_back(entity.as_ptr());
+      }
+    }
+  }
+  logger_.OnSuggestionsShown(form, field, entities_suggested, ukm_source_id);
+
   auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
   // Do not overwrite cases in which a suggestion was previously accepted.
   if (it == user_suggestion_interactions_per_form_.end() ||
       !it->second.entity_type_accepted) {
     user_suggestion_interactions_per_form_.Put(
         {form.global_id(),
-         {.suggested_entity_types = suggested_entity_types,
+         {.suggested_entity_types =
+              DenseSet<EntityType>(entities_suggested, &EntityInstance::type),
           .entity_type_accepted = std::nullopt,
           .autofill_ai_field_types = field.Type().GetAutofillAiTypes()}});
   }
@@ -202,11 +214,9 @@ void AutofillAiManager::OnDidFillSuggestion(
     const AutofillField& trigger_field,
     base::span<const AutofillField* const> filled_fields,
     ukm::SourceId ukm_source_id) {
-  logger_.OnDidFillSuggestion(form, trigger_field, entity.type(),
-                              ukm_source_id);
+  logger_.OnDidFillSuggestion(form, trigger_field, entity, ukm_source_id);
   for (const AutofillField* const field : filled_fields) {
-    logger_.OnDidFillField(form, CHECK_DEREF(field), entity.type(),
-                           ukm_source_id);
+    logger_.OnDidFillField(form, CHECK_DEREF(field), entity, ukm_source_id);
   }
   EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {

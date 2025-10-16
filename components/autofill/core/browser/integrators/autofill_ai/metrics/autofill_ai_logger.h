@@ -29,20 +29,21 @@ class AutofillAiLogger {
   void OnFormHasDataToFill(FormGlobalId form_id,
                            DenseSet<EntityType> form_relevant_entity_types,
                            base::span<const EntityInstance> stored_entities);
-  void OnSuggestionsShown(const FormStructure& form,
-                          const AutofillField& field,
-                          DenseSet<EntityType> suggested_entity_types,
-                          ukm::SourceId ukm_source_id);
+  void OnSuggestionsShown(
+      const FormStructure& form,
+      const AutofillField& field,
+      base::span<const EntityInstance* const> entities_suggested,
+      ukm::SourceId ukm_source_id);
   void OnDidFillSuggestion(const FormStructure& form,
                            const AutofillField& field,
-                           EntityType entity_type,
+                           const EntityInstance& entity_filled,
                            ukm::SourceId ukm_source_id);
   void OnEditedAutofilledField(const FormStructure& form,
                                const AutofillField& field,
                                ukm::SourceId ukm_source_id);
   void OnDidFillField(const FormStructure& form,
                       const AutofillField& field,
-                      EntityType entity_type,
+                      const EntityInstance& entity_filled,
                       ukm::SourceId ukm_source_id);
 
   void OnSaveOrUpdatePromptResult(
