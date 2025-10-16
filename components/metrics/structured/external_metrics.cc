@@ -94,21 +94,16 @@ std::string_view Platform2ProjectName(uint64_t project_name_hash) {
   }
 }
 
-void IncrementProjectCount(base::flat_map<uint64_t, int>& project_count_map,
-                           uint64_t project_name_hash) {
-  project_count_map[project_name_hash]++;
-}
-
 void ProcessEventProtosProjectCounts(
     base::flat_map<uint64_t, int>& project_count_map,
     const EventsProto& proto) {
   // Process all events that were packed in the proto.
   for (const auto& event : proto.uma_events()) {
-    IncrementProjectCount(project_count_map, event.project_name_hash());
+    ++project_count_map[event.project_name_hash()];
   }
 
   for (const auto& event : proto.events()) {
-    IncrementProjectCount(project_count_map, event.project_name_hash());
+    ++project_count_map[event.project_name_hash()];
   }
 }
 
