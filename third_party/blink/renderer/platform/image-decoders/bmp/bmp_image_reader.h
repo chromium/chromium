@@ -226,8 +226,8 @@ class PLATFORM_EXPORT BMPImageReader final {
       case 2:
         return ReadUint16(encoded_pixel);
       case 3: {
-        // It doesn't matter that we never set the most significant byte
-        // of the return value, the caller won't read it.
+        // It doesn't matter that we set the most significant byte
+        // of the return value to 0, the caller won't read it.
         uint32_t pixel = 0;
         base::byte_span_from_ref(pixel).first<3u>().copy_from(encoded_pixel);
         return pixel;
