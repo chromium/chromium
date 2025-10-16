@@ -833,11 +833,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mEdgeToEdgeControllerSupplier.get() != null) {
             mEdgeToEdgeChangeObserver =
                     (int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) -> {
+                        var systemBarColorHelper =
+                                mEdgeToEdgeManager != null
+                                        ? mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper()
+                                        : null;
                         CustomTabNavigationBarController.update(
                                 mWindowAndroid.getWindow(),
                                 mIntentDataProvider.get(),
                                 mActivity,
-                                isDrawingToEdge && isPageOptInToEdge);
+                                isDrawingToEdge && isPageOptInToEdge,
+                                systemBarColorHelper);
                     };
             mEdgeToEdgeControllerSupplier.get().registerObserver(mEdgeToEdgeChangeObserver);
         }

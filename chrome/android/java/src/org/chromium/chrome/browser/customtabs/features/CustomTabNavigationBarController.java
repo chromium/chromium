@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.util.ColorUtils;
 
 /**
@@ -35,15 +36,18 @@ public class CustomTabNavigationBarController {
      * @param intentDataProvider The {@link BrowserServicesIntentDataProvider} used in CCT.
      * @param context The current Android context.
      * @param isEdgeToEdge Whether CCT is drawing edge to edge.
+     * @param systemBarColorHelper The {@link EdgeToEdgeSystemBarColorHelper} to set the system bar
+     *     colors.
      */
     public static void update(
             Window window,
             BrowserServicesIntentDataProvider intentDataProvider,
             Context context,
-            boolean isEdgeToEdge) {
+            boolean isEdgeToEdge,
+            @Nullable EdgeToEdgeSystemBarColorHelper systemBarColorHelper) {
         // When drawing edge to edge, always use transparent color for the navigation bar.
         if (isEdgeToEdge) {
-            updateBarColor(window, Color.TRANSPARENT, false, false);
+            updateBarColor(window, Color.TRANSPARENT, false, false, systemBarColorHelper);
             return;
         }
 
@@ -66,13 +70,24 @@ public class CustomTabNavigationBarController {
                 navigationBarColor != null
                         && !ColorUtils.shouldUseLightForegroundOnBackground(navigationBarColor);
 
-        updateBarColor(window, navigationBarColor, supportsDarkButtons, needsDarkButtons);
+        updateBarColor(
+                window,
+                navigationBarColor,
+                supportsDarkButtons,
+                needsDarkButtons,
+                systemBarColorHelper);
 
         Integer dividerColor =
                 getDividerColor(
                         context, navigationBarColor, navigationBarDividerColor, needsDarkButtons);
 
-        if (dividerColor != null) window.setNavigationBarDividerColor(dividerColor);
+        if (dividerColor != null) {
+            if (systemBarColorHelper != null) {
+                systemBarColorHelper.setNavigationBarDividerColor(dividerColor);
+            } else {
+                window.setNavigationBarDividerColor(dividerColor);
+            }
+        }
     }
 
     /** Sets the navigation bar color according to intent extras. */
@@ -80,7 +95,8 @@ public class CustomTabNavigationBarController {
             Window window,
             @Nullable Integer navigationBarColor,
             boolean supportsDarkButtons,
-            boolean needsDarkButtons) {
+            boolean needsDarkButtons,
+            @Nullable EdgeToEdgeSystemBarColorHelper systemBarColorHelper) {
         if (navigationBarColor == null) return;
 
         if (supportsDarkButtons) {
@@ -92,7 +108,11 @@ public class CustomTabNavigationBarController {
             navigationBarColor = ColorUtils.getDarkenedColorForStatusBar(navigationBarColor);
         }
 
-        window.setNavigationBarColor(navigationBarColor);
+        if (systemBarColorHelper != null) {
+            systemBarColorHelper.setNavigationBarColor(navigationBarColor);
+        } else {
+            window.setNavigationBarColor(navigationBarColor);
+        }
     }
 
     /**

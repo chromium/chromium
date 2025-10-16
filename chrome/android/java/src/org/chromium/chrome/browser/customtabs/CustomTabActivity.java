@@ -176,8 +176,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 mEdgeToEdgeControllerSupplier.get() != null
                         && mEdgeToEdgeControllerSupplier.get().isDrawingToEdge()
                         && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge();
+        var systemBarColorHelper =
+                getEdgeToEdgeManager() != null
+                        ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
+                        : null;
         CustomTabNavigationBarController.update(
-                getWindow(), getIntentDataProvider(), this, drawEdgeToEdge);
+                getWindow(), getIntentDataProvider(), this, drawEdgeToEdge, systemBarColorHelper);
 
         mTimeoutHandler.restoreInstanceState(savedInstanceState);
     }
