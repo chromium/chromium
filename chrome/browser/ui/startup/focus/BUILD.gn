@@ -21,10 +21,8 @@ source_set("focus") {
   deps = [
     "//base",
     "//chrome/browser/profiles",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/startup",
     "//chrome/browser/ui/sync",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",

@@ -17,6 +17,10 @@ namespace content {
 class WebContents;
 }
 
+namespace web_app {
+class WebAppRegistrar;
+}
+
 namespace focus {
 
 struct Selector;
@@ -49,16 +53,15 @@ struct MatchCandidate {
 };
 
 // Creates a MatchCandidate if the given WebContents matches the selector.
+// For app windows, matches against the app's manifest ID.
+// For regular tabs, matches against the tab's URL.
 // Returns std::nullopt if there's no match.
-std::optional<MatchCandidate> MatchTab(const Selector& selector,
-                                       BrowserWindowInterface& browser_window,
-                                       int tab_index,
-                                       content::WebContents& web_contents);
-
-// Creates a MatchCandidate if the given browser window is an app that matches
-// the selector's app_id. Returns std::nullopt if there's no match.
-std::optional<MatchCandidate> MatchApp(const Selector& selector,
-                                       BrowserWindowInterface& browser_window);
+std::optional<MatchCandidate> MatchTab(
+    const Selector& selector,
+    BrowserWindowInterface& browser_window,
+    int tab_index,
+    content::WebContents& web_contents,
+    web_app::WebAppRegistrar* registrar = nullptr);
 
 }  // namespace focus
 

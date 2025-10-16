@@ -12,12 +12,12 @@
 
 namespace focus {
 
-enum class SelectorType { kApp, kUrlExact, kUrlPrefix };
+enum class SelectorType { kUrlExact, kUrlPrefix };
 
 // Represents criteria for matching tabs or app windows to focus.
-// Can specify exact URLs, URL prefixes, or web app IDs to match against.
+// URLs are matched against both tab URLs and app manifest IDs.
+// If an app window's manifest ID matches, it will be preferred over tabs.
 struct Selector {
-  Selector(SelectorType type, const std::string& app_id);
   Selector(SelectorType type, const GURL& url);
   ~Selector();
 
@@ -30,27 +30,28 @@ struct Selector {
   std::string ToString() const;
 
   SelectorType type;
-  std::string app_id;
   GURL url;
 };
 
 // Parses a comma-separated string of selectors into a vector of Selector
-// objects. Each selector can be one of three types:
+// objects. Each selector can be one of two types:
 //
-// 1. App selector: "app:APP_ID"
-//    - Matches web app windows with the specified app ID
-//    - Example: "app:chrome-extension://abc123" or "app:my-pwa-id"
-//
-// 2. Exact URL selector: "https://example.com/path"
+// 1. Exact URL selector: "https://example.com/path"
 //    - Matches tabs with exactly this URL (after canonicalization)
+//    - Also matches app windows whose manifest ID equals this URL
 //    - Example: "https://github.com/user/repo"
 //
-// 3. URL prefix selector: "https://example.com/path/*"
+// 2. URL prefix selector: "https://example.com/path/*"
 //    - Matches tabs whose URLs start with the prefix (trailing /* removed)
-//    - Example: "https://github.com/*" matches any GitHub page
+//    - Also matches app windows whose manifest ID starts with this prefix
+//    - Example: "https://github.com/*" matches any GitHub page or GitHub app
+//
+// App windows are matched by their manifest ID (which is a URL). Since apps
+// typically have unique manifest IDs, they will naturally match and be
+// prioritized over regular tabs with the same URL.
 //
 // Multiple selectors can be combined with commas:
-//   "app:my-app,https://example.com,https://github.com/*"
+//   "https://app.example.com/,https://example.com,https://github.com/*"
 //
 // Returns an empty vector if the input is invalid or contains no valid
 // selectors.

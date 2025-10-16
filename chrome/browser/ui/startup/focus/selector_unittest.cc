@@ -32,26 +32,16 @@ TEST_F(SelectorTest, ParseSelectorsWildcard) {
   EXPECT_EQ("https://example.com/", selectors[0].url.spec());
 }
 
-TEST_F(SelectorTest, ParseSelectorsApp) {
-  std::vector<Selector> selectors = ParseSelectors("app:test-app-id");
-  ASSERT_EQ(1u, selectors.size());
-  EXPECT_EQ(SelectorType::kApp, selectors[0].type);
-  EXPECT_EQ("test-app-id", selectors[0].app_id);
-}
-
 TEST_F(SelectorTest, ParseSelectorsMultiple) {
   std::vector<Selector> selectors =
-      ParseSelectors("app:test-app,https://example.com,https://test.com/*");
-  ASSERT_EQ(3u, selectors.size());
+      ParseSelectors("https://example.com,https://test.com/*");
+  ASSERT_EQ(2u, selectors.size());
 
-  EXPECT_EQ(SelectorType::kApp, selectors[0].type);
-  EXPECT_EQ("test-app", selectors[0].app_id);
+  EXPECT_EQ(SelectorType::kUrlExact, selectors[0].type);
+  EXPECT_EQ("https://example.com/", selectors[0].url.spec());
 
-  EXPECT_EQ(SelectorType::kUrlExact, selectors[1].type);
-  EXPECT_EQ("https://example.com/", selectors[1].url.spec());
-
-  EXPECT_EQ(SelectorType::kUrlPrefix, selectors[2].type);
-  EXPECT_EQ("https://test.com/", selectors[2].url.spec());
+  EXPECT_EQ(SelectorType::kUrlPrefix, selectors[1].type);
+  EXPECT_EQ("https://test.com/", selectors[1].url.spec());
 }
 
 TEST_F(SelectorTest, ParseSelectorsInvalid) {
@@ -60,12 +50,6 @@ TEST_F(SelectorTest, ParseSelectorsInvalid) {
 
   // Invalid URL.
   EXPECT_TRUE(ParseSelectors("not-a-url").empty());
-
-  // Empty app ID.
-  EXPECT_TRUE(ParseSelectors("app:").empty());
-
-  // Invalid URL prefix.
-  EXPECT_TRUE(ParseSelectors("url:").empty());
 }
 
 TEST_F(SelectorTest, ParseSelectorsWhitespaceOnly) {
@@ -82,17 +66,17 @@ TEST_F(SelectorTest, ParseSelectorsWhitespaceOnly) {
 TEST_F(SelectorTest, ParseSelectorsMixedValidInvalid) {
   // Valid URL mixed with invalid.
   std::vector<Selector> selectors =
-      ParseSelectors("https://example.com,not-a-url,app:valid-app");
+      ParseSelectors("https://example.com,not-a-url,https://valid.com");
   ASSERT_EQ(2u, selectors.size());
 
   EXPECT_EQ(SelectorType::kUrlExact, selectors[0].type);
   EXPECT_EQ("https://example.com/", selectors[0].url.spec());
 
-  EXPECT_EQ(SelectorType::kApp, selectors[1].type);
-  EXPECT_EQ("valid-app", selectors[1].app_id);
+  EXPECT_EQ(SelectorType::kUrlExact, selectors[1].type);
+  EXPECT_EQ("https://valid.com/", selectors[1].url.spec());
 
-  // Invalid app mixed with valid URL.
-  selectors = ParseSelectors("app:,https://test.com/*,invalid-url");
+  // Invalid URL mixed with valid URL.
+  selectors = ParseSelectors("invalid-url,https://test.com/*,also-invalid");
   ASSERT_EQ(1u, selectors.size());
 
   EXPECT_EQ(SelectorType::kUrlPrefix, selectors[0].type);
@@ -100,9 +84,6 @@ TEST_F(SelectorTest, ParseSelectorsMixedValidInvalid) {
 }
 
 TEST_F(SelectorTest, SelectorToString) {
-  Selector app_selector(SelectorType::kApp, "test-app");
-  EXPECT_EQ("app:test-app", app_selector.ToString());
-
   Selector url_selector(SelectorType::kUrlExact, GURL("https://example.com"));
   EXPECT_EQ("https://example.com/", url_selector.ToString());
 
@@ -112,12 +93,6 @@ TEST_F(SelectorTest, SelectorToString) {
 }
 
 TEST_F(SelectorTest, SelectorIsValid) {
-  Selector valid_app(SelectorType::kApp, "test-app");
-  EXPECT_TRUE(valid_app.IsValid());
-
-  Selector invalid_app(SelectorType::kApp, "");
-  EXPECT_FALSE(invalid_app.IsValid());
-
   Selector valid_url(SelectorType::kUrlExact, GURL("https://example.com"));
   EXPECT_TRUE(valid_url.IsValid());
 

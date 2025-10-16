@@ -145,6 +145,10 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/startup/focus/focus_handler.h"
+#endif
+
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
 
@@ -1026,6 +1030,26 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // instead.
   Profile* privacy_safe_profile =
       GetPrivateProfileIfRequested(command_line, profile_info);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (process_startup == chrome::startup::IsProcessStartup::kNo &&
+      command_line.HasSwitch(switches::kFocus) &&
+      profile_info.mode == StartupProfileMode::kBrowserWindow &&
+      profile_info.profile) {
+    focus::FocusResult focus_result =
+        focus::ProcessFocusRequest(command_line, *profile_info.profile);
+    // Early return for successful focus, parse errors, or when there's no
+    // fallback URL. When focus succeeds or parsing fails, we're done. When no
+    // match is found but there are no command line args to fall back to
+    // (e.g., no URL to open), we also return to avoid opening an empty browser.
+    if (focus_result.status == focus::FocusStatus::kFocused ||
+        focus_result.status == focus::FocusStatus::kParseError ||
+        (focus_result.status == focus::FocusStatus::kNoMatch &&
+         command_line.GetArgs().empty())) {
+      return true;
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (command_line.HasSwitch(switches::kValidateCrx)) {
     if (process_startup == chrome::startup::IsProcessStartup::kNo) {

@@ -215,17 +215,4 @@ TEST_F(MatchCandidateTest, MatchTabNoMatch) {
   EXPECT_FALSE(match.has_value());
 }
 
-// Test MatchTab function returns nullopt for app selectors.
-TEST_F(MatchCandidateTest, MatchTabRejectsAppSelector) {
-  GURL tab_url("https://example.com");
-  auto web_contents = CreateWebContents(tab_url);
-
-  Selector app_selector(SelectorType::kApp, "com.example.app");
-
-  auto match =
-      MatchTab(app_selector, browser_window_interface_, 0, *web_contents);
-
-  EXPECT_FALSE(match.has_value());
-}
-
 }  // namespace focus
