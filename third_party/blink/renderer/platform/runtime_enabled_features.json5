@@ -1397,9 +1397,18 @@
       status: "stable",
     },
     {
-      // // https://drafts.csswg.org/css-values-5/#ident
+      // https://drafts.csswg.org/css-values-5/#ident
       name: "CSSIdentFunction",
       status: "test",
+    },
+    {
+      // The inherit() function works like var(), except that it grabs
+      // the computed value of the specified property from the parent style
+      // instead of the current style.
+      //
+      // https://drafts.csswg.org/css-values-5/#inherit-notation
+      name: "CSSInheritFunction",
+      status: "experimental",
     },
     {
       // CSS if() function for custom properties. Flag is used only for media

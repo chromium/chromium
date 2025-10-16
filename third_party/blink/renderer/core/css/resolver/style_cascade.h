@@ -525,6 +525,13 @@ class CORE_EXPORT StyleCascade {
                       const CSSParserContext&,
                       FunctionContext*,
                       TokenSequence&);
+  bool ResolveInheritInto(CSSParserTokenStream&,
+                          const TreeScope*,
+                          const CustomEnvBindings*,
+                          CascadeResolver&,
+                          const CSSParserContext&,
+                          FunctionContext*,
+                          TokenSequence&);
   bool ResolveEnvInto(CSSParserTokenStream&,
                       const TreeScope*,
                       const CustomEnvBindings*,

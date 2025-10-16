@@ -488,6 +488,11 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           }
           has_references = true;
           continue;
+        case CSSValueID::kInherit:
+          if (!RuntimeEnabledFeatures::CSSInheritFunctionEnabled()) {
+            return false;
+          }
+          [[fallthrough]];
         case CSSValueID::kVar:
           if (!ConsumeVariableReference(
                   stream, has_references, has_font_units, has_root_font_units,

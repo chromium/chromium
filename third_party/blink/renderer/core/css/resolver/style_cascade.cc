@@ -1489,6 +1489,10 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveVarInto(stream, tree_scope, env_bindings, resolver,
                                 context, function_context, out);
+    } else if (token.FunctionId() == CSSValueID::kInherit) {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      success &= ResolveInheritInto(stream, tree_scope, env_bindings, resolver,
+                                    context, function_context, out);
     } else if (token.FunctionId() == CSSValueID::kEnv) {
       CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveEnvInto(stream, tree_scope, env_bindings, resolver,
@@ -1625,6 +1629,37 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   }
   return AppendDataWithFallback(data, stream, tree_scope, env_bindings,
                                 resolver, context, function_context, out);
+}
+
+bool StyleCascade::ResolveInheritInto(CSSParserTokenStream& stream,
+                                      const TreeScope* tree_scope,
+                                      const CustomEnvBindings* env_bindings,
+                                      CascadeResolver& resolver,
+                                      const CSSParserContext& context,
+                                      FunctionContext* function_context,
+                                      TokenSequence& out) {
+  if (function_context) {
+    // In a function context, we can simply pass the parent function context.
+    // ResolveVarInto can already handle this via its dynamic scoping mechanism
+    // for local variables.
+    return ResolveVarInto(stream, tree_scope, env_bindings, resolver, context,
+                          function_context->parent, out);
+  }
+
+  // If we're at the top-level (i.e. not in a function context),
+  // then we need to explicitly find the inherited value. Note that since
+  // we're depending on the already-finished ComputedStyle of the parent
+  // element, cycles with properties on *this* element cannot happen.
+  AtomicString var_name =
+      ConsumeAndComputeVariableName(stream, context, state_);
+  if (!stream.AtEnd()) {
+    DCHECK_EQ(stream.Peek().GetType(), kCommaToken);
+  }
+  CustomProperty property(var_name, state_.GetDocument());
+  CSSVariableData* data = GetInheritedVariableData(property);
+  return AppendDataWithFallback(data, stream, tree_scope, env_bindings,
+                                resolver, context, /*function_context=*/nullptr,
+                                out);
 }
 
 bool StyleCascade::ResolveFunctionInto(StringView function_name,
