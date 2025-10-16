@@ -84,8 +84,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
     EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
         .WillOnce(
             [&](optimization_guide::ModelBasedCapabilityKey feature,
-                const std::optional<optimization_guide::SessionConfigParams>&
-                    config_params) {
+                const optimization_guide::SessionConfigParams& config_params) {
               return std::make_unique<NiceMock<MockSession>>(&session_);
             });
   }
@@ -251,8 +250,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             return std::make_unique<NiceMock<MockSession>>(&session);
           });
   // No need to add the observer because the session is created immediately.
@@ -505,8 +503,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return nullptr; });
+              const optimization_guide::SessionConfigParams& config_params) {
+            return nullptr;
+          });
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->InquireOnDeviceModel("", future.GetCallback());
@@ -548,8 +547,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
           });
 
@@ -569,8 +567,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
           });
 
@@ -583,8 +580,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             return std::make_unique<NiceMock<MockSession>>(&session2);
           });
 
@@ -622,8 +618,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
           });
 
@@ -636,8 +631,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             return std::make_unique<NiceMock<MockSession>>(&session2);
           });
 
@@ -853,8 +847,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
           });
   base::test::TestFuture<IntelligentScanResult> future2;

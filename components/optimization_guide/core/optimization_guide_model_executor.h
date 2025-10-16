@@ -108,26 +108,6 @@ struct SamplingParams {
 struct SessionConfigParams {
   std::optional<SamplingParams> sampling_params;
 
-  enum class ExecutionMode {
-    // Allows for infrastructure to choose what is most appropriate.
-    kDefault,
-    // Only allows for on-device execution.
-    kOnDeviceOnly,
-    // Only allows for server execution.
-    kServerOnly,
-  };
-
-  // How the execution of this feature should be configured.
-  ExecutionMode execution_mode = ExecutionMode::kDefault;
-
-  enum class LoggingMode {
-    // Enable logging if it's enabled for ModelBasedCapability.
-    kDefault,
-    // Always disable logging.
-    kAlwaysDisable,
-  };
-  LoggingMode logging_mode = LoggingMode::kDefault;
-
   // Capabilities that are enabled for this session when using on-device
   // execution.
   on_device_model::Capabilities capabilities;
@@ -340,7 +320,7 @@ class OptimizationGuideModelExecutor {
   // not outlive OptimizationGuideModelExecutor.
   virtual std::unique_ptr<Session> StartSession(
       ModelBasedCapabilityKey feature,
-      const std::optional<SessionConfigParams>& config_params) = 0;
+      const SessionConfigParams& config_params) = 0;
 
   // Executes the model for `feature` with `request_metadata` and invokes the
   // `callback` with the result.

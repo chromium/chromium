@@ -359,14 +359,8 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 ClientSideDetectionIntelligentScanDelegateDesktop::GetModelExecutorSession() {
-  using ::optimization_guide::SessionConfigParams;
-  SessionConfigParams config_params = SessionConfigParams{
-      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
-      .logging_mode = SessionConfigParams::LoggingMode::kDefault,
-  };
-
   return opt_guide_->StartSession(
       optimization_guide::ModelBasedCapabilityKey::kScamDetection,
-      config_params);
+      ::optimization_guide::SessionConfigParams{});
 }
 }  // namespace safe_browsing

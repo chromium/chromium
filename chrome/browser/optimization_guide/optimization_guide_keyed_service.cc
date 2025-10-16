@@ -182,8 +182,7 @@ OptimizationGuideKeyedService::CreateModelBrokerClient() {
   mojo::PendingRemote<optimization_guide::mojom::ModelBroker> remote;
   GetGlobalState().BindBroker(remote.InitWithNewPipeAndPassReceiver());
   return std::make_unique<optimization_guide::ModelBrokerClient>(
-      std::move(remote), optimization_guide::CreateSessionArgs(
-                             optimization_guide_logger_->GetWeakPtr(), {}));
+      std::move(remote));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -441,8 +440,7 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 OptimizationGuideKeyedService::StartSession(
     optimization_guide::ModelBasedCapabilityKey feature,
-    const std::optional<optimization_guide::SessionConfigParams>&
-        config_params) {
+    const optimization_guide::SessionConfigParams& config_params) {
   if (!model_execution_manager_) {
     return nullptr;
   }

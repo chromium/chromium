@@ -142,15 +142,14 @@ class AISummarizerTest : public AITestUtils::AITestBase {
     expected.set_allocated_options(
         AISummarizer::ToProtoOptions(options).release());
     EXPECT_CALL(session_, ExecuteModel(_, _))
-        .WillOnce(
-            [&](const google::protobuf::MessageLite& request,
-                optimization_guide::
-                    OptimizationGuideModelExecutionResultStreamingCallback
-                        callback) {
-              EXPECT_THAT(request, EqualsProto(expected));
-              callback.Run(CreateExecutionResult("Result text",
-                                                 /*is_complete=*/true));
-            });
+        .WillOnce([&](const google::protobuf::MessageLite& request,
+                      optimization_guide::
+                          OptimizationGuideModelExecutionResultStreamingCallback
+                              callback) {
+          EXPECT_THAT(request, EqualsProto(expected));
+          callback.Run(CreateExecutionResult("Result text",
+                                             /*is_complete=*/true));
+        });
 
     mojo::Remote<blink::mojom::AISummarizer> summarizer_remote;
     {
@@ -287,8 +286,9 @@ TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return nullptr; });
+              const optimization_guide::SessionConfigParams& config_params) {
+            return nullptr;
+          });
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
       .WillOnce([](auto feature, auto capabilities, auto callback) {
@@ -323,15 +323,13 @@ TEST_F(AISummarizerTest,
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             // Returns a nullptr for the first call.
             return nullptr;
           })
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             // Returns a MockSession for the second call.
             return std::make_unique<
                 testing::NiceMock<optimization_guide::MockSession>>(&session_);
@@ -443,8 +441,9 @@ TEST_F(AISummarizerTest,
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return nullptr; });
+              const optimization_guide::SessionConfigParams& config_params) {
+            return nullptr;
+          });
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
@@ -569,19 +568,17 @@ TEST_F(AISummarizerTest, ModelExecutionError) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            callback.Run(CreateExecutionErrorResult(
-                optimization_guide::OptimizationGuideModelExecutionError::
-                    FromModelExecutionError(
-                        optimization_guide::
-                            OptimizationGuideModelExecutionError::
-                                ModelExecutionError::kPermissionDenied)));
-          });
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        callback.Run(CreateExecutionErrorResult(
+            optimization_guide::OptimizationGuideModelExecutionError::
+                FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kPermissionDenied)));
+      });
 
   auto summarizer_remote = GetAISummarizerRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -604,17 +601,15 @@ TEST_F(AISummarizerTest, SummarizeMultipleResponse) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            callback.Run(
-                CreateExecutionResult("Result ", /*is_complete=*/false));
-            callback.Run(CreateExecutionResult("text",
-                                               /*is_complete=*/true));
-          });
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        callback.Run(CreateExecutionResult("Result ", /*is_complete=*/false));
+        callback.Run(CreateExecutionResult("text",
+                                           /*is_complete=*/true));
+      });
 
   auto summarizer_remote = GetAISummarizerRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -637,25 +632,23 @@ TEST_F(AISummarizerTest, MultipleSummarize) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            callback.Run(CreateExecutionResult("Result text",
-                                               /*is_complete=*/true));
-          })
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest(
-                                     "test context 2", "input string 2")));
-            callback.Run(CreateExecutionResult("Result text 2",
-                                               /*is_complete=*/true));
-          });
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        callback.Run(CreateExecutionResult("Result text",
+                                           /*is_complete=*/true));
+      })
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest("test context 2",
+                                                           "input string 2")));
+        callback.Run(CreateExecutionResult("Result text 2",
+                                           /*is_complete=*/true));
+      });
 
   auto summarizer_remote = GetAISummarizerRemote();
   {

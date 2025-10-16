@@ -73,13 +73,9 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
   CHECK(!session_) << "Start() should only be called once per inquiry.";
 
   rendered_texts_ = rendered_texts;
-  using ::optimization_guide::SessionConfigParams;
-  SessionConfigParams config_params = SessionConfigParams{
-      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
-  };
   session_creation_start_time_ = base::TimeTicks::Now();
   parent_->model_broker_client_->CreateSession(
-      kScamDetection, config_params,
+      kScamDetection, ::optimization_guide::SessionConfigParams{},
       base::BindOnce(&ClientSideDetectionIntelligentScanDelegateAndroid::
                          Inquiry::OnSessionCreated,
                      weak_factory_.GetWeakPtr()));

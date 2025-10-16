@@ -43,10 +43,7 @@ class MlIntentClassifier::Execution final {
                std::string query,
                ComputeQueryIntentCallback callback) {
     session_ = model_executor->StartSession(
-        ModelBasedCapabilityKey::kHistoryQueryIntent,
-        SessionConfigParams{
-            .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
-        });
+        ModelBasedCapabilityKey::kHistoryQueryIntent, SessionConfigParams{});
     if (!session_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,

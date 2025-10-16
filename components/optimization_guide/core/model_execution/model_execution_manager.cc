@@ -231,16 +231,13 @@ void ModelExecutionManager::ExecuteModel(
 }
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
-ModelExecutionManager::StartSession(
-    ModelBasedCapabilityKey feature,
-    const std::optional<SessionConfigParams>& config_params) {
-  CHECK(config_params && config_params->execution_mode ==
-                             SessionConfigParams::ExecutionMode::kOnDeviceOnly);
+ModelExecutionManager::StartSession(ModelBasedCapabilityKey feature,
+                                    const SessionConfigParams& config_params) {
   if (!on_device_model_service_controller_) {
     return nullptr;
   }
-  return on_device_model_service_controller_->CreateSession(
-      feature, CreateNoOpExecuteRemoteFn(), config_params);
+  return on_device_model_service_controller_->CreateSession(feature,
+                                                            config_params);
 }
 
 on_device_model::Capabilities ModelExecutionManager::GetOnDeviceCapabilities() {

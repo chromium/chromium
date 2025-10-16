@@ -142,15 +142,14 @@ class AIProofreaderTest : public AITestUtils::AITestBase {
     expected.set_allocated_options(
         AIProofreader::ToProtoOptions(options).release());
     EXPECT_CALL(session_, ExecuteModel(_, _))
-        .WillOnce(
-            [&](const google::protobuf::MessageLite& request,
-                optimization_guide::
-                    OptimizationGuideModelExecutionResultStreamingCallback
-                        callback) {
-              EXPECT_THAT(request, EqualsProto(expected));
-              callback.Run(CreateExecutionResult("Result text",
-                                                 /*is_complete=*/true));
-            });
+        .WillOnce([&](const google::protobuf::MessageLite& request,
+                      optimization_guide::
+                          OptimizationGuideModelExecutionResultStreamingCallback
+                              callback) {
+          EXPECT_THAT(request, EqualsProto(expected));
+          callback.Run(CreateExecutionResult("Result text",
+                                             /*is_complete=*/true));
+        });
 
     mojo::Remote<blink::mojom::AIProofreader> proofreader_remote;
     {
@@ -195,13 +194,13 @@ TEST_F(AIProofreaderTest, CreateProofreaderNoService) {
   MockCreateProofreaderClient mock_create_proofreader_client;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_create_proofreader_client, OnError(_, _))
-      .WillOnce(
-          [&](blink::mojom::AIManagerCreateClientError error,
-              blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-            ASSERT_EQ(error, blink::mojom::AIManagerCreateClientError::
-                                 kUnableToCreateSession);
-            run_loop.Quit();
-          });
+      .WillOnce([&](blink::mojom::AIManagerCreateClientError error,
+                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
+        ASSERT_EQ(
+            error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+        run_loop.Quit();
+      });
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateProofreader(
@@ -215,8 +214,9 @@ TEST_F(AIProofreaderTest, CreateProofreaderModelNotEligible) {
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return nullptr; });
+              const optimization_guide::SessionConfigParams& config_params) {
+            return nullptr;
+          });
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
       .WillOnce([](auto feature, auto capabilities, auto callback) {
@@ -228,13 +228,13 @@ TEST_F(AIProofreaderTest, CreateProofreaderModelNotEligible) {
   MockCreateProofreaderClient mock_create_proofreader_client;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_create_proofreader_client, OnError(_, _))
-      .WillOnce(
-          [&](blink::mojom::AIManagerCreateClientError error,
-              blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-            ASSERT_EQ(error, blink::mojom::AIManagerCreateClientError::
-                                 kUnableToCreateSession);
-            run_loop.Quit();
-          });
+      .WillOnce([&](blink::mojom::AIManagerCreateClientError error,
+                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
+        ASSERT_EQ(
+            error,
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+        run_loop.Quit();
+      });
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateProofreader(
@@ -250,8 +250,9 @@ TEST_F(AIProofreaderTest,
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return nullptr; });
+              const optimization_guide::SessionConfigParams& config_params) {
+            return nullptr;
+          });
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
@@ -385,18 +386,18 @@ TEST_F(AIProofreaderTest, InputLimitExceededError) {
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnError(_, _))
-      .WillOnce(
-          [&](blink::mojom::ModelStreamingResponseStatus status,
-              blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-            EXPECT_EQ(status, blink::mojom::ModelStreamingResponseStatus::
-                                  kErrorInputTooLarge);
-            ASSERT_TRUE(quota_error_info);
-            ASSERT_EQ(quota_error_info->requested,
-                      blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
-            ASSERT_EQ(quota_error_info->quota,
-                      blink::mojom::kWritingAssistanceMaxInputTokenSize);
-            run_loop.Quit();
-          });
+      .WillOnce([&](blink::mojom::ModelStreamingResponseStatus status,
+                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
+        EXPECT_EQ(
+            status,
+            blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+        ASSERT_TRUE(quota_error_info);
+        ASSERT_EQ(quota_error_info->requested,
+                  blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+        ASSERT_EQ(quota_error_info->quota,
+                  blink::mojom::kWritingAssistanceMaxInputTokenSize);
+        run_loop.Quit();
+      });
 
   proofreader_remote->Proofread(kInputString,
                                 mock_responder.BindNewPipeAndPassRemote());
@@ -407,31 +408,29 @@ TEST_F(AIProofreaderTest, ModelExecutionError) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            callback.Run(CreateExecutionErrorResult(
-                optimization_guide::OptimizationGuideModelExecutionError::
-                    FromModelExecutionError(
-                        optimization_guide::
-                            OptimizationGuideModelExecutionError::
-                                ModelExecutionError::kPermissionDenied)));
-          });
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        callback.Run(CreateExecutionErrorResult(
+            optimization_guide::OptimizationGuideModelExecutionError::
+                FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kPermissionDenied)));
+      });
 
   auto proofreader_remote = GetAIProofreaderRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnError(_, _))
-      .WillOnce(
-          [&](blink::mojom::ModelStreamingResponseStatus status,
-              blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-            EXPECT_EQ(status, blink::mojom::ModelStreamingResponseStatus::
-                                  kErrorPermissionDenied);
-            run_loop.Quit();
-          });
+      .WillOnce([&](blink::mojom::ModelStreamingResponseStatus status,
+                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
+        EXPECT_EQ(
+            status,
+            blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
+        run_loop.Quit();
+      });
 
   proofreader_remote->Proofread(kInputString,
                                 mock_responder.BindNewPipeAndPassRemote());
@@ -442,17 +441,15 @@ TEST_F(AIProofreaderTest, ProofreadMultipleResponse) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            callback.Run(
-                CreateExecutionResult("Result ", /*is_complete=*/false));
-            callback.Run(CreateExecutionResult("text",
-                                               /*is_complete=*/true));
-          });
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        callback.Run(CreateExecutionResult("Result ", /*is_complete=*/false));
+        callback.Run(CreateExecutionResult("text",
+                                           /*is_complete=*/true));
+      });
 
   auto proofreader_remote = GetAIProofreaderRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -475,25 +472,23 @@ TEST_F(AIProofreaderTest, MultipleProofread) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            callback.Run(CreateExecutionResult("Result text",
-                                               /*is_complete=*/true));
-          })
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            auto expect = GetExecuteRequest("input string 2");
-            EXPECT_THAT(request, EqualsProto(expect));
-            callback.Run(CreateExecutionResult("Result text 2",
-                                               /*is_complete=*/true));
-          });
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        callback.Run(CreateExecutionResult("Result text",
+                                           /*is_complete=*/true));
+      })
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        auto expect = GetExecuteRequest("input string 2");
+        EXPECT_THAT(request, EqualsProto(expect));
+        callback.Run(CreateExecutionResult("Result text 2",
+                                           /*is_complete=*/true));
+      });
 
   auto proofreader_remote = GetAIProofreaderRemote();
   {
@@ -545,15 +540,14 @@ TEST_F(AIProofreaderTest, GetCorretionTypeDefault) {
   expected.set_allocated_options(
       AIProofreader::ToProtoOptions(options).release());
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [&](const google::protobuf::MessageLite& request,
-              optimization_guide::
-                  OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) {
-            EXPECT_THAT(request, EqualsProto(expected));
-            callback.Run(CreateExecutionResult("Correction type",
-                                               /*is_complete=*/true));
-          });
+      .WillOnce([&](const google::protobuf::MessageLite& request,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultStreamingCallback
+                            callback) {
+        EXPECT_THAT(request, EqualsProto(expected));
+        callback.Run(CreateExecutionResult("Correction type",
+                                           /*is_complete=*/true));
+      });
 
   mojo::Remote<blink::mojom::AIProofreader> proofreader_remote;
   {
@@ -646,13 +640,13 @@ TEST_F(AIProofreaderTest, ProofreaderDisconnected) {
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop_for_response;
   EXPECT_CALL(mock_responder, OnError(_, _))
-      .WillOnce(
-          [&](blink::mojom::ModelStreamingResponseStatus status,
-              blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-            EXPECT_EQ(status, blink::mojom::ModelStreamingResponseStatus::
-                                  kErrorSessionDestroyed);
-            run_loop_for_response.Quit();
-          });
+      .WillOnce([&](blink::mojom::ModelStreamingResponseStatus status,
+                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
+        EXPECT_EQ(
+            status,
+            blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+        run_loop_for_response.Quit();
+      });
 
   proofreader_remote->Proofread(kInputString,
                                 mock_responder.BindNewPipeAndPassRemote());

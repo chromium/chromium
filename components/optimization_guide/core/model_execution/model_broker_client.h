@@ -30,17 +30,6 @@
 
 namespace optimization_guide {
 
-struct CreateSessionArgs final {
-  CreateSessionArgs(base::WeakPtr<OptimizationGuideLogger> logger,
-                    ExecuteRemoteFn remote_fn);
-  ~CreateSessionArgs();
-
-  CreateSessionArgs(const CreateSessionArgs&);
-
-  base::WeakPtr<OptimizationGuideLogger> logger_;
-  ExecuteRemoteFn remote_fn_;
-};
-
 class ModelClient final : public TextSafetyClient {
  public:
   ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
@@ -49,8 +38,7 @@ class ModelClient final : public TextSafetyClient {
 
   // Construct a session for this capability.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
-      const CreateSessionArgs& args,
-      const std::optional<SessionConfigParams>& config_params);
+      const SessionConfigParams& config_params);
 
   // TextSafetyClient:
   void StartSession(
@@ -107,8 +95,7 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
 
   // Creates and returns a session via callback as soon as a model is available.
   // Calls the callback with nullptr if the state become NotSupported.
-  void CreateSession(const CreateSessionArgs& args,
-                     const std::optional<SessionConfigParams>& config_params,
+  void CreateSession(const SessionConfigParams& config_params,
                      CreateSessionCallback callback);
 
   // Wait for the client to be available and call the callback with a reference.
@@ -133,8 +120,7 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
 
 class ModelBrokerClient final {
  public:
-  explicit ModelBrokerClient(mojo::PendingRemote<mojom::ModelBroker> remote,
-                             CreateSessionArgs args);
+  explicit ModelBrokerClient(mojo::PendingRemote<mojom::ModelBroker> remote);
   ~ModelBrokerClient();
 
   using CreateSessionResult = ModelSubscriber::CreateSessionResult;
@@ -148,12 +134,11 @@ class ModelBrokerClient final {
 
   // Async session creation.
   void CreateSession(mojom::ModelBasedCapabilityKey key,
-                     const std::optional<SessionConfigParams>& config_params,
+                     const SessionConfigParams& config_params,
                      CreateSessionCallback callback);
 
  private:
   mojo::Remote<mojom::ModelBroker> remote_;
-  CreateSessionArgs args_;
 
   absl::flat_hash_map<mojom::ModelBasedCapabilityKey,
                       std::unique_ptr<ModelSubscriber>>

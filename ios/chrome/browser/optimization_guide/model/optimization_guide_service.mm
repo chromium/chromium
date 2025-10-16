@@ -283,8 +283,7 @@ void OptimizationGuideService::RemoveObserverForOptimizationTargetModel(
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 OptimizationGuideService::StartSession(
     optimization_guide::ModelBasedCapabilityKey feature,
-    const std::optional<optimization_guide::SessionConfigParams>&
-        config_params) {
+    const optimization_guide::SessionConfigParams& config_params) {
   if (!model_execution_manager_) {
     return nullptr;
   }

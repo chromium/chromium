@@ -147,8 +147,7 @@ class OptimizationGuideKeyedService
   // optimization_guide::OptimizationGuideModelExecutor implementation:
   std::unique_ptr<Session> StartSession(
       optimization_guide::ModelBasedCapabilityKey feature,
-      const std::optional<optimization_guide::SessionConfigParams>&
-          config_params) override;
+      const optimization_guide::SessionConfigParams& config_params) override;
   void ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,

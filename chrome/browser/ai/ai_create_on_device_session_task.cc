@@ -140,10 +140,7 @@ CreateOnDeviceSessionTask::StartSession() {
   }
 
   using ::optimization_guide::SessionConfigParams;
-  SessionConfigParams config_params = SessionConfigParams{
-      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
-      .logging_mode = SessionConfigParams::LoggingMode::kAlwaysDisable,
-  };
+  SessionConfigParams config_params = SessionConfigParams{};
 
   UpdateSessionConfigParams(&config_params);
   return service->StartSession(feature_, config_params);

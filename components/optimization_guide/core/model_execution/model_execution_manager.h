@@ -80,7 +80,7 @@ class ModelExecutionManager final {
   // Starts a new session for `feature`.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> StartSession(
       ModelBasedCapabilityKey feature,
-      const std::optional<SessionConfigParams>& config_params);
+      const SessionConfigParams& config_params);
 
   // Returns the capabilities for the on-device model, or empty capabilities if
   // no model is available.

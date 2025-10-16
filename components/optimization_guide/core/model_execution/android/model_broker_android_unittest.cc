@@ -103,8 +103,8 @@ class ModelBrokerAndroidTest : public testing::Test {
   DownloadModelAndCreateSession(ModelBrokerClient& client) {
     // Requesting the feature we've provided assets for should succeed.
     base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-    client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
-                         future.GetCallback());
+    client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
+                         SessionConfigParams{}, future.GetCallback());
     base::test::RunUntil([&]() {
       return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
                  .unavailable_reason() ==
@@ -135,12 +135,11 @@ class ModelBrokerAndroidTest : public testing::Test {
 // Verify that when requesting a session while assets are still pending, the
 // client will wait for the assets before resolving the callback.
 TEST_F(ModelBrokerAndroidTest, PendingClient) {
-  ModelBrokerClient client(BindAndPassRemote(),
-                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+  ModelBrokerClient client(BindAndPassRemote());
   // Requesting test feature, but assets not available.
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
-                       future.GetCallback());
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
+                       SessionConfigParams{}, future.GetCallback());
   base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
                .unavailable_reason() ==
@@ -153,8 +152,7 @@ TEST_F(ModelBrokerAndroidTest, PendingClient) {
 // Verify that CreateSession and ExecuteModel works when the download succeeds.
 TEST_F(ModelBrokerAndroidTest, ExecuteModel) {
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(),
-                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+  ModelBrokerClient client(BindAndPassRemote());
 
   auto session = DownloadModelAndCreateSession(client);
   ASSERT_TRUE(session);
@@ -192,8 +190,7 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModel) {
 // Verify that ExecuteModel succeeds after the model is disconnected.
 TEST_F(ModelBrokerAndroidTest, ExecuteModelAfterModelDisconnected) {
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(),
-                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+  ModelBrokerClient client(BindAndPassRemote());
 
   auto session = DownloadModelAndCreateSession(client);
   ASSERT_TRUE(session);
@@ -219,13 +216,12 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModelAfterModelDisconnected) {
 // Verify that when download fails, the client is notified.
 TEST_F(ModelBrokerAndroidTest, DownloadFailure) {
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(),
-                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+  ModelBrokerClient client(BindAndPassRemote());
 
   // Requesting the feature we've provided assets for should fail.
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
-                       future.GetCallback());
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
+                       SessionConfigParams{}, future.GetCallback());
   base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
                .unavailable_reason() ==
@@ -251,12 +247,11 @@ TEST_F(ModelBrokerAndroidTest, EnterprisePolicyDisallowsModel) {
                            GenAILocalFoundationalModelEnterprisePolicySettings::
                                kDisallowed));
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(),
-                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+  ModelBrokerClient client(BindAndPassRemote());
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
-                       future.GetCallback());
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
+                       SessionConfigParams{}, future.GetCallback());
   base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
                .unavailable_reason() ==
@@ -275,8 +270,7 @@ TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
       features::GetOnDeviceEligibleModelFeatureRecentUsePeriod() -
       base::Days(1));
 
-  ModelBrokerClient client(BindAndPassRemote(),
-                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+  ModelBrokerClient client(BindAndPassRemote());
   auto session = DownloadModelAndCreateSession(client);
   ASSERT_TRUE(session);
 }
@@ -292,12 +286,11 @@ class ModelBrokerAndroidFeatureDisabledTest : public ModelBrokerAndroidTest {
 
 TEST_F(ModelBrokerAndroidFeatureDisabledTest, FeatureDisabled) {
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(),
-                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+  ModelBrokerClient client(BindAndPassRemote());
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
-                       future.GetCallback());
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
+                       SessionConfigParams{}, future.GetCallback());
   base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
                .unavailable_reason() ==

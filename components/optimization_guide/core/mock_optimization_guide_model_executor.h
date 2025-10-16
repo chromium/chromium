@@ -22,7 +22,7 @@ class MockOptimizationGuideModelExecutor
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
               (ModelBasedCapabilityKey feature,
-               const std::optional<SessionConfigParams>& config_params),
+               const SessionConfigParams& config_params),
               (override));
 
   MOCK_METHOD(void,

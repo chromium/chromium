@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
+#include "components/optimization_guide/core/model_execution/execute_remote_fn.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -180,8 +181,7 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 OnDeviceModelServiceController::CreateSession(
     ModelBasedCapabilityKey feature,
-    ExecuteRemoteFn execute_remote_fn,
-    const std::optional<SessionConfigParams>& config_params) {
+    const SessionConfigParams& config_params) {
   // Ensure an initial solution is computed to avoid giving kUnknown error.
   UpdateSolutionProvider(feature);
   auto& maybe_solution =
@@ -218,16 +218,13 @@ OnDeviceModelServiceController::CreateSession(
   opts.token_limits = solution->adapter()->GetTokenLimits();
   opts.adapter = solution->adapter();
 
-  if (config_params) {
-    opts.capabilities = config_params->capabilities;
-    // TODO: can this be required?
-    if (config_params->sampling_params) {
-      opts.sampling_params = *config_params->sampling_params;
-    }
+  opts.capabilities = config_params.capabilities;
+  if (config_params.sampling_params) {
+    opts.sampling_params = *config_params.sampling_params;
   }
 
   return std::make_unique<SessionImpl>(
-      feature, std::move(opts), std::move(execute_remote_fn), config_params);
+      feature, std::move(opts), CreateNoOpExecuteRemoteFn(), config_params);
 }
 
 void OnDeviceModelServiceController::SetLanguageDetectionModel(

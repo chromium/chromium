@@ -303,8 +303,7 @@ void MlAnswerer::ComputeAnswer(std::string query,
       base::BindOnce(&MlAnswerer::SessionManager::OnSessionsStarted,
                      session_manager_->GetWeakPtr()));
 
-  const SessionConfigParams session_config{
-      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly};
+  const SessionConfigParams session_config;
   // Start a session for each URL.
   for (const auto& url_and_passages : context.url_passages_map) {
     std::unique_ptr<Session> session = model_executor_->StartSession(

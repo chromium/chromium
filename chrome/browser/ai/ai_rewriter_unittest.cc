@@ -142,15 +142,14 @@ class AIRewriterTest : public AITestUtils::AITestBase {
     expected.set_allocated_options(
         AIRewriter::ToProtoOptions(options).release());
     EXPECT_CALL(session_, ExecuteModel(_, _))
-        .WillOnce(
-            [&](const google::protobuf::MessageLite& request,
-                optimization_guide::
-                    OptimizationGuideModelExecutionResultStreamingCallback
-                        callback) {
-              EXPECT_THAT(request, EqualsProto(expected));
-              callback.Run(CreateExecutionResult("Result text",
-                                                 /*is_complete=*/true));
-            });
+        .WillOnce([&](const google::protobuf::MessageLite& request,
+                      optimization_guide::
+                          OptimizationGuideModelExecutionResultStreamingCallback
+                              callback) {
+          EXPECT_THAT(request, EqualsProto(expected));
+          callback.Run(CreateExecutionResult("Result text",
+                                             /*is_complete=*/true));
+        });
 
     mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
     {
@@ -215,8 +214,9 @@ TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return nullptr; });
+              const optimization_guide::SessionConfigParams& config_params) {
+            return nullptr;
+          });
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
       .WillOnce([](auto feature, auto capabilities, auto callback) {
@@ -249,15 +249,13 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             // Returns a nullptr for the first call.
             return nullptr;
           })
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
+              const optimization_guide::SessionConfigParams& config_params) {
             // Returns a MockSession for the second call.
             return std::make_unique<
                 testing::NiceMock<optimization_guide::MockSession>>(&session_);
@@ -367,8 +365,9 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return nullptr; });
+              const optimization_guide::SessionConfigParams& config_params) {
+            return nullptr;
+          });
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
@@ -558,19 +557,17 @@ TEST_F(AIRewriterTest, ModelExecutionError) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            callback.Run(CreateExecutionErrorResult(
-                optimization_guide::OptimizationGuideModelExecutionError::
-                    FromModelExecutionError(
-                        optimization_guide::
-                            OptimizationGuideModelExecutionError::
-                                ModelExecutionError::kPermissionDenied)));
-          });
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        callback.Run(CreateExecutionErrorResult(
+            optimization_guide::OptimizationGuideModelExecutionError::
+                FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kPermissionDenied)));
+      });
 
   auto rewriter_remote = GetAIRewriterRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -593,17 +590,15 @@ TEST_F(AIRewriterTest, RewriteMultipleResponse) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            callback.Run(
-                CreateExecutionResult("Result ", /*is_complete=*/false));
-            callback.Run(CreateExecutionResult("text",
-                                               /*is_complete=*/true));
-          });
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        callback.Run(CreateExecutionResult("Result ", /*is_complete=*/false));
+        callback.Run(CreateExecutionResult("text",
+                                           /*is_complete=*/true));
+      });
 
   auto rewriter_remote = GetAIRewriterRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -626,25 +621,23 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            callback.Run(CreateExecutionResult("Result text",
-                                               /*is_complete=*/true));
-          })
-      .WillOnce(
-          [](const google::protobuf::MessageLite& request,
-             optimization_guide::
-                 OptimizationGuideModelExecutionResultStreamingCallback
-                     callback) {
-            auto expect = GetExecuteRequest("test context 2", "input string 2");
-            EXPECT_THAT(request, EqualsProto(expect));
-            callback.Run(CreateExecutionResult("Result text 2",
-                                               /*is_complete=*/true));
-          });
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        callback.Run(CreateExecutionResult("Result text",
+                                           /*is_complete=*/true));
+      })
+      .WillOnce([](const google::protobuf::MessageLite& request,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultStreamingCallback
+                           callback) {
+        auto expect = GetExecuteRequest("test context 2", "input string 2");
+        EXPECT_THAT(request, EqualsProto(expect));
+        callback.Run(CreateExecutionResult("Result text 2",
+                                           /*is_complete=*/true));
+      });
 
   auto rewriter_remote = GetAIRewriterRemote();
   {

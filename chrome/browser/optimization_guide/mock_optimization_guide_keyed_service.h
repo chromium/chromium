@@ -56,8 +56,7 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
               (optimization_guide::ModelBasedCapabilityKey feature,
-               const std::optional<optimization_guide::SessionConfigParams>&
-                   config_params));
+               const optimization_guide::SessionConfigParams& config_params));
   MOCK_METHOD(
       void,
       ExecuteModel,

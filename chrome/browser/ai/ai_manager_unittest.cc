@@ -105,8 +105,7 @@ class AIManagerTest : public AITestUtils::AITestBase {
     ON_CALL(*mock_optimization_guide_keyed_service_, CreateModelBrokerClient())
         .WillByDefault([&]() {
           return std::make_unique<optimization_guide::ModelBrokerClient>(
-              fake_broker_.BindAndPassRemote(),
-              optimization_guide::CreateSessionArgs(nullptr, {}));
+              fake_broker_.BindAndPassRemote());
         });
   }
 

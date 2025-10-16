@@ -95,8 +95,7 @@ class OnDeviceModelServiceController final {
   // context, executing input, and sending the response.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
       ModelBasedCapabilityKey feature,
-      ExecuteRemoteFn execute_remote_fn,
-      const std::optional<SessionConfigParams>& config_params);
+      const SessionConfigParams& config_params);
 
   // Sets the language detection model to be used by the ODM service when text
   // safety evaluation is restricted to a specific set of languages.

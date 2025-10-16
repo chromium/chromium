@@ -194,11 +194,8 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
   }
 
   using optimization_guide::SessionConfigParams;
-  on_device_validation_session_ = opt_guide_service->StartSession(
-      capability_key,
-      SessionConfigParams{
-          .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
-      });
+  on_device_validation_session_ =
+      opt_guide_service->StartSession(capability_key, SessionConfigParams{});
   auto metadata = GetProtoFromAny(request.request_metadata());
   on_device_validation_session_->AddContext(*metadata);
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

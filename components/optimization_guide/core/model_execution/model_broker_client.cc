@@ -26,24 +26,15 @@ namespace optimization_guide {
 namespace {
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
-CreateSessionWithParams(const CreateSessionArgs& args,
-                        const std::optional<SessionConfigParams>& config_params,
+CreateSessionWithParams(const SessionConfigParams& config_params,
                         base::WeakPtr<ModelClient> client) {
   if (!client) {
     return nullptr;
   }
-  return client->CreateSession(args, config_params);
+  return client->CreateSession(config_params);
 }
 
 }  // namespace
-
-CreateSessionArgs::CreateSessionArgs(
-    base::WeakPtr<OptimizationGuideLogger> logger,
-    ExecuteRemoteFn remote_fn)
-    : logger_(std::move(logger)), remote_fn_(std::move(remote_fn)) {}
-CreateSessionArgs::~CreateSessionArgs() = default;
-
-CreateSessionArgs::CreateSessionArgs(const CreateSessionArgs&) = default;
 
 class ModelClient::OnDeviceOptionsClient final
     : public OnDeviceOptions::Client {
@@ -98,9 +89,7 @@ void ModelClient::StartSession(
 }
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
-ModelClient::CreateSession(
-    const CreateSessionArgs& args,
-    const std::optional<SessionConfigParams>& config_params) {
+ModelClient::CreateSession(const SessionConfigParams& config_params) {
   OnDeviceOptions opts;
   opts.model_client = std::make_unique<ModelClient::OnDeviceOptionsClient>(
       weak_ptr_factory_.GetWeakPtr());
@@ -110,20 +99,13 @@ ModelClient::CreateSession(
       weak_ptr_factory_.GetWeakPtr(), SafetyConfig(safety_config_));
   opts.token_limits = feature_adapter_->GetTokenLimits();
 
-  ExecuteRemoteFn execute_fn = args.remote_fn_;
-  if (config_params) {
-    opts.capabilities = config_params->capabilities;
-    if (config_params->sampling_params) {
-      opts.sampling_params = *config_params->sampling_params;
-    }
-    if (config_params->execution_mode ==
-        SessionConfigParams::ExecutionMode::kOnDeviceOnly) {
-      execute_fn = CreateNoOpExecuteRemoteFn();
-    }
+  opts.capabilities = config_params.capabilities;
+  if (config_params.sampling_params) {
+    opts.sampling_params = *config_params.sampling_params;
   }
 
-  return std::make_unique<SessionImpl>(key_, std::move(opts), execute_fn,
-                                       std::nullopt);
+  return std::make_unique<SessionImpl>(
+      key_, std::move(opts), CreateNoOpExecuteRemoteFn(), std::nullopt);
 }
 
 void ModelClient::OnDisconnect() {
@@ -139,11 +121,9 @@ ModelSubscriber::ModelSubscriber(
 }
 ModelSubscriber::~ModelSubscriber() = default;
 
-void ModelSubscriber::CreateSession(
-    const CreateSessionArgs& args,
-    const std::optional<SessionConfigParams>& config_params,
-    CreateSessionCallback callback) {
-  WaitForClient(base::BindOnce(&CreateSessionWithParams, args, config_params)
+void ModelSubscriber::CreateSession(const SessionConfigParams& config_params,
+                                    CreateSessionCallback callback) {
+  WaitForClient(base::BindOnce(&CreateSessionWithParams, config_params)
                     .Then(std::move(callback)));
 }
 
@@ -186,9 +166,8 @@ void ModelSubscriber::FlushCallbacks() {
 }
 
 ModelBrokerClient::ModelBrokerClient(
-    mojo::PendingRemote<mojom::ModelBroker> remote,
-    CreateSessionArgs args)
-    : remote_(std::move(remote)), args_(std::move(args)) {}
+    mojo::PendingRemote<mojom::ModelBroker> remote)
+    : remote_(std::move(remote)) {}
 ModelBrokerClient::~ModelBrokerClient() = default;
 
 ModelSubscriber& ModelBrokerClient::GetSubscriber(
@@ -208,11 +187,10 @@ bool ModelBrokerClient::HasSubscriber(mojom::ModelBasedCapabilityKey key) {
   return subscribers_.contains(key);
 }
 
-void ModelBrokerClient::CreateSession(
-    mojom::ModelBasedCapabilityKey key,
-    const std::optional<SessionConfigParams>& config_params,
-    CreateSessionCallback callback) {
-  GetSubscriber(key).CreateSession(args_, std::move(config_params),
+void ModelBrokerClient::CreateSession(mojom::ModelBasedCapabilityKey key,
+                                      const SessionConfigParams& config_params,
+                                      CreateSessionCallback callback) {
+  GetSubscriber(key).CreateSession(std::move(config_params),
                                    std::move(callback));
 }
 
