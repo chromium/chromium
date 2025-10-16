@@ -59,9 +59,9 @@ with devil_env.SysPath(os.path.join(_DIR_SOURCE_ROOT, 'build', 'util')):
 BASE_MODULE = 'base'
 
 
-def _IsWebView():
+def _IsTrichrome():
   calling_script_name = os.path.basename(sys.argv[0])
-  return 'webview' in calling_script_name
+  return 'trichrome' in calling_script_name
 
 
 def _Colorize(text, style=''):
@@ -1351,7 +1351,7 @@ class _Command:
   def _FindSupportedDevices(self, devices):
     """Returns supported devices and reasons for each not supported one."""
     app_abis = self.apk_helper.GetAbis()
-    is_webview = _IsWebView()
+    is_webview = _IsWebViewProvider(self.apk_helper)
     requires_32_bit = self.apk_helper.Get32BitAbiOverride() == '0xffffffff'
     logging.debug('App supports (requires 32bit: %r, is webview: %r): %r',
                   requires_32_bit, is_webview, app_abis)
@@ -1542,11 +1542,20 @@ class _PackageInfoCommand(_Command):
     print('minSdkVersion: %s' % self.apk_helper.GetMinSdkVersion())
     print('targetSdkVersion: %s' % self.apk_helper.GetTargetSdkVersion())
     print('Supported ABIs: %r' % self.apk_helper.GetAbis())
-    x = android_chrome_version.TranslateVersionCode(str(
-        self.apk_helper.GetVersionCode()),
-                                                    is_webview=_IsWebView())
-    print(f'Decoded versionCode: build_number={x.build_number} '
-          f'patch_number={x.patch_number} sku={x.package_name} abi={x.abi}')
+
+    if len(str(self.apk_helper.GetVersionCode())) == 9:
+      # android_chrome_version expects Trichrome to be is_webview=False, even if
+      # this is TrichromeWebView.
+      is_webview = (_IsWebViewProvider(self.apk_helper) and not _IsTrichrome())
+      x = android_chrome_version.TranslateVersionCode(
+          str(self.apk_helper.GetVersionCode()), is_webview)
+      print(f'Decoded versionCode: build_number={x.build_number} '
+            f'patch_number={x.patch_number} sku={x.package_name} abi={x.abi}')
+    else:
+      # This does not follow the chromium versionCode scheme. This might be a
+      # test APK, a utiltiy APK (like WebView shell browser), or it could just
+      # be any other non-chromium APK.
+      print('Decoded versionCode: N/A')
 
 
 class _InstallCommand(_Command):

@@ -319,11 +319,15 @@ def TranslateVersionCode(version_code, is_webview=False):
     is_next_build = True
     package_digit -= 5
 
+  package_name = None
   for package, number in _PACKAGE_NAMES.items():
     if number == package_digit * 10:
       if is_webview == ('WEBVIEW' in package):
         package_name = package
         break
+  if not package_name:
+    raise Error(f'Unable to match package with package_digit={package_digit} '
+                f'and is_webview={is_webview}')
 
   for arch, bitness_to_number in (_GetAbisToDigitMask(build_number,
                                                       patch_number).items()):
