@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -53,16 +54,24 @@ omnibox::ChromeAimToolsAndModels ComposeboxHandler::GetAimToolMode() {
 void ComposeboxHandler::SetDeepSearchMode(bool enabled) {
   if (enabled) {
     aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH;
+    base::UmaHistogramEnumeration("NewTabPage.Composebox.Tools.DeepSearch",
+                                  AimToolState::kEnabled);
   } else {
     aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
+    base::UmaHistogramEnumeration("NewTabPage.Composebox.Tools.DeepSearch",
+                                  AimToolState::kDisabled);
   }
 }
 
 void ComposeboxHandler::SetCreateImageMode(bool enabled) {
   if (enabled) {
     aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_CANVAS;
+    base::UmaHistogramEnumeration("NewTabPage.Composebox.Tools.CreateImage",
+                                  AimToolState::kEnabled);
   } else {
     aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
+    base::UmaHistogramEnumeration("NewTabPage.Composebox.Tools.CreateImage",
+                                  AimToolState::kDisabled);
   }
 }
 
@@ -110,11 +119,20 @@ void ComposeboxHandler::SubmitQuery(
   switch (aim_tool_mode_) {
     case omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH:
       additional_params["dr"] = "1";
+      base::UmaHistogramEnumeration(
+          "NewTabPage.Composebox.Tools.SubmissionType",
+          SubmissionType::kDeepSearch);
       break;
     case omnibox::ChromeAimToolsAndModels::TOOL_MODE_CANVAS:
       additional_params["imgn"] = "1";
+      base::UmaHistogramEnumeration(
+          "NewTabPage.Composebox.Tools.SubmissionType",
+          SubmissionType::kCreateImages);
       break;
     default:
+      base::UmaHistogramEnumeration(
+          "NewTabPage.Composebox.Tools.SubmissionType",
+          SubmissionType::kDefault);
       break;
   }
 

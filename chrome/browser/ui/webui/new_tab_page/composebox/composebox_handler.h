@@ -25,6 +25,13 @@
 
 class Profile;
 
+// Value to hold the state of an AIM Tool.
+enum class AimToolState {
+  kDisabled = 0,
+  kEnabled = 1,
+  kMaxValue = kEnabled,
+};
+
 class ComposeboxHandler
     : public composebox::mojom::PageHandler,
       public ContextualSearchboxHandler,

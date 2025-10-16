@@ -35,6 +35,14 @@ namespace searchbox_internal {
 extern const char* kSearchIconResourceName;
 }  // namespace searchbox_internal
 
+// How an AIM Composebox query was submitted.
+enum class SubmissionType {
+  kDefault = 0,
+  kDeepSearch = 1,
+  kCreateImages = 2,
+  kMaxValue = kCreateImages,
+};
+
 // Base class for browser-side handlers that handle bi-directional communication
 // with WebUI search boxes.
 class SearchboxHandler : public searchbox::mojom::PageHandler,
