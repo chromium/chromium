@@ -72,7 +72,7 @@
 #include "content/public/common/webplugininfo.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/extension.h"
 #endif
 
@@ -1621,10 +1621,10 @@ TEST_F(DownloadTargetDeterminerTest, ContinueWithConfirmation_SaveAs) {
   RunTestCasesWithActiveItem(base::span_from_ref(kTestCase), 1);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // These test cases are run with "Prompt for download" user preference set to
 // true. For non-trusted extensions, download should cause prompting.
-// Android doesn't support extensions.
+// Desktop platforms, including desktop Android, support extensions.
 TEST_F(DownloadTargetDeterminerTest, PromptAlways_NonTrustedExtension) {
   const DownloadTestCase kPromptingTestCases[] = {
       {// 0: Automatic Browser Extension download. - Shouldn't prompt for
@@ -1726,7 +1726,7 @@ TEST_F(DownloadTargetDeterminerTest, DownloadRestrictions_TrustedExtension) {
                              std::size(kPromptingTestCases));
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // If the download path is managed, then we don't show any prompts.
 // Note that if the download path is managed, then PromptForDownload() is false.

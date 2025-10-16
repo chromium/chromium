@@ -51,7 +51,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "extensions/common/feature_switch.h"
 #endif
@@ -1242,8 +1242,8 @@ DownloadConfirmationReason DownloadTargetDeterminer::NeedsConfirmation(
       DownloadItem::TARGET_DISPOSITION_PROMPT)
     return DownloadConfirmationReason::SAVE_AS;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Don't prompt for extension downloads if the installation site is white
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Don't prompt for extension downloads if the installation site is allow
   // listed.
   if (download_crx_util::IsTrustedExtensionDownload(GetProfile(), *download_))
     return DownloadConfirmationReason::NONE;
