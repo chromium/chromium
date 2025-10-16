@@ -84,8 +84,6 @@ class GlicWindowController {
   // open the panel again.
   virtual void ShowAfterSignIn(base::WeakPtr<Browser> browser) = 0;
 
-  virtual void FocusIfOpen() = 0;
-
   // Destroy the glic panel and its web contents.
   virtual void Shutdown() = 0;
 

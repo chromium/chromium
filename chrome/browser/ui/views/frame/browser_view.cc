@@ -368,15 +368,6 @@
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#include "chrome/browser/glic/widget/glic_widget.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#endif
-
 using base::UserMetricsAction;
 using content::WebContents;
 using input::NativeWebKeyboardEvent;
@@ -2545,21 +2536,6 @@ void BrowserView::FocusBookmarksToolbar() {
 }
 
 void BrowserView::FocusInactivePopupForAccessibility() {
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic::GlicEnabling::IsEnabledByFlags()) {
-    glic::GlicKeyedService* service =
-        glic::GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
-    if (service) {
-      glic::GlicWindowController& window_controller =
-          service->window_controller();
-      if (window_controller.attached_browser() == browser_.get()) {
-        window_controller.FocusIfOpen();
-        return;
-      }
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
   if (ActivateFirstInactiveBubbleForAccessibility()) {
     return;
   }

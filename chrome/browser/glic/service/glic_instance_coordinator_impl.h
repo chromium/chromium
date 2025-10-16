@@ -87,7 +87,6 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
               bool prevent_close,
               mojom::InvocationSource source) override;
   void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
-  void FocusIfOpen() override;
   void Shutdown() override;
   void Close() override;
 

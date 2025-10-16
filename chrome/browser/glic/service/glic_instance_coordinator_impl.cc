@@ -176,13 +176,6 @@ void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
   ToggleSidePanel(browser, prevent_close);
 }
 
-void GlicInstanceCoordinatorImpl::FocusIfOpen() {
-  // TODO(crbug/449179649): This is called from
-  // BrowserView::FocusInactivePopupForAccessibility(), and needs implemented
-  // to focus the floating panel.
-  NOTIMPLEMENTED();
-}
-
 void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
     base::WeakPtr<Browser> browser) {
   // TODO(crbug/4263869): Used by GlicPageHandler::SignInAndClosePanel(), which
