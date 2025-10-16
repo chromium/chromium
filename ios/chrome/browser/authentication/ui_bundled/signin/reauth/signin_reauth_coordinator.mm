@@ -139,7 +139,7 @@
   }
 
   // Do not use self after this line, the owner might delete this coordinator.
-  GaiaId gaiaId(identity.gaiaID);
+  GaiaId gaiaId = identity.gaiaId;
   GaiaId* gaiaIdPointer = identity ? &gaiaId : nullptr;
   [self.delegate reauthFinishedWithResult:result gaiaID:gaiaIdPointer];
 }

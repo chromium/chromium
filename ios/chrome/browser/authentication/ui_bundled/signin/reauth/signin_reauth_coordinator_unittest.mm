@@ -17,6 +17,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/test/ios/test_utils.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -107,9 +108,9 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfully) {
 
   OCMExpect([mock_delegate_
                 reauthFinishedWithResult:ReauthResult::kSuccess
-                                  gaiaID:ios::OCM::AnyPointer<GaiaId>()])
-      .andCallBlockWithParameterAtIndex(GaiaId, 1, ^(GaiaId* gaia_id) {
-        EXPECT_NSEQ(gaia_id->ToNSString(), identity.gaiaID);
+                                  gaiaID:ios::OCM::AnyPointer<const GaiaId>()])
+      .andCompareObjectAtIndex(identity.gaiaId, 1)
+      .andDo(^(NSInvocation* invocation) {
         reauth_coordinator = nil;
       });
   CHECK(completion_block);
@@ -231,9 +232,9 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
 
   OCMExpect([[((id)mock_delegate_) ignoringNonObjectArgs]
                 reauthFinishedWithResult:ReauthResult::kSuccess
-                                  gaiaID:ios::OCM::AnyPointer<GaiaId>()])
-      .andCallBlockWithParameterAtIndex(GaiaId, 1, ^(GaiaId* gaia_id) {
-        EXPECT_NSEQ(gaia_id->ToNSString(), identity.gaiaID);
+                                  gaiaID:ios::OCM::AnyPointer<const GaiaId>()])
+      .andCompareObjectAtIndex(identity.gaiaId, 1)
+      .andDo(^(NSInvocation* invocation) {
         reauth_coordinator = nil;
       });
   CHECK(completion_block);

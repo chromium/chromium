@@ -10,6 +10,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator_delegate.h"
@@ -260,15 +261,15 @@
 
 #pragma mark - SigninReauthCoordinatorDelegate
 
-- (void)reauthFinishedWithResult:(ReauthResult)result gaiaID:(GaiaId*)gaiaID {
+- (void)reauthFinishedWithResult:(ReauthResult)result
+                          gaiaID:(const GaiaId*)gaiaID {
   [self stopReauthCoordinator];
   if (result == ReauthResult::kSuccess) {
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
     BOOL identityValid =
         accountManagerService->IsValidIdentity(self.selectedIdentity);
-    BOOL identityEqual =
-        [self.selectedIdentity.gaiaID isEqualToString:gaiaID->ToNSString()];
+    BOOL identityEqual = self.selectedIdentity.gaiaId == *gaiaID;
     if (identityValid && identityEqual) {
       [self.delegate
           accountPickerCoordinator:self
