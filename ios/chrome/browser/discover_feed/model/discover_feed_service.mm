@@ -21,6 +21,10 @@ BOOL DiscoverFeedService::GetFollowingFeedHasUnseenContent() {
   return NO;
 }
 void DiscoverFeedService::SetFollowingFeedContentSeen() {}
+void DiscoverFeedService::CreateFeedModels() {}
+void DiscoverFeedService::CreateFeedModel(
+    FeedModelConfiguration* feed_model_config) {}
+void DiscoverFeedService::ClearFeedModels() {}
 
 void DiscoverFeedService::AddObserver(DiscoverFeedObserver* observer) {
   observer_list_.AddObserver(observer);
@@ -29,6 +33,8 @@ void DiscoverFeedService::AddObserver(DiscoverFeedObserver* observer) {
 void DiscoverFeedService::RemoveObserver(DiscoverFeedObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
+
+void DiscoverFeedService::CreateFeedModel() {}
 
 void DiscoverFeedService::NotifyDiscoverFeedModelRecreated() {
   for (auto& observer : observer_list_) {

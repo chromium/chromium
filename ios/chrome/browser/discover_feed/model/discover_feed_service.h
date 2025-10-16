@@ -24,14 +24,10 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   DiscoverFeedService();
   ~DiscoverFeedService() override;
 
-  // Creates models for all enabled feed types.
-  virtual void CreateFeedModels() = 0;
-
-  // Creates a single feed model based on the given model configuration.
-  virtual void CreateFeedModel(FeedModelConfiguration* feed_model_config) = 0;
-
-  // Clears all existing feed models.
-  virtual void ClearFeedModels() = 0;
+  // Creates a single feed model.
+  // TODO(crbug.com/425685705): Make fully virtual once downstream
+  // implementation is implemented.
+  virtual void CreateFeedModel();
 
   // Sets whether the feed is currently being shown on the Start Surface.
   virtual void SetIsShownOnStartSurface(bool shown_on_start_surface) = 0;
@@ -73,6 +69,9 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
       DiscoverFeedViewControllerConfiguration* configuration);
   virtual BOOL GetFollowingFeedHasUnseenContent();
   virtual void SetFollowingFeedContentSeen();
+  virtual void CreateFeedModels();
+  virtual void CreateFeedModel(FeedModelConfiguration* feed_model_config);
+  virtual void ClearFeedModels();
 
  protected:
   void NotifyDiscoverFeedModelRecreated();
