@@ -198,6 +198,14 @@ const KURL& WorkerGlobalScope::BaseURL() const {
   return Url();
 }
 
+UserAgentMetadata WorkerGlobalScope::GetUserAgentMetadata() const {
+  std::optional<UserAgentMetadata> optional_metadata;
+  if (CoreProbeSink* sink = probe::ToCoreProbeSink(GetExecutionContext())) {
+    probe::ApplyUserAgentMetadataOverride(sink, &optional_metadata);
+  }
+  return optional_metadata.value_or(ua_metadata_);
+}
+
 scheduler::WorkerScheduler* WorkerGlobalScope::GetScheduler() {
   DCHECK(IsContextThread());
   return GetThread()->GetScheduler();

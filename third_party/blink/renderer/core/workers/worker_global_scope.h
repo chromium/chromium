@@ -143,9 +143,7 @@ class CORE_EXPORT WorkerGlobalScope
   bool IsContextThread() const final;
   const KURL& BaseURL() const final;
   String UserAgent() const final { return user_agent_; }
-  UserAgentMetadata GetUserAgentMetadata() const override {
-    return ua_metadata_;
-  }
+  UserAgentMetadata GetUserAgentMetadata() const override;
   HttpsState GetHttpsState() const override { return https_state_; }
   scheduler::WorkerScheduler* GetScheduler() final;
   ukm::UkmRecorder* UkmRecorder() final;
