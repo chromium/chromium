@@ -28,8 +28,10 @@ class CollectionTestViewImpl : public views::View {
  public:
   explicit CollectionTestViewImpl(TabCollectionNode* node) {
     node->set_add_child_to_node(
-        base::BindRepeating<TabCollectionNode::CustomAddChildView>(
-            &views::View::AddChildViewAt, base::Unretained(this)));
+        base::BindRepeating(static_cast<views::View* (
+                                views::View::*)(std::unique_ptr<views::View>)>(
+                                &views::View::AddChildView),
+                            base::Unretained(this)));
   }
   ~CollectionTestViewImpl() override = default;
 };
@@ -70,30 +72,51 @@ std::unique_ptr<views::View> TabCollectionNode::CreateViewForNode(
   return std::make_unique<CollectionTestViewImpl>(node_for_view);
 }
 
+TabCollectionNode::TabCollectionNode() = default;
 TabCollectionNode::TabCollectionNode(tabs_api::mojom::DataPtr data)
     : data_(std::move(data)) {}
+
+// TODO(crbug.com/450304539): Get rid of this. Collections should only store
+// add_child_to_node_ and use its parents add_child_to_node_ if need be, instead
+// of storing a copy of it.
+TabCollectionNode::TabCollectionNode(
+    CustomAddChildView add_node_to_parent_callback)
+    : add_node_to_parent_(std::move(add_node_to_parent_callback)) {}
 
 TabCollectionNode::~TabCollectionNode() {
   on_will_destroy_callback_list_.Notify();
 }
 
-std::unique_ptr<views::View> TabCollectionNode::Initialize(
-    std::vector<tabs_api::mojom::ContainerPtr> children) {
+// TODO(crbug.com/450304539): change to take TabCollectionNode* parent_node,
+// then use parent_node->node_view_ and parent_node->add_child_to_node_.
+void TabCollectionNode::Initialize(
+    tabs_api::mojom::ContainerPtr container,
+    views::View* parent_view,
+    CustomAddChildView add_node_to_parent_callback) {
   CHECK(children_.empty());
-  children_.reserve(children.size());
+  children_.reserve(container->children.size());
 
-  std::unique_ptr<views::View> node_view = CreateAndSetView();
+  parent_view_ = parent_view;
+  add_node_to_parent_ = std::move(add_node_to_parent_callback);
+  data_ = std::move(container->data);
 
-  for (auto& child_container : children) {
-    auto child_node =
-        std::make_unique<TabCollectionNode>(std::move(child_container->data));
-    auto child_node_view =
-        child_node->Initialize(std::move(child_container->children));
-    AddChild(std::move(child_node_view), std::move(child_node),
-             children_.size());
+  std::unique_ptr<views::View> node_view = CreateViewForNode(this);
+  // It is expected that the node_view_ constructor will add the method
+  // add_child_to_node_ to the tab_collection_node_. If it does not,
+  // AddChildView will be used for filling its children below.
+  node_view_ = node_view.get();
+  if (add_node_to_parent_) {
+    add_node_to_parent_.Run(std::move(node_view));
+  } else {
+    parent_view->AddChildView(std::move(node_view));
   }
 
-  return node_view;
+  for (auto& child_container : container->children) {
+    auto child_node = std::make_unique<TabCollectionNode>();
+    child_node->Initialize(std::move(child_container), node_view_,
+                           add_child_to_node_);
+    children_.push_back(std::move(child_node));
+  }
 }
 
 // TODO(crbug.com/450976282): Consider having a map at the root level, or using
@@ -136,13 +159,15 @@ std::unique_ptr<views::View> TabCollectionNode::CreateAndSetView() {
   return node_view;
 }
 
+// TODO(crbug.com/450304539): Actually use the index here, after refactoring
+// add_parent_to_node_/add_child_to_node_.
 void TabCollectionNode::AddChild(std::unique_ptr<views::View> child_node_view,
                                  std::unique_ptr<TabCollectionNode> child_node,
                                  size_t index) {
   if (add_child_to_node_) {
-    add_child_to_node_.Run(std::move(child_node_view), index);
+    add_child_to_node_.Run(std::move(child_node_view));
   } else {
-    node_view_->AddChildViewAt(std::move(child_node_view), index);
+    node_view_->AddChildView(std::move(child_node_view));
   }
-  children_.insert(children_.begin() + index, std::move(child_node));
+  children_.push_back(std::move(child_node));
 }

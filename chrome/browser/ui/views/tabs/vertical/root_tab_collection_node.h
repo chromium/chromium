@@ -8,7 +8,6 @@
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_data_model.mojom-forward.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,13 +23,9 @@ class RootTabCollectionNode
     : public TabCollectionNode,
       public tabs_api::observation::TabStripApiObserver {
  public:
-  typedef views::View* (views::View::*CustomAddToParentView)(
-      std::unique_ptr<views::View>);
-  typedef base::RepeatingCallback<views::View*(std::unique_ptr<views::View>)>
-      CustomAddToParentViewCallback;
-  explicit RootTabCollectionNode(
-      tabs_api::TabStripService* service_register,
-      CustomAddToParentViewCallback add_node_view_to_parent);
+  explicit RootTabCollectionNode(tabs_api::TabStripService* service_register,
+                                 views::View* parent_view,
+                                 CustomAddChildView add_node_to_parent_);
   ~RootTabCollectionNode() override;
 
   // tabs_api::observation::TabStripApiObserver
@@ -46,16 +41,6 @@ class RootTabCollectionNode
                                collection_created_event) override;
 
  private:
-  // TabCollectionNode needs to be initialized with data, however we need the
-  // container's children later in the constructor of RootTabCollectionNode.
-  // Use these helpers so that we only have to call GetTabs once.
-  explicit RootTabCollectionNode(
-      tabs_api::TabStripService* tab_strip_service,
-      tabs_api::mojom::ContainerPtr container,
-      CustomAddToParentViewCallback add_node_view_to_parent);
-  tabs_api::mojom::ContainerPtr GetTabs(
-      tabs_api::TabStripService* tab_strip_service);
-
   base::ScopedObservation<tabs_api::TabStripService,
                           tabs_api::observation::TabStripApiObserver>
       service_observer_{this};

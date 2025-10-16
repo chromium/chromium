@@ -21,26 +21,25 @@ class View;
 
 class TabCollectionNode {
  public:
-  typedef views::View* (
-      views::View::*CustomAddChildView)(std::unique_ptr<views::View>, size_t);
-  typedef base::RepeatingCallback<views::View*(std::unique_ptr<views::View>,
-                                               size_t)>
-      CustomAddChildViewCallback;
+  typedef base::RepeatingCallback<views::View*(std::unique_ptr<views::View>)>
+      CustomAddChildView;
   typedef tabs_api::mojom::Data::Tag Type;
   typedef std::vector<std::unique_ptr<TabCollectionNode>> Children;
 
   using ViewFactory =
       base::RepeatingCallback<std::unique_ptr<views::View>(TabCollectionNode*)>;
 
+  TabCollectionNode();
   explicit TabCollectionNode(tabs_api::mojom::DataPtr data);
+  explicit TabCollectionNode(CustomAddChildView add_node_to_parent_callback);
   virtual ~TabCollectionNode();
 
-  // Creates the view for this node. Then, for each child container in children,
-  // creates a TabCollectionNode, calls Initialize on it, and then adds the node
-  // as a child of this.
+  // A TabCollectionNode will be created for each of the children
+  // 'Container' The container which holds children information and Data.
   // TODO May need a BrowserWindow Interface
-  std::unique_ptr<views::View> Initialize(
-      std::vector<tabs_api::mojom::ContainerPtr> children);
+  void Initialize(tabs_api::mojom::ContainerPtr container,
+                  views::View* parent_view,
+                  CustomAddChildView add_node_to_parent_callback);
 
   // Gets the collection under this subtree that has the associated node_id.
   // Returns nullptr if no such node exists.
@@ -55,7 +54,7 @@ class TabCollectionNode {
 
   Type GetType() const { return data_->which(); }
 
-  void set_add_child_to_node(CustomAddChildViewCallback add_child_to_node) {
+  void set_add_child_to_node(CustomAddChildView add_child_to_node) {
     add_child_to_node_ = std::move(add_child_to_node);
   }
 
@@ -86,12 +85,17 @@ class TabCollectionNode {
   // 1:1 mapping of the collections children.
   Children children_;
 
+  // parent view (for tab, unpinned_container, for unpinned, the
+  // tab_strip_container_view) parent view function for adding child
+  CustomAddChildView add_node_to_parent_;
+  raw_ptr<views::View> parent_view_ = nullptr;
+
   // The view created for this node. (for tab:tabview, for unpinned: the
   // unpinned_container_view).
   // add_child_to_node_ must be assigned when constructing the node_view in
   // Initialize so that the children that are created know how to be added to
   // the View Hierarchy.
-  CustomAddChildViewCallback add_child_to_node_;
+  CustomAddChildView add_child_to_node_;
   raw_ptr<views::View> node_view_ = nullptr;
 };
 
