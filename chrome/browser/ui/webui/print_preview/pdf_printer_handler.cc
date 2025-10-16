@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -28,7 +27,7 @@
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/common/chrome_switches.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/cloud_devices/common/printer_description.h"
@@ -316,8 +315,7 @@ void PdfPrinterHandler::StartPrint(
   }
   base::FilePath path = GetFileName(initiator_url, job_title, is_savable);
 
-  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  bool prompt_user = !cmdline->HasSwitch(switches::kKioskModePrinting);
+  bool prompt_user = !SilentPrintingEnabled();
 #if BUILDFLAG(IS_CHROMEOS)
   use_drive_mount_ =
       settings.FindBool(kSettingPrintToGoogleDrive).value_or(false);

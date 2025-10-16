@@ -62,6 +62,11 @@ void StartLocalPrint(base::Value::Dict job_settings,
                      content::WebContents* preview_web_contents,
                      PrinterHandler::PrintCallback callback);
 
+// Checks if silent printing is enabled via the --kiosk-printing command line
+// flag or the SilentPrintingEnabled policy, which immediately closes the print
+// preview dialog and prints to the default printer with default options.
+bool SilentPrintingEnabled();
+
 }  // namespace printing
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_UTILS_H_

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -15,11 +16,15 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "components/crash/core/common/crash_keys.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/page_range.h"
@@ -303,6 +308,16 @@ void StartLocalPrint(base::Value::Dict job_settings,
   print_view_manager->PrintForPrintPreview(
       std::move(job_settings), std::move(print_data),
       preview_web_contents->GetPrimaryMainFrame(), std::move(callback));
+}
+
+bool SilentPrintingEnabled() {
+  if (const auto* pref = g_browser_process->local_state()->FindPreference(
+          prefs::kSilentPrintingEnabled);
+      pref && pref->GetValue()->GetBool()) {
+    return true;
+  }
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kKioskModePrinting);
 }
 
 }  // namespace printing
