@@ -1402,7 +1402,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DatabaseTooOld" units="version"
+<histogram name="History.DatabaseTooOld" enum="HistoryDatabaseVersion"
     expires_after="2026-09-12">
   <owner>jpgravel@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -1413,7 +1413,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DatabaseVersion" units="version"
+<histogram name="History.DatabaseVersion" enum="HistoryDatabaseVersion"
     expires_after="2026-09-12">
   <owner>jpgravel@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -2684,8 +2684,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.MigrateFailureFromVersion" units="units"
-    expires_after="2026-06-25">
+<histogram name="History.MigrateFailureFromVersion"
+    enum="HistoryDatabaseVersion" expires_after="2026-06-25">
   <owner>etienneb@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>1456716</component>
