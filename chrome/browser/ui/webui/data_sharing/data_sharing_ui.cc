@@ -4,18 +4,22 @@
 
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_page_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/data_sharing_resources.h"
 #include "chrome/grit/data_sharing_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/data_sharing/public/client_version_info.h"
 #include "components/data_sharing/public/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -200,6 +204,10 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       data_sharing::features::kLearnAboutBlockedAccountsURL.Get());
   source->AddString("activityLogsUrl",
                     data_sharing::features::kActivityLogsURL.Get());
+  source->AddString(
+      "currentClientVersion",
+      base::StrCat({version_info::GetVersionNumber(), "-",
+                    version_info::GetChannelString(chrome::GetChannel())}));
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile,

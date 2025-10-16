@@ -372,7 +372,9 @@ export class DataSharingApp extends CustomElement implements Logger {
 
   constructor() {
     super();
-    console.info('ShareKit SDK version: ' + SHAREKIT_SDK_VERSION);
+    this.dataSharingSdk_.setClientVersionAndResetPeopleStore(
+        loadTimeData.getStringF('currentClientVersion'),
+        parseInt(SHAREKIT_SDK_VERSION));
     this.dataSharingSdk_.updateClearcut(
         {enabled: loadTimeData.getBoolean('metricsReportingEnabled')});
     this.browserProxy_.callbackRouter.onAccessTokenFetched.addListener(

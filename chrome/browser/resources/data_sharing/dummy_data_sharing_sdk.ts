@@ -122,6 +122,10 @@ export class DataSharingSdkImpl implements DataSharingSdk {
   // Setup Helpers
   setOauthAccessToken(_params: {accessToken: string}): void {}
   updateClearcut(_params: {enabled: boolean}): void {}
+  setClientVersionAndResetPeopleStore(
+      _versionString: string,
+      _baselineCl: number,
+      ): void {}
 
   static getInstance(): DataSharingSdk {
     return dataSharingSdkInstance ||

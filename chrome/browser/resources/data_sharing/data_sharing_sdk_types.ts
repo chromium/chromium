@@ -331,6 +331,10 @@ export declare interface DataSharingSdk {
   runDeleteFlow(params: RunDeleteFlowParams): Promise<DataSharingSdkResponse>;
   setOauthAccessToken(params: {accessToken: string}): void;
   updateClearcut(params: {enabled: boolean}): void;
+  setClientVersionAndResetPeopleStore(
+      versionString: string,
+      baselineCl: number,
+      ): void;
 }
 declare global {
   interface Window {
