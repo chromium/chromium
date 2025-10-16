@@ -11,7 +11,7 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='log' interesting name='Live illegal'
 ++android.app.AlertDialog role_description='dialog' interesting name='Modal illegal'
 ++android.widget.EditText clickable editable_text multiline interesting hint='Multiline illegal'
-++android.widget.GridView role_description='table' collection multiselectable interesting name='Multiselectable illegal' state_description='multiselectable, none selected.' selection_mode=2
+++android.widget.GridView collection multiselectable interesting name='Multiselectable illegal' state_description='multiselectable, none selected.' selection_mode=2
 ++android.widget.SeekBar role_description='slider' clickable range interesting name='50, Orientation illegal' item_index=50 item_count=100 range_max=100 range_current_value=50
 ++android.widget.ToggleButton role_description='toggle button' checkable clickable interesting name='Pressed illegal' state_description='On' checked=1
 ++android.widget.EditText clickable editable_text interesting hint='Readonly illegal'
@@ -19,5 +19,5 @@ android.webkit.WebView focusable focused
 ++android.widget.EditText clickable editable_text required interesting hint='Required illegal'
 ++android.view.View role_description='tree' collection hierarchical multiselectable interesting state_description='multiselectable, 1 of 1 selected.' item_count=1 row_count=1 selection_mode=2
 ++++android.view.View role_description='tree item' clickable collection_item selected content_description='Selected illegal'
-++android.widget.GridView role_description='table' collection
+++android.widget.GridView collection
 ++++android.view.View role_description='column header' collection_item interesting table_header content_description='Sort illegal' row_span=1 column_span=1

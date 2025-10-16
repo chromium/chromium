@@ -32,6 +32,6 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='tree' collection hierarchical interesting
 ++android.view.View role_description='tree' collection hierarchical interesting
 ++android.view.View role_description='tree' collection hierarchical interesting
-++android.widget.GridView role_description='tree grid' clickable collection interesting
-++android.widget.GridView role_description='tree grid' clickable collection interesting
-++android.widget.GridView role_description='tree grid' clickable collection interesting
+++android.widget.GridView clickable collection interesting
+++android.widget.GridView clickable collection interesting
+++android.widget.GridView clickable collection interesting

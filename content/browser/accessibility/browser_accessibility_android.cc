@@ -1539,6 +1539,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kDetails:
     case ax::mojom::Role::kEmphasis:
     case ax::mojom::Role::kForm:
+    case ax::mojom::Role::kGrid:
     case ax::mojom::Role::kImage:
     case ax::mojom::Role::kProgressIndicator:
     case ax::mojom::Role::kRowGroup:
@@ -1548,7 +1549,9 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kStrong:
     case ax::mojom::Role::kSubscript:
     case ax::mojom::Role::kSuperscript:
+    case ax::mojom::Role::kTable:
     case ax::mojom::Role::kTextField:
+    case ax::mojom::Role::kTreeGrid:
     case ax::mojom::Role::kTime:
       // No role description on Android.
       break;

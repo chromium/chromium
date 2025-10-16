@@ -9,7 +9,7 @@ android.webkit.WebView focusable focused
 ++++++android.widget.TextView interesting name=' and a '
 ++++++android.widget.Button clickable focusable interesting name='Button'
 ++++++android.widget.TextView interesting name='.'
-++++android.widget.GridView role_description='table' collection row_count=1 column_count=1
+++++android.widget.GridView collection row_count=1 column_count=1
 ++++++android.view.View
 ++++++++android.view.View collection_item interesting name='Always expose editable tables as tables.' row_span=1 column_span=1
 ++++android.widget.ListView collection item_count=1 row_count=1 column_count=1
