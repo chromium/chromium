@@ -69,6 +69,7 @@ _TEST_TARGET_ALLOWLIST = [
     '//chrome/browser/mac:install_sh_test',
     '//chrome/browser/metrics/perf:profile_provider_unittest',
     '//chrome/browser/privacy_sandbox/notice:fuzz_tests',
+    '//chrome/browser/ui/views/toolbar:unit_tests',
     '//chrome/browser/web_applications:web_application_fuzztests',
     '//chromecast/media/base:video_plane_controller_test',
     '//chromecast/metrics:cast_metrics_unittest',
