@@ -545,7 +545,7 @@ PositionInFlatTree FindBuffer::PositionAtStartOfCharacterAtIndex(
   const BufferNodeMapping* entry = MappingForIndex(index);
   if (!entry)
     return PositionInFlatTree();
-  return ToPositionInFlatTree(offset_mapping_->GetLastPosition(
+  return ToPositionInFlatTree(entry->offset_mapping->GetLastPosition(
       index - entry->offset_in_buffer + entry->offset_in_mapping));
 }
 
@@ -556,7 +556,7 @@ PositionInFlatTree FindBuffer::PositionAtEndOfCharacterAtIndex(
   const BufferNodeMapping* entry = MappingForIndex(index);
   if (!entry)
     return PositionInFlatTree();
-  return ToPositionInFlatTree(offset_mapping_->GetFirstPosition(
+  return ToPositionInFlatTree(entry->offset_mapping->GetFirstPosition(
       index - entry->offset_in_buffer + entry->offset_in_mapping + 1));
 }
 
@@ -564,7 +564,7 @@ Vector<UChar> FindBuffer::SerializeLevelInGraph(
     const HeapVector<Member<CorpusChunk>>& chunk_list,
     const String& level,
     const EphemeralRangeInFlatTree& range) {
-  Vector<BufferNodeMapping>* mappings =
+  HeapVector<BufferNodeMapping>* mappings =
       level.empty() ? &buffer_node_mappings_ : nullptr;
   Vector<UChar> buffer;
   const CorpusChunk* chunk = chunk_list[0];
@@ -598,7 +598,7 @@ Vector<UChar> FindBuffer::SerializeLevelInGraph(
 void FindBuffer::AddTextToBuffer(const Text& text_node,
                                  const EphemeralRangeInFlatTree& range,
                                  Vector<UChar>& buffer,
-                                 Vector<BufferNodeMapping>* mappings) {
+                                 HeapVector<BufferNodeMapping>* mappings) {
   LayoutBlockFlow& block_flow = *OffsetMapping::GetInlineFormattingContextOf(
       *text_node.GetLayoutObject());
   if (!offset_mapping_) {
@@ -630,8 +630,8 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
       if (mappings) {
         // This is the first unit, or the units are not consecutive, so we need
         // to insert a new BufferNodeMapping.
-        mappings->push_back(
-            BufferNodeMapping({buffer.size(), unit.TextContentStart()}));
+        mappings->push_back(BufferNodeMapping(
+            {offset_mapping_, buffer.size(), unit.TextContentStart()}));
       }
       first_unit = false;
     }
@@ -652,6 +652,10 @@ Vector<String> FindBuffer::BuffersForTesting() const {
     result.push_back(String(buffer));
   }
   return result;
+}
+
+void FindBuffer::BufferNodeMapping::Trace(Visitor* visitor) const {
+  visitor->Trace(offset_mapping);
 }
 
 }  // namespace blink
