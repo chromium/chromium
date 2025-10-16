@@ -197,11 +197,6 @@ void GlicInstanceCoordinatorImpl::Shutdown() {
   NOTIMPLEMENTED();
 }
 
-void GlicInstanceCoordinatorImpl::MaybeSetWidgetCanResize() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-}
-
 void GlicInstanceCoordinatorImpl::Close() {
   // TODO(crbug.com/450286204): This is likely needed, or needed to be
   // refactored.
@@ -209,7 +204,8 @@ void GlicInstanceCoordinatorImpl::Close() {
 }
 
 mojom::PanelState GlicInstanceCoordinatorImpl::GetGlobalPanelState() {
-  // Method should only be called on individual panels not the coordinator.
+  // TODO: Currently called from GlicButtonController. Needs implemented or
+  // refactored and removed.
   NOTIMPLEMENTED();
   return panel_state_;
 }
@@ -231,7 +227,8 @@ void GlicInstanceCoordinatorImpl::RemoveGlobalStateObserver(
 }
 
 bool GlicInstanceCoordinatorImpl::IsDetached() const {
-  // Method should only be called on individual panels not the coordinator.
+  // TODO: Called by GlicProfileManager. Needs implemented or refactored and
+  // removed.
   NOTIMPLEMENTED();
   return false;
 }
@@ -239,6 +236,7 @@ bool GlicInstanceCoordinatorImpl::IsDetached() const {
 base::CallbackListSubscription
 GlicInstanceCoordinatorImpl::AddWindowActivationChangedCallback(
     WindowActivationChangedCallback callback) {
+  // TODO: Notification of this callback list is not yet implemented.
   return window_activation_callback_list_.Add(std::move(callback));
 }
 
@@ -278,6 +276,7 @@ gfx::NativeWindow GlicInstanceCoordinatorImpl::GetHostNativeWindow() {
 
 Browser* GlicInstanceCoordinatorImpl::attached_browser() {
   // Method should only be called on individual panels not the coordinator.
+  // TODO: This can be called today, but it should not be.
   NOTIMPLEMENTED();
   return nullptr;
 }
@@ -393,11 +392,6 @@ void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
     NotifyLastActiveInstanceChanged();
   }
   instances_.erase(instance->id());
-}
-
-bool GlicInstanceCoordinatorImpl::HasAttachedInstance(GlicInstance* instance) {
-  NOTIMPLEMENTED();
-  return false;
 }
 
 void GlicInstanceCoordinatorImpl::SwitchConversation(

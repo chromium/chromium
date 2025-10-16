@@ -89,11 +89,6 @@ class GlicWindowController {
   // Destroy the glic panel and its web contents.
   virtual void Shutdown() = 0;
 
-  // Update the resize state of the widget if it is needed and safe to do so.
-  // On Windows make sure that the client area size remains the same even if
-  // the widget size changes because the widget is resizable.
-  virtual void MaybeSetWidgetCanResize() = 0;
-
   // Close the panel but keep the glic WebContents alive in the background.
   virtual void Close() = 0;
 
@@ -187,11 +182,19 @@ class GlicWindowControllerInterface : public GlicWindowController,
   // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
   virtual bool IsWarmed() const = 0;
 
+  // Returns whether the views::Widget associated with the glic window is active
+  // (e.g. will receive keyboard events).
+  virtual bool IsActive() = 0;
+
   virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
   virtual std::unique_ptr<views::View> CreateViewForSidePanel(
       tabs::TabInterface& tab) = 0;
 
-  virtual bool IsActive() = 0;
+  // Update the resize state of the widget if it is needed and safe to do so.
+  // On Windows make sure that the client area size remains the same even if
+  // the widget size changes because the widget is resizable.
+  virtual void MaybeSetWidgetCanResize() = 0;
+
 };
 
 }  // namespace glic

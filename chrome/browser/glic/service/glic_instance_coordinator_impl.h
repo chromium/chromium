@@ -89,7 +89,6 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
   void FocusIfOpen() override;
   void Shutdown() override;
-  void MaybeSetWidgetCanResize() override;
   void Close() override;
 
   void AddGlobalStateObserver(StateObserver* observer) override;
@@ -140,7 +139,6 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   void ToggleSidePanel(BrowserWindowInterface* browser, bool prevent_close);
 
   void RemoveInstance(GlicInstance* instance) override;
-  bool HasAttachedInstance(GlicInstance* instance);
 
   void NotifyLastActiveInstanceChanged();
 
