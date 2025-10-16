@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
@@ -116,7 +116,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
 
         doReturn(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(anyBoolean());
+                .getPageClassification(anyInt());
 
         mProfileSupplier.set(mProfileMock);
         View navigationToolbar = mParent.findViewById(R.id.location_bar_attachments_toolbar);
@@ -213,7 +213,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
             Mockito.reset(mMediator);
             doReturn(pageClass.getNumber())
                     .when(mLocationBarDataProvider)
-                    .getPageClassification(anyBoolean());
+                    .getPageClassification(anyInt());
 
             mCoordinator.onUrlFocusChange(true);
 

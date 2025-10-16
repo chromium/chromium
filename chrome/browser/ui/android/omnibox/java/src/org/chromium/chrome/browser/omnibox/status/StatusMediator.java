@@ -45,6 +45,7 @@ import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -505,7 +506,7 @@ public class StatusMediator
 
         mIsSecurityViewShown = false;
 
-        if (mLocationBarDataProvider.getPageClassification(false)
+        if (mLocationBarDataProvider.getPageClassification(AutocompleteRequestType.SEARCH)
                 == PageClassification.ANDROID_HUB_VALUE) {
             // Show the status icon primarily for incognito since it is defaulted off there.
             setStatusIconShown(/* show= */ true);
@@ -563,7 +564,7 @@ public class StatusMediator
      * independent from alpha/visibility.
      */
     boolean shouldDisplaySearchEngineIcon() {
-        if (mLocationBarDataProvider.getPageClassification(false)
+        if (mLocationBarDataProvider.getPageClassification(AutocompleteRequestType.SEARCH)
                 == PageClassification.ANDROID_HUB_VALUE) {
             return false;
         }
@@ -595,7 +596,7 @@ public class StatusMediator
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
     private int getAccessibilityDescriptionRes() {
-        if (mLocationBarDataProvider.getPageClassification(false)
+        if (mLocationBarDataProvider.getPageClassification(AutocompleteRequestType.SEARCH)
                 == PageClassification.ANDROID_HUB_VALUE) {
             return R.string.hub_search_status_view_back_button_icon_description;
         }
@@ -890,7 +891,7 @@ public class StatusMediator
     private void applyStatusIconAndTooltipProperties(
             boolean showIcon, boolean verboseStatusTextVisible) {
         boolean isHubSearch =
-                mLocationBarDataProvider.getPageClassification(false)
+                mLocationBarDataProvider.getPageClassification(AutocompleteRequestType.SEARCH)
                         == PageClassification.ANDROID_HUB_VALUE;
         mModel.set(StatusProperties.SHOW_STATUS_ICON, showIcon);
         if (showIcon && !isHubSearch) {

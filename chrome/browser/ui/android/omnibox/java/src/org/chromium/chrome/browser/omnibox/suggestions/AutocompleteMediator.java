@@ -1168,7 +1168,11 @@ class AutocompleteMediator
      */
     @VisibleForTesting
     void initAutocompleteInput() {
-        mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
+        mAutocompleteInput.setPageClassification(
+                mDataProvider.getPageClassification(
+                        mNavigationAttachmentsCoordinator
+                                .getAutocompleteRequestTypeSupplier()
+                                .get()));
         mAutocompleteInput.setPageUrl(mDataProvider.getCurrentGurl());
         mAutocompleteInput.setPageTitle(mDataProvider.getTitle());
 

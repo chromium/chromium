@@ -48,7 +48,6 @@ import org.robolectric.shadows.ShadowPausedSystemClock;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -138,7 +137,9 @@ public class AutocompleteMediatorUnitTest {
     private List<AutocompleteMatch> mSuggestionsList;
     private AutocompleteResult mAutocompleteResult;
     private ModelList mSuggestionModels;
-    private ObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
+    private ObservableSupplierImpl<@ControlsPosition Integer> mToolbarPositionSupplier;
+    private ObservableSupplierImpl<@AutocompleteRequestType Integer>
+            mAutocompleteRequestTypeSupplier;
     private Context mContext;
 
     @Before
@@ -151,7 +152,9 @@ public class AutocompleteMediatorUnitTest {
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJniMock);
         OmniboxActionFactoryJni.setInstanceForTesting(mActionFactoryJni);
         AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
-        mToolbarPositionSupplier = new ObservableSupplierImpl(ControlsPosition.TOP);
+        mToolbarPositionSupplier = new ObservableSupplierImpl<>(ControlsPosition.TOP);
+        mAutocompleteRequestTypeSupplier =
+                new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
 
         lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
 
@@ -168,6 +171,11 @@ public class AutocompleteMediatorUnitTest {
                 .doReturn(mToolbarPositionSupplier)
                 .when(mLocationBarDataProvider)
                 .getToolbarPositionSupplier();
+
+        lenient()
+                .doReturn(mAutocompleteRequestTypeSupplier)
+                .when(mNavigationAttachmentsCoordinator)
+                .getAutocompleteRequestTypeSupplier();
 
         mMediator =
                 new AutocompleteMediator(
@@ -258,7 +266,9 @@ public class AutocompleteMediatorUnitTest {
         lenient().when(mLocationBarDataProvider.getCurrentGurl()).thenReturn(url);
         lenient().when(mLocationBarDataProvider.getTitle()).thenReturn(title);
         lenient()
-                .when(mLocationBarDataProvider.getPageClassification(false))
+                .when(
+                        mLocationBarDataProvider.getPageClassification(
+                                AutocompleteRequestType.SEARCH))
                 .thenReturn(pageClassification);
     }
 
@@ -1621,10 +1631,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onOmniboxSessionStateChange(true);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
-        ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
-        supplier.set(AutocompleteRequestType.AI_MODE);
-        when(mNavigationAttachmentsCoordinator.getAutocompleteRequestTypeSupplier())
-                .thenReturn(supplier);
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
         GURL url = JUnitTestGURLs.BLUE_2;
         when(mNavigationAttachmentsCoordinator.getAimUrl("test")).thenReturn(url);
 

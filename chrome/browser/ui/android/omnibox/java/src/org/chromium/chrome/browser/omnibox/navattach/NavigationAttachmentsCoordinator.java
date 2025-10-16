@@ -104,7 +104,8 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
     public void onUrlFocusChange(boolean hasFocus) {
         if (mMediator == null || mLocationBarDataProvider == null) return;
 
-        int pageClass = mLocationBarDataProvider.getPageClassification(false);
+        int pageClass =
+                mLocationBarDataProvider.getPageClassification(AutocompleteRequestType.SEARCH);
 
         boolean isSupportedPageClass =
                 switch (pageClass) {
