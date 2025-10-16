@@ -51,7 +51,7 @@ void Insert(NoVarySearchCache& cache,
             std::string_view query,
             std::string_view no_vary_search);
 
-// Returns true if a URL matching `query` was foind in `cache`. Marks the entry
+// Returns true if a URL matching `query` was found in `cache`. Marks the entry
 // as recently used as a side-effect.
 bool Exists(NoVarySearchCache& cache, std::string_view query);
 

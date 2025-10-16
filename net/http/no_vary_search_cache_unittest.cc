@@ -783,7 +783,7 @@ std::optional<NoVarySearchCache> TestPickleRoundTrip(
     const NoVarySearchCache& cache) {
   base::Pickle pickle;
   WriteToPickle(pickle, cache);
-  // The estimate of PickeSize should always be correct.
+  // The estimate of PickleSize should always be correct.
   EXPECT_EQ(EstimatePickleSize(cache), pickle.payload_size());
   auto maybe_cache = ReadValueFromPickle<NoVarySearchCache>(pickle);
   if (!maybe_cache) {
