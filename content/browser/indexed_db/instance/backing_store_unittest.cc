@@ -14,7 +14,6 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 #include "content/browser/indexed_db/instance/backing_store_util.h"
-#include "content/browser/indexed_db/instance/bucket_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
@@ -44,17 +43,12 @@ namespace content::indexed_db {
 class BackingStoreTest : public testing::WithParamInterface<bool>,
                          public BackingStoreTestBase {
  public:
-  BackingStoreTest()
-      : sqlite_override_(BucketContext::OverrideShouldUseSqliteForTesting(
-            IsSqliteBackingStoreEnabled())) {}
+  BackingStoreTest() : BackingStoreTestBase(IsSqliteBackingStoreEnabled()) {}
 
   BackingStoreTest(const BackingStoreTest&) = delete;
   BackingStoreTest& operator=(const BackingStoreTest&) = delete;
 
   bool IsSqliteBackingStoreEnabled() { return GetParam(); }
-
- private:
-  base::AutoReset<std::optional<bool>> sqlite_override_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -379,8 +373,8 @@ class BackingStoreTestWithExternalObjects
       public BackingStoreWithExternalObjectsTestBase {
  public:
   BackingStoreTestWithExternalObjects()
-      : sqlite_override_(BucketContext::OverrideShouldUseSqliteForTesting(
-            IsSqliteBackingStoreEnabled())) {}
+      : BackingStoreWithExternalObjectsTestBase(IsSqliteBackingStoreEnabled()) {
+  }
 
   BackingStoreTestWithExternalObjects(
       const BackingStoreTestWithExternalObjects&) = delete;
@@ -397,9 +391,6 @@ class BackingStoreTestWithExternalObjects
   bool IncludesFileSystemAccessHandles() override {
     return TestType() != ExternalObjectTestType::kOnlyBlobs;
   }
-
- private:
-  base::AutoReset<std::optional<bool>> sqlite_override_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

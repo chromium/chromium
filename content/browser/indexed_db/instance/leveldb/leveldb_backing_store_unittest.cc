@@ -65,9 +65,7 @@ int64_t GetId(indexed_db::BackingStore::Database& db) {
 
 class LevelDbBackingStoreTest : public BackingStoreTestBase {
  public:
-  LevelDbBackingStoreTest()
-      : sqlite_override_(
-            BucketContext::OverrideShouldUseSqliteForTesting(false)) {}
+  LevelDbBackingStoreTest() : BackingStoreTestBase(/*use_sqlite=*/false) {}
 
   LevelDbBackingStoreTest(const LevelDbBackingStoreTest&) = delete;
   LevelDbBackingStoreTest& operator=(const LevelDbBackingStoreTest&) = delete;
@@ -76,9 +74,6 @@ class LevelDbBackingStoreTest : public BackingStoreTestBase {
     return static_cast<level_db::BackingStore*>(
         BackingStoreTestBase::backing_store());
   }
-
- private:
-  base::AutoReset<std::optional<bool>> sqlite_override_;
 };
 
 class LevelDbBackingStoreTestForThirdPartyStoragePartitioning
@@ -111,7 +106,8 @@ enum class ExternalObjectTestType {
 class LevelDbBackingStoreWithExternalObjectsTestBase
     : public BackingStoreWithExternalObjectsTestBase {
  public:
-  LevelDbBackingStoreWithExternalObjectsTestBase() = default;
+  LevelDbBackingStoreWithExternalObjectsTestBase()
+      : BackingStoreWithExternalObjectsTestBase(/*use_sqlite=*/false) {}
 
   LevelDbBackingStoreWithExternalObjectsTestBase(
       const LevelDbBackingStoreWithExternalObjectsTestBase&) = delete;

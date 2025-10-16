@@ -72,9 +72,7 @@ void ReadWholeBlob(mojo::Remote<blink::mojom::Blob>& blob,
 
 class BackingStoreSqliteTest : public BackingStoreTestBase {
  public:
-  BackingStoreSqliteTest()
-      : sqlite_override_(
-            BucketContext::OverrideShouldUseSqliteForTesting(true)) {}
+  BackingStoreSqliteTest() : BackingStoreTestBase(/*use_sqlite=*/true) {}
 
   BackingStoreSqliteTest(const BackingStoreSqliteTest&) = delete;
   BackingStoreSqliteTest& operator=(const BackingStoreSqliteTest&) = delete;
@@ -121,9 +119,6 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
     run_loop.Run();
     return output_blob_contents;
   }
-
- private:
-  base::AutoReset<std::optional<bool>> sqlite_override_;
 };
 
 TEST_F(BackingStoreSqliteTest, BlobBasics) {

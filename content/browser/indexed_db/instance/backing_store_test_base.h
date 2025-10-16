@@ -28,7 +28,7 @@ namespace content::indexed_db {
 
 class BackingStoreTestBase : public testing::Test {
  public:
-  BackingStoreTestBase();
+  explicit BackingStoreTestBase(bool use_sqlite);
   BackingStoreTestBase(const BackingStoreTestBase&) = delete;
   BackingStoreTestBase& operator=(const BackingStoreTestBase&) = delete;
   ~BackingStoreTestBase() override;
@@ -89,11 +89,14 @@ class BackingStoreTestBase : public testing::Test {
   IndexedDBValue value2_;
 
   raw_ptr<BackingStore> backing_store_ = nullptr;
+
+ private:
+  base::AutoReset<std::optional<bool>> sqlite_override_;
 };
 
 class BackingStoreWithExternalObjectsTestBase : public BackingStoreTestBase {
  public:
-  BackingStoreWithExternalObjectsTestBase();
+  explicit BackingStoreWithExternalObjectsTestBase(bool use_sqlite);
 
   BackingStoreWithExternalObjectsTestBase(
       const BackingStoreWithExternalObjectsTestBase&) = delete;

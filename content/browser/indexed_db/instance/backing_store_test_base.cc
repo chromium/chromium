@@ -43,7 +43,9 @@ class FakeFileSystemAccessTransferToken
 
 namespace content::indexed_db {
 
-BackingStoreTestBase::BackingStoreTestBase() = default;
+BackingStoreTestBase::BackingStoreTestBase(bool use_sqlite)
+    : sqlite_override_(
+          BucketContext::OverrideShouldUseSqliteForTesting(use_sqlite)) {}
 
 BackingStoreTestBase::~BackingStoreTestBase() = default;
 
@@ -178,7 +180,8 @@ void BackingStoreTestBase::TearDown() {
 }
 
 BackingStoreWithExternalObjectsTestBase::
-    BackingStoreWithExternalObjectsTestBase() = default;
+    BackingStoreWithExternalObjectsTestBase(bool use_sqlite)
+    : BackingStoreTestBase(use_sqlite) {}
 
 BackingStoreWithExternalObjectsTestBase::
     ~BackingStoreWithExternalObjectsTestBase() = default;
