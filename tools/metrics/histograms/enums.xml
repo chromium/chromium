@@ -12762,6 +12762,8 @@ from previous Chrome versions.
   <int value="-531651776" label="NewRemotePlaybackPipeline:enabled"/>
   <int value="-531633181" label="AccessibilityMagnifierFollowsSts:enabled"/>
   <int value="-531379517" label="MediaSessionNotification:disabled"/>
+  <int value="-531032480"
+      label="ProfileCreationDeclineSigninCTAExperiment:disabled"/>
   <int value="-530799497" label="MacCoreLocationImplementation:enabled"/>
   <int value="-530480158" label="EnableSuggestedFiles:enabled"/>
   <int value="-529896675" label="SmartLockSignInRemoved:disabled"/>
@@ -12885,6 +12887,8 @@ from previous Chrome versions.
   <int value="-491131428" label="OmniboxNewAnswerLayout:disabled"/>
   <int value="-490652941" label="WebViewZeroCopyVideo:enabled"/>
   <int value="-489672760" label="ImeFstDecoderParamsUpdate:disabled"/>
+  <int value="-489165842"
+      label="ProfileCreationDeclineSigninCTAExperiment:enabled"/>
   <int value="-489122628" label="ShowTabListAnimations:disabled"/>
   <int value="-488779992" label="blink-settings"/>
   <int value="-488744544" label="PromoBrowserCommands:disabled"/>

@@ -3907,6 +3907,14 @@ const char kSkiaGraphitePrecompilationDescription[] =
     "--disable-skia-graphite-precompilation "
     "command line flags";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kProfileCreationDeclineSigninCTAExperimentName[] =
+    "Enable CTA experiment for sign-in level up";
+const char kProfileCreationDeclineSigninCTAExperimentDescription[] =
+    "As part of the Sign In Level Up experiment, changes the decline "
+    "sign in CTA string in profile creation entry points";
+#endif
+
 const char kBackdropFilterMirrorEdgeName[] = "Backdrop Filter Mirror Edge";
 const char kBackdropFilterMirrorEdgeDescription[] =
     "When sampling being the backdrop edge for backdrop-filter, samples "

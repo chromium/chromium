@@ -284,6 +284,13 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kOfferMigrationToDiceUsersMinTimeBetweenDialogs);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Experimenting with changing the secondary CTA for FRE and new profile
+// creation.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kProfileCreationDeclineSigninCTAExperiment);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfilesReordering);
 

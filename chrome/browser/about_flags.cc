@@ -13227,6 +13227,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kReadAnythingReadAloudTSTextSegmentation)},
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    {"profile-creation-decline-signin-cta-experiment",
+     flag_descriptions::kProfileCreationDeclineSigninCTAExperimentName,
+     flag_descriptions::kProfileCreationDeclineSigninCTAExperimentDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kProfileCreationDeclineSigninCTAExperiment)},
+#endif
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -1971,6 +1971,11 @@ extern const char kSkiaGraphiteDescription[];
 extern const char kSkiaGraphitePrecompilationName[];
 extern const char kSkiaGraphitePrecompilationDescription[];
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+extern const char kProfileCreationDeclineSigninCTAExperimentName[];
+extern const char kProfileCreationDeclineSigninCTAExperimentDescription[];
+#endif
+
 extern const char kBackdropFilterMirrorEdgeName[];
 extern const char kBackdropFilterMirrorEdgeDescription[];
 

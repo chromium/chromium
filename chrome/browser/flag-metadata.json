@@ -8365,6 +8365,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "profile-creation-decline-signin-cta-experiment",
+    "owners": [ "saskekun@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "profiles-reordering",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 146
