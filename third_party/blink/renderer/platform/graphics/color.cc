@@ -591,8 +591,7 @@ std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
     case ColorSpace::kLab:
       return gfx::LabToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kOklab: {
-      auto [x, y, z] = gfx::OklabToXYZD65(param0_, param1_, param2_);
-      return gfx::XYZD65ToD50(x, y, z);
+      return gfx::OklabToXYZD50(param0_, param1_, param2_);
     }
     case ColorSpace::kLch: {
       auto [l, a, b] = gfx::LchToLab(param0_, param1_, param2_);
@@ -600,8 +599,7 @@ std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
     }
     case ColorSpace::kOklch: {
       auto [l, a, b] = gfx::LchToLab(param0_, param1_, param2_);
-      auto [x, y, z] = gfx::OklabToXYZD65(l, a, b);
-      return gfx::XYZD65ToD50(x, y, z);
+      return gfx::OklabToXYZD50(l, a, b);
     }
     case ColorSpace::kHSL: {
       auto [r, g, b] = gfx::HSLToSRGB(param0_, param1_, param2_);
@@ -649,17 +647,7 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
   }
 
   switch (destination_color_space) {
-    case ColorSpace::kXYZD65: {
-      if (color_space_ == ColorSpace::kOklab) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::OklabToXYZD65(param0_, param1_, param2_);
-      } else {
-        auto [x, y, z] = ExportAsXYZD50Floats();
-        std::tie(param0_, param1_, param2_) = gfx::XYZD50ToD65(x, y, z);
-      }
-      color_space_ = ColorSpace::kXYZD65;
-      return;
-    }
+    case ColorSpace::kXYZD65:
     case ColorSpace::kXYZD50:
     case ColorSpace::kSRGBLinear:
     case ColorSpace::kDisplayP3:
@@ -704,18 +692,8 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
         color_space_ = ColorSpace::kOklab;
         return;
       }
-      // Conversion to Oklab is done through XYZD65.
-      auto [xd65, yd65, zd65] = [&]() {
-        if (color_space_ == ColorSpace::kXYZD65) {
-          return std::make_tuple(param0_, param1_, param2_);
-        } else {
-          auto [xd50, yd50, zd50] = ExportAsXYZD50Floats();
-          return gfx::XYZD50ToD65(xd50, yd50, zd50);
-        }
-      }();
-
-      std::tie(param0_, param1_, param2_) =
-          gfx::XYZD65ToOklab(xd65, yd65, zd65);
+      auto [x, y, z] = ExportAsXYZD50Floats();
+      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToOklab(x, y, z);
       color_space_ = ColorSpace::kOklab;
       return;
     }
@@ -747,17 +725,8 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
         std::tie(param0_, param1_, param2_) =
             gfx::LabToLch(param0_, param1_, param2_);
       } else {
-        // Conversion to Oklch is done through XYZD65.
-        auto [xd65, yd65, zd65] = [&]() {
-          if (color_space_ == ColorSpace::kXYZD65) {
-            return std::make_tuple(param0_, param1_, param2_);
-          } else {
-            auto [xd50, yd50, zd50] = ExportAsXYZD50Floats();
-            return gfx::XYZD50ToD65(xd50, yd50, zd50);
-          }
-        }();
-
-        auto [l, a, b] = gfx::XYZD65ToOklab(xd65, yd65, zd65);
+        auto [x, y, z] = ExportAsXYZD50Floats();
+        auto [l, a, b] = gfx::XYZD50ToOklab(x, y, z);
         std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
         param2_ = AngleToUnitCircleDegrees(param2_);
       }

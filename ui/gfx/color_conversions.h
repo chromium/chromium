@@ -22,10 +22,10 @@ COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> XYZD50ToLab(float x, float y, float z);
 
 COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> OklabToXYZD65(float l, float a, float b);
+std::tuple<float, float, float> OklabToXYZD50(float l, float a, float b);
 
 COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD65ToOklab(float x, float y, float z);
+std::tuple<float, float, float> XYZD50ToOklab(float x, float y, float z);
 
 COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> LchToLab(float l, float c, float h);

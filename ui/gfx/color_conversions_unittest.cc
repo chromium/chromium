@@ -111,8 +111,8 @@ TEST(ColorConversions, OklabToXYZD65) {
   for (auto& color_pair : colors_tests) {
     auto [input_l, input_a, input_b] = color_pair.input;
     auto [expected_x, expected_y, expected_z] = color_pair.expected;
-    auto [output_x, output_y, output_z] =
-        OklabToXYZD65(input_l, input_a, input_b);
+    auto [x_d50, y_d50, z_d50] = OklabToXYZD50(input_l, input_a, input_b);
+    auto [output_x, output_y, output_z] = XYZD50ToD65(x_d50, y_d50, z_d50);
     EXPECT_NEAR(output_x, expected_x, 0.001f)
         << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_x
         << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
@@ -149,22 +149,22 @@ TEST(ColorConversions, XYZD65ToOklab) {
         0.10767589774360209f}}};  // green
 
   for (auto& color_pair : colors_tests) {
-    auto [input_l, input_a, input_b] = color_pair.input;
-    auto [expected_x, expected_y, expected_z] = color_pair.expected;
-    auto [output_x, output_y, output_z] =
-        XYZD65ToOklab(input_l, input_a, input_b);
-    EXPECT_NEAR(output_x, expected_x, 0.001f)
-        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_x
-        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
-        << ' ' << output_y << ' ' << output_z;
-    EXPECT_NEAR(output_y, expected_y, 0.001f)
-        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_x
-        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
-        << ' ' << output_y << ' ' << output_z;
-    EXPECT_NEAR(output_z, expected_z, 0.001f)
-        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_x
-        << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
-        << ' ' << output_y << ' ' << output_z;
+    auto [input_x, input_y, input_z] = color_pair.input;
+    auto [expected_l, expected_a, expected_b] = color_pair.expected;
+    auto [x_d50, y_d50, z_d50] = XYZD65ToD50(input_x, input_y, input_z);
+    auto [output_l, output_a, output_b] = XYZD50ToOklab(x_d50, y_d50, z_d50);
+    EXPECT_NEAR(output_l, expected_l, 0.001f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_l
+        << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
+        << ' ' << output_a << ' ' << output_b;
+    EXPECT_NEAR(output_a, expected_a, 0.001f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_l
+        << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
+        << ' ' << output_a << ' ' << output_b;
+    EXPECT_NEAR(output_b, expected_b, 0.001f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_l
+        << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
+        << ' ' << output_a << ' ' << output_b;
   }
 }
 
