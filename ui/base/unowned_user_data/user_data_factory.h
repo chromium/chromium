@@ -223,6 +223,34 @@ class UserDataFactoryWithOwner : public UserDataFactory {
         std::forward<Args>(concrete_type_constructor_args)...);
   }
 
+  // Creates an unowned data object instance, either by calling `factory_method`
+  // with `factory_method_args`, or by referring to a testing override already
+  // registered.
+  //
+  // Will call (if present)
+  //   `override.Run(owner_for_override)`
+  // or else
+  //   `(*factory_method)(factory_method_args...)`
+  // to create an instance of `BaseType`.
+  //
+  // Note that `owner_for_override` is only used for overrides and not passed to
+  // `factory_method`, so you may find yourself passing the object (or part of
+  // it) twice - once for the override, and again for the factory method.
+  template <typename ConcreteType,
+            typename... Args,
+            typename BaseType = typename decltype(ConcreteType::kDataKey)::Type>
+    requires std::derived_from<ConcreteType, BaseType>
+  std::unique_ptr<BaseType> CreateInstanceWithFactoryMethod(
+      Owner& owner_for_override,
+      std::unique_ptr<ConcreteType> (*factory_method)(Args...),
+      Args... factory_method_args) {
+    if (auto* const entry = GetEntry<TestingOverrideFactoryMethod<BaseType>>(
+            ConcreteType::kDataKey)) {
+      return entry->factory_method.Run(owner_for_override);
+    }
+    return (*factory_method)(std::forward<Args>(factory_method_args)...);
+  }
+
   // Override how all unowned user data objects of type `BaseType` will be
   // created when this factory is used. The `factory_method` will be used to
   // create objects of `OverrideType` instead.
