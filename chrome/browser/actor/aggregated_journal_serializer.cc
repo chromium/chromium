@@ -140,7 +140,7 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
   // "android_screenshot". See
   // https://github.com/google/perfetto/blob/891351c7233523c01dc0e58ac8650df47fad9ab5/src/trace_processor/perfetto_sql/stdlib/android/screenshots.sql#L37
   track_event->add_categories(
-      entry.jpg_screenshot.has_value() ? "android_screenshot" : "actor");
+      entry.screenshot.has_value() ? "android_screenshot" : "actor");
 
   for (auto& details_entry : entry.data->details) {
     auto* annotation = track_event->add_debug_annotations();
@@ -148,7 +148,7 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
     annotation->set_string_value(details_entry->value);
   }
 
-  // If we have an annontated page content we encde it into screenshot
+  // If we have an annontated page content we encode it into screenshot
   // descriptor for now. TODO(dtapuska): annotation->set_proto_value
   // wasn't working because it didn't know about the encoded protobuf
   // type in the chrome_intelligence_proto_features.AnnotatedPageContent type.
@@ -158,10 +158,11 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
                               entry.annotated_page_content->size());
   }
 
-  if (entry.jpg_screenshot.has_value()) {
+  if (entry.screenshot.has_value()) {
     auto* screenshot = track_event->set_screenshot();
-    screenshot->set_jpg_image(entry.jpg_screenshot->data(),
-                              entry.jpg_screenshot->size());
+    // Despite being named jpg_image this field will support any image/* payload
+    screenshot->set_jpg_image(entry.screenshot->data(),
+                              entry.screenshot->size());
   }
 
   if (!entry.url.empty()) {

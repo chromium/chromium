@@ -25,6 +25,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace page_content_annotations {
 
@@ -118,9 +119,6 @@ class ScreenshotBackendMultiSourcePageContextFetcherBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled_features{
         {kGlicTabScreenshotExperiment,
          {
-             {"max_screenshot_width", "0"},
-             {"max_screenshot_height", "0"},
-             {"screenshot_jpeg_quality", "100"},
              {"screenshot_timeout_ms", "10s"},
          }},
     };
@@ -183,9 +181,10 @@ IN_PROC_BROWSER_TEST_P(
   // TODO(crbug.com/443783984): Add test coverage for the dimensions of the
   // screenshot.
   EXPECT_FALSE(screenshot.dimensions.IsZero());
-  ASSERT_GT(screenshot.jpeg_data.size(), 0);
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
 
-  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.jpeg_data);
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
 
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_FALSE(bitmap.empty());
@@ -207,9 +206,6 @@ class RedactingMultiSourcePageContextFetcherBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled_features{
         {kGlicTabScreenshotExperiment,
          {
-             {"max_screenshot_width", "0"},
-             {"max_screenshot_height", "0"},
-             {"screenshot_jpeg_quality", "100"},
              {"screenshot_timeout_ms", "10s"},
          }},
     };
@@ -261,9 +257,10 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
   ScreenshotResult& screenshot = result->screenshot_result.value();
 
   EXPECT_FALSE(screenshot.dimensions.IsZero());
-  ASSERT_GT(screenshot.jpeg_data.size(), 0);
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
 
-  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.jpeg_data);
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
 
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_FALSE(bitmap.empty());
@@ -299,9 +296,10 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
   ScreenshotResult& screenshot = result->screenshot_result.value();
 
   EXPECT_FALSE(screenshot.dimensions.IsZero());
-  ASSERT_GT(screenshot.jpeg_data.size(), 0);
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
 
-  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.jpeg_data);
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
 
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_FALSE(bitmap.empty());
@@ -337,14 +335,120 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
   ScreenshotResult& screenshot = result->screenshot_result.value();
 
   EXPECT_FALSE(screenshot.dimensions.IsZero());
-  ASSERT_GT(screenshot.jpeg_data.size(), 0);
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
 
-  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.jpeg_data);
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
 
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_FALSE(bitmap.empty());
   EXPECT_THAT(bitmap.getColor(10, 10),
               IsColorWithinTolerance(SK_ColorBLACK, 10));
+}
+
+// Test class that sets png params and validates pngs are returned.
+class PngMultiSourcePageContextFetcherBrowserTest
+    : public MultiSourcePageContextFetcherBrowserTest {
+ public:
+  PngMultiSourcePageContextFetcherBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {kGlicTabScreenshotExperiment,
+         {
+             {"screenshot_timeout_ms", "10s"},
+             {"screenshot_image_type", "png"},
+         }},
+    };
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features=*/{});
+  }
+  ~PngMultiSourcePageContextFetcherBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Tests that the mimetype returned is png and image decodes correctly.
+IN_PROC_BROWSER_TEST_F(PngMultiSourcePageContextFetcherBrowserTest,
+                       TakesScreenshot_Png) {
+  GURL url = embedded_https_test_server().GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  SetBackground(web_contents()->GetPrimaryMainFrame(), "red");
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+  FetchPageContextOptions options;
+
+  options.screenshot_options =
+      ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/png");
+
+  SkBitmap bitmap = gfx::PNGCodec::Decode(screenshot.screenshot_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+}
+
+// Test class that sets webp params and validates webps are returned.
+class WebpMultiSourcePageContextFetcherBrowserTest
+    : public MultiSourcePageContextFetcherBrowserTest {
+ public:
+  WebpMultiSourcePageContextFetcherBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {kGlicTabScreenshotExperiment,
+         {
+             {"screenshot_timeout_ms", "10s"},
+             {"screenshot_image_type", "webp"},
+         }},
+    };
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features=*/{});
+  }
+  ~WebpMultiSourcePageContextFetcherBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Tests that the mimetype returned is webp and image decodes correctly.
+IN_PROC_BROWSER_TEST_F(WebpMultiSourcePageContextFetcherBrowserTest,
+                       TakesScreenshot_Webp) {
+  GURL url = embedded_https_test_server().GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  SetBackground(web_contents()->GetPrimaryMainFrame(), "red");
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+  FetchPageContextOptions options;
+
+  options.screenshot_options =
+      ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/webp");
 }
 
 }  // namespace page_content_annotations

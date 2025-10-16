@@ -79,7 +79,7 @@ void ActorInternalsUIHandler::WillAddJournalEntry(
   remote_->JournalEntryAdded(actor_internals::mojom::JournalEntry::New(
       entry.url, entry.data->event, ToString(entry.data->type),
       std::move(details), entry.data->timestamp, entry.data->task_id.value(),
-      ToString(entry.data->track), entry.jpg_screenshot));
+      ToString(entry.data->track), entry.screenshot));
 }
 
 void ActorInternalsUIHandler::StartLogging() {

@@ -33,7 +33,7 @@ class AggregatedJournal {
   // Journal entry
   struct Entry {
     std::string url;
-    std::optional<std::vector<uint8_t>> jpg_screenshot;
+    std::optional<std::vector<uint8_t>> screenshot;
     std::optional<std::vector<uint8_t>> annotated_page_content;
     mojom::JournalEntryPtr data;
 

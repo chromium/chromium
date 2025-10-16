@@ -36,9 +36,6 @@ namespace actor {
 class ActorTask;
 class ToolRequest;
 
-// The mime type used for screenshots.
-inline constexpr std::string kMimeTypeJpeg = "image/jpeg";
-
 // Input type used for ActorKeyedService acting APIs, created from
 // BuildToolRequest functions below. Aliased for convenience.
 using ToolRequestList = std::vector<std::unique_ptr<ToolRequest>>;

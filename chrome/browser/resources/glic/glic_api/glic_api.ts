@@ -1304,9 +1304,6 @@ export declare interface ImageOriginAnnotations {}
 
 /**
  * An encoded screenshot image and associated metadata.
- *
- * Note: Only JPEG images will be supported initially, so mimeType will always
- * be "image/jpeg".
  */
 export declare interface Screenshot {
   /** Width and height of the image in pixels. */

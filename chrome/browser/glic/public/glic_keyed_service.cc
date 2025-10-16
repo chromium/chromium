@@ -707,7 +707,8 @@ void GlicKeyedService::ResumeActorTask(
         glic_tab_context->viewport_screenshot = glic::mojom::Screenshot::New(
             page_context.screenshot_result->dimensions.width(),
             page_context.screenshot_result->dimensions.height(),
-            std::move(page_context.screenshot_result->jpeg_data), "image/jpeg",
+            std::move(page_context.screenshot_result->screenshot_data),
+            page_context.screenshot_result->mime_type,
             // TODO(b/380495633): Finalize and implement image annotations.
             glic::mojom::ImageOriginAnnotations::New());
 

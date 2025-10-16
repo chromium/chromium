@@ -308,10 +308,10 @@ void ActorKeyedService::RequestTabObservation(
             pending_journal_entry->GetJournal().LogAnnotatedPageContent(
                 last_committed_url, pending_journal_entry->GetTaskId(), buffer);
 
-            auto& data = fetch_result.screenshot_result->jpeg_data;
+            auto& data = fetch_result.screenshot_result->screenshot_data;
             pending_journal_entry->GetJournal().LogScreenshot(
                 last_committed_url, pending_journal_entry->GetTaskId(),
-                kMimeTypeJpeg, base::as_byte_span(data));
+                fetch_result.screenshot_result->mime_type, base::as_byte_span(data));
             if (tab) {
               actor::ActorTabData::From(tab.get())->DidObserveContent(
                   fetch_result.annotated_page_content_result->proto);

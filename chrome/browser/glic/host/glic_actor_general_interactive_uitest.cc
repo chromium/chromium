@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
         EXPECT_TRUE(tab.has_screenshot());
         EXPECT_GT(tab.screenshot().size(), 0u);
         EXPECT_TRUE(tab.has_screenshot_mime_type());
-        EXPECT_EQ(tab.screenshot_mime_type(), actor::kMimeTypeJpeg);
+        EXPECT_EQ(tab.screenshot_mime_type(), "image/jpeg");
       })
   );
   // clang-format on

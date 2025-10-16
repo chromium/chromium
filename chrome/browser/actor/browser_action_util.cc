@@ -671,9 +671,9 @@ void FillInTabObservation(
     apc::TabObservation& tab_observation) {
   TRACE_EVENT0("actor", "FillInTabObservation");
   if (fetch_result.screenshot_result.has_value()) {
-    auto& data = fetch_result.screenshot_result->jpeg_data;
+    auto& data = fetch_result.screenshot_result->screenshot_data;
     if (data.size() != 0) {
-      tab_observation.set_screenshot_mime_type(kMimeTypeJpeg);
+      tab_observation.set_screenshot_mime_type(fetch_result.screenshot_result->mime_type);
       // TODO(bokan): Can we avoid a copy here?
       tab_observation.set_screenshot(data.data(), data.size());
     }

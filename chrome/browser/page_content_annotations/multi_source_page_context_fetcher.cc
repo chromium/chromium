@@ -43,6 +43,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/origin.h"
 
@@ -111,7 +113,44 @@ int GetScreenshotJpegQuality() {
     return 100;
   }
   // Must be an int from 0 to 100.
-  return std::max(0, std::min(100, kScreenshotJpegQuality.Get()));
+  return std::max(0, std::min(100, kScreenshotQuality.Get()));
+}
+
+int GetScreenshotWebPQuality() {
+  return GetScreenshotJpegQuality();
+}
+
+// Png only has two modes exposed, so we use the quality to determine if it is
+// low quality or not by checking if it is 50 or lower.
+bool ShouldPngScreenshotBeLowQuality() {
+  if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
+    return false;
+  }
+  return kScreenshotQuality.Get() < 50;
+}
+
+enum class ScreenshotImageType {
+  kUnknown = 0,
+  kJpeg = 1,
+  kPng = 2,
+  kWebp = 3,
+  kMaxValue = kWebp,
+};
+
+ScreenshotImageType GetScreenshotImageType() {
+  if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
+    return ScreenshotImageType::kJpeg;
+  }
+  if (kScreenshotImageType.Get() == "jpeg") {
+    return ScreenshotImageType::kJpeg;
+  }
+  if (kScreenshotImageType.Get() == "png") {
+    return ScreenshotImageType::kPng;
+  }
+  if (kScreenshotImageType.Get() == "webp") {
+    return ScreenshotImageType::kWebp;
+  }
+  return ScreenshotImageType::kJpeg;
 }
 
 base::expected<paint_preview::RedactionParams, std::string> GetRedactionParams(
@@ -274,7 +313,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     }
 
     if (!view || !view->IsSurfaceAvailableForCopy()) {
-      ReceivedJpegScreenshot(
+      ReceivedEncodedScreenshot(
           base::unexpected("Could not retrieve RenderWidgetHostView."));
       return;
     }
@@ -286,7 +325,7 @@ class PageContextFetcher : public content::WebContentsObserver {
           PageContentScreenshotServiceFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents.GetBrowserContext()));
       if (!service) {
-        ReceivedJpegScreenshot(
+        ReceivedEncodedScreenshot(
             base::unexpected("Could not get PageContentScreenshotService."));
         return;
       }
@@ -297,7 +336,7 @@ class PageContextFetcher : public content::WebContentsObserver {
                              screenshot_options.paint_preview_options()
                                  ->iframe_redaction_scope),
           [&](std::string error) {
-            ReceivedJpegScreenshot(base::unexpected(std::move(error)));
+            ReceivedEncodedScreenshot(base::unexpected(std::move(error)));
             return;
           });
 
@@ -356,7 +395,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     // long. b/431837630.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&PageContextFetcher::ReceivedJpegScreenshot,
+        base::BindOnce(&PageContextFetcher::ReceivedEncodedScreenshot,
                        GetWeakPtr(), base::unexpected("ScreenshotTimeout")),
         kScreenshotTimeout.Get());
   }
@@ -381,8 +420,28 @@ class PageContextFetcher : public content::WebContentsObserver {
           FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(
               [](const SkBitmap& bitmap) {
-                std::optional<std::vector<uint8_t>> encoded =
-                    gfx::JPEGCodec::Encode(bitmap, GetScreenshotJpegQuality());
+                std::optional<std::vector<uint8_t>> encoded;
+                switch (GetScreenshotImageType()) {
+                  case ScreenshotImageType::kJpeg:
+                    encoded = gfx::JPEGCodec::Encode(
+                        bitmap, GetScreenshotJpegQuality());
+                    break;
+                  case ScreenshotImageType::kPng:
+                    if (ShouldPngScreenshotBeLowQuality()) {
+                      encoded = gfx::PNGCodec::FastEncodeBGRASkBitmap(
+                          bitmap, /*discard_transparency=*/true);
+                    } else {
+                      encoded = gfx::PNGCodec::EncodeBGRASkBitmap(
+                          bitmap, /*discard_transparency=*/true);
+                    }
+                    break;
+                  case ScreenshotImageType::kWebp:
+                    encoded = gfx::WebpCodec::Encode(
+                        bitmap, GetScreenshotWebPQuality());
+                    break;
+                  default:
+                    break;
+                }
                 base::expected<std::vector<uint8_t>, std::string> reply;
                 if (encoded) {
                   reply.emplace(std::move(encoded.value()));
@@ -396,10 +455,11 @@ class PageContextFetcher : public content::WebContentsObserver {
               EmitTimingHistogram<std::vector<uint8_t>, std::string>,
               "Glic.PageContextFetcher.GetEncodedScreenshot.TimeoutAgnostic",
               elapsed_timer_)
-              .Then(base::BindOnce(&PageContextFetcher::ReceivedJpegScreenshot,
-                                   GetWeakPtr())));
+              .Then(
+                  base::BindOnce(&PageContextFetcher::ReceivedEncodedScreenshot,
+                                 GetWeakPtr())));
     } else {
-      ReceivedJpegScreenshot(base::unexpected(bitmap_result.error()));
+      ReceivedEncodedScreenshot(base::unexpected(bitmap_result.error()));
     }
   }
 
@@ -409,8 +469,8 @@ class PageContextFetcher : public content::WebContentsObserver {
     RunCallbackIfComplete();
   }
 
-  void ReceivedJpegScreenshot(
-      base::expected<std::vector<uint8_t>, std::string> screenshot_jpeg_data) {
+  void ReceivedEncodedScreenshot(
+      base::expected<std::vector<uint8_t>, std::string> screenshot_data) {
     // This function can be called multiple times, for timeout behavior. Early
     // exit if it's already been called.
     if (screenshot_done_) {
@@ -419,9 +479,22 @@ class PageContextFetcher : public content::WebContentsObserver {
     auto elapsed = elapsed_timer_.Elapsed();
     screenshot_done_ = true;
     capture_count_lock_ = {};
-    if (screenshot_jpeg_data.has_value()) {
-      pending_result_->screenshot_result.value().jpeg_data =
-          std::move(screenshot_jpeg_data.value());
+    if (screenshot_data.has_value()) {
+      pending_result_->screenshot_result.value().screenshot_data =
+          std::move(screenshot_data.value());
+      switch (GetScreenshotImageType()) {
+        case ScreenshotImageType::kJpeg:
+          pending_result_->screenshot_result.value().mime_type = "image/jpeg";
+          break;
+        case ScreenshotImageType::kPng:
+          pending_result_->screenshot_result.value().mime_type = "image/png";
+          break;
+        case ScreenshotImageType::kWebp:
+          pending_result_->screenshot_result.value().mime_type = "image/webp";
+          break;
+        default:
+          NOTREACHED();
+      }
       base::UmaHistogramTimes("Glic.PageContextFetcher.GetEncodedScreenshot",
                               elapsed);
       if (progress_listener_) {
@@ -429,11 +502,11 @@ class PageContextFetcher : public content::WebContentsObserver {
       }
     } else {
       pending_result_->screenshot_result =
-          base::unexpected(screenshot_jpeg_data.error());
+          base::unexpected(screenshot_data.error());
       base::UmaHistogramTimes(
           "Glic.PageContextFetcher.GetEncodedScreenshot.Failure", elapsed);
       if (progress_listener_) {
-        progress_listener_->EndScreenshot(screenshot_jpeg_data.error());
+        progress_listener_->EndScreenshot(screenshot_data.error());
       }
     }
     if (pending_result_->screenshot_result.has_value()) {
@@ -554,13 +627,16 @@ std::string ToString(FetchPageContextError error) {
 BASE_FEATURE(kGlicTabScreenshotExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMaxScreenshotWidthParam{
-    &kGlicTabScreenshotExperiment, "max_screenshot_width", 1024};
+    &kGlicTabScreenshotExperiment, "max_screenshot_width", 0};
 
 const base::FeatureParam<int> kMaxScreenshotHeightParam{
-    &kGlicTabScreenshotExperiment, "max_screenshot_height", 1024};
+    &kGlicTabScreenshotExperiment, "max_screenshot_height", 0};
 
-const base::FeatureParam<int> kScreenshotJpegQuality{
-    &kGlicTabScreenshotExperiment, "screenshot_jpeg_quality", 40};
+const base::FeatureParam<int> kScreenshotQuality{&kGlicTabScreenshotExperiment,
+                                                 "screenshot_quality", 100};
+
+const base::FeatureParam<std::string> kScreenshotImageType{&kGlicTabScreenshotExperiment,
+                                                 "screenshot_image_type", "jpeg"};
 
 const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
     &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(5)};
