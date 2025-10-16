@@ -301,13 +301,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
         l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
     new_tab_button_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
-
-#if BUILDFLAG(IS_LINUX)
-      // The New Tab Button can be middle-clicked on Linux.
-      new_tab_button_->SetTriggerableEventFlags(
-          new_tab_button_->GetTriggerableEventFlags() |
-          ui::EF_MIDDLE_MOUSE_BUTTON);
-#endif
   }
 
   reserved_grab_handle_space_ =

@@ -83,8 +83,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_id.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -2270,24 +2268,6 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
     // normal fade-in.
     if (hover_card_controller_) {
       hover_card_controller_->PreventImmediateReshow();
-    }
-
-    const ui::MouseEvent& mouse = static_cast<const ui::MouseEvent&>(event);
-    if (mouse.IsOnlyMiddleMouseButton()) {
-      if (ui::Clipboard::IsSupportedClipboardBuffer(
-              ui::ClipboardBuffer::kSelection)) {
-        ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-        CHECK(clipboard)
-            << "Clipboard instance is not available, cannot proceed with "
-               "middle mouse button action.";
-        std::u16string clipboard_text;
-        clipboard->ReadText(ui::ClipboardBuffer::kSelection,
-                            /* data_dst = */ nullptr, &clipboard_text);
-        if (!clipboard_text.empty()) {
-          controller_->CreateNewTabWithLocation(clipboard_text);
-        }
-      }
-      return;
     }
   }
   controller_->CreateNewTab();
