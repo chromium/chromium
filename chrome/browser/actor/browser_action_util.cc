@@ -839,8 +839,8 @@ void BuildActionsResultWithObservations(
     }
   }
 
-  std::vector<Browser*> browsers = chrome::FindAllTabbedBrowsersWithProfile(
-      profile, /*ignore_closing_browsers=*/true);
+  std::vector<Browser*> browsers =
+      chrome::FindAllTabbedBrowsersWithProfile(profile);
 
   for (Browser* browser : browsers) {
     apc::WindowObservation* window_observation = response->add_windows();
