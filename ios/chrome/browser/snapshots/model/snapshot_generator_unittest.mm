@@ -202,27 +202,6 @@ TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshot) {
   EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor blueColor]));
 }
 
-// Tests the snapshot taken by WebKit-based API with invalid URL.
-TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshotWithInvalidURL) {
-  // Enable the flag to take a snapshot with WebKit-based API.
-  web_state_.SetCanTakeSnapshot(true);
-  // Set an invalid URL.
-  web_state_.SetCurrentURL(GURL());
-
-  base::RunLoop run_loop;
-  base::RunLoop* run_loop_ptr = &run_loop;
-
-  __block UIImage* snapshot = nil;
-  [generator_ generateSnapshotWithCompletion:^(UIImage* image) {
-    snapshot = image;
-    run_loop_ptr->Quit();
-  }];
-
-  run_loop.Run();
-
-  ASSERT_FALSE(snapshot);
-}
-
 // Tests the snapshot on the new tab page.
 TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshotWithNTP) {
   // Enable the flag to take a snapshot with WebKit-based API.

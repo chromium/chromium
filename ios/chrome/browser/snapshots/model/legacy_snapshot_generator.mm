@@ -42,6 +42,12 @@ struct SnapshotInfo {
 }
 
 - (void)generateSnapshotWithCompletion:(void (^)(UIImage*))completion {
+  // TODO(crbug.com/452299163): A last committed URL is nil when this method is
+  // called before the navigation has been committed. For instance, a snapshot
+  // is taken prior to the navigation when opening multiple new tab pages
+  // quickly. The execution continues but it may choose the wrong way to take a
+  // snapshot (-generateWKWebViewSnapshotWithCompletion: vs
+  // -generateUIViewSnapshotWithOverlays:).
   bool isNTP = _webState->GetLastCommittedURL() == kChromeUINewTabURL;
   SnapshotSourceTabHelper* snapshotSource =
       SnapshotSourceTabHelper::FromWebState(_webState.get());
