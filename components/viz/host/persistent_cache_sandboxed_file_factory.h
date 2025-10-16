@@ -28,7 +28,7 @@ struct PersistentCacheSandboxedFiles {
 // This class supports opening file handles in a persistent cache directory.
 // The handles can be forwarded to the GPU process to load & store blobs.
 //
-// The persistent cache files are versioned based on the browser's product
+// The persistent cache files are versioned based on the provided product
 // version. When a version change happens, the older versioned files will
 // be automatically deleted. TODO(crbug.com/399642827): This is a temporary
 // solution until PersistentCache supports max size limit and trimming.
@@ -47,8 +47,8 @@ class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
 
   // Creates the persistent cache database and journal files.
   // `cache_id` is used to uniquely identify the cache type (e.g.,
-  // 'dawngraphite'). `product` is the browser product string, used for
-  // versioning. Stale files from different versions are automatically deleted.
+  // 'dawngraphite'). `product` is used for versioning. Stale files from
+  // different versions are automatically deleted.
   std::optional<PersistentCacheSandboxedFiles> CreateFiles(
       const CacheIdString& cache_id,
       const std::string& product);

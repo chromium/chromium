@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 source_set("common") {
-  sources = [ "callback.h" ]
+  sources = [
+    "callback.h",
+    "dawn_commit_hash.h",
+  ]
   public_deps = [ "//base" ]
 }

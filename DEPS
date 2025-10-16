@@ -4223,8 +4223,10 @@ hooks = [
     'name': 'lastchange_dawn',
     'pattern': '.',
     'action': ['python3', 'src/build/util/lastchange.py',
+               '-m', 'DAWN_COMMIT_HASH',
                '-s', 'src/third_party/dawn',
-               '--revision', 'src/gpu/webgpu/DAWN_VERSION'],
+               '--revision', 'src/gpu/webgpu/DAWN_VERSION',
+               '--header', 'src/gpu/webgpu/dawn_commit_hash.h'],
   },
   # Pull dsymutil binaries using checked-in hashes.
   {

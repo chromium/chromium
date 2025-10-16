@@ -1,6 +1,7 @@
 # Please consult components/viz/README.md about allowable dependencies.
 
 include_rules = [
+  "+components/base32",
   "+components/discardable_memory/public/mojom",
   "+components/input/render_input_router.mojom.h",
   "+components/input/utils.h",
@@ -11,6 +12,7 @@ include_rules = [
   "+gpu/ipc/client",
   "+gpu/ipc/common",
   "+gpu/ipc/host",
+  "+gpu/webgpu/dawn_commit_hash.h",
   "+media/base/video_types.h",
   "+media/capture/mojom",
   "+media/media_buildflags.h",

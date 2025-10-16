@@ -27,8 +27,10 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/host/gpu_disk_cache.h"
+#include "gpu/webgpu/dawn_commit_hash.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "skia/buildflags.h"
+#include "skia/ext/skia_commit_hash.h"
 #include "ui/gfx/font_render_params.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -95,6 +97,17 @@ FontRenderParams& GetFontRenderParams() {
 bool IsHdrEnabledForGpuInfo(const gpu::GPUInfo& gpu_info) {
   return gpu_info.skia_backend_type != gpu::SkiaBackendType::kUnknown &&
          gpu_info.skia_backend_type != gpu::SkiaBackendType::kNone;
+}
+#endif
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+std::string GraphiteDawnCacheVersion() {
+  // We use a combination of Dawn and Skia's git hashes as the cache version.
+  // - Dawn's git hash is because a new Dawn's version might change the way
+  // shaders are compiled.
+  // - Skia's git hash is because some cached shaders might not be used in a
+  // newer version of Skia.
+  return SKIA_COMMIT_HASH "_" DAWN_COMMIT_HASH;
 }
 #endif
 
@@ -214,7 +227,7 @@ void GpuHostImpl::OnProcessCrashed() {
       persistent_cache_file_factory->ClearFilesAsync(
           /*cache_id=*/GetGpuDiskCacheSubdir(
               gpu::GpuDiskCacheType::kDawnGraphite),
-          params_.product, base::DoNothing());
+          GraphiteDawnCacheVersion(), base::DoNothing());
 #endif
     }
     auto* gpu_disk_cache_factory = delegate_->GetGpuDiskCacheFactory();
@@ -446,7 +459,7 @@ void GpuHostImpl::InitPersistentCache() {
     persistent_cache_file_factory->CreateFilesAsync(
         /*cache_id=*/GetGpuDiskCacheSubdir(
             gpu::GpuDiskCacheType::kDawnGraphite),
-        params_.product,
+        GraphiteDawnCacheVersion(),
         base::BindOnce(
             [](base::WeakPtr<GpuHostImpl> gpu_host,
                std::optional<PersistentCacheSandboxedFiles> files) {

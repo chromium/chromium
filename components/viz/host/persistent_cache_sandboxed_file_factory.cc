@@ -7,11 +7,13 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/base32/base32.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 
 namespace viz {
@@ -26,13 +28,17 @@ struct PersistentCacheFilePaths {
 };
 
 std::string GetVersionSuffix(const std::string& product) {
-  // Use produce's version to differentiate the cache files.
-  // TODO(crbug.com/399642827): Use Dawn/ANGLE/Skia's versions which change less
-  // often. The product string may contain characters that are not valid in a
-  // filename, so it must be sanitized.
-  std::string version_suffix = product;
-  base::ReplaceChars(version_suffix, "/\\", "_", &version_suffix);
-  return version_suffix;
+  // The product's version string can be arbitrary long. So use SHA1 to reduce
+  // the length to avoid path length limit (260 on Windows and 4096 on Linux).
+  // The SHA1 is then encoded using a path-safe base32 (final length = 32
+  // characters).
+  // TODO(crbug.com/399642827): in future, we should be able to rely on
+  // auto-trimming ability of persistent caches, so even if there is a collision
+  // in version names, it would still be fine. It's still fine now because the
+  // collision probability of SHA1 is 1 in 2^80.
+  std::string sha1 = base::SHA1HashString(product);
+  return base32::Base32Encode(base::as_byte_span(sha1),
+                              base32::Base32EncodePolicy::OMIT_PADDING);
 }
 
 // Returns the paths to the cache database and journal files. The format is:
