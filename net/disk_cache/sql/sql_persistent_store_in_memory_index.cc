@@ -4,7 +4,12 @@
 
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 
+#include <limits>
+
 namespace disk_cache {
+
+using Hash = CacheEntryKey::Hash;
+using ResId = SqlPersistentStore::ResId;
 
 SqlPersistentStoreInMemoryIndex::SqlPersistentStoreInMemoryIndex() = default;
 SqlPersistentStoreInMemoryIndex::~SqlPersistentStoreInMemoryIndex() = default;
@@ -14,55 +19,62 @@ SqlPersistentStoreInMemoryIndex::SqlPersistentStoreInMemoryIndex(
 SqlPersistentStoreInMemoryIndex& SqlPersistentStoreInMemoryIndex::operator=(
     SqlPersistentStoreInMemoryIndex&& other) noexcept = default;
 
-bool SqlPersistentStoreInMemoryIndex::Insert(CacheEntryKey::Hash hash,
-                                             SqlPersistentStore::ResId res_id) {
-  if (res_id_to_hash_map_.contains(res_id)) {
-    return false;
+bool SqlPersistentStoreInMemoryIndex::Insert(Hash hash, ResId res_id) {
+  std::optional<ResId32> res_id_32 = ToResId32(res_id);
+  if (res_id_32.has_value()) {
+    return impl32_.Insert(hash, *res_id_32);
   }
-  if (hash_res_id_set_.Insert(hash, res_id)) {
-    res_id_to_hash_map_[res_id] = hash;
+
+  if (!impl64_) {
+    impl64_.emplace();
+  }
+  return impl64_->Insert(hash, res_id);
+}
+
+bool SqlPersistentStoreInMemoryIndex::Contains(Hash hash) const {
+  if (impl32_.Contains(hash)) {
     return true;
   }
-  return false;
+  return impl64_ && impl64_->Contains(hash);
 }
 
-bool SqlPersistentStoreInMemoryIndex::Contains(CacheEntryKey::Hash hash) const {
-  return hash_res_id_set_.Contains(hash);
+bool SqlPersistentStoreInMemoryIndex::Remove(ResId res_id) {
+  std::optional<ResId32> res_id_32 = ToResId32(res_id);
+  if (res_id_32.has_value()) {
+    return impl32_.Remove(*res_id_32);
+  }
+  return impl64_ && impl64_->Remove(res_id);
 }
 
-bool SqlPersistentStoreInMemoryIndex::Remove(SqlPersistentStore::ResId res_id) {
-  auto it = res_id_to_hash_map_.find(res_id);
-  if (it == res_id_to_hash_map_.end()) {
-    return false;
+bool SqlPersistentStoreInMemoryIndex::Remove(Hash hash, ResId res_id) {
+  std::optional<ResId32> res_id_32 = ToResId32(res_id);
+  if (res_id_32.has_value()) {
+    return impl32_.Remove(hash, *res_id_32);
   }
-  return RemoveInternal(it);
-}
-
-bool SqlPersistentStoreInMemoryIndex::Remove(CacheEntryKey::Hash hash,
-                                             SqlPersistentStore::ResId res_id) {
-  auto it = res_id_to_hash_map_.find(res_id);
-  if (it == res_id_to_hash_map_.end()) {
-    return false;
-  }
-  if (it->second != hash) {
-    return false;
-  }
-  return RemoveInternal(it);
+  return impl64_ && impl64_->Remove(hash, res_id);
 }
 
 void SqlPersistentStoreInMemoryIndex::Clear() {
-  hash_res_id_set_.Clear();
-  res_id_to_hash_map_.clear();
+  impl32_.Clear();
+  impl64_.reset();
 }
 
-bool SqlPersistentStoreInMemoryIndex::RemoveInternal(
-    ResIdToHashMap::iterator it) {
-  DCHECK(it != res_id_to_hash_map_.end());
-  if (!hash_res_id_set_.Remove(it->second, it->first)) {
-    return false;
+// static
+std::optional<SqlPersistentStoreInMemoryIndex::ResId32>
+SqlPersistentStoreInMemoryIndex::ToResId32(ResId res_id) {
+  if (res_id.value() < 0 ||
+      res_id.value() > std::numeric_limits<uint32_t>::max()) {
+    return std::nullopt;
   }
-  res_id_to_hash_map_.erase(it);
-  return true;
+  return ResId32(static_cast<uint32_t>(res_id.value()));
+}
+
+size_t SqlPersistentStoreInMemoryIndex::size() const {
+  size_t size = impl32_.size();
+  if (impl64_) {
+    size += impl64_->size();
+  }
+  return size;
 }
 
 }  // namespace disk_cache
