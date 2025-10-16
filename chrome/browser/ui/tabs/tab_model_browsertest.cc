@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -77,6 +78,8 @@ IN_PROC_BROWSER_TEST_F(TabModelBrowserTest, VisibilityCallbacks) {
 
   // Set the selection to be a tab in the split.
   tab_strip_model()->SelectTabAt(1);
+  ASSERT_EQ(1, tab_strip_model()->active_index());
+  ASSERT_TRUE(content::WaitForLoadStop(tab_strip_model()->GetWebContentsAt(1)));
 
   // Verify that the callbacks were called for each tab.
   VerifyAndClearCallbacks();
