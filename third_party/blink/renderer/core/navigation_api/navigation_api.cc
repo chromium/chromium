@@ -776,7 +776,12 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   PromoteUpcomingNavigationToOngoing(key);
 
-  KURL previous_url = currentEntry()->url();
+  KURL previous_url;
+  // currentEntry() may be nullptr, although we have no repro.
+  // See crbug.com/451762633
+  if (currentEntry()) {
+    previous_url = currentEntry()->url();
+  }
   auto* init = NavigateEventInit::Create();
   V8NavigationType::Enum navigation_type =
       DetermineNavigationType(params->frame_load_type);

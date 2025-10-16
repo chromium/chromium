@@ -100,6 +100,10 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // Set the URLs that we're navigating between at the start of navigation. This
   // is used to match @route "from" (and "to") rules.
   void OnNavigationStart(const KURL& previous_url, const KURL& next_url) {
+    if (previous_url.IsNull()) {
+      // Workaround for crbug.com/451762633
+      return;
+    }
     previous_url_ = previous_url;
     next_url_ = next_url;
     UpdateActiveRoutes();
@@ -108,6 +112,10 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // Clear the URL that we're navigating between when the navigation is
   // complete.
   void OnNavigationDone() {
+    if (previous_url_.IsNull()) {
+      // Workaround for crbug.com/451762633
+      return;
+    }
     previous_url_ = KURL();
     next_url_ = KURL();
     UpdateActiveRoutes();
