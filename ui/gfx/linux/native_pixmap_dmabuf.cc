@@ -13,9 +13,14 @@ namespace gfx {
 NativePixmapDmaBuf::NativePixmapDmaBuf(const gfx::Size& size,
                                        gfx::BufferFormat format,
                                        gfx::NativePixmapHandle handle)
-    : size_(size),
-      format_(viz::GetSharedImageFormat(format)),
-      handle_(std::move(handle)) {}
+    : NativePixmapDmaBuf(size,
+                         viz::GetSharedImageFormat(format),
+                         std::move(handle)) {}
+
+NativePixmapDmaBuf::NativePixmapDmaBuf(const gfx::Size& size,
+                                       viz::SharedImageFormat format,
+                                       gfx::NativePixmapHandle handle)
+    : size_(size), format_(format), handle_(std::move(handle)) {}
 
 NativePixmapDmaBuf::~NativePixmapDmaBuf() {}
 

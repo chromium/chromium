@@ -22,6 +22,9 @@ class COMPONENT_EXPORT(GFX) NativePixmapDmaBuf : public gfx::NativePixmap {
   NativePixmapDmaBuf(const gfx::Size& size,
                      gfx::BufferFormat format,
                      gfx::NativePixmapHandle handle);
+  NativePixmapDmaBuf(const gfx::Size& size,
+                     viz::SharedImageFormat format,
+                     gfx::NativePixmapHandle handle);
 
   NativePixmapDmaBuf(const NativePixmapDmaBuf&) = delete;
   NativePixmapDmaBuf& operator=(const NativePixmapDmaBuf&) = delete;
