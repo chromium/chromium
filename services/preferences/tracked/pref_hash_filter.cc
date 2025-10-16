@@ -417,10 +417,18 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
     if (preference->EnforceAndReport(pref_store_contents_at_load,
                                      transaction.get(),
                                      nullptr /* external_tx */, encryptor)) {
-      // The preference was invalid. Reset the *live* preference. This action
-      // will mark the PrefService as dirty and automatically schedule a new
-      // write operation, during which new encrypted hashes will be generated.
-      pref_service_->ClearPref(path);
+      // The preference was invalid. Update the *live* preference with the
+      // corrected value from the in-memory `pref_store_contents_at_load`
+      // dictionary, which `EnforceAndReport` has already modified.
+      const base::Value* corrected_value =
+          pref_store_contents_at_load.FindByDottedPath(path);
+      if (corrected_value) {
+        pref_service_->Set(path, corrected_value->Clone());
+      } else {
+        // If the corrected value is null (meaning the whole preference was
+        // corrupt and removed), then clear the live pref.
+        pref_service_->ClearPref(path);
+      }
       pref_to_write = user_prefs::kPreferenceResetTime;
     }
   }
