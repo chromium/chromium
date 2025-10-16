@@ -8677,13 +8677,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.FileDescriptorLimiterAction"
-    enum="SimpleCache.FileDescriptorLimiterOp" expires_after="2022-11-13">
+    enum="SimpleCache.FileDescriptorLimiterOp" expires_after="2026-01-13">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
     This even is emitted when SimpleCache is forced to either close some files
     due to being over FD limit, or reopen files it had to close due to such
     limit earlier.
+
+    Warning: this histogram was expired from 2022-11-13 to 2025-10-17; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -8745,7 +8748,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SimpleCache.{CacheInstance}DidDeleteIndexFilesAfterFailedConsistency"
-    enum="Boolean" expires_after="2023-12-08">
+    enum="Boolean" expires_after="2026-01-13">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -8753,6 +8756,9 @@ chromium-metrics-reviews@google.com.
     empty cache after the cache failed the initialization consistency check.
     This histogram will tell us how often the deletion code is triggering and
     modifying the disk. {CacheInstance}
+
+    Warning: this histogram was expired from 2023-12-08 to 2025-10-17; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -8977,12 +8983,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}SyncOpenPrefetchMode"
-    enum="SimpleCachePrefetchMode" expires_after="2023-12-10">
+    enum="SimpleCachePrefetchMode" expires_after="2026-01-13">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
     The kind of prefetching performed, if any, when executing
     SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(). {CacheInstance}
+
+    Warning: this histogram was expired from 2023-12-10 to 2025-10-17; data may
+    be missing.
   </summary>
 </histogram>
 
