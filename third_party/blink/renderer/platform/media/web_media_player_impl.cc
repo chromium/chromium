@@ -1534,8 +1534,13 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   paint_params.dest_rect = gfx::RectF(rect);
   paint_params.transformation =
       pipeline_metadata_.video_decoder_config.video_transformation();
-  video_renderer_.Paint(video_frame, canvas, flags, paint_params,
-                        raster_context_provider_.get());
+
+  // This class should only be used with raster context providers that
+  // support OOP-R.
+  CHECK(!raster_context_provider_ ||
+        raster_context_provider_->ContextCapabilities().gpu_rasterization);
+  video_renderer_.PaintOOPR(video_frame, canvas, flags, paint_params,
+                            raster_context_provider_.get());
 }
 
 scoped_refptr<media::VideoFrame>
