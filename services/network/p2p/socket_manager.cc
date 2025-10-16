@@ -140,6 +140,7 @@ class P2PSocketManager::DnsRequest {
       return;
     }
 
+    list.reserve(addresses.size());
     for (const auto& endpoint : addresses) {
       list.push_back(endpoint.address());
     }
