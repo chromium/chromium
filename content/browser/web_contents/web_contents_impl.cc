@@ -3935,13 +3935,11 @@ void WebContentsImpl::OnWebPreferencesChanged() {
       (force_enable_zoom_ != web_preferences_->force_enable_zoom);
   force_enable_zoom_ = web_preferences_->force_enable_zoom;
   if (force_enable_zoom_changed) {
-    std::vector<viz::FrameSinkId> frame_sink_ids;
     for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
       RenderFrameHostImpl* rfh = node->current_frame_host();
       if (rfh->is_local_root()) {
         if (auto* rwh = rfh->GetRenderWidgetHost()) {
           rwh->SetForceEnableZoom(force_enable_zoom_);
-          frame_sink_ids.push_back(rwh->GetFrameSinkId());
         }
       }
     }
