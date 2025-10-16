@@ -263,8 +263,10 @@ GURL ComposeboxQueryController::CreateSearchUrl(
               *file_info->request_id_);
         }
       }
-      return GetUrlForMultimodalAim(
+      return GetUrlForMultimodalSearch(
           template_url_service_,
+          /*is_aim_search=*/search_url_request_info->search_url_type ==
+              SearchUrlType::kAim,
           omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
           search_url_request_info->query_start_time,
           cluster_info_->search_session_id(), std::move(contextual_inputs),
@@ -282,8 +284,10 @@ GURL ComposeboxQueryController::CreateSearchUrl(
       if (IsValidFileUploadStatusForMultimodalRequest(
               last_file->upload_status_)) {
         num_files_in_request_ = 1;
-        return GetUrlForMultimodalAim(
+        return GetUrlForMultimodalSearch(
             template_url_service_,
+            /*is_aim_search=*/search_url_request_info->search_url_type ==
+                SearchUrlType::kAim,
             omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
             search_url_request_info->query_start_time,
             cluster_info_->search_session_id(),
@@ -297,6 +301,11 @@ GURL ComposeboxQueryController::CreateSearchUrl(
       }
     }
   }
+
+  // TODO(crbug.com/445996881):Determine how to support non-AIM search for
+  // text-only queries.
+  DCHECK(search_url_request_info->search_url_type == SearchUrlType::kAim);
+
   // Treat queries in which the cluster info has expired, or the last file is
   // not valid, as unimodal text queries.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info

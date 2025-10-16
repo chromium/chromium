@@ -52,6 +52,7 @@ constexpr char kContextualInputsParameterKey[] = "cinpts";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kClientUploadDurationQueryParameter[] = "cud";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
+constexpr char kSearchModeQueryParameterKey[] = "udm";
 constexpr char kVariationsHeaderKey[] = "X-Client-Data";
 constexpr char kTestUser[] = "test_user@gmail.com";
 constexpr char kTestSearchSessionId[] = "test_search_session_id";
@@ -64,6 +65,9 @@ constexpr char kVisualInputTypeParameterKey[] = "vit";
 constexpr char kLnsSurfaceParameterKey[] = "lns_surface";
 constexpr char kTestCellAddress[] = "test_cell_address";
 constexpr char kTestServerAddress[] = "test_server_address";
+constexpr char kAimUdmQueryParameterValue[] = "50";
+constexpr char kMultimodalUdmQueryParameterValue[] = "24";
+constexpr char kUnimodalUdmQueryParameterValue[] = "26";
 
 #if BUILDFLAG(IS_ANDROID)
 constexpr lens::CompressionType kExpectedPdfCompressionType =
@@ -1539,6 +1543,12 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
   std::string cud_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
       aim_url, kClientUploadDurationQueryParameter, &cud_value));
+
+  // Check that the udm parameter is set to 50 (AIM).
+  std::string udm_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSearchModeQueryParameterKey,
+                                         &udm_value));
+  EXPECT_EQ(udm_value, kAimUdmQueryParameterValue);
 }
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
@@ -1593,6 +1603,91 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
   std::string cud_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
       aim_url, kClientUploadDurationQueryParameter, &cud_value));
+
+  // Check that the udm value is set to 50 (AIM).
+  std::string udm_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSearchModeQueryParameterKey,
+                                         &udm_value));
+  EXPECT_EQ(udm_value, kAimUdmQueryParameterValue);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       QuerySubmittedWithUploadedPdfStandardSearch) {
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create the destination URL for the query. The destination URL can
+  // only be created after the cluster info is received.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kStandard;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  GURL search_url =
+      controller().CreateSearchUrl(std::move(search_url_request_info));
+
+  // Assert: Lens request id is added to multimodal pdf queries.
+  std::string vsrid_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(search_url, kRequestIdParameterKey,
+                                         &vsrid_value));
+  EXPECT_FALSE(vsrid_value.empty());
+  EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_PDF,
+            DecodeRequestIdFromVsrid(vsrid_value).media_type());
+
+  // Assert: Visual input type is set to pdf for multimodal pdf queries.
+  std::string vit_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kVisualInputTypeParameterKey, &vit_value));
+  EXPECT_EQ(vit_value, "pdf");
+
+  // Assert: Gsession id is added to multimodal pdf queries.
+  std::string gsession_id_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kSessionIdQueryParameterKey, &gsession_id_value));
+  EXPECT_EQ(kTestSearchSessionId, gsession_id_value);
+
+  // Check that the timestamps are attached to the url.
+  std::string qsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
+
+  std::string cud_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kClientUploadDurationQueryParameter, &cud_value));
+
+  // Check that the udm value is set to 24 (multimodal search).
+  std::string udm_value_24;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      search_url, kSearchModeQueryParameterKey, &udm_value_24));
+  EXPECT_EQ(udm_value_24, kMultimodalUdmQueryParameterValue);
+
+  // Act: Create the destination URL for the query, with no query text.
+  std::unique_ptr<CreateSearchUrlRequestInfo>
+      search_url_request_info_no_query_text =
+          std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info_no_query_text->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kStandard;
+  search_url_request_info_no_query_text->query_start_time = kTestQueryStartTime;
+  GURL no_query_text_url = controller().CreateSearchUrl(
+      std::move(search_url_request_info_no_query_text));
+
+  // Check that the udm value is set to 26 (unimodal search).
+  std::string udm_value_26;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      no_query_text_url, kSearchModeQueryParameterKey, &udm_value_26));
+  EXPECT_EQ(udm_value_26, kUnimodalUdmQueryParameterValue);
 }
 
 #if !BUILDFLAG(IS_IOS)

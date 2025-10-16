@@ -184,6 +184,14 @@ class ComposeboxQueryController {
     size_t num_outstanding_network_requests_ = 0;
   };
 
+  // The possible search url types.
+  enum class SearchUrlType {
+    // The standard "All" tab search experience
+    kStandard = 0,
+    // The AIM search type.
+    kAim = 1,
+  };
+
   // Struct containing information needed to construct a search url.
   struct CreateSearchUrlRequestInfo {
    public:
@@ -195,6 +203,9 @@ class ComposeboxQueryController {
 
     // The client-side time the query was started.
     base::Time query_start_time;
+
+    // The type of search url to create.
+    SearchUrlType search_url_type = SearchUrlType::kAim;
 
     // Additional params to attach to the search url.
     std::map<std::string, std::string> additional_params;
