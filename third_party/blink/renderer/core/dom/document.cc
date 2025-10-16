@@ -8295,12 +8295,13 @@ void Document::RequestResizeResponsiveIframe(ExceptionState* exception_state) {
 void Document::ResponsiveEmbeddedSizingChanged() {
   DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
   responsive_embedded_sizing_ = false;
-  if (auto* root_element = documentElement()) {
-    for (HTMLMetaElement& meta_element :
+  if (const auto* root_element = documentElement()) {
+    for (const HTMLMetaElement& meta_element :
          Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
       if (EqualIgnoringASCIICase(meta_element.GetName(),
                                  keywords::kResponsiveEmbeddedSizing)) {
         responsive_embedded_sizing_ = true;
+        break;
       }
     }
   }
