@@ -2450,6 +2450,7 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
   }
 
   if (result == OK) {
+    CHECK(stream_);
     base::UmaHistogramEnumeration(
         base::StrCat({
             "Net.NetworkTransaction.NegotiatedProtocol",
@@ -2500,6 +2501,28 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
           base::StrCat(
               {"Net.NetworkTransaction.SessionSource2.", protocol_suffix}),
           *stream_request_completion_details_->session_source);
+    }
+
+    // Record HttpStream creation time per new/existing stream/session.
+    // TODO(crbug.com/414173943): Remove these histograms after we confirm
+    // there is no difference between the HEv3 and the non-HEv3 paths.
+    if (!ForWebSocketHandshake()) {
+      auto is_existing = [&]() {
+        if (negotiated_protocol_ == NextProto::kProtoUnknown ||
+            negotiated_protocol_ == NextProto::kProtoHTTP11) {
+          // For HTTP/1.1 streams, `IsConnectionReused()` actually means whether
+          // the underlying socket is idle (existing) or fresh (new).
+          return stream_->IsConnectionReused();
+        }
+        CHECK(stream_request_completion_details_->session_source.has_value());
+        return *stream_request_completion_details_->session_source ==
+               SessionSource::kExisting;
+      };
+      base::UmaHistogramTimes(
+          base::StrCat({"Net.NetworkTransaction.", protocol_suffix,
+                        "StreamCreationTime.",
+                        is_existing() ? "Existing" : "New"}),
+          create_time);
     }
   } else {
     base::UmaHistogramSparse("Net.NetworkTransaction.StreamRequestErrorCode2",

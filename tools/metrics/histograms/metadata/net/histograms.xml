@@ -4061,6 +4061,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.NetworkTransaction.{Protocol}StreamCreationTime.{NewOrExisting}"
+    units="ms" expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time taken by an HttpNetworkTransaction to create a successful
+    HttpStream, recorded separately by protocol and whether the stream is
+    created on top of new or existing socket/session. Recorded in
+    HttpNetworkTransaction::DoCreateStreamComplete when the stream creation
+    completes successfully.
+  </summary>
+  <token key="Protocol" variants="NegotiatedProtocolCoalesced"/>
+  <token key="NewOrExisting">
+    <variant name="Existing"/>
+    <variant name="New"/>
+  </token>
+</histogram>
+
 <histogram name="Net.NetworkTransaction{HostType}.RetryReason"
     enum="HttpNetworkTransactionRetryReason" expires_after="2026-03-08">
   <owner>horo@chromium.org</owner>
