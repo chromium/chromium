@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
+#include "third_party/webrtc/api/test/mock_datagram_connection.h"
 
 namespace blink {
 using testing::_;
@@ -75,34 +76,6 @@ class MockAsyncDatagramConnection : public AsyncDatagramConnection {
               (std::unique_ptr<Vector<Vector<uint8_t>>> packet_payloads),
               (override));
   MOCK_METHOD(void, Terminate, (), (override));
-};
-
-class MockDatagramConnection : public webrtc::DatagramConnection {
- public:
-  MOCK_METHOD(void,
-              SetRemoteIceParameters,
-              (const webrtc::IceParameters& ice_parameters),
-              (override));
-  MOCK_METHOD(void,
-              AddRemoteCandidate,
-              (const webrtc::Candidate& candidate),
-              (override));
-  MOCK_METHOD(bool, Writable, (), (override));
-  MOCK_METHOD(void,
-              SetRemoteDtlsParameters,
-              (absl::string_view digestAlgorithm,
-               const uint8_t* digest,
-               size_t digest_len,
-               webrtc::DatagramConnection::SSLRole ssl_role),
-              (override));
-  MOCK_METHOD(bool,
-              SendPacket,
-              (webrtc::ArrayView<const uint8_t> data),
-              (override));
-  MOCK_METHOD(void,
-              Terminate,
-              (absl::AnyInvocable<void()> terminate_complete_callback),
-              (override));
 };
 
 class RtcTransportTest : public PageTestBase {
@@ -519,8 +492,8 @@ class RtcTransportMultithreadedTest : public PageTestBase {
  public:
   void SetUp() override {
     PageTestBase::SetUp(gfx::Size());
-    mock_sync_connection_ =
-        webrtc::make_ref_counted<testing::NiceMock<MockDatagramConnection>>();
+    mock_sync_connection_ = webrtc::make_ref_counted<
+        testing::NiceMock<webrtc::MockDatagramConnection>>();
   }
 
   RtcTransport* CreateTransport(ExceptionState& exception_state) {
@@ -531,7 +504,7 @@ class RtcTransportMultithreadedTest : public PageTestBase {
   }
 
  protected:
-  webrtc::scoped_refptr<MockDatagramConnection> mock_sync_connection_;
+  webrtc::scoped_refptr<webrtc::MockDatagramConnection> mock_sync_connection_;
 };
 
 TEST_F(RtcTransportMultithreadedTest, SetRemoteDtlsParameters) {
