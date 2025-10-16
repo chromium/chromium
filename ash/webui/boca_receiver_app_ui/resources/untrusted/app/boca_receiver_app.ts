@@ -8,6 +8,23 @@ import {ConnectionClosedReason, ReceiverInfo, UserInfo} from '../mojom/boca_rece
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 
+/**
+ * TODO(b/449757180): Remove this definition once the
+ * actual mojom::DecodedAudioPacket struct has been added and can be used
+ * directly.
+ *
+ * This is a temporary client-side representation of the
+ * mojom.DecodedAudioPacket.
+ */
+export interface DecodedAudioPacket {
+  /** Sample rate (e.g., 48000). */
+  sampleRate: number;
+  /** Number of channels (e.g., 2 for stereo). */
+  channels: number;
+  /** The raw, interleaved 16-bit PCM audio samples. */
+  data: Int16Array;
+}
+
 export declare interface ClientApi {
   /**
    * Initializes the client with the receiver info.
@@ -25,6 +42,12 @@ export declare interface ClientApi {
    * after onConnecting is called.
    */
   onFrameReceived(image: BitmapN32): void;
+
+  /**
+   * Notifies the client that an audio packet has been received.
+   * @param packet The audio packet to be processed.
+   */
+  onAudioPacket(packet: DecodedAudioPacket): void;
 
   /**
    * Notifies the client that the receiver is connecting to a new host.
