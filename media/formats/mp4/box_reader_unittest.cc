@@ -577,6 +577,27 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromStream) {
   EXPECT_TRUE(record.Serialize(output));
   ASSERT_THAT(output, testing::ElementsAreArray(test_data));
 }
+
+TEST_F(BoxReaderTest, MovieFragmentWithZeroTracks) {
+  static const uint8_t kData[] = {
+      0x00, 0x00, 0x00, 0x18, 'm', 'o', 'o', 'f',  // moof box
+      0x00, 0x00, 0x00, 0x10, 'm', 'f', 'h', 'd',  // mfhd box
+      0x00, 0x00, 0x00, 0x00,                      // version = 0, flags = 0
+      0x00, 0x00, 0x00, 0x01                       // sequence_number = 1
+  };
+
+  std::unique_ptr<BoxReader> reader;
+  ParseResult result = BoxReader::ReadTopLevelBox(kData, &media_log_, &reader);
+
+  EXPECT_EQ(result, ParseResult::kOk);
+  EXPECT_TRUE(reader);
+  EXPECT_EQ(FOURCC_MOOF, reader->type());
+
+  MovieFragment moof;
+  EXPECT_TRUE(moof.Parse(reader.get()));
+  EXPECT_EQ(moof.header.sequence_number, 1u);
+  EXPECT_TRUE(moof.tracks.empty());
+}
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 }  // namespace mp4
