@@ -179,7 +179,7 @@ const char kAndroidSmsOtpFillingName[] = "Enable SMS OTP filling";
 const char kAndroidSmsOtpFillingDescription[] =
     "Enables filling of OTPs received via SMS on Android";
 
-const char kAndroidWebAppLaunchHandler[] = "Android Web App Launch Handler";
+const char kAndroidWebAppLaunchHandlerName[] = "Android Web App Launch Handler";
 const char kAndroidWebAppLaunchHandlerDescription[] =
     "Enables support of launch_handler and file_handlers that allows web app "
     "developers to control how it's launched — for example if it uses an "

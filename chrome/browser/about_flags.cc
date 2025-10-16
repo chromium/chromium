@@ -12409,7 +12409,7 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-web-app-launch-handler",
-     flag_descriptions::kAndroidWebAppLaunchHandler,
+     flag_descriptions::kAndroidWebAppLaunchHandlerName,
      flag_descriptions::kAndroidWebAppLaunchHandlerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAndroidWebAppLaunchHandler)},
 #endif  // BUILDFLAG(IS_ANDROID)
