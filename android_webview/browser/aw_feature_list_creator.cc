@@ -285,6 +285,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // components/variations/variations_seed_processor_unittest.cc needs updates.
   // TODO(b/263797385): Re-evaluate if we can add entropy source id to
   // variations ids for WebView or not.
+  // variation_ids can be overridden by calls to ForceVariationIds in other
+  // places.
   variations_field_trial_creator_->SetUpFieldTrials(
       variation_ids,
       command_line->GetSwitchValueASCII(

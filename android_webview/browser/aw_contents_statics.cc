@@ -175,4 +175,14 @@ std::string JNI_AwContentsStatics_GetVariationsHeader(JNIEnv* env) {
   return headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
 }
 
+// static
+void JNI_AwContentsStatics_ForceVariationIdsForTesting(  // IN-TEST
+    JNIEnv* env,
+    std::vector<std::string>& variationIds,
+    std::string& commandLineVariationIds) {
+  variations::VariationsIdsProvider::GetInstance()
+      ->ForceVariationIdsForTesting(  // IN-TEST
+          variationIds, commandLineVariationIds);
+}
+
 }  // namespace android_webview

@@ -210,6 +210,12 @@ public class AwContentsStatics {
         return sDefaultTrafficStatsUid;
     }
 
+    public static void forceVariationIdsForTesting( // IN-TEST
+            List<String> variationIds, String commandLineVariationIds) {
+        AwContentsStaticsJni.get()
+                .forceVariationIdsForTesting(variationIds, commandLineVariationIds); // IN-TEST
+    }
+
     @NativeMethods
     interface Natives {
         void logCommandLineForDebugging();
@@ -234,5 +240,9 @@ public class AwContentsStatics {
 
         @JniType("std::string")
         String getVariationsHeader();
+
+        void forceVariationIdsForTesting( // IN-TEST
+                @JniType("std::vector<std::string>") List<String> variationIds,
+                @JniType("std::string") String commandLineVariationIds);
     }
 }
