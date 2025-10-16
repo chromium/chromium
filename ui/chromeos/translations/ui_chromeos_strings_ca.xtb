@@ -248,7 +248,7 @@
 <translation id="2984337792991268709">Avui a les <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">Francès (Canadà)</translation>
 <translation id="3003189754374775221">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, connecta</translation>
-<translation id="3003633581067744647">Canvia a la visualització de miniatures</translation>
+<translation id="3003633581067744647">Canvia a la vista en miniatura</translation>
 <translation id="3016566519832145558">Compte: aquests fitxers són temporals i és possible que se suprimeixin automàticament per alliberar espai de disc.</translation>
 <translation id="3029114385395636667">Activa Documents de Google sense connexió perquè els documents, els fulls de càlcul i les diapositives estiguin disponibles sense connexió.</translation>
 <translation id="303198083543495566">Geografia</translation>
@@ -538,7 +538,7 @@
        Si retireu el dispositiu mentre encara s'està utilitzant, es poden perdre dades. Espereu fins que hagi acabat l'operació i, a continuació, expulseu el dispositiu amb l'aplicació Fitxers.</translation>
 <translation id="5163869187418756376">Hi ha hagut un error en compartir. Comproveu la connexió i torneu-ho a provar més tard.</translation>
 <translation id="516592729076796170">Dvorak nord-americà per a programadors</translation>
-<translation id="5177526793333269655">Visualització de miniatures</translation>
+<translation id="5177526793333269655">Vista en miniatura</translation>
 <translation id="5181896909298187506">No hi ha cap fitxer recent</translation>
 <translation id="5194713942430106590">Fes clic per veure les dades de la columna en ordre ascendent.</translation>
 <translation id="5211614973734216083">Feroès</translation>
@@ -1005,7 +1005,7 @@
 <translation id="8569764466147087991">Seleccioneu el fitxer que vulgueu obrir</translation>
 <translation id="8577897833047451336">Croat</translation>
 <translation id="8578308463707544055">Indonesi</translation>
-<translation id="8600173386174225982">La llista de fitxers ha canviat a la visualització de miniatures.</translation>
+<translation id="8600173386174225982">La llista de fitxers ha canviat a la vista en miniatura.</translation>
 <translation id="8601932370724196034">Fitxer d'imatge de Crostini</translation>
 <translation id="8609695766746872526">Islandès</translation>
 <translation id="8630384863424041081">Introdueix el PIN de la targeta SIM o el predeterminat que t'hagi proporcionat l'operador. Contacta amb l'operador per obtenir assistència.</translation>

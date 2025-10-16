@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 રિવ્યૂ જુઓ}=1{1 રિવ્યૂ જુઓ}one{તમામ # રિવ્યૂ જુઓ}other{તમામ # રિવ્યૂ જુઓ}}</translation>
 <translation id="1458059624921545588">લોકો અને સંસ્થા</translation>
 <translation id="1458140305240870199">અંતર્વસ્ત્રો</translation>
+<translation id="1458770162980644530">"હમણાં ખરીદો, પછીથી ચુકવો" સેવાની શરતોની સ્ક્રીન. કીબોર્ડ છુપાવેલું છે.</translation>
 <translation id="1459693405370120464">હવામાન</translation>
 <translation id="1461041542809785877">પર્ફોર્મન્સ</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -4212,6 +4213,7 @@
 <translation id="7916162853251942238">ફ્લેક્સો બેઝ</translation>
 <translation id="791698251820376781">તમારી સંસ્થા તમને સાઇન ઇન કરવાની મંજૂરી આપતી નથી</translation>
 <translation id="7926503317156566022">ઉડ્ડયન ઉદ્યોગ</translation>
+<translation id="7930282586031445870">"હમણાં ખરીદો, પછીથી ચુકવો" સેવાની શરતોની સ્ક્રીન બંધ છે.</translation>
 <translation id="793209273132572360">સરનામું અપડેટ કરીએ?</translation>
 <translation id="7932579305932748336">કોટ કરો</translation>
 <translation id="79338296614623784">એક માન્ય ફોન નંબર દાખલ કરો</translation>
@@ -4624,6 +4626,7 @@
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />કયા ડેટાનો ઉપયોગ કરવામાં આવે છે:<ph name="END_BOLD" /> આ ડિવાઇસ પર Chrome વડે તમે મુલાકાત લીધેલી કોઈ સાઇટ પરની તમારી પ્રવૃત્તિ.</translation>
 <translation id="8601456038554914806">પાણીની રમતોનું સાધન</translation>
 <translation id="8601782593888534566">સાયન્સ ફિક્શન અને કાલ્પનિક</translation>
+<translation id="8604103095921958091">"હમણાં ખરીદો, પછીથી ચુકવો" સેવાની શરતોની સ્ક્રીન પૂર્ણ ઊંચાઈએ ખોલી.</translation>
 <translation id="8606988009912891950">જાહેરાતના વિષયો તમને સંબંધિત જાહેરાતો બતાવવામાં તેમજ તમારો બ્રાઉઝિંગ ઇતિહાસ અને ઓળખ છુપાવવામાં સાઇટને સહાય કરે છે. તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસના આધારે Chrome રુચિઓ સંબંધી વિષયોની નોંધ લઈ શકે છે. તે પછી, તમે ઉપયોગ કરો છો એ ઍપ તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવવા માટે, Chrome પાસે સંબંધિત વિષયોની માહિતી માગી શકે છે.</translation>
 <translation id="8612919051706159390">ઑનલાઇન સમુદાયો</translation>
 <translation id="8617269623452051934">તમારા ડિવાઇસનો વપરાશ</translation>
@@ -4864,6 +4867,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> તમારા સ્થાનિક નેટવર્ક પર કોઈપણ ડિવાઇસ શોધવા અને તેની સાથે કનેક્ટ કરવા માગે છે</translation>
 <translation id="9046864189129893978">માઇક્રોફોન (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">"હમણાં ખરીદો, પછીથી ચુકવો" સેવાની શરતોની સ્ક્રીન અડધી ઊંચાઈએ ખુલી છે.</translation>
 <translation id="9047528041803621289">તમારું ડિફૉલ્ટ શોધ એન્જિન તમને વેબ પર શોધવાની મંજૂરી આપે છે. તમે સેટિંગમાં જઈને તેને બદલી શકો છો.</translation>
 <translation id="9048035366624198823">આ ક્રિયાઓ માટે <ph name="POLICY_NAME" /> પૉલિસીને <ph name="POLICY_VALUE" /> પર સેટ કરવી આવશ્યક છે: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 ઇંચ</translation>

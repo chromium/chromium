@@ -3313,7 +3313,7 @@
 <translation id="6433501201775827830">検索サービスの選択</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> で接続が拒否されました。</translation>
 <translation id="6433797564277305076">デバイスのロック解除を使用すると、カードを素早く確認できます</translation>
-<translation id="6436994298828707228">公開ページでローカル ネットワーク上のデバイスまたはサーバーへの接続が開始されたため、接続がブロックされています。</translation>
+<translation id="6436994298828707228">公開ページでローカル ネットワーク上のデバイスまたはサーバーへの接続が開始されたため、接続がブロックされました。</translation>
 <translation id="6437647869369934905">Google 図形描画</translation>
 <translation id="643917412048333145">ドレス</translation>
 <translation id="6440503408713884761">除外されました</translation>
@@ -3534,7 +3534,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">シリアルポート</translation>
 <translation id="6820686453637990663">CVC</translation>
-<translation id="6820949753458790123">簡単な分割払いで支払い</translation>
+<translation id="6820949753458790123">簡単に分割払い</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> にアクセスしようとしましたが、脆弱な署名アルゴリズム（SHA-1 など）を使用して署名された証明書がサーバーから提示されました。このセキュリティ認証情報は偽装されたものである可能性があり、アクセスしようとしたサーバーとは別のサーバーが応答している可能性があります（悪意のあるユーザーと通信している可能性があります）。</translation>
 <translation id="6826993739343257035">AR を許可しますか？</translation>
 <translation id="6828150717884939426">電話</translation>
@@ -4801,7 +4801,7 @@
 <translation id="8922734931659847428">アクセスしたページのうち、<ph name="BEGIN_LINK" />以前のテクノロジー イベント<ph name="END_LINK" />が発生しているページの URL リストのみ</translation>
 <translation id="892588693504540538">パンチ（右上）</translation>
 <translation id="8926389886865778422">再表示させない</translation>
-<translation id="8926400492587758246">低額の分割払い（月払い）で支払い</translation>
+<translation id="8926400492587758246">低額の月々分割払い</translation>
 <translation id="8932102934695377596">時計が遅れています</translation>
 <translation id="893332455753468063">名前の追加</translation>
 <translation id="8938242527120341116">デバイスのコンテンツ フィルタにより <ph name="BLOCKED_URL" /> がブロックされました</translation>

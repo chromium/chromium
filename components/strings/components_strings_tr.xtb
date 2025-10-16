@@ -3313,7 +3313,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6433501201775827830">Arama motorunuzu seçin</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> bağlanmayı reddetti.</translation>
 <translation id="6433797564277305076">Bundan böyle cihazda kilit açma kullanarak kartlarınızı daha hızlı onaylayın</translation>
-<translation id="6436994298828707228">Bağlantı, yerel ağınızdaki cihazlara veya sunuculara bağlanırken herkese açık bir sayfa tarafından başlatıldığı için engellendi.</translation>
+<translation id="6436994298828707228">Bağlantı, yerel ağınızdaki cihazlara veya sunuculara bağlanmaya çalışan herkese açık bir sayfa tarafından başlatıldığı için engellendi.</translation>
 <translation id="6437647869369934905">Google Çizimler</translation>
 <translation id="643917412048333145">Elbise</translation>
 <translation id="6440503408713884761">Yoksayıldı</translation>

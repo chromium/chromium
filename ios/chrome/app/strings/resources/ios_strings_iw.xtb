@@ -480,6 +480,7 @@
 <translation id="2816489851009559785">תפריט ← הגדרות ← דפדפן ברירת המחדל</translation>
 <translation id="2818821771744632548">‏המערכת הוציאה אותך מהחשבון, <ph name="USER_NAME" />, במסגרת האיפוס של iPhone. כדי להיכנס שוב לחשבון צריך ללחוץ על 'המשך' למטה.</translation>
 <translation id="2819667972867209401">‏כשההגדרה מופעלת, הנתונים נשמרים בחשבון שלך ב-Google. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה ונמחקים כשיוצאים מהחשבון.</translation>
+<translation id="2825777862277359739">כדאי להיכנס לחשבון כדי לקבל את הסיסמאות, הכרטיסיות, הסימניות ונתונים נוספים.</translation>
 <translation id="2827760117436553203">לשמור את הנתונים בנפרד?</translation>
 <translation id="2829172210806130158">חיפוש במסך</translation>
 <translation id="2831109159746537587">כדי לחפש, מקיפים את התמונה עם האצבע או לוחצים עליה</translation>
@@ -606,6 +607,7 @@
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="3377063233124932127">עכשיו הסימניות, הסיסמאות ונתונים נוספים ששמרת מופיעים למעלה.</translation>
 <translation id="3380352560400387991">האתר הזה מנסה לפתוח אפליקציה. הפעולה הזו תוציא אותך ממצב פרטי.</translation>
+<translation id="3385742921291399323">אפשר לקבל גישה לסיסמאות, לכרטיסיות, לסימניות ולנתונים שמורים נוספים.</translation>
 <translation id="3392923070107623576">אפשר ליצור קבוצות של כרטיסיות כדי לשמור על הסדר</translation>
 <translation id="3404232721752787413">‏שמירה ב-Google Photos</translation>
 <translation id="3406506285180498376">שיתוף הדף…</translation>
@@ -633,6 +635,7 @@
 <translation id="3504377992102007712">הגדרות</translation>
 <translation id="35083190962747987">‏פתיחה של ${url}</translation>
 <translation id="3511519535430890904">הוספת הגנה על הגלישה</translation>
+<translation id="3512572904898385012">עכשיו אפשר לקנות ולתרגם באמצעות המצלמה. אפשר ללחוץ כדי לנסות.</translation>
 <translation id="3517216995152707259">‏מחיקת נתוני הגלישה לא מובילה ליציאה מהחשבון שלך ב-Google. כדי לעשות את זה, <ph name="BEGIN_LINK" />צריך לצאת מהחשבון ב-Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519792890877853853">הכרטיס הזה מציג ביקורות על מוצרים בכרטיסיות הפתוחות</translation>
 <translation id="3519905498307021260">{count,plural, =1{פתיחת הכרטיסייה}one{פתיחת {count} הכרטיסיות}two{פתיחת {count} הכרטיסיות}other{פתיחת {count} הכרטיסיות}}</translation>
@@ -1060,6 +1063,7 @@
 <translation id="5145331760738811130">יציאה מהכלי למעבר בין כרטיסיות</translation>
 <translation id="5148717509369231739">‏ייבוא מ-Safari</translation>
 <translation id="5152483358138813104">כניסה מהירה יותר לכל המכשירים</translation>
+<translation id="5155502059906700593">אפשר להעביר את סרגל הכתובות לחלק העליון או התחתון של המסך.</translation>
 <translation id="5157638238828697074">משהו השתבש. לא ניתן לפתוח את האפליקציה.</translation>
 <translation id="5163417375525818870">‏קובצי PDF</translation>
 <translation id="5168414296986405587">‏מותאם ל-iPadOS</translation>
@@ -1135,6 +1139,7 @@
 <translation id="5457082343331641453">הוספה טקסט לחיפוש</translation>
 <translation id="5457226814769348910">פתיחה של גרסת אופליין</translation>
 <translation id="5467163657366219870">השבתת הפצה מקדימה של "מפות"</translation>
+<translation id="5474397204728336997">סיסמאות משפחתיות, התאמות אישיות חדשות ועוד. אפשר ללחוץ כדי לקבל מידע נוסף.</translation>
 <translation id="5475793109165786685">{count,plural, =0{לא יובאה אף סיסמה}=1{יובאה סיסמה אחת ({count})}one{יובאו {count} סיסמאות}two{יובאו {count} סיסמאות}other{יובאו {count} סיסמאות}}</translation>
 <translation id="5478327362747197944">ניתן ליצור אירועים ישירות ביומן בלחיצה על תאריך בדף אינטרנט.</translation>
 <translation id="5482922178977937393">רוצה לקבל התראות לגבי חדשות, ספורט ועוד על סמך תחומי העניין שלך?</translation>
@@ -1308,6 +1313,7 @@
 <translation id="6084848228346514841">בחירת כרטיסיות</translation>
 <translation id="6089212833343035912">‏קוד אימות למנהל הסיסמאות של Google</translation>
 <translation id="6090760257419195752">אזהרות שנסגרו</translation>
+<translation id="6094325891006032858">הפעלת הגרסה המשופרת של גלישה בטוחה</translation>
 <translation id="6096965253650248286">נמצאו <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">נכנסת לחשבון בתור <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
 <translation id="6100676328067737810">‏הנתונים שלך יישמרו בחשבון Google שלך, <ph name="USER_EMAIL" /></translation>
@@ -1343,6 +1349,7 @@
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6196207969502475924">חיפוש קולי</translation>
 <translation id="6198252989419008588">שינוי קוד אימות</translation>
+<translation id="6199783146233591178">אפשר ליהנות מהגנה בזמן אמת באמצעות הגרסה המשופרת של הגלישה הבטוחה</translation>
 <translation id="6210079381482819663">כרטיסיות שלא משתמשים בהן במשך <ph name="THRESHOLD" /> ימים או יותר מועברות לכאן. תמיד אפשר לשנות זאת <ph name="BEGIN_LINK" />בהגדרות<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">לא נמצאו כתובות</translation>
 <translation id="6218508144653756827">עיצוב פוקסיה</translation>
@@ -1394,6 +1401,7 @@
 <translation id="63519665078626091">‏כדי להשתמש ב'סוקר האינטרנט', צריך להתחבר למחשב באמצעות כבל, לפתוח את Safari ולגשת ל-iPad בתפריט 'פיתוח'. ניתן להפעיל את התפריט 'פיתוח' בקטע 'מתקדם' בהגדרות של Safari במחשב.</translation>
 <translation id="6355820183143562453">הסתרת הכרטיס "מעקב מחירים"</translation>
 <translation id="6355820205320395730">קל לנחש סיסמאות חלשות. יש לוודא שהגדרת סיסמאות חזקות. <ph name="BEGIN_LINK" />עוד טיפים לגבי אבטחה<ph name="END_LINK" /></translation>
+<translation id="6357455205205567365">כדאי לך להיכנס לחשבון כדי לקבל גישה לכל הדברים שלך, כמו סיסמאות, סימניות ועוד.</translation>
 <translation id="6368038301482806847">צריך לבחור מנוע חיפוש מהרשימה.</translation>
 <translation id="6368102751067608420">כדי למחוק את כל הנתונים של מנהל הסיסמאות</translation>
 <translation id="6372558618707314581">עוברים לכל דף שרוצים</translation>
@@ -1468,6 +1476,7 @@
 <translation id="6625830436658400045">הגדרות הסנכרון ישוחזרו על סמך הגיבוי האחרון שלך. תמיד אפשר לבחור מה לסנכרן דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">עריכת התיקייה</translation>
 <translation id="6629759408545977279">מאת: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="66306952800092318">מוסיפים שכבה נוספת של הגנה מפני איומים באינטרנט.</translation>
 <translation id="6634432609054530164">הארגון שלך השבית את 'מצב אנונימי'.</translation>
 <translation id="6637478299472506933">ההורדה נכשלה</translation>
 <translation id="6638511529934826365">הגדלת טקסט…</translation>

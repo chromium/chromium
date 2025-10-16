@@ -336,7 +336,7 @@
 <translation id="1216891999012841486">更新エラー修正の詳細</translation>
 <translation id="1217114730239853757">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。有効にする場合は Space キーを押してください。</translation>
 <translation id="1217117837721346030">不審なファイルをダウンロード</translation>
-<translation id="1217437913373100941"><ph name="GROUP_NAME" /> の新しいタブ</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> に新しいタブを追加</translation>
 <translation id="1217483152325416304">ローカルデータはまもなく削除されます</translation>
 <translation id="1217668622537098248">終了後、デフォルトの左クリック動作に戻す</translation>
 <translation id="1218015446623563536">Linux の削除</translation>
@@ -3215,7 +3215,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         このカードからいつでも設定を管理できます。その他のオプションは [Chrome をカスタマイズ] を開きます。</translation>
-<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 個のタブで新しいタブを開く}other{# 個のタブで新しいタブを開く}}</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 個のタブに新しいタブを追加}other{# 個のタブに新しいタブを追加}}</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
 <translation id="3208703785962634733">未確認</translation>
@@ -3391,7 +3391,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ピクチャー イン ピクチャー モードで再生中の動画</translation>
 <translation id="3335380372402547327">点滅による通知をプレビュー</translation>
 <translation id="3335947283844343239">閉じたタブを開く</translation>
-<translation id="3336661809256024098"><ph name="GROUP_NAME" /> の新しいタブ</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> に新しいタブを追加</translation>
 <translation id="3336855445806447827">わからない</translation>
 <translation id="3337568642696914359">サイトにプロトコルの処理を許可しない</translation>
 <translation id="333863344734218290">安全でない公開サイトと非公開サイトについて警告する</translation>
@@ -8724,6 +8724,7 @@
 <translation id="7055451306017383754">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Parallels Desktop をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="7056418393177503237">{0,plural, =1{シークレット}other{開いているシークレット ウィンドウ # 個}}</translation>
 <translation id="7056526158851679338">デバイスを検証(&amp;I)</translation>
+<translation id="7057567173736333354">画像の説明を入力</translation>
 <translation id="70577934383983846">このパスワードをすべてのデバイスで使用する</translation>
 <translation id="7058024590501568315">非公開ネットワーク</translation>
 <translation id="7059858479264779982">自動起動に設定する</translation>
@@ -8926,7 +8927,7 @@
 <translation id="7211783048245131419">割り当てられたスイッチはありません</translation>
 <translation id="7212097698621322584">PIN を変更するには、現在の PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットしたうえで新しい PIN を作成する必要があります。</translation>
 <translation id="7214047272988222011">許可 – <ph name="PERMISSION_DETAILS" />。<ph name="LINK_BEGIN" />システムのカメラへのアクセス<ph name="LINK_END" />をオンにする。</translation>
-<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 個のタブで新しいタブを開く}other{# 個のタブで新しいタブを開く}}</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 個のタブに新しいタブを追加}other{# 個のタブに新しいタブを追加}}</translation>
 <translation id="721490496276866468">パスワードをインポート</translation>
 <translation id="7217208603285112910">選択内容が <ph name="LANGUAGE" /> ではない場合</translation>
 <translation id="7219254577985949841">サイトデータを削除しますか？</translation>
@@ -9928,6 +9929,7 @@
 <translation id="7899720074434636454"><ph name="EXTENSION_NAME" /> のリクエストを拒否する</translation>
 <translation id="7900950034255258543">デバイスを安全に使用できるようにするため、組織ではオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認することができます。</translation>
 <translation id="7901405293566323524">スマートフォン ハブ</translation>
+<translation id="7901728443188947649">画像を作成</translation>
 <translation id="7903429136755645827">クリックすると、ゲーム操作キーをカスタマイズできます</translation>
 <translation id="7903481341948453971">パスワードの入力時に画面ロックを使用する</translation>
 <translation id="7903925330883316394">ユーティリティ: <ph name="UTILITY_TYPE" /></translation>
@@ -10706,6 +10708,7 @@
 <translation id="8413795581997394485">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ コンテンツの一部も送信されます。</translation>
 <translation id="8413956290606243087">ChromeVox を有効にしますか？ChromeVox は ChromeOS 用の組み込みのスクリーン リーダーです。</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> に <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の情報を使用してログイン</translation>
+<translation id="8415120635186642416">さまざまなことを調べる</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（ケース）</translation>
 <translation id="8417065541337558100">カメラのプレビュー</translation>
 <translation id="8417548266957501132">保護者のパスワード</translation>

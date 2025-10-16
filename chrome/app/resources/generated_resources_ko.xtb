@@ -8756,6 +8756,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7055451306017383754">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Parallels Desktop이 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="7056418393177503237">{0,plural, =1{시크릿 모드}other{열려 있는 시크릿 창 #개}}</translation>
 <translation id="7056526158851679338">기기 검사(&amp;I)</translation>
+<translation id="7057567173736333354">이미지 설명 작성</translation>
 <translation id="70577934383983846">모든 기기에서 이 비밀번호 사용</translation>
 <translation id="7058024590501568315">숨겨진 네트워크</translation>
 <translation id="7059858479264779982">자동 실행 설정</translation>
@@ -9961,6 +9962,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7899720074434636454"><ph name="EXTENSION_NAME" /> 요청 닫기</translation>
 <translation id="7900950034255258543">이 기기를 안전하게 사용하도록 하기 위해 조직에서 운영체제, 브라우저, 설정에 관한 정보와 기기에 설치된 소프트웨어를 확인할 수 있습니다.</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
+<translation id="7901728443188947649">이미지 만들기</translation>
 <translation id="7903429136755645827">클릭하여 게임 컨트롤 맞춤설정</translation>
 <translation id="7903481341948453971">비밀번호 입력 시 화면 잠금 사용</translation>
 <translation id="7903925330883316394">유틸리티: <ph name="UTILITY_TYPE" /></translation>
@@ -10739,6 +10741,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 일부 페이지 콘텐츠도 전송됩니다.</translation>
 <translation id="8413956290606243087">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
+<translation id="8415120635186642416">무엇이든 조사해 보세요</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%(케이스)</translation>
 <translation id="8417065541337558100">카메라 미리보기</translation>
 <translation id="8417548266957501132">부모 비밀번호</translation>

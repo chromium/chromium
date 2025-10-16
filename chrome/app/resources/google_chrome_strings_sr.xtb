@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">Затворите дијалог повратних информација</translation>
 <translation id="306179102415443347">Користите пречицу да бисте брзо приступали Google менаџеру лозинки. Пречицу можете да преместите на почетни екран рачунара или у покретач апликација.</translation>
 <translation id="3065168410429928842">Chrome картица</translation>
+<translation id="3073571714401714450">Укључите или искључите Gemini у Chrome Dev-у</translation>
 <translation id="3080151273017101988">Настави са покретањем апликација у позадини када се Google Chrome затвори</translation>
 <translation id="308397506772922478">Ако сте заборавили приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />избришите Chrome податке на налогу<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Дајте назив Chrome профилу</translation>
@@ -379,6 +380,7 @@
 <translation id="5368118228313795342">Додатни кôд: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Контролише и страницу која се приказује када покренете Chrome или претражујете из омнибокса.</translation>
 <translation id="5394833366792865639">Делите Chrome картицу</translation>
+<translation id="5402307365844630024">Укључите или искључите Gemini у Chrome бета верзији</translation>
 <translation id="5430073640787465221">Датотека подешавања је оштећена или неважећа.
 
 Google Chrome не може да врати подешавања.</translation>
@@ -430,6 +432,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="5941711191222866238">Умањи</translation>
 <translation id="5941830788786076944">Подесите Google Chrome као подразумевани прегледач</translation>
 <translation id="5947104538377036631">Chrome пречица</translation>
+<translation id="5960071705175224773">Непозната апликација је променила подешавања</translation>
 <translation id="5968400720580217226">Режим вештачке интелигенције</translation>
 <translation id="5980111191913430208">Додаци, апликације и теме из непознатих извора могу да нашкоде уређају. Chrome препоручује да их инсталирате само из: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Преузима се... Још <ph name="HOURS" /> ч</translation>
@@ -653,6 +656,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8362914115861174987">Преводи на језик</translation>
 <translation id="8366770919198174997">Смањује перформансе, али чини Chrome отпорнијим на нападе</translation>
 <translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>
+<translation id="8377158135256176353">Укључите или искључите Gemini у Chrome Canary-ју</translation>
 <translation id="8387459386171870978">Наставите са коришћењем Chrome-а</translation>
 <translation id="8394720698884623075">Проверава URL-ове са листом небезбедних сајтова који се чувају у Chrome-у</translation>
 <translation id="8403038600646341038">Chrome логотип на екрану рачунара.</translation>
@@ -701,12 +705,14 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8914504000324227558">Поново покрени Chrome</translation>
 <translation id="8922193594870374009">Да бисте послали број са <ph name="ORIGIN" /> на Android телефон, пријавите се у Chrome на оба уређаја.</translation>
 <translation id="8922998289262614701">Уклони податке ове апликације из Chrome-а</translation>
+<translation id="8936233353620149764">Укључите или искључите Gemini у Chrome-у</translation>
 <translation id="8948460679427074738">Овај додатак није објавио праксе приватности, на пример, како прикупља и користи податке. Chrome препоручује да га уклоните.</translation>
 <translation id="8958307504142971576">Сада имате још функција доступних у Chrome-у</translation>
 <translation id="8991530961471831170">Отворите Gemini у Chrome-у</translation>
 <translation id="8992769679401294069">Подаци се шифрују помоћу приступне фразе. Унесите је да бисте користили и сачували Chrome податке на Google налогу.</translation>
 <translation id="8999117580775242387">Када HTTPS није доступан, Chrome ће користити небезбедну везу без упозорења</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ажурирање за Chrome је доступно}=1{Ажурирање за Chrome је доступно}one{Ажурирање за Chrome је доступно већ # дан}few{Ажурирање за Chrome је доступно већ # дана}other{Ажурирање за Chrome је доступно већ # дана}}</translation>
+<translation id="9010418943148193727">Подразумевани претраживач је промењен изван Chrome-а. Chrome га је ресетовао ради ваше заштите.</translation>
 <translation id="9014771989710951291">Више организација управља Chrome-ом</translation>
 <translation id="9024318700713112071">Подесите Chrome као подразумевани прегледач</translation>
 <translation id="9066987883552592250">Затворите Gemini у Chrome Canary-ју</translation>

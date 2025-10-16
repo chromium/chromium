@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">Chromeમાં ${searchPhrase} શોધો</translation>
 <translation id="1237769345474105984">Chromeમાંથી</translation>
 <translation id="124228879633599436">તમારું Chrome જૂનું થઈ ગયું છે. સુરક્ષિત રહેવા માટે તેને અપડેટ કરો.</translation>
+<translation id="1258531953614971819">Chrome વિશે ટિપ: Chromeને તમારી હોમ સ્ક્રીન પર ખસેડો</translation>
 <translation id="1333745675627230582">Chrome Dino ગેમ રમો</translation>
 <translation id="1352919863522755794">Google Password Manager તમારા પાસવર્ડ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1394995526009609883">તમે Chromeના સેટિંગમાં જઈને કોઈપણ સમયે તમારી પસંદગીઓને અપડેટ કરી શકો છો.</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">તમારા બધા ડિવાઇસ પર તમારી ટૅબ, પાસવર્ડ અને ચુકવણી સંબંધિત માહિતી સિંક કરવા માટે, Chromeને ડિફૉલ્ટ તરીકે સેટ કરો</translation>
 <translation id="1504372625950710826">Chrome અપડેટ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1516692594929310090">Chromeમાં ટૅબ ગ્રિડ ખોલે છે.</translation>
+<translation id="152319127067424683">તમારા iPhoneના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="1526327845902180576">જ્યારે ચાલુ હોય:
 <ph name="BEGIN_INDENT" />  • તમે જે રીતે ઉપયોગ કરો છો, તે રીતે Chrome વાપરતા લોકો માટે તેને બહેતર બનાવવામાં સહાય કરો.<ph name="END_INDENT" />
 
@@ -58,6 +60,7 @@
 <translation id="2199719347983604670">Chrome સિંકમાંનો ડેટા</translation>
 <translation id="2213327331203157297">Chromeમાં લૉકડાઉન મોડ બંધ કરવા માટે, તેને તમારા iPhone પર બંધ કરો.</translation>
 <translation id="2242467532204595597">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
+<translation id="2256384876478573507">જ્યારે તમે તમારા iPhone પર બ્રાઉઝ કરવા માટે તૈયાર હો, ત્યારે Chromeને વધુ ઝડપથી ખોલો.</translation>
 <translation id="2311240109311056604">Chrome Dino ગેમ ખોલે છે.</translation>
 <translation id="2339201583852607431">તમારો પાસવર્ડ તમારા Google એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="2342919707875585281">Chrome તમે મંજૂરી આપો છો તે સાઇટ સાથે તમારા સ્થાનની માહિતી શેર કરે છે.</translation>
@@ -66,6 +69,7 @@
 <translation id="2427791862912929107">Chromeમાં એવી સુવિધાઓ છે કે જે તમને તમારા ઇન્ટરનેટ ડેટાને મેનેજ કરવામાં અને વેબપેજને ઝડપથી લોડ કરવામાં સહાય કરે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. આમાં ઇતિહાસ અને ઑટોમૅટિક રીતે ભરવાની સુવિધા શામેલ હોઈ શકે છે.}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. આમાં ઇતિહાસ અને ઑટોમૅટિક રીતે ભરવાની સુવિધા શામેલ હોઈ શકે છે.}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. આમાં ઇતિહાસ અને ઑટોમૅટિક રીતે ભરવાની સુવિધા શામેલ હોઈ શકે છે.}}</translation>
+<translation id="2531823184391665648">જ્યારે તમે તમારા iPad પર બ્રાઉઝ કરવા માટે તૈયાર હો, ત્યારે Chromeને વધુ ઝડપથી ખોલો.</translation>
 <translation id="2561231791489583059">જોખમકારક સાઇટથી સુરક્ષિત રહેવા અને તમારા પાસવર્ડ સલામત રાખવા માટે, તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="2574249610672786438">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, તમારા બધાં ડિવાઇસ પર સાઇન ઇન કરો</translation>
 <translation id="2576431527583832481">Chrome હમણાં જ વધુ સારું થયું છે! એક નવું વર્ઝન ઉપલબ્ધ છે.</translation>
@@ -81,6 +85,7 @@
 <translation id="2767464022270041271">કોઈ સાચવેલો પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો, ત્યારે Google Password Manager તેને ચેક કરી શકે છે.</translation>
 <translation id="2788811701191021538">Chromeમાં ચુકવણી પદ્ધતિઓનું સેટિંગ પેજ ખોલે છે.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
+<translation id="2922914028977213693">તમારા iPad પર Chromeનો વધુમાં વધુ લાભ લેવા માટે અહીં ટૅપ કરો.</translation>
 <translation id="292371311537977079">Chrome સેટિંગ</translation>
 <translation id="2923827943290349720">તમે Chrome બંધ કરો ત્યારે છૂપી ટૅબ લૉક કરો</translation>
 <translation id="2940565985148833945">Chrome ટિપ: Lens વડે શોધો</translation>
@@ -97,6 +102,7 @@
 <translation id="3140589780564632473">Chromeમાં વિઝ્યુઅલ શોધો</translation>
 <translation id="314782365035065913">તમારી હોમ સ્ક્રીનના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો</translation>
 <translation id="3167189358072330585">તમારું એકાઉન્ટ, Google Chrome પર કાર્ય કરતું નથી. કૃપા કરીને તમારા ડોમેન એડમિનનો સંપર્ક કરો અથવા સાઇન ઇન કરવા માટે નિયમિત Google એકાઉન્ટનો ઉપયોગ કરો.</translation>
+<translation id="320747600144551583">Chrome ટિપ: Safe Browsingમાં વધારેલી સુરક્ષા તમારો દિવસ બચાવશે</translation>
 <translation id="322254490661677575">તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
 <translation id="3282568296779691940">Chrome માં સાઇન ઇન કરો</translation>
 <translation id="3303503998967553377">iOS પર Chrome ઍક્શનનો ઉપયોગ કરો</translation>
@@ -109,6 +115,7 @@
 <translation id="3440830787838130530">Google Password Managerમાં તમારા ફૅમિલી ગ્રૂપ સાથે સરળતાથી અને સુરક્ષિત રીતે કોઈ પાસવર્ડની કૉપિ શેર કરો</translation>
 <translation id="3460369101684070455">તમારી અન્ય ઍપમાં તમારા સાચવેલા પાસવર્ડ સરળતાથી મેળવવા, ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chrome પસંદ કરો</translation>
 <translation id="3472587960215700950">Chrome ભાળ મેળવેલા સરનામાઓ વિશે તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે, Google Mapsનો ઉપયોગ કરે છે.</translation>
+<translation id="3482807551645716768">તમારા iPadની હોમ સ્ક્રીનમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="3503014945441706099">આ Chrome પ્રોફાઇલ માટે પણ Safe Browsingમાં વધારેલી સુરક્ષા મેળવો</translation>
 <translation id="3522659714780527202">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="364480321352456989">તમારું Chrome જૂનું થઈ ગયું છે.</translation>
@@ -125,16 +132,19 @@
 <translation id="3988789688219830639">Google Chromeને તમારા ફોટા અથવા વીડિયોનો ઍક્સેસ નથી. iOS સેટિંગ &gt; પ્રાઇવસી &gt; ફોટામાં ઍક્સેસને ચાલુ કરો.</translation>
 <translation id="4064699917955374540">તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો.</translation>
 <translation id="411154422556990518">કિંમત ટ્રૅક કરવાના અપડેટ અને Chrome ટિપ વડે ચાલુ રાખો.</translation>
+<translation id="4167555379306984168">Chromeમાં શું નવું છે તે જુઓ</translation>
 <translation id="417201473131094001">Chrome Canary પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="4430797724889237570">Chromeમાં Gmail, Maps, YouTube અને અન્ય ઍપમાંની લિંક ખોલો</translation>
 <translation id="447252321002412580">Chromeની સુવિધાઓ અને પ્રદર્શનને સુધારવામાં સહાય કરો</translation>
 <translation id="4523886039239821078">કેટલાંક એડ-ઓનને કારણે Chrome ક્રૅશ થાય છે. કૃપા કરી આને અનઇન્સ્ટૉલ કરો:</translation>
+<translation id="4568024439284012497">તમારા iPhoneની હોમ સ્ક્રીનમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="4574806550936185355">“જ્યારે તમે Chrome બંધ કરો, ત્યારે છૂપા ટૅબ લૉક કરો” ચાલુ કરો</translation>
 <translation id="4633328489441962921">Chrome અપડેટ ચેક કરી શકતું નથી</translation>
 <translation id="4636900170638246267">આ સાઇટ અને Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="4647910807533196601">Chromeમાં મારું નવીનતમ ટૅબ ખોલો.</translation>
 <translation id="4693084815234024320">તમે Chromeના છૂપા મોડમાં છે</translation>
+<translation id="4708857722625759026">તમારા iPadના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="4713740144985377441">તમારી ફાઇલ અપલોડ કરવા માટે, Chrome પર પાછા ફરો</translation>
 <translation id="4713907610796204963">તમે શરૂ કરી શકો તે માટે Chromeની સહાયરૂપ મૂળભૂત બાબતો વિશે જાણો</translation>
 <translation id="4724297637870447613">સર્વત્ર Chromeનો ઉપયોગ કરો</translation>
@@ -149,6 +159,8 @@
 <translation id="4903674399067644695">આ કાર્ડ તમને Chromeનો મહત્તમ લાભ મેળવવા માટેના સૂચનો બતાવે છે.</translation>
 <translation id="49200511069271369">તમે જેમાં સાઇન ઇન કરી રહ્યાં હો તે એકાઉન્ટને અને Chromeના વપરાશની રીતને તમારી સંસ્થા <ph name="DOMAIN" /> મેનેજ કરે છે. તમારા ઍડમિનિસ્ટ્રેટર અમુક સુવિધાઓનું સેટઅપ અથવા તેને પ્રતિબંધિત કરી શકે છે.</translation>
 <translation id="4925322001044117929">iPad પર ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
+<translation id="4934496192263958600">તમારી વસ્તુઓ મેળવવા માટે Chromeમાં સાઇન ઇન કરો</translation>
+<translation id="496747131578053942">Chrome ટિપ: Google Lens વડે તમે જે જુઓ છો, તે શોધો</translation>
 <translation id="498985224078955265">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, બંને ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="5030102366287574140">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chrome તમારી સહાય કરી શકે છે.</translation>
 <translation id="5109169629909011627">Chrome Bookmarks જુઓ</translation>
@@ -225,16 +237,19 @@
 <translation id="6684809838922667136">Chromeને બહેતર બનાવો</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}}</translation>
 <translation id="6709398533399187136">ડેટા ઉલ્લંઘનમાં તમારો પાસવર્ડ જાહેર થઈ ગયો હતો. Google પાસવર્ડ મેનેજર હમણાં જ તેને ચેક કરવાનો સુઝાવ આપે છે.</translation>
+<translation id="6718973358446066955">તમે Chromeનું સેટઅપ કરવાનું લગભગ પૂર્ણ કરી લીધું છે!</translation>
 <translation id="6820553595690137150">પાસફ્રેઝ એન્ક્રિપ્શનમાં ચુકવણી પદ્ધતિઓ અને સરનામા શામેલ હોતા નથી.
 
 આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chrome ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
 <translation id="6838525730752203626">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
+<translation id="6864705365700484754">તમારા iPhone પર Chromeનો વધુમાં વધુ લાભ લેવા માટે અહીં ટૅપ કરો.</translation>
 <translation id="686691656039982452">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />Chromeનો કયો ડેટા સાચવવામાં આવે છે<ph name="END_LINK" /> તેને તમે મેનેજ કરી શકો છો.
 
 તમારા Chromeના અનુભવને બહેતર બનાવવા માટે ડેટાનો ઉપયોગ કરતા વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> પર જાઓ.</translation>
 <translation id="6922332667202044570">Chromeમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરો.</translation>
 <translation id="6924922227983877439">ડિફૉલ્ટ તરીકે Chromeમાં લિંક ખોલો</translation>
 <translation id="6975725306479268850">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chrome પસંદ કરો</translation>
+<translation id="7001031184470316752">Chromeને તમારા ડૉકમાં ખસેડો</translation>
 <translation id="7038674195294813388">iOSમાં ઍપના ડિફૉલ્ટ સેટિંગ ખોલો, પછી "બ્રાઉઝર ઍપ" પર ટૅપ કરો અને Chrome પસંદ કરો.</translation>
 <translation id="7056826488869329999">Chromeમાં સલામતી માટે તપાસ ખોલે છે અને ચલાવે છે.</translation>
 <translation id="7061455974939528301">Chrome આઇકન દબાવી રાખો અને "હોમ સ્ક્રીનમાં ફેરફાર કરો" પર ક્લિક કરો</translation>
@@ -305,6 +320,7 @@
 તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="8371138994040262994">Chromeમાં સેટિંગ ખોલે છે.</translation>
+<translation id="8375378038757507658">તમે કોઈપણ સમયે મેસેજ અથવા અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ સરળતાથી કરો.</translation>
 <translation id="8387459386171870978">Chromeનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="8392023217086447677">Chrome છુપા મોડમાં ખોલેલી</translation>
 <translation id="840168496893712993">કેટલાંક એડ-ઓનને કારણે Chrome ક્રૅશ થાય છે. કૃપા કરીને તેમને અનઇન્સ્ટૉલ કરવાનો પ્રયાસ કરો.</translation>

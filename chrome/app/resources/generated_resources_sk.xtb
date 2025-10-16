@@ -8746,6 +8746,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7055451306017383754">Zdieľanie sa nepodarilo zrušiť, pretože tento priečinok používa nejaká aplikácia. Jeho zdieľanie bude zrušené po ďalšom vypnutí aplikácie Parallels Desktop.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}few{# otvorené okná inkognito}many{# open Incognito windows}other{# otvorených okien inkognito}}</translation>
 <translation id="7056526158851679338">&amp;Preskúmať zariadenia</translation>
+<translation id="7057567173736333354">Opíšte obrázok</translation>
 <translation id="70577934383983846">Používajte toto heslo vo všetkých zariadeniach</translation>
 <translation id="7058024590501568315">Skrytá sieť</translation>
 <translation id="7059858479264779982">Nastaviť na automatické spúšťanie</translation>
@@ -9950,6 +9951,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7899720074434636454">Zavrieť žiadosť o udelenie prístupu rozšíreniu <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Vaša organizácia si môže zobraziť informácie o operačnom systéme, prehliadači, nastaveniach a softvéri nainštalovanom v tomto zariadení, aby mohla zaistiť jeho bezpečné používanie.</translation>
 <translation id="7901405293566323524">Telefónne centrum</translation>
+<translation id="7901728443188947649">Vytvoriť snímky</translation>
 <translation id="7903429136755645827">Kliknutím prispôsobte ovládanie hry</translation>
 <translation id="7903481341948453971">Pri vypĺňaní hesiel používať zámku obrazovky</translation>
 <translation id="7903925330883316394">Pomôcka: <ph name="UTILITY_TYPE" /></translation>
@@ -10728,6 +10730,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8413795581997394485">Chráni pred nebezpečnými webmi, súbormi na stiahnutie a rozšíreniami. Keď navštívite určitý web, Chrome odošle Googlu znejasnenú časť webovej adresy prostredníctvom servera chrániaceho súkromie, ktorý skryje vašu adresu IP. Ak určitý web vykoná niečo podozrivé, odošlú sa aj úplné webové adresy a časti obsahu stránok.</translation>
 <translation id="8413956290606243087">Chcete aktivovať vstavanú čítačku obrazovky ChromeVox pre Chrome OS?</translation>
 <translation id="8414396119627470038">Prihláste sa na webe <ph name="SITE_ETLD_PLUS_ONE" /> pomocou poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Prehľadávajte čokoľvek</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (puzdro)</translation>
 <translation id="8417065541337558100">Ukážka streamu vašej kamery</translation>
 <translation id="8417548266957501132">Heslo rodiča</translation>
