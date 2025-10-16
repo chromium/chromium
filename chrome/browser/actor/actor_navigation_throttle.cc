@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -198,11 +199,13 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
                                        : "Check navigation safety")
           .Build());
 
-  MayActOnUrl(
-      navigation_url, /*allow_insecure_http=*/true, GetProfile(), journal,
-      task_id_,
-      base::BindOnce(&ActorNavigationThrottle::OnMayActOnUrlResult,
-                     weak_factory_.GetWeakPtr(), std::move(journal_entry)));
+  ActorKeyedService::Get(GetProfile())
+      ->GetPolicyChecker()
+      .MayActOnUrl(
+          navigation_url, /*allow_insecure_http=*/true, GetProfile(), journal,
+          task_id_,
+          base::BindOnce(&ActorNavigationThrottle::OnMayActOnUrlResult,
+                         weak_factory_.GetWeakPtr(), std::move(journal_entry)));
 
   return content::NavigationThrottle::DEFER;
 }

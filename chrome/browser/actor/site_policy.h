@@ -27,6 +27,7 @@ using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
 // Checks whether the actor may perform actions on the given tab based on the
 // last committed document and URL. Invokes the callback with true if it is
 // allowed.
+// Please use ActorPolicyChecker instead of calling this directly.
 void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
@@ -36,6 +37,7 @@ void MayActOnTab(const tabs::TabInterface& tab,
 // This can optionally allow insecure HTTP URLs as in practice sites may have
 // HTTP links that will get upgraded. Rejecting HTTP URLs before this can happen
 // would be too serious of an impediment.
+// Please use ActorPolicyChecker instead of calling this directly.
 void MayActOnUrl(const GURL& url,
                  bool allow_insecure_http,
                  Profile* profile,

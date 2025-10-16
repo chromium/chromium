@@ -14,6 +14,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -58,7 +59,7 @@ using ui::ActorUiStateManagerInterface;
 
 ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
-  InitActionBlocklist(profile);
+  policy_checker_ = std::make_unique<ActorPolicyChecker>(*this);
 }
 
 ActorKeyedService::~ActorKeyedService() = default;
@@ -226,6 +227,16 @@ void ActorKeyedService::OnUserConfirmationDialogDecision(
   }
 }
 
+void ActorKeyedService::OnActuationCapabilityChanged(
+    bool has_actuation_capability) {
+  if (!has_actuation_capability) {
+    FailAllTasks();
+  }
+  // TODO(crbug.com/450525715): Depends on the shape of the Chrome API to signal
+  // the HostCapability (Set vs Observable), we might need to inform the web
+  // client about the capability change.
+}
+
 void ActorKeyedService::RequestTabObservation(
     tabs::TabInterface& tab,
     TaskId task_id,
@@ -356,6 +367,15 @@ void ActorKeyedService::OnActionsFinished(
                           index_of_failed_action, std::move(action_results)));
 }
 
+void ActorKeyedService::FailAllTasks() {
+  auto no_op_predicate = [](const ActorTask& task) { return true; };
+  std::vector<TaskId> tasks_to_stop =
+      FindTaskIdsInActive(base::BindRepeating(no_op_predicate));
+  for (const auto& task_id : tasks_to_stop) {
+    StopTask(task_id, /*success=*/false);
+  }
+}
+
 void ActorKeyedService::StopTask(TaskId task_id, bool success) {
   TRACE_EVENT0("actor", "ActorKeyedService::StopTask");
   auto task = active_tasks_.extract(task_id);
@@ -379,6 +399,10 @@ ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
 
 ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
   return actor_ui_state_manager_.get();
+}
+
+ActorPolicyChecker& ActorKeyedService::GetPolicyChecker() {
+  return *policy_checker_;
 }
 
 bool ActorKeyedService::IsActiveOnTab(const tabs::TabInterface& tab) const {

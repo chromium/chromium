@@ -75,6 +75,8 @@ source_set("impl") {
     "actor_keyed_service_factory.cc",
     "actor_metrics.cc",
     "actor_navigation_throttle.cc",
+    "actor_policy_checker.cc",
+    "actor_policy_checker.h",
     "actor_switches.cc",
     "actor_tab_data.cc",
     "actor_task.cc",
@@ -167,6 +169,10 @@ source_set("impl") {
     # actor:impl, which could clean up this circular dependency.
     "//chrome/browser/actor/ui:tool_request_variant",
   ]
+
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }
 
 # This target contains only type definitions that may be depended on by other
@@ -282,6 +288,7 @@ source_set("browser_tests") {
   if (enable_glic) {
     sources += [
       "actor_keyed_service_browsertest.cc",
+      "actor_policy_checker_browsertest.cc",
       "execution_engine_browsertest.cc",
       "tools/attempt_login_tool_browsertest.cc",
       "tools/click_tool_browsertest.cc",

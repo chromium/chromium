@@ -24,6 +24,7 @@
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -373,7 +374,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   }
 
   // Asynchronously check if we can act on the tab.
-  MayActOnTab(
+  ActorKeyedService::Get(profile_)->GetPolicyChecker().MayActOnTab(
       *tab, *journal_, task_->id(),
       base::BindOnce(
           &ExecutionEngine::DidFinishAsyncSafetyChecks, GetWeakPtr(),

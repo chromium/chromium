@@ -42,6 +42,7 @@ class ActorUiStateManagerInterface;
 }
 
 class ActorTask;
+class ActorPolicyChecker;
 class ToolRequest;
 
 using ParentInstanceId = base::Uuid;
@@ -69,6 +70,8 @@ class ActorKeyedService : public KeyedService {
   const std::map<TaskId, const ActorTask*> GetActiveTasks() const;
   const std::map<TaskId, const ActorTask*> GetInactiveTasks() const;
 
+  // TODO(liuwilliam): These functions can take in a `base::FunctionRef` to
+  // avoid the `base::BindRepeating` at the callsite.
   std::vector<TaskId> FindTaskIdsInActive(
       const base::RepeatingCallback<bool(const ActorTask&)>& predicate) const;
   std::vector<TaskId> FindTaskIdsInInactive(
@@ -108,6 +111,8 @@ class ActorKeyedService : public KeyedService {
 
   // The associated ActorUiStateManager for the associated profile.
   ui::ActorUiStateManagerInterface* GetActorUiStateManager();
+
+  ActorPolicyChecker& GetPolicyChecker();
 
   // Returns true if there is a task that is actively (i.e. not paused) acting
   // in the given `tab`.
@@ -184,6 +189,8 @@ class ActorKeyedService : public KeyedService {
       TaskId request_task_id,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
+  void OnActuationCapabilityChanged(bool has_actuation_capability);
+
   // Returns the acting task for web_contents. Returns nullptr if acting task
   // does not exist.
   const ActorTask* GetActingActorTaskForWebContents(
@@ -199,6 +206,9 @@ class ActorKeyedService : public KeyedService {
       std::optional<size_t> index_of_failed_action,
       std::vector<ActionResultWithLatencyInfo> action_results);
 
+  // Fails all the active tasks.
+  void FailAllTasks();
+
   // Needs to be declared before the tasks, as they will indirectly have a
   // reference to it. This ensures the correct destruction order.
   std::unique_ptr<ui::ActorUiStateManagerInterface> actor_ui_state_manager_;
@@ -210,6 +220,8 @@ class ActorKeyedService : public KeyedService {
   TaskId::Generator next_task_id_;
 
   AggregatedJournal journal_;
+
+  std::unique_ptr<ActorPolicyChecker> policy_checker_;
 
   base::RepeatingCallbackList<void(const ActorTask&)>
       tab_state_change_callback_list_;
