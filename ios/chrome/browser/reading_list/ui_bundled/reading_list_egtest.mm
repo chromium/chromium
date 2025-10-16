@@ -1099,6 +1099,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Selects read and unread entries and mark them as read.
 - (void)testMarkMixedEntriesRead {
+  // TODO(crbug.com/433982582): This test fails on iPad iOS 18 with multitasking
+  // enabled.
+  if (!@available(iOS 18, *)) {
+    if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
+        [ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
+      EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
+    }
+  }
+
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
   TapEntry(kUnreadTitle);
@@ -1215,9 +1224,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 - (void)testContextMenuOpenInNewTab {
 #if TARGET_IPHONE_SIMULATOR
   // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
-  if ([ChromeEarlGrey isIPhoneIdiom]) {
-    if (!@available(iOS 18, *)) {
+  if (!@available(iOS 18, *)) {
+    if ([ChromeEarlGrey isIPhoneIdiom]) {
       EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+    }
+    // This test fails on iPad iOS 18 with multitasking enabled.
+    if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
+        [ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
+      EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
     }
   }
 #endif
@@ -1674,6 +1688,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 - (void)testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // TODO(crbug.com/433982582): This test fails on iPad iOS 18 with multitasking
+  // enabled.
+  if (!@available(iOS 18, *)) {
+    if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
+        [ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
+      EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
+    }
   }
 
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
