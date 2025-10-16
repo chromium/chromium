@@ -59,12 +59,6 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
   ImageDecodeAcceleratorStub& operator=(const ImageDecodeAcceleratorStub&) =
       delete;
 
-  // Processes a decode request. Must be called on the IO thread.
-  // `release_count` will be released on completion, no matter whether the
-  // operation is successful or not.
-  void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
-                           uint64_t release_count);
-
   // Called on the main thread to indicate that |channel_| should no longer be
   // used.
   void Shutdown();
@@ -73,18 +67,8 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
   friend class base::RefCountedThreadSafe<ImageDecodeAcceleratorStub>;
   ~ImageDecodeAcceleratorStub();
 
-  // Creates the service-side cache entry for a completed decode. If the decode
-  // was unsuccessful, no cache entry is created.
-  void ProcessCompletedDecode(mojom::ScheduleImageDecodeParamsPtr params_ptr);
-
   // Disables |sequence_| if there are no more decodes to process for now.
   void FinishCompletedDecode() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  // The |worker_| calls this when a decode is completed. |result| is enqueued
-  // and |sequence_| is enabled so that ProcessCompletedDecode() picks it up.
-  void OnDecodeCompleted(
-      gfx::Size expected_output_size,
-      std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult> result);
 
   void ScheduleSyncTokenRelease(const SyncToken& release);
 

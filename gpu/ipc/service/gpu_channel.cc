@@ -175,8 +175,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       CreateCommandBufferCallback callback) override;
   void DestroyCommandBuffer(int32_t routing_id,
                             DestroyCommandBufferCallback callback) override;
-  void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
-                           uint64_t decode_release_count) override;
   void FlushDeferredRequests(std::vector<mojom::DeferredRequestPtr> requests,
                              uint32_t flushed_deferred_message_id) override;
 
@@ -549,13 +547,6 @@ void GpuChannelMessageFilter::DestroyCommandBuffer(
       base::BindOnce(&gpu::GpuChannel::DestroyCommandBuffer,
                      gpu_channel_->AsWeakPtr(), routing_id),
       std::move(callback));
-}
-
-void GpuChannelMessageFilter::ScheduleImageDecode(
-    mojom::ScheduleImageDecodeParamsPtr params,
-    uint64_t decode_release_count) {
-  image_decode_accelerator_stub_->ScheduleImageDecode(std::move(params),
-                                                      decode_release_count);
 }
 
 #if BUILDFLAG(IS_WIN)

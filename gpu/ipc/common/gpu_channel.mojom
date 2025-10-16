@@ -102,18 +102,6 @@ struct CommandBufferState {
   uint32 set_get_buffer_count;
 };
 
-struct ScheduleImageDecodeParams {
-  array<uint8> encoded_data;
-  gfx.mojom.Size output_size;
-  int32 raster_decoder_route_id;
-  uint32 transfer_cache_entry_id;
-  int32 discardable_handle_shm_id;
-  uint32 discardable_handle_shm_offset;
-  uint64 discardable_handle_release_count;
-  gfx.mojom.ColorSpace target_color_space;
-  bool needs_mips;
-};
-
 // Main control interface for a GPU process connection. For now an instance of
 // this interface is associated with each C++ GpuChannel/Host's underlying
 // IPC::Channel interface. Eventually it will replace the IPC::Channel.
@@ -169,12 +157,6 @@ interface GpuChannel {
   // destructor, so that the stub deletes the actual CommandBufferService
   // object that it's hosting.
   [Sync, NoInterrupt] DestroyCommandBuffer(int32 routing_id) => ();
-
-  // Schedules a hardware-accelerated image decode in the GPU process. Renderers
-  // should use gpu::ImageDecodeAcceleratorProxy to schedule decode requests
-  // which are processed by gpu::ImageDecodeAcceleratorStub on the service side.
-  ScheduleImageDecode(ScheduleImageDecodeParams params,
-                      uint64 decode_release_count);
 
   // Sends a batch of DeferredRequests to be executed by the service.
   // `flushed_deferred_message_id` is used to update the per-channel id of

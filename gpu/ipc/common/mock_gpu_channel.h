@@ -49,8 +49,6 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD1(DestroyCommandBuffer, bool(int32_t));
   MOCK_METHOD2(DestroyCommandBuffer,
                void(int32_t, DestroyCommandBufferCallback));
-  MOCK_METHOD2(ScheduleImageDecode,
-               void(mojom::ScheduleImageDecodeParamsPtr, uint64_t));
   MOCK_METHOD2(FlushDeferredRequests,
                void(std::vector<mojom::DeferredRequestPtr>, uint32_t));
   MOCK_METHOD4(CreateGpuMemoryBuffer,
