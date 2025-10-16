@@ -457,7 +457,7 @@ bool CookieCraving::CanSetBoundCookie(
              CookieAccessParams(CookieAccessSemantics::UNKNOWN,
                                 CookieScopeSemantics::UNKNOWN,
                                 /* delegate_treats_url_as_trustworthy=*/false),
-             {"https"}, std::nullopt)
+             {"https", "http"}, std::nullopt)
       .status.IsInclude();
 }
 
