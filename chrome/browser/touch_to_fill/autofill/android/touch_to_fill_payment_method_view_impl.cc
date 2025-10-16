@@ -33,6 +33,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TouchToFillPaymentMethodViewBridge_jni.h"
 #include "components/autofill/android/main_autofill_jni_headers/LoyaltyCard_jni.h"
+#include "components/autofill/android/payments_jni_headers/BnplIssuerContext_jni.h"
 #include "components/autofill/android/payments_jni_headers/BnplIssuerTosDetail_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
@@ -62,6 +63,35 @@ ConvertBnplIssuerTosDetailToJavaObject(
       ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.approve_text),
       ConvertTextWithLinkToJavaObject(env, obj,
                                       bnpl_issuer_tos_detail.link_text));
+}
+
+// TODO(crbug.com/449764859): Refactor BnplIssuerContext to use JNI type
+// converters.
+static base::android::ScopedJavaLocalRef<jobject>
+CreateJavaBnplIssuerContextFromNative(
+    JNIEnv* env,
+    const autofill::payments::BnplIssuerContext& bnpl_issuer_context) {
+  // For now, Android only uses the `LightModeImageId`.
+  const std::pair<autofill::BnplIssuer::LightModeImageId,
+                  autofill::BnplIssuer::DarkModeImageId>
+      image_ids = GetBnplIssuerIconIds(
+          bnpl_issuer_context.issuer.issuer_id(),
+          /*issuer_linked=*/bnpl_issuer_context.issuer.payment_instrument()
+              .has_value());
+
+  // TODO(crbug.com/430575808): App locale will be provided to `ShowBnplIssuers`
+  // in crrev.com/c/7005163. Once this CL is merged remove the hard-coded app
+  // locale, "en-US".
+  const std::u16string selection_text =
+      autofill::payments::GetBnplIssuerSelectionOptionText(
+          bnpl_issuer_context.issuer.issuer_id(), "en-US",
+          {bnpl_issuer_context});
+
+  return autofill::Java_BnplIssuerContext_Constructor(
+      env, image_ids.first.value(), bnpl_issuer_context.issuer.GetDisplayName(),
+      selection_text,
+      bnpl_issuer_context.issuer.payment_instrument().has_value(),
+      bnpl_issuer_context.IsEligible());
 }
 
 }  // namespace
@@ -237,8 +267,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuers(
   for (const payments::BnplIssuerContext& issuer_context :
        bnpl_issuer_contexts) {
     issuer_context_array.push_back(
-        PersonalDataManagerAndroid::CreateJavaBnplIssuerContextFromNative(
-            env, issuer_context));
+        CreateJavaBnplIssuerContextFromNative(env, issuer_context));
   }
 
   // Pass only the raw string to Java. The link's start/end indices from

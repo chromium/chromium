@@ -30,6 +30,7 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.AutofillSuggestion.Payload;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
+import org.chromium.components.autofill.payments.BnplIssuerContext;
 import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -116,8 +117,7 @@ class TouchToFillPaymentMethodViewBridge {
 
     @CalledByNative
     private void showBnplIssuers(
-            @JniType("std::vector") List<PersonalDataManager.BnplIssuerContext> bnplIssuerContexts,
-            String footerText) {
+            @JniType("std::vector") List<BnplIssuerContext> bnplIssuerContexts, String footerText) {
         mComponent.showBnplIssuers(bnplIssuerContexts, footerText);
     }
 

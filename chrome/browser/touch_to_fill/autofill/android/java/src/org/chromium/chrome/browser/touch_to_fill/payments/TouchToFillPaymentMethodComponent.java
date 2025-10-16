@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.LoyaltyCard;
+import org.chromium.components.autofill.payments.BnplIssuerContext;
 import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -143,13 +144,11 @@ interface TouchToFillPaymentMethodComponent {
     /**
      * Displays a new BNPL issuers bottom sheet.
      *
-     * @param bnplIssuerContexts A list of {@link PersonalDataManager.BnplIssuerContext} objects,
-     *     each representing a BNPL issuer context, to be displayed on the bottom sheet for the user
-     *     to select from.
+     * @param bnplIssuerContexts A list of {@link BnplIssuerContext} objects, each representing a
+     *     BNPL issuer context, to be displayed on the bottom sheet for the user to select from.
      * @param footerText The footer text to be displayed on the bottom sheet.
      */
-    void showBnplIssuers(
-            List<PersonalDataManager.BnplIssuerContext> bnplIssuerContexts, String footerText);
+    void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts, String footerText);
 
     /**
      * Displays an error screen bottom sheet.

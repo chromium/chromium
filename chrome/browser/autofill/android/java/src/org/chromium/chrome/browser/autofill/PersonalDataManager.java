@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -688,65 +687,6 @@ public class PersonalDataManager implements Destroyable {
                         mRecordType,
                         assumeNonNull(mValue));
             }
-        }
-    }
-
-    /** Autofill BNPL issuer context information. */
-    // TODO(crbug.com/430575808): Move `BnplIssuerContext` to its own separate
-    // file.
-    public static class BnplIssuerContext {
-        private final @DrawableRes int mIconId;
-        private final String mDisplayName;
-        private final String mSelectionText;
-        private final boolean mIsLinked;
-        private final boolean mIsEligible;
-
-        /**
-         * Constructs a new BnplIssuerContext.
-         *
-         * @param iconId The resource ID of the issuer's icon.
-         * @param displayName The name of the issuer to be displayed.
-         * @param selectionText The selection text of the issuer to be displayed.
-         * @param isLinked Whether the issuer is linked or not.
-         * @param isEligible Whether the issuer is eligible to be selected.
-         */
-        @CalledByNative("BnplIssuerContext")
-        public BnplIssuerContext(
-                @DrawableRes int iconId,
-                @JniType("std::u16string") String displayName,
-                @JniType("std::u16string") String selectionText,
-                boolean isLinked,
-                boolean isEligible) {
-            mIconId = iconId;
-            mDisplayName = displayName;
-            mSelectionText = selectionText;
-            mIsLinked = isLinked;
-            mIsEligible = isEligible;
-        }
-
-        /** Returns the resource ID of the issuer's icon. */
-        public @DrawableRes int getIconId() {
-            return mIconId;
-        }
-
-        /** Returns the name of the issuer to be displayed. */
-        public String getDisplayName() {
-            return mDisplayName;
-        }
-
-        /** Returns the selection text of the issuer to be displayed. */
-        public String getSelectionText() {
-            return mSelectionText;
-        }
-
-        /** Returns {@code true} if the issuer is linked. */
-        public boolean isLinked() {
-            return mIsLinked;
-        }
-
-        /** Returns {@code true} if the issuer is eligible to be selected. */
-        public boolean isEligible() {
-            return mIsEligible;
         }
     }
 

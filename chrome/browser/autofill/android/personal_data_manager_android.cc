@@ -39,7 +39,6 @@
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
-#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
@@ -844,30 +843,6 @@ jboolean PersonalDataManagerAndroid::IsCardEligibleForBenefits(
     return payments_data_manager().IsCardEligibleForBenefits(*card);
   }
   return false;
-}
-
-// static
-ScopedJavaLocalRef<jobject>
-PersonalDataManagerAndroid::CreateJavaBnplIssuerContextFromNative(
-    JNIEnv* env,
-    const payments::BnplIssuerContext& bnpl_issuer_context) {
-  // For now, Android only uses the `LightModeImageId`.
-  const std::pair<BnplIssuer::LightModeImageId, BnplIssuer::DarkModeImageId>
-      image_ids = GetBnplIssuerIconIds(
-          bnpl_issuer_context.issuer.issuer_id(),
-          /*issuer_linked=*/bnpl_issuer_context.issuer.payment_instrument()
-              .has_value());
-
-  const std::u16string selection_text =
-      payments::GetBnplIssuerSelectionOptionText(
-          bnpl_issuer_context.issuer.issuer_id(),
-          g_browser_process->GetApplicationLocale(), {bnpl_issuer_context});
-
-  return Java_BnplIssuerContext_Constructor(
-      env, image_ids.first.value(), bnpl_issuer_context.issuer.GetDisplayName(),
-      selection_text,
-      bnpl_issuer_context.issuer.payment_instrument().has_value(),
-      bnpl_issuer_context.IsEligible());
 }
 
 }  // namespace autofill
