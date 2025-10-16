@@ -9750,6 +9750,16 @@ Element* Element::GetStyledPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) const {
   if (!IsTransitionPseudoElement(pseudo_id)) {
+    if (pseudo_id == kPseudoIdScrollMarkerGroup) {
+      if (const ComputedStyle* style = GetComputedStyle()) {
+        if (!style->GetScrollMarkerGroup()) {
+          return nullptr;
+        }
+        pseudo_id = style->HasScrollMarkerGroupBefore()
+                        ? kPseudoIdScrollMarkerGroupBefore
+                        : kPseudoIdScrollMarkerGroupAfter;
+      }
+    }
     if (PseudoElement* result = GetPseudoElement(pseudo_id, pseudo_argument)) {
       return result;
     }

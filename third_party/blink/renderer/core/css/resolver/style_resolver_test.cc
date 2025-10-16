@@ -1196,6 +1196,35 @@ TEST_F(StyleResolverTest, EnsureComputedStyleOutsideFlatTree) {
   EXPECT_NE(c_style, c->GetComputedStyle());
 }
 
+TEST_F(StyleResolverTest, EnsureComputedStyleForExistingScrollMarkerGroup) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        #scroller {
+          overflow: auto;
+          width: 100px;
+          height: 100px;
+          scroll-marker-group: before;
+        }
+        #scroller::scroll-marker-group {
+          background: green;
+        }
+      </style>
+      <div id="scroller"></div>
+    )HTML");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  PseudoElement* smg =
+      scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
+  ASSERT_TRUE(smg);
+  const ComputedStyle* smg_style = smg->GetComputedStyle();
+  const ComputedStyle* smg_ensured_style =
+      scroller->EnsureComputedStyle(kPseudoIdScrollMarkerGroup);
+  EXPECT_TRUE(smg_style);
+  EXPECT_EQ(smg_style, smg_ensured_style)
+      << "Ensuring ComputedStyle for kPseudoIdScrollMarkerGroup should "
+         "retrieve the style directly from the generated before or after group "
+         "when present";
+}
+
 TEST_F(StyleResolverTest, ComputeValueStandardProperty) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
