@@ -365,6 +365,9 @@ HEADLESS_MODE_PROTOCOL_TEST(CreateTargetWindowState,
 HEADLESS_MODE_PROTOCOL_TEST(DocumentVisibilityState,
                             "shared/document-visibility-state.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(DocumentVisibilityStatePopup,
+                            "shared/document-visibility-state-popup.js")
+
 // Headless Mode uses Ozone only when running on Linux.
 #if BUILDFLAG(IS_LINUX)
 HEADLESS_MODE_PROTOCOL_TEST(OzoneScreenSizeOverride,

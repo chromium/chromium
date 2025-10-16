@@ -647,6 +647,9 @@ HEADLESS_PROTOCOL_TEST(CreateTargetWindowState,
 HEADLESS_PROTOCOL_TEST(DocumentVisibilityState,
                        "shared/document-visibility-state.js")
 
+HEADLESS_PROTOCOL_TEST(DocumentVisibilityStatePopup,
+                       "shared/document-visibility-state-popup.js")
+
 // This currently results in an unexpected screen orientation type,
 // see http://crbug.com/398150465.
 HEADLESS_PROTOCOL_TEST(MultipleScreenDetails,
