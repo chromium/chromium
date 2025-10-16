@@ -14,7 +14,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
-#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_effects/public/cpp/buildflags.h"
 
@@ -28,10 +27,8 @@
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 MediaEffectsService::MediaEffectsService(
-    PrefService* prefs,
     std::unique_ptr<MediaEffectsModelProvider> model_provider)
-    : prefs_(prefs),
-      model_provider_(std::move(model_provider)),
+    : model_provider_(std::move(model_provider)),
       gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   if (model_provider_) {
     model_provider_->AddObserver(this);
@@ -39,7 +36,7 @@ MediaEffectsService::MediaEffectsService(
 }
 #endif
 
-MediaEffectsService::MediaEffectsService(PrefService* prefs) : prefs_(prefs) {}
+MediaEffectsService::MediaEffectsService() = default;
 
 MediaEffectsService::~MediaEffectsService() {
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
@@ -57,57 +54,7 @@ MediaEffectsService::~MediaEffectsService() {
 #endif
 }
 
-void MediaEffectsService::BindReadonlyVideoEffectsManager(
-    const std::string& device_id,
-    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
-        effects_manager_receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto& effects_manager = GetOrCreateVideoEffectsManager(device_id);
-  effects_manager.Bind(std::move(effects_manager_receiver));
-}
-
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-void MediaEffectsService::BindVideoEffectsProcessor(
-    const std::string& device_id,
-    mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
-        effects_processor_receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-      readonly_video_effects_manager;
-  BindReadonlyVideoEffectsManager(
-      device_id,
-      readonly_video_effects_manager.InitWithNewPipeAndPassReceiver());
-
-  auto* video_effects_service = video_effects::GetVideoEffectsService();
-  CHECK(video_effects_service);
-
-  // The `video_effects_service` is reset if it is idle for more than 5 seconds.
-  // Re-send the model in case that has happened.
-  if (latest_segmentation_model_file_.IsValid()) {
-    video_effects_service->SetBackgroundSegmentationModel(
-        latest_segmentation_model_file_.Duplicate());
-  }
-
-  mojo::PendingRemote<viz::mojom::Gpu> gpu_remote;
-  mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver =
-      gpu_remote.InitWithNewPipeAndPassReceiver();
-
-  if (!gpu_client_) {
-    gpu_client_ = content::CreateGpuClient(std::move(gpu_receiver));
-  } else {
-    auto task_runner = content::GetUIThreadTaskRunner({});
-    task_runner->PostTask(FROM_HERE, base::BindOnce(&viz::GpuClient::Add,
-                                                    gpu_client_->GetWeakPtr(),
-                                                    std::move(gpu_receiver)));
-  }
-
-  video_effects_service->CreateEffectsProcessor(
-      device_id, std::move(gpu_remote),
-      std::move(readonly_video_effects_manager),
-      std::move(effects_processor_receiver));
-}
 
 void MediaEffectsService::OnBackgroundSegmentationModelUpdated(
     base::optional_ref<const base::FilePath> path) {
@@ -160,31 +107,3 @@ void MediaEffectsService::OnBackgroundSegmentationModelOpened(
   }
 }
 #endif
-
-VideoEffectsManagerImpl& MediaEffectsService::GetOrCreateVideoEffectsManager(
-    const std::string& device_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (auto effects_manager = video_effects_managers_.find(device_id);
-      effects_manager != video_effects_managers_.end()) {
-    return *effects_manager->second;
-  }
-
-  // base::Unretained is safe here because `this` owns the
-  // `VideoEffectsManagerImpl` that would call this callback.
-  auto [effects_manager, inserted] = video_effects_managers_.emplace(
-      device_id,
-      std::make_unique<VideoEffectsManagerImpl>(
-          prefs_,
-          base::BindOnce(&MediaEffectsService::OnLastReceiverDisconnected,
-                         base::Unretained(this), device_id)));
-  CHECK(inserted);
-  return *effects_manager->second;
-}
-
-void MediaEffectsService::OnLastReceiverDisconnected(
-    const std::string& device_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  video_effects_managers_.erase(device_id);
-}

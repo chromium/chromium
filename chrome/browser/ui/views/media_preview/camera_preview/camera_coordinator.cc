@@ -49,13 +49,6 @@ CameraCoordinator::CameraCoordinator(
       base::BindRepeating(&CameraCoordinator::OnVideoSourceChanged,
                           base::Unretained(this)),
       metrics_context_);
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
-    blur_switch_view_controller_.emplace(*camera_view, browser_context_);
-  }
-#endif
-
   video_stream_coordinator_.emplace(
       camera_view_controller_->GetLiveFeedContainer(), metrics_context_);
 
@@ -92,11 +85,6 @@ void CameraCoordinator::OnVideoSourceInfosReceived(
   if (eligible_device_infos_.empty()) {
     active_device_id_.clear();
     video_stream_coordinator_->Stop();
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    if (blur_switch_view_controller_) {
-      blur_switch_view_controller_->ResetConnections();
-    }
-#endif
   }
   camera_view_controller_->UpdateVideoSourceInfos(eligible_device_infos_);
 }
@@ -116,16 +104,6 @@ void CameraCoordinator::OnVideoSourceChanged(
   mojo::Remote<video_capture::mojom::VideoSource> video_source;
   camera_mediator_.BindVideoSource(active_device_id_,
                                    video_source.BindNewPipeAndPassReceiver());
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
-      browser_context_) {
-    if (blur_switch_view_controller_) {
-      blur_switch_view_controller_->BindVideoEffectsManager(active_device_id_);
-    }
-  }
-#endif
-
   video_stream_coordinator_->ConnectToDevice(device_info,
                                              std::move(video_source));
 }
@@ -157,7 +135,4 @@ void CameraCoordinator::UpdateDevicePreferenceRanking() {
 
 void CameraCoordinator::ResetViewController() {
   camera_view_controller_.reset();
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  blur_switch_view_controller_.reset();
-#endif
 }

@@ -6761,11 +6761,6 @@ test("unit_tests") {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
   }
 
-  if (enable_video_effects) {
-    sources +=
-        [ "../browser/media_effects/media_effects_manager_binder_unittest.cc" ]
-  }
-
   if (toolkit_views) {
     sources +=
         [ "../browser/bookmarks/bookmark_expanded_state_tracker_unittest.cc" ]

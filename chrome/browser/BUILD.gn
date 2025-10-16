@@ -36,7 +36,6 @@ import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
 import("//services/screen_ai/buildflags/features.gni")
-import("//services/video_effects/args.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -8275,17 +8274,6 @@ static_library("browser") {
     if (!is_android) {
       deps += [ "//third_party/hunspell" ]
     }
-  }
-
-  if (enable_video_effects) {
-    sources += [
-      "media_effects/media_effects_manager_binder.cc",
-      "media_effects/media_effects_manager_binder.h",
-    ]
-    deps += [
-      "//media/capture/mojom:video_effects_manager",
-      "//services/video_effects/public/mojom",
-    ]
   }
 
   if (enable_vr) {

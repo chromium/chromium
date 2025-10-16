@@ -8,7 +8,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "media/base/media_switches.h"
 #include "services/video_effects/public/cpp/buildflags.h"
@@ -66,7 +65,7 @@ class SegmentationModelObserver
     optimization_guide_->AddObserverForOptimizationTargetModel(
         optimization_guide::proto::OptimizationTarget::
             OPTIMIZATION_TARGET_CAMERA_BACKGROUND_SEGMENTATION,
-        std::nullopt, this);
+        std::nullopt, base::SequencedTaskRunner::GetCurrentDefault(), this);
   }
 
   ~SegmentationModelObserver() override {
@@ -153,10 +152,8 @@ MediaEffectsServiceFactory::BuildServiceInstanceForBrowserContext(
     model_provider =
         std::make_unique<SegmentationModelObserver>(browser_context);
   }
-  return std::make_unique<MediaEffectsService>(
-      user_prefs::UserPrefs::Get(browser_context), std::move(model_provider));
+  return std::make_unique<MediaEffectsService>(std::move(model_provider));
 #else
-  return std::make_unique<MediaEffectsService>(
-      user_prefs::UserPrefs::Get(browser_context));
+  return std::make_unique<MediaEffectsService>();
 #endif
 }

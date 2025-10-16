@@ -23,7 +23,6 @@ import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
-import("//services/video_effects/args.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 import("//ui/base/ui_features.gni")
@@ -2957,13 +2956,6 @@ static_library("ui") {
       "webui/settings/system_handler.cc",
       "webui/settings/system_handler.h",
     ]
-
-    if (enable_video_effects) {
-      sources += [
-        "views/media_preview/camera_preview/blur_switch_view_controller.cc",
-        "views/media_preview/camera_preview/blur_switch_view_controller.h",
-      ]
-    }
 
     deps += [
       "//chrome/app:generated_resources",
