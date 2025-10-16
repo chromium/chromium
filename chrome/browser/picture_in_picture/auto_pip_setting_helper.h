@@ -7,14 +7,15 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class WebContents;
@@ -28,6 +29,8 @@ class PermissionDecisionAutoBlockerBase;
 namespace views {
 class View;
 }  // namespace views
+
+class AutoPipSettingOverlayView;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class HostContentSettingsMap;

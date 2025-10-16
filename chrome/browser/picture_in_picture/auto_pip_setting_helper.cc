@@ -21,6 +21,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#endif
+
 // static
 std::unique_ptr<AutoPipSettingHelper>
 AutoPipSettingHelper::CreateForWebContents(

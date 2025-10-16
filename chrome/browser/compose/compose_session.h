@@ -22,7 +22,6 @@
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,6 +39,11 @@ class WebContents;
 namespace content_extraction {
 struct InnerTextResult;
 }  // namespace content_extraction
+
+namespace optimization_guide {
+class OptimizationGuideModelExecutor;
+struct OptimizationGuideModelExecutionResult;
+}  // namespace optimization_guide
 
 namespace ui {
 struct AXTreeUpdate;
