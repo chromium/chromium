@@ -1556,11 +1556,6 @@ const char kSupervisedUserBlockInterstitialV3Name[] =
 const char kSupervisedUserBlockInterstitialV3Description[] =
     "Enables URL filter interstitial V3 for Family Link users.";
 
-const char kSupervisedUserLocalWebApprovalsName[] =
-    "Enable local web approvals feature";
-const char kSupervisedUserLocalWebApprovalsDescription[] =
-    "Enables parents to approve blocked websites on a child's device.";
-
 const char kSyncAutofillWalletCredentialDataName[] =
     "Sync Autofill Wallet Credential Data";
 const char kSyncAutofillWalletCredentialDataDescription[] =

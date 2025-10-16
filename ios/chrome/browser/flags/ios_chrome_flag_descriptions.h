@@ -914,9 +914,6 @@ extern const char kSuggestStrongPasswordInAddPasswordDescription[];
 extern const char kSupervisedUserBlockInterstitialV3Name[];
 extern const char kSupervisedUserBlockInterstitialV3Description[];
 
-extern const char kSupervisedUserLocalWebApprovalsName[];
-extern const char kSupervisedUserLocalWebApprovalsDescription[];
-
 extern const char kSyncAutofillWalletCredentialDataName[];
 extern const char kSyncAutofillWalletCredentialDataDescription[];
 

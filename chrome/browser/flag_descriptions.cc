@@ -8375,13 +8375,6 @@ const char kSupervisedUserBlockInterstitialV3Name[] =
 const char kSupervisedUserBlockInterstitialV3Description[] =
     "Enables URL filter interstitial V3 for Family Link users.";
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-const char kSupervisedUserLocalWebApprovalsName[] =
-    "Enable local web approvals feature";
-const char kSupervisedUserLocalWebApprovalsDescription[] =
-    "Enables parents to approve blocked websites on a child's device.";
-#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_CHROMEOS)
 const char kAllowUserInstalledChromeAppsName[] =
     "Allow user installed Chrome Apps";

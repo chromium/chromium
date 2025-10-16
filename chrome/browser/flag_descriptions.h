@@ -4785,11 +4785,6 @@ extern const char kEnableManagementPromotionBannerDescription[];
 extern const char kSupervisedUserBlockInterstitialV3Name[];
 extern const char kSupervisedUserBlockInterstitialV3Description[];
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-extern const char kSupervisedUserLocalWebApprovalsName[];
-extern const char kSupervisedUserLocalWebApprovalsDescription[];
-#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.

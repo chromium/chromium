@@ -9546,14 +9546,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "supervised-user-local-web-approvals",
-    "owners": [
-      "fernandex@google.com",
-      "chrome-kids-eng@google.com"
-    ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "support-f11-and-f12-shortcuts",
     "owners": [
       "michaelcheco@chromium.org",
