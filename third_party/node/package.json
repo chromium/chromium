@@ -24,10 +24,10 @@
     "@types/w3c-image-capture": "1.0.10",
     "@types/webrtc": "0.0.45",
     "@types/wicg-file-system-access": "2020.09.05",
-    "@typescript-eslint/eslint-plugin": "8.26.0",
-    "@typescript-eslint/parser": "8.26.0",
-    "@typescript-eslint/types": "8.26.0",
-    "@typescript-eslint/utils": "8.26.0",
+    "@typescript-eslint/eslint-plugin": "8.46.1",
+    "@typescript-eslint/parser": "8.46.1",
+    "@typescript-eslint/types": "8.46.1",
+    "@typescript-eslint/utils": "8.46.1",
     "eslint": "9.20.1",
     "eslint-plugin-jsdoc": "50.2.2",
     "lit": "3.3.0",
@@ -37,6 +37,6 @@
     "postcss-minify": "1.1.0",
     "terser": "5.37.0",
     "ts-proto": "2.7.7",
-    "typescript": "5.8.2"
+    "typescript": "5.9.3"
   }
 }

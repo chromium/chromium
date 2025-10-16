@@ -32,7 +32,12 @@ export default {
   rules: {
     'require-await': 'off',
     '@typescript-eslint/require-await' : 'error',
-    '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+
+    // TODO(crbug.com/451650623): Re-enable this check after rolling to
+    // TypeScript v5.9. This is temporarily disabled to make rolling easier,
+    // since v5.9 has a non-nullable HTMLElement#textContent property triggering
+    // lot of newly surfaced violations of the rule below.
+    // '@typescript-eslint/no-unnecessary-type-assertion': 'error',
 
     '@webui-eslint/lit-property-accessor': 'error',
     '@webui-eslint/polymer-property-declare': 'error',

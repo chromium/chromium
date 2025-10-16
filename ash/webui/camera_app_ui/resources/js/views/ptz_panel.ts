@@ -168,7 +168,10 @@ export class PtzPanel extends View {
       attr: 'pan'|'tilt'|'zoom', incBtn: HTMLButtonElement,
       decBtn: HTMLButtonElement): AsyncJobQueue {
     const ptzController = assertExists(this.ptzController);
-    const {min, max, step} = ptzController.getCapabilities()[attr];
+    const capabilities = ptzController.getCapabilities()[attr];
+    const min = capabilities.min!;
+    const max = capabilities.max!;
+    const step = capabilities.step!;
     function getCurrent() {
       return assertExists(ptzController.getSettings()[attr]);
     }
@@ -243,8 +246,8 @@ export class PtzPanel extends View {
       const current = settings[attr];
       const {min, max, step} = capabilities[attr];
       assert(current !== undefined);
-      decBtn.disabled = current - step < min;
-      incBtn.disabled = current + step > max;
+      decBtn.disabled = current - step! < min!;
+      incBtn.disabled = current + step! > max!;
     }
     if (capabilities.zoom !== undefined) {
       updateDisable(this.zoomIn, this.zoomOut, 'zoom');

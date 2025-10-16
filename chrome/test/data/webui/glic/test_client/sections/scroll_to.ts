@@ -72,7 +72,7 @@ function getNodeId(selectElement: HTMLSelectElement): number|undefined {
 }
 
 $.scrollToFetchAPCBn.addEventListener('click', async () => {
-  let annotatedPageContentBytes: Uint8Array|undefined = undefined;
+  let annotatedPageContentBytes: Uint8Array<ArrayBuffer>|undefined;
   try {
     const pageContent = await getBrowser()!.getContextFromFocusedTab!
                         ({annotatedPageContent: true});

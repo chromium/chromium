@@ -61,8 +61,8 @@ export class Portrait extends Photo {
     } else {
       const caps = await this.getImageCapture().getPhotoCapabilities();
       photoSettings = {
-        imageWidth: caps.imageWidth.max,
-        imageHeight: caps.imageHeight.max,
+        imageWidth: caps.imageWidth!.max,
+        imageHeight: caps.imageHeight!.max,
       };
     }
 

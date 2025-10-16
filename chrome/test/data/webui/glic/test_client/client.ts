@@ -19,7 +19,7 @@ export function logMessage(message: string) {
 }
 
 export function readStream(stream: ReadableStream<Uint8Array>):
-    Promise<Uint8Array> {
+    Promise<Uint8Array<ArrayBuffer>> {
   return new Response(stream).bytes();
 }
 

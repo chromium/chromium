@@ -157,8 +157,8 @@ export class Photo extends ModeBase {
       } else {
         const caps = await this.getImageCapture().getPhotoCapabilities();
         photoSettings = {
-          imageWidth: caps.imageWidth.max,
-          imageHeight: caps.imageHeight.max,
+          imageWidth: caps.imageWidth!.max,
+          imageHeight: caps.imageHeight!.max,
         };
       }
       await this.waitPreviewReady();

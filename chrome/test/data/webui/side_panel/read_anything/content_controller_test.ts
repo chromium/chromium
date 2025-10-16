@@ -388,8 +388,7 @@ suite('ContentController', () => {
 
       assertTrue(root instanceof HTMLAnchorElement, 'instance');
       assertEquals(url, root.href);
-      assertTrue(!!root.onclick, 'onclick');
-      root.onclick(new MouseEvent('type'));
+      root.click();
       assertTrue(clicked, 'clicked');
     });
 
