@@ -31,8 +31,6 @@ NotShared<DOMFloat32Array> transformationMatrixToDOMFloat32Array(
 
 gfx::Transform DOMFloat32ArrayToTransform(NotShared<DOMFloat32Array>);
 
-gfx::Transform WTFFloatVectorToTransform(const Vector<float>&);
-
 DOMPointReadOnly* makeNormalizedQuaternion(double x,
                                            double y,
                                            double z,
