@@ -37,6 +37,11 @@ class ArcPrivacyItemsBridge
   static ArcPrivacyItemsBridge* GetForBrowserContext(
       content::BrowserContext* context);
 
+  static ArcPrivacyItemsBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
+
+  static void ShutdownForTesting(content::BrowserContext* context);
+
   ArcPrivacyItemsBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
 

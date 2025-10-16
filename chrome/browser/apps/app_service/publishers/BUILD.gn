@@ -167,6 +167,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc/fileapi",
+      "//chrome/browser/ash/arc/privacy_items",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/bruschetta:test_support",

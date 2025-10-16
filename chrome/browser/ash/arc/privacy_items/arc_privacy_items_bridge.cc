@@ -25,6 +25,12 @@ class ArcPrivacyItemsBridgeFactory
     return base::Singleton<ArcPrivacyItemsBridgeFactory>::get();
   }
 
+  static void ShutdownForTesting(content::BrowserContext* context) {
+    auto* self = GetInstance();
+    self->BrowserContextShutdown(context);
+    self->BrowserContextDestroyed(context);
+  }
+
  private:
   friend base::DefaultSingletonTraits<ArcPrivacyItemsBridgeFactory>;
 
@@ -38,6 +44,18 @@ class ArcPrivacyItemsBridgeFactory
 ArcPrivacyItemsBridge* ArcPrivacyItemsBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcPrivacyItemsBridgeFactory::GetForBrowserContext(context);
+}
+
+// static
+ArcPrivacyItemsBridge* ArcPrivacyItemsBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcPrivacyItemsBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
+// static
+void ArcPrivacyItemsBridge::ShutdownForTesting(
+    content::BrowserContext* context) {
+  return ArcPrivacyItemsBridgeFactory::ShutdownForTesting(context);
 }
 
 ArcPrivacyItemsBridge::ArcPrivacyItemsBridge(content::BrowserContext* context,

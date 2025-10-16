@@ -42,6 +42,7 @@
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/arc/privacy_items/arc_privacy_items_bridge.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -526,7 +527,9 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
     std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
     privacy_items.push_back(CreateArcPrivacyItem(
         arc::mojom::AppPermissionGroup::CAMERA, package_name1));
-    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
     VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
                            /*accessing_camera=*/true,
                            /*accessing_microphone=*/std::nullopt);
@@ -535,7 +538,9 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
   // Cancel accessing Camera for `package_name1`.
   {
     std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
-    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
     VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
                            /*accessing_camera=*/false,
                            /*accessing_microphone=*/false);
@@ -551,7 +556,9 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
         arc::mojom::AppPermissionGroup::MICROPHONE, package_name1));
     privacy_items.push_back(CreateArcPrivacyItem(
         arc::mojom::AppPermissionGroup::CAMERA, package_name2));
-    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
     VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
                            /*accessing_camera=*/true,
                            /*accessing_microphone=*/true);
@@ -567,7 +574,9 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
         arc::mojom::AppPermissionGroup::CAMERA, package_name1));
     privacy_items.push_back(CreateArcPrivacyItem(
         arc::mojom::AppPermissionGroup::CAMERA, package_name2));
-    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
     VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
                            /*accessing_camera=*/true,
                            /*accessing_microphone=*/false);
@@ -579,7 +588,9 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
   // Cancel accessing CAMERA for `package_name1` and `package_name2`.
   {
     std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
-    arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
     VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
                            /*accessing_camera=*/false,
                            /*accessing_microphone=*/false);

@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/privacy_items/arc_privacy_items_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
@@ -172,6 +173,8 @@ void ArcAppTest::SetUp(Profile* profile) {
       WaitForInstanceReady(
           arc_service_manager_->arc_bridge_service()->intent_helper());
     }
+
+    arc::ArcPrivacyItemsBridge::GetForBrowserContextForTesting(profile_);
 
     // Ensure that the singleton apps::ArcApps is constructed.
     apps::ArcAppsFactory::GetForProfile(profile_);
@@ -365,6 +368,8 @@ void ArcAppTest::TearDown() {
     intent_helper_instance_.reset();
     arc::ArcIntentHelperBridge::ShutDownForTesting(profile_);
   }
+
+  arc::ArcPrivacyItemsBridge::ShutdownForTesting(profile_);
 
   arc::ResetArcAllowedCheckForTesting(profile_);
 
