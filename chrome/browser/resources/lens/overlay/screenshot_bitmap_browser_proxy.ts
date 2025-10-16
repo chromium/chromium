@@ -70,7 +70,7 @@ export class ScreenshotBitmapBrowserProxyImpl implements
     }
 
     // Pull the pixel data into a Uint8ClampedArray.
-    let pixelData: Uint8ClampedArray;
+    let pixelData: Uint8ClampedArray<ArrayBuffer>;
     if (Array.isArray(data.bytes)) {
       pixelData = new Uint8ClampedArray(data.bytes);
     } else {

@@ -706,7 +706,7 @@ class PdfBuilder {
    */
   private createPdfBlob(bigBuffer: BigBuffer): Blob {
     assert(bigBuffer.invalidBuffer !== true);
-    let bytes: Uint8Array|null = null;
+    let bytes: Uint8Array<ArrayBuffer>|null = null;
     if (bigBuffer.bytes !== undefined) {
       bytes = new Uint8Array(bigBuffer.bytes);
     } else {

@@ -471,7 +471,8 @@ export class ContentController {
       const context = element.getContext('2d');
       // Context should not be null unless another was already requested.
       assert(context);
-      const imgData = new ImageData(data.data, data.width);
+      const imgData = new ImageData(
+          data.data as Uint8ClampedArray<ArrayBuffer>, data.width);
       const bitmap = await createImageBitmap(imgData, {
         colorSpaceConversion: 'none',
         premultiplyAlpha: 'premultiply',

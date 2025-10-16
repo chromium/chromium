@@ -29,8 +29,8 @@ interface FileOps {
       stream: FileStream, buffer: Int8Array, offset: number, length: number,
       position: number): number;
   write(
-      stream: FileStream, buffer: Int8Array, offset: number, length: number,
-      position?: number): number;
+      stream: FileStream, buffer: Int8Array<ArrayBuffer>, offset: number,
+      length: number, position?: number): number;
   llseek(stream: FileStream, offset: number, whence: number): number;
 }
 
@@ -228,8 +228,8 @@ class OutputDevice {
    * @return The numbers of bytes written.
    */
   write(
-      stream: FileStream, buffer: Int8Array, offset: number, length: number,
-      position?: number): number {
+      stream: FileStream, buffer: Int8Array<ArrayBuffer>, offset: number,
+      length: number, position?: number): number {
     assert(!this.closed.isSignaled());
     const blob = new Blob([buffer.subarray(offset, offset + length)]);
     assert(

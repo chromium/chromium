@@ -35,7 +35,7 @@ function bufferToPngObjectUrl(value: BigBuffer): Url|null {
   }
 
   try {
-    let bytes: Uint8Array;
+    let bytes: Uint8Array<ArrayBuffer>;
     if (Array.isArray(value.bytes)) {
       bytes = new Uint8Array(value.bytes);
     } else {
