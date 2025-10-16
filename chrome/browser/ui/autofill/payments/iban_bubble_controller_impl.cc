@@ -377,8 +377,11 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
     } else {
       current_bubble_type_ = IbanBubbleType::kInactive;
     }
-  } else if (closed_reason == PaymentsUiClosedReason::kCancelled) {
-    current_bubble_type_ = IbanBubbleType::kInactive;
+  } else if (closed_reason == PaymentsUiClosedReason::kCancelled ||
+             closed_reason == PaymentsUiClosedReason::kClosed) {
+    if (current_bubble_type_ != IbanBubbleType::kManageSavedIban) {
+      current_bubble_type_ = IbanBubbleType::kInactive;
+    }
   }
   UpdatePageActionIcon();
   confirmation_ui_params_.reset();
