@@ -60,15 +60,6 @@ template("ios_all_toolchains") {
       ios_is_app_extension = true
     }
   }
-
-  ios_single_toolchain(target_name + "_blink_app_ext") {
-    forward_variables_from(invoker, "*", [ "toolchain_args" ])
-    toolchain_args = {
-      forward_variables_from(invoker.toolchain_args, "*")
-      ios_is_app_extension = true
-      use_blink = true
-    }
-  }
 }
 
 ios_all_toolchains("ios_clang_arm64") {
