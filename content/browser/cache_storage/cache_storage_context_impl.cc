@@ -29,8 +29,6 @@
 
 namespace content {
 
-BASE_FEATURE(kCacheStorageTaskPriority, base::FEATURE_ENABLED_BY_DEFAULT);
-
 CacheStorageContextImpl::CacheStorageContextImpl(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
     : quota_manager_proxy_(std::move(quota_manager_proxy)) {
@@ -59,9 +57,7 @@ CacheStorageContextImpl::~CacheStorageContextImpl() {
 scoped_refptr<base::SequencedTaskRunner>
 CacheStorageContextImpl::CreateSchedulerTaskRunner() {
   return base::ThreadPool::CreateSequencedTaskRunner(
-      {base::FeatureList::IsEnabled(kCacheStorageTaskPriority)
-           ? base::TaskPriority::USER_BLOCKING
-           : base::TaskPriority::USER_VISIBLE});
+      base::TaskPriority::USER_BLOCKING);
 }
 
 void CacheStorageContextImpl::Init(
@@ -80,10 +76,7 @@ void CacheStorageContextImpl::Init(
 
   scoped_refptr<base::SequencedTaskRunner> cache_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(),
-           base::FeatureList::IsEnabled(kCacheStorageTaskPriority)
-               ? base::TaskPriority::USER_BLOCKING
-               : base::TaskPriority::USER_VISIBLE,
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   DCHECK(!dispatcher_host_);
