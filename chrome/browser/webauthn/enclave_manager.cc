@@ -3684,6 +3684,18 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
 #endif
 }
 
+void EnclaveManager::CheckGpmPinAvailability(
+    base::OnceCallback<void(GpmPinAvailability)> callback) {
+  CoreAccountInfo account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  download_account_state_request_ =
+      trusted_vault_conn_->DownloadAuthenticationFactorsRegistrationState(
+          account_info,
+          base::BindOnce(&EnclaveManager::OnCheckGpmPinAvailabilityResult,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+          base::DoNothing());
+}
+
 // static
 void EnclaveManager::AreUserVerifyingKeysSupported(Callback callback) {
   if (base::FeatureList::IsEnabled(
@@ -4304,6 +4316,20 @@ void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor) {
   encryptor_.emplace(std::move(encryptor));
   loading_ = false;
   Act();
+}
+
+void EnclaveManager::OnCheckGpmPinAvailabilityResult(
+    base::OnceCallback<void(GpmPinAvailability)> callback,
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+        result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  download_account_state_request_.reset();
+  GpmPinAvailability pin_availability = result.gpm_pin_metadata.has_value()
+                                            ? GpmPinAvailability::kGpmPinSet
+                                            : GpmPinAvailability::kGpmPinUnset;
+  // Calling the callback after fetching the GPM PIN info:
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), pin_availability));
 }
 
 base::WeakPtr<EnclaveManager> EnclaveManager::GetWeakPtr() {

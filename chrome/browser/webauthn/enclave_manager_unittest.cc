@@ -2142,6 +2142,31 @@ TEST_F(EnclaveManagerTest, RenewPinWithoutWrappedSecurityDomainSecret) {
             0);
 }
 
+TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsAvailable) {
+  const std::string pin = "123456";
+  ASSERT_TRUE(Register());
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+
+  base::test::TestFuture<EnclaveManager::GpmPinAvailability> future;
+  manager_.CheckGpmPinAvailability(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), EnclaveManager::GpmPinAvailability::kGpmPinSet);
+}
+
+TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsNotAvailable) {
+  ASSERT_TRUE(Register());
+
+  base::test::TestFuture<EnclaveManager::GpmPinAvailability> future;
+  manager_.CheckGpmPinAvailability(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), EnclaveManager::GpmPinAvailability::kGpmPinUnset);
+}
+
 class EnclaveManagerMockTimeTest : public EnclaveManagerTest {
  public:
   EnclaveManagerMockTimeTest()
