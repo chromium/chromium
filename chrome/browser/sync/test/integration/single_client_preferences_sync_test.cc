@@ -736,13 +736,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
   CommitToDiskAndWait();
 
-  // Account prefs have been removed from the file.
+  // Account prefs have been removed from the file (but prefs with
+  // kExemptFromUserControlWhileSignedIn may still be there).
   file_content =
       ReadValuesFromFile(
           GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
           chrome_prefs::kAccountPreferencesPrefix);
   ASSERT_TRUE(file_content.has_value());
-  EXPECT_TRUE(file_content->empty());
+  EXPECT_FALSE(
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1259,11 +1261,13 @@ IN_PROC_BROWSER_TEST_F(
 
   CommitToDiskAndWait();
 
-  // Account prefs have been removed from the file.
+  // Account prefs have been removed from the file (but prefs with
+  // kExemptFromUserControlWhileSignedIn may still be there).
   file_content = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
   ASSERT_TRUE(file_content.has_value());
-  EXPECT_TRUE(file_content->empty());
+  EXPECT_FALSE(
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1456,12 +1460,14 @@ IN_PROC_BROWSER_TEST_F(
 
   CommitToDiskAndWait();
 
-  // Account prefs have been removed from the file.
+  // Account prefs have been removed from the file (but prefs with
+  // kExemptFromUserControlWhileSignedIn may still be there).
   file_content = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
       chrome_prefs::kAccountPreferencesPrefix);
   ASSERT_TRUE(file_content.has_value());
-  EXPECT_TRUE(file_content->empty());
+  EXPECT_FALSE(
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting));
 }
 
 IN_PROC_BROWSER_TEST_F(
