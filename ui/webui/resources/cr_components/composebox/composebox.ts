@@ -164,6 +164,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor inputsDisabled_: boolean = false;
   protected accessor lensButtonDisabled_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
+  protected lastQueriedInput_: string = '';
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
@@ -178,7 +179,6 @@ export class ComposeboxElement extends I18nMixinLit
   private contextFilesSize_: number = 0;
 
   private selectedMatch_: AutocompleteMatch|null = null;
-  private lastQueriedInput_: string = '';
 
   constructor() {
     super();
