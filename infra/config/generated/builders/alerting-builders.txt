@@ -494,7 +494,6 @@ try/chromeos-jacuzzi-rel
 try/chromeos-js-coverage-rel
 try/chromeos-libfuzzer-asan-rel
 try/chromeos-octopus-rel
-try/chromium_presubmit
 try/compile-size
 try/fuchsia-angle-try
 try/fuchsia-arm64-cast-receiver-rel

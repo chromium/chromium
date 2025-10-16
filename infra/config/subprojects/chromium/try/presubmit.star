@@ -173,21 +173,6 @@ try_.presubmit_builder(
 )
 
 try_.presubmit_builder(
-    name = "chromium_presubmit",
-    branch_selector = branches.selector.ALL_BRANCHES,
-    executable = "recipe:presubmit",
-    execution_timeout = 40 * time.minute,
-    properties = {
-        "$depot_tools/presubmit": {
-            "runhooks": True,
-            "timeout_s": 480,
-        },
-        "repo_name": "chromium",
-    },
-    tryjob = try_.job(),
-)
-
-try_.presubmit_builder(
     name = "linux-presubmit",
     branch_selector = branches.selector.ALL_BRANCHES,
     description_html = "Runs basic presubmit checks on Linux machines",
@@ -201,10 +186,7 @@ try_.presubmit_builder(
         },
         "repo_name": "chromium",
     },
-    tryjob = try_.job(
-        # TODO(crbug.com/41495881): Promote out of experimental.
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.presubmit_builder(

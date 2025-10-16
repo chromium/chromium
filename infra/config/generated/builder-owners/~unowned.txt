@@ -141,7 +141,6 @@ try/chromeos-arm-generic-rel
 try/chromeos-arm64-generic-rel
 try/chromeos-js-code-coverage
 try/chromeos-js-coverage-rel
-try/chromium_presubmit
 try/fuchsia-arm64-cast-receiver-rel
 try/fuchsia-binary-size
 try/fuchsia-clang-tidy-rel
