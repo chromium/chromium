@@ -29,7 +29,7 @@ public class ComposeplateCoordinator {
      */
     public ComposeplateCoordinator(ViewGroup parentView, Profile profile) {
         mModel = new PropertyModel(ComposeplateProperties.ALL_KEYS);
-        View view = parentView.findViewById(R.id.composeplate_view);
+        ComposeplateView view = parentView.findViewById(R.id.composeplate_view);
         PropertyModelChangeProcessor.create(mModel, view, ComposeplateViewBinder::bind);
         mHideIncognitoButton =
                 ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue()
@@ -141,6 +141,10 @@ public class ComposeplateCoordinator {
         mModel.set(ComposeplateProperties.LENS_CLICK_LISTENER, null);
         mModel.set(ComposeplateProperties.INCOGNITO_CLICK_LISTENER, null);
         mModel.set(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER, null);
+    }
+
+    public void applyWhiteBackgroundWithShadow(boolean apply) {
+        mModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, apply);
     }
 
     public PropertyModel getModelForTesting() {

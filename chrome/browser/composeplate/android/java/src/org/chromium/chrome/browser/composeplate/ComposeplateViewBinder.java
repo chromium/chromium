@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.composeplate;
 
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.INCOGNITO_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_INCOGNITO_BUTTON_VISIBLE;
@@ -21,7 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** The view binder class for the composeplate on the NTP. */
 @NullMarked
 public class ComposeplateViewBinder {
-    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+    public static void bind(PropertyModel model, ComposeplateView view, PropertyKey propertyKey) {
         if (IS_VISIBLE == propertyKey) {
             view.setVisibility(model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (IS_INCOGNITO_BUTTON_VISIBLE == propertyKey) {
@@ -47,6 +48,8 @@ public class ComposeplateViewBinder {
                 composeplateButton.setOnClickListener(
                         model.get(COMPOSEPLATE_BUTTON_CLICK_LISTENER));
             }
+        } else if (APPLY_WHITE_BACKGROUND_WITH_SHADOW == propertyKey) {
+            view.applyWhiteBackgroundWithShadow(model.get(APPLY_WHITE_BACKGROUND_WITH_SHADOW));
         } else {
             assert false : "Unhandled property detected in ComposeplateViewBinder!";
         }

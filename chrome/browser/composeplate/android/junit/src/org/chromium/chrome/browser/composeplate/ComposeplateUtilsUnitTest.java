@@ -4,15 +4,30 @@
 
 package org.chromium.chrome.browser.composeplate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.view.ContextThemeWrapper;
+import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -34,9 +49,17 @@ public class ComposeplateUtilsUnitTest {
 
     @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
     @Mock private Profile mProfile;
+    @Mock private View mView;
+    @Captor private ArgumentCaptor<GradientDrawable> mBackgroundDrawableCaptor;
+
+    private Context mContext;
 
     @Before
     public void setUp() {
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(true);
     }
@@ -56,5 +79,27 @@ public class ComposeplateUtilsUnitTest {
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(false);
         // Verifies that the composeplate is disabled by policy.
         assertFalse(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, mProfile));
+    }
+
+    @Test
+    public void testApplyWhiteBackgroundAndShadow() {
+        float elevation =
+                mContext.getResources().getDimensionPixelSize(R.dimen.ntp_search_box_elevation);
+
+        // Verifies the apply case.
+        ComposeplateUtils.applyWhiteBackgroundAndShadow(mContext, mView, /* apply= */ true);
+        verify(mView).setClipToOutline(eq(true));
+        verify(mView).setBackground(mBackgroundDrawableCaptor.capture());
+        assertEquals(
+                Color.WHITE, mBackgroundDrawableCaptor.getValue().getColor().getDefaultColor());
+        verify(mView).setElevation(eq(elevation));
+
+        clearInvocations(mView);
+
+        // Verifies the reset case.
+        ComposeplateUtils.applyWhiteBackgroundAndShadow(mContext, mView, /* apply= */ false);
+        verify(mView).setClipToOutline(eq(false));
+        verify(mView).setBackground(any(Drawable.class));
+        verify(mView).setElevation(eq(0f));
     }
 }

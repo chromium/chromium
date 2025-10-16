@@ -6,14 +6,16 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<org.chromium.chrome.browser.composeplate.ComposeplateView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/composeplate_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:paddingTop="@dimen/composeplate_view_long_button_padding_top"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:paddingBottom="@dimen/composeplate_view_long_button_padding_top">
 
     <LinearLayout
@@ -79,4 +81,4 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.ComposeplateTextMedium" />
     </LinearLayout>
 
-</LinearLayout>
+</org.chromium.chrome.browser.composeplate.ComposeplateView>

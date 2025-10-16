@@ -28,6 +28,9 @@ interface ComposeplateProperties {
     WritableObjectPropertyKey<View.OnClickListener> COMPOSEPLATE_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    WritableBooleanPropertyKey APPLY_WHITE_BACKGROUND_WITH_SHADOW =
+            new WritableBooleanPropertyKey();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
@@ -35,6 +38,7 @@ interface ComposeplateProperties {
                 VOICE_SEARCH_CLICK_LISTENER,
                 LENS_CLICK_LISTENER,
                 INCOGNITO_CLICK_LISTENER,
-                COMPOSEPLATE_BUTTON_CLICK_LISTENER
+                COMPOSEPLATE_BUTTON_CLICK_LISTENER,
+                APPLY_WHITE_BACKGROUND_WITH_SHADOW
             };
 }

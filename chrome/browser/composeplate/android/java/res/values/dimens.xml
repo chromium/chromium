@@ -13,4 +13,5 @@ found in the LICENSE file.
     <dimen name="composeplate_view_height">48dp</dimen>
     <dimen name="composeplate_view_icon_size">24dp</dimen>
     <dimen name="composeplate_view_long_button_padding_top">2dp</dimen>
+    <dimen name="composeplate_view_button_padding_for_shadow">3dp</dimen>
 </resources>

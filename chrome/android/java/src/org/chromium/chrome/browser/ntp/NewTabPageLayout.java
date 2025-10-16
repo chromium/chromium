@@ -288,9 +288,6 @@ public class NewTabPageLayout extends LinearLayout
                         ? getResources()
                                 .getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset)
                         : 0;
-        if (NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox()) {
-            onCustomizedBackgroundChanged(/* applyWhiteBackgroundOnSearchBox= */ true);
-        }
 
         updateSearchBoxWidth();
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
@@ -301,6 +298,13 @@ public class NewTabPageLayout extends LinearLayout
         initializeVoiceSearchButton();
         initializeLensButton();
         initializeComposeplate();
+
+        // This should be called after both mSearchBoxCoordinator and mComposeplateCoordinator are
+        // initialized.
+        if (NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox()) {
+            onCustomizedBackgroundChanged(/* applyWhiteBackgroundOnSearchBox= */ true);
+        }
+
         updateActionButtonVisibility();
         initializeLayoutChangeListener();
 
@@ -1325,12 +1329,15 @@ public class NewTabPageLayout extends LinearLayout
      */
     void onCustomizedBackgroundChanged(boolean applyWhiteBackgroundOnSearchBox) {
         // applyWhiteBackgroundWithShadow() will be called immediately after mSearchBoxCoordinator
-        // is initialized, early exits here.
-        if (mSearchBoxCoordinator == null) {
-            return;
+        // is initialized, it is fine to skip here.
+        if (mSearchBoxCoordinator != null) {
+            mSearchBoxCoordinator.applyWhiteBackgroundWithShadow(applyWhiteBackgroundOnSearchBox);
         }
 
-        mSearchBoxCoordinator.applyWhiteBackgroundWithShadow(applyWhiteBackgroundOnSearchBox);
+        if (mComposeplateCoordinator != null) {
+            mComposeplateCoordinator.applyWhiteBackgroundWithShadow(
+                    applyWhiteBackgroundOnSearchBox);
+        }
     }
 
     /** Returns the top inset of the NTP. */

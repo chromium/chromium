@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,7 +42,7 @@ public class ComposeplateCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ViewGroup mParentView;
-    @Mock private View mComposeplateView;
+    @Mock private ComposeplateView mComposeplateView;
     @Mock private ImageView mVoiceSearchButton;
     @Mock private ImageView mLensButton;
     @Mock private View mIncognitoButton;
@@ -50,6 +51,7 @@ public class ComposeplateCoordinatorUnitTest {
     @Mock private Profile mProfile;
 
     private ComposeplateCoordinator mCoordinator;
+    private PropertyModel mPropertyModel;
 
     @Before
     public void setUp() {
@@ -65,6 +67,7 @@ public class ComposeplateCoordinatorUnitTest {
                 .thenReturn(mComposeplateButton);
 
         mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
+        mPropertyModel = mCoordinator.getModelForTesting();
     }
 
     @Test
@@ -212,23 +215,35 @@ public class ComposeplateCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
-        PropertyModel model = mCoordinator.getModelForTesting();
-
         mCoordinator.setVoiceSearchClickListener(mOriginalOnClickListener);
         mCoordinator.setLensClickListener(mOriginalOnClickListener);
         mCoordinator.setIncognitoClickListener(mOriginalOnClickListener);
         mCoordinator.setComposeplateButtonClickListener(mOriginalOnClickListener);
 
-        assertNotNull(model.get(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER));
-        assertNotNull(model.get(ComposeplateProperties.LENS_CLICK_LISTENER));
-        assertNotNull(model.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
-        assertNotNull(model.get(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER));
+        assertNotNull(mPropertyModel.get(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER));
+        assertNotNull(mPropertyModel.get(ComposeplateProperties.LENS_CLICK_LISTENER));
+        assertNotNull(mPropertyModel.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
+        assertNotNull(
+                mPropertyModel.get(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER));
 
         mCoordinator.destroy();
-        assertNull(model.get(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER));
-        assertNull(model.get(ComposeplateProperties.LENS_CLICK_LISTENER));
-        assertNull(model.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
-        assertNull(model.get(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER));
+        assertNull(mPropertyModel.get(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER));
+        assertNull(mPropertyModel.get(ComposeplateProperties.LENS_CLICK_LISTENER));
+        assertNull(mPropertyModel.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
+        assertNull(mPropertyModel.get(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER));
+    }
+
+    @Test
+    public void testApplyWhiteBackgroundWithShadow() {
+        // Tests the case to apply a white background with shadow.
+        mCoordinator.applyWhiteBackgroundWithShadow(true);
+        assertTrue(mPropertyModel.get(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        verify(mComposeplateView).applyWhiteBackgroundWithShadow(eq(true));
+
+        // Tests the case to remove the white background with shadow.
+        mCoordinator.applyWhiteBackgroundWithShadow(false);
+        assertFalse(mPropertyModel.get(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        verify(mComposeplateView).applyWhiteBackgroundWithShadow(eq(false));
     }
 
     private View.OnClickListener getCapturedOnClickListener(View button) {
