@@ -10,10 +10,13 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_container_view_controller.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_dismiss_animator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_present_animator.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/web/public/web_state.h"
 

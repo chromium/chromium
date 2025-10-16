@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
@@ -190,6 +191,7 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 
 - (void)presentLensInputSelectionUIForCommand:
     (OpenLensInputSelectionCommand*)command {
+  [self cancelOmniboxEdit];
   [self prepareLensViewControllerForCommand:command];
 
   if (!_lensViewController) {
@@ -287,6 +289,16 @@ LensViewFinderTransition TransitionFromPresentationStyle(
                                         completion:^(BOOL) {
                                           weakSelf.postCaptureShown = YES;
                                         }];
+}
+
+// Cancel any editing before presenting the Lens View Finder experience to
+// prevent the omnibox popup from obscuring the view.
+- (void)cancelOmniboxEdit {
+  Browser* browser = self.browser;
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  id<OmniboxCommands> omniboxCommandsHandler =
+      HandlerForProtocol(dispatcher, OmniboxCommands);
+  [omniboxCommandsHandler cancelOmniboxEdit];
 }
 
 @end

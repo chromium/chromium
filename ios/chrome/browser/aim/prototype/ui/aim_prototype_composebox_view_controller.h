@@ -17,17 +17,27 @@
 
 /// Delegate for the AIM prototype composebox view controller.
 @protocol AIMPrototypeComposeboxViewControllerDelegate
+/// Informs the delegate that a user did tap on the gallery button.
 - (void)aimPrototypeViewControllerDidTapGalleryButton:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
+/// Informs the delegate that a user did tap on the mic button.
 - (void)aimPrototypeViewController:
             (AIMPrototypeComposeboxViewController*)composeboxViewController
                    didTapMicButton:(UIButton*)button;
+/// Informs the delegate that a user did tap on the lens button.
+- (void)aimPrototypeViewController:
+            (AIMPrototypeComposeboxViewController*)composeboxViewController
+                  didTapLensButton:(UIButton*)button;
+/// Informs the delegate that a user did tap on the camera button.
 - (void)aimPrototypeViewControllerDidTapCameraButton:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
+/// Informs the delegate that a user did tap on the gallery button.
 - (void)aimPrototypeViewControllerMayShowGalleryPicker:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
+/// Informs the delegate that a user did tap on the file button.
 - (void)aimPrototypeViewControllerDidTapFileButton:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
+/// Informs the delegate that a user did tap on the attach tabs button.
 - (void)aimPrototypeViewControllerDidTapAttachTabsButton:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
 @end

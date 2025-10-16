@@ -19,8 +19,8 @@
 - (void)updateState:(AIMInputItemState)state
     forItemWithToken:(const base::UnguessableToken&)token;
 
-// Updates the mic button visibility.
-- (void)hideMicButton:(BOOL)hidden;
+// Updates the mic and lens button visibility.
+- (void)hideLensAndMicButton:(BOOL)hidden;
 
 // Sets whether the "Attach current tab" action is enabled.
 - (void)setCanAttachTabAction:(BOOL)canAttachTabAction;

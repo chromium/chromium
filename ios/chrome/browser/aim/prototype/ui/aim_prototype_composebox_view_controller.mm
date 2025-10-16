@@ -70,10 +70,12 @@ const CGFloat kGlowEffectDuration = 1.0f;
 /// The width of the glow effect border.
 const CGFloat kGlowEffectWidth = 40.0f;
 
-/// The top padding between the omnibox container and the mic button.
-const CGFloat kMicButtonTopPadding = 2.0f;
+/// The top padding between the omnibox container and the mic and lens button.
+const CGFloat kMicLensButtonTopPadding = 2.0f;
+/// The padding between the mic and lens buttons.
+const CGFloat kMicLensButtonHorizontalPadding = 10.0f;
 /// The trailing padding between the omnibox container and the mic button.
-const CGFloat kMicButtonTrailingPadding = 5.0f;
+const CGFloat kLensButtonTrailingPadding = 5.0f;
 
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
@@ -117,6 +119,8 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   UIView<GlowEffect>* _glowEffectView;
   /// The mic button for voice search.
   UIButton* _micButton;
+  /// The lens button.
+  UIButton* _lensButton;
   /// The fade view for the carousel's leading edge.
   UIView* _leadingCarouselFadeView;
   /// The fade view for the carousel's trailing edge.
@@ -182,14 +186,31 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                  action:@selector(micButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
   [_omniboxContainer addSubview:_micButton];
+
+  _lensButton = [self
+      createButtonWithImage:CustomSymbolWithPointSize(kCameraLensSymbol,
+                                                      kSymbolActionPointSize)];
+  [_lensButton addTarget:self
+                  action:@selector(lensButtonTapped)
+        forControlEvents:UIControlEventTouchUpInside];
+  [_omniboxContainer addSubview:_lensButton];
+
+  AddSizeConstraints(_lensButton,
+                     CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
+  AddSizeConstraints(_micButton,
+                     CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
+
   [NSLayoutConstraint activateConstraints:@[
-    [_micButton.topAnchor constraintEqualToAnchor:_omniboxContainer.topAnchor
-                                         constant:kMicButtonTopPadding],
-    [_micButton.widthAnchor constraintEqualToConstant:kGenericButtonWidth],
-    [_micButton.heightAnchor constraintEqualToConstant:kGenericButtonHeight],
-    [_micButton.trailingAnchor
+    [_lensButton.topAnchor constraintEqualToAnchor:_omniboxContainer.topAnchor
+                                          constant:kMicLensButtonTopPadding],
+    [_lensButton.trailingAnchor
         constraintEqualToAnchor:_omniboxContainer.trailingAnchor
-                       constant:-kMicButtonTrailingPadding],
+                       constant:-kLensButtonTrailingPadding],
+    [_micButton.topAnchor constraintEqualToAnchor:_omniboxContainer.topAnchor
+                                         constant:kMicLensButtonTopPadding],
+    [_micButton.trailingAnchor
+        constraintEqualToAnchor:_lensButton.leadingAnchor
+                       constant:-kMicLensButtonHorizontalPadding],
   ]];
 
   // Carousel view
@@ -472,8 +493,9 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   [_dataSource applySnapshot:newSnapshot animatingDifferences:YES];
 }
 
-- (void)hideMicButton:(BOOL)hidden {
+- (void)hideLensAndMicButton:(BOOL)hidden {
   _micButton.hidden = hidden;
+  _lensButton.hidden = hidden;
 }
 
 #pragma mark - Actions
@@ -496,6 +518,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 - (void)micButtonTapped {
   [self.delegate aimPrototypeViewController:self didTapMicButton:_micButton];
+}
+
+- (void)lensButtonTapped {
+  [self.delegate aimPrototypeViewController:self didTapLensButton:_lensButton];
 }
 
 - (void)stopGlowEffect {
