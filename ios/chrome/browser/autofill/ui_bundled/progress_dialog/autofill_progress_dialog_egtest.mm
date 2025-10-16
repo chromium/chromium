@@ -31,15 +31,6 @@
 
 @implementation AutofillProgressDialogDismissEGTest
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
-
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface setUpFakeCreditCardServer];

@@ -172,12 +172,6 @@ const char
              "enrollment earlier in the flow with the multiple server request "
              "support.";
 
-const char kAutofillEnableFpanRiskBasedAuthenticationName[] =
-    "Enable risk-based authentication for FPAN retrieval";
-const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =
-    "When enabled, server card retrieval will begin with a risk-based check "
-    "instead of jumping straight to CVC or biometric auth.";
-
 const char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
     "Enable prefetching of risk data during payments autofill retrieval";
 const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[] =

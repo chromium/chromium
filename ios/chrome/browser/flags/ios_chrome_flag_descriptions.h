@@ -104,9 +104,6 @@ extern const char
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[];
 extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[];
 
-extern const char kAutofillEnableFpanRiskBasedAuthenticationName[];
-extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
-
 extern const char
     kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName[];
 extern const char

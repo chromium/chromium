@@ -126,14 +126,6 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
                  (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
     config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
     config.features_enabled.push_back(kStatelessFormSuggestionController);
-  } else if ([self
-                 isRunningTest:@selector(testFillingFromKeyboardOnAutofocus)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
-  } else if ([self isRunningTest:@selector
-                   (testUpdateBottomSheetOnAddServerCreditCard)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
   }
 
   if ([self shouldUseNewBlur]) {
