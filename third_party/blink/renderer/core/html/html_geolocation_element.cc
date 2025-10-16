@@ -102,8 +102,11 @@ void HTMLGeolocationElement::AttributeChanged(
     const AttributeModificationParams& params) {
   // The autolocate and the watch attributes are exclusive to the geolocation
   // element, other attributes will be handled by the HTMLPermissionElement.
-  if (params.name == html_names::kAutolocateAttr && PermissionsGranted()) {
-    GetCurrentPosition();
+  if (params.name == html_names::kAutolocateAttr) {
+    if (!params.new_value) {
+      is_autolocate_triggered_ = false;
+    }
+    MaybeTriggerAutolocate();
   }
   if (params.name == html_names::kWatchAttr) {
     if (!params.new_value) {
@@ -116,6 +119,12 @@ void HTMLGeolocationElement::AttributeChanged(
     }
   }
   HTMLPermissionElement::AttributeChanged(params);
+}
+
+void HTMLGeolocationElement::DidFinishLifecycleUpdate(
+    const LocalFrameView& view) {
+  HTMLPermissionElement::DidFinishLifecycleUpdate(view);
+  MaybeTriggerAutolocate();
 }
 
 void HTMLGeolocationElement::DefaultEventHandler(Event& event) {
@@ -135,11 +144,23 @@ void HTMLGeolocationElement::DefaultEventHandler(Event& event) {
 void HTMLGeolocationElement::OnPermissionStatusChange(
     mojom::blink::PermissionName permission_name,
     mojom::blink::PermissionStatus status) {
+  HTMLPermissionElement::OnPermissionStatusChange(permission_name, status);
   // Update the current position once the permission is granted.
   if (status == mojom::blink::PermissionStatus::GRANTED) {
-    GetCurrentPosition();
+    MaybeTriggerAutolocate();
   }
-  HTMLPermissionElement::OnPermissionStatusChange(permission_name, status);
+}
+
+void HTMLGeolocationElement::MaybeTriggerAutolocate() {
+  if (!is_autolocate_triggered_ && IsRenderered() &&
+      FastHasAttribute(html_names::kAutolocateAttr) && PermissionsGranted()) {
+    is_autolocate_triggered_ = true;
+    if (FastHasAttribute(html_names::kWatchAttr)) {
+      WatchPosition();
+    } else {
+      GetCurrentPosition();
+    }
+  }
 }
 
 void HTMLGeolocationElement::GetCurrentPosition() {

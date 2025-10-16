@@ -149,6 +149,9 @@ class CORE_EXPORT HTMLPermissionElement
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
+  // LocalFrameView::LifecycleNotificationObserver
+  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+
  private:
   // TODO(crbug.com/1315595): remove this friend class once migration
   // to blink_unittests_v2 completes.
@@ -508,9 +511,6 @@ class CORE_EXPORT HTMLPermissionElement
   LengthSize AdjustedPercentBoundedRadius(const LengthSize& length_size,
                                           float width_percent_bound,
                                           float height_percent_bound);
-
-  // LocalFrameView::LifecycleNotificationObserver
-  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
   // Computes the intersection rect of the element with the viewport.
   gfx::Rect ComputeIntersectionRectWithViewport(const Page* page);
