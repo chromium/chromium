@@ -2408,9 +2408,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private boolean hasStartWithNativeBeenCalled() {
-        int activity_state = getLifecycleDispatcher().getCurrentActivityState();
-        return activity_state == ActivityLifecycleDispatcher.ActivityState.STARTED_WITH_NATIVE
-                || activity_state == ActivityLifecycleDispatcher.ActivityState.RESUMED_WITH_NATIVE;
+        int activityState = getLifecycleDispatcher().getCurrentActivityState();
+        return activityState == ActivityLifecycleDispatcher.ActivityState.STARTED_WITH_NATIVE
+                || activityState == ActivityLifecycleDispatcher.ActivityState.RESUMED_WITH_NATIVE;
     }
 
     /** Create an initial tab for cold start without restored tabs. */
