@@ -1177,9 +1177,6 @@ ci.thin_tester(
         short_name = "exp",
     ),
     list_view = "chromium.gpu.experimental",
-    experiments = {
-        "chromium_tests.resultdb_module": 100,
-    },
 )
 
 ci.thin_tester(
