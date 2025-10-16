@@ -32,6 +32,12 @@ class ActorOverlayHandler : public mojom::ActorOverlayPageHandler {
   // overlay has changed. Called by the ActorOverlay WebUI (renderer-side).
   void OnHoverStatusChanged(bool is_hovering) override;
 
+  // mojom::ActorOverlayPageHandler
+  // Calls the ActorUiTabController to retrieve the most current BorderGlow
+  // visibility state. Called by the ActorOverlay WebUi (renderer-side)
+  void GetCurrentBorderGlowVisibility(
+      GetCurrentBorderGlowVisibilityCallback callback) override;
+
   // mojom::ActorOverlayPage:
   // Forwards the scrim background visibility to WebUI.
   void SetOverlayBackground(bool is_visible);

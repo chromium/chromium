@@ -30,6 +30,14 @@ void ActorOverlayHandler::OnHoverStatusChanged(bool is_hovering) {
       ->OnOverlayHoverStatusChanged(is_hovering);
 }
 
+void ActorOverlayHandler::GetCurrentBorderGlowVisibility(
+    GetCurrentBorderGlowVisibilityCallback callback) {
+  std::move(callback).Run(
+      ActorUiTabControllerInterface::From(webui::GetTabInterface(web_contents_))
+          ->GetCurrentUiTabState()
+          .actor_overlay.border_glow_visible);
+}
+
 void ActorOverlayHandler::SetOverlayBackground(bool is_visible) {
   page_->SetScrimBackground(is_visible);
 }

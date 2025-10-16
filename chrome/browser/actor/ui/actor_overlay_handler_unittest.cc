@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_handler.h"
 
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller_factory.h"
@@ -20,6 +21,8 @@
 
 namespace actor::ui {
 namespace {
+
+using ::testing::Return;
 
 // Fake implementation for the ActorOverlayPage interface.
 class FakeActorOverlayPage : public mojom::ActorOverlayPage {
@@ -101,6 +104,23 @@ TEST_F(ActorOverlayHandlerTest, OnHoverStatusChanged) {
   // Verify that if the same hover status is sent, we return early and don't
   // call the tab controller's OnOverlayHoverStatusChanged function.
   handler_->OnHoverStatusChanged(false);
+}
+
+TEST_F(ActorOverlayHandlerTest, GetCurrentBorderGlowVisibility) {
+  base::test::TestFuture<bool> future;
+  UiTabState ui_tab_state;
+
+  ui_tab_state.actor_overlay.border_glow_visible = true;
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), GetCurrentUiTabState())
+      .WillOnce(Return(ui_tab_state));
+  handler_->GetCurrentBorderGlowVisibility(future.GetCallback());
+  EXPECT_TRUE(future.Take());
+
+  ui_tab_state.actor_overlay.border_glow_visible = false;
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), GetCurrentUiTabState())
+      .WillOnce(Return(ui_tab_state));
+  handler_->GetCurrentBorderGlowVisibility(future.GetCallback());
+  EXPECT_FALSE(future.Take());
 }
 
 TEST_F(ActorOverlayHandlerTest, SetScrimBackground) {

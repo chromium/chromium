@@ -22,12 +22,15 @@ export class TestActorOverlayBrowserProxy {
 export class TestActorOverlayPageHandler extends TestBrowserProxy implements
     ActorOverlayPageHandlerInterface {
   constructor() {
-    super([
-      'onHoverStatusChanged',
-    ]);
+    super(['onHoverStatusChanged', 'getCurrentBorderGlowVisibility']);
   }
 
   onHoverStatusChanged(isVisible: boolean) {
     this.methodCalled('onHoverStatusChanged', isVisible);
+  }
+
+  getCurrentBorderGlowVisibility() {
+    this.methodCalled('getCurrentBorderGlowVisibility');
+    return Promise.resolve({isVisible: false});
   }
 }

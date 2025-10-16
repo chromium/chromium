@@ -20,6 +20,9 @@ interface ActorOverlayPageHandler {
   // Notifies the Actor UI Tab Controller that the user's hovering status has
   // changed.
   OnHoverStatusChanged(bool is_hovering);
+
+  // Retrieves the current glow visibility state.
+  GetCurrentBorderGlowVisibility() => (bool is_visible);
 };
 
 // Browser -> Renderer
