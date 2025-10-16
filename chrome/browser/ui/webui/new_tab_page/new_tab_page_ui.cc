@@ -36,6 +36,7 @@
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups_page_handler.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
+#include "chrome/browser/omnibox/contextual_session_service_factory.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -96,6 +97,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/composebox/composebox_metrics_recorder.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
+#include "components/omnibox/composebox/contextual_session_service.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -847,17 +849,15 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
   MetricsReporterService* service =
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
-  std::unique_ptr<ComposeboxQueryController> query_controller;
+  std::unique_ptr<ContextualSessionService::SessionHandle>
+      contextual_session_handle;
   std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder;
   // Only create the composebox query controller and metrics recorder needed for
   // contextual search if realbox next is enabled.
   if (ntp_realbox::IsNtpRealboxNextEnabled(profile_)) {
-    query_controller = std::make_unique<ComposeboxQueryController>(
-        IdentityManagerFactory::GetForProfile(profile_),
-        g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
-        g_browser_process->GetApplicationLocale(),
-        TemplateURLServiceFactory::GetForProfile(profile_),
-        profile_->GetVariationsClient(),
+    auto* contextual_session_service =
+        ContextualSessionServiceFactory::GetForProfile(profile_);
+    contextual_session_handle = contextual_session_service->CreateSession(
         ntp_composebox::kSendLnsSurfaceParam.Get(),
         ntp_composebox::kMaxNumFiles.Get() > 1,
         ntp_composebox::kEnableViewportImages.Get());
@@ -865,7 +865,7 @@ void NewTabPageUI::BindInterface(
         kComposeboxMetricsReporterPrefName);
   }
   realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), std::move(query_controller),
+      std::move(pending_page_handler), std::move(contextual_session_handle),
       std::move(composebox_metrics_recorder), profile_, web_contents(),
       service->metrics_reporter());
 }
@@ -1069,19 +1069,20 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   MetricsReporterService* service =
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
-  bool enable_multi_context_input_flow = ntp_composebox::kMaxNumFiles.Get() > 1;
+  auto* contextual_session_service =
+      ContextualSessionServiceFactory::GetForProfile(profile_);
+  auto contextual_session_handle = contextual_session_service->CreateSession(
+      ntp_composebox::kSendLnsSurfaceParam.Get(),
+      ntp_composebox::kMaxNumFiles.Get() > 1,
+      ntp_composebox::kEnableViewportImages.Get());
+  auto secondary_contextual_session_handle =
+      contextual_session_service->GetSession(
+          contextual_session_handle->session_id());
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler),
-      std::make_unique<ComposeboxQueryController>(
-          IdentityManagerFactory::GetForProfile(profile_),
-          g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
-          g_browser_process->GetApplicationLocale(),
-          TemplateURLServiceFactory::GetForProfile(profile_),
-          profile_->GetVariationsClient(),
-          ntp_composebox::kSendLnsSurfaceParam.Get(),
-          enable_multi_context_input_flow,
-          ntp_composebox::kEnableViewportImages.Get()),
+      std::move(contextual_session_handle),
+      std::move(secondary_contextual_session_handle),
       std::make_unique<ComposeboxMetricsRecorder>(
           kComposeboxMetricsReporterPrefName),
       profile_, web_contents(), service->metrics_reporter());

@@ -23,7 +23,8 @@ class TestSearchboxHandler : public ContextualSearchboxHandler {
       Profile* profile,
       content::WebContents* web_contents,
       std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
-      std::unique_ptr<ComposeboxQueryController> query_controller)
+      std::unique_ptr<ContextualSessionService::SessionHandle>
+          contextual_session_handle)
       : ContextualSearchboxHandler(std::move(pending_page_handler),
                                    profile,
                                    web_contents,
@@ -32,7 +33,7 @@ class TestSearchboxHandler : public ContextualSearchboxHandler {
                                    std::make_unique<OmniboxController>(
                                        /*view=*/nullptr,
                                        std::make_unique<TestOmniboxClient>()),
-                                   std::move(query_controller)) {}
+                                   std::move(contextual_session_handle)) {}
 
   ~TestSearchboxHandler() override = default;
 
@@ -51,7 +52,7 @@ class ContextualSearchboxHandlerBrowserTest : public InProcessBrowserTest {
         browser()->profile(),
         /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
         /*metrics_recorder=*/nullptr,
-        /*query_controller=*/nullptr);
+        /*contextual_session_handle=*/nullptr);
     handler_->SetPage(page_.BindAndGetRemote());
   }
 

@@ -22,7 +22,10 @@ ComposeboxHandler::ComposeboxHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
-    std::unique_ptr<ComposeboxQueryController> query_controller,
+    std::unique_ptr<ContextualSessionService::SessionHandle>
+        contextual_session_handle,
+    std::unique_ptr<ContextualSessionService::SessionHandle>
+        secondary_contextual_session_handle,
     std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     Profile* profile,
     content::WebContents* web_contents,
@@ -39,22 +42,15 @@ ComposeboxHandler::ComposeboxHandler(
                   profile,
                   web_contents,
                   this,
-                  query_controller.get())),
-          std::move(query_controller)),
+                  std::move(secondary_contextual_session_handle))),
+          std::move(contextual_session_handle)),
       web_contents_(web_contents),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 
-ComposeboxHandler::~ComposeboxHandler() {
-  autocomplete_controller_observation_.Reset();
-  // Even though these are owned by `SearchboxHandler` whose destructor would
-  // have destroyed these anyways, they have to be deconstructed here because
-  // they have a pointer to `query_controller_`.
-  controller_ = nullptr;
-  owned_controller_.reset();
-}
+ComposeboxHandler::~ComposeboxHandler() = default;
 
 void ComposeboxHandler::SetDeepSearchMode(bool enabled) {
   deep_search_mode_enabled_ = enabled;

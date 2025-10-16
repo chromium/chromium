@@ -19,6 +19,7 @@
 #include "components/omnibox/composebox/composebox_metrics_recorder.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
+#include "components/omnibox/composebox/contextual_session_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
@@ -43,14 +44,15 @@ class ContextualSearchboxHandler
       public SearchboxHandler {
  public:
   explicit ContextualSearchboxHandler(
-     mojo::PendingReceiver<searchbox::mojom::PageHandler>
-        pending_searchbox_handler,
-     Profile* profile,
-     content::WebContents* web_contents,
-     MetricsReporter* metrics_reporter,
-     std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
-     std::unique_ptr<OmniboxController> controller,
-     std::unique_ptr<ComposeboxQueryController> query_controller);
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>
+          pending_searchbox_handler,
+      Profile* profile,
+      content::WebContents* web_contents,
+      MetricsReporter* metrics_reporter,
+      std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
+      std::unique_ptr<OmniboxController> controller,
+      std::unique_ptr<ContextualSessionService::SessionHandle>
+          contextual_session_handle);
   ~ContextualSearchboxHandler() override;
 
   // searchbox::mojom::PageHandler:
@@ -95,6 +97,8 @@ class ContextualSearchboxHandler
   std::optional<lens::ImageEncodingOptions> CreateTabPreviewEncodingOptions(
       content::WebContents* web_contents);
 
+  ComposeboxQueryController* GetQueryController();
+
  private:
   void OnGetTabPageContext(
       const base::UnguessableToken& context_token,
@@ -108,7 +112,8 @@ class ContextualSearchboxHandler
   void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
   std::set<base::UnguessableToken> deleted_context_tokens_;
-  std::unique_ptr<ComposeboxQueryController> query_controller_;
+  std::unique_ptr<ContextualSessionService::SessionHandle>
+      contextual_session_handle_;
   std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder_;
   raw_ptr<content::WebContents> web_contents_;
 

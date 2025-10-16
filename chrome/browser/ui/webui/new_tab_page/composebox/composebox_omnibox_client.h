@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/composebox/contextual_session_service.h"
 #include "ui/base/window_open_disposition.h"
 
-class ComposeboxQueryController;
 class GURL;
 class Profile;
 class TemplateURLRef;
@@ -35,10 +35,12 @@ namespace composebox {
 
 class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
  public:
-  ComposeboxOmniboxClient(Profile* profile,
-                          content::WebContents* web_contents,
-                          BaseComposeboxHandler* composebox_handler,
-                          ComposeboxQueryController* query_controller);
+  ComposeboxOmniboxClient(
+      Profile* profile,
+      content::WebContents* web_contents,
+      BaseComposeboxHandler* composebox_handler,
+      std::unique_ptr<ContextualSessionService::SessionHandle>
+          contextual_session_handle);
 
   ~ComposeboxOmniboxClient() override;
 
@@ -64,7 +66,8 @@ class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
   GetLensOverlaySuggestInputs() const override;
 
   raw_ptr<BaseComposeboxHandler> composebox_handler_;
-  raw_ptr<ComposeboxQueryController> query_controller_;
+  std::unique_ptr<ContextualSessionService::SessionHandle>
+      contextual_session_handle_;
 };
 
 }  // namespace composebox
