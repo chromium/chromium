@@ -155,6 +155,33 @@ TEST(ProtoTestExtras, TestMapFields) {
   EXPECT_THAT(message, EqualsTestMessage(expected));
 }
 
+TEST(ProtoTestExtras, TestOptionalFields) {
+  TestMessage message;
+  EXPECT_THAT(message, EqualsTestMessage(TestMessage()));
+
+  message.set_optional_int_field(0);
+  EXPECT_THAT(message, Not(EqualsTestMessage(TestMessage())));
+
+  TestMessage message2;
+  message2.set_optional_int_field(0);
+  EXPECT_THAT(message, EqualsTestMessage(message2));
+
+  message2.set_optional_int_field(2);
+  EXPECT_THAT(message, Not(EqualsTestMessage(message2)));
+}
+
+TEST(ProtoTestExtras, TestOptionalEmptyMessageFields) {
+  TestMessage message;
+  EXPECT_THAT(message, EqualsTestMessage(TestMessage()));
+
+  message.mutable_optional_empty_embedded_message_field();
+  EXPECT_THAT(message, Not(EqualsTestMessage(TestMessage())));
+
+  TestMessage message2;
+  message2.mutable_optional_empty_embedded_message_field();
+  EXPECT_THAT(message, EqualsTestMessage(message2));
+}
+
 TEST(ProtoTestExtrasProto2, TestMessage) {
   TestMessageProto2 message;
   EXPECT_THAT(message, EqualsTestMessageProto2(TestMessageProto2()));

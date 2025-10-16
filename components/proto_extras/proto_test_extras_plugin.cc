@@ -49,6 +49,10 @@ class ProtoGmockGenerator : public google::protobuf::compiler::CodeGenerator {
   ProtoGmockGenerator() = default;
   ~ProtoGmockGenerator() override = default;
 
+  uint64_t GetSupportedFeatures() const override {
+    return FEATURE_PROTO3_OPTIONAL;
+  }
+
   bool Generate(const FileDescriptor* file,
                 const std::string& options,  // Options from build system
                 GeneratorContext* context,

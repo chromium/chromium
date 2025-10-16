@@ -268,7 +268,9 @@ void CreateEqualityOperatorDefinition(
               "false;\n");
 
           // Compare oneof fields using a switch statement.
-          for (int i = 0; i < message.oneof_decl_count(); ++i) {
+          // Skip synthetic oneofs.
+          // (see implementing_proto3_presence.md#to-iterate-over-all-oneofs)
+          for (int i = 0; i < message.real_oneof_decl_count(); ++i) {
             const OneofDescriptor* oneof = message.oneof_decl(i);
             printer->Emit(
                 {{"oneof_name", oneof->name()},
@@ -309,7 +311,7 @@ void CreateEqualityOperatorDefinition(
           for (int j = 0; j < message.field_count(); j++) {
             const FieldDescriptor* field = message.field(j);
             // Skip fields that are part of a oneof, as they are handled above.
-            if (field->containing_oneof()) {
+            if (field->real_containing_oneof()) {
               continue;
             }
 
@@ -371,6 +373,10 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
  public:
   ProtoExtrasGenerator() = default;
   ~ProtoExtrasGenerator() override = default;
+
+  uint64_t GetSupportedFeatures() const override {
+    return FEATURE_PROTO3_OPTIONAL;
+  }
 
   bool Generate(const FileDescriptor* file,
                 const std::string& command_line_options,

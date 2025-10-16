@@ -226,6 +226,57 @@ TEST(ProtoExtrasToValueTest, CordBytesField) {
   })!"));
 }
 
+TEST(ProtoExtrasToValueTest, OptionalField) {
+  TestMessage message;
+
+  // By default, the optional field should not be present.
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "double_field": 0.0,
+    "int32_field": 0,
+    "enum_field": "UNKNOWN",
+    "uint64_field": "0",
+  })!"));
+
+  message.set_optional_int_field(0);
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "double_field": 0.0,
+    "int32_field": 0,
+    "enum_field": "UNKNOWN",
+    "uint64_field": "0",
+    "optional_int_field": 0
+  })!"));
+
+  message.set_optional_int_field(123);
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "double_field": 0.0,
+    "int32_field": 0,
+    "enum_field": "UNKNOWN",
+    "uint64_field": "0",
+    "optional_int_field": 123
+  })!"));
+}
+
+TEST(ProtoExtrasToValueTest, OptionalEmptyMessageField) {
+  TestMessage message;
+
+  // By default, the optional field should not be present.
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "double_field": 0.0,
+    "int32_field": 0,
+    "enum_field": "UNKNOWN",
+    "uint64_field": "0",
+  })!"));
+
+  message.mutable_optional_empty_embedded_message_field();
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "double_field": 0.0,
+    "int32_field": 0,
+    "enum_field": "UNKNOWN",
+    "uint64_field": "0",
+    "optional_empty_embedded_message_field": {}
+  })!"));
+}
+
 TEST(ProtoExtrasProto2ToValueTest, Basic) {
   TestMessageProto2 message;
   const std::string expected_empty_message_str = R"({})";
@@ -429,6 +480,43 @@ TEST(ProtoExtrasEquality, EnumField) {
   msg2.set_enum_field(TestMessage::ENUM_B);
   EXPECT_NE(msg1, msg2);
 }
+
+TEST(ProtoExtrasEquality, OptionalField) {
+  TestMessage msg1;
+  TestMessage msg2;
+
+  // Test default messages are equal.
+  EXPECT_EQ(msg1, msg2);
+
+  // Test setting an optional field makes them unequal.
+  msg1.set_optional_int_field(0);
+  EXPECT_NE(msg1, msg2);
+
+  // Test setting the same optional field to the same value makes them equal.
+  msg2.set_optional_int_field(0);
+  EXPECT_EQ(msg1, msg2);
+
+  // Test setting different values makes them unequal.
+  msg2.set_optional_int_field(2);
+  EXPECT_NE(msg1, msg2);
+}
+
+TEST(ProtoExtrasEquality, OptionalEmptyMessageField) {
+  TestMessage msg1;
+  TestMessage msg2;
+
+  // Test default messages are equal.
+  EXPECT_EQ(msg1, msg2);
+
+  // Test setting an optional field makes them unequal.
+  msg1.mutable_optional_empty_embedded_message_field();
+  EXPECT_NE(msg1, msg2);
+
+  // Test setting the same optional field to the same value makes them equal.
+  msg2.mutable_optional_empty_embedded_message_field();
+  EXPECT_EQ(msg1, msg2);
+}
+
 
 TEST(ProtoExtrasEquality, MapField) {
   TestMessage msg1;
