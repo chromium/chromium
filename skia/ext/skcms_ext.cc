@@ -20,7 +20,6 @@ namespace {
 float TransferFunction_eval(const skcms_TransferFunction& fn, float x) {
   const float sign = x < 0 ? -1 : 1;
   const float abs_x = std::abs(x);
-  float y = 0.f;
   if (abs_x <= fn.d) {
     return sign * (fn.c * abs_x + fn.f);
   }

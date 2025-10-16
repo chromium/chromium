@@ -112,10 +112,10 @@ base::Value AsValue(const SkMatrix& matrix) {
 
 base::Value AsValue(SkColor color) {
   base::Value::Dict val;
-  val.Set("a", int{SkColorGetA(color)});
-  val.Set("r", int{SkColorGetR(color)});
-  val.Set("g", int{SkColorGetG(color)});
-  val.Set("b", int{SkColorGetB(color)});
+  val.Set("a", static_cast<int>(SkColorGetA(color)));
+  val.Set("r", static_cast<int>(SkColorGetR(color)));
+  val.Set("g", static_cast<int>(SkColorGetG(color)));
+  val.Set("b", static_cast<int>(SkColorGetB(color)));
 
   return base::Value(std::move(val));
 }
@@ -203,7 +203,7 @@ base::Value AsValue(const SkPaint& paint) {
 }
 
 base::Value SaveLayerFlagsAsValue(SkCanvas::SaveLayerFlags flags) {
-  return base::Value(int{flags});
+  return base::Value(static_cast<int>(flags));
 }
 
 base::Value AsValue(SkClipOp op) {
