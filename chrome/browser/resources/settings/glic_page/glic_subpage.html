@@ -153,7 +153,8 @@
       <settings-toggle-button
           id="defaultTabAccessToggle" pref="[[fakePref_]]" disabled
           label="$i18n{glicDefaultTabAccessToggle}"
-          sub-label="[[defaultTabAccessSubLabel_]]"
+          sub-label-with-link="[[defaultTabAccessSubLabel_]]"
+          on-sub-label-link-clicked="onDefaultTabAccessToggleLearnMoreClick_"
           hidden="[[!showGlicDefaultTabContextSetting_]]">
       </settings-toggle-button>
     </template>
@@ -247,9 +248,8 @@
             id="defaultTabAccessToggle"
             pref="{{prefs.glic.default_tab_context_enabled}}"
             label="$i18n{glicDefaultTabAccessToggle}"
-            sub-label="[[defaultTabAccessSubLabel_]]"
-            learn-more-url="[[defaultTabAccessLearnMoreUrl_]]"
-            on-learn-more-clicked="onDefaultTabAccessToggleLearnMoreClick_"
+            sub-label-with-link="[[defaultTabAccessSubLabel_]]"
+            on-sub-label-link-clicked="onDefaultTabAccessToggleLearnMoreClick_"
             on-settings-boolean-control-change="onDefaultTabAccessToggleChange_"
             no-toggle-on-host-click on-click="onDefaultTabAccessExpand_">
           <div id="defaultTabAccessToggleActions"
@@ -296,16 +296,18 @@
                   </cr-icon>
                   <div class="secondary">
                     $i18n{glicDefaultTabAccessConsider1}
-                    <a id="shortcutDefaultTabAccessConsider1LearnMoreLabel"
-                        class="learn-more-label"
-                        href="[[defaultTabAccessLearnMoreUrl_]]"
-                        on-click="onDefaultTabAccessToggleLearnMoreClick_"
-                        aria-label=
-                           "$i18n{glicDefaultTabAccessConsider1LearnMoreLabel}"
-                        aria-description="$i18n{opensInNewTab}"
-                        target="_blank">
-                    $i18n{glicDefaultTabAccessConsider1LearnMoreLabel}
-                  </a>
+                  </div>
+                </li>
+                <li hidden="[[isEnterpriseAccountDataProtected_]]">
+                  <cr-icon aria-hidden="true" <if expr="not _google_chrome">
+                    icon="settings20:web">
+                    </if>
+                    <if expr="_google_chrome">
+                      icon="settings-internal:insight-spark">
+                    </if>
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{glicDefaultTabAccessConsider2}
                   </div>
                 </li>
               </ul>
