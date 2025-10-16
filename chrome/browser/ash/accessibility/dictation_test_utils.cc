@@ -59,15 +59,9 @@ constexpr char kTextAreaUrl[] = R"(
     data:text/html;charset=utf-8,<textarea id='input'
         class='editableForDictation' autofocus></textarea>
 )";
-constexpr char kPumpkinMV2TestFilePath[] =
-    "resources/chromeos/accessibility/accessibility_common/mv2/third_party/"
-    "pumpkin";
 constexpr char kPumpkinMV3TestFilePath[] =
     "resources/chromeos/accessibility/accessibility_common/mv3/third_party/"
     "pumpkin";
-constexpr char kTestSupportMV2Path[] =
-    "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv2/"
-    "dictation/dictation_test_support.js";
 constexpr char kTestSupportMV3Path[] =
     "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv3/"
     "dictation/dictation_test_support.js";
@@ -151,32 +145,20 @@ void DictationTestUtils::EnableDictation(
   generator_ = std::make_unique<ui::test::EventGenerator>(
       Shell::Get()->GetPrimaryRootWindow());
 
-  const bool v3_manifest =
-      ::features::IsAccessibilityManifestV3EnabledForAccessibilityCommon();
-
   // Set up the Pumpkin dir before turning on Dictation because the
   // extension will immediately request a Pumpkin installation once activated.
-  DictationTestUtils::SetUpPumpkinDir(v3_manifest ? kPumpkinMV3TestFilePath
-                                                  : kPumpkinMV2TestFilePath);
+  DictationTestUtils::SetUpPumpkinDir(kPumpkinMV3TestFilePath);
   test_helper_->SetUp(profile_);
   ASSERT_FALSE(AccessibilityManager::Get()->IsDictationEnabled());
   profile_->GetPrefs()->SetBoolean(
       prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
 
   if (wait_for_accessibility_common_extension_load_) {
-    // Use ExtensionHostTestHelper to detect when the accessibility common
-    // extension loads.
-    extensions::ExtensionHostTestHelper host_helper(
-        profile_, extension_misc::kAccessibilityCommonExtensionId);
     // Watch events from an MV3 extension which runs in a service worker.
     extensions::ExtensionRegistryTestHelper observer(
         extension_misc::kAccessibilityCommonExtensionId, profile);
     AccessibilityManager::Get()->SetDictationEnabled(true);
-    if (observer.WaitForManifestVersion() == 3) {
-      observer.WaitForServiceWorkerStart();
-    } else {
-      host_helper.WaitForHostCompletedFirstLoad();
-    }
+    observer.WaitForServiceWorkerStart();
   } else {
     // In some cases (e.g. DictationWithAutoclickTest) the accessibility
     // common extension is already setup and loaded. For these cases, simply
@@ -197,7 +179,7 @@ void DictationTestUtils::EnableDictation(
   // Create an instance of the DictationTestSupport JS class, which can be
   // used from these tests to interact with Dictation JS. For more
   // information, see kTestSupportMV3Path.
-  SetUpTestSupport(v3_manifest ? kTestSupportMV3Path : kTestSupportMV2Path);
+  SetUpTestSupport(kTestSupportMV3Path);
 
   // Wait for focus to propagate.
   WaitForEditableFocus();

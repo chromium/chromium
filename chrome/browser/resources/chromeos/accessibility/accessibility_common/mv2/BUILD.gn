@@ -249,18 +249,7 @@ source_set("browser_tests") {
 
 js2gtest("accessibility_common_extjs_tests") {
   test_type = "extension"
-  sources = [
-    "accessibility_common_test.js",
-    "dictation/dictation_test.js",
-    "dictation/dictation_test_base.js",
-    "dictation/dictation_ui_test.js",
-    "dictation/editing_util_test.js",
-    "dictation/focus_handler_test.js",
-    "dictation/locale_info_test.js",
-    "dictation/macros/dictation_macros_test.js",
-    "dictation/parse/dictation_parse_test.js",
-    "dictation/parse/dictation_pumpkin_parse_test.js",
-  ]
+  sources = [ "accessibility_common_test.js" ]
 
   gen_include_files = [
     "../../common/testing/accessibility_test_base.js",
