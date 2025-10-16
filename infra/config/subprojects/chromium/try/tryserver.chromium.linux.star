@@ -82,7 +82,7 @@ try_.builder(
         },
         # Catches a couple of CLs per week that are either actionable or
         # worthy of discussion.
-        "size_threshold_mib": 250,
+        "size_threshold_mib": 200,
     },
     tryjob = try_.job(),
 )
