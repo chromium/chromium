@@ -266,8 +266,15 @@ declare_args() {
        (clang_use_default_sample_profile || clang_sample_profile_path != ""))
 }
 
-assert(!(llvm_force_head_revision && use_remoteexec && host_os != "linux"),
-       "rbe with locally built clang only works on linux")
+is_bot = false
+if (getenv("SWARMING_HEADLESS") != "" || getenv("SWARMING_BOT_ID") != "" ||
+    getenv("SWARMING_TASK_ID") != "") {
+  is_bot = true
+}
+
+assert(is_bot ||
+           !(llvm_force_head_revision && use_remoteexec && host_os != "linux"),
+       "rbe with locally built clang only works on linux")  # Or on CI bots
 
 # Whether or not we should pass the warning_suppression.txt file to clang
 # compilations. This file allows us to suppress warnings that originate from
