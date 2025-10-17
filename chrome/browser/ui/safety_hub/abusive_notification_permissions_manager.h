@@ -14,6 +14,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 
 class GURL;
+class Profile;
 
 namespace {
 // Maximum time in milliseconds to wait for the Safe Browsing service reputation
@@ -26,6 +27,8 @@ inline constexpr int kCheckUrlTimeoutMs = 5000;
 inline constexpr char kAbusiveRevocationSourceKeyStr[] = "revocation_source";
 inline constexpr char kSocialEngineeringBlocklistStr[] = "social_engineering";
 inline constexpr char kManualSafeBrowsingRevocationStr[] = "manual";
+inline constexpr char kSuspiciousContentAutoRevocationStr[] =
+    "suspicious_content";
 }  // namespace
 
 namespace safe_browsing {
@@ -93,6 +96,12 @@ class AbusiveNotificationPermissionsManager {
       bool is_ignored,
       const content_settings::ContentSettingConstraints& constraints = {});
 
+  // Revoke notification permission for `url` if suspicious notification
+  // criteria are met, setting `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`.
+  // Return true if the notification has been revoked.
+  static bool MaybeRevokeSuspiciousNotificationPermission(Profile* profile,
+                                                          GURL url);
+
   // Return `NotificationRevocationSource` if there is  a
   // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting value for the
   // `setting_url` with the `safety_hub::kAbusiveRevocationSourceKeyStr`.
@@ -101,6 +110,12 @@ class AbusiveNotificationPermissionsManager {
   static safe_browsing::NotificationRevocationSource
   GetRevokedAbusiveNotificationRevocationSource(HostContentSettingsMap* hcsm,
                                                 GURL url);
+
+  // Returns true if `url` belongs to a site with revoked abusive notifications
+  // with `NotificationRevocationSource::kSuspiciousContentAutoRevocation` as
+  // notification revocation source.
+  static bool IsUrlRevokedDueToSuspiciousContent(HostContentSettingsMap* hcsm,
+                                                 GURL url);
 
   // Calls `PerformSafeBrowsingChecks` on URLs which have notifications
   // enabled and haven't been marked as a URL to be ignored.
@@ -283,12 +298,6 @@ class AbusiveNotificationPermissionsManager {
   // storing in `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`.
   static std::optional<std::string> GetRevocationSourceString(
       safe_browsing::NotificationRevocationSource source);
-
-  // Convert string representation for storing in
-  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` into
-  // `NotificationRevocationSource`.
-  static safe_browsing::NotificationRevocationSource
-  GetNotificationRevocationSource(std::string source_str);
 
   // Used for interactions with the local database, when checking the blocklist.
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;

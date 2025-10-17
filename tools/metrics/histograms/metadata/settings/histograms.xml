@@ -835,6 +835,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <token key="NotificationRevocationSource">
     <variant name="ManualSafeBrowsingRevocation"/>
     <variant name="SocialEngineeringBlocklist"/>
+    <variant name="SuspiciousContentAutoRevocation"/>
     <variant name="Unknown"/>
   </token>
 </histogram>

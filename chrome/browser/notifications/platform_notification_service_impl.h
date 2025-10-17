@@ -118,6 +118,15 @@ class PlatformNotificationServiceImpl
   FRIEND_TEST_ALL_PREFIXES(
       PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
       NotSuspiciousNoEngagementRecorded);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      RevokeNotificationPermission);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      DoNotRevokeWhenFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      RevokeNotificationPermission_UpdateNotificationDatabaseMetadata);
 
   struct WebAppIconAndTitle {
     gfx::ImageSkia icon;
@@ -174,7 +183,9 @@ class PlatformNotificationServiceImpl
   // `serialized_content_detection_metadata` for possible MQLS logging later.
   // Update `persistent_metadata`, given the value of `should_show_warning`, to
   // tell the front end whether to display the notification or the warning.
-  void UpdatePersistentMetadataThenDisplay(
+  // Increment warning shown count based on `should_show_warning` and revoke
+  // notification permission if applicable.
+  void HandleOnDeviceModelResponseThenMaybeDisplay(
       const message_center::Notification& notification,
       std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
       bool should_show_warning,

@@ -165,6 +165,25 @@ int NotificationsEngagementService::GetDailyAverageNotificationCount(
 }
 
 // static
+int NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+    const base::Value::Dict& engagement,
+    int days) {
+  base::Time date = base::Time::Now();
+  int suspicious_notification_count = 0;
+
+  for (int day = 0; day < days; ++day) {
+    const base::Value::Dict* bucket =
+        engagement.FindDict(GetBucketLabel(date - base::Days(day)));
+    if (bucket) {
+      suspicious_notification_count +=
+          bucket->FindInt(kSuspiciousKey).value_or(0);
+    }
+  }
+
+  return suspicious_notification_count;
+}
+
+// static
 std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
 NotificationsEngagementService::GetNotificationCountMapPerPatternPair(
     const HostContentSettingsMap* hcsm) {

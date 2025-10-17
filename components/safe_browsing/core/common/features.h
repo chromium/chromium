@@ -34,6 +34,21 @@ BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 // received a number of notifications with a suspicious verdict from the
 // on-device model.
 BASE_DECLARE_FEATURE(kAutoRevokeSuspiciousNotification);
+// The number of days in which suspicious notification will be counted toward
+// `kAutoRevokeSuspiciousNotificationMinNotificationCount`.
+extern const base::FeatureParam<int>
+    kAutoRevokeSuspiciousNotificationLookBackPeriod;
+// Notification permissions with site engagement score of
+// kAutoRevokeSuspiciousNotificationEngagementScoreCutOff or higher will not be
+// revoked due to suspicious content reason to prevent false positive
+// revocations.
+extern const base::FeatureParam<double>
+    kAutoRevokeSuspiciousNotificationEngagementScoreCutOff;
+// The minimum number of suspicious notification warning the user have received
+// during `kAutoRevokeSuspiciousNotificationLookBackPeriod` before the
+// notification permission is revoked.
+extern const base::FeatureParam<int>
+    kAutoRevokeSuspiciousNotificationMinNotificationCount;
 
 // Enables Bundled Security Settings UI on chrome://settings/security
 BASE_DECLARE_FEATURE(kBundledSecuritySettings);

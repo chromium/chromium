@@ -7,10 +7,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h"
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/permissions/permission_revocation_request.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
@@ -22,20 +25,25 @@
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/notifications_engagement_service.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 namespace {
 
 const char url1[] = "https://example1.com";
 const char url2[] = "https://example2.com";
 const char url3[] = "https://example3.com";
 const char url4[] = "https://example4.com";
+
+const int kTestMinSuspiciousCount = 2;
+const double kTestSiteEngagementCutOff = 50.0;
 
 const ContentSettingsType notifications_type =
     ContentSettingsType::NOTIFICATIONS;
@@ -149,6 +157,10 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
   }
 
   TestingProfile* profile() { return &profile_; }
+
+  void SetNotificationPermission(const GURL& url, ContentSetting cs) {
+    hcsm()->SetContentSettingDefaultScope(url, GURL(), notifications_type, cs);
+  }
 
  private:
   scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
@@ -837,6 +849,33 @@ TEST_F(AbusiveNotificationPermissionsManagerTest, OnPermissionChanged) {
       /* expected_count */ 1);
 }
 
+TEST_F(AbusiveNotificationPermissionsManagerTest,
+       OnPermissionChanged_SuspiciousContent) {
+  // Simulate the user re-granting permission of site revoked due to suspicious
+  // content outside of Safety Hub.
+  AddRevokedAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW,
+                                /*is_ignored=*/false,
+                                safe_browsing::NotificationRevocationSource::
+                                    kSuspiciousContentAutoRevocation);
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
+  base::HistogramTester histogram_tester;
+
+  manager.OnPermissionChanged(
+      ContentSettingsPattern::FromURLNoWildcard(GURL(url1)),
+      ContentSettingsPattern::Wildcard());
+
+  // Verify that revocation status is set to ignored.
+  ASSERT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
+      hcsm(), GURL(url1)));
+  // Verify that appropriate metric is logged.
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
+      "SuspiciousContentAutoRevocation."
+      "Revoked.PermissionChanged",
+      /* sample */ ContentSetting::CONTENT_SETTING_ALLOW,
+      /* expected_count */ 1);
+}
 class ShowManualNotificationRevocationsTest
     : public AbusiveNotificationPermissionsManagerTest {
  public:
@@ -1079,4 +1118,280 @@ TEST_F(ShowManualNotificationRevocationsTest,
   EXPECT_FALSE(
       PermissionRevocationRequest::IsOriginExemptedFromFutureRevocations(
           profile(), origin_to_revoke));
+}
+
+class SuspiciousNotificationRevocationTest
+    : public AbusiveNotificationPermissionsManagerTest {
+ public:
+  SuspiciousNotificationRevocationTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        safe_browsing::kAutoRevokeSuspiciousNotification,
+        {{safe_browsing::kAutoRevokeSuspiciousNotificationEngagementScoreCutOff
+              .name,
+          "50.0"},
+         {safe_browsing::kAutoRevokeSuspiciousNotificationMinNotificationCount
+              .name,
+          "2"},
+         {safe_browsing::kAutoRevokeSuspiciousNotificationLookBackPeriod.name,
+          "1"}});
+  }
+
+  void RecordSuspiciousNotifications(const GURL& url, int count) {
+    base::Value::Dict engagement;
+    std::string date =
+        permissions::NotificationsEngagementService::GetBucketLabel(
+            base::Time::Now());
+    base::Value::Dict* bucket =
+        &engagement.Set(date, base::Value::Dict())->GetDict();
+    bucket->Set("suspicious_count", count);
+    hcsm()->SetWebsiteSettingDefaultScope(
+        url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS,
+        base::Value(std::move(engagement)));
+
+    base::Value stored_value = hcsm()->GetWebsiteSetting(
+        url, url, ContentSettingsType::NOTIFICATION_INTERACTIONS);
+    EXPECT_EQ(count, permissions::NotificationsEngagementService::
+                         GetSuspiciousNotificationCountForPeriod(
+                             stored_value.GetDict(), 1));
+  }
+
+  void SetSiteEngagementScore(const GURL& url, double score) {
+    site_engagement::SiteEngagementServiceFactory::GetForProfile(profile())
+        ->ResetBaseScoreForURL(url, score);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermissionRevokesPermission) {
+  base::HistogramTester histogram_tester;
+  SetNotificationPermission(GURL(url1), ContentSetting::CONTENT_SETTING_ALLOW);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff - 1.0);
+
+  // All criteria met; `MaybeRevokeSuspiciousNotificationPermission` returns
+  // true.
+  ASSERT_TRUE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+  // Verify that abusive revocation is stored correctly.
+  ASSERT_TRUE(IsRevokedSettingValueRevoked(url1));
+  ASSERT_EQ(
+      safe_browsing::NotificationRevocationSource::
+          kSuspiciousContentAutoRevocation,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url1)));
+  // Verify that notification permission has been revoked.
+  ASSERT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+  // Verify metric logged.
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.NotificationRevocationSource",
+      safe_browsing::NotificationRevocationSource::
+          kSuspiciousContentAutoRevocation,
+      /* expected_count */ 1);
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermission_HighSiteEngagementScore) {
+  SetNotificationPermission(GURL(url1), ContentSetting::CONTENT_SETTING_ALLOW);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff + 10.0);
+
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+
+  // Verify that notification permission has not been revoked.
+  ASSERT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  ASSERT_TRUE(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
+          hcsm(), GURL(url1))
+          .is_none());
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermission_LowSuspiciousCount) {
+  SetNotificationPermission(GURL(url1), ContentSetting::CONTENT_SETTING_ALLOW);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount - 1);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff - 1.0);
+
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+
+  // Verify that notification permission has not been revoked.
+  ASSERT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  ASSERT_TRUE(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
+          hcsm(), GURL(url1))
+          .is_none());
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermission_NoSuspiciousCount) {
+  // Simulate the first warning shown, not suspicious count is recorded for the
+  // site.
+  SetNotificationPermission(GURL(url1), ContentSetting::CONTENT_SETTING_ALLOW);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff - 1.0);
+
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+
+  // Verify that notification permission has not been revoked.
+  ASSERT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  ASSERT_TRUE(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
+          hcsm(), GURL(url1))
+          .is_none());
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermission_NotificationDisabled) {
+  SetNotificationPermission(GURL(url1), ContentSetting::CONTENT_SETTING_ASK);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff - 1.0);
+
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+
+  ASSERT_TRUE(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
+          hcsm(), GURL(url1))
+          .is_none());
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermission_ExistingAbusiveEntry) {
+  AddRevokedAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW,
+                                /*is_ignored=*/false);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff - 1.0);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
+
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+  // Verify that revocation source of the existing entry has not been changed to
+  // suspicious content.
+  ASSERT_NE(
+      safe_browsing::NotificationRevocationSource::
+          kSuspiciousContentAutoRevocation,
+      AbusiveNotificationPermissionsManager::
+          GetRevokedAbusiveNotificationRevocationSource(hcsm(), GURL(url1)));
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermission_HasRegrant) {
+  // Url 1: Abusive re-grant.
+  AddRevokedAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW,
+                                /*is_ignored=*/true);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff - 1.0);
+
+  // Url 2: Disruptive re-grant.
+  SetNotificationPermission(GURL(url2), ContentSetting::CONTENT_SETTING_ALLOW);
+  content_settings::ContentSettingConstraints constraint;
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url2), GURL(url2),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(
+          base::Value::Dict().Set("revoked_status", "ignore_inside_sh")),
+      constraint);
+  EXPECT_TRUE(
+      DisruptiveNotificationPermissionsManager::
+          IsUrlIgnoredForRevokedDisruptiveNotification(hcsm(), GURL(url2)));
+  RecordSuspiciousNotifications(GURL(url2), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url2), kTestSiteEngagementCutOff - 1.0);
+
+  // Url 3: No re-grant.
+  SetNotificationPermission(GURL(url3), ContentSetting::CONTENT_SETTING_ALLOW);
+  RecordSuspiciousNotifications(GURL(url3), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url3), kTestSiteEngagementCutOff - 1.0);
+
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url2)));
+  ASSERT_TRUE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url3)));
+
+  // Verify that notification permission has not been revoked.
+  ASSERT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  ASSERT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  ASSERT_EQ(GetNotificationSettingValue(url3),
+            ContentSetting::CONTENT_SETTING_ASK);
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermission_HasShowOriginal) {
+  SetNotificationPermission(GURL(url1), ContentSetting::CONTENT_SETTING_ALLOW);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff - 1.0);
+  content_settings::ContentSettingConstraints constraint;
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url1), GURL(url1),
+      ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL,
+      base::Value(base::Value::Dict().Set(
+          safe_browsing::kSuspiciousNotificationShowOriginalKey, true)),
+      constraint);
+
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+
+  // Verify that notification permission has not been revoked.
+  ASSERT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  ASSERT_TRUE(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
+          hcsm(), GURL(url1))
+          .is_none());
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       IsUrlRevokedDueToSuspiciousContent) {
+  AddRevokedAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ASK,
+                                /*is_ignored=*/false,
+                                safe_browsing::NotificationRevocationSource::
+                                    kSuspiciousContentAutoRevocation);
+  AddRevokedAbusiveNotification(
+      url2, ContentSetting::CONTENT_SETTING_ASK,
+      /*is_ignored=*/false,
+      safe_browsing::NotificationRevocationSource::kUnknown);
+  AddRevokedAbusiveNotification(url3, ContentSetting::CONTENT_SETTING_ASK,
+                                /*is_ignored=*/false,
+                                safe_browsing::NotificationRevocationSource::
+                                    kManualSafeBrowsingRevocation);
+  AddRevokedAbusiveNotification(
+      url4, ContentSetting::CONTENT_SETTING_ASK,
+      /*is_ignored=*/false,
+      safe_browsing::NotificationRevocationSource::kSocialEngineeringBlocklist);
+
+  ASSERT_TRUE(
+      AbusiveNotificationPermissionsManager::IsUrlRevokedDueToSuspiciousContent(
+          hcsm(), GURL(url1)));
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::IsUrlRevokedDueToSuspiciousContent(
+          hcsm(), GURL(url2)));
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::IsUrlRevokedDueToSuspiciousContent(
+          hcsm(), GURL(url3)));
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::IsUrlRevokedDueToSuspiciousContent(
+          hcsm(), GURL(url4)));
 }

@@ -364,6 +364,66 @@ TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {
   ASSERT_EQ(2u, website_engagement.size());
 }
 
+TEST_F(NotificationsEngagementServiceTest,
+       GetSuspiciousNotificationCountForPeriod) {
+  GURL url("https://www.suspicious.site.com/");
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Record suspicious notifications over several days.
+  task_environment_.FastForwardBy(base::Days(2));
+  service()->RecordNotificationSuspicious(url);
+  service()->RecordNotificationSuspicious(url);
+
+  task_environment_.FastForwardBy(base::Days(5));
+  service()->RecordNotificationSuspicious(url);
+
+  task_environment_.FastForwardBy(base::Days(10));
+  service()->RecordNotificationSuspicious(url);
+  service()->RecordNotificationSuspicious(url);
+  service()->RecordNotificationSuspicious(url);
+
+  task_environment_.FastForwardBy(base::Days(1));
+  service()->RecordNotificationSuspicious(url);
+  service()->RecordNotificationSuspicious(url);
+
+  base::Value website_engagement_value =
+      host_content_settings_map->GetWebsiteSetting(
+          url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
+  ASSERT_TRUE(website_engagement_value.is_dict());
+  base::Value::Dict& website_engagement_dict =
+      website_engagement_value.GetDict();
+
+  // No lookback period.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 0),
+      0);
+  // Lookback period of 1 day.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 1),
+      2);
+
+  // Lookback period of 7 days.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 7),
+      5);
+
+  // Long lookback period.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 12),
+      6);
+  // Lookback period that includes all recorded suspicious
+  // notifications.
+  EXPECT_EQ(
+      NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+          website_engagement_dict, 30),
+      8);
+}
+
 // Disabled, due to http://go/crb/1407635.
 TEST_F(NotificationsEngagementServiceTest, DISABLED_GetBucketLabel) {
   base::Time date1, date2, date3, date4;

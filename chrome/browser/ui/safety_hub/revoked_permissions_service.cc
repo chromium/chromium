@@ -404,8 +404,18 @@ RevokedPermissionsService::GetRevokedPermissions() {
           info.metadata.expiration()) {
         permissions_data.constraints = GetConstraintFromInfo(info);
       }
-      permissions_data.revocation_type =
-          PermissionsRevocationType::kUnusedPermissionsAndAbusiveNotifications;
+      // Suspicious content revocation is considered abusive notification
+      // permission but revocation should be displayed with it own string
+      // explanation.
+      if (AbusiveNotificationPermissionsManager::
+              IsUrlRevokedDueToSuspiciousContent(hcsm(), url)) {
+        permissions_data.revocation_type = PermissionsRevocationType::
+            kUnusedPermissionsAndSuspiciousNotifications;
+      } else {
+        permissions_data.revocation_type = PermissionsRevocationType::
+            kUnusedPermissionsAndAbusiveNotifications;
+      }
+
     } else if (DisruptiveNotificationPermissionsManager::
                    IsUrlRevokedDisruptiveNotification(hcsm(), url)) {
       // If the origin has a revoked disruptive notification, add
@@ -438,11 +448,11 @@ RevokedPermissionsService::GetRevokedPermissions() {
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
   for (const auto& revoked_abusive_notification_permission :
        revoked_abusive_notification_settings) {
+    const GURL& abusive_url = GURL(
+        revoked_abusive_notification_permission.primary_pattern.ToString());
     // Skip origins with revoked unused site permissions, since these were
     // handled above.
-    if (safety_hub_util::IsUrlRevokedUnusedSite(
-            hcsm(), GURL(revoked_abusive_notification_permission.primary_pattern
-                             .ToString()))) {
+    if (safety_hub_util::IsUrlRevokedUnusedSite(hcsm(), abusive_url)) {
       continue;
     }
     PermissionsData permissions_data;
@@ -457,8 +467,14 @@ RevokedPermissionsService::GetRevokedPermissions() {
     permissions_data.constraints.set_lifetime(
         revoked_abusive_notification_permission.metadata.lifetime());
 
-    permissions_data.revocation_type =
-        PermissionsRevocationType::kAbusiveNotificationPermissions;
+    if (AbusiveNotificationPermissionsManager::
+            IsUrlRevokedDueToSuspiciousContent(hcsm(), abusive_url)) {
+      permissions_data.revocation_type =
+          PermissionsRevocationType::kSuspiciousNotificationPermissions;
+    } else {
+      permissions_data.revocation_type =
+          PermissionsRevocationType::kAbusiveNotificationPermissions;
+    }
 
     result->AddRevokedPermission(permissions_data);
   }

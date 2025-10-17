@@ -31,6 +31,8 @@ enum class PermissionsRevocationType {
   kDisruptiveNotificationPermissions,
   kUnusedPermissionsAndAbusiveNotifications,
   kUnusedPermissionsAndDisruptiveNotifications,
+  kSuspiciousNotificationPermissions,
+  kUnusedPermissionsAndSuspiciousNotifications,
 };
 // LINT.ThenChange(//chrome/browser/resources/settings/safety_hub/safety_hub_browser_proxy.ts:PermissionsRevocationType)
 

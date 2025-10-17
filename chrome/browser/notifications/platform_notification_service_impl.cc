@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -349,7 +350,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
           AreSuspiciousNotificationsAllowlistedByUser(origin),
           is_show_warnings_for_suspicious_notifications_enabled
               ? base::BindOnce(&PlatformNotificationServiceImpl::
-                                   UpdatePersistentMetadataThenDisplay,
+                                   HandleOnDeviceModelResponseThenMaybeDisplay,
                                weak_ptr_factory_.GetWeakPtr(), notification,
                                std::move(metadata))
               : base::DoNothing());
@@ -785,29 +786,46 @@ bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
 #endif
 }
 
-void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
-    const message_center::Notification& notification,
-    std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
-    bool should_show_warning,
-    std::optional<std::string> serialized_content_detection_metadata) {
+void PlatformNotificationServiceImpl::
+    HandleOnDeviceModelResponseThenMaybeDisplay(
+        const message_center::Notification& notification,
+        std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+        bool should_show_warning,
+        std::optional<std::string> serialized_content_detection_metadata) {
+  bool suspicious_notification_revoked = false;
   if (base::FeatureList::IsEnabled(
           safe_browsing::kAutoRevokeSuspiciousNotification) &&
       should_show_warning) {
+#if BUILDFLAG(IS_ANDROID)
+    suspicious_notification_revoked = AbusiveNotificationPermissionsManager::
+        MaybeRevokeSuspiciousNotificationPermission(profile_,
+                                                    notification.origin_url());
+#endif
+
+    auto* service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile_);
     // This service might be missing for incognito profiles and in tests.
-    if (auto* service =
-            NotificationsEngagementServiceFactory::GetForProfile(profile_)) {
+    if (!suspicious_notification_revoked && service) {
+      // Increment suspicious count if the notification permission has not been
+      // revoked.
       service->RecordNotificationSuspicious(notification.origin_url());
     }
   }
   if (base::FeatureList::IsEnabled(
           safe_browsing::kReportNotificationContentDetectionData)) {
+    // If the notification permission has been revoked, we do still want to
+    // record the notification in the database for re-grant scenario; however;
+    // there is no need to trigger `DidUpdatePersistentMetadata` callback.
     content::PlatformNotificationContext::WriteResourcesResultCallback
-        callback = base::BindOnce(
-            &PlatformNotificationServiceImpl::DidUpdatePersistentMetadata,
-            weak_ptr_factory_.GetWeakPtr(), std::move(persistent_metadata),
-            notification, should_show_warning);
+        callback = suspicious_notification_revoked
+                       ? base::DoNothing()
+                       : base::BindOnce(&PlatformNotificationServiceImpl::
+                                            DidUpdatePersistentMetadata,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        std::move(persistent_metadata),
+                                        notification, should_show_warning);
 #if BUILDFLAG(IS_ANDROID)
-    if (should_show_warning) {
+    if (should_show_warning && !suspicious_notification_revoked) {
       // Keep track of suspicious notification ids.
       safe_browsing::UpdateSuspiciousNotificationIds(
           HostContentSettingsMapFactory::GetForProfile(profile_),
@@ -828,6 +846,11 @@ void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
     }
     std::move(callback).Run(/*success=*/false);
   } else {
+    // Notification permission has been revoked due to suspicious content; do
+    // not show notification.
+    if (suspicious_notification_revoked) {
+      return;
+    }
     DoUpdatePersistentMetadataThenDisplay(std::move(persistent_metadata),
                                           notification, should_show_warning);
   }
