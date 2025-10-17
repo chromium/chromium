@@ -75,8 +75,12 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
     return;
   }
 
-  UpdateTaskIcon(instance->IsShowing(),
-                 instance->host().GetPrimaryCurrentView());
+  if (features::kGlicActorUiNudgeRedesign.Get()) {
+    UpdateTaskNudge();
+  } else {
+    UpdateTaskIcon(instance->IsShowing(),
+                   instance->host().GetPrimaryCurrentView());
+  }
 }
 
 void GlicActorTaskIconManager::Shutdown() {}
@@ -123,15 +127,51 @@ void GlicActorTaskIconManager::UpdateTaskIcon(bool is_showing,
                                                current_actor_task_icon_state_);
 }
 
+void GlicActorTaskIconManager::UpdateTaskNudge() {
+  auto active_tasks = actor_service_->GetActiveTasks();
+  // TODO(crbug.com/431015299): Cache some of these values.
+  auto completed_tasks =
+      actor_service_->FindTaskIdsInInactive(&IsRecentlyCompletedTask);
+  auto paused_by_actor_tasks =
+      actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
+        return task.GetState() == ActorTask::State::kPausedByActor;
+      });
+
+  if (!paused_by_actor_tasks.empty()) {
+    current_actor_task_nudge_state_.text =
+        ActorTaskNudgeState::Text::kNeedsAttention;
+  } else if (!completed_tasks.empty()) {
+    current_actor_task_nudge_state_.text =
+        ActorTaskNudgeState::Text::kCompleteTasks;
+  } else {
+    // If no tasks needing attention or completed, hide the nudge.
+    current_actor_task_nudge_state_.text = ActorTaskNudgeState::Text::kDefault;
+  }
+
+  task_nudge_state_change_callback_list_.Notify(
+      current_actor_task_nudge_state_);
+}
+
 base::CallbackListSubscription
 GlicActorTaskIconManager::RegisterTaskIconStateChange(
     TaskIconStateChangeCallback callback) {
   return task_icon_state_change_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription
+GlicActorTaskIconManager::RegisterTaskNudgeStateChange(
+    TaskNudgeChangeCallback callback) {
+  return task_nudge_state_change_callback_list_.Add(std::move(callback));
+}
+
 ActorTaskIconState GlicActorTaskIconManager::GetCurrentActorTaskIconState()
     const {
   return current_actor_task_icon_state_;
+}
+
+ActorTaskNudgeState GlicActorTaskIconManager::GetCurrentActorTaskNudgeState()
+    const {
+  return current_actor_task_nudge_state_;
 }
 
 raw_ptr<tabs::TabInterface> GlicActorTaskIconManager::GetLastUpdatedTab() {

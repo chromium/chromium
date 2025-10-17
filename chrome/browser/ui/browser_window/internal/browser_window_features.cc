@@ -698,19 +698,23 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
       if (features::kGlicActorUiTaskIcon.Get() &&
           browser_->GetProfile()->IsRegularProfile()) {
-        // Includes browser twice to enable injecting for testing.
-        glic_actor_task_icon_controller_ =
-            GetUserDataFactory()
-                .CreateInstance<tabs::GlicActorTaskIconController>(
-                    *browser_, browser_,
-                    BrowserElementsViews::From(browser_view->browser())
-                        ->GetViewAs<TabStripActionContainer>(
-                            kTabStripActionContainerElementId));
         if (features::kGlicActorUiNudgeRedesign.Get()) {
+          // Includes browser twice to enable injecting for testing.
           glic_actor_nudge_controller_ =
               GetUserDataFactory()
-                  .CreateInstance<tabs::GlicActorNudgeController>(*browser_,
-                                                                  browser_);
+                  .CreateInstance<tabs::GlicActorNudgeController>(
+                      *browser_, browser_,
+                      BrowserElementsViews::From(browser_view->browser())
+                          ->GetViewAs<TabStripActionContainer>(
+                              kTabStripActionContainerElementId));
+        } else {
+          glic_actor_task_icon_controller_ =
+              GetUserDataFactory()
+                  .CreateInstance<tabs::GlicActorTaskIconController>(
+                      *browser_, browser_,
+                      BrowserElementsViews::From(browser_view->browser())
+                          ->GetViewAs<TabStripActionContainer>(
+                              kTabStripActionContainerElementId));
         }
       }
     }
