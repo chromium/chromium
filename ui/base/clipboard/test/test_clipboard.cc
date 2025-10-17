@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
@@ -393,8 +394,7 @@ void TestClipboard::WriteBitmap(const SkBitmap& bitmap) {
 
 void TestClipboard::WriteData(const ClipboardFormatType& format,
                               base::span<const uint8_t> data) {
-  GetDefaultStore().data[format] =
-      std::string(reinterpret_cast<const char*>(data.data()), data.size());
+  GetDefaultStore().data[format] = std::string(base::as_string_view(data));
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
