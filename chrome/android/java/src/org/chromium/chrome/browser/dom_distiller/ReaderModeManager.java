@@ -243,6 +243,9 @@ public class ReaderModeManager extends EmptyTabObserver
     /** Whether the reader mode button is currently being shown on the toolbar. */
     private boolean mIsReaderModeButtonShowingOnToolbar;
 
+    /** Whether the prompt was put on hold until CPA is ready should be displayed in the end. */
+    private boolean mShouldRestorePrompt;
+
     // Whether the manager has been notified that a contextual page action has been shown for the
     // current navigation.
     private boolean mHasBeenNotifiedOfCpa;
@@ -374,7 +377,7 @@ public class ReaderModeManager extends EmptyTabObserver
         if (mWebContentsObserver == null && mTab.getWebContents() != null) {
             mWebContentsObserver = createWebContentsObserver();
         }
-        tryShowingPrompt();
+        tryShowingPrompt(/* resetRestorePrompt= */ true);
     }
 
     @Override
@@ -558,7 +561,7 @@ public class ReaderModeManager extends EmptyTabObserver
                 if (mDistillationStatus == DistillationStatus.POSSIBLE) {
                     mHasBeenNotifiedOfCpa = false;
                     mIsReaderModeButtonShowingOnToolbar = false;
-                    tryShowingPrompt();
+                    tryShowingPrompt(/* resetRestorePrompt= */ true);
                 }
             }
 
@@ -587,30 +590,24 @@ public class ReaderModeManager extends EmptyTabObserver
         };
     }
 
-    /** Try showing the reader mode prompt. */
+    /**
+     * Try showing the reader mode prompt.
+     *
+     * @param resetRestorePrompt Whether the flag |mShouldRestorePrompt| should be reset at the
+     *     beginning before setting it conditionally. This is expected to be {@code true} for all
+     *     the call sites except {@link #onContextualPageActionShown()} which should use the current
+     *     state of the flag to decide what to do.
+     * @return Whether the prompt request was successfully processed.
+     */
     @VisibleForTesting
-    void tryShowingPrompt() {
-        if (mTab == null || mTab.getWebContents() == null) return;
+    boolean tryShowingPrompt(boolean resetRestorePrompt) {
+        if (resetRestorePrompt) mShouldRestorePrompt = false;
+
+        if (mTab == null || mTab.getWebContents() == null) return false;
 
         // This prompt should only be shown on incognito or custom tabs, in other cases we'll show a
         // toolbar button (contextual page action) instead.
-        if (!shouldUseReaderModeMessages(mTab)) return;
-
-        if (mTab.isCustomTab() && ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
-            // If the manager hasn't been notified of the CPA yet, don't show the prompt for now.
-            // Later it will be shown if CPA is determined to be hidden.
-            if (!mHasBeenNotifiedOfCpa) return;
-
-            // Do not proceed to show Message UI if CPA is shown, or the fallback UI will be in
-            // the overflow menu.
-            if (mIsReaderModeButtonShowingOnToolbar
-                    || ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
-                            CPA_FALLBACK_MENU_PARAM,
-                            false)) {
-                return;
-            }
-        }
+        if (!shouldUseReaderModeMessages(mTab)) return false;
 
         // Test if the user is requesting the desktop site. Ignore this if distiller is set to
         // ALWAYS_TRUE.
@@ -621,19 +618,21 @@ public class ReaderModeManager extends EmptyTabObserver
         if (usingRequestDesktopSite
                 || mDistillationStatus != DistillationStatus.POSSIBLE
                 || mIsDismissed) {
-            return;
+            return false;
         }
 
-        if (mDistillerUrl != null && sMutedSites.contains(urlToHash(mDistillerUrl))) {
-            return;
-        }
+        if (isSiteAlreadyShown()) return false;
 
         MessageDispatcher messageDispatcher = mMessageDispatcherSupplier.get();
         if (messageDispatcher != null) {
             if (!mMessageRequestedForNavigation) {
                 // If feature is disabled, reader mode message ui is only shown once per tab.
                 if (mMessageShown) {
-                    return;
+                    return false;
+                }
+
+                if (shouldSuppressForCpa()) {
+                    return false;
                 }
 
                 showReaderModeMessage(messageDispatcher);
@@ -641,6 +640,33 @@ public class ReaderModeManager extends EmptyTabObserver
             }
             mMessageRequestedForNavigation = true;
         }
+        return true;
+    }
+
+    private boolean isSiteAlreadyShown() {
+        return mDistillerUrl != null && sMutedSites.contains(urlToHash(mDistillerUrl));
+    }
+
+    private boolean shouldSuppressForCpa() {
+        if (mTab.isCustomTab() && ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
+            // If the manager hasn't been notified of the CPA yet, don't show the prompt for now.
+            // Later it will be shown if CPA is determined to be hidden.
+            if (!mHasBeenNotifiedOfCpa) {
+                mShouldRestorePrompt = true;
+                return true;
+            }
+
+            // Do not proceed to show Message UI if CPA is shown, or the fallback UI will be in
+            // the overflow menu.
+            if (mIsReaderModeButtonShowingOnToolbar
+                    || ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+                            CPA_FALLBACK_MENU_PARAM,
+                            false)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void showReaderModeMessage(MessageDispatcher messageDispatcher) {
@@ -915,7 +941,7 @@ public class ReaderModeManager extends EmptyTabObserver
                     if (mIsCurrentPageDistillationStatusDetermined) {
                         mHasBeenNotifiedOfCpa = false;
                         mIsReaderModeButtonShowingOnToolbar = false;
-                        tryShowingPrompt();
+                        tryShowingPrompt(/* resetRestorePrompt= */ true);
                     }
                 };
         var provider = TabDistillabilityProvider.get(tabToObserve);
@@ -1057,7 +1083,14 @@ public class ReaderModeManager extends EmptyTabObserver
                         if (mIsReaderModeButtonShowingOnToolbar) {
                             markUrlAsShown();
                         } else {
-                            tryShowingPrompt();
+                            boolean success = tryShowingPrompt(/* resetRestorePrompt= */ false);
+                            if (mShouldRestorePrompt) {
+                                mShouldRestorePrompt = false;
+                                if (!success) {
+                                    RecordUserAction.record(
+                                            "CustomTabs.ReaderMode.PromptSuppressed");
+                                }
+                            }
                         }
                     });
         }

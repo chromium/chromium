@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -213,7 +214,10 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         new Handler(Looper.getMainLooper())
                 .postDelayed(
                         () -> {
-                            if (tab.isDestroyed()) return;
+                            if (tab.isDestroyed()) {
+                                RecordUserAction.record("CustomTabs.ReaderMode.TabDestroyed");
+                                return;
+                            }
 
                             ReaderModeManager readerModeManager =
                                     tab.getUserDataHost()

@@ -10480,6 +10480,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="CustomTabs.ReaderMode.PromptSuppressed" not_user_triggered="true">
+  <owner>jinsukkim@google.com</owner>
+  <description>
+    Emitted by CCT when Reader Mode Message prompt UI previously suppressed
+    despite meeting all the conditions ends up not being displayed due to a
+    certain modified condition.
+  </description>
+</action>
+
+<action name="CustomTabs.ReaderMode.TabDestroyed" not_user_triggered="true">
+  <owner>jinsukkim@google.com</owner>
+  <description>
+    Emitted by CCT when Reader Mode Message prompt UI discovers that the
+    associated Tab was already destroyed, therefore cannot be displayed.
+  </description>
+</action>
+
 <action name="CustomTabs.StartedInitially">
   <owner>tedchoc@chromium.org</owner>
   <description>
