@@ -656,10 +656,11 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::CreateTouchEvent(
     ui::PointerId original_id,
     int managed_touch_id,
     gfx::PointF root_location_f) {
-  return std::make_unique<ui::TouchEvent>(ui::TouchEvent(
-      touch_event->type(), root_location_f, root_location_f,
-      touch_event->time_stamp(),
-      ui::PointerDetails(ui::EventPointerType::kTouch, managed_touch_id)));
+  ui::PointerDetails managed_pointer_details = touch_event->pointer_details();
+  managed_pointer_details.id = managed_touch_id;
+  return std::make_unique<ui::TouchEvent>(
+      ui::TouchEvent(touch_event->type(), root_location_f, root_location_f,
+                     touch_event->time_stamp(), managed_pointer_details));
 }
 
 Action* TouchInjector::GetActionById(int id) {
