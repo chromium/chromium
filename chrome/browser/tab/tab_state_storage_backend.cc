@@ -4,6 +4,8 @@
 
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
@@ -86,6 +88,31 @@ void TabStateStorageBackend::Save(int id,
   base::OnceCallback<bool(Transaction*)> save_sequence =
       base::BindOnce(&SaveNodeSequence, base::Unretained(database_.get()), id,
                      type, std::move(package));
+  db_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&RunTransaction, base::Unretained(database_.get()),
+                     std::move(save_sequence)),
+      base::BindOnce(&TabStateStorageBackend::OnWrite,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool SaveChildrenSequence(TabStateStorageDatabase* db,
+                          int id,
+                          std::unique_ptr<Payload> children,
+                          Transaction* transaction) {
+  std::string serialized = children->SerializePayload();
+  bool success = db->SaveNodeChildren(transaction, id, std::move(serialized));
+  if (!success) {
+    DLOG(ERROR) << "Could not perform save node operation.";
+  }
+  return true;
+}
+
+void TabStateStorageBackend::SaveChildren(int id,
+                                          std::unique_ptr<Payload> children) {
+  base::OnceCallback<bool(Transaction*)> save_sequence =
+      base::BindOnce(&SaveChildrenSequence, base::Unretained(database_.get()),
+                     id, std::move(children));
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&RunTransaction, base::Unretained(database_.get()),

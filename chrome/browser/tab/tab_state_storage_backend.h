@@ -35,6 +35,9 @@ class TabStateStorageBackend {
             TabStorageType type,
             std::unique_ptr<StoragePackage> package);
 
+  // A payload of children to save.
+  void SaveChildren(int id, std::unique_ptr<Payload> children);
+
   void LoadAllNodes(base::OnceCallback<void(std::vector<NodeState>)> callback);
 
  private:

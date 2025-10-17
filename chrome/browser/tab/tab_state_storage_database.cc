@@ -165,6 +165,28 @@ bool TabStateStorageDatabase::SaveNode(Transaction* transaction,
   return write_statement.Run();
 }
 
+bool TabStateStorageDatabase::SaveNodeChildren(Transaction* transaction,
+                                               int id,
+                                               std::string children) {
+  CHECK(db_);
+  DCHECK(transaction && transaction->IsOpen());
+
+  static constexpr char kUpdateChildrenSql[] =
+      "UPDATE nodes"
+      "SET children = ?"
+      "WHERE id = ?";
+
+  DCHECK(db_->IsSQLValid(kUpdateChildrenSql));
+
+  sql::Statement write_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kUpdateChildrenSql));
+
+  write_statement.BindInt(0, id);
+  write_statement.BindBlob(1, std::move(children));
+
+  return write_statement.Run();
+}
+
 std::unique_ptr<TabStateStorageDatabase::Transaction>
 TabStateStorageDatabase::CreateTransaction() {
   std::unique_ptr<sql::Transaction> sql_transaction =

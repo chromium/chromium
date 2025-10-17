@@ -68,6 +68,9 @@ class TabStateStorageDatabase {
                 std::string payload,
                 std::string children);
 
+  // Saves the children of a node to the database.
+  bool SaveNodeChildren(Transaction* transaction, int id, std::string children);
+
   // Creates a transaction.
   std::unique_ptr<Transaction> CreateTransaction();
 
