@@ -65,6 +65,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.BNPL_SELECTION_PROGRESS_FOOTER:
                 case ItemType.TOS_FOOTER:
                 case ItemType.TEXT_BUTTON:
+                case ItemType.BNPL_TOS_TEXT:
                     return true;
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:
@@ -72,7 +73,6 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.ALL_LOYALTY_CARDS:
                 case ItemType.BNPL:
                 case ItemType.BNPL_ISSUER:
-                case ItemType.BNPL_TOS_TEXT:
                     return false;
             }
             assert false : "Undefined whether to skip setting background for item of type: " + type;

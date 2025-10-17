@@ -5,7 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(crbug.com/438784697): Set sheet item background to transparent. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/touch_to_fill_bnpl_tos_sheet_item"
