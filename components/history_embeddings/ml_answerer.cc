@@ -186,13 +186,15 @@ class MlAnswerer::SessionManager {
   // Callback to be repeatedly called during streaming execution.
   void StreamingExecutionCallback(
       size_t session_index,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-      std::unique_ptr<optimization_guide::proto::HistoryAnswerLoggingData>
-          logging_data) {
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult
+          result) {
     auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
         logs_uploader_);
-    log_entry->log_ai_data_request()->set_allocated_history_answer(
-        logging_data.release());
+    if (result.execution_info) {
+      *log_entry->log_ai_data_request()
+           ->mutable_history_answer()
+           ->mutable_model_execution_info() = *result.execution_info;
+    }
     if (!result.response.has_value()) {
       ComputeAnswerStatus status = ComputeAnswerStatus::kExecutionFailure;
       auto error = result.response.error().error();
@@ -205,6 +207,9 @@ class MlAnswerer::SessionManager {
       auto response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::HistoryAnswerResponse>(
           std::move(result.response).value().response);
+      *log_entry->log_ai_data_request()
+           ->mutable_history_answer()
+           ->mutable_response() = *response;
       AnswererResult answerer_result(ComputeAnswerStatus::kSuccess, query_,
                                      response->answer(), std::move(log_entry),
                                      urls_[session_index], {});
@@ -251,8 +256,8 @@ class MlAnswerer::SessionManager {
       optimization_guide::proto::HistoryAnswerRequest request;
       const size_t session_index = std::get<0>(session_scores[max_index]);
       VLOG(3) << "Running ExecuteModel for session " << session_index;
-      optimization_guide::ExecuteModelSessionWithLogging(
-          sessions_[session_index].get(), request,
+      sessions_[session_index].get()->ExecuteModel(
+          request,
           base::BindRepeating(&SessionManager::StreamingExecutionCallback,
                               weak_ptr_factory_.GetWeakPtr(), session_index));
     } else {
