@@ -24,5 +24,10 @@ navigator.mediaDevices.getUserMedia({ video: true })
 pipButton.addEventListener('click', () => {
   video.requestPictureInPicture();
 });
+
+// Register auto-pip action handler.
+navigator.mediaSession.setActionHandler('enterpictureinpicture', () => {
+  video.requestPictureInPicture();
+});
 </script>
 </html>

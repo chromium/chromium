@@ -183,6 +183,13 @@ class AutoPictureInPictureTabHelper
   void set_has_high_engagement_for_testing(bool value) {
     has_high_engagement_for_testing_ = value;
   }
+
+  // TODO(crbug.com/421608904): investigate why IsCapturingUserMedia is still
+  // false after getUserMedia JS call in Android Java tests.
+  // Overrides the camera or mic usage status for testing.
+  void set_is_using_camera_or_microphone_for_testing(bool value) {
+    is_using_camera_or_microphone_for_testing_ = value;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipTriggerReason()
@@ -446,6 +453,10 @@ class AutoPictureInPictureTabHelper
   // If set, this value overrides the result of the real MediaEngagementService
   // check. Intended for Android JNI tests only.
   std::optional<bool> has_high_engagement_for_testing_ = std::nullopt;
+
+  // If set, this value overrides the result of the real IsCapturingUserMedia
+  // check. Intended for Android JNI tests only.
+  std::optional<bool> is_using_camera_or_microphone_for_testing_ = std::nullopt;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // WeakPtrFactory used only for requesting URL safety. This weak ptr factory

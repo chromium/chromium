@@ -616,6 +616,13 @@ bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions() const {
 }
 
 bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {
+#if BUILDFLAG(IS_ANDROID)
+  // For Android JNI tests, return the testing override value if it's available,
+  // completely bypassing the IsCapturingUserMedia check.
+  if (is_using_camera_or_microphone_for_testing_.has_value()) {
+    return is_using_camera_or_microphone_for_testing_.value();
+  }
+#endif
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->IsCapturingUserMedia(web_contents());

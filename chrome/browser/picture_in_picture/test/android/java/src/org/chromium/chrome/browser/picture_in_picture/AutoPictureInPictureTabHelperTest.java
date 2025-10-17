@@ -52,6 +52,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaFeatures;
 import org.chromium.media.MediaSwitches;
 
@@ -62,6 +63,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ContentSwitches.AUTO_ACCEPT_CAMERA_AND_MICROPHONE_CAPTURE,
+    ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM,
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
 })
 @EnableFeatures({
@@ -86,6 +89,8 @@ public class AutoPictureInPictureTabHelperTest {
             "/chrome/test/data/media/picture-in-picture/autopip-video.html";
     private static final String AUTO_PIP_NOT_REGISTERED_PAGE =
             "/chrome/test/data/media/picture-in-picture/autopip-no-register.html";
+    private static final String VIDEO_CONFERENCING_PAGE =
+            "/chrome/test/data/media/picture-in-picture/video-conferencing-usermedia.html";
 
     @Before
     public void setUp() {
@@ -117,6 +122,36 @@ public class AutoPictureInPictureTabHelperTest {
                 webContents, false, "Should not enter auto-PiP with new background tab.");
 
         fulfillVideoPlaybackConditions(webContents);
+
+        // Switch away from the tab. This should trigger auto-PiP.
+        switchToTab(newTab);
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, true, "Did not enter auto-PiP after tab hidden.");
+
+        // Return to the tab. This should exit auto-PiP.
+        switchToTab(originalTab);
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Did not exit auto-PiP after tab shown.");
+    }
+
+    @Test
+    @MediumTest
+    public void testCanAutopipWithConferenceCall() {
+        WebContents webContents = loadUrlAndInitializeForTest(VIDEO_CONFERENCING_PAGE);
+        // Verify if the loaded page registers auto pip.
+        assertTrue(
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+        DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Should not enter auto-PiP with new background tab.");
+
+        // Fulfill the camera/mic usage condition.
+        AutoPictureInPictureTabHelperTestUtils.setIsUsingCameraOrMicrophone(webContents, true);
 
         // Switch away from the tab. This should trigger auto-PiP.
         switchToTab(newTab);
@@ -221,8 +256,6 @@ public class AutoPictureInPictureTabHelperTest {
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Did not exit auto-PiP after back-to-tab.");
     }
-
-    // TODO(crbug.com/421608904): add a test case for camera/mic based video auto-PiP.
 
     @Test
     @MediumTest

@@ -99,6 +99,22 @@ public class AutoPictureInPictureTabHelperTestUtils {
     }
 
     /**
+     * Overrides the is using camera or microphone value for the given {@link WebContents} for
+     * testing purposes.
+     *
+     * @param webContents The WebContents to modify.
+     * @param isUsingCameraOrMicrophone The mock value to set.
+     */
+    public static void setIsUsingCameraOrMicrophone(
+            WebContents webContents, boolean isUsingCameraOrMicrophone) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        AutoPictureInPictureTabHelperTestUtilsJni.get()
+                                .setIsUsingCameraOrMicrophone(
+                                        webContents, isUsingCameraOrMicrophone));
+    }
+
+    /**
      * Sets the content setting for a given URL and waits for it to be applied.
      *
      * @param profile The profile to set the content setting for.
@@ -152,6 +168,10 @@ public class AutoPictureInPictureTabHelperTestUtils {
         void setHasHighMediaEngagement(
                 @JniType("content::WebContents*") WebContents webContents,
                 boolean hasHighEngagement);
+
+        void setIsUsingCameraOrMicrophone(
+                @JniType("content::WebContents*") WebContents webContents,
+                boolean isUsingCameraOrMicrophone);
 
         int getDismissCountForTesting(
                 @JniType("content::WebContents*") WebContents webContents,
