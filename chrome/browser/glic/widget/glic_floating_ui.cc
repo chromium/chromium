@@ -18,6 +18,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -226,9 +227,24 @@ void GlicFloatingUi::Show() {
   // TODO: Set up manual resize.
   window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
   glic_widget_observation_.Observe(GetGlicWidget());
+  // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
+  // enterprise users) via constrained_window APIs.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      delegate_->host().webui_contents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      delegate_->host().webui_contents())
+      ->SetDelegate(this);
 }
 
 void GlicFloatingUi::Close() {
+  if (IsShowing()) {
+    modal_dialog_host_observers_.Notify(
+        &web_modal::ModalDialogHostObserver::OnHostDestroying);
+    if (auto* web_contents = delegate_->host().webui_contents()) {
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+          ->SetDelegate(nullptr);
+    }
+  }
   if (screenshot_capturer_) {
     screenshot_capturer_->CloseScreenPicker();
   }
@@ -269,9 +285,8 @@ void GlicFloatingUi::OnWidgetDestroyed(views::Widget* widget) {
 
 void GlicFloatingUi::OnWidgetBoundsChanged(views::Widget* widget,
                                            const gfx::Rect& new_bounds) {
-  // TODO(crbug.com/452201326): Handle notifying ModalDialogHostObservers to
-  // update modal positions.
-  NOTIMPLEMENTED();
+  modal_dialog_host_observers_.Notify(
+      &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
 }
 
 void GlicFloatingUi::OnWidgetUserResizeStarted() {
@@ -292,6 +307,42 @@ void GlicFloatingUi::OnWidgetUserResizeEnded() {
 
   glic_window_animator_->ResetLastTargetSize();
   user_resizing_ = false;
+}
+
+// web_modal::WebContentsModalDialogManagerDelegate
+// web_modal::WebContentsModalDialogHost
+web_modal::WebContentsModalDialogHost*
+GlicFloatingUi::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  return this;
+}
+
+gfx::Size GlicFloatingUi::GetMaximumDialogSize() {
+  return GetGlicWidget()->GetClientAreaBoundsInScreen().size();
+}
+
+gfx::NativeView GlicFloatingUi::GetHostView() const {
+  return GetGlicWidget()->GetNativeView();
+}
+
+gfx::Point GlicFloatingUi::GetDialogPosition(const gfx::Size& dialog_size) {
+  gfx::Rect client_area_bounds = GetGlicWidget()->GetClientAreaBoundsInScreen();
+  return gfx::Point((client_area_bounds.width() - dialog_size.width()) / 2, 0);
+}
+
+bool GlicFloatingUi::ShouldConstrainDialogBoundsByHost() {
+  // Allows web modal dialogs to extend beyond the boundary of glic window.
+  // These web modals are usually larger than the glic window.
+  return false;
+}
+
+void GlicFloatingUi::AddObserver(web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.AddObserver(observer);
+}
+
+void GlicFloatingUi::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.RemoveObserver(observer);
 }
 
 std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {

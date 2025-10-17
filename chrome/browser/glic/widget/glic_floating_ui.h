@@ -12,6 +12,8 @@
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/widget/glic_window_event_observer.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget_observer.h"
@@ -30,7 +32,9 @@ class GlicFloatingUi : public GlicUiEmbedder,
                        public Host::EmbedderDelegate,
                        public GlicWindowEventObserver::Delegate,
                        public LocalHotkeyManager::Panel,
-                       public views::WidgetObserver {
+                       public views::WidgetObserver,
+                       public web_modal::WebContentsModalDialogManagerDelegate,
+                       public web_modal::WebContentsModalDialogHost {
  public:
   GlicFloatingUi(Profile* profile,
                  BrowserWindowInterface* browser,
@@ -89,6 +93,18 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
   base::WeakPtr<views::View> GetView() override;
 
+  // web_modal::WebContentsModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
+
+  // web_modal::WebContentsModalDialogHost:
+  gfx::Size GetMaximumDialogSize() override;
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& dialog_size) override;
+  bool ShouldConstrainDialogBoundsByHost() override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+
  private:
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
@@ -110,6 +126,11 @@ class GlicFloatingUi : public GlicUiEmbedder,
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};
+
+  // Used by web modals to listens for glic window events, e.g. size change or
+  // window close.
+  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+      modal_dialog_host_observers_;
 
   raw_ptr<Profile> profile_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
