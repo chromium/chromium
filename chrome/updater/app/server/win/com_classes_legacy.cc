@@ -1352,7 +1352,9 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
         app_command_data.requires_network_encryption = false;
         app_command_data.version = persisted_data->GetProductVersion(app_id);
 
-        update_client::UpdateClientFactory(config)->SendPing(
+        scoped_refptr<update_client::UpdateClient> update_client =
+            update_client::UpdateClientFactory(config);
+        update_client->SendPing(
             app_command_data,
             {
                 .event_type =
@@ -1365,7 +1367,14 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
                 .extra_code1 = error_params.extra_code1,
                 .app_command_id = command_id,
             },
-            std::move(callback));
+            base::BindOnce(
+                [](scoped_refptr<update_client::UpdateClient> update_client,
+                   update_client::Callback callback,
+                   update_client::Error error) {
+                  std::move(callback).Run(error);
+                  update_client->Stop();
+                },
+                update_client, std::move(callback)));
       },
       scope, app_id, command_id, error_params, std::move(callback));
   AppServerWin::PostRpcTask(base::BindOnce(
