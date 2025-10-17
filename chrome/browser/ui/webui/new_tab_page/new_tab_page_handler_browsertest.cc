@@ -14,6 +14,9 @@
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -66,25 +69,8 @@ class MockPage : public new_tab_page::mojom::Page {
   mojo::Receiver<new_tab_page::mojom::Page> receiver_{this};
 };
 
-class NewTabPageHandlerBrowserTest : public InProcessBrowserTest {
+class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-
-    handler_ = std::make_unique<NewTabPageHandler>(
-        mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote(), profile(),
-        NtpCustomBackgroundServiceFactory::GetForProfile(profile()),
-        ThemeServiceFactory::GetForProfile(profile()),
-        LogoServiceFactory::GetForProfile(profile()),
-        /*sync_service=*/nullptr,
-        /*segmentation_platform_service=*/nullptr, web_contents(),
-        std::make_unique<NewTabPageFeaturePromoHelper>(),
-        /*ntp_navigation_start_time=*/base::Time::Now(),
-        /*module_id_details=*/nullptr);
-    testing::Mock::VerifyAndClearExpectations(&mock_page_);
-  }
-
   void TearDownOnMainThread() override {
     handler_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
@@ -98,13 +84,64 @@ class NewTabPageHandlerBrowserTest : public InProcessBrowserTest {
   MockPage* mock_page() { return &mock_page_; }
   NewTabPageHandler& handler() { return *handler_; }
 
+ protected:
+  void CreateHandlerAndVerifyExpectations() {
+    handler_ = std::make_unique<NewTabPageHandler>(
+        mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
+        mock_page_.BindAndGetRemote(), profile(),
+        NtpCustomBackgroundServiceFactory::GetForProfile(profile()),
+        ThemeServiceFactory::GetForProfile(profile()),
+        LogoServiceFactory::GetForProfile(profile()),
+        /*sync_service=*/nullptr,
+        /*segmentation_platform_service=*/nullptr, web_contents(),
+        std::make_unique<NewTabPageFeaturePromoHelper>(),
+        /*ntp_navigation_start_time=*/base::Time::Now(),
+        /*module_id_details=*/nullptr);
+    testing::Mock::VerifyAndClearExpectations(mock_page());
+  }
+
  private:
   std::unique_ptr<NewTabPageHandler> handler_;
   testing::NiceMock<MockPage> mock_page_;
 };
 
+class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
+    : public NewTabPageHandlerBaseBrowserTest {
+ protected:
+  base::HistogramTester histogram_tester_;
+
+  void OpenNewTabPageInForeground() {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(chrome::kChromeUINewTabPageURL),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ntp_features::kNtpCustomizeChromePromo};
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
+                       OpenCustomizeChromePromoWhenFlagEnabled) {
+  OpenNewTabPageInForeground();
+  EXPECT_TRUE(webui::GetBrowserWindowInterface(web_contents())
+                  ->GetTabStripModel()
+                  ->GetActiveTab()
+                  ->GetTabFeatures()
+                  ->customize_chrome_side_panel_controller()
+                  ->IsCustomizeChromeEntryShowing());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SidePanel.OpenTrigger",
+      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                prefs::kNtpCustomizeChromeButtonOpenCount),
+            0);
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-class NewTabPageHandlerManagedTest : public NewTabPageHandlerBrowserTest,
+class NewTabPageHandlerManagedTest : public NewTabPageHandlerBaseBrowserTest,
                                      public testing::WithParamInterface<bool> {
  public:
   NewTabPageHandlerManagedTest() {
@@ -115,7 +152,9 @@ class NewTabPageHandlerManagedTest : public NewTabPageHandlerBrowserTest,
   }
 
   void SetUpOnMainThread() override {
-    NewTabPageHandlerBrowserTest::SetUpOnMainThread();
+    NewTabPageHandlerBaseBrowserTest::SetUpOnMainThread();
+
+    CreateHandlerAndVerifyExpectations();
 
     // Simulate browser management.
     scoped_browser_management_ =
@@ -130,7 +169,7 @@ class NewTabPageHandlerManagedTest : public NewTabPageHandlerBrowserTest,
 
   void TearDownOnMainThread() override {
     scoped_browser_management_.reset();
-    NewTabPageHandlerBrowserTest::TearDownOnMainThread();
+    NewTabPageHandlerBaseBrowserTest::TearDownOnMainThread();
   }
 
   void NavigateToNewTabPage() {

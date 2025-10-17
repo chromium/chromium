@@ -259,6 +259,8 @@ interface PageHandler {
   MaybeShowFeaturePromo(IphFeature iph_feature);
   // Increments count of times the compose button was shown.
   IncrementComposeButtonShownCount();
+  // Opens Customize Chrome if eligibility conditions are met.
+  MaybeTriggerAutomaticCustomizeChromePromo();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

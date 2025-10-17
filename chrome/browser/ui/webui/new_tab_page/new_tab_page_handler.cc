@@ -51,6 +51,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -60,6 +61,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -93,6 +95,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
@@ -1150,6 +1153,23 @@ void NewTabPageHandler::OnBrowserWindowInterfaceChanged() {
   auto* footer_controller = browser->GetFeatures().new_tab_footer_controller();
   CHECK(footer_controller);
   footer_controller_observation_.Observe(footer_controller);
+}
+
+void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeChromePromo)) {
+    return;
+  }
+
+  actions::ActionManager::Get()
+      .FindAction(kActionSidePanelShowCustomizeChrome)
+      ->InvokeAction(
+          actions::ActionInvocationContext::Builder()
+              .SetProperty(
+                  kSidePanelOpenTriggerKey,
+                  static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                      SidePanelOpenTrigger::
+                          kNewTabPageAutomaticCustomizeChrome))
+              .Build());
 }
 
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {

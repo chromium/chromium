@@ -160,6 +160,7 @@ class NewTabPageHandler
                       const std::optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
   void IncrementComposeButtonShownCount() override;
+  void MaybeTriggerAutomaticCustomizeChromePromo() override;
 
  private:
   // ui::NativeThemeObserver:

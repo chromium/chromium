@@ -24923,6 +24923,8 @@ Called by update_net_error_codes.py.-->
   <int value="20" label="Opened from the Reading List toast"/>
   <int value="21" label="Opened from the New Tab Page footer"/>
   <int value="22" label="Opened from the New Tab Page customization promo"/>
+  <int value="23"
+      label="Opened Customize Chrome from the New Tab Page automatically"/>
 </enum>
 
 <enum name="SignedExchangeLoadResult">

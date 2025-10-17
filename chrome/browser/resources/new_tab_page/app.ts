@@ -585,6 +585,7 @@ export class AppElement extends AppElementBase {
     if (!this.modulesEnabled_) {
       this.recordBrowserPromoMetrics_();
     }
+    this.pageHandler_.maybeTriggerAutomaticCustomizeChromePromo();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
