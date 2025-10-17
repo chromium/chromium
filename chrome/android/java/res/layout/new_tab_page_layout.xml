@@ -68,6 +68,12 @@ found in the LICENSE file.
         android:layout="@layout/mv_tiles_layout" />
 
     <ViewStub
+        android:id="@+id/signin_promo_view_container_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout="@layout/signin_promo_view_new_tab_page" />
+
+    <ViewStub
         android:id="@+id/home_modules_recycler_view_stub"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

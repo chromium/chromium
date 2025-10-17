@@ -79,6 +79,7 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -88,7 +89,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 @EnableFeatures({
     ChromeFeatureList.WEB_FEED_SORT,
     ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
-    ChromeFeatureList.FEED_HEADER_REMOVAL
+    ChromeFeatureList.FEED_HEADER_REMOVAL,
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN
 })
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;

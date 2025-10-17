@@ -55,12 +55,14 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoCoordinator;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
@@ -69,6 +71,8 @@ import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayS
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -170,6 +174,9 @@ public class NewTabPageLayout extends LinearLayout
     private int mCurrentNtpFakeSearchBoxTransitionStartOffset;
     private int mTopInset;
     private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
+    // TODO(crbug.com/451602301): remove @Nullable and all null checks once
+    // ENABLE_SEAMLESS_SIGNIN is removed after the experiment.
+    private @Nullable NtpSigninPromoCoordinator mSigninPromoCoordinator;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -309,6 +316,9 @@ public class NewTabPageLayout extends LinearLayout
 
         updateActionButtonVisibility();
         initializeLayoutChangeListener();
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            initializeSigninPromoCoordinator();
+        }
 
         // Initialize Searchbox observers
         SearchEngineUtils.getForProfile(mProfile).addSearchBoxHintTextObserver(this);
@@ -614,6 +624,16 @@ public class NewTabPageLayout extends LinearLayout
         if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
             mMostVisitedTilesCoordinator.updateMvtVisibility();
         }
+    }
+
+    private void initializeSigninPromoCoordinator() {
+        ViewStub signinPromoViewContainerStub = findViewById(R.id.signin_promo_view_container_stub);
+        mSigninPromoCoordinator =
+                new NtpSigninPromoCoordinator(
+                        mContext,
+                        mProfile,
+                        SigninAndHistorySyncActivityLauncherImpl.get(),
+                        signinPromoViewContainerStub);
     }
 
     /** Updates the search box when the parent view's scroll position is changed. */
@@ -1195,6 +1215,11 @@ public class NewTabPageLayout extends LinearLayout
         if (mComposeplateCoordinator != null) {
             mComposeplateCoordinator.destroy();
             mComposeplateCoordinator = null;
+        }
+
+        if (mSigninPromoCoordinator != null) {
+            mSigninPromoCoordinator.destroy();
+            mSigninPromoCoordinator = null;
         }
 
         mComposeplateButtonClickListener = null;
