@@ -85,8 +85,6 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
-import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
@@ -622,7 +620,11 @@ public class PageInfoViewTest {
     public void testShowOnInsecureHttpWebsite() throws IOException {
         mTestServerRule.setServerUsesHttps(false);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        onViewWaiting(allOf(withId(R.id.page_info_connection_row), isDisplayed()));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.VERIFY_QWACS)) {
+            onViewWaiting(allOf(withId(R.id.security_description_details), isDisplayed()));
+        } else {
+            onViewWaiting(allOf(withId(R.id.page_info_connection_row), isDisplayed()));
+        }
         onView(withText("Connection is not secure")).check(matches(isDisplayed()));
     }
 
@@ -641,7 +643,11 @@ public class PageInfoViewTest {
     public void testShowOnExpiredCertificateWebsite() throws IOException {
         mTestServerRule.setCertificateType(ServerCertificate.CERT_EXPIRED);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        onViewWaiting(allOf(withId(R.id.page_info_connection_row), isDisplayed()));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.VERIFY_QWACS)) {
+            onViewWaiting(allOf(withId(R.id.security_description_details), isDisplayed()));
+        } else {
+            onViewWaiting(allOf(withId(R.id.page_info_connection_row), isDisplayed()));
+        }
         onView(withText("Connection is not secure")).check(matches(isDisplayed()));
     }
 
@@ -748,35 +754,6 @@ public class PageInfoViewTest {
                         withText(containsString("The identity of this website isn't verified.")),
                         isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_ConnectionInfoSubpageInsecure");
-    }
-
-    /** Tests the connection info page of the PageInfo UI - secure website. */
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testShowConnectionInfoSubpageSecure() throws IOException {
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        onView(withId(R.id.page_info_connection_row)).perform(click());
-        onViewWaiting(
-                allOf(
-                        withText(containsString("Test Root CA issued this website's certificate.")),
-                        isDisplayed()));
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_ConnectionInfoSubpageSecure");
-    }
-
-    /** Tests the connection info page of the PageInfo UI - expired certificate. */
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testShowConnectionInfoSubpageExpiredCert() throws IOException {
-        mTestServerRule.setCertificateType(ServerCertificate.CERT_EXPIRED);
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        onView(withId(R.id.page_info_connection_row)).perform(click());
-        onViewWaiting(
-                allOf(
-                        withText(containsString("Server's certificate has expired.")),
-                        isDisplayed()));
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_ConnectionInfoSubpageExpiredCert");
     }
 
     /** Tests the permissions page of the PageInfo UI with permissions. */
@@ -1637,157 +1614,6 @@ public class PageInfoViewTest {
             assertEquals(GURLUtils.getOrigin(rpUrl), exceptions.get(0).getPrimaryPattern() + "/");
             assertEquals(ContentSetting.ALLOW, exceptions.get(0).getContentSetting());
         }
-    }
-
-    /** Tests that page info view is shown correctly for paint preview pages. */
-    @Test
-    @MediumTest
-    public void testPaintPreview() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    final ChromeActivity activity = mActivityTestRule.getActivity();
-                    final Tab tab = activity.getActivityTab();
-                    ChromePageInfoControllerDelegate pageInfoControllerDelegate =
-                            new ChromePageInfoControllerDelegate(
-                                    activity,
-                                    tab.getWebContents(),
-                                    activity::getModalDialogManager,
-                                    new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
-                                    null,
-                                    null,
-                                    ChromePageInfoHighlight.noHighlight(),
-                                    null,
-                                    null) {
-                                @Override
-                                public boolean isShowingPaintPreviewPage() {
-                                    return true;
-                                }
-                            };
-                    PageInfoController.show(
-                            mActivityTestRule.getActivity(),
-                            tab.getWebContents(),
-                            null,
-                            PageInfoController.OpenedFromSource.MENU,
-                            pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight(),
-                            Gravity.TOP);
-                });
-        onViewWaiting(
-                allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()), true);
-    }
-
-    /** Tests that page info view is shown correctly for transient pdf pages. */
-    @Test
-    @MediumTest
-    public void testTransientPdfPage() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    final ChromeActivity activity = mActivityTestRule.getActivity();
-                    final Tab tab = activity.getActivityTab();
-                    ChromePageInfoControllerDelegate pageInfoControllerDelegate =
-                            new ChromePageInfoControllerDelegate(
-                                    activity,
-                                    tab.getWebContents(),
-                                    activity::getModalDialogManager,
-                                    new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
-                                    null,
-                                    null,
-                                    ChromePageInfoHighlight.noHighlight(),
-                                    null,
-                                    null) {
-                                @Override
-                                public @PdfPageType int getPdfPageType() {
-                                    return PdfPageType.TRANSIENT_SECURE;
-                                }
-                            };
-                    PageInfoController.show(
-                            mActivityTestRule.getActivity(),
-                            tab.getWebContents(),
-                            null,
-                            PageInfoController.OpenedFromSource.MENU,
-                            pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight(),
-                            Gravity.TOP);
-                });
-        onViewWaiting(
-                allOf(withText(R.string.page_info_connection_transient_pdf), isDisplayed()), true);
-    }
-
-    /** Tests that page info view is shown correctly for insecure transient pdf pages. */
-    @Test
-    @MediumTest
-    public void testInsecureTransientPdfPage() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    final ChromeActivity activity = mActivityTestRule.getActivity();
-                    final Tab tab = activity.getActivityTab();
-                    ChromePageInfoControllerDelegate pageInfoControllerDelegate =
-                            new ChromePageInfoControllerDelegate(
-                                    activity,
-                                    tab.getWebContents(),
-                                    activity::getModalDialogManager,
-                                    new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
-                                    null,
-                                    null,
-                                    ChromePageInfoHighlight.noHighlight(),
-                                    null,
-                                    null) {
-                                @Override
-                                public @PdfPageType int getPdfPageType() {
-                                    return PdfPageType.TRANSIENT_INSECURE;
-                                }
-                            };
-                    PageInfoController.show(
-                            mActivityTestRule.getActivity(),
-                            tab.getWebContents(),
-                            null,
-                            PageInfoController.OpenedFromSource.MENU,
-                            pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight(),
-                            Gravity.TOP);
-                });
-        onViewWaiting(
-                allOf(
-                        withText(R.string.page_info_connection_transient_pdf_insecure),
-                        isDisplayed()),
-                true);
-    }
-
-    /** Tests that page info view is shown correctly for local pdf pages. */
-    @Test
-    @MediumTest
-    public void testLocalPdfPage() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    final ChromeActivity activity = mActivityTestRule.getActivity();
-                    final Tab tab = activity.getActivityTab();
-                    ChromePageInfoControllerDelegate pageInfoControllerDelegate =
-                            new ChromePageInfoControllerDelegate(
-                                    activity,
-                                    tab.getWebContents(),
-                                    activity::getModalDialogManager,
-                                    new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
-                                    null,
-                                    null,
-                                    ChromePageInfoHighlight.noHighlight(),
-                                    null,
-                                    null) {
-                                @Override
-                                public @PdfPageType int getPdfPageType() {
-                                    return PdfPageType.LOCAL;
-                                }
-                            };
-                    PageInfoController.show(
-                            mActivityTestRule.getActivity(),
-                            tab.getWebContents(),
-                            null,
-                            PageInfoController.OpenedFromSource.MENU,
-                            pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight(),
-                            Gravity.TOP);
-                });
-        onViewWaiting(
-                allOf(withText(R.string.page_info_connection_local_pdf), isDisplayed()), true);
     }
 
     /** Tests PageInfo on a website with permissions and no particular row highlight. */

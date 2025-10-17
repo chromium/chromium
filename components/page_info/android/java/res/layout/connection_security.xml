@@ -41,6 +41,7 @@
                 android:id="@+id/security_description_details"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="2dp"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                 app:leading="@dimen/text_size_medium_leading"
                 android:clickable="true"
