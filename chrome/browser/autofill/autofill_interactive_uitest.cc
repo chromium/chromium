@@ -3108,15 +3108,18 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   // need to explicitly wait for the pending votes. Since voting is scheduled on
   // submission, we first need to wait for the submission (otherwise, there are
   // no pending to vote for).
-  //
-  // Additionally, we wait for RFH destruction after a navigation, because
-  // that's when the key metrics are emitted.
+  // Additionally, we wait for a navigation because that's when the key metrics
+  // are emitted. When the RFH changes on same site navigation, the metrics are
+  // emitted during RFH destruction, so we wait for it as well.
+  auto* main_frame = GetWebContents()->GetPrimaryMainFrame();
+  std::optional<content::RenderFrameDeletedObserver> rfh_deleted_observer;
+  if (main_frame->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
+    rfh_deleted_observer.emplace(main_frame);
+  }
   content::LoadStopObserver load_stop_observer(GetWebContents());
   BrowserAutofillManager& autofill_manager = *GetBrowserAutofillManager();
   TestAutofillManagerSingleEventWaiter submission_waiter(
       autofill_manager, &AutofillManager::Observer::OnAfterFormSubmitted);
-  content::RenderFrameDeletedObserver rfh_deleted_observer(
-      GetWebContents()->GetPrimaryMainFrame());
   ASSERT_TRUE(content::ExecJs(GetWebContents(),
                               "document.getElementById('testform').submit();"));
   ASSERT_TRUE(std::move(submission_waiter).Wait());
@@ -3124,7 +3127,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                            ->GetVotesUploader())
                   .FlushPendingVotes());
   load_stop_observer.Wait();
-  rfh_deleted_observer.WaitUntilDeleted();
+  if (rfh_deleted_observer) {
+    rfh_deleted_observer->WaitUntilDeleted();
+  }
 
   // Short hand for ExpectBucketCount:
   auto expect_count = [&](std::string_view name,
