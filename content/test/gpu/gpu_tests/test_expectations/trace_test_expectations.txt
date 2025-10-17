@@ -168,6 +168,11 @@ crbug.com/dawn/549 [ fuchsia ] WebGPUCachingTraceTest_* [ Skip ]
 [ mac no-asan amd-0x679e ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ Skip ]
 [ mac amd-0x679e ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture_Hidden [ Skip ]
 
+# WebGpu is not supported on x86 nvidia
+crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture_Accelerated [ Skip ]
+crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ Skip ]
+crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture_Hidden [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
