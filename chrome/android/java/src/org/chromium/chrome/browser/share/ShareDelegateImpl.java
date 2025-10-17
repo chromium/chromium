@@ -294,6 +294,7 @@ public class ShareDelegateImpl implements ShareDelegate {
         ShareParams.Builder shareParamsBuilder =
                 new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl));
 
+        shareParamsBuilder.setOrigin(shareOrigin);
         boolean isDownloadedPdf = PdfUtils.isDownloadedPdf(visibleUrl.getSpec());
         if (isDownloadedPdf) {
             ArrayList<Uri> fileToShare = new ArrayList<>();

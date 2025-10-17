@@ -361,6 +361,7 @@ public class ShareHelper {
                         | Intent.FLAG_ACTIVITY_FORWARD_RESULT
                         | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP
                         | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(ShareParams.EXTRA_SHARE_ORIGIN, params.getOrigin());
         intent.putExtra(
                 EXTRA_TASK_ID, assumeNonNull(params.getWindow().getActivity().get()).getTaskId());
 

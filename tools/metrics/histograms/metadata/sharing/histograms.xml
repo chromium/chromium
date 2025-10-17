@@ -172,6 +172,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.Android.Origin" enum="ShareOrigin"
+    expires_after="2026-03-22">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the origin of the sharing action in the Intent object. Recorded when
+    the Intent is processed in browser app for viewing. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.AndroidPageSummary.SheetEvents"
     enum="PageSummarySheetEvents" expires_after="2024-06-30">
   <owner>salg@google.com</owner>

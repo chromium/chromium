@@ -206,6 +206,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackBuilder;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -307,6 +308,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.xr.scenecore.XrSceneCoreSessionInitializerImpl;
 import org.chromium.chrome.browser.xr.scenecore.XrSceneCoreSessionManagerImpl;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
@@ -2497,6 +2499,14 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
     }
 
+    private static void maybeRecordShareOrigin(Intent intent) {
+        int shareOrigin = IntentUtils.safeGetIntExtra(intent, ShareParams.EXTRA_SHARE_ORIGIN, -1);
+        if (shareOrigin >= 0) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Sharing.Android.Origin", shareOrigin, ShareDelegate.ShareOrigin.COUNT);
+        }
+    }
+
     /** Processes a url view intent. */
     private @Nullable Tab processUrlViewIntent(
             LoadUrlParams loadUrlParams,
@@ -2515,6 +2525,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         recordExternalIntentSourceUMA(intent);
         recordAppHandlersForIntent(intent);
+        maybeRecordShareOrigin(intent);
 
         final String url = loadUrlParams.getUrl();
         boolean fromLauncherShortcut =
