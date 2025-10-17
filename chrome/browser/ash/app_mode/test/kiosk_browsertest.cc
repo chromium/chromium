@@ -89,31 +89,7 @@ void SimulateSwipeUpGesture() {
                              /*duration=*/base::Milliseconds(300), /*steps=*/4);
 }
 
-void EnterOverviewSession() {
-  auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview(OverviewStartAction::kTests,
-                                     OverviewEnterExitType::kImmediateEnter);
-  ASSERT_TRUE(overview_controller->InOverviewSession());
-}
 
-DeskIconButton* GetNewDeskButton(aura::Window* root_window) {
-  ash::OverviewGrid& overview_grid =
-      CHECK_DEREF(ash::GetOverviewGridForRoot(root_window));
-  auto* desks_bar_view = overview_grid.desks_bar_view();
-  auto* new_desk_button = desks_bar_view->new_desk_button();
-
-  return new_desk_button;
-}
-
-void ClickNewDeskButton() {
-  aura::Window* root_window = ash::Shell::GetPrimaryRootWindow();
-  auto* new_desk_button = GetNewDeskButton(root_window);
-  ui::test::EventGenerator generator(root_window);
-  generator.MoveMouseTo(new_desk_button->GetBoundsInScreen().CenterPoint());
-  base::RunLoop().RunUntilIdle();
-  generator.ClickLeftButton();
-  base::RunLoop().RunUntilIdle();
-}
 
 }  // namespace
 
@@ -189,15 +165,18 @@ IN_PROC_BROWSER_TEST_P(KioskTest, DoesNotSignInWithGaiaAccount) {
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, CannotCreateNewDesksDuringKioskSession) {
-  // Enter overview mode to access the desks bar and the "New Desk" button.
-  EnterOverviewSession();
   int initial_desks_count = DesksController::Get()->GetNumberOfDesks();
   EXPECT_EQ(1, initial_desks_count);
+  ASSERT_FALSE(DesksController::Get()->CanCreateDesks());
+}
 
-  ClickNewDeskButton();
+IN_PROC_BROWSER_TEST_P(KioskTest, CannotEnterOverviewDuringKioskSession) {
+  auto* overview_controller = Shell::Get()->overview_controller();
 
-  int final_desks_count = DesksController::Get()->GetNumberOfDesks();
-  EXPECT_EQ(initial_desks_count, final_desks_count);
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+
+  ASSERT_FALSE(overview_controller->InOverviewSession());
 }
 
 INSTANTIATE_TEST_SUITE_P(
