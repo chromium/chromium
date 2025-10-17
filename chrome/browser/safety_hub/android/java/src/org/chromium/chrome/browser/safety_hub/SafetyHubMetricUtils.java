@@ -13,12 +13,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
-import org.chromium.components.content_settings.ContentSettingsType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.StringJoiner;
-import java.util.stream.IntStream;
 
 /** Helper utils to log UMA histograms for Safety Hub. */
 @NullMarked
@@ -300,13 +298,16 @@ public class SafetyHubMetricUtils {
 
         // If any of the `PermissionsData` objects include notifications, log the histogram once.
         for (PermissionsData permissionsData : permissionsDataList) {
-            if (IntStream.of(permissionsData.getPermissions())
-                    .anyMatch(x -> x == ContentSettingsType.NOTIFICATIONS)) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        ABUSIVE_NOTIFICATION_REVOCATION_INTERACTIONS_HISTOGRAM_NAME,
-                        value,
-                        PermissionsModuleInteractions.MAX_VALUE);
-                return;
+            switch (permissionsData.getRevocationType()) {
+                case PermissionsRevocationType.ABUSIVE_NOTIFICATION_PERMISSIONS:
+                case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_ABUSIVE_NOTIFICATIONS:
+                case PermissionsRevocationType.SUSPICIOUS_NOTIFICATION_PERMISSIONS:
+                case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_SUSPICIOUS_NOTIFICATIONS:
+                    RecordHistogram.recordEnumeratedHistogram(
+                            ABUSIVE_NOTIFICATION_REVOCATION_INTERACTIONS_HISTOGRAM_NAME,
+                            value,
+                            PermissionsModuleInteractions.MAX_VALUE);
+                    return;
             }
         }
     }

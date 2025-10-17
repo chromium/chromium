@@ -95,6 +95,11 @@ class SafetyHubPermissionsPreference extends ChromeBasePreference implements Vie
             case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_ABUSIVE_NOTIFICATIONS:
                 return getContext()
                         .getString(R.string.safety_hub_abusive_notification_permissions_sublabel);
+            case PermissionsRevocationType.SUSPICIOUS_NOTIFICATION_PERMISSIONS:
+            case PermissionsRevocationType.UNUSED_PERMISSIONS_AND_SUSPICIOUS_NOTIFICATIONS:
+                return getContext()
+                        .getString(
+                                R.string.safety_hub_suspicious_notification_permissions_sublabel);
         }
         return createUnusedOrDisruptivePermissionsSummary();
     }
