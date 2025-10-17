@@ -34,6 +34,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +46,7 @@
 #include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -127,18 +130,20 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
 
 // Test case for menus that only appear with the kSidePanelPinning feature
 // enabled.
-class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
+class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
  public:
-  PinnedSidePanelInteractiveTest() = default;
+  PinnedSidePanelInteractiveTest()
+      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHSidePanelGenericPinnableFeature})) {}
   ~PinnedSidePanelInteractiveTest() override = default;
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
-    InteractiveBrowserTest::SetUp();
+    InteractiveFeaturePromoTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
@@ -498,4 +503,25 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
             ->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
       }),
       WaitForHide(kSidePanelElementId), WaitForHide(kBookmarksButton));
+}
+
+// Regression test for crbug.com/452911460 where the side panel header close
+// button triggers the side panel to close but the controller is destroyed and
+// triggers a seg fault when trying to retrieve the
+// BrowserUserEducationInterface.
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest, CloseSidePanel) {
+  auto disable_rich_animation =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  RunTestSequence(
+      // Ensure the side panel isn't open
+      EnsureNotPresent(kSidePanelElementId),
+      EnsureNotPresent(kPinnedActionToolbarButtonElementId),
+      // Open bookmarks sidepanel
+      OpenBookmarksSidePanel(), WaitForShow(kSidePanelElementId),
+      WaitForShow(kPinnedToolbarActionsContainerElementId),
+      WaitForShow(kPinnedActionToolbarButtonElementId),
+      WaitForPromo(feature_engagement::kIPHSidePanelGenericPinnableFeature),
+      PressButton(kSidePanelCloseButtonElementId),
+      WaitForHide(kSidePanelElementId));
 }

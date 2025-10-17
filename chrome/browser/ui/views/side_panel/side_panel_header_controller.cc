@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -324,7 +325,7 @@ void SidePanelHeaderController::OpenInNewTab() {
     return;
   }
 
-  base::WeakPtr<SidePanelHeaderController> header_controller =
+  base::WeakPtr<SidePanelHeaderController> weak_this =
       weak_pointer_factor_.GetWeakPtr();
   SidePanelUtil::RecordNewTabButtonClicked(side_panel_entry_->key().id());
   content::OpenURLParams params(new_tab_url, content::Referrer(),
@@ -335,7 +336,7 @@ void SidePanelHeaderController::OpenInNewTab() {
 
   // `this` can be destroyed because the side panel might be closed when
   // opening a new tab. If `this` is still alive, close the side panel.
-  if (header_controller) {
+  if (weak_this) {
     Close();
   }
 }
@@ -359,7 +360,6 @@ void SidePanelHeaderController::OpenMoreInfoMenu() {
 
 void SidePanelHeaderController::Close() {
   browser_->GetFeatures().side_panel_ui()->Close();
-  MaybeEndPinPromo(/*pinned=*/false);
 }
 
 void SidePanelHeaderController::MaybeQueuePinPromo(SidePanelEntryId id) {
