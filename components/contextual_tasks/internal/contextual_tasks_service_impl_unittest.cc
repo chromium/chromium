@@ -183,6 +183,15 @@ class ContextualTasksServiceImplTest : public testing::Test {
     service_->OnContextualTaskDataStoreLoaded();
   }
 
+  void CallOnThreadAddedOrUpdatedRemotely(
+      const std::vector<proto::AiThreadEntity>& threads) {
+    service_->OnThreadAddedOrUpdatedRemotely(threads);
+  }
+
+  void CallOnThreadRemovedRemotely(const std::vector<base::Uuid>& thread_ids) {
+    service_->OnThreadRemovedRemotely(thread_ids);
+  }
+
   void SetAiThreadSyncBridgeForTesting(
       std::unique_ptr<AiThreadSyncBridge> bridge) {
     service_->SetAiThreadSyncBridgeForTesting(std::move(bridge));
@@ -888,6 +897,107 @@ TEST_F(ContextualTasksServiceImplTest, BuildContextualTasksFromLoadedData) {
   ASSERT_TRUE(result_thread.has_value());
   EXPECT_EQ(thread_id, result_thread->server_id);
   EXPECT_EQ("Thread Title", result_thread->title);
+
+  service_->RemoveObserver(&observer_);
+}
+
+TEST_F(ContextualTasksServiceImplTest, OnThreadAddedOrUpdatedRemotely) {
+  service_->AddObserver(&observer_);
+
+  // 1. Create a task with a thread and add it to the service.
+  ContextualTask task = service_->CreatePersistentTask();
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      observer_,
+      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce([&]() { run_loop.Quit(); });
+  std::string server_id = "server_id_1";
+  service_->AddThreadToTask(
+      task.GetTaskId(),
+      Thread(ThreadType::kAiMode, server_id, "Old Title", "old_turn_id"));
+  run_loop.Run();
+
+  // 2. Create an updated version of the thread.
+  proto::AiThreadEntity updated_thread_entity;
+  updated_thread_entity.mutable_specifics()->set_server_id(server_id);
+  updated_thread_entity.mutable_specifics()->set_title("New Title");
+  updated_thread_entity.mutable_specifics()->set_conversation_turn_id(
+      "new_turn_id");
+  std::vector<proto::AiThreadEntity> updated_threads = {updated_thread_entity};
+
+  // 3. Expect OnTaskUpdated to be called and verify the changes.
+  base::RunLoop run_loop2;
+  EXPECT_CALL(
+      observer_,
+      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kRemote))
+      .WillOnce([&](const ContextualTask& updated_task,
+                    ContextualTasksService::TriggerSource source) {
+        EXPECT_EQ(task.GetTaskId(), updated_task.GetTaskId());
+        ASSERT_TRUE(updated_task.GetThread().has_value());
+        EXPECT_EQ("New Title", updated_task.GetThread()->title);
+        EXPECT_EQ("new_turn_id",
+                  updated_task.GetThread()->conversation_turn_id);
+        run_loop2.Quit();
+      });
+
+  // 4. Call the method under test.
+  CallOnThreadAddedOrUpdatedRemotely(updated_threads);
+  run_loop2.Run();
+
+  // 5. Verify the task is updated in the service.
+  std::optional<ContextualTask> result_task = GetTaskById(task.GetTaskId());
+  ASSERT_TRUE(result_task.has_value());
+  ASSERT_TRUE(result_task->GetThread().has_value());
+  EXPECT_EQ("New Title", result_task->GetThread()->title);
+
+  service_->RemoveObserver(&observer_);
+}
+
+TEST_F(ContextualTasksServiceImplTest, OnThreadRemovedRemotely) {
+  service_->AddObserver(&observer_);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      observer_,
+      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .Times(2)
+      .WillOnce(testing::Return())
+      .WillOnce([&]() { run_loop.Quit(); });
+  // 1. Create two tasks with threads.
+  ContextualTask task_to_delete = service_->CreatePersistentTask();
+  base::Uuid thread_id_to_delete = base::Uuid::GenerateRandomV4();
+  service_->AddThreadToTask(
+      task_to_delete.GetTaskId(),
+      Thread(ThreadType::kAiMode, thread_id_to_delete.AsLowercaseString(),
+             "Title 1", "turn_id_1"));
+
+  ContextualTask task_to_keep = service_->CreatePersistentTask();
+  std::string thread_id_to_keep = "server_id_2";
+  service_->AddThreadToTask(
+      task_to_keep.GetTaskId(),
+      Thread(ThreadType::kAiMode, thread_id_to_keep, "Title 2", "turn_id_2"));
+  run_loop.Run();
+
+  ASSERT_EQ(2u, GetTasks().size());
+
+  // 2. Expect OnTaskRemoved to be called for the correct task.
+  base::RunLoop run_loop2;
+  EXPECT_CALL(observer_,
+              OnTaskRemoved(task_to_delete.GetTaskId(),
+                            ContextualTasksService::TriggerSource::kRemote))
+      .WillOnce([&](const base::Uuid& task_id,
+                    ContextualTasksService::TriggerSource source) {
+        run_loop2.Quit();
+      });
+
+  // 3. Call the method under test to remove the first thread.
+  CallOnThreadRemovedRemotely({thread_id_to_delete});
+  run_loop2.Run();
+
+  // 4. Verify that only the correct task was deleted.
+  std::vector<ContextualTask> remaining_tasks = GetTasks();
+  ASSERT_EQ(1u, remaining_tasks.size());
+  EXPECT_EQ(task_to_keep.GetTaskId(), remaining_tasks[0].GetTaskId());
 
   service_->RemoveObserver(&observer_);
 }

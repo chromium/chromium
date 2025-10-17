@@ -111,21 +111,7 @@ void ContextualTasksServiceImpl::GetTasks(
 }
 
 void ContextualTasksServiceImpl::DeleteTask(const base::Uuid& task_id) {
-  auto task_it = tasks_.find(task_id);
-  if (task_it == tasks_.end()) {
-    return;
-  }
-
-  const auto& task = task_it->second;
-  for (const auto& tab_id : task.GetTabIds()) {
-    tab_to_task_.erase(tab_id);
-  }
-
-  tasks_.erase(task_it);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskRemoved,
-                                weak_ptr_factory_.GetWeakPtr(), task_id,
-                                TriggerSource::kLocal));
+  RemoveTaskInternal(task_id, TriggerSource::kLocal);
 }
 
 void ContextualTasksServiceImpl::AddThreadToTask(const base::Uuid& task_id,
@@ -331,10 +317,78 @@ void ContextualTasksServiceImpl::OnThreadDataStoreLoaded() {
 }
 
 void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
-    const std::vector<proto::AiThreadEntity>& threads) {}
+    const std::vector<proto::AiThreadEntity>& threads) {
+  std::map<std::string, const proto::AiThreadEntity&> thread_map;
+  for (const auto& thread : threads) {
+    thread_map.emplace(thread.specifics().server_id(), thread);
+  }
+
+  for (auto& task_entry : tasks_) {
+    ContextualTask& task = task_entry.second;
+    if (!task.GetThread()) {
+      continue;
+    }
+
+    auto it = thread_map.find(task.GetThread()->server_id);
+    if (it == thread_map.end()) {
+      continue;
+    }
+
+    // Check if the thread has changed for the task.
+    const proto::AiThreadEntity& new_thread_entity = it->second;
+    const std::optional<Thread>& old_thread = task.GetThread();
+    if (old_thread->conversation_turn_id !=
+            new_thread_entity.specifics().conversation_turn_id() ||
+        old_thread->title != new_thread_entity.specifics().title()) {
+      task.AddThread(
+          Thread(ThreadType::kAiMode, new_thread_entity.specifics().server_id(),
+                 new_thread_entity.specifics().title(),
+                 new_thread_entity.specifics().conversation_turn_id()));
+      NotifyTaskUpdated(task, TriggerSource::kRemote);
+    }
+  }
+}
 
 void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
-    const std::vector<base::Uuid>& thread_ids) {}
+    const std::vector<base::Uuid>& thread_ids) {
+  std::set<std::string> removed_thread_server_ids;
+  for (const auto& id : thread_ids) {
+    removed_thread_server_ids.insert(id.AsLowercaseString());
+  }
+
+  std::vector<base::Uuid> tasks_to_delete;
+  for (const auto& task_entry : tasks_) {
+    const ContextualTask& task = task_entry.second;
+    if (task.GetThread()) {
+      if (removed_thread_server_ids.count(task.GetThread()->server_id)) {
+        tasks_to_delete.push_back(task.GetTaskId());
+      }
+    }
+  }
+
+  for (const auto& task_id : tasks_to_delete) {
+    RemoveTaskInternal(task_id, TriggerSource::kRemote);
+  }
+}
+
+void ContextualTasksServiceImpl::RemoveTaskInternal(const base::Uuid& task_id,
+                                                    TriggerSource source) {
+  auto task_it = tasks_.find(task_id);
+  if (task_it == tasks_.end()) {
+    return;
+  }
+
+  const auto& task = task_it->second;
+  for (const auto& tab_id : task.GetTabIds()) {
+    tab_to_task_.erase(tab_id);
+  }
+
+  tasks_.erase(task_it);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskRemoved,
+                     weak_ptr_factory_.GetWeakPtr(), task_id, source));
+}
 
 size_t ContextualTasksServiceImpl::GetTabIdMapSizeForTesting() const {
   return tab_to_task_.size();

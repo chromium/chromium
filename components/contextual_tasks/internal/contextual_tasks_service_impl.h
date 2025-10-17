@@ -94,6 +94,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
  private:
   friend class ContextualTasksServiceImplTest;
 
+  void RemoveTaskInternal(const base::Uuid& task_id, TriggerSource source);
+
   void SetAiThreadSyncBridgeForTesting(
       std::unique_ptr<AiThreadSyncBridge> bridge);
   void SetContextualTaskSyncBridgeForTesting(
