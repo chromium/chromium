@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
@@ -69,7 +70,7 @@ void MultiContentsViewDropTargetController::OnTabDragUpdated(
   // Only allow creating split with a single dragged tab.
   if (controller.GetSessionData().num_dragging_tabs() != 1) {
     ResetDropTargetTimers();
-    drop_target_view_->Hide();
+    HideDropTarget();
     return;
   }
 
@@ -77,7 +78,7 @@ void MultiContentsViewDropTargetController::OnTabDragUpdated(
       &drop_target_parent_view_.get(), point_in_screen);
   if (PointOverlapsWithOSDropTarget(point_in_parent)) {
     ResetDropTargetTimers();
-    drop_target_view_->Hide();
+    HideDropTarget();
     return;
   }
   HandleDragUpdate(point_in_parent,
@@ -88,12 +89,12 @@ void MultiContentsViewDropTargetController::OnTabDragEntered() {}
 
 void MultiContentsViewDropTargetController::OnTabDragExited() {
   ResetDropTargetTimers();
-  drop_target_view_->Hide();
+  HideDropTarget();
 }
 
 void MultiContentsViewDropTargetController::OnTabDragEnded() {
   ResetDropTargetTimers();
-  drop_target_view_->Hide();
+  HideDropTarget();
 }
 
 bool MultiContentsViewDropTargetController::CanDropTab() {
@@ -149,7 +150,7 @@ void MultiContentsViewDropTargetController::OnDragExited() {
   if (*drop_target_view_->state() ==
       MultiContentsDropTargetView::DropTargetState::kFull) {
     // If the target is full expanded, then hide it immediately.
-    drop_target_view_->Hide();
+    HideDropTarget();
   } else {
     // If we are we a nudge or expanded nudge evaluate hiding the drop target
     // from a posted task. This is so we can determine if we are exiting the
@@ -159,7 +160,7 @@ void MultiContentsViewDropTargetController::OnDragExited() {
 }
 
 void MultiContentsViewDropTargetController::OnDragDone() {
-  drop_target_view_->Hide(/*suppress_animation=*/true);
+  HideDropTarget(/*suppress_animation=*/true);
 }
 
 int MultiContentsViewDropTargetController::OnDragUpdated(
@@ -181,7 +182,7 @@ void MultiContentsViewDropTargetController::DoDrop(
   CHECK(drop_target_view_->side().has_value());
   MultiContentsDropTargetView::DropSide side =
       drop_target_view_->side().value();
-  drop_target_view_->Hide(/*suppress_animation=*/true);
+  HideDropTarget(/*suppress_animation=*/true);
   drop_delegate_->HandleLinkDrop(side, event);
   output_drag_op = ui::mojom::DragOperation::kLink;
 
@@ -200,7 +201,7 @@ void MultiContentsViewDropTargetController::HandleTabDrop(
   CHECK(drop_target_view_->side().has_value());
   MultiContentsDropTargetView::DropSide side =
       drop_target_view_->side().value();
-  drop_target_view_->Hide(/*suppress_animation=*/true);
+  HideDropTarget(/*suppress_animation=*/true);
   drop_delegate_->HandleTabDrop(side, controller);
 }
 
@@ -247,7 +248,7 @@ void MultiContentsViewDropTargetController::OnWebContentsDragExit() {
 
 void MultiContentsViewDropTargetController::OnWebContentsDragEnded() {
   ResetDropTargetTimers();
-  drop_target_view_->Hide();
+  HideDropTarget();
 }
 
 void MultiContentsViewDropTargetController::OnTabInserted() {
@@ -255,7 +256,7 @@ void MultiContentsViewDropTargetController::OnTabInserted() {
   // window, we do not receive a OnWebContentsDragEnded event. So when a new tab
   // is created, hide the drop target.
   ResetDropTargetTimers();
-  drop_target_view_->Hide();
+  HideDropTarget();
 }
 
 bool MultiContentsViewDropTargetController::IsDropTimerRunningForTesting() {
@@ -288,7 +289,7 @@ void MultiContentsViewDropTargetController::HandleDragUpdate(
     return;
   }
   ResetDropTargetTimers();
-  drop_target_view_->Hide();
+  HideDropTarget();
 }
 
 void MultiContentsViewDropTargetController::HandleDragUpdateForNudge(
@@ -303,7 +304,7 @@ void MultiContentsViewDropTargetController::HandleDragUpdateForNudge(
 
   // Either hide or show the drop target if the drag is in the trigger area.
   if (point_ratio > nudge_ratio && point_ratio < 1.0f - nudge_ratio) {
-    drop_target_view_->Hide();
+    HideDropTarget();
     show_nudge_timer_.reset();
     return;
   }
@@ -346,12 +347,22 @@ void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
 
   show_drop_target_timer_.emplace(drop_side, drag_type);
 
+  base::TimeDelta show_delay;
+  if (drag_type == MultiContentsDropTargetView::DragType::kTab) {
+    show_delay = features::kSideBySideShowDropTargetDelay.Get();
+  } else if (base::Time::Now() - drop_target_last_hidden_ <
+             features::kSideBySideShowDropTargetForLinkAfterHideLookbackWindow
+                 .Get()) {
+    // If a drop target was recently closed for a link drag, use a longer delay
+    // to avoid blocking elements on the page.
+    show_delay = features::kSideBySideShowDropTargetForLinkAfterHideDelay.Get();
+  } else {
+    show_delay = features::kSideBySideShowDropTargetForLinkDelay.Get();
+  }
+
   show_drop_target_timer_->timer.Start(
-      FROM_HERE,
-      drag_type == MultiContentsDropTargetView::DragType::kTab
-          ? features::kSideBySideShowDropTargetDelay.Get()
-          : features::kSideBySideShowDropTargetForLinkDelay.Get(),
-      this, &MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget);
+      FROM_HERE, show_delay, this,
+      &MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget);
 }
 
 void MultiContentsViewDropTargetController::ResetDropTargetTimers() {
@@ -371,8 +382,16 @@ void MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget() {
 void MultiContentsViewDropTargetController::StartDropTargetHideTimer() {
   hide_drop_target_timer_.Start(
       FROM_HERE, features::kSideBySideHideDropTargetDelay.Get(),
-      base::BindOnce(&MultiContentsDropTargetView::Hide,
-                     base::Unretained(drop_target_view_), false));
+      base::BindOnce(&MultiContentsViewDropTargetController::HideDropTarget,
+                     base::Unretained(this), false));
+}
+
+void MultiContentsViewDropTargetController::HideDropTarget(
+    bool suppress_animation) {
+  if (drop_target_view_->GetVisible()) {
+    drop_target_view_->Hide(suppress_animation);
+    drop_target_last_hidden_ = base::Time::Now();
+  }
 }
 
 void MultiContentsViewDropTargetController::StartNudgeShowTimer(

@@ -154,6 +154,11 @@ BASE_DECLARE_FEATURE(kSideBySide);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideShowDropTargetDelay);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kSideBySideShowDropTargetForLinkDelay);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kSideBySideShowDropTargetForLinkAfterHideDelay);
+BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kSideBySideShowDropTargetForLinkAfterHideLookbackWindow);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideHideDropTargetDelay);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideShowNudgeDelay);
 

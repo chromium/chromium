@@ -121,7 +121,17 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kSideBySideShowDropTargetForLinkDelay,
                    &kSideBySide,
                    "drop_target_for_link_show_delay",
-                   base::Milliseconds(1400));
+                   base::Milliseconds(500));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSideBySideShowDropTargetForLinkAfterHideDelay,
+                   &kSideBySide,
+                   "drop_target_for_link_after_hide_show_delay",
+                   base::Milliseconds(3000));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSideBySideShowDropTargetForLinkAfterHideLookbackWindow,
+                   &kSideBySide,
+                   "drop_target_for_link_after_hide_lookback_window",
+                   base::Seconds(30));
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kSideBySideHideDropTargetDelay,
                    &kSideBySide,

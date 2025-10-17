@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -42,6 +43,8 @@ constexpr gfx::Point kDragPointForEndDropTargetShow(499, 250);
 constexpr gfx::Point kDragPointForHiddenTargets(250, 250);
 constexpr base::TimeDelta kShowDropTargetForLinkDelay =
     base::Milliseconds(1400);
+constexpr base::TimeDelta kShowDropTargetForLinkAfterHideDelay =
+    base::Milliseconds(3000);
 constexpr base::TimeDelta kShowDropTargetForTabDelay = base::Milliseconds(500);
 constexpr base::TimeDelta kHideDropTargetDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kHideDropTargetAnimation = base::Milliseconds(450);
@@ -254,7 +257,14 @@ class MultiContentsViewDropTargetControllerNudgeDisabledTest
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kSideBySide,
           {{features::kSideBySideShowDropTargetDelay.name,
+            base::NumberToString(kShowDropTargetForTabDelay.InMilliseconds()) +
+                "ms"},
+           {features::kSideBySideShowDropTargetForLinkDelay.name,
             base::NumberToString(kShowDropTargetForLinkDelay.InMilliseconds()) +
+                "ms"},
+           {features::kSideBySideShowDropTargetForLinkAfterHideDelay.name,
+            base::NumberToString(
+                kShowDropTargetForLinkAfterHideDelay.InMilliseconds()) +
                 "ms"}}}},
         {features::kSideBySideDropTargetNudge});
   }
@@ -278,6 +288,32 @@ TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
   DragURLTo(kDragPointForHiddenTargets);
   FastForward(kHideDropTargetDelay + kHideDropTargetAnimation);
   EXPECT_FALSE(drop_target_view().GetVisible());
+}
+
+// Tests that the drop target takes longer to show if it has been recently
+// hidden.
+TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
+       OnWebContentsDragUpdate_ShowAfterHideDropTarget) {
+  DragURLTo(kDragPointForStartDropTargetShow);
+  EXPECT_FALSE(drop_target_view().GetVisible());
+
+  FastForward(kShowDropTargetForLinkDelay);
+  EXPECT_TRUE(drop_target_view().GetVisible());
+
+  // Move the drag back to the center to hide the drop target.
+  DragURLTo(kDragPointForHiddenTargets);
+  FastForward(kHideDropTargetDelay + kHideDropTargetAnimation);
+  EXPECT_FALSE(drop_target_view().GetVisible());
+
+  // Now move back over the drop target.
+  DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward(kShowDropTargetForLinkDelay);
+  EXPECT_FALSE(drop_target_view().GetVisible());
+
+  // After waiting the longer delay, it does show.
+  FastForward(kShowDropTargetForLinkAfterHideDelay -
+              kShowDropTargetForLinkDelay);
+  EXPECT_TRUE(drop_target_view().GetVisible());
 }
 
 // Tests that the end drop target is shown when a drag reaches enters the
@@ -441,8 +477,10 @@ class MultiContentsViewDropTargetControllerDragTest
             base::NumberToString(kShowDropTargetForLinkDelay.InMilliseconds()) +
                 "ms"},
            {features::kSideBySideHideDropTargetDelay.name,
-            base::NumberToString(kHideDropTargetDelay.InMilliseconds()) +
-                "ms"}}},
+            base::NumberToString(kHideDropTargetDelay.InMilliseconds()) + "ms"},
+           {features::kSideBySideShowDropTargetForLinkAfterHideLookbackWindow
+                .name,
+            "0ms"}}},
          {features::kSideBySideDropTargetNudge, {}}},
         {});
   }
