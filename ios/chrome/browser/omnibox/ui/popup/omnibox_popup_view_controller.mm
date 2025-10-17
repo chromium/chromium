@@ -1022,8 +1022,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  // TODO(crbug.com/41325585): Default to the dragging check once it's been
-  // tested on trunk.
   if (!scrollView.dragging) {
     return;
   }
