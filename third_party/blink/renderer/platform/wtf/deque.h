@@ -364,21 +364,20 @@ inline Deque<T, InlineCapacity, Allocator>::Deque(const Deque& other)
     : buffer_(other.buffer_.capacity()),
       start_(other.start_),
       end_(other.end_) {
-  const T* other_buffer = other.buffer_.Buffer();
+  const auto other_buffer = other.buffer_.BufferSpan();
+  auto this_buffer = buffer_.BufferSpan();
   if (start_ <= end_) {
-    TypeOperations::UninitializedCopy(UNSAFE_TODO(other_buffer + start_),
-                                      UNSAFE_TODO(other_buffer + end_),
-                                      UNSAFE_TODO(buffer_.Buffer() + start_),
-                                      VectorOperationOrigin::kConstruction);
+    TypeOperations::UninitializedCopy(
+        other_buffer.subspan(start_, end_ - start_),
+        this_buffer.subspan(start_, end_ - start_),
+        VectorOperationOrigin::kConstruction);
   } else {
-    TypeOperations::UninitializedCopy(
-        other_buffer, UNSAFE_TODO(other_buffer + end_), buffer_.Buffer(),
-        VectorOperationOrigin::kConstruction);
-    TypeOperations::UninitializedCopy(
-        UNSAFE_TODO(other_buffer + start_),
-        UNSAFE_TODO(other_buffer + buffer_.capacity()),
-        UNSAFE_TODO(buffer_.Buffer() + start_),
-        VectorOperationOrigin::kConstruction);
+    TypeOperations::UninitializedCopy(other_buffer.first(end_),
+                                      this_buffer.first(end_),
+                                      VectorOperationOrigin::kConstruction);
+    TypeOperations::UninitializedCopy(other_buffer.subspan(start_),
+                                      this_buffer.subspan(start_),
+                                      VectorOperationOrigin::kConstruction);
   }
 }
 

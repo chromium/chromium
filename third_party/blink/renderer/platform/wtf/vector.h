@@ -363,17 +363,19 @@ struct VectorTypeOperations {
   }
 
   template <typename U>
-  ALWAYS_INLINE static void UninitializedCopy(const U* const src,
-                                              const U* const src_end,
-                                              T* dst,
+  ALWAYS_INLINE static void UninitializedCopy(base::span<const U> src,
+                                              base::span<T> dst,
                                               VectorOperationOrigin origin) {
-    if (!dst || !src) [[unlikely]] {
+    if (!dst.data() || !src.data()) [[unlikely]] {
       return;
     }
     if constexpr (std::is_same_v<T, U> && VectorTraits<T>::kCanCopyWithMemcpy) {
-      Copy(src, src_end, dst, origin);
+      Copy(base::to_address(src.begin()), base::to_address(src.end()),
+           dst.data(), origin);
     } else {
-      UninitializedTransform(src, src_end, dst, origin, std::identity());
+      UninitializedTransform(base::to_address(src.begin()),
+                             base::to_address(src.end()), dst.data(), origin,
+                             std::identity());
     }
   }
 
@@ -480,6 +482,10 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
   T* Buffer() { return buffer_; }
   const T* Buffer() const { return buffer_; }
   wtf_size_t capacity() const { return capacity_; }
+  base::span<T> BufferSpan() { return base::span<T>(buffer_, capacity_); }
+  base::span<const T> BufferSpan() const {
+    return base::span<T>(buffer_, capacity_);
+  }
 
   void ClearUnusedSlots(T* from, T* to) {
     if constexpr (NeedsToClearUnusedSlots()) {
@@ -1686,6 +1692,9 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   template <typename U>
   NOINLINE PRESERVE_MOST void AppendSlowCase(U&&);
 
+  // Returns a span including the unused part of the buffer.
+  base::span<T> CapacitySpan() { return Base::BufferSpan(); }
+
   bool HasInlineBuffer() const {
     return INLINE_CAPACITY && !this->HasOutOfLineBuffer();
   }
@@ -1765,7 +1774,7 @@ Vector<T, InlineCapacity, Allocator>::Vector(const Vector& other)
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(data(), capacity(), other.size());
   size_ = other.size();
-  TypeOperations::UninitializedCopy(other.data(), other.DataEnd(), data(),
+  TypeOperations::UninitializedCopy(base::span(other), base::span(*this),
                                     VectorOperationOrigin::kConstruction);
 }
 
@@ -1776,7 +1785,7 @@ Vector<T, InlineCapacity, Allocator>::Vector(
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(data(), capacity(), other.size());
   size_ = other.size();
-  TypeOperations::UninitializedCopy(other.data(), other.DataEnd(), data(),
+  TypeOperations::UninitializedCopy(base::span(other), base::span(*this),
                                     VectorOperationOrigin::kConstruction);
 }
 
@@ -1818,7 +1827,7 @@ Vector<T, InlineCapacity, Allocator>::operator=(
   TypeOperations::Copy(other.data(), other.data() + size(), data(),
                        VectorOperationOrigin::kRegularModification);
   TypeOperations::UninitializedCopy(
-      other.data() + size(), other.DataEnd(), DataEnd(),
+      base::span(other).subspan(size()), CapacitySpan().subspan(size()),
       VectorOperationOrigin::kRegularModification);
   size_ = other.size();
 
@@ -1852,7 +1861,7 @@ Vector<T, InlineCapacity, Allocator>::operator=(
   TypeOperations::Copy(other.data(), other.data() + size(), data(),
                        VectorOperationOrigin::kRegularModification);
   TypeOperations::UninitializedCopy(
-      other.data() + size(), other.DataEnd(), DataEnd(),
+      base::span(other).subspan(size()), CapacitySpan().subspan(size()),
       VectorOperationOrigin::kRegularModification);
   size_ = other.size();
 
@@ -1914,7 +1923,7 @@ Vector<T, InlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
     : Base(base::checked_cast<wtf_size_t>(elements.size())) {
   ANNOTATE_NEW_BUFFER(data(), capacity(), elements.size());
   size_ = static_cast<wtf_size_t>(elements.size());
-  TypeOperations::UninitializedCopy(elements.begin(), elements.end(), data(),
+  TypeOperations::UninitializedCopy(base::span(elements), base::span(*this),
                                     VectorOperationOrigin::kConstruction);
 }
 
@@ -1936,7 +1945,8 @@ Vector<T, InlineCapacity, Allocator>::operator=(
   TypeOperations::Copy(elements.begin(), elements.begin() + size_, data(),
                        VectorOperationOrigin::kRegularModification);
   TypeOperations::UninitializedCopy(
-      elements.begin() + size_, elements.end(), DataEnd(),
+      base::span(elements).subspan(size_),
+      CapacitySpan().subspan(size_, input_size - size_),
       VectorOperationOrigin::kRegularModification);
   size_ = input_size;
 
@@ -2239,11 +2249,11 @@ void Vector<T, InlineCapacity, Allocator>::Append(const U* data,
     DCHECK(this->data());
   }
   CHECK_GE(new_size, size_);
-  T* dest = DataEnd();
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, this->data(), capacity(), size_,
                                      new_size);
   TypeOperations::UninitializedCopy(
-      data, &data[data_size], dest,
+      base::span<const U>(data, data_size),
+      CapacitySpan().subspan(size_, data_size),
       VectorOperationOrigin::kRegularModification);
   size_ = new_size;
 }
@@ -2344,7 +2354,8 @@ void Vector<T, InlineCapacity, Allocator>::insert(wtf_size_t position,
   TypeOperations::MoveOverlapping(spot, DataEnd(), spot + data_size,
                                   VectorOperationOrigin::kRegularModification);
   TypeOperations::UninitializedCopy(
-      data, &data[data_size], spot,
+      base::span<const U>(data, data_size),
+      CapacitySpan().subspan(position, data_size),
       VectorOperationOrigin::kRegularModification);
   size_ = new_size;
 }
