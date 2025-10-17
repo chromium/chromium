@@ -476,6 +476,9 @@ export declare interface GlicBrowserHost {
   /** Returns the state of the glic closed captioning setting. */
   getClosedCaptioningSetting?(): ObservableValue<boolean>;
 
+  /** Returns the state of the web actuation setting. */
+  getActuationOnWebSetting?(): ObservableValue<boolean>;
+
   /**
    * Returns the state of the default tab context permission for new sessions.
    * The returned observable will be updated when the setting changes.
@@ -505,6 +508,12 @@ export declare interface GlicBrowserHost {
    * promise that resolves when the browser has stored the new pref value.
    */
   setClosedCaptioningSetting?(enabled: boolean): Promise<void>;
+
+  /**
+   * Set the state of the web actuation permission in settings. Returns a
+   * promise that resolves when the browser has stored the new pref value.
+   */
+  setActuationOnWebSetting?(enabled: boolean): Promise<void>;
 
   /** Returns the user profile information. */
   getUserProfileInfo?(): Promise<UserProfileInfo>;

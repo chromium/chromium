@@ -42,6 +42,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kGlicActuationOnWeb,
       static_cast<int>(prefs::GlicActuationOnWebPolicyState::kEnabled));
+
+  registry->RegisterBooleanPref(prefs::kGlicUserEnabledActuationOnWeb, false);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

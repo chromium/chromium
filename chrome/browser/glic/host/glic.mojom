@@ -305,6 +305,10 @@ struct WebClientInitialState {
   bool enable_api_activation_gating;
   // Whether capture region is enabled.
   bool enable_capture_region;
+  // Whether kGlicWebActuationSetting is enabled.
+  bool enable_web_actuation_setting_feature;
+  // Whether the user enabled actuation setting is enabled.
+  bool actuation_on_web_setting_enabled;
 };
 
 // Options for getting tab context.
@@ -672,6 +676,11 @@ interface WebClientHandler {
   // prefs::kGlicClosedCaptioningEnabled. Returns when the browser has stored
   // the new pref value.
   SetClosedCaptioningSetting(bool enabled) => ();
+
+  // Set the state of the user enabled web actuation glic setting pref:
+  // prefs::kGlicUserEnabledActuationOnWeb. Returns when the browser has stored
+  // the new pref value.
+  SetActuationOnWebSetting(bool enabled) => ();
 
   // Returns whether a media permission request from the guest should be granted
   // or denied.
@@ -1106,6 +1115,9 @@ interface WebClient {
 
   // Informs the client that additional context is available.
   NotifyAdditionalContext(AdditionalContext context);
+
+  // Notify that the user enabled web actuation setting has changed.
+  NotifyActuationOnWebSettingChanged(bool enabled);
 };
 
 // Information extracted from a tab.

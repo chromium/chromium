@@ -105,6 +105,10 @@ enum class GlicActuationOnWebPolicyState {
 };
 inline constexpr char kGlicActuationOnWeb[] = "glic.actuation_on_web";
 
+// Boolean pref for the user enabled acutuation on web setting.
+inline constexpr char kGlicUserEnabledActuationOnWeb[] =
+    "glic.user_enabled_actuation_on_web";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

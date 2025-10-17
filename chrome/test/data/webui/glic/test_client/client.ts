@@ -35,8 +35,8 @@ class TestInitFailure extends Error implements WebClientInitializeError {
   }
 }
 
-export type PermissionSwitchName =
-    'microphone'|'geolocation'|'tabContext'|'osGeolocation'|'defaultTabContext';
+export type PermissionSwitchName = 'microphone'|'geolocation'|'tabContext'|
+    'osGeolocation'|'defaultTabContext'|'actuationOnWeb';
 export const permissionSwitches:
     Record<PermissionSwitchName, HTMLInputElement> = {
       microphone: $.microphoneSwitch,
@@ -44,6 +44,7 @@ export const permissionSwitches:
       tabContext: $.tabContextSwitch,
       osGeolocation: $.osGeolocationPermissionSwitch,
       defaultTabContext: $.defaultTabContextSwitch,
+      actuationOnWeb: $.actuationOnWebSwitch,
     };
 
 // Update a permission switch display state.
@@ -113,6 +114,10 @@ class WebClient implements GlicWebClient {
         updatePermissionSwitch(permission, enabled);
       });
     }
+    const actuationOnWebState = await browser.getActuationOnWebSetting?.();
+    actuationOnWebState?.subscribe((enabled) => {
+      $.actuationOnWebSwitch.checked = enabled;
+    });
     const closedCaptioningState =
         await this.browser.getClosedCaptioningSetting?.();
     closedCaptioningState?.subscribe((enabled) => {

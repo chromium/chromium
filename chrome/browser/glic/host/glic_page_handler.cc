@@ -620,6 +620,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         prefs::kGlicDefaultTabContextEnabled,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kGlicUserEnabledActuationOnWeb,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
     host().AddPanelStateObserver(this);
 
     if (base::FeatureList::IsEnabled(
@@ -746,6 +750,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab);
     state->enable_get_context_actor = base::FeatureList::IsEnabled(
         glic::mojom::features::kGlicActorTabContext);
+    state->enable_web_actuation_setting_feature =
+        base::FeatureList::IsEnabled(features::kGlicWebActuationSetting);
+    state->actuation_on_web_setting_enabled =
+        pref_service_->GetBoolean(prefs::kGlicUserEnabledActuationOnWeb);
+
 #if BUILDFLAG(ENABLE_PDF)
     if (features::kGlicScrollToPDF.Get()) {
       state->host_capabilities.push_back(mojom::HostCapability::kScrollToPdf);
@@ -1107,6 +1116,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       base::RecordAction(
           base::UserMetricsAction("GlicClosedCaptioningDisabled"));
     }
+    std::move(callback).Run();
+  }
+
+  void SetActuationOnWebSetting(
+      bool enabled,
+      SetActuationOnWebSettingCallback callback) override {
+    pref_service_->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb, enabled);
+    base::RecordAction(
+        enabled ? base::UserMetricsAction("GlicUserEnabledActuationOnWeb")
+                : base::UserMetricsAction("GlicUserDisabledActuationOnWeb"));
     std::move(callback).Run();
   }
 
@@ -1500,6 +1519,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       web_client_->NotifyClosedCaptioningSettingChanged(is_enabled);
     } else if (pref_name == prefs::kGlicDefaultTabContextEnabled) {
       web_client_->NotifyDefaultTabContextPermissionStateChanged(is_enabled);
+    } else if (pref_name == prefs::kGlicUserEnabledActuationOnWeb) {
+      web_client_->NotifyActuationOnWebSettingChanged(is_enabled);
     } else {
       DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
     }

@@ -14366,6 +14366,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicUserDisabledActuationOnWeb">
+  <owner>michelleabreo@google.com</owner>
+  <description>
+    Logged when the user disables actuation on web in Chrome settings.
+  </description>
+</action>
+
+<action name="GlicUserEnabledActuationOnWeb">
+  <owner>michelleabreo@google.com</owner>
+  <description>
+    Logged when the user enables actuation on web in Chrome settings.
+  </description>
+</action>
+
 <action name="GlicWebClientSessionEnd">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>

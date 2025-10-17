@@ -255,6 +255,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserSetActuationOnWebSetting: {
+    request: {
+      enabled: boolean,
+    },
+    backgroundAllowed: true,
+  },
   glicBrowserGetUserProfileInfo: {
     response: {
       profileInfo?: UserProfileInfoPrivate,
@@ -547,6 +553,12 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientNotifyActuationOnWebSettingChanged: {
+    request: {
+      enabled: boolean,
+    },
+    backgroundAllowed: true,
+  },
   glicWebClientNotifyFocusedTabChanged: {
     request: {
       focusedTabDataPrivate: FocusedTabDataPrivate,
@@ -720,6 +732,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         OnReaction: 66,
         OnContextUploadCompleted: 67,
         OnContextUploadStarted: 68,
+        SetActuationOnWebSetting: 69,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

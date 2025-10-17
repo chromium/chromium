@@ -138,6 +138,12 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.closedCaptioningState.assignAndSignal(payload.enabled);
   }
 
+  glicWebClientNotifyActuationOnWebSettingChanged(payload: {
+    enabled: boolean,
+  }) {
+    this.host.actuationOnWebState.assignAndSignal(payload.enabled);
+  }
+
   glicWebClientNotifyFocusedTabChanged(payload: {
     focusedTabDataPrivate: FocusedTabDataPrivate,
   }) {
@@ -341,6 +347,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private permissionStateOsLocation =
       ObservableValueImpl.withNoValue<boolean>();
   closedCaptioningState = ObservableValueImpl.withNoValue<boolean>();
+  actuationOnWebState = ObservableValueImpl.withNoValue<boolean>();
   private osHotkeyState = ObservableValueImpl.withNoValue<{hotkey: string}>();
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
   isBrowserOpenValue = ObservableValueImpl.withNoValue<boolean>();
@@ -424,6 +431,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.osHotkeyState.assignAndSignal({hotkey: state.hotkey});
     this.closedCaptioningState.assignAndSignal(
         state.closedCaptioningSettingEnabled);
+    this.actuationOnWebState.assignAndSignal(
+        state.actuationOnWebSettingEnabled);
     for (const capability of state.hostCapabilities) {
       this.hostCapabilities.add(capability);
     }
@@ -500,6 +509,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
     if (!state.enableGetPageMetadata) {
       this.getPageMetadata = undefined;
+    }
+
+    if (!state.enableWebActuationSettingFeature) {
+      this.getActuationOnWebSetting = undefined;
+      this.setActuationOnWebSetting = undefined;
     }
   }
 
@@ -746,6 +760,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.closedCaptioningState;
   }
 
+  getActuationOnWebSetting?(): ObservableValueImpl<boolean> {
+    return this.actuationOnWebState;
+  }
+
   setMicrophonePermissionState(enabled: boolean): Promise<void> {
     return this.sender.requestWithResponse(
         'glicBrowserSetMicrophonePermissionState', {enabled});
@@ -769,6 +787,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   setContextAccessIndicator(show: boolean): void {
     this.sender.requestWithResponse(
         'glicBrowserSetContextAccessIndicator', {show});
+  }
+
+  setActuationOnWebSetting?(enabled: boolean): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicBrowserSetActuationOnWebSetting', {enabled});
   }
 
   async getUserProfileInfo?(): Promise<UserProfileInfo> {

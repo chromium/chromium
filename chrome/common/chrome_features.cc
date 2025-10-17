@@ -807,6 +807,8 @@ const base::FeatureParam<bool> kGlicEntrypointVariationsHighlightNudge{
 
 BASE_FEATURE(kGlicShareImage, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicWebActuationSetting, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Enables the `google-chrome://` URI scheme.

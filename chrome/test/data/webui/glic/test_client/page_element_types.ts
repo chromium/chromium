@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 export interface PageElementTypes {
+  actuationOnWebSwitch: HTMLInputElement;
   content: HTMLElement;
   status: HTMLElement;
   pageHeader: HTMLElement;
