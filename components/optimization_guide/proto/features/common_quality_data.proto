@@ -651,10 +651,6 @@ message IframeData {
     RedactedFrameMetadata redacted_frame_metadata = 4;
   }
 
-  // Indicates whether the iframe is likely to be an ad frame. This is set for
-  // both the root ad frame and its descendants.
-  bool likely_ad_frame = 2 [features = { field_presence: EXPLICIT }];
-
   message RedactedFrameMetadata {
     Reason reason = 1 [features = { field_presence: EXPLICIT }];
 
@@ -671,7 +667,7 @@ message IframeData {
     }
   }
 
-  reserved 1;
+  reserved 1, 2;
 }
 
 // The data for a frame in the web page. This is the common data structure for
