@@ -55,7 +55,6 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
-#include "gpu/ipc/service/image_decode_accelerator_worker.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sync_channel.h"
@@ -483,9 +482,9 @@ void GpuServiceImpl::InitializeWithHostInternal(
       gpu_preferences_, this, watchdog_thread_.get(), main_runner_, io_runner_,
       scheduler_, sync_point_manager, shared_image_manager, gpu_feature_info_,
       &use_shader_cache_shm_count_, std::move(default_offscreen_surface),
-      /*image_decode_accelerator_worker=*/nullptr, vulkan_context_provider(),
-      metal_context_provider(), dawn_context_provider(),
-      dawn_caching_interface_factory(), gr_context_options_provider_);
+      vulkan_context_provider(), metal_context_provider(),
+      dawn_context_provider(), dawn_caching_interface_factory(),
+      gr_context_options_provider_);
 
   media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
       gpu_channel_manager_.get());

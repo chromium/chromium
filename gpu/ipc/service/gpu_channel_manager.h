@@ -97,7 +97,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
       const GpuFeatureInfo& gpu_feature_info,
       GpuProcessShmCount* use_shader_cache_shm_count,
       scoped_refptr<gl::GLSurface> default_offscreen_surface,
-      ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
       viz::VulkanContextProvider* vulkan_context_provider = nullptr,
       viz::MetalContextProvider* metal_context_provider = nullptr,
       DawnContextProvider* dawn_context_provider = nullptr,
@@ -335,9 +334,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   base::TimeTicks last_gpu_access_time_;
   base::TimeTicks begin_wake_up_time_;
 #endif
-
-  raw_ptr<ImageDecodeAcceleratorWorker> image_decode_accelerator_worker_ =
-      nullptr;
 
   // A count in shared memory that's non-zero for the duration of loading
   // shaders. Read by the browser process on GPU process crash.

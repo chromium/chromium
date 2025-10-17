@@ -133,7 +133,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       gpu::GpuChannel* gpu_channel,
       const base::UnguessableToken& channel_token,
       Scheduler* scheduler,
-      ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
       const gfx::GpuExtraInfo& gpu_extra_info,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
   GpuChannelMessageFilter(const GpuChannelMessageFilter&) = delete;
@@ -268,7 +267,6 @@ GpuChannelMessageFilter::GpuChannelMessageFilter(
     gpu::GpuChannel* gpu_channel,
     const base::UnguessableToken& channel_token,
     Scheduler* scheduler,
-    ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
     const gfx::GpuExtraInfo& gpu_extra_info,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : gpu_channel_(gpu_channel),
@@ -277,7 +275,7 @@ GpuChannelMessageFilter::GpuChannelMessageFilter(
       main_task_runner_(std::move(main_task_runner)),
       image_decode_accelerator_stub_(
           base::MakeRefCounted<ImageDecodeAcceleratorStub>(
-              image_decode_accelerator_worker,
+              /*image_decode_accelerator_worker=*/nullptr,
               gpu_channel,
               static_cast<int32_t>(
                   GpuChannelReservedRoutes::kImageDecodeAccelerator))),
@@ -697,7 +695,6 @@ GpuChannel::GpuChannel(
     uint64_t client_tracing_id,
     bool is_gpu_host,
     bool enable_extra_handles_validation,
-    ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
     const gfx::GpuExtraInfo& gpu_extra_info)
     : gpu_channel_manager_(gpu_channel_manager),
       scheduler_(scheduler),
@@ -713,7 +710,6 @@ GpuChannel::GpuChannel(
           this,
           channel_token,
           scheduler,
-          image_decode_accelerator_worker,
           gpu_extra_info,
           std::move(task_runner))) {
   DCHECK(gpu_channel_manager_);
@@ -752,14 +748,12 @@ std::unique_ptr<GpuChannel> GpuChannel::Create(
     uint64_t client_tracing_id,
     bool is_gpu_host,
     bool enable_extra_handles_validation,
-    ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
     const gfx::GpuExtraInfo& gpu_extra_info) {
   auto gpu_channel = base::WrapUnique(new GpuChannel(
       gpu_channel_manager, channel_token, scheduler, sync_point_manager,
       std::move(share_group), std::move(task_runner), std::move(io_task_runner),
       client_id, client_tracing_id, is_gpu_host,
-      enable_extra_handles_validation, image_decode_accelerator_worker,
-      gpu_extra_info));
+      enable_extra_handles_validation, gpu_extra_info));
 
   if (!gpu_channel->CreateSharedImageStub(gpu_extra_info)) {
     LOG(ERROR) << "GpuChannel: Failed to create SharedImageStub";

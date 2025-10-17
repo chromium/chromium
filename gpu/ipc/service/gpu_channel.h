@@ -48,7 +48,6 @@ class DCOMPTexture;
 class FenceSyncReleaseDelegate;
 class GpuChannelManager;
 class GpuChannelMessageFilter;
-class ImageDecodeAcceleratorWorker;
 class Scheduler;
 class SharedImageStub;
 class SyncPointManager;
@@ -74,7 +73,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       uint64_t client_tracing_id,
       bool is_gpu_host,
       bool enable_extra_handles_validation,
-      ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
       const gfx::GpuExtraInfo& gpu_extra_info);
 
   // Init() sets up the underlying IPC channel.  Use a separate method because
@@ -219,7 +217,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
              uint64_t client_tracing_id,
              bool is_gpu_host,
              bool enable_extra_handles_validation,
-             ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
              const gfx::GpuExtraInfo& gpu_extra_info);
 
   void OnDestroyCommandBuffer(int32_t route_id);
