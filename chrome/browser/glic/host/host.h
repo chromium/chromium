@@ -20,6 +20,10 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/views/widget/widget.h"
 
+namespace actor {
+class ActorTaskDelegate;
+}
+
 class Profile;
 namespace content {
 class WebContents;
@@ -85,7 +89,7 @@ class Host : public GlicSharingManagerProvider {
         const std::optional<int32_t>& window_id,
         glic::mojom::WebClientHandler::CreateTabCallback callback) = 0;
     virtual void CreateTask(
-        InstanceId instance_id,
+        base::WeakPtr<actor::ActorTaskDelegate> delegate,
         actor::webui::mojom::TaskOptionsPtr options,
         mojom::WebClientHandler::CreateTaskCallback callback) = 0;
     virtual void PerformActions(

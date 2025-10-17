@@ -37,6 +37,7 @@ class ProfileManager;
 namespace actor {
 struct ActionResultWithLatencyInfo;
 class ActorKeyedService;
+class ActorTaskDelegate;
 }  // namespace actor
 
 namespace contextual_cueing {
@@ -178,7 +179,7 @@ class GlicKeyedService : public KeyedService,
       const std::optional<int32_t>& window_id,
       glic::mojom::WebClientHandler::CreateTabCallback callback) override;
   void CreateTask(
-      InstanceId instance_id,
+      base::WeakPtr<actor::ActorTaskDelegate> delegate,
       actor::webui::mojom::TaskOptionsPtr options,
       mojom::WebClientHandler::CreateTaskCallback callback) override;
   void PerformActions(

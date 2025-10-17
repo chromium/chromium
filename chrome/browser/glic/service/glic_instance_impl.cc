@@ -287,10 +287,11 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
 }
 
 void GlicInstanceImpl::CreateTask(
-    InstanceId instance_id,
+    base::WeakPtr<actor::ActorTaskDelegate> delegate,
     actor::webui::mojom::TaskOptionsPtr options,
     mojom::WebClientHandler::CreateTaskCallback callback) {
-  service_->CreateTask(id_, std::move(options), std::move(callback));
+  service_->CreateTask(weak_ptr_factory_.GetWeakPtr(), std::move(options),
+                       std::move(callback));
 }
 
 void GlicInstanceImpl::PerformActions(
@@ -681,6 +682,16 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
       }
     }
   }
+}
+
+void GlicInstanceImpl::OnTabAddedToTask(
+    actor::TaskId task_id,
+    const tabs::TabInterface::Handle& tab_handle) {
+  tabs::TabInterface* tab = tab_handle.Get();
+  if (!tab || !task_id) {
+    return;
+  }
+  Show(ShowOptions::ForSidePanel(*tab));
 }
 
 }  // namespace glic

@@ -67,28 +67,8 @@ void GlicTabSourceObserver::OnTabStripModelChanged(
   }
 
   for (const auto& change_insert : change.GetInsert()->contents) {
-    // Start observing the newly created web contents
-    Observe(change_insert.contents);
     MaybeAddSidePanel(change_insert.tab, change_insert.contents);
   }
-}
-
-void GlicTabSourceObserver::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  content::WebContents& web_contents = *navigation_handle->GetWebContents();
-  // Check if the navigation came from an Actor Task.
-  if (auto* actor_keyed_service =
-          actor::ActorKeyedService::Get(web_contents.GetBrowserContext())) {
-    if (auto* task = actor_keyed_service->GetActingActorTaskForWebContents(
-            &web_contents)) {
-      // TODO (crbug.com/451720781): Record if/when this fails to daisy chain.
-      coordinator_->FindInstanceFromIdAndBindToTab(
-          task->parent_instance_id(), tabs::TabInterface::GetFromContents(
-                                          navigation_handle->GetWebContents()));
-    }
-  }
-
-  Observe(nullptr);
 }
 
 void GlicTabSourceObserver::OnBrowserAdded(Browser* browser) {

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -48,7 +49,8 @@ class GlicInstanceImpl : public GlicInstance,
                          public Host::InstanceDelegate,
                          public Host::Observer,
                          public GlicSharingManagerProvider,
-                         public GlicUiEmbedder::Delegate {
+                         public GlicUiEmbedder::Delegate,
+                         public actor::ActorTaskDelegate {
  public:
   class InstanceCoordinatorDelegate {
    public:
@@ -117,7 +119,7 @@ class GlicInstanceImpl : public GlicInstance,
       const std::optional<int32_t>& window_id,
       glic::mojom::WebClientHandler::CreateTabCallback callback) override;
   void CreateTask(
-      InstanceId instance_id,
+      base::WeakPtr<actor::ActorTaskDelegate> delegate,
       actor::webui::mojom::TaskOptionsPtr options,
       mojom::WebClientHandler::CreateTaskCallback callback) override;
   void PerformActions(
@@ -168,6 +170,10 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Host::Observer
   void WebUiStateChanged(mojom::WebUiState state) override;
+
+  // ActorTaskDelegate:
+  void OnTabAddedToTask(actor::TaskId task_id,
+                        const tabs::TabInterface::Handle& tab_handle) override;
 
  private:
   struct EmbedderEntry {

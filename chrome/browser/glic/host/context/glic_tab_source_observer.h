@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -21,7 +20,6 @@ namespace glic {
 class GlicWindowController;
 
 class GlicTabSourceObserver : public TabStripModelObserver,
-                              public content::WebContentsObserver,
                               public BrowserListObserver {
  public:
   explicit GlicTabSourceObserver(GlicWindowController* coordinator,
@@ -33,10 +31,6 @@ class GlicTabSourceObserver : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-
-  // content::WebContentsObserver
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
  private:
   // BrowserListObserver:

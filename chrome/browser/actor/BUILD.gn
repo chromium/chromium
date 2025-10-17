@@ -20,6 +20,7 @@ source_set("actor") {
     "actor_switches.h",
     "actor_tab_data.h",
     "actor_task.h",
+    "actor_task_delegate.h",
     "actor_task_metadata.h",
     "aggregated_journal.h",
     "aggregated_journal_file_serializer.h",

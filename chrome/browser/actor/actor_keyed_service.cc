@@ -133,19 +133,19 @@ void ActorKeyedService::ResetForTesting() {
 }
 
 TaskId ActorKeyedService::CreateTask() {
-  return CreateTaskWithOptions(nullptr, base::Uuid());
+  return CreateTaskWithOptions(nullptr, nullptr);
 }
 
 TaskId ActorKeyedService::CreateTaskWithOptions(
     webui::mojom::TaskOptionsPtr options,
-    ParentInstanceId parent_instance_id) {
+    base::WeakPtr<ActorTaskDelegate> delegate) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   base::UmaHistogramBoolean("Actor.Task.Created", true);
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task = std::make_unique<ActorTask>(
       profile_.get(), std::move(execution_engine),
       ui::NewUiEventDispatcher(GetActorUiStateManager()), std::move(options),
-      parent_instance_id);
+      std::move(delegate));
   return AddActiveTask(std::move(actor_task));
 }
 
