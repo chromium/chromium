@@ -240,3 +240,25 @@ void RecordAIHubIconTapped() {
 void RecordBWGPromptSent() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiPromptSent"));
 }
+
+void RecordBWGSettingsOpened() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsOpened"));
+}
+
+void RecordBWGSettingsClose() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsClose"));
+}
+
+void RecordBWGSettingsBack() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsBack"));
+}
+
+void RecordBWGSettingsAppActivity() {
+  base::RecordAction(
+      base::UserMetricsAction("Settings.BWGSettings.BWGAppActivity"));
+}
+
+void RecordBWGSettingsExtensions() {
+  base::RecordAction(
+      base::UserMetricsAction("Settings.BWGSettings.BWGExtensions"));
+}

@@ -166,4 +166,7 @@ extern const char kBWGPreciseLocationURL[];
 // URL for the BWG Page Content Sharing Settings row.
 extern const char kBWGPageContentSharingURL[];
 
+// URL for the BWG Extensions Settings row.
+extern const char kBWGExtensionsURL[];
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_URL_CHROME_URL_CONSTANTS_H_

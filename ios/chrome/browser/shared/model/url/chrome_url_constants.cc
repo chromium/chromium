@@ -182,3 +182,5 @@ const char kBWGPreciseLocationURL[] =
 
 const char kBWGPageContentSharingURL[] =
     "https://support.google.com/gemini?p=chrome_PH#topic=15280100";
+
+const char kBWGExtensionsURL[] = "https://gemini.google.com/apps";

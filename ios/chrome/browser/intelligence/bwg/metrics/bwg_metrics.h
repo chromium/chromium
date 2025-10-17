@@ -180,4 +180,19 @@ void RecordAIHubIconTapped();
 // Records that the user sent a prompt in a BWG session.
 void RecordBWGPromptSent();
 
+// Records that the user opened the BWG settings page.
+void RecordBWGSettingsOpened();
+
+// Records that the user tapped the close button on the BWG settings page.
+void RecordBWGSettingsClose();
+
+// Records that the user tapped the back button on the BWG settings page.
+void RecordBWGSettingsBack();
+
+// Records that the user tapped on the BWG App Activity link.
+void RecordBWGSettingsAppActivity();
+
+// Records that the user tapped on the BWG Extensions link.
+void RecordBWGSettingsExtensions();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

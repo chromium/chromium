@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/bwg//ui/bwg_settings_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
@@ -31,12 +30,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierLocation = kSectionIdentifierEnumZero,
   SectionIdentifierPageContent,
   SectionIdentifierActivity,
+  SectionIdentifierExtensions,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeLocation = kItemTypeEnumZero,
   ItemTypePageContentSharing,
   ItemTypeAppActivity,
+  ItemTypeExtensions,
   ItemTypeLocationFooter,
   ItemTypePageContentSharingFooter,
   ItemTypeAppActivityFooter,
@@ -64,8 +65,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   TableViewMultiDetailTextItem* _preciseLocationItem;
   // Switch item for toggling page content sharing.
   TableViewSwitchItem* _pageContentSharingItem;
-  // BWG Apps activity item. Uses `accessoryView` to create a tappable icon.
-  TableViewDetailTextItem* _BWGAppsActivityItem;
   // Location view controller shown when precise location row is tapped.
   BWGLocationViewController* _locationViewController;
   // Precise location preference value.
@@ -80,6 +79,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kBWGSettingsViewTableIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_TITLE);
+  RecordBWGSettingsOpened();
   [self loadModel];
 }
 
@@ -141,16 +141,20 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
       toSectionWithIdentifier:SectionIdentifierActivity];
   [model setFooter:BWGAppActivityFooterItem
       forSectionWithIdentifier:SectionIdentifierActivity];
+
+  [model addSectionWithIdentifier:SectionIdentifierExtensions];
+  [model addItem:[self BWGExtensionsItem]
+      toSectionWithIdentifier:SectionIdentifierExtensions];
 }
 
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsClose"));
+  RecordBWGSettingsClose();
 }
 
 - (void)reportBackUserAction {
-  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsBack"));
+  RecordBWGSettingsBack();
 }
 
 #pragma mark - Private
@@ -213,6 +217,18 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   return BWGAppActivityItem;
 }
 
+// Creates the BWG extensions item.
+- (TableViewDetailTextItem*)BWGExtensionsItem {
+  TableViewDetailTextItem* BWGExtensionsItem =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypeExtensions];
+  BWGExtensionsItem.text =
+      l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_EXTENSIONS_TITLE);
+  BWGExtensionsItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolExternalLink;
+  BWGExtensionsItem.accessibilityTraits = UIAccessibilityTraitLink;
+  return BWGExtensionsItem;
+}
+
 // Called from the PageContentSharing setting's UIControlEventTouchUpInside.
 // Updates underlying page content sharing pref.
 - (void)pageContentSharingSwitchTapped:(UISwitch*)switchView {
@@ -247,9 +263,14 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeAppActivity) {
-    base::RecordAction(
-        base::UserMetricsAction("Settings.BWGSettings.BWGAppActivity"));
+    RecordBWGSettingsAppActivity();
     [self.mutator openNewTabWithURL:GURL(kBWGAppActivityURL)];
+  }
+
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypeExtensions) {
+    RecordBWGSettingsExtensions();
+    [self.mutator openNewTabWithURL:GURL(kBWGExtensionsURL)];
   }
 
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
