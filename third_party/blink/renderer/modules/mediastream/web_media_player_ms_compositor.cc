@@ -89,7 +89,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     cc::SkiaPaintCanvas paint_canvas(bitmap);
 
     DCHECK(provider->RasterInterface());
-    video_renderer->Copy(frame.get(), &paint_canvas, provider.get());
+    video_renderer->CopyOOPR(frame.get(), &paint_canvas, provider.get());
 
     bitmap.setImmutable();
     new_frame =

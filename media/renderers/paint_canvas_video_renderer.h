@@ -96,6 +96,14 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
              const PaintParams& params,
              viz::RasterContextProvider* raster_context_provider);
 
+  // Wrapper of Copy() that CHECK()'s that `raster_context_provider` is either
+  // null or supports the `gpu_rasterization` capability. Being used to
+  // incrementally validate that all callers of Copy() satisfy these
+  // conditions, at which point it will be merged into Copy().
+  void CopyOOPR(scoped_refptr<VideoFrame> video_frame,
+                cc::PaintCanvas* canvas,
+                viz::RasterContextProvider* raster_context_provider);
+
   // Paints |video_frame|, scaled to its |video_frame->visible_rect().size()|
   // on |canvas|. Note that the origin of |video_frame->visible_rect()| is
   // ignored -- the copy is done to the origin of |canvas|.
