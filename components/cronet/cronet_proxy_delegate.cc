@@ -10,7 +10,11 @@
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_delegate.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "url/gurl.h"
 
 namespace cronet {
 
@@ -69,6 +73,13 @@ void CronetProxyDelegate::OnResolveProxy(
     result->UseProxyList(proxy_list);
   }();
   TRACE_EVENT_END("cronet", "resulting_proxy_info", result->ToDebugString());
+}
+
+std::optional<bool> CronetProxyDelegate::CanFalloverToNextProxyOverride(
+    const net::ProxyChain& proxy_chain,
+    int net_error) {
+  // We promise this in org.chromium.net.ProxyOptions's documentation.
+  return true;
 }
 
 void CronetProxyDelegate::OnSuccessfulRequestAfterFailures(

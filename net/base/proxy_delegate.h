@@ -45,6 +45,14 @@ class NET_EXPORT ProxyDelegate {
       const ProxyRetryInfoMap& proxy_retry_info,
       ProxyInfo* result) = 0;
 
+  // Called when use of a proxy chain failed due to `net_error`. Allows
+  // overriding whether the request should be retried using the next ProxyChain
+  // in the fallback list. If not implemented, or if this returns std::nullopt,
+  // no override will take place.
+  virtual std::optional<bool> CanFalloverToNextProxyOverride(
+      const ProxyChain& proxy_chain,
+      int net_error);
+
   // Called when use of a proxy chain failed due to `net_error`, but another
   // proxy chain in the list succeeded. The failed proxy is within `bad_chain`,
   // but it is undefined at which proxy in that chain. `net_error` is the

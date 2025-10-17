@@ -39,6 +39,7 @@
 #include "net/http/alternative_service.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_network_session_peer.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_server_properties_manager.h"
@@ -1627,6 +1628,200 @@ TEST_P(JobControllerReconsiderProxyAfterErrorHttpsProxyTest, Test) {
     socket_pool->CloseIdleSockets("Close socket reason");
   }
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+// Same as JobControllerReconsiderProxyAfterErrorHttpsProxyTest.Test, but this
+// confirms that HttpStreamFactory::Job::ReconsiderProxyAfterError is correctly
+// passing ProxyDelegate to CanFalloverToNextProxy. This is achieved by checking
+// TestProxyDelegate::can_fallover_to_next_proxy_override_count.
+TEST_P(JobControllerReconsiderProxyAfterErrorHttpsProxyTest,
+       TestCanFalloverToNextProxyReceivesProxyDelegate) {
+  const auto [phase, error, unused] = std::get<0>(GetParam());
+  bool triggers_ssl_connect_job_retry_logic =
+      std::get<0>(GetParam()).TriggersSslConnectJobRetryLogic();
+  const GURL dest_url(std::get<1>(GetParam()));
+
+  CreateSessionDeps();
+
+  std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+          "HTTPS badproxy:99; HTTPS badfallbackproxy:98; DIRECT",
+          TRAFFIC_ANNOTATION_FOR_TESTS);
+  if (triggers_ssl_connect_job_retry_logic) {
+    proxy_resolution_service =
+        ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+            "HTTPS badproxy:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
+  }
+  auto test_proxy_delegate = std::make_unique<TestProxyDelegate>();
+  test_proxy_delegate->set_extra_header_name("Foo");
+
+  // Before starting the test, verify that there are no proxies marked as bad.
+  ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
+
+  static constexpr char kBadProxyTunnelRequest[] =
+      "CONNECT www.example.com:443 HTTP/1.1\r\n"
+      "Host: www.example.com:443\r\n"
+      "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n"
+      "Foo: https://badproxy:99\r\n\r\n";
+  static constexpr char kBadFallbackProxyTunnelRequest[] =
+      "CONNECT www.example.com:443 HTTP/1.1\r\n"
+      "Host: www.example.com:443\r\n"
+      "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n"
+      "Foo: https://badfallbackproxy:98\r\n\r\n";
+  const MockWrite kBadProxyTunnelWrites[] = {{ASYNC, kBadProxyTunnelRequest}};
+  const MockWrite kBadFallbackProxyTunnelWrites[] = {
+      {ASYNC, kBadFallbackProxyTunnelRequest}};
+  std::vector<MockRead> reads;
+
+  // Generate identical errors for both the main proxy and the fallback proxy.
+  // No alternative job is created for either, so only need one data provider
+  // for each, when the request makes it to the socket layer.
+  std::unique_ptr<StaticSocketDataProvider> socket_data_proxy_main_job;
+  std::unique_ptr<SSLSocketDataProvider> ssl_data_proxy_main_job;
+  std::unique_ptr<StaticSocketDataProvider> socket_data_proxy_main_job2;
+  std::unique_ptr<SSLSocketDataProvider> ssl_data_proxy_main_job2;
+  switch (phase) {
+    case TcpErrorPhase::kHostResolution:
+      // Only ERR_NAME_NOT_RESOLVED can be returned by the mock host resolver.
+      DCHECK_EQ(ERR_NAME_NOT_RESOLVED, error);
+      session_deps_.host_resolver->rules()->AddSimulatedFailure("badproxy");
+      session_deps_.host_resolver->rules()->AddSimulatedFailure(
+          "badfallbackproxy");
+      break;
+    case TcpErrorPhase::kTcpConnect:
+      socket_data_proxy_main_job = std::make_unique<StaticSocketDataProvider>();
+      socket_data_proxy_main_job->set_connect_data(MockConnect(ASYNC, error));
+      socket_data_proxy_main_job2 =
+          std::make_unique<StaticSocketDataProvider>();
+      socket_data_proxy_main_job2->set_connect_data(MockConnect(ASYNC, error));
+      break;
+    case TcpErrorPhase::kProxySslHandshake:
+      socket_data_proxy_main_job = std::make_unique<StaticSocketDataProvider>();
+      ssl_data_proxy_main_job =
+          std::make_unique<SSLSocketDataProvider>(ASYNC, error);
+      socket_data_proxy_main_job2 =
+          std::make_unique<StaticSocketDataProvider>();
+      ssl_data_proxy_main_job2 =
+          std::make_unique<SSLSocketDataProvider>(ASYNC, error);
+      break;
+    case TcpErrorPhase::kTunnelRead:
+      if (dest_url.SchemeIs(url::kHttpScheme)) {
+        GTEST_SKIP() << "Tunnels aren't established for HTTP destinations.";
+      }
+      reads.emplace_back(ASYNC, error);
+      socket_data_proxy_main_job = std::make_unique<StaticSocketDataProvider>(
+          reads, kBadProxyTunnelWrites);
+      ssl_data_proxy_main_job =
+          std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+      socket_data_proxy_main_job2 = std::make_unique<StaticSocketDataProvider>(
+          reads, triggers_ssl_connect_job_retry_logic
+                     ? kBadProxyTunnelWrites
+                     : kBadFallbackProxyTunnelWrites);
+      ssl_data_proxy_main_job2 =
+          std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+      break;
+  }
+
+  if (socket_data_proxy_main_job) {
+    session_deps_.socket_factory->AddSocketDataProvider(
+        socket_data_proxy_main_job.get());
+    session_deps_.socket_factory->AddSocketDataProvider(
+        socket_data_proxy_main_job2.get());
+  }
+  if (ssl_data_proxy_main_job) {
+    session_deps_.socket_factory->AddSSLSocketDataProvider(
+        ssl_data_proxy_main_job.get());
+    session_deps_.socket_factory->AddSSLSocketDataProvider(
+        ssl_data_proxy_main_job2.get());
+  }
+
+  // After both proxies fail, the request should fall back to using DIRECT, and
+  // succeed.
+  SSLSocketDataProvider ssl_data_first_request(ASYNC, OK);
+  StaticSocketDataProvider socket_data_direct_first_request;
+  socket_data_direct_first_request.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(
+      &socket_data_direct_first_request);
+  // Only used in the HTTPS destination case, but harmless in the HTTP case.
+  session_deps_.socket_factory->AddSSLSocketDataProvider(
+      &ssl_data_first_request);
+
+  // Second request should use DIRECT, skipping the bad proxies, and succeed.
+  SSLSocketDataProvider ssl_data_second_request(ASYNC, OK);
+  StaticSocketDataProvider socket_data_direct_second_request;
+  socket_data_direct_second_request.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(
+      &socket_data_direct_second_request);
+  // Only used in the HTTPS destination case, but harmless in the HTTP case.
+  session_deps_.socket_factory->AddSSLSocketDataProvider(
+      &ssl_data_second_request);
+
+  // Now request a stream. It should succeed using the DIRECT fallback proxy
+  // option.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = dest_url;
+
+  Initialize(std::move(proxy_resolution_service),
+             std::move(test_proxy_delegate));
+
+  // Start two requests. The first request should consume data from
+  // `socket_data_proxy_main_job` and `socket_data_direct_first_request`.
+  // The second request should consume data from
+  // `socket_data_direct_second_request`.
+
+  for (size_t i = 0; i < 2; ++i) {
+    std::unique_ptr<HttpStreamRequest> request =
+        CreateJobController(request_info);
+    ASSERT_TRUE(request_delegate_->WaitForHttpStream());
+
+    // Verify that request was fetched without proxy.
+    EXPECT_TRUE(request_delegate_->used_proxy_info().is_direct());
+
+    // The proxies that failed should now be known to the proxy service as bad.
+    const ProxyRetryInfoMap& retry_info =
+        session_->proxy_resolution_service()->proxy_retry_info();
+    if (!triggers_ssl_connect_job_retry_logic) {
+      EXPECT_THAT(retry_info,
+                  ::testing::UnorderedElementsAre(
+
+                      Key(ProxyUriToProxyChain(
+
+                          "https://badproxy:99", ProxyServer::SCHEME_HTTP)),
+
+                      Key(ProxyUriToProxyChain("https://badfallbackproxy:98",
+                                               ProxyServer::SCHEME_HTTP))));
+    } else {
+      ASSERT_THAT(retry_info, SizeIs(1));
+      EXPECT_THAT(retry_info,
+                  Contains(Key(ProxyUriToProxyChain(
+                      "https://badproxy:99", ProxyServer::SCHEME_HTTP))));
+    }
+
+    // The idle socket should have been added back to the socket pool. Close it,
+    // so the next loop iteration creates a new socket instead of reusing the
+    // idle one.
+    auto* socket_pool = session_->GetSocketPool(
+        HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
+    EXPECT_EQ(socket_pool->IdleSocketCount(), 1);
+    socket_pool->CloseIdleSockets("Close socket reason");
+  }
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+  auto* proxy_delegate =
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+
+  // When this is set we fallback directly to DIRECT, hence we expect one fewer
+  // call to CanFalloverToNextProxy. See ConfiguredProxyResolutionService
+  // creation above and TriggersSslConnectJobRetryLogic()'s documentation.
+  if (triggers_ssl_connect_job_retry_logic) {
+    EXPECT_EQ(proxy_delegate->on_can_fallover_to_next_proxy_override_count(),
+              1);
+  } else {
+    EXPECT_EQ(proxy_delegate->on_can_fallover_to_next_proxy_override_count(),
+              2);
+  }
 }
 
 constexpr TcpProxyTestCase kFirstNestedHttpsProxyTestCases[] = {

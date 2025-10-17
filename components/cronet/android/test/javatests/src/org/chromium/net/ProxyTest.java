@@ -295,10 +295,9 @@ public class ProxyTest {
                     "This feature flag has not reached platform Cronet yet. Fallback provides no"
                             + " ProxyOptions support.",
             requiredSdkExtensionForPlatform = HTTPENGINE_PROXY_API_SDK_EXTENSION)
-    @DisabledTest(
-            message =
-                    "TODO(https://crbug.com/440096216): Make Cronet fallback for"
-                            + " ERR_TUNNEL_CONNECTION_FAILED")
+    // Mockito#verify implementations makes use of java.util.stream.Stream, which is available
+    // starting from Nougat/API level 24.
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testBrokenProxyWithWorkingFallback_brokenProxyIsDeprioritized() {
         try (NativeTestServer brokenProxyServer = mNativeTestServer;
                 NativeTestServer workingProxyServer =

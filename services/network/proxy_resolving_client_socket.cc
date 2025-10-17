@@ -23,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_delegate.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_controller.h"
 #include "net/http/http_network_session.h"
@@ -351,7 +352,9 @@ int ProxyResolvingClientSocket::ReconsiderProxyAfterError(int error) {
   DCHECK_NE(error, net::ERR_IO_PENDING);
 
   // Check if the error was a proxy failure.
-  if (!net::CanFalloverToNextProxy(proxy_info_.proxy_chain(), error, &error)) {
+  if (!net::CanFalloverToNextProxy(
+          proxy_info_.proxy_chain(), error, &error,
+          common_connect_job_params_->proxy_delegate)) {
     return error;
   }
 

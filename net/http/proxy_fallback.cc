@@ -9,13 +9,23 @@
 #include "base/strings/string_number_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 
 namespace net {
 
 NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int error,
-                                       int* final_error) {
+                                       int* final_error,
+                                       ProxyDelegate* proxy_delegate) {
+  if (proxy_delegate) {
+    std::optional<bool> can_fallover =
+        proxy_delegate->CanFalloverToNextProxyOverride(proxy_chain, error);
+    if (can_fallover.has_value()) {
+      return *can_fallover;
+    }
+  }
+
   if (proxy_chain.is_for_ip_protection()) {
     // Log the error.
     // Useful to know if errors not handled below are passed to this function.

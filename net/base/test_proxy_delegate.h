@@ -54,6 +54,11 @@ class TestProxyDelegate : public ProxyDelegate {
   // proxy server. For more info, see `set_extra_header_name()`.
   static std::string GetExtraHeaderValue(const ProxyServer& proxy_server);
 
+  // Returns the number of times `CanFalloverToNextProxyOverride()` was called.
+  size_t on_can_fallover_to_next_proxy_override_count() const {
+    return on_can_fallover_to_next_proxy_override_count_;
+  }
+
   // Returns the number of times `OnBeforeTunnelRequest()` was called.
   size_t on_before_tunnel_request_call_count() const {
     return on_before_tunnel_request_call_count_;
@@ -111,6 +116,9 @@ class TestProxyDelegate : public ProxyDelegate {
                       ProxyInfo* result) override;
   void OnSuccessfulRequestAfterFailures(
       const ProxyRetryInfoMap& proxy_retry_info) override;
+  std::optional<bool> CanFalloverToNextProxyOverride(
+      const net::ProxyChain& proxy_chain,
+      int net_error) override;
   void OnFallback(const ProxyChain& bad_chain, int net_error) override;
   base::expected<HttpRequestHeaders, Error> OnBeforeTunnelRequest(
       const ProxyChain& proxy_chain,
@@ -147,6 +155,8 @@ class TestProxyDelegate : public ProxyDelegate {
   std::optional<ProxyChain> proxy_chain_;
   std::optional<ProxyList> proxy_list_;
   std::optional<std::string> extra_header_name_;
+
+  size_t on_can_fallover_to_next_proxy_override_count_ = 0;
 
   size_t on_before_tunnel_request_call_count_ = 0;
 

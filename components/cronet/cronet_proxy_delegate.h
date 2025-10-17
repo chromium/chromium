@@ -12,6 +12,16 @@
 #include "net/base/net_errors.h"
 #include "net/base/proxy_delegate.h"
 
+class GURL;
+
+namespace net {
+
+class NetworkAnonymizationKey;
+class ProxyChain;
+class ProxyInfo;
+
+}  // namespace net
+
 namespace cronet {
 
 // Implements org.chromium.net.ProxyOptions by implementing a custom
@@ -35,6 +45,9 @@ class CronetProxyDelegate final : public net::ProxyDelegate {
       const std::string& method,
       const net::ProxyRetryInfoMap& proxy_retry_info,
       net::ProxyInfo* result) override;
+  std::optional<bool> CanFalloverToNextProxyOverride(
+      const net::ProxyChain& proxy_chain,
+      int net_error) override;
   void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
   void OnSuccessfulRequestAfterFailures(
       const net::ProxyRetryInfoMap& proxy_retry_info) override;

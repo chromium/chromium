@@ -145,6 +145,13 @@ void TestProxyDelegate::OnResolveProxy(
 void TestProxyDelegate::OnSuccessfulRequestAfterFailures(
     const ProxyRetryInfoMap& proxy_retry_info) {}
 
+std::optional<bool> TestProxyDelegate::CanFalloverToNextProxyOverride(
+    const net::ProxyChain& proxy_chain,
+    int net_error) {
+  ++on_can_fallover_to_next_proxy_override_count_;
+  return std::nullopt;
+}
+
 void TestProxyDelegate::OnFallback(const ProxyChain& bad_chain, int net_error) {
 }
 
