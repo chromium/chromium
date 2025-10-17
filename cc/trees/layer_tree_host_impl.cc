@@ -2956,6 +2956,10 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
             data->add_latency_ids(latency.trace_id());
           }
         });
+    if (settings_.trees_in_viz_in_viz_process) {
+      compositor_frame.metadata.trees_in_viz_timing_details
+          .submit_compositor_frame = submit_time;
+    }
     layer_tree_frame_sink_->SubmitCompositorFrame(
         std::move(compositor_frame),
         /*hit_test_data_changed=*/false);

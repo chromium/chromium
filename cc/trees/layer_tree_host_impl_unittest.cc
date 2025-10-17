@@ -17292,7 +17292,7 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
   EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
   // This function sets the metadata timestamps from FrameData.
-  host_impl_->DrawLayers(&frame);
+  std::optional<SubmitInfo> submit_info = host_impl_->DrawLayers(&frame);
 
   auto* fake_layer_tree_frame_sink =
       static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
@@ -17306,7 +17306,9 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
             metadata.trees_in_viz_timing_details.start_prepare_to_draw);
   EXPECT_EQ(frame.trees_in_viz_timing_details->start_draw_layers,
             metadata.trees_in_viz_timing_details.start_draw_layers);
-  EXPECT_EQ(frame.trees_in_viz_timing_details->submit_compositor_frame,
+  // This timestamp is set inside DrawLayers, so it should be
+  // equat to submit info submit time.
+  EXPECT_EQ(submit_info.value().time,
             metadata.trees_in_viz_timing_details.submit_compositor_frame);
 }
 
