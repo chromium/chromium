@@ -64,7 +64,7 @@
   --cr-icon-button-height: 100%;
   --cr-icon-button-width: 100%;
   --cr-icon-button-fill-color: white;
-  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-icon-size: 20px;
   --cr-icon-button-margin-start: 0px;
   border-radius: 10px;
   display: flex;
@@ -77,7 +77,9 @@
   display: flex;
   gap: 8px;
   height: 36px;
+  overflow: hidden;
   padding: 0px 0px 0px 4px;
+  position: relative;
   width: 174px;
 }
 
@@ -102,6 +104,24 @@
   width: 100%;
 }
 
+.chip:hover .pdf-icon,
+.chip:hover composebox-tab-favicon {
+  display: none;
+}
+
+.chip-overlay {
+  background-color: var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+  border-radius: inherit;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+  position: absolute;
+}
+
+.chip:hover .chip-overlay {
+  display: block;
+}
+
 .overlay {
   height: 100%;
   left: 0;
@@ -112,12 +132,11 @@
 }
 
 .remove-button {
-  --cr-icon-button-fill-color:
-    var(--color-new-tab-page-composebox-file-chip-text);
+  --cr-icon-button-fill-color: white;
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-margin-start: 0;
   --cr-icon-button-margin-end: 8px;
-  background-color: var(--color-new-tab-page-composebox-background);
+  background-color: var(--color-new-tab-page-composebox-file-image-overlay);
   border-radius: 4px;
   color: var(--color-new-tab-page-composebox-pdf-chip-icon);
   height: 100%;
