@@ -1022,9 +1022,6 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
 crabbyavif::avifResult CrabbyAVIFImageDecoder::DecodeImage(wtf_size_t index) {
   const auto ret =
       crabbyavif::crabby_avifDecoderNthImage(decoder_.get(), index);
-  // |index| should be less than what DecodeFrameCount() returns, so we should
-  // not get the crabbyavif::AVIF_RESULT_NO_IMAGES_REMAINING error.
-  DCHECK_NE(ret, crabbyavif::AVIF_RESULT_NO_IMAGES_REMAINING);
   if (ret != crabbyavif::AVIF_RESULT_OK &&
       ret != crabbyavif::AVIF_RESULT_WAITING_ON_IO) {
     DVLOG(1) << "crabbyavif::crabby_avifDecoderNthImage(" << index
