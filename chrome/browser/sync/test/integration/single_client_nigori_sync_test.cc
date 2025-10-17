@@ -125,31 +125,6 @@ MATCHER_P(IsDataEncryptedWith, key_params, "") {
   return encrypted_data.key_name() == nigori->GetKeyName();
 }
 
-MATCHER_P4(StatusLabelsMatch,
-           message_type,
-           status_label_string_id,
-           button_string_id,
-           action_type,
-           "") {
-  if (arg.message_type != message_type) {
-    *result_listener << "Wrong message type";
-    return false;
-  }
-  if (arg.status_label_string_id != status_label_string_id) {
-    *result_listener << "Wrong status label";
-    return false;
-  }
-  if (arg.button_string_id != button_string_id) {
-    *result_listener << "Wrong button string";
-    return false;
-  }
-  if (arg.action_type != action_type) {
-    *result_listener << "Wrong action type";
-    return false;
-  }
-  return true;
-}
-
 std::string ComputeKeyName(const KeyParamsForTesting& key_params) {
   return syncer::Nigori::CreateByDerivation(key_params.derivation_params,
                                             key_params.password)
@@ -1312,13 +1287,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                      kNeedsTrustedVaultKeyForPasswords));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // Verify the string that would be displayed in settings.
-  ASSERT_THAT(GetSyncStatusLabels(GetProfile(0)),
-              StatusLabelsMatch(
-                  SyncStatusMessageType::kPasswordsOnlySyncError,
-                  IDS_SYNC_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
-                  SyncStatusActionType::kRetrieveTrustedVaultKeys));
-
   // There needs to be an existing tab for the second tab (the retrieval flow)
   // to be closeable via javascript.
   chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
@@ -1342,10 +1310,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   EXPECT_FALSE(GetSyncService(0)
                    ->GetUserSettings()
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
-  EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
-              StatusLabelsMatch(SyncStatusMessageType::kSynced,
-                                IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
-                                SyncStatusActionType::kNoAction));
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string is empty.
@@ -1631,10 +1595,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                    ->GetUserSettings()
                    ->IsTrustedVaultRecoverabilityDegraded());
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
-              StatusLabelsMatch(SyncStatusMessageType::kSynced,
-                                IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
-                                SyncStatusActionType::kNoAction));
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string is empty.
@@ -1978,12 +1938,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
               Eq(syncer::SyncService::UserActionableError::
                      kTrustedVaultRecoverabilityDegradedForPasswords));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  // No messages expected in settings.
-  EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
-              StatusLabelsMatch(SyncStatusMessageType::kSynced,
-                                IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
-                                SyncStatusActionType::kNoAction));
 
   // Mimic opening a web page where the user can interact with the degraded
   // recoverability flow. Before that, there needs to be an existing tab for the

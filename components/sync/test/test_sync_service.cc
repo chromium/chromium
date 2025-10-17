@@ -232,7 +232,9 @@ SyncService::UserActionableError TestSyncService::GetUserActionableError()
     }
     // RequiresClientUpgrade() is unrecoverable, but is treated separately
     // below.
-    if (HasUnrecoverableError() && !RequiresClientUpgrade()) {
+    if (HasUnrecoverableError() &&
+        detailed_sync_status_.sync_protocol_error.action !=
+            syncer::UPGRADE_CLIENT) {
       return UserActionableError::kUnrecoverableError;
     }
   }
@@ -241,7 +243,8 @@ SyncService::UserActionableError TestSyncService::GetUserActionableError()
   if (GetAuthError().state() != GoogleServiceAuthError::NONE) {
     return UserActionableError::kSignInNeedsUpdate;
   }
-  if (RequiresClientUpgrade()) {
+  if (detailed_sync_status_.sync_protocol_error.action ==
+      syncer::UPGRADE_CLIENT) {
     return UserActionableError::kNeedsClientUpgrade;
   }
   if (user_settings_.IsPassphraseRequiredForPreferredDataTypes()) {
@@ -289,11 +292,6 @@ bool TestSyncService::HasCachedPersistentAuthErrorForMetrics() const {
 
 base::Time TestSyncService::GetAuthErrorTime() const {
   return base::Time();
-}
-
-bool TestSyncService::RequiresClientUpgrade() const {
-  return detailed_sync_status_.sync_protocol_error.action ==
-         syncer::UPGRADE_CLIENT;
 }
 
 std::unique_ptr<SyncSetupInProgressHandle>

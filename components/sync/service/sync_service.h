@@ -347,12 +347,6 @@ class SyncService : public KeyedService {
   // after startup / profile load, as it caches the last known value.
   virtual bool HasCachedPersistentAuthErrorForMetrics() const = 0;
 
-  // Returns true if the Chrome client is too old and needs to be updated for
-  // Sync to work.
-  // TODO(crbug.com/40890809): Remove this API and use GetUserActionableError()
-  // instead.
-  virtual bool RequiresClientUpgrade() const = 0;
-
   //////////////////////////////////////////////////////////////////////////////
   // DERIVED STATE ACCESS
   //////////////////////////////////////////////////////////////////////////////

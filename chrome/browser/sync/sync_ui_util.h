@@ -17,10 +17,6 @@ class Profile;
 class Browser;
 #endif
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -62,22 +58,6 @@ struct SyncStatusLabels {
   int secondary_button_string_id = 0;
   SyncStatusActionType action_type = SyncStatusActionType::kNoAction;
 };
-
-// Returns the high-level sync status by querying |sync_service| and
-// |identity_manager|.
-SyncStatusLabels GetSyncStatusLabels(
-    syncer::SyncService* sync_service,
-    signin::IdentityManager* identity_manager,
-    bool is_user_clear_primary_account_allowed);
-
-// Returns the high-level sync status by querying |profile|. This is a
-// convenience version of GetSyncStatusLabels that use the |sync_service| and
-// |identity_manager| associated to |profile| via their respective factories.
-SyncStatusLabels GetSyncStatusLabels(Profile* profile);
-
-// Convenience version of GetSyncStatusLabels for when you're only interested in
-// the message type.
-SyncStatusMessageType GetSyncStatusMessageType(Profile* profile);
 
 #if !BUILDFLAG(IS_ANDROID)
 SyncStatusLabels GetSyncStatusLabelsForSettings(

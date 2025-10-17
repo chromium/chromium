@@ -406,10 +406,13 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
             GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                 CREDENTIALS_REJECTED_BY_SERVER));
+    test_sync_service->SetPersistentAuthError();
     ASSERT_TRUE(
         identity_test_env->identity_manager()
             ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
             .IsPersistentError());
+    ASSERT_EQ(syncer::SyncService::UserActionableError::kSignInNeedsUpdate,
+              test_sync_service->GetUserActionableError());
   }
 
   void VerifyTestCase(const TestCase& test_case) {

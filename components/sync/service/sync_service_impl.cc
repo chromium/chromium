@@ -904,9 +904,9 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
     if (!GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
       return UserActionableError::kNeedsSettingsConfirmation;
     }
-    // RequiresClientUpgrade() is unrecoverable, but is treated separately
-    // below.
-    if (HasUnrecoverableError() && !RequiresClientUpgrade()) {
+    // UPGRADE_CLIENT error is unrecoverable, but is treated separately below.
+    if (HasUnrecoverableError() &&
+        last_actionable_error_.action != UPGRADE_CLIENT) {
       return UserActionableError::kUnrecoverableError;
     }
   }
@@ -915,7 +915,7 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
   if (GetAuthError().state() != GoogleServiceAuthError::NONE) {
     return UserActionableError::kSignInNeedsUpdate;
   }
-  if (RequiresClientUpgrade()) {
+  if (last_actionable_error_.action == UPGRADE_CLIENT) {
     return UserActionableError::kNeedsClientUpgrade;
   }
   if (user_settings_->IsPassphraseRequiredForPreferredDataTypes()) {
@@ -1501,10 +1501,6 @@ base::Time SyncServiceImpl::GetAuthErrorTime() const {
 bool SyncServiceImpl::HasCachedPersistentAuthErrorForMetrics() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_prefs_.HasCachedPersistentAuthErrorForMetrics();
-}
-
-bool SyncServiceImpl::RequiresClientUpgrade() const {
-  return last_actionable_error_.action == UPGRADE_CLIENT;
 }
 
 std::unique_ptr<SyncSetupInProgressHandle>

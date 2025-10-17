@@ -62,7 +62,6 @@ class MockSyncService : public SyncService {
               HasCachedPersistentAuthErrorForMetrics,
               (),
               (const override));
-  MOCK_METHOD(bool, RequiresClientUpgrade, (), (const override));
   MOCK_METHOD(std::unique_ptr<SyncSetupInProgressHandle>,
               GetSetupInProgressHandle,
               (),

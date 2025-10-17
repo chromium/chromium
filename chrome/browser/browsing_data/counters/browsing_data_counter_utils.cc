@@ -18,6 +18,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/core/features.h"
@@ -29,9 +30,14 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
+#include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/sync/service/sync_user_settings.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "ui/strings/grit/ui_strings.h"
@@ -81,7 +87,23 @@ bool ShouldShowCookieException(Profile* profile) {
   }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
-    return GetSyncStatusMessageType(profile) == SyncStatusMessageType::kSynced;
+    const syncer::SyncService* service =
+        SyncServiceFactory::GetForProfile(profile);
+    if (!service || !service->HasSyncConsent()) {
+      return false;
+    }
+#if BUILDFLAG(IS_CHROMEOS)
+    if (service->GetUserSettings()->IsSyncFeatureDisabledViaDashboard()) {
+      return false;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    syncer::SyncService::UserActionableError error =
+        service->GetUserActionableError();
+    return error == syncer::SyncService::UserActionableError::kNone ||
+           error == syncer::SyncService::UserActionableError::
+                        kTrustedVaultRecoverabilityDegradedForPasswords ||
+           error == syncer::SyncService::UserActionableError::
+                        kTrustedVaultRecoverabilityDegradedForEverything;
   }
 #endif
   return false;

@@ -573,14 +573,16 @@ class AvatarToolbarButtonBaseBrowserTest {
     sync_status.sync_protocol_error.action = syncer::UPGRADE_CLIENT;
     GetTestSyncService()->SetDetailedSyncStatus(true, sync_status);
     GetTestSyncService()->FireStateChanged();
-    ASSERT_TRUE(GetTestSyncService()->RequiresClientUpgrade());
+    ASSERT_EQ(GetTestSyncService()->GetUserActionableError(),
+              syncer::SyncService::UserActionableError::kNeedsClientUpgrade);
   }
 
   void ClearUpgradeClientError() {
     syncer::SyncStatus sync_status;
     GetTestSyncService()->SetDetailedSyncStatus(true, sync_status);
     GetTestSyncService()->FireStateChanged();
-    ASSERT_FALSE(GetTestSyncService()->RequiresClientUpgrade());
+    ASSERT_NE(GetTestSyncService()->GetUserActionableError(),
+              syncer::SyncService::UserActionableError::kNeedsClientUpgrade);
   }
 
   void SetSyncServiceInitializedState(bool initialized) {

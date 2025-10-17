@@ -11,16 +11,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -43,138 +39,6 @@
 
 namespace {
 
-SyncStatusLabels GetStatusForUnrecoverableError(
-    bool is_user_clear_primary_account_allowed) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  int status_label_string_id =
-      is_user_clear_primary_account_allowed
-          ? IDS_SYNC_STATUS_UNRECOVERABLE_ERROR
-          :
-          // The message for managed accounts is the same as that on ChromeOS.
-          IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT;
-#else
-  int status_label_string_id =
-      IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT;
-#endif
-
-  return {SyncStatusMessageType::kSyncError, status_label_string_id,
-          IDS_SYNC_RELOGIN_BUTTON, IDS_SYNC_EMPTY_STRING,
-          SyncStatusActionType::kReauthenticate};
-}
-
-SyncStatusLabels GetSyncStatusLabelsImpl(
-    const syncer::SyncService* service,
-    bool is_user_clear_primary_account_allowed,
-    const GoogleServiceAuthError& auth_error) {
-  DCHECK(service);
-  DCHECK(!auth_error.IsTransientError());
-
-  if (!service->HasSyncConsent()) {
-    return {SyncStatusMessageType::kPreSynced, IDS_SYNC_EMPTY_STRING,
-            IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
-            SyncStatusActionType::kNoAction};
-  }
-
-  // If local Sync were enabled, then the SyncService shouldn't report having a
-  // primary (or any) account.
-  DCHECK(!service->IsLocalSyncEnabled());
-
-  // First check if Chrome needs to be updated.
-  if (service->RequiresClientUpgrade()) {
-    return {SyncStatusMessageType::kSyncError, IDS_SYNC_UPGRADE_CLIENT,
-            IDS_SYNC_UPGRADE_CLIENT_BUTTON, IDS_SYNC_EMPTY_STRING,
-            SyncStatusActionType::kUpgradeClient};
-  }
-
-  // Then check for an unrecoverable error.
-  if (service->HasUnrecoverableError()) {
-    return GetStatusForUnrecoverableError(
-        is_user_clear_primary_account_allowed);
-  }
-
-  // Then check for an auth error.
-  if (auth_error.state() != GoogleServiceAuthError::NONE) {
-    DCHECK(auth_error.IsPersistentError());
-    return {SyncStatusMessageType::kSyncError, IDS_SYNC_RELOGIN_ERROR,
-            IDS_SYNC_RELOGIN_BUTTON, IDS_SYNC_EMPTY_STRING,
-            SyncStatusActionType::kReauthenticate};
-  }
-
-  // Check if Sync is disabled by policy.
-  if (service->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    // TODO(crbug.com/41429548): Is SyncStatusMessageType::kSynced correct for
-    // this case?
-    return {SyncStatusMessageType::kSynced,
-            IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY, IDS_SYNC_EMPTY_STRING,
-            IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kNoAction};
-  }
-
-  // Check to see if sync has been disabled via the dashboard and needs to be
-  // set up once again.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (service->GetUserSettings()->IsSyncFeatureDisabledViaDashboard()) {
-    return {SyncStatusMessageType::kSyncError,
-            IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
-            IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
-            SyncStatusActionType::kNoAction};
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  if (service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
-    // Check for a passphrase error.
-    if (service->GetUserSettings()
-            ->IsPassphraseRequiredForPreferredDataTypes()) {
-      // TODO(mastiz): This should return
-      // SyncStatusMessageType::kPasswordsOnlySyncError if only passwords are
-      // encrypted as per IsEncryptEverythingEnabled().
-      return {SyncStatusMessageType::kSyncError, IDS_SYNC_STATUS_NEEDS_PASSWORD,
-              IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON, IDS_SYNC_EMPTY_STRING,
-              SyncStatusActionType::kEnterPassphrase};
-    }
-
-    if (service->IsSyncFeatureActive() &&
-        service->GetUserSettings()
-            ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
-      return {service->GetUserSettings()->IsEncryptEverythingEnabled()
-                  ? SyncStatusMessageType::kSyncError
-                  : SyncStatusMessageType::kPasswordsOnlySyncError,
-              IDS_SYNC_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
-              IDS_SYNC_EMPTY_STRING,
-              SyncStatusActionType::kRetrieveTrustedVaultKeys};
-    }
-
-    // At this point, there is no Sync error.
-    if (service->IsSyncFeatureActive()) {
-      return {SyncStatusMessageType::kSynced,
-              service->GetUserSettings()->IsSyncEverythingEnabled()
-                  ? IDS_SYNC_ACCOUNT_SYNCING
-                  : IDS_SYNC_ACCOUNT_SYNCING_CUSTOM_DATA_TYPES,
-              IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
-              SyncStatusActionType::kNoAction};
-    } else {
-      // Sync is still initializing.
-      return {SyncStatusMessageType::kSynced, IDS_SYNC_EMPTY_STRING,
-              IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
-              SyncStatusActionType::kNoAction};
-    }
-  }
-
-  // If first setup is in progress, show an "in progress" message.
-  if (service->IsSetupInProgress()) {
-    return {SyncStatusMessageType::kPreSynced, IDS_SYNC_SETUP_IN_PROGRESS,
-            IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
-            SyncStatusActionType::kNoAction};
-  }
-
-  // At this point we've ruled out all other cases - all that's left is a
-  // missing Sync confirmation.
-  DCHECK(ShouldRequestSyncConfirmation(service));
-  return {SyncStatusMessageType::kSyncError, IDS_SYNC_SETTINGS_NOT_CONFIRMED,
-          IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
-          IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kConfirmSyncSettings};
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 
 void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {
@@ -189,40 +53,6 @@ void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
-
-SyncStatusLabels GetSyncStatusLabels(
-    syncer::SyncService* sync_service,
-    signin::IdentityManager* identity_manager,
-    bool is_user_clear_primary_account_allowed) {
-  if (!sync_service) {
-    // This can happen if Sync is disabled via the command line.
-    return {SyncStatusMessageType::kPreSynced, IDS_SYNC_EMPTY_STRING,
-            IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
-            SyncStatusActionType::kNoAction};
-  }
-  DCHECK(identity_manager);
-  CoreAccountInfo account_info = sync_service->GetAccountInfo();
-  GoogleServiceAuthError auth_error =
-      identity_manager->GetErrorStateOfRefreshTokenForAccount(
-          account_info.account_id);
-  return GetSyncStatusLabelsImpl(
-      sync_service, is_user_clear_primary_account_allowed, auth_error);
-}
-
-SyncStatusLabels GetSyncStatusLabels(Profile* profile) {
-  CHECK(profile);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-  return GetSyncStatusLabels(SyncServiceFactory::GetForProfile(profile),
-                             identity_manager,
-                             ChromeSigninClientFactory::GetForProfile(profile)
-                                 ->IsClearPrimaryAccountAllowed());
-}
-
-SyncStatusMessageType GetSyncStatusMessageType(Profile* profile) {
-  return GetSyncStatusLabels(profile).message_type;
-}
 
 #if !BUILDFLAG(IS_ANDROID)
 SyncStatusLabels GetSyncStatusLabelsForSettings(
