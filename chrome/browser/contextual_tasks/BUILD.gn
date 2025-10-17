@@ -18,6 +18,7 @@ source_set("contextual_tasks") {
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
+    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/common:channel_info",
     "//components/contextual_tasks/internal",

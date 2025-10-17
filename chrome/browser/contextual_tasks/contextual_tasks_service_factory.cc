@@ -10,6 +10,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/contextual_tasks/internal/composite_context_decorator.h"
@@ -48,6 +49,7 @@ ContextualTasksServiceFactory::ContextualTasksServiceFactory()
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 ContextualTasksServiceFactory::~ContextualTasksServiceFactory() = default;
@@ -68,13 +70,15 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
                                            ServiceAccessType::EXPLICIT_ACCESS);
   AimEligibilityService* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<ContextualTasksServiceImpl>(
       chrome::GetChannel(),
       DataTypeStoreServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context))
           ->GetStoreFactory(),
       CreateCompositeContextDecorator(favicon_service, history_service),
-      aim_eligibility_service);
+      aim_eligibility_service, identity_manager);
 }
 
 }  // namespace contextual_tasks

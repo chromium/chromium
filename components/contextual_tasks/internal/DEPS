@@ -2,7 +2,11 @@ include_rules = [
   "+components/prefs",
   "+components/history/core/browser",
   "+components/omnibox/browser",
+  "+components/signin/public",
   "+components/sync/protocol",
   "+components/sync/test",
+  "+google_apis/gaia",
+  "+net/base",
   "+services/network/public/cpp/shared_url_loader_factory.h",
+  "+third_party/re2",
 ]

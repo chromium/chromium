@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sessions/core/session_id.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -116,6 +117,11 @@ class MockCompositeContextDecorator : public CompositeContextDecorator {
 class ContextualTasksServiceImplTest : public testing::Test {
  public:
   ContextualTasksServiceImplTest() {
+    identity_test_environment_ =
+        std::make_unique<signin::IdentityTestEnvironment>();
+    identity_test_environment_->MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
+
     auto mock_decorator =
         std::make_unique<testing::NiceMock<MockCompositeContextDecorator>>();
     mock_decorator_ = mock_decorator.get();
@@ -125,7 +131,8 @@ class ContextualTasksServiceImplTest : public testing::Test {
     service_ = std::make_unique<ContextualTasksServiceImpl>(
         version_info::Channel::UNKNOWN,
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-        std::move(mock_decorator), mock_aim_eligibility_service_.get());
+        std::move(mock_decorator), mock_aim_eligibility_service_.get(),
+        identity_test_environment_->identity_manager());
   }
   ~ContextualTasksServiceImplTest() override = default;
 
@@ -206,6 +213,7 @@ class ContextualTasksServiceImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
   std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service_;
   std::unique_ptr<ContextualTasksServiceImpl> service_;
   raw_ptr<testing::NiceMock<MockCompositeContextDecorator>> mock_decorator_;

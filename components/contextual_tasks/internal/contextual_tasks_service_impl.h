@@ -29,6 +29,10 @@
 
 class AimEligibilityService;
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace contextual_tasks {
 
 class CompositeContextDecorator;
@@ -42,7 +46,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       version_info::Channel channel,
       syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
       std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
-      AimEligibilityService* aim_eligibility_service);
+      AimEligibilityService* aim_eligibility_service,
+      signin::IdentityManager* identity_manager);
   ~ContextualTasksServiceImpl() override;
 
   ContextualTasksServiceImpl(const ContextualTasksServiceImpl&) = delete;
@@ -149,6 +154,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   bool is_initialized_ = false;
 
   raw_ptr<AimEligibilityService> aim_eligibility_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   base::WeakPtrFactory<ContextualTasksServiceImpl> weak_ptr_factory_{this};
 };

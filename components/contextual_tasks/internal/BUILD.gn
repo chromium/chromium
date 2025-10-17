@@ -9,6 +9,8 @@ source_set("internal") {
   ]
 
   sources = [
+    "account_utils.cc",
+    "account_utils.h",
     "ai_thread_sync_bridge.cc",
     "ai_thread_sync_bridge.h",
     "composite_context_decorator.cc",
@@ -37,8 +39,10 @@ source_set("internal") {
     "//components/keyed_service/core",
     "//components/omnibox/browser",
     "//components/sessions:session_id",
+    "//components/signin/public/identity_manager",
     "//components/sync/model",
     "//components/url_formatter",
+    "//net",
     "//ui/gfx",
     "//url",
   ]
@@ -48,6 +52,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "account_utils_unittest.cc",
     "ai_thread_sync_bridge_unittest.cc",
     "composite_context_decorator_unittest.cc",
     "contextual_task_sync_bridge_unittest.cc",
@@ -68,6 +73,7 @@ source_set("unit_tests") {
     "//components/omnibox/browser",
     "//components/prefs:test_support",
     "//components/sessions:session_id",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync/model",
     "//testing/gmock",

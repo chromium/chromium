@@ -12,12 +12,14 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
+#include "components/contextual_tasks/internal/account_utils.h"
 #include "components/contextual_tasks/internal/composite_context_decorator.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/core/session_id.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -29,9 +31,11 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     version_info::Channel channel,
     syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
     std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
-    AimEligibilityService* aim_eligibility_service)
+    AimEligibilityService* aim_eligibility_service,
+    signin::IdentityManager* identity_manager)
     : composite_context_decorator_(std::move(composite_context_decorator)),
-      aim_eligibility_service_(aim_eligibility_service) {
+      aim_eligibility_service_(aim_eligibility_service),
+      identity_manager_(identity_manager) {
   const base::RepeatingClosure& dump_stack =
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel);
   auto ai_thread_processor =
@@ -81,10 +85,8 @@ ContextualTask ContextualTasksServiceImpl::CreateEphemeralTask() {
 
 ContextualTask ContextualTasksServiceImpl::CreateTaskFromUrl(const GURL& url) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  ContextualTask task(task_id, /*is_ephemeral=*/false);
-
-  // TODO(shaktisahu): Mark the task as ephemeral.
-
+  ContextualTask task(task_id, /*is_ephemeral=*/!IsUrlForPrimaryAccount(
+                          identity_manager_, url));
   return AddTaskAndNotify(std::move(task));
 }
 
