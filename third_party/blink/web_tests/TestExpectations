@@ -2984,10 +2984,10 @@ crbug.com/452662753 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_ac
 
 # Various flaky timeouts on the debug builder. Note that some timeouts actually
 # surface as failures because `webdriver.error.TimeoutException` is thrown.
-crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browsing_context/load/load.py [ Pass Failure ]
+crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browsing_context/load/load.py [ Failure Pass ]
 crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browsing_context/reload/wait.py [ Pass Timeout ]
 crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Pass Timeout ]
-crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/classic/find_elements_from_element/user_prompts.py [ Pass Failure ]
+crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/classic/find_elements_from_element/user_prompts.py [ Failure Pass ]
 crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browser/set_download_behavior/user_context.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======

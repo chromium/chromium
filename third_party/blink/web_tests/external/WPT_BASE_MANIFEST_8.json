@@ -87655,7 +87655,7 @@
       ]
      ],
      "box-shadow-radius-000.html": [
-      "ea6190b57f68eed178c5b57ab3b43dffb94dda4b",
+      "a1ba53cfaf9770433f954bbff0ccd99e929bb146",
       [
        null,
        [
@@ -87694,6 +87694,399 @@
         ]
        ],
        {}
+      ]
+     ],
+     "box-shadow-radius-generated.html": [
+      "dc48c3469da25c20eff94bbc09d9a915e88317f4",
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=10&height=10&spread=70&radius=100%",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=10&height=10&spread=70&radius=100%",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=200&height=40&spread=50&radius=0%2050%%2050%",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=200&height=40&spread=50&radius=0%2050%%2050%",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=200&height=40&spread=50&radius=10%%2090%%205%%",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=200&height=40&spread=50&radius=10%%2090%%205%%",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=200&height=40&spread=50&radius=100px%20/%2020px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=200&height=40&spread=50&radius=100px%20/%2020px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=200&height=40&spread=50&radius=20px%20/%204px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=200&height=40&spread=50&radius=20px%20/%204px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=250&height=30&spread=100&radius=10px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=250&height=30&spread=100&radius=10px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=300&height=50&spread=30&radius=15px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=300&height=50&spread=30&radius=15px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=300&height=50&spread=30&radius=1px%201px%2049px%2049px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=300&height=50&spread=30&radius=1px%201px%2049px%2049px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=300&height=50&spread=30&radius=25px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=300&height=50&spread=30&radius=25px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=300&height=50&spread=30&radius=50%",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=300&height=50&spread=30&radius=50%",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=300&height=50&spread=30&radius=50%%2050%%201px%2050%",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=300&height=50&spread=30&radius=50%%2050%%201px%2050%",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=300&height=60&spread=30&radius=0px%200px%2030px%2030px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=300&height=60&spread=30&radius=0px%200px%2030px%2030px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=300&height=60&spread=30&radius=20px%2020px%2040px%2040px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=300&height=60&spread=30&radius=20px%2020px%2040px%2040px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=50&height=50&spread=50&radius=0px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=50&height=50&spread=50&radius=0px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
+      ],
+      [
+       "css/css-backgrounds/box-shadow-radius-generated.html?width=50&height=50&spread=50&radius=1px",
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-generated-ref.html?width=50&height=50&spread=50&radius=1px",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            32
+           ],
+           [
+            0,
+            128
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "box-shadow-table-border-collapse-001.html": [
@@ -88583,7 +88976,7 @@
        ]
       ],
       "corner-shape-inset-shadow.html": [
-       "8a0b991567b4d5a1065bc98f856a9e123f6c21d0",
+       "068f565d3637f83de5f88ac34f7f172d78e7bc29",
        [
         null,
         [
@@ -347890,11 +348283,15 @@
       []
      ],
      "box-shadow-radius-000-ref.html": [
-      "8e31ec5266facc1d99813f0caa25cb24729ecd43",
+      "564f1f855057d7f5944833fc77601c6d802c7608",
       []
      ],
      "box-shadow-radius-001-ref.html": [
       "96b80aed7b81769158a10829beef193fd4b0f888",
+      []
+     ],
+     "box-shadow-radius-generated-ref.html": [
+      "7b35f01b3c3f6c7aacd256617c9f61de76cbf5aa",
       []
      ],
      "child-move-reveals-parent-background-ref.html": [
@@ -349075,7 +349472,7 @@
        []
       ],
       "corner-shape-inset-shadow-ref.html": [
-       "fa36c9d6ecc527fee37bb589c3c5194df1ff2291",
+       "b682db7b8cff832777a1572c1cf530e686209e2a",
        []
       ],
       "corner-shape-notch-ref.html": [
@@ -349092,11 +349489,11 @@
       ],
       "resources": {
        "corner-shape.js": [
-        "c08a95c7d7511e84eb92015d13578e23ad2f2ec5",
+        "e0039492b3bf64aae0f5276319d2c6297ac88150",
         []
        ],
        "corner-utils.js": [
-        "b6f329e82484f14f853c999dbd99a15771db1e8d",
+        "3a156436bc3af3c870a00abdc99368afab3dc2cb",
         []
        ],
        "green.html": [
@@ -370818,7 +371215,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "223c8b79896204f8fafed9e05a00d77da600721c",
+      "75be566f6f025b1217750f6973260d5abf0b07c5",
       []
      ],
      "at-function-cssom-expected.txt": [
@@ -372744,7 +373141,7 @@
       []
      ],
      "overflow-clip-margin-010-ref.html": [
-      "e548417c728fce159e7a7388d5530966944bd4ea",
+      "4bdc2526d246440e83c6f4a465ec2919e85a22f5",
       []
      ],
      "overflow-clip-margin-011-ref.html": [
@@ -450820,10 +451217,6 @@
        "user_prompt_opened": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-         []
-        ],
-        "beforeunload-expected.txt": [
-         "ef408b11d21f1310e3e100752f36aa401a880266",
          []
         ]
        }
@@ -697868,6 +698261,13 @@
      ],
      "entries-after-navigations-in-multiple-windows.html": [
       "8cba4c80b7e505595af4b3a4ecd1a3773b2462de",
+      [
+       null,
+       {}
+      ]
+     ],
+     "entries-after-server-redirect.html": [
+      "e956621bec5a834828a0e6f17e1398be18da9492",
       [
        null,
        {}
