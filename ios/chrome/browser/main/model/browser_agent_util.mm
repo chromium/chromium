@@ -211,7 +211,8 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
     PrerenderBrowserAgent::CreateForBrowser(browser);
   }
 
-  if (IsPersistTabContextEnabled() && !browser_is_off_record) {
+  if (IsCleanupPersistedTabContextsEnabled() && !browser_is_off_record &&
+      !browser_is_inactive && !browser_is_temporary) {
     PersistTabContextBrowserAgent::CreateForBrowser(browser);
   }
 

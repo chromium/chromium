@@ -143,6 +143,13 @@ BASE_DECLARE_FEATURE(kPersistTabContext);
 // fallback if it is invalid) and the TTL defined by the Inactive Tabs feature.
 base::TimeDelta GetPersistedContextEffectiveTTL(PrefService* prefs);
 
+// Acts as a killswitch (enabled by default) for the
+// PersistTabContextBrowserAgent.
+BASE_DECLARE_FEATURE(kCleanupPersistedTabContexts);
+
+// Returns true if persisted tab contexts cleanup is enabled.
+bool IsCleanupPersistedTabContextsEnabled();
+
 // Feature flag for the automatic Gemini promo shown on navigation.
 BASE_DECLARE_FEATURE(kGeminiNavigationPromo);
 

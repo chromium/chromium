@@ -246,6 +246,19 @@ void PurgeExpiredPageContexts(base::FilePath contexts_dir,
   }
 }
 
+// Recursively deletes the entire persisted contexts directory.
+void DeletePersistedContextsDirectory(base::FilePath contexts_dir) {
+  if (!base::DirectoryExists(contexts_dir)) {
+    // TODO(crbug.com/445963646): Add metrics logging to browser agent for
+    // cleanup functions.
+    return;
+  }
+
+  // TODO(crbug.com/445963646): Add metrics logging to browser agent for
+  // cleanup functions.
+  base::DeletePathRecursively(contexts_dir);
+}
+
 }  // namespace
 
 #pragma mark - Public
@@ -260,28 +273,41 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
   base::FilePath cache_directory_path;
   ios::GetUserCacheDirectory(profile->GetStatePath(), &cache_directory_path);
   storage_directory_path_ = cache_directory_path.Append(kPersistedTabContexts);
-  task_runner_->PostTask(FROM_HERE, base::BindOnce(&CreateStorageDirectory,
-                                                   storage_directory_path_));
-  StartObserving(browser, Policy::kAccordingToFeature);
-  persist_tab_context_state_agent_ = [[PersistTabContextStateAgent alloc]
-      initWithTransitionCallback:
-          base::BindRepeating(
-              &PersistTabContextBrowserAgent::OnSceneActivationLevelChanged,
-              weak_factory_.GetWeakPtr())];
-  [browser->GetSceneState() addObserver:persist_tab_context_state_agent_];
-  PrefService* prefs = profile->GetPrefs();
-  CHECK(prefs);
-  base::TimeDelta ttl = GetPersistedContextEffectiveTTL(prefs);
-  // Schedule a cleanup task with a delay.
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PurgeExpiredPageContexts, storage_directory_path_, ttl),
-      kPurgeTaskDelay);
+
+  if (IsPersistTabContextEnabled()) {
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(&CreateStorageDirectory,
+                                                     storage_directory_path_));
+
+    persist_tab_context_state_agent_ = [[PersistTabContextStateAgent alloc]
+        initWithTransitionCallback:
+            base::BindRepeating(
+                &PersistTabContextBrowserAgent::OnSceneActivationLevelChanged,
+                weak_factory_.GetWeakPtr())];
+    [browser->GetSceneState() addObserver:persist_tab_context_state_agent_];
+    StartObserving(browser, Policy::kAccordingToFeature);
+
+    PrefService* prefs = profile->GetPrefs();
+    CHECK(prefs);
+    base::TimeDelta ttl = GetPersistedContextEffectiveTTL(prefs);
+    // Schedule a cleanup task with a delay.
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PurgeExpiredPageContexts, storage_directory_path_, ttl),
+        kPurgeTaskDelay);
+  } else {
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DeletePersistedContextsDirectory,
+                       storage_directory_path_),
+        kPurgeTaskDelay);
+  }
 }
 
 PersistTabContextBrowserAgent::~PersistTabContextBrowserAgent() {
-  StopObserving();
-  [browser_->GetSceneState() removeObserver:persist_tab_context_state_agent_];
+  if (persist_tab_context_state_agent_) {
+    StopObserving();
+    [browser_->GetSceneState() removeObserver:persist_tab_context_state_agent_];
+  }
   page_context_wrapper_ = nil;
   web_state_observation_.Reset();
 }

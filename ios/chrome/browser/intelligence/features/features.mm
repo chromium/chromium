@@ -165,6 +165,12 @@ bool IsPersistTabContextEnabled() {
   return base::FeatureList::IsEnabled(kPersistTabContext);
 }
 
+BASE_FEATURE(kCleanupPersistedTabContexts, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsCleanupPersistedTabContextsEnabled() {
+  return base::FeatureList::IsEnabled(kCleanupPersistedTabContexts);
+}
+
 // The default Time-To-Live in days for persisted contexts.
 constexpr int kPersistTabContextDefaultTTL = 21;
 
