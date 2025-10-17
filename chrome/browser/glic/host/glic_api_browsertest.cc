@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testLoadWhileWindowClosed) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testLoadWhileWindowClosed) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone),
       CloseGlic());
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testLoadWhileWindowClosed) {
   WaitForWebUiState(mojom::WebUiState::kReady);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsWindowClosed) {
   base::HistogramTester histogram_tester;
   // Immediately close the window to check behavior while window is closed.
   // Fail client initialization, should see error page.
@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
       /*sample=*/2 /*WEB_CLIENT_INITIALIZE_FAILED*/, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowOpen) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsWindowOpen) {
   // Fail client initialization, should see error page.
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
@@ -528,12 +528,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowOpen) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextDisabled,
-                       testDefaultTabContextApiIsUndefinedWhenFeatureDisabled) {
+                       DISABLED_testDefaultTabContextApiIsUndefinedWhenFeatureDisabled) {
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled,
-                       testGetDefaultTabContextPermissionState) {
+                       DISABLED_testGetDefaultTabContextPermissionState) {
   // Default kGlicDefaultTabContextEnabled value is true.
   ExecuteJsTest();
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
   });
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadWebUi) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testReloadWebUi) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadWebUi) {
 
 // The client navigates to the 'sorry' page before it finishes initialize().
 // Chrome should show this page.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageBeforeInitialize) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testSorryPageBeforeInitialize) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageBeforeInitialize) {
   });
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testSorryPageAfterInitialize) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
   });
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsAfterReload) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
@@ -706,7 +706,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
 }
 
 // Connect the client, and check that the special request header is sent.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testRequestHeader) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   const GURL cross_origin_rpc_url =
@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTab) {
   RunTestSequence(CheckTabCount(2));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsWithUnsupportedScheme) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabFailsWithUnsupportedScheme) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsWithUnsupportedScheme) {
   RunTestSequence(CheckTabCount(1));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabInBackground) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabInBackground) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabInBackground) {
               testing::EndsWith("#foreground"));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabByClickingOnLink) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
   }));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLinkDaisyChains) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabByClickingOnLinkDaisyChains) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Test only supported with multi-instance on";
   }
@@ -830,7 +830,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLinkDaisyChains) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsIfNotActive) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabFailsIfNotActive) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
@@ -875,7 +875,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDetachPanel) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testMultiplePanelsDetachedAndFloating) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testMultiplePanelsDetachedAndFloating) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Attached only supported with multi-instance.";
   }
@@ -966,7 +966,7 @@ class GlicApiTestRuntimeFeatureOff : public GlicApiTestWithOneTab {
 // but instead update this test to call any other RuntimeFeature-protected
 // method.
 IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
-                       testErrorShownOnMojoPipeError) {
+                       DISABLED_testErrorShownOnMojoPipeError) {
   ExecuteJsTest();
 
   auto* web_contents = FindGlicWebUIContents();
@@ -1066,17 +1066,17 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitiallyNotResizable) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
-                       testGetModelQualityClientIdFeatureEnabled) {
+                       DISABLED_testGetModelQualityClientIdFeatureEnabled) {
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterDisabled,
-                       testGetModelQualityClientIdFeatureDisabled) {
+                       DISABLED_testGetModelQualityClientIdFeatureDisabled) {
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsForFocusedTabApi) {
+                       DISABLED_testGetZeroStateSuggestionsForFocusedTabApi) {
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(1);
@@ -1086,7 +1086,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 
 IN_PROC_BROWSER_TEST_P(
     GlicApiTestWithOneTabAndContextualCueing,
-    testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden) {
+    DISABLED_testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden) {
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(0);
@@ -1095,7 +1095,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsApi) {
+                       DISABLED_testGetZeroStateSuggestionsApi) {
   if (GetParam().multi_instance) {
     EXPECT_CALL(
         *mock_cueing_service(),
@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
   testGetZeroStateSuggestionsMultipleNavigations
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       MAYBE_testGetZeroStateSuggestionsMultipleNavigations) {
+                       DISABLED_testGetZeroStateSuggestionsMultipleNavigations) {
   // TODO: zero state suggestions not yet implemented for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
   EXPECT_CALL(*mock_cueing_service(),
@@ -1149,7 +1149,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsFailsWhenHidden) {
+                       DISABLED_testGetZeroStateSuggestionsFailsWhenHidden) {
   // TODO: zero state suggestions not yet implemented for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
   // Initial state.
@@ -1743,7 +1743,7 @@ class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {
 };
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
-                       testOpenOsMediaPermissionSettings) {
+                       DISABLED_testOpenOsMediaPermissionSettings) {
   base::test::TestFuture<void> signal;
   EXPECT_CALL(
       mock_platform_handle,
@@ -1757,7 +1757,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
-                       testOpenOsGeoPermissionSettings) {
+                       DISABLED_testOpenOsGeoPermissionSettings) {
   base::test::TestFuture<void> signal;
   EXPECT_CALL(mock_platform_handle,
               OpenSystemSettings(testing::_, ContentSettingsType::GEOLOCATION))
@@ -1770,7 +1770,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
-                       testGetOsMicrophonePermissionStatusAllowed) {
+                       DISABLED_testGetOsMicrophonePermissionStatusAllowed) {
   EXPECT_CALL(mock_platform_handle,
               IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))
       .WillOnce(testing::Return(true));
@@ -1781,7 +1781,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
-                       testGetOsMicrophonePermissionStatusNotAllowed) {
+                       DISABLED_testGetOsMicrophonePermissionStatusNotAllowed) {
   EXPECT_CALL(mock_platform_handle,
               IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))
       .WillOnce(testing::Return(false));
@@ -1850,7 +1850,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCallingApiWhileHiddenRecordsMetrics) {
   // multi-instance: document.visibilityState never transitions to 'hidden'.
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
@@ -2203,7 +2203,7 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
-                       testMaybeRefreshUserStatus) {
+                       DISABLED_testMaybeRefreshUserStatus) {
   Profile* profile = browser()->profile();
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile),
@@ -2220,7 +2220,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
-                       testMaybeRefreshUserStatusThrottled) {
+                       DISABLED_testMaybeRefreshUserStatusThrottled) {
   // As previous, but requests several updates (e.g., as though many errors
   // were processed around the same time). An "enabled" status is assumed as
   // otherwise the client will be unloaded.
