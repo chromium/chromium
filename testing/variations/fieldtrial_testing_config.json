@@ -4307,78 +4307,42 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledContextualPageActionOnly",
+                    "name": "EnabledDefault",
+                    "enable_features": [
+                        "CCTAdaptiveButton"
+                    ]
+                },
+                {
+                    "name": "EnabledCPA+OIB",
                     "params": {
-                        "contextual_only": "true"
+                        "contextual_only": "true",
+                        "default_variant": "15"
                     },
                     "enable_features": [
                         "CCTAdaptiveButton"
                     ]
                 },
                 {
-                    "name": "Disabled",
+                    "name": "EnabledCPA+OIB+ReaderModeFallbackMenu",
+                    "params": {
+                        "contextual_only": "true",
+                        "default_variant": "15",
+                        "reader_mode_fallback_menu": "true"
+                    },
+                    "enable_features": [
+                        "CCTAdaptiveButton"
+                    ]
+                },
+                {
+                    "name": "Control",
                     "disable_features": [
                         "CCTAdaptiveButton"
                     ]
                 },
                 {
-                    "name": "EnabledDefault",
+                    "name": "EnabledOIBMenu",
                     "params": {
-                        "open_in_browser": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledContextualPageActionOnlyMenuOpenInBrowser",
-                    "params": {
-                        "contextual_only": "true",
                         "show_open_in_browser_menu_top": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledContextualPageActionOnlyMenuRemoval",
-                    "params": {
-                        "contextual_only": "true",
-                        "remove_desktop_site_menu_item": "true",
-                        "remove_find_in_page_menu_item": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledContextualPageActionOnlyMenuCombo",
-                    "params": {
-                        "contextual_only": "true",
-                        "remove_desktop_site_menu_item": "true",
-                        "remove_find_in_page_menu_item": "true",
-                        "show_open_in_browser_menu_top": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledContextualPageActionOnlyOpenInBrowser",
-                    "params": {
-                        "contextual_only": "true",
-                        "default_variant": "15",
-                        "open_in_browser": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledForModelTraining",
-                    "params": {
-                        "ml_training": "true",
-                        "open_in_browser": "true"
                     },
                     "enable_features": [
                         "CCTAdaptiveButton"
