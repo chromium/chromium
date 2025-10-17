@@ -96,9 +96,9 @@ BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAllowNonFamilyLinkUrlFilterMode,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch,
@@ -106,7 +106,7 @@ BASE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch,
 BASE_FEATURE(kSupervisedUserClearDeviceContentFiltersPrefsOnStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserInterstitialWithoutApprovals,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserLocalSupervisionPreview,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
