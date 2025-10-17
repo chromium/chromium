@@ -113,7 +113,12 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   virtual bool IsTextureBacked() const { return false; }
 
   // Derived classes should override this if they can assure that the image
-  // contains only resources from its own security origin.
+  // itself contains only resources from its _own_ security origin. This is not
+  // the same as the image being fetched from the document's security origin.
+  // For example, a bitmap image used in security origin foo but obtained from
+  // security origin bar will still only contain data from origin bar.
+  // As another example, an SVG Image from origin foo that references an image
+  // from origin bar does not have a single security origin.
   virtual bool HasSingleSecurityOrigin() const { return false; }
 
   static Image* NullImage();

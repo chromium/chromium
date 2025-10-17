@@ -2231,7 +2231,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       state.local_transform_space = context_.current.transform;
       EffectPaintPropertyNode::FilterInfo filter_info;
       UpdateFilterEffect(object_, properties_->Filter(), filter_info);
-      if (!filter_info.operations.IsEmpty()) {
+      bool is_filter_disallowed =
+          RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+          IsA<Element>(object_.GetNode()) &&
+          To<Element>(object_.GetNode())->IsInCanvasSubtree() &&
+          filter_info.operations.OriginTainted();
+      if (!(filter_info.operations.IsEmpty() || is_filter_disallowed)) {
         state.filter_info =
             std::make_unique<EffectPaintPropertyNode::FilterInfo>(
                 std::move(filter_info));

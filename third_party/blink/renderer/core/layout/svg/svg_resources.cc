@@ -210,6 +210,9 @@ class SVGElementResourceClient::FilterData final
       : last_effect_(last_effect), node_map_(node_map) {}
 
   bool HasEffects() const { return last_effect_ != nullptr; }
+  bool OriginTainted() const {
+    return last_effect_ ? last_effect_->OriginTainted() : false;
+  }
   sk_sp<PaintFilter> BuildPaintFilter() {
     return paint_filter_builder::Build(last_effect_.Get(),
                                        kInterpolationSpaceSRGB);
@@ -382,6 +385,9 @@ void SVGElementResourceClient::UpdateFilterData(
       if (filter_data_->HasEffects()) {
         // BuildPaintFilter() can return null which means pass-through.
         operations.AppendReferenceFilter(filter_data_->BuildPaintFilter());
+        if (filter_data_->OriginTainted()) {
+          operations.SetOriginTainted();
+        }
       } else {
         // Create a filter chain that yields transparent black.
         operations.AppendOpacityFilter(0);

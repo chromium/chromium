@@ -393,6 +393,9 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
           if (!paint_filter)
             continue;
           filters.AppendReferenceFilter(std::move(paint_filter));
+          if (filter_effect->OriginTainted()) {
+            filters.SetOriginTainted();
+          }
         }
         reference_operation.SetFilter(reference_filter);
         break;
