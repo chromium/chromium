@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/script/import_map.h"
+#include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -168,6 +170,27 @@ TEST(StyleElementTest, CSSModule) {
   // TODO(kschmi) - Updating the child contents shouldn't create a new Module
   // Map entry, but this can't be tested until Module Map functionality is
   // added.
+}
+
+TEST(StyleElementTest, CSSModuleImportMap) {
+  test::TaskEnvironment task_environment;
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Document& document = dummy_page_holder->GetDocument();
+
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<style id='style' type='module' specifier='foo'>a { top: 0; }</style>");
+
+  Modulator* modulator =
+      Modulator::From(ToScriptStateForMainWorld(document.GetFrame()));
+  const ImportMap* import_map = modulator->GetImportMapForTest();
+
+  // Verify that the internal structure of the document's Import Map contains an
+  // entry for the URL-encoded contents of the <style> tag.
+  EXPECT_EQ(
+      import_map->ToStringForTesting(),
+      "{\"imports\":{\"foo\":\"data:text/"
+      "css,a%20%7B%20top%3A%200%3B%20%7D\"},\"scopes\":{},\"integrity\": {}}");
 }
 
 }  // namespace blink

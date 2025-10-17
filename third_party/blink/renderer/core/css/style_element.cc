@@ -30,12 +30,18 @@
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script/import_map.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
+#include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -179,16 +185,20 @@ StyleElement::ProcessingResult StyleElement::CreateSheetOrModule(
           : nullptr;
 
   // CSP is bypassed for style elements in user agent shadow DOM.
-  bool passes_content_security_policy_checks =
+  const bool passes_content_security_policy_checks =
       IsInUserAgentShadowDOM(element) ||
       (csp && csp->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
                                &element, text, element.nonce(), document.Url(),
                                start_position_.line_));
-  if (RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled() && IsModule()) {
+
+  // TODO(crbug.com/448174611) - should Declarative CSS Modules continue
+  // respecting CSP? Need to confirm with WHATWG.
+  if (passes_content_security_policy_checks && IsModule()) {
+    CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
+    AddImportMapEntry(element, text);
+
     // Return early, since we explicitly *don't* want to create a CSSStyleSheet
     // for CSS modules.
-    // TODO(crbug.com/448174611): Create Import Map entry using `text`.
-    DCHECK(!sheet_);
     return kProcessingSuccessful;
   }
 
@@ -240,6 +250,57 @@ StyleElement::ProcessingResult StyleElement::CreateSheetOrModule(
 
   return passes_content_security_policy_checks ? kProcessingSuccessful
                                                : kProcessingFatalError;
+}
+
+void StyleElement::AddImportMapEntry(Element& element, const String& text) {
+  CHECK(!sheet_);
+
+  // Return early if there is no specifier
+  // TODO(crbug.com/448174611) - Is this the correct behavior?
+  if (!element.hasAttribute(html_names::kSpecifierAttr)) {
+    return;
+  }
+
+  // Create an Import Map JSON string in the following format:
+  // "imports": {
+  //   "<specifier attribute value>": "data:text/css,<URL-percent-encoded CSS
+  //   content>"
+  // }
+  // TODO(crbug.com/448174611) - consider encoding in base64 to decrease
+  // string size in memory (at the expense of decoding on the CPU).
+  // TODO(crbug.com/448174611) - add links to each step from the spec once the
+  // PR is merged.
+  // TODO(crbug.com/364917757) - Use PendingImportMap here to reduce code (if
+  // the dependency on the <script> element can be removed from
+  // PendingImportMap).
+  const String data_uri_string =
+      "data:text/css," + EncodeWithURLEscapeSequences(text);
+  CHECK(KURL(data_uri_string).IsValid());
+
+  // The inner JSON object needs to be on the heap because
+  // JSONObject::SetObject only accepts a unique_ptr.
+  auto import_map_inner_json = std::make_unique<JSONObject>();
+  import_map_inner_json->SetString(
+      element.getAttribute(html_names::kSpecifierAttr), data_uri_string);
+
+  JSONObject import_map_outer_json;
+  import_map_outer_json.SetObject("imports", std::move(import_map_inner_json));
+
+  ExecutionContext* context = element.GetExecutionContext();
+  std::optional<ImportMapError> error_to_rethrow;
+
+  // Even though ImportMap is garbage collected (and thus managed by Oilpan), we
+  // don't need to store it as a Member because MergeExistingAndNewImportMaps
+  // will copy-by-value the local import map strings into the global import map.
+  ImportMap* import_map = ImportMap::Parse(import_map_outer_json.ToJSONString(),
+                                           element.GetDocument().BaseURL(),
+                                           *context, &error_to_rethrow);
+  CHECK(import_map);
+  CHECK(!error_to_rethrow.has_value());
+
+  Modulator* modulator = Modulator::From(
+      ToScriptStateForMainWorld(To<LocalDOMWindow>(context)->GetFrame()));
+  modulator->MergeExistingAndNewImportMaps(import_map);
 }
 
 bool StyleElement::IsLoading() const {

@@ -72,6 +72,7 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
 
  private:
   ProcessingResult CreateSheetOrModule(Element&, const String& text = String());
+  void AddImportMapEntry(Element&, const String& text);
   ProcessingResult Process(Element&);
   void ClearSheet(Element& owner_element);
 
