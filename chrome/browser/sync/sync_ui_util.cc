@@ -176,17 +176,9 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void FocusWebContents(Browser* browser) {
-  content::WebContents* const contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (contents) {
-    contents->Focus();
-  }
-}
 
 void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {
   DCHECK(browser);
-  FocusWebContents(browser);
 
   NavigateParams params(GetSingletonTabNavigateParams(browser, url));
   // Allow the window to close itself.
