@@ -38,13 +38,11 @@ void SpellcheckCharAttribute::SetDefaultLanguage(const std::string& language) {
 
 bool SpellcheckCharAttribute::IsTextInSameScript(
     const std::u16string& text) const {
-  const char16_t* data = text.data();
-  const size_t length = text.length();
-  for (size_t index = 0; index < length; /* U16_NEXT post-increments */) {
-    uint32_t code = 0;
-    UNSAFE_TODO(U16_NEXT(data, index, length, code));
+  icu::StringCharacterIterator it(text.data(), text.length());
+  for (UChar32 c = it.first32(); c != icu::CharacterIterator::DONE;
+       c = it.next32()) {
     UErrorCode error = U_ZERO_ERROR;
-    UScriptCode script = uscript_getScript(code, &error);
+    UScriptCode script = uscript_getScript(c, &error);
     if (U_SUCCESS(error) && (script != USCRIPT_COMMON) &&
         (script != USCRIPT_INHERITED)) {
       if (script != script_code_)
@@ -327,8 +325,7 @@ bool SpellcheckCharAttribute::OutputDefault(UChar c,
 
 // SpellcheckWordIterator implementation:
 
-SpellcheckWordIterator::SpellcheckWordIterator()
-    : text_(nullptr), attribute_(nullptr), iterator_() {}
+SpellcheckWordIterator::SpellcheckWordIterator() : attribute_(nullptr) {}
 
 SpellcheckWordIterator::~SpellcheckWordIterator() {
   Reset();
@@ -376,7 +373,7 @@ bool SpellcheckWordIterator::SetText(std::u16string_view text) {
     return false;
   }
 
-  text_ = text.data();
+  text_ = text;
   return true;
 }
 
@@ -384,13 +381,11 @@ SpellcheckWordIterator::WordIteratorStatus SpellcheckWordIterator::GetNextWord(
     std::u16string* word_string,
     size_t* word_start,
     size_t* word_length) {
-  DCHECK(!!text_);
-
   word_string->clear();
   *word_start = 0;
   *word_length = 0;
 
-  if (!text_) {
+  if (text_.empty()) {
     return IS_END_OF_TEXT;
   }
 
@@ -441,8 +436,8 @@ bool SpellcheckWordIterator::Normalize(size_t input_start,
   // spellchecker and we need manual normalization as well. The normalized
   // text does not have to be NUL-terminated since its characters are copied to
   // string16, which adds a NUL character when we need.
-  icu::UnicodeString input(false, &UNSAFE_TODO(text_[input_start]),
-                           base::checked_cast<int32_t>(input_length));
+  auto sub = text_.substr(input_start, input_length);
+  icu::UnicodeString input(sub.data(), sub.length());
   UErrorCode status = U_ZERO_ERROR;
   icu::UnicodeString output;
   icu::Normalizer::normalize(input, UNORM_NFKC, 0, output, status);
