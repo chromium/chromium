@@ -1,7 +1,6 @@
 caption: This policy allows administrators to encrypt http cache on disk.
 desc: |-
   This policy allows the administrators to encrypt browser http cache on disk.
-  Currently only supported on Windows.
 
   When this policy is Enabled, browser cache will be encrypted.
 
@@ -13,7 +12,7 @@ owners:
 - valadkevich@google.com
 - cbe-cep-eng@google.com
 future_on:
-- chrome.*
+- chrome.win
 features:
   dynamic_refresh: true
   per_profile: true
