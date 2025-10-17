@@ -89,6 +89,10 @@ class AccountsPolicyManager::DeleteProfileDialogManager
     }
 
     active_browser_ = browser;
+    browser_did_become_inactive_subscription_ =
+        active_browser_->RegisterDidBecomeActive(base::BindRepeating(
+            &DeleteProfileDialogManager::OnBrowserDidBecomeInactive,
+            base::Unretained(this)));
 
     // Display the dialog on the next run loop as otherwise the dialog can block
     // browser from displaying because the dialog creates a nested run loop.
@@ -107,11 +111,10 @@ class AccountsPolicyManager::DeleteProfileDialogManager
                        weak_factory_.GetWeakPtr(), browser->AsWeakPtr()));
   }
 
-  // Called immediately after a browser becomes not active.
-  void OnBrowserNoLongerActive(Browser* browser) override {
-    if (active_browser_ == browser) {
-      active_browser_ = nullptr;
-    }
+  // Called immediately after active_browser_ becomes inactive.
+  void OnBrowserDidBecomeInactive(BrowserWindowInterface* browser) {
+    active_browser_ = nullptr;
+    browser_did_become_inactive_subscription_ = {};
   }
 
   void OnBrowserRemoved(Browser* browser) override {
@@ -177,6 +180,7 @@ class AccountsPolicyManager::DeleteProfileDialogManager
   raw_ptr<AccountsPolicyManager> delegate_;
   base::FilePath profile_path_;
   raw_ptr<Browser> active_browser_;
+  base::CallbackListSubscription browser_did_become_inactive_subscription_;
   base::WeakPtrFactory<DeleteProfileDialogManager> weak_factory_{this};
 };
 
