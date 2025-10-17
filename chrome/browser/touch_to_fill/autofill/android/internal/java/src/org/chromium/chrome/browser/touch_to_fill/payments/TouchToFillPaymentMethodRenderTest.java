@@ -456,7 +456,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* legalMessages= */ new BnplIssuerTosDetail.LegalMessages(
                             Arrays.asList(new LegalMessageLine("Affirm legal message line")),
                             MOCK_LINK_OPENER));
-    private static final String BNPL_FOOTER_TEXT =
+    private static final String BNPL_HIDE_OPTIONS_LINK_FOOTER_TEXT =
             "To hide pay later options, go to <link>payment settings</link>";
 
     private BottomSheetController mBottomSheetController;
@@ -786,7 +786,7 @@ public class TouchToFillPaymentMethodRenderTest {
                                     BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
                                     BNPL_ISSUER_CONTEXT_KLARNA_LINKED,
                                     BNPL_ISSUER_CONTEXT_ZIP_LINKED),
-                            BNPL_FOOTER_TEXT);
+                            BNPL_HIDE_OPTIONS_LINK_FOOTER_TEXT);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -806,7 +806,7 @@ public class TouchToFillPaymentMethodRenderTest {
                                     BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED,
                                     BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED,
                                     BNPL_ISSUER_CONTEXT_ZIP_UNLINKED),
-                            BNPL_FOOTER_TEXT);
+                            BNPL_HIDE_OPTIONS_LINK_FOOTER_TEXT);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

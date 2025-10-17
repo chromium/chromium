@@ -14,8 +14,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.APPLY_LINK_DEACTIVATED_STYLE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.FOOTER_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.HIDE_OPTIONS_LINK_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.ON_LINK_CLICK_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.TERMS_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
@@ -775,7 +776,10 @@ class TouchToFillPaymentMethodViewBinder {
      */
     static void bindBnplSelectionProgressFooterView(
             PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == FOOTER_TEXT
+        if (propertyKey == TERMS_TEXT_ID) {
+            TextView termsLabelTextView = view.findViewById(R.id.bnpl_terms_label);
+            termsLabelTextView.setText(model.get(TERMS_TEXT_ID));
+        } else if (propertyKey == HIDE_OPTIONS_LINK_TEXT
                 || propertyKey == ON_LINK_CLICK_CALLBACK
                 || propertyKey == APPLY_LINK_DEACTIVATED_STYLE) {
             buildFooterSpannable(model, view);
@@ -819,7 +823,7 @@ class TouchToFillPaymentMethodViewBinder {
             // For the enabled state, create a ChromeClickableSpan.
             span = new ChromeClickableSpan(view.getContext(), model.get(ON_LINK_CLICK_CALLBACK));
         }
-        String rawFooterText = model.get(FOOTER_TEXT);
+        String rawFooterText = model.get(HIDE_OPTIONS_LINK_TEXT);
         TextView footer = view.findViewById(R.id.bnpl_footer_label);
         SpannableString spannableFooter =
                 SpanApplier.applySpans(

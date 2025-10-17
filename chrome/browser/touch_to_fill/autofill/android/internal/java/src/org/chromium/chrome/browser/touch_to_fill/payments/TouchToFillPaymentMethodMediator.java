@@ -12,8 +12,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.NON_TRANSFORMING_BNPL_ISSUER_CONTEXT_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.APPLY_LINK_DEACTIVATED_STYLE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.FOOTER_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.HIDE_OPTIONS_LINK_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.ON_LINK_CLICK_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.TERMS_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
@@ -576,7 +577,6 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(BNPL_ISSUER, createBnplIssuerContextModel(issuerContext)));
         }
 
-        sheetItems.add(buildBnplTermsLabel());
         sheetItems.add(buildFooterForBnplSelectionProgress(footerText, /* isInProgress= */ false));
 
         mModel.set(
@@ -977,16 +977,6 @@ class TouchToFillPaymentMethodMediator {
                         .build());
     }
 
-    private ListItem buildBnplTermsLabel() {
-        return new ListItem(
-                TERMS_LABEL,
-                new PropertyModel.Builder(TermsLabelProperties.ALL_TERMS_LABEL_KEYS)
-                        .with(
-                                TERMS_LABEL_TEXT_ID,
-                                R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)
-                        .build());
-    }
-
     private ListItem buildHeaderForPayments(boolean hasOnlyLocalPaymentMethods) {
         return new ListItem(
                 HEADER,
@@ -1087,7 +1077,8 @@ class TouchToFillPaymentMethodMediator {
         return new ListItem(
                 BNPL_SELECTION_PROGRESS_FOOTER,
                 new PropertyModel.Builder(BnplSelectionProgressFooterProperties.ALL_KEYS)
-                        .with(FOOTER_TEXT, footerText)
+                        .with(TERMS_TEXT_ID, R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)
+                        .with(HIDE_OPTIONS_LINK_TEXT, footerText)
                         .with(ON_LINK_CLICK_CALLBACK, (view) -> showPaymentMethodSettings())
                         .with(APPLY_LINK_DEACTIVATED_STYLE, isInProgress)
                         .build());

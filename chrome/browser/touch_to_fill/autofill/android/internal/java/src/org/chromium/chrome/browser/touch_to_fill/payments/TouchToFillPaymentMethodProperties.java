@@ -420,14 +420,19 @@ class TouchToFillPaymentMethodProperties {
      * progress screen in the TouchToFill sheet for payments.
      */
     static class BnplSelectionProgressFooterProperties {
-        static final PropertyModel.ReadableObjectPropertyKey<String> FOOTER_TEXT =
-                new PropertyModel.ReadableObjectPropertyKey<>("footer_text");
+        static final PropertyModel.ReadableIntPropertyKey TERMS_TEXT_ID =
+                new PropertyModel.ReadableIntPropertyKey("terms_text_id");
+        static final PropertyModel.ReadableObjectPropertyKey<String> HIDE_OPTIONS_LINK_TEXT =
+                new PropertyModel.ReadableObjectPropertyKey<>("hide_options_link_text");
         static final PropertyModel.ReadableObjectPropertyKey<Callback<View>>
                 ON_LINK_CLICK_CALLBACK = new ReadableObjectPropertyKey<>("on_link_click_callback");
         static final PropertyModel.ReadableBooleanPropertyKey APPLY_LINK_DEACTIVATED_STYLE =
                 new PropertyModel.ReadableBooleanPropertyKey("apply_link_deactivated_style");
         static final PropertyKey[] ALL_KEYS = {
-            FOOTER_TEXT, ON_LINK_CLICK_CALLBACK, APPLY_LINK_DEACTIVATED_STYLE
+            TERMS_TEXT_ID,
+            HIDE_OPTIONS_LINK_TEXT,
+            ON_LINK_CLICK_CALLBACK,
+            APPLY_LINK_DEACTIVATED_STYLE
         };
 
         private BnplSelectionProgressFooterProperties() {}

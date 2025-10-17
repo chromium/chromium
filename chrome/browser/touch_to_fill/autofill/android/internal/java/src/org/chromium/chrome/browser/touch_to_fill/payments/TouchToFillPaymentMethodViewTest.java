@@ -42,8 +42,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.APPLY_LINK_DEACTIVATED_STYLE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.FOOTER_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.HIDE_OPTIONS_LINK_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.ON_LINK_CLICK_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressFooterProperties.TERMS_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
@@ -420,7 +421,7 @@ public class TouchToFillPaymentMethodViewTest {
                             /* isLinked= */ true,
                             /* isEligible= */ false);
     private static final String BNPL_ISSUER_TOS_ITEM_TEXT = "Affirm ToS text";
-    private static final String BNPL_FOOTER_TEXT =
+    private static final String BNPL_HIDE_OPTIONS_LINK_FOOTER_TEXT =
             "To hide pay later options, go to <link>payment settings</link>";
     private static final String TITLE_TEXT = "test title string";
     private static final String LEGAL_MESSAGE_LINE = "legal message";
@@ -1812,12 +1813,20 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             BNPL_SELECTION_PROGRESS_FOOTER,
                                             createBnplSelectionProgressFooterModel(
-                                                    BNPL_FOOTER_TEXT,
-                                                    actionCallback,
+                                                    /* termsTextId= */ R.string
+                                                            .autofill_bnpl_issuer_bottom_sheet_terms_label,
+                                                    /* hideOptionsLinkText= */ BNPL_HIDE_OPTIONS_LINK_FOOTER_TEXT,
+                                                    /* onLinkClickCallback= */ actionCallback,
                                                     /* isLinkEnabled= */ false)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView termsLabel =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
+        assertThat(
+                termsLabel.getText().toString(),
+                is(getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)));
 
         TextView footerLabel =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_footer_label);
@@ -1844,12 +1853,20 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             BNPL_SELECTION_PROGRESS_FOOTER,
                                             createBnplSelectionProgressFooterModel(
-                                                    BNPL_FOOTER_TEXT,
-                                                    actionCallback,
+                                                    /* termsTextId= */ R.string
+                                                            .autofill_bnpl_issuer_bottom_sheet_terms_label,
+                                                    /* hideOptionsLinkText= */ BNPL_HIDE_OPTIONS_LINK_FOOTER_TEXT,
+                                                    /* onLinkClickCallback= */ actionCallback,
                                                     /* isLinkEnabled= */ true)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView termsLabel =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
+        assertThat(
+                termsLabel.getText().toString(),
+                is(getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)));
 
         TextView footerLabel =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_footer_label);
@@ -1862,30 +1879,6 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(spans.length, is(1));
         spans[0].onClick(footerLabel);
         waitForEvent(actionCallback).run();
-    }
-
-    @Test
-    @MediumTest
-    public void testBnplTermsLabel() {
-        runOnUiThreadBlocking(
-                () -> {
-                    PropertyModel termsLabelModel =
-                            createTermsLabelModel(
-                                    R.string.autofill_bnpl_issuer_bottom_sheet_terms_label);
-                    mTouchToFillPaymentMethodModel
-                            .get(SHEET_ITEMS)
-                            .add(new ListItem(TERMS_LABEL, termsLabelModel));
-                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
-                });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-
-        TextView termsLabel =
-                mTouchToFillPaymentMethodView
-                        .getContentView()
-                        .findViewById(R.id.touch_to_fill_terms_label);
-        assertThat(
-                termsLabel.getText().toString(),
-                is(getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)));
     }
 
     private RecyclerView getCreditCardSuggestions() {
@@ -2047,10 +2040,14 @@ public class TouchToFillPaymentMethodViewTest {
     }
 
     private static PropertyModel createBnplSelectionProgressFooterModel(
-            String footerText, Runnable actionCallback, boolean isLinkEnabled) {
+            @StringRes int termsTextId,
+            String hideOptionsLinkText,
+            Runnable onLinkClickCallback,
+            boolean isLinkEnabled) {
         return new PropertyModel.Builder(BnplSelectionProgressFooterProperties.ALL_KEYS)
-                .with(FOOTER_TEXT, footerText)
-                .with(ON_LINK_CLICK_CALLBACK, (view) -> actionCallback.run())
+                .with(TERMS_TEXT_ID, termsTextId)
+                .with(HIDE_OPTIONS_LINK_TEXT, hideOptionsLinkText)
+                .with(ON_LINK_CLICK_CALLBACK, (view) -> onLinkClickCallback.run())
                 .with(APPLY_LINK_DEACTIVATED_STYLE, !isLinkEnabled)
                 .build();
     }
