@@ -55,6 +55,8 @@ if (!is_android) {
       "fake_security_domain_service.h",
       "test_util.cc",
       "test_util.h",
+      "webauthn_scoped_fake_unexportable_key_provider.cc",
+      "webauthn_scoped_fake_unexportable_key_provider.h",
     ]
 
     deps = [

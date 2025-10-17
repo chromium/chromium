@@ -74,4 +74,7 @@ void OverrideWebAuthnChromeosUserVerifyingKeyProviderForTesting(
     std::unique_ptr<crypto::UserVerifyingKeyProvider> (*func)());
 #endif
 
+void SetWebAuthnUnexportableKeyProviderForTesting(
+    std::unique_ptr<crypto::UnexportableKeyProvider> (*func)());
+
 #endif  // CHROME_BROWSER_WEBAUTHN_UNEXPORTABLE_KEY_UTILS_H_

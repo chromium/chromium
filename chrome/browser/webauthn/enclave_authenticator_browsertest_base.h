@@ -23,9 +23,9 @@
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
 #include "chrome/browser/webauthn/test_util.h"
+#include "chrome/browser/webauthn/webauthn_scoped_fake_unexportable_key_provider.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/render_frame_host.h"
-#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/constants.h"
@@ -132,7 +132,7 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   std::unique_ptr<ScopedICloudDriveOverride> scoped_icloud_drive_override_;
 #endif
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
-  std::unique_ptr<crypto::ScopedFakeUnexportableKeyProvider> fake_hw_provider_;
+  std::unique_ptr<WebAuthnScopedFakeUnexportableKeyProvider> fake_hw_provider_;
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       bluetooth_values_for_testing_;

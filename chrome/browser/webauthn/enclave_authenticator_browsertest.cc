@@ -58,7 +58,9 @@
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/test_util.h"
+#include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
+#include "chrome/browser/webauthn/webauthn_scoped_fake_unexportable_key_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -3360,7 +3362,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   // Without support for unexportable keys, IsUVPAA should return false because
   // the enclave cannot be used.
   fake_hw_provider_.reset();
-  crypto::ScopedNullUnexportableKeyProvider no_hw_key_support;
+  WebAuthnScopedNullUnexportableKeyProvider no_hw_key_support;
   EXPECT_FALSE(IsUVPAA());
 }
 
@@ -3641,20 +3643,13 @@ BlockingUnexportableKeyProviderFactory() {
   return std::make_unique<BlockingUnexportableKeyProvider>();
 }
 
-// TODO(https://crbug.com/452094561): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CancelRacesTPMCheck DISABLED_CancelRacesTPMCheck
-#else
-#define MAYBE_CancelRacesTPMCheck CancelRacesTPMCheck
-#endif
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
-                       MAYBE_CancelRacesTPMCheck) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CancelRacesTPMCheck) {
   // https://crbug.com/352532554
 
   // Set the UnexportableKeyProvider to one that will block inside
   // `SelectAlgorithm` so that we can simulate a slow TPM check.
   fake_hw_provider_.reset();
-  crypto::internal::SetUnexportableKeyProviderForTesting(
+  SetWebAuthnUnexportableKeyProviderForTesting(
       BlockingUnexportableKeyProviderFactory);
 
   // Start a WebAuthn request. It'll block when checking the TPM.
