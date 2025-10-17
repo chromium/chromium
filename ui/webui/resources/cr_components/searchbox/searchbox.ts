@@ -582,6 +582,11 @@ export class SearchboxElement extends SearchboxElementBase {
       return sideType === SideType.kDefaultPrimary;
     });
     this.dropdownIsVisible = hasPrimaryMatches;
+    // Do not show the dropdown if the input is non-empty and context files are
+    // present.
+    if (decodeString16(result.input).length > 0 && this.hasContextFiles_) {
+      this.dropdownIsVisible = false;
+    }
 
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
@@ -635,6 +640,9 @@ export class SearchboxElement extends SearchboxElementBase {
     const result = this.$.context.updateFileStatus(token, status, errorType);
     if (result.errorMessage) {
       this.$.errorScrim.setErrorMessage(result.errorMessage);
+    } else if (status === FileUploadStatus.kProcessing) {
+      this.clearAutocompleteMatches_();
+      this.queryAutocomplete_(this.$.input.value);
     }
   }
 
@@ -691,8 +699,10 @@ export class SearchboxElement extends SearchboxElementBase {
       }
     }
     // For lens searchboxes, requery autcomplete for all updates to the input
-    // (even if the input is empty).
-    if (inputValue.trim() || this.isLensSearchbox_) {
+    // (even if the input is empty). When context files are present, requery
+    // autocomplete only if the input is non-empty.
+    if (inputValue.trim() || this.isLensSearchbox_ ||
+        (this.hasContextFiles_  && !inputValue.trim())) {
       // TODO(crbug.com/40732045): Rather than disabling inline autocompletion
       // when the input event is fired within a composition session, change the
       // mechanism via which inline autocompletion is shown in the searchbox.

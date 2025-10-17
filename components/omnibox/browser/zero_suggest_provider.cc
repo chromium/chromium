@@ -140,9 +140,14 @@ void LogOmniboxZeroSuggestRequest(const RemoteRequestEvent request_event,
 // zero suggest cache is being used to store ZPS responses received from the
 // remote Suggest service for the given |result_type|.
 bool ShouldCacheResultTypeInContext(const ResultType result_type,
+                                    const bool has_contextual_input,
                                     const OEP::PageClassification page_class) {
   switch (result_type) {
     case ResultType::kRemoteNoURL:
+      // Only cache results for the NTP realbox if there is no contextual input.
+      if (omnibox::IsNTPRealbox(page_class)) {
+        return !has_contextual_input;
+      }
       return !(omnibox::IsLensSearchbox(page_class) ||
                omnibox::IsComposebox(page_class));
     case ResultType::kRemoteSendURL:
@@ -189,8 +194,11 @@ bool StoreRemoteResponse(const std::string& response_json,
     return false;
   }
 
+  const bool has_contextual_input =
+      input.lens_overlay_suggest_inputs().has_value();
   const auto page_class = input.current_page_classification();
-  if (!ShouldCacheResultTypeInContext(result_type, page_class)) {
+  if (!ShouldCacheResultTypeInContext(result_type, has_contextual_input,
+                                      page_class)) {
     return true;
   }
 
@@ -218,7 +226,10 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
   DCHECK_NE(ResultType::kNone, result_type);
 
   const auto page_class = input.current_page_classification();
-  if (!ShouldCacheResultTypeInContext(result_type, page_class)) {
+  const bool has_contextual_input =
+      input.lens_overlay_suggest_inputs().has_value();
+  if (!ShouldCacheResultTypeInContext(result_type, has_contextual_input,
+                                      page_class)) {
     return false;
   }
 

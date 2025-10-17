@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/webui/new_tab_page/composebox/base_composebox_handler.h"
-#include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
+#include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/composebox/contextual_session_service.h"
@@ -33,7 +33,7 @@ class LensOverlaySuggestInputs;
 
 namespace composebox {
 
-class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
+class ComposeboxOmniboxClient final : public ContextualOmniboxClient {
  public:
   ComposeboxOmniboxClient(
       Profile* profile,
@@ -62,12 +62,7 @@ class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
       const AutocompleteMatch& alternative_nav_match) override;
 
  private:
-  std::optional<lens::proto::LensOverlaySuggestInputs>
-  GetLensOverlaySuggestInputs() const override;
-
   raw_ptr<BaseComposeboxHandler> composebox_handler_;
-  std::unique_ptr<ContextualSessionService::SessionHandle>
-      contextual_session_handle_;
 };
 
 }  // namespace composebox

@@ -1134,6 +1134,39 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals('voiceSearchButton', getDeepActiveElement()!.id);
   });
 
+  test('autocomplete hides dropdown in typed state with context', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    realbox.ntpRealboxNextEnabled = true;
+    document.body.appendChild(realbox);
+
+    realbox.$.input.value = 'typed state';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    realbox.$.context.dispatchEvent(
+      new CustomEvent('on-context-files-changed', {
+        detail: {files: 2},
+      }));
+    const matches = [createSearchMatch(), createUrlMatch()];
+    testProxy.callbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16(realbox.$.input.value.trimStart()),
+          matches: matches,
+        }));
+    assertFalse(await areMatchesShowing());
+
+    // Dropdown should show again when context is removed.
+    realbox.$.context.dispatchEvent(
+      new CustomEvent('on-context-files-changed', {
+        detail: {files: 0},
+      }));
+    testProxy.callbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16(realbox.$.input.value.trimStart()),
+          matches: matches,
+        }));
+    assertTrue(await areMatchesShowing());
+  });
+
   //============================================================================
   // Test Cut/Copy
   //============================================================================

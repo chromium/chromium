@@ -20,9 +20,9 @@ ComposeboxOmniboxClient::ComposeboxOmniboxClient(
     BaseComposeboxHandler* composebox_handler,
     std::unique_ptr<ContextualSessionService::SessionHandle>
         contextual_session_handle)
-    : SearchboxOmniboxClient(profile, web_contents),
-      composebox_handler_(composebox_handler),
-      contextual_session_handle_(std::move(contextual_session_handle)) {}
+    : ContextualOmniboxClient(profile, web_contents,
+                              std::move(contextual_session_handle)),
+      composebox_handler_(composebox_handler) {}
 
 ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;
 
@@ -54,22 +54,4 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
   composebox_handler_->SubmitQuery(query_text, disposition, additional_params);
 }
 
-std::optional<lens::proto::LensOverlaySuggestInputs>
-ComposeboxOmniboxClient::GetLensOverlaySuggestInputs() const {
-  if (!contextual_session_handle_) {
-    return std::nullopt;
-  }
-
-  auto* query_controller = contextual_session_handle_->GetController();
-  if (!query_controller) {
-    return std::nullopt;
-  }
-
-  const auto& suggest_inputs = query_controller->suggest_inputs();
-  if (suggest_inputs.has_encoded_request_id()) {
-    return suggest_inputs;
-  }
-
-  return std::nullopt;
-}
 }  // namespace composebox
