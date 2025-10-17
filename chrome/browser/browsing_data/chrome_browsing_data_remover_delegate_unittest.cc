@@ -3585,7 +3585,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionHeuristicData) {
-  base::test::ScopedFeatureList feature(blink::features::kGeolocationElement);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {blink::features::kGeolocationElement,
+       permissions::features::kPermissionHeuristicAutoGrant},
+      {});
   constexpr int kHeuristicGrantThreshold = 3;
   auto* history = PermissionActionsHistoryFactory::GetForProfile(GetProfile());
   ContentSettingsType permission = ContentSettingsType::GEOLOCATION;

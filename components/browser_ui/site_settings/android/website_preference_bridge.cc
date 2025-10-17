@@ -122,6 +122,16 @@ PermissionActionsHistory* GetPermissionActionsHistory(
       browser_context);
 }
 
+void ResetHeuristicData(BrowserContext* browser_context,
+                        const GURL& url,
+                        ContentSettingsType permission) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionHeuristicAutoGrant)) {
+    GetPermissionActionsHistory(browser_context)
+        ->ResetHeuristicData(url, permission);
+  }
+}
+
 ScopedJavaLocalRef<jstring> ConvertOriginToJavaString(
     JNIEnv* env,
     const std::string& origin) {
@@ -310,8 +320,7 @@ void SetPermissionSettingForOrigin(
   }
 
   if (setting != CONTENT_SETTING_ALLOW) {
-    GetPermissionActionsHistory(browser_context)
-        ->ResetHeuristicData(origin_url, content_type);
+    ResetHeuristicData(browser_context, origin_url, content_type);
   }
 
   permissions::PermissionUmaUtil::ScopedRevocationReporter
@@ -543,8 +552,7 @@ static void JNI_WebsitePreferenceBridge_SetGeolocationSettingForOrigin(
   // Clear heuristic data if the new setting isn't allow.
   if (!setting || std::get<GeolocationSetting>(*setting).approximate !=
                       PermissionOption::kAllowed) {
-    GetPermissionActionsHistory(browser_context)
-        ->ResetHeuristicData(origin_url, type);
+    ResetHeuristicData(browser_context, origin_url, type);
   }
 
   permissions::PermissionUmaUtil::ScopedRevocationReporter
@@ -1124,9 +1132,8 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingDefaultScope(
   }
 
   if (setting != CONTENT_SETTING_ALLOW) {
-    GetPermissionActionsHistory(unwrap(jbrowser_context_handle))
-        ->ResetHeuristicData(primary_url, static_cast<ContentSettingsType>(
-                                              content_settings_type));
+    ResetHeuristicData(unwrap(jbrowser_context_handle), primary_url,
+                       static_cast<ContentSettingsType>(content_settings_type));
   }
 
   GetHostContentSettingsMap(jbrowser_context_handle)
@@ -1154,9 +1161,8 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingCustomScope(
   }
 
   if (setting != CONTENT_SETTING_ALLOW && primary_url.is_valid()) {
-    GetPermissionActionsHistory(unwrap(jbrowser_context_handle))
-        ->ResetHeuristicData(primary_url, static_cast<ContentSettingsType>(
-                                              content_settings_type));
+    ResetHeuristicData(unwrap(jbrowser_context_handle), primary_url,
+                       static_cast<ContentSettingsType>(content_settings_type));
   }
 
   std::string secondary_pattern_string =

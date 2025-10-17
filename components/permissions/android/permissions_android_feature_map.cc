@@ -25,6 +25,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidCancelPermissionPromptOnTouchOutside,
     &features::kOsAdditionalSecurityPermissionKillSwitch,
+    &features::kPermissionHeuristicAutoGrant,
     &content_settings::features::kApproximateGeolocationPermission,
     &media::kAutoPictureInPictureAndroid,
     &blink::features::kPermissionElement,

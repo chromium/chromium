@@ -345,8 +345,12 @@ TEST_F(PermissionActionHistoryTest, FillInActionCountsTest) {
 class PermissionActionHistoryHeuristicGrantTest
     : public PermissionActionHistoryTest {
  public:
-  PermissionActionHistoryHeuristicGrantTest()
-      : scoped_feature_list_(blink::features::kGeolocationElement) {}
+  PermissionActionHistoryHeuristicGrantTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kGeolocationElement,
+         permissions::features::kPermissionHeuristicAutoGrant},
+        {});
+  }
   PermissionActionHistoryHeuristicGrantTest(
       const PermissionActionHistoryHeuristicGrantTest&) = delete;
   ~PermissionActionHistoryHeuristicGrantTest() override = default;

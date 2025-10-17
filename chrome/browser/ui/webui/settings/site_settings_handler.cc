@@ -607,6 +607,16 @@ void MaybeLogSafeBrowsingNotificationRevocationSource(
   }
 }
 
+void ResetHeuristicData(Profile* profile,
+                        const GURL& url,
+                        ContentSettingsType permission) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionHeuristicAutoGrant)) {
+    PermissionActionsHistoryFactory::GetForProfile(profile)->ResetHeuristicData(
+        url, permission);
+  }
+}
+
 }  // namespace
 
 // static
@@ -1675,8 +1685,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
 
     // Clear heuristic data if the new setting isn't allow.
     if (setting != CONTENT_SETTING_ALLOW) {
-      PermissionActionsHistoryFactory::GetForProfile(profile_)
-          ->ResetHeuristicData(origin, content_type);
+      ResetHeuristicData(profile_, origin, content_type);
     }
 
     content_settings::ContentSettingConstraints constraints;
@@ -1854,8 +1863,7 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
   if (url.is_valid()) {
     PermissionDecisionAutoBlockerFactory::GetForProfile(profile)
         ->RemoveEmbargoAndResetCounts(url, content_type);
-    PermissionActionsHistoryFactory::GetForProfile(profile_)
-        ->ResetHeuristicData(url, content_type);
+    ResetHeuristicData(profile_, url, content_type);
   }
 
   if (content_type == ContentSettingsType::NOTIFICATIONS) {
@@ -1934,8 +1942,7 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
   if (setting != CONTENT_SETTING_ALLOW) {
     GURL url(primary_pattern.ToString());
     if (url.is_valid()) {
-      PermissionActionsHistoryFactory::GetForProfile(target_profile)
-          ->ResetHeuristicData(url, content_type);
+      ResetHeuristicData(target_profile, url, content_type);
     }
   }
 

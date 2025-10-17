@@ -749,8 +749,11 @@ void PageInfo::OnSitePermissionChanged(
   }
 
   // Also clear heuristic grant data if user removes the granted state.
-  if (setting && (info->delegate().IsBlocked(*setting) ||
-                  info->delegate().IsUndecided(*setting))) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionHeuristicAutoGrant) &&
+      setting &&
+      (info->delegate().IsBlocked(*setting) ||
+       info->delegate().IsUndecided(*setting))) {
     delegate_->GetPermissionActionsHistory()->ResetHeuristicData(site_url_,
                                                                  type);
   }

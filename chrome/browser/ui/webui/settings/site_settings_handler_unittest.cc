@@ -2264,8 +2264,11 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
 }
 
 TEST_F(SiteSettingsHandlerTest, ClearHeuristicData) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::features::kGeolocationElement);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {blink::features::kGeolocationElement,
+       permissions::features::kPermissionHeuristicAutoGrant},
+      {});
   constexpr char kOrigin[] = "https://www.example.com:443";
   auto* permission_actions_history =
       PermissionActionsHistoryFactory::GetForProfile(profile());

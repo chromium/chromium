@@ -187,7 +187,9 @@ bool PermissionRequest::IsGeolocationElementInitiated() const {
 }
 
 bool PermissionRequest::IsEligibleForHeuristicAutoGrant() const {
-  return data_->IsEligibleForHeuristicAutoGrant();
+  return base::FeatureList::IsEnabled(
+             features::kPermissionHeuristicAutoGrant) &&
+         data_->IsEligibleForHeuristicAutoGrant();
 }
 
 std::optional<gfx::Rect> PermissionRequest::GetAnchorElementPosition() const {

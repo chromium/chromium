@@ -138,7 +138,10 @@ public class WebsitePreferenceBridgeTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT})
+    @Features.EnableFeatures({
+        PermissionsAndroidFeatureList.GEOLOCATION_ELEMENT,
+        PermissionsAndroidFeatureList.PERMISSION_HEURISTIC_AUTO_GRANT
+    })
     @Features.DisableFeatures({PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION})
     public void testHeuristicDataCleared() {
         ThreadUtils.runOnUiThreadBlocking(

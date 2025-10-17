@@ -406,8 +406,11 @@ class PEPCInitiatedPermissionRequestTestWithAutolocate
 TEST_P(PEPCInitiatedPermissionRequestTestWithAutolocate,
        PEPCRequestHeuristicallyGrantedGeolocation) {
   bool autolocate = GetParam();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::features::kGeolocationElement);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {blink::features::kGeolocationElement,
+       permissions::features::kPermissionHeuristicAutoGrant},
+      {});
 
   auto* history =
       PermissionsClient::Get()->GetPermissionActionsHistory(browser_context());
