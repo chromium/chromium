@@ -52,7 +52,7 @@ BrokeredUdpClientSocket::~BrokeredUdpClientSocket() {
 }
 
 int BrokeredUdpClientSocket::Connect(const net::IPEndPoint& address) {
-  if (!broker_helper_.ShouldBroker(address.address())) {
+  if (!client_socket_factory_->ShouldBroker(address.address())) {
     return ConnectInternal(address);
   }
   // Brokered sockets can only support asynchronous connections so this does not
@@ -103,7 +103,7 @@ int BrokeredUdpClientSocket::ConnectAsyncInternal(
   DCHECK(!socket_);
   CHECK(!connect_called_);
   connect_called_ = true;
-  if (!broker_helper_.ShouldBroker(address.address())) {
+  if (!client_socket_factory_->ShouldBroker(address.address())) {
     return DidCompleteCreate(/*should_broker=*/false, address,
                              std::move(callback), network::TransferableSocket(),
                              net::OK);
