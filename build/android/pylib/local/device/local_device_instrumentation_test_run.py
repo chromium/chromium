@@ -810,8 +810,11 @@ class LocalDeviceInstrumentationTestRun(
         else:
           raise Exception('No PackageInfo found but'
                           '--use-apk-under-test-flags-file is specified.')
-      self._flag_changers[str(device)] = flag_changer.FlagChanger(
-          device, cmdline_file)
+      changer = flag_changer.FlagChanger(device, cmdline_file)
+      # Ensure that any existing flags are cleared so that there cannot be any
+      # conflicts with added flags.
+      changer.RemoveFlags(changer.GetCurrentFlags())
+      self._flag_changers[str(device)] = changer
 
   #override
   def _CreateShardsForDevices(self, tests):
