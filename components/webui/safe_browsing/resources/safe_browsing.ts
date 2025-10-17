@@ -51,11 +51,12 @@ function initialize() {
                                         ]) => addCookie(cookie));
   sendWithPromise('getSavedPasswords', [])
       .then((passwords: Array<string|boolean>) => addSavedPasswords(passwords));
-  sendWithPromise('getDatabaseManagerInfo', []).then(function(databaseState) {
-    const fullHashCacheState = databaseState.splice(-1, 1);
-    addDatabaseManagerInfo(databaseState);
-    addFullHashCacheInfo(fullHashCacheState);
-  });
+  sendWithPromise('getDatabaseManagerInfo', [])
+      .then(function(databaseState: Array<string|number|string[]>) {
+        const fullHashCacheState = databaseState.splice(-1, 1) as string[];
+        addDatabaseManagerInfo(databaseState);
+        addFullHashCacheInfo(fullHashCacheState);
+      });
 
   sendWithPromise('getDownloadUrlsChecked', [])
       .then((urlsChecked: string[]) => {
@@ -345,23 +346,26 @@ function addSavedPasswords(passwords: Array<string|boolean>) {
   }
 }
 
-function addDatabaseManagerInfo(result: string[]) {
-  const resLength = result.length;
-
-  for (let i = 0; i < resLength; i += 2) {
+// Adds the DatabaseManagerInfo proto to the DOM. Each even-indexed
+// element in `databaseManagerInfo` contains the proto's property name.
+// Each odd-indexed element contains the value stored the property.
+function addDatabaseManagerInfo(
+    databaseManagerInfo: Array<string|number|string[]>) {
+  for (let i = 0; i < databaseManagerInfo.length; i += 2) {
     const preferenceListTemplate = $<HTMLTemplateElement>('result-template');
     assert(preferenceListTemplate);
     const preferencesListFormatted =
         preferenceListTemplate.content.cloneNode(true) as HTMLElement;
     const selectedElements = preferencesListFormatted.querySelectorAll('span');
     assert(selectedElements);
-    const firstElement = selectedElements[0];
-    const secondElement = selectedElements[1];
-    assert(firstElement);
-    assert(secondElement);
 
-    firstElement.textContent = result[i] + ': ';
-    const value = result[i + 1];
+    const labelDOM = selectedElements[0];
+    assert(labelDOM);
+    const valueDOM = selectedElements[1];
+    assert(valueDOM);
+
+    labelDOM.textContent = databaseManagerInfo[i] + ': ';
+    const value = databaseManagerInfo[i + 1];
     assert(value);
     if (Array.isArray(value)) {
       const blockQuote = document.createElement('blockquote');
@@ -370,10 +374,11 @@ function addDatabaseManagerInfo(result: string[]) {
         div.textContent = item;
         blockQuote.appendChild(div);
       });
-      secondElement.appendChild(blockQuote);
+      valueDOM.appendChild(blockQuote);
     } else {
-      secondElement.textContent = value;
+      valueDOM.textContent = value.toString();
     }
+
     const databaseInfoList = $('database-info-list');
     assert(databaseInfoList);
     databaseInfoList.appendChild(preferencesListFormatted);
@@ -414,10 +419,10 @@ function addContentHelper(
   }
 }
 
-function addFullHashCacheInfo(result: string) {
+function addFullHashCacheInfo(result: string[]) {
   const cacheInfo = $('full-hash-cache-info');
   assert(cacheInfo);
-  cacheInfo.textContent = result;
+  cacheInfo.textContent = result.toString();
 }
 
 function addDownloadUrlChecked(urlAndResult: string) {
@@ -425,47 +430,47 @@ function addDownloadUrlChecked(urlAndResult: string) {
   appendChildWithInnerText(logDiv, urlAndResult);
 }
 
-function addSentClientDownloadRequestsInfo(result: string) {
+function addSentClientDownloadRequestsInfo(requestInfo: string) {
   const logDiv = $('sent-client-download-requests-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, requestInfo);
 }
 
-function addReceivedClientDownloadResponseInfo(result: string) {
+function addReceivedClientDownloadResponseInfo(responseInfo: string) {
   const logDiv = $('received-client-download-response-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, responseInfo);
 }
 
-function addSentClientPhishingRequestsInfo(result: string) {
+function addSentClientPhishingRequestsInfo(phishingRequestInfo: string) {
   const logDiv = $('sent-client-phishing-requests-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, phishingRequestInfo);
 }
 
-function addReceivedClientPhishingResponseInfo(result: string) {
+function addReceivedClientPhishingResponseInfo(phishingResponseInfo: string) {
   const logDiv = $('received-client-phishing-response-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, phishingResponseInfo);
 }
 
-function addSentCSBRRsInfo(result: string) {
+function addSentCSBRRsInfo(csbrrsInfo: string) {
   const logDiv = $('sent-csbrrs-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, csbrrsInfo);
 }
 
-function addSentHitReportsInfo(result: string) {
+function addSentHitReportsInfo(hitReportsInfo: string) {
   const logDiv = $('sent-hit-report-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, hitReportsInfo);
 }
 
-function addPGEvent(result: ReportingResult) {
+function addPGEvent(pgEvent: ReportingResult) {
   const logDiv = $('pg-event-log');
   const eventFormatted =
-      '[' + (new Date(result.time)).toLocaleString() + '] ' + result.message;
+      '[' + (new Date(pgEvent.time)).toLocaleString() + '] ' + pgEvent.message;
   appendChildWithInnerText(logDiv, eventFormatted);
 }
 
-function addSecurityEvent(result: ReportingResult) {
+function addSecurityEvent(securityEvent: ReportingResult) {
   const logDiv = $('security-event-log');
-  const eventFormatted =
-      '[' + (new Date(result.time)).toLocaleString() + '] ' + result.message;
+  const eventFormatted = '[' + (new Date(securityEvent.time)).toLocaleString() +
+      '] ' + securityEvent.message;
   appendChildWithInnerText(logDiv, eventFormatted);
 }
 
@@ -493,28 +498,28 @@ function addResultToTable(
   cell.innerText = result;
 }
 
-function addPGPing(result: string[]) {
-  addResultToTableHelper('pg-ping-list', result, 0);
+function addPGPing(pgPing: string[]) {
+  addResultToTableHelper('pg-ping-list', pgPing, 0);
 }
 
-function addPGResponse(result: string[]) {
-  addResultToTableHelper('pg-ping-list', result, 1);
+function addPGResponse(pgResponse: string[]) {
+  addResultToTableHelper('pg-ping-list', pgResponse, 1);
 }
 
-function addURTLookupPing(result: string[]) {
-  addResultToTableHelper('urt-lookup-ping-list', result, 0);
+function addURTLookupPing(urtPing: string[]) {
+  addResultToTableHelper('urt-lookup-ping-list', urtPing, 0);
 }
 
-function addURTLookupResponse(result: string[]) {
-  addResultToTableHelper('urt-lookup-ping-list', result, 1);
+function addURTLookupResponse(urtLookupResponse: string[]) {
+  addResultToTableHelper('urt-lookup-ping-list', urtLookupResponse, 1);
 }
 
-function addHPRTLookupPing(result: string[]) {
-  addResultToTableHelper('hprt-lookup-ping-list', result, 0);
+function addHPRTLookupPing(hprtPing: string[]) {
+  addResultToTableHelper('hprt-lookup-ping-list', hprtPing, 0);
 }
 
-function addHPRTLookupResponse(result: string[]) {
-  addResultToTableHelper('hprt-lookup-ping-list', result, 1);
+function addHPRTLookupResponse(hprtLookupResponse: string[]) {
+  addResultToTableHelper('hprt-lookup-ping-list', hprtLookupResponse, 1);
 }
 
 // A helper function that ensures there are elements within `results` before
@@ -555,18 +560,18 @@ function addDeepScan(result: DeepScanResult) {
   }
 }
 
-function addLogMessage(result: ReportingResult) {
+function addLogMessage(logMessage: ReportingResult) {
   const logDiv = $('log-messages');
-  const eventFormatted =
-      '[' + (new Date(result.time)).toLocaleString() + '] ' + result.message;
+  const eventFormatted = '[' + (new Date(logMessage.time)).toLocaleString() +
+      '] ' + logMessage.message;
   appendChildWithInnerText(logDiv, eventFormatted);
 }
 
-function addReportingEvent(result: RealtimeReportingResult) {
+function addReportingEvent(reportingEvent: RealtimeReportingResult) {
   // If the event doesn't have a timestamp, fall back to the old display format.
-  if (!result.timeMillis) {
+  if (!reportingEvent.timeMillis) {
     const logDiv = $('reporting-events');
-    const eventFormatted = result.message;
+    const eventFormatted = reportingEvent.message;
     appendChildWithInnerText(logDiv, eventFormatted);
     return;
   }
@@ -587,15 +592,17 @@ function addReportingEvent(result: RealtimeReportingResult) {
   const detailsRow = reportingEventRow.querySelector('.details-row')!;
 
   mainRow.querySelector('.time-cell')!.textContent =
-      new Date(result.timeMillis).toLocaleString();
-  mainRow.querySelector('.event-type-cell')!.textContent = result.event_type;
+      new Date(reportingEvent.timeMillis).toLocaleString();
+  mainRow.querySelector('.event-type-cell')!.textContent =
+      reportingEvent.event_type;
   mainRow.querySelector('.profile-cell')!.textContent =
-      result.profile ? 'Yes' : 'No';
+      reportingEvent.profile ? 'Yes' : 'No';
   mainRow.querySelector('.device-cell')!.textContent =
-      result.device ? 'Yes' : 'No';
+      reportingEvent.device ? 'Yes' : 'No';
   mainRow.querySelector('.success-cell')!.textContent =
-      result.success ? 'Yes' : 'No';
-  detailsRow.querySelector('.details-cell')!.textContent = result.message;
+      reportingEvent.success ? 'Yes' : 'No';
+  detailsRow.querySelector('.details-cell')!.textContent =
+      reportingEvent.message;
 
   const expander = mainRow.querySelector('.expander')!;
   const copyButton = mainRow.querySelector('.copy-button')!;
@@ -603,7 +610,7 @@ function addReportingEvent(result: RealtimeReportingResult) {
   // Add click listener to copy the message.
   copyButton.addEventListener('click', (e) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(result.message).then(() => {
+    navigator.clipboard.writeText(reportingEvent.message).then(() => {
       const originalText = copyButton.textContent;
       copyButton.textContent = 'Copied!';
       setTimeout(() => {
@@ -637,7 +644,7 @@ function addReferrerChain(ev: Event) {
   const referrerChainURL = $<HTMLInputElement>('referrer-chain-url');
   assert(referrerChainURL);
   sendWithPromise('getReferrerChain', referrerChainURL.value)
-      .then((response) => {
+      .then((referrerChain: string) => {
         const referrerChainContent = $('referrer-chain-content');
         assert(referrerChainContent);
         // TrustedTypes is not supported on iOS
@@ -646,7 +653,7 @@ function addReferrerChain(ev: Event) {
         } else {
           referrerChainContent.innerHTML = '';
         }
-        referrerChainContent.textContent = response;
+        referrerChainContent.textContent = referrerChain;
       });
 }
 
