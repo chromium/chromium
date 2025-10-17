@@ -18,7 +18,11 @@ action("chromium_git_revision") {
   output_file = "$target_gen_dir/chromium_git_revision.h"
   outputs = [ output_file ]
 
-  args = [
+  args = []
+  if (is_official_build) {
+    args += [ "--official" ]
+  }
+  args += [
     # LASTCHANGE contains "<build hash>-<ref>".  The user agent only wants the
     # "<build hash>" bit, so chop off everything after it.
     "-e",
