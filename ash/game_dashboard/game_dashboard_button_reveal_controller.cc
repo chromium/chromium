@@ -39,7 +39,11 @@ GameDashboardButtonRevealController::GameDashboardButtonRevealController(
 }
 
 GameDashboardButtonRevealController::~GameDashboardButtonRevealController() {
-  UpdateVisibility(/*target_visibility=*/true, /*animate=*/false);
+  // Don't attempt to update the button's visibility if the game window is
+  // already being destroyed.
+  if (!context_->game_window()->is_destroying()) {
+    UpdateVisibility(/*target_visibility=*/true, /*animate=*/false);
+  }
   context_->game_window()->RemovePreTargetHandler(this);
 }
 
