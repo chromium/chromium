@@ -14,7 +14,9 @@
 #include "ash/webui/grit/ash_boca_receiver_app_bundle_resources_map.h"
 #include "ash/webui/grit/ash_boca_receiver_untrusted_ui_resources.h"
 #include "ash/webui/grit/ash_boca_receiver_untrusted_ui_resources_map.h"
+#include "base/version_info/channel.h"
 #include "chromeos/ash/components/boca/receiver/receiver_handler_delegate.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -35,7 +37,8 @@ BocaReceiverUntrustedUIConfig::~BocaReceiverUntrustedUIConfig() = default;
 
 bool BocaReceiverUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return features::IsBocaReceiverAppEnabled();
+  return features::IsBocaReceiverAppEnabled() ||
+         ash::GetChannel() != version_info::Channel::STABLE;
 }
 
 BocaReceiverUntrustedUI::BocaReceiverUntrustedUI(

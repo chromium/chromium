@@ -9,6 +9,8 @@
 #include "ash/webui/grit/ash_boca_receiver_ui_resources.h"
 #include "ash/webui/grit/ash_boca_receiver_ui_resources_map.h"
 #include "base/strings/stringprintf.h"
+#include "base/version_info/channel.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -26,7 +28,8 @@ BocaReceiverUIConfig::~BocaReceiverUIConfig() = default;
 
 bool BocaReceiverUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return features::IsBocaReceiverAppEnabled();
+  return features::IsBocaReceiverAppEnabled() ||
+         ash::GetChannel() != version_info::Channel::STABLE;
 }
 
 BocaReceiverUI::BocaReceiverUI(content::WebUI* web_ui)
