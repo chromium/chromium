@@ -22,6 +22,7 @@ import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 
 import org.chromium.base.Callback;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
@@ -206,9 +208,22 @@ class NavigationAttachmentsMediator {
         }
 
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        Iterable<Tab> filteredTabs =
+                Iterables.filter(
+                        tabModelSelector.getCurrentModel(),
+                        (tab) ->
+                                !tab.isIncognitoBranded()
+                                        && tab.isInitialized()
+                                        && !tab.isFrozen()
+                                        && (tab.getUrl()
+                                                        .getScheme()
+                                                        .equals(UrlConstants.HTTP_SCHEME)
+                                                || tab.getUrl()
+                                                        .getScheme()
+                                                        .equals(UrlConstants.HTTPS_SCHEME)));
         List<Tab> tabs =
                 Ordering.from(Comparator.comparingLong(Tab::getTimestampMillis))
-                        .greatestOf(tabModelSelector.getCurrentModel(), MAX_RECENT_TABS_TO_PRESENT);
+                        .greatestOf(filteredTabs, MAX_RECENT_TABS_TO_PRESENT);
         for (Tab tab : tabs) {
             PropertyModel tabProperties =
                     new PropertyModel.Builder(TabAttachmentPopupChoiceProperties.ALL_KEYS)
