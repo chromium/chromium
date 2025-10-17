@@ -348,8 +348,19 @@ bool PrerendererImpl::MaybePrerender(
     return false;
   }
 
-  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-      &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
+  switch (candidate->action) {
+    case blink::mojom::SpeculationAction::kPrerender:
+      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+          &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
+      break;
+    case blink::mojom::SpeculationAction::kPrerenderUntilScript:
+      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+          &rfhi,
+          blink::mojom::WebFeature::kSpeculationRulesPrerenderUntilScript);
+      break;
+    default:
+      NOTREACHED();
+  }
 
   IncrementReceivedPrerendersCountForMetrics(
       PreloadingTriggerTypeFromSpeculationInjectionType(
