@@ -667,6 +667,40 @@ TEST_F(GeolocationPermissionContextTests,
   CheckPermissionMessageSent(0, true);
 }
 
+TEST_F(GeolocationPermissionContextTests, GeolocationAccuracy) {
+  GURL requesting_frame("https://www.example.com/geolocation");
+  NavigateAndCommit(requesting_frame);
+  RequestManagerDocumentLoadCompleted();
+
+  // Test "precise" accuracy.
+  base::HistogramTester histograms;
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
+  PermissionRequestManager* manager =
+      PermissionRequestManager::FromWebContents(web_contents());
+  manager->SetPromptOptions(GeolocationPromptOptions{true});
+  AcceptPrompt();
+  histograms.ExpectUniqueSample(
+      "Permissions.Prompt.Geolocation.AccuracyGranted",
+      /*sample=*/static_cast<int>(GeolocationAccuracy::kPrecise),
+      /*expected_bucket_count=*/1);
+  CheckPermissionMessageSent(0, true);
+
+  // Reset permission before the second test.
+  SetGeolocationContentSetting(requesting_frame, requesting_frame,
+                               CONTENT_SETTING_ASK);
+
+  // Test "approximate" accuracy.
+  base::HistogramTester histograms_approximate;
+  RequestGeolocationPermission(RequestID(1), requesting_frame, true);
+  manager->SetPromptOptions(GeolocationPromptOptions{false});
+  AcceptPromptThisTime();
+  histograms_approximate.ExpectUniqueSample(
+      "Permissions.Prompt.Geolocation.AccuracyGranted",
+      /*sample=*/static_cast<int>(GeolocationAccuracy::kApproximate),
+      /*expected_bucket_count=*/1);
+  CheckPermissionMessageSent(1, true);
+}
+
 TEST_F(GeolocationPermissionContextTests, AndroidEnabledCantPrompt) {
   GURL requesting_frame("https://www.example.com/geolocation");
   NavigateAndCommit(requesting_frame);

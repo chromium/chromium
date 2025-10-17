@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -17,8 +18,10 @@
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/pref_names.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -192,6 +195,18 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     PermissionDecision decision,
     bool is_final_decision) {
   DCHECK(is_final_decision);
+
+  if (decision == PermissionDecision::kAllow ||
+      decision == PermissionDecision::kAllowThisTime) {
+    const auto* geolocation_options =
+        std::get_if<GeolocationPromptOptions>(&request_data.prompt_options);
+    if (geolocation_options) {
+      PermissionUmaUtil::RecordGeolocationAccuracy(
+          geolocation_options->selected_precise
+              ? GeolocationAccuracy::kPrecise
+              : GeolocationAccuracy::kApproximate);
+    }
+  }
 
   bool is_default_search =
       IsRequestingOriginDSE(request_data.requesting_origin);

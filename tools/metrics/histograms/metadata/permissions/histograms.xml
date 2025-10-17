@@ -1324,6 +1324,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Permissions.Prompt.Geolocation.AccuracyGranted"
+    enum="GeolocationAccuracy" expires_after="2026-10-15">
+  <owner>tommasin@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when a geolocation permission prompt is resolved with a grant
+    action (either 'allow' or 'allow this time'). This tracks whether the user
+    granted precise or approximate location. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.Prompt.Has{FaviconType}Favicon" enum="Boolean"
     expires_after="2024-08-30">
   <owner>dullweber@chromium.org</owner>

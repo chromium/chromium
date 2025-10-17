@@ -405,6 +405,14 @@ enum class ElementAnchoredBubbleVariant {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ElementAnchoredBubbleVariant)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GeolocationAccuracy {
+  kPrecise = 0,
+  kApproximate = 1,
+  kMaxValue = kApproximate,
+};
+
 enum class PermissionAutoRevocationHistory {
   // Permission has not been automatically revoked.
   NONE = 0,
@@ -925,6 +933,9 @@ class PermissionUmaUtil {
   // Records whether the UI selection logic of the
   // PermissionBasedPredictionUiSelector ran into a timeout.
   static void RecordPredictionServiceTimeout(bool timeout);
+
+  // Records the accuracy of the geolocation permission request.
+  static void RecordGeolocationAccuracy(GeolocationAccuracy accuracy);
 
   // Records if the browser was active at the time the prompt started displaying
   static void RecordPromptShownInActiveBrowser(

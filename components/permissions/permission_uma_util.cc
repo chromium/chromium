@@ -2306,6 +2306,13 @@ void PermissionUmaUtil::RecordPredictionServiceTimeout(bool timeout) {
 }
 
 // static
+void PermissionUmaUtil::RecordGeolocationAccuracy(
+    GeolocationAccuracy accuracy) {
+  base::UmaHistogramEnumeration(
+      "Permissions.Prompt.Geolocation.AccuracyGranted", accuracy);
+}
+
+// static
 void PermissionUmaUtil::RecordPermissionAutoRejectForActor(
     ContentSettingsType permission,
     bool is_actor_operating) {

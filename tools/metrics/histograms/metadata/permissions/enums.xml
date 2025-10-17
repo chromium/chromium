@@ -93,6 +93,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/external_protocol/external_protocol_handler.cc:LoggedScheme) -->
 
+<enum name="GeolocationAccuracy">
+  <int value="0" label="Precise"/>
+  <int value="1" label="Approximate"/>
+</enum>
+
 <enum name="HandleStateType">
   <int value="0" label="Launch"/>
   <int value="1" label="Checked launch"/>
