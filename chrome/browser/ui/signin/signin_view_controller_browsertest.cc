@@ -760,6 +760,14 @@ class SigninViewControllerInteractiveBrowserTest
   }
 
  protected:
+  const DeepQuery kExtensionsSectionExpandButton = {
+      "signout-confirmation-app", "extensions-section", "#expandButton"};
+  const DeepQuery kExtensionsSectionCollapse = {
+      "signout-confirmation-app", "extensions-section", "#collapse"};
+  const DeepQuery kExtensionsSectionAccountExtensions = {
+      "signout-confirmation-app", "extensions-section",
+      "#account-extensions-list"};
+
   bool uninstall_account_extensions() const { return GetParam(); }
 
   const base::FilePath& extension_data_dir() const {
@@ -783,6 +791,34 @@ class SigninViewControllerInteractiveBrowserTest
     element_exists.event = kElementExists;
     element_exists.where = element;
     return WaitForStateChange(contents_id, element_exists);
+  }
+
+  // Show the signout confirmation dialog and instrument its internal
+  // WebContents.
+  auto ShowAndInstrumentSignoutConfirmationDialog() {
+    return Steps(
+        Do([&] {
+          browser()
+              ->GetFeatures()
+              .signin_view_controller()
+              ->SignoutOrReauthWithPrompt(
+                  kTestAccessPoint,
+                  signin_metrics::ProfileSignout::
+                      kUserClickedSignoutProfileMenu,
+                  signin_metrics::SourceForRefreshTokenOperation::
+                      kUserMenu_SignOutAllAccounts);
+        }),
+        WaitForShow(
+            SigninViewController::kSignoutConfirmationDialogViewElementId),
+        Check([&] {
+          return browser()
+              ->GetFeatures()
+              .signin_view_controller()
+              ->ShowsModalDialog();
+        }),
+        InstrumentNonTabWebView(
+            kWebContentsId,
+            SigninViewController::kSignoutConfirmationDialogViewElementId));
   }
 
   // Waits for the dialog to be ready to uninstall account extensions.
@@ -851,6 +887,14 @@ class SigninViewControllerInteractiveBrowserTest
         installed);
   }
 
+  // Loads the extension from `extension_path`.
+  auto LoadExtension(const std::string& extension_path) {
+    extensions::ChromeTestExtensionLoader extension_loader(GetProfile());
+    extension_loader.set_pack_extension(true);
+    return extension_loader.LoadExtension(
+        extension_data_dir().AppendASCII(extension_path));
+  }
+
  private:
   // chrome/test/data/extensions/
   base::FilePath extension_data_dir_;
@@ -867,17 +911,10 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerInteractiveBrowserTest,
   // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
   extensions::ScopedTestMV2Enabler mv2_enabler;
 
-  auto load_extension = [this](const std::string& extension_path) {
-    extensions::ChromeTestExtensionLoader extension_loader(GetProfile());
-    extension_loader.set_pack_extension(true);
-    return extension_loader.LoadExtension(
-        extension_data_dir().AppendASCII(extension_path));
-  };
-
   // Install a local extension; it should not be shown in the list of account
   // extensions in the dialog.
   scoped_refptr<const extensions::Extension> local_extension =
-      load_extension("simple_with_file");
+      LoadExtension("simple_with_file");
   ASSERT_TRUE(local_extension);
   auto local_extension_id = local_extension->id();
 
@@ -895,24 +932,16 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerInteractiveBrowserTest,
   // Install two account extensions: both should eventually be shown in the
   // dialog.
   scoped_refptr<const extensions::Extension> first_account_extension =
-      load_extension("simple_with_host");
+      LoadExtension("simple_with_host");
   ASSERT_TRUE(first_account_extension);
   auto first_account_extension_id = first_account_extension->id();
 
   scoped_refptr<const extensions::Extension> second_account_extension =
-      load_extension("simple_with_icon");
+      LoadExtension("simple_with_icon");
   ASSERT_TRUE(second_account_extension);
   auto second_account_extension_id = second_account_extension->id();
 
   const int expected_num_account_extensions = 2;
-
-  const DeepQuery kExtensionsSectionExpandButton = {
-      "signout-confirmation-app", "extensions-section", "#expandButton"};
-  const DeepQuery kExtensionsSectionCollapse = {
-      "signout-confirmation-app", "extensions-section", "#collapse"};
-  const DeepQuery kExtensionsSectionAccountExtensions = {
-      "signout-confirmation-app", "extensions-section",
-      "#account-extensions-list"};
 
   const char* get_num_shown_account_extensions = R"((el) => {
     if (!el.opened) { return -1; }
@@ -923,30 +952,10 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerInteractiveBrowserTest,
 
   // Test sequence setup:
   // - User is signed in and is about to sign out via confirmation prompt.
-  // - Use has two account extensions installed while signed in.
+  // - User has two account extensions installed while signed in.
   RunTestSequence(
       // Show the dialog and verify that it has shown.
-      Do([&] {
-        browser()
-            ->GetFeatures()
-            .signin_view_controller()
-            ->SignoutOrReauthWithPrompt(
-                kTestAccessPoint,
-                signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
-                signin_metrics::SourceForRefreshTokenOperation::
-                    kUserMenu_SignOutAllAccounts);
-      }),
-      WaitForShow(
-          SigninViewController::kSignoutConfirmationDialogViewElementId),
-      Check([&] {
-        return browser()
-            ->GetFeatures()
-            .signin_view_controller()
-            ->ShowsModalDialog();
-      }),
-      InstrumentNonTabWebView(
-          kWebContentsId,
-          SigninViewController::kSignoutConfirmationDialogViewElementId),
+      ShowAndInstrumentSignoutConfirmationDialog(),
 
       // Within the dialog, verify that the extensions section is visible but
       // the list of account extensions is collapsed.
@@ -983,6 +992,68 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerInteractiveBrowserTest,
           : AccountExtensionsSignoutChoice::kSignoutAccountExtensionsKept;
   histogram_tester.ExpectUniqueSample(
       kAccountExtensionsSignoutChoiceHistogramName, choice, 1);
+}
+
+// Test that the signout confirmation dialog will show account extensions if the
+// user has disabled extensions syncing and that the user can choose to
+// uninstall them on signout.
+IN_PROC_BROWSER_TEST_P(SigninViewControllerInteractiveBrowserTest,
+                       ShowAccountExtensionsSyncDisabled) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
+
+  // Setup a primary account.
+  extensions::signin_test_util::SimulateExplicitSignIn(
+      GetProfile(), identity_test_env(), kTestEmail);
+
+  // Verify that the user has performed an explicit signin.
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  // And that they can sync extensions while in transport mode.
+  ASSERT_TRUE(
+      extensions::sync_util::IsSyncingExtensionsInTransportMode(GetProfile()));
+
+  // Install an account extension.
+  scoped_refptr<const extensions::Extension> account_extension =
+      LoadExtension("simple_with_host");
+  ASSERT_TRUE(account_extension);
+  auto account_extension_id = account_extension->id();
+
+  // Disable extension syncing for this user.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(GetProfile());
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kExtensions, false);
+
+  // Install another extension; it should not be treated as an account
+  // extension.
+  scoped_refptr<const extensions::Extension> non_account_extension =
+      LoadExtension("simple_with_icon");
+  ASSERT_TRUE(non_account_extension);
+  auto non_account_extension_id = non_account_extension->id();
+
+  // Test sequence setup:
+  // - User is signed in and is about to sign out via confirmation prompt.
+  // - User has one account extension and one non-account extension installed
+  //   while signed in.
+  RunTestSequence(
+      // Show the dialog and verify that it has shown.
+      ShowAndInstrumentSignoutConfirmationDialog(),
+
+      // Within the dialog, verify that the extensions section is visible
+      // despite extensions not currently being synced.
+      WaitForElementExists(kWebContentsId, kExtensionsSectionExpandButton),
+
+      // Now accept the dialog and sign out.
+      AcceptDialogAndSignout(),
+
+      // The local extension should always still be installed.
+      CheckExtensionInstalled(non_account_extension_id, true),
+
+      // The account extension should be uninstalled if the user chose to
+      // uninstall them from the dialog based on uninstall_account_extensions().
+      CheckExtensionInstalled(account_extension_id,
+                              !uninstall_account_extensions()));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

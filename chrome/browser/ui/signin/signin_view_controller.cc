@@ -175,9 +175,8 @@ signin_metrics::PromoAction GetPromoActionForNewAccount(
 bool ShowAccountExtensionsOnSignout(Profile* profile) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Do not sign out immediately if the user has account extensions.
-  if (extensions::sync_util::IsSyncingExtensionsInTransportMode(profile)) {
-    extensions::AccountExtensionTracker* tracker =
-        extensions::AccountExtensionTracker::Get(profile);
+  if (extensions::AccountExtensionTracker* tracker =
+          extensions::AccountExtensionTracker::Get(profile)) {
     return !tracker->GetSignedInAccountExtensions().empty();
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
