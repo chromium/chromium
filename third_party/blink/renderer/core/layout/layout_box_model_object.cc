@@ -871,10 +871,10 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   }
   if (caret_shape != CaretShape::kBar && font_data) [[unlikely]] {
     if (caret_shape == CaretShape::kBlock) {
-      caret_width = LayoutUnit(font_data->AvgCharWidth());
+      caret_width = LayoutUnit(font_data->GetFontMetrics().ZeroWidth());
     } else if (caret_shape == CaretShape::kUnderscore) {
       height = caret_width;
-      caret_width = LayoutUnit(font_data->AvgCharWidth());
+      caret_width = LayoutUnit(font_data->GetFontMetrics().ZeroWidth());
       block_start =
           block_start + LayoutUnit(font_data->GetFontMetrics().Height());
     }

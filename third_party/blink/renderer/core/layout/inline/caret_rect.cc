@@ -108,8 +108,8 @@ LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,
         cursor, offset - cursor.Current().TextStartOffset(), style);
     // Fall back to 1ch.
     if (cursor_inline_size == LayoutUnit()) {
-      cursor_inline_size =
-          LayoutUnit(style.GetFont()->PrimaryFont()->AvgCharWidth());
+      cursor_inline_size = LayoutUnit(
+          style.GetFont()->PrimaryFont()->GetFontMetrics().ZeroWidth());
     }
   } else {
     // If the next fragment is text, we need to get the width and height of
@@ -127,8 +127,8 @@ LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,
           next.Current().Size());
       cursor_inline_size = ComputeCharacterWidthAtOffset(next, 0, style_next);
       if (cursor_inline_size == LayoutUnit()) {
-        cursor_inline_size =
-            LayoutUnit(style_next.GetFont()->PrimaryFont()->AvgCharWidth());
+        cursor_inline_size = LayoutUnit(
+            style_next.GetFont()->PrimaryFont()->GetFontMetrics().ZeroWidth());
       }
       cursor_block_size =
           converter_next.ToLogical(next.Current().Size()).block_size;
@@ -150,8 +150,8 @@ LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,
     } else {
       // The width of the block and underscore carets should be 1ch if
       // this information is impractical to determine.
-      cursor_inline_size =
-          LayoutUnit(style.GetFont()->PrimaryFont()->AvgCharWidth());
+      cursor_inline_size = LayoutUnit(
+          style.GetFont()->PrimaryFont()->GetFontMetrics().ZeroWidth());
   }
   }
   caret_rect.offset.block_offset = cursor_block_offset;
