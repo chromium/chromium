@@ -38,6 +38,16 @@ class TabStateStorageBackend {
   // A payload of children to save.
   void SaveChildren(int id, std::unique_ptr<Payload> children);
 
+  // Removes a node without updating the parent.
+  void RemoveNode(int id);
+
+  // Performs two operations:
+  // a) Removes a node.
+  // b) Updates the parent's children list using `children`.
+  void RemoveNodeAndUpdateParent(int id,
+                                 int parent_id,
+                                 std::unique_ptr<Payload> children);
+
   void LoadAllNodes(base::OnceCallback<void(std::vector<NodeState>)> callback);
 
  private:

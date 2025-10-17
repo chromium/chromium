@@ -187,6 +187,23 @@ bool TabStateStorageDatabase::SaveNodeChildren(Transaction* transaction,
   return write_statement.Run();
 }
 
+bool TabStateStorageDatabase::RemoveNode(Transaction* transaction, int id) {
+  CHECK(db_);
+  DCHECK(transaction && transaction->IsOpen());
+
+  static constexpr char kDeleteChildrenSql[] =
+      "DELETE FROM nodes"
+      "WHERE id = ?";
+
+  DCHECK(db_->IsSQLValid(kDeleteChildrenSql));
+
+  sql::Statement write_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteChildrenSql));
+
+  write_statement.BindInt(0, id);
+  return write_statement.Run();
+}
+
 std::unique_ptr<TabStateStorageDatabase::Transaction>
 TabStateStorageDatabase::CreateTransaction() {
   std::unique_ptr<sql::Transaction> sql_transaction =

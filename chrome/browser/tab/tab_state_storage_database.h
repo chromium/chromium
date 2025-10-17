@@ -69,7 +69,12 @@ class TabStateStorageDatabase {
                 std::string children);
 
   // Saves the children of a node to the database.
+  // This will silently fail if the node does not already exist.
   bool SaveNodeChildren(Transaction* transaction, int id, std::string children);
+
+  // Removes a node from the database.
+  // This will silently fail if the node does not already exist.
+  bool RemoveNode(Transaction* transaction, int id);
 
   // Creates a transaction.
   std::unique_ptr<Transaction> CreateTransaction();
