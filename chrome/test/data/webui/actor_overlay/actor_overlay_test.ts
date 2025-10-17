@@ -114,14 +114,14 @@ suite('BorderGlow', function() {
 
   test('InitialState', function() {
     const borderGlow =
-        page.shadowRoot!.querySelector<HTMLElement>('#border-glow');
+        page.shadowRoot.querySelector<HTMLElement>('#border-glow');
     assertTrue(!!borderGlow);
     assertTrue(borderGlow.parentElement!.hidden);
   });
 
   test('SetBorderGlowVisibility', async function() {
     const borderGlow =
-        page.shadowRoot!.querySelector<HTMLElement>('#border-glow');
+        page.shadowRoot.querySelector<HTMLElement>('#border-glow');
     assertTrue(!!borderGlow);
 
     testRemote.setBorderGlowVisibility(true);
@@ -141,7 +141,7 @@ suite('BorderGlow', function() {
     await microtasksFinished();
 
     const borderGlow =
-        pageWithGlow.shadowRoot!.querySelector<HTMLElement>('#border-glow');
+        pageWithGlow.shadowRoot.querySelector<HTMLElement>('#border-glow');
     assertTrue(!!borderGlow);
     assertFalse(borderGlow.parentElement!.hidden);
   });
@@ -154,7 +154,7 @@ suite('BorderGlow', function() {
     await microtasksFinished();
 
     const borderGlow =
-        pageWithoutGlow.shadowRoot!.querySelector<HTMLElement>('#border-glow');
+        pageWithoutGlow.shadowRoot.querySelector<HTMLElement>('#border-glow');
     assertTrue(!!borderGlow);
     assertTrue(borderGlow.parentElement!.hidden);
 

@@ -84,7 +84,7 @@ suite('RecentTabChipTest', function() {
     const buttonText = button.querySelector('.recent-tab-button-text');
     assertTrue(!!buttonText);
     assertEquals(
-        'Ask Google about previous tab', buttonText.textContent!.trim());
+        'Ask Google about previous tab', buttonText.textContent.trim());
     assertEquals('Tab 1', button.title);
   });
 
