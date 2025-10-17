@@ -734,7 +734,7 @@ void ExtensionActionViewController::ShowPopup(
   has_opened_popup_ = true;
   platform_delegate_->ShowPopup(std::move(popup_host), show_action,
                                 std::move(callback));
-  view_delegate_->OnPopupShown(by_user);
+  extensions_container_->OnPopupShown(GetId(), by_user);
 }
 
 void ExtensionActionViewController::OnPopupClosed() {
@@ -746,7 +746,7 @@ void ExtensionActionViewController::OnPopupClosed() {
   if (extensions_container_->GetPoppedOutActionId() == GetId()) {
     extensions_container_->UndoPopOut();
   }
-  view_delegate_->OnPopupClosed();
+  extensions_container_->OnPopupClosed(GetId());
 }
 
 std::unique_ptr<IconWithBadgeImageSource>

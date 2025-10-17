@@ -76,7 +76,6 @@ bool TestToolbarActionViewController::IsShowingPopup() const {
 
 void TestToolbarActionViewController::HidePopup() {
   popup_showing_ = false;
-  delegate_->OnPopupClosed();
 }
 
 gfx::NativeView TestToolbarActionViewController::GetPopupNativeView() {
@@ -105,7 +104,6 @@ TestToolbarActionViewController::GetSiteInteraction(
 
 void TestToolbarActionViewController::ShowPopup(bool by_user) {
   popup_showing_ = true;
-  delegate_->OnPopupShown(by_user);
 }
 
 void TestToolbarActionViewController::SetActionName(

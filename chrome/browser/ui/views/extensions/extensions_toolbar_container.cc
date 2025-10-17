@@ -1090,6 +1090,17 @@ void ExtensionsToolbarContainer::ShowContextMenuAsFallback(
   GetViewForId(action_id)->ShowContextMenuAsFallback();
 }
 
+void ExtensionsToolbarContainer::OnPopupShown(
+    const extensions::ExtensionId& action_id,
+    bool by_user) {
+  GetViewForId(action_id)->OnPopupShown(by_user);
+}
+
+void ExtensionsToolbarContainer::OnPopupClosed(
+    const extensions::ExtensionId& action_id) {
+  GetViewForId(action_id)->OnPopupClosed();
+}
+
 void ExtensionsToolbarContainer::OnMouseExited(const ui::MouseEvent& event) {
   UpdateToolbarActionHoverCard(nullptr,
                                ToolbarActionHoverCardUpdateType::kHover);

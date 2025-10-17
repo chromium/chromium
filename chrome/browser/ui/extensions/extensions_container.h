@@ -85,6 +85,14 @@ class ExtensionsContainer {
   // action.
   virtual void ShowContextMenuAsFallback(
       const extensions::ExtensionId& action_id) = 0;
+
+  // Called when a popup is shown. If `by_user` is true, then this was through
+  // a direct user action (as opposed to, e.g., an API call).
+  virtual void OnPopupShown(const extensions::ExtensionId& action_id,
+                            bool by_user) = 0;
+
+  // Called when a popup is closed.
+  virtual void OnPopupClosed(const extensions::ExtensionId& action_id) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_

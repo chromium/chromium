@@ -288,6 +288,13 @@ void WebUIBrowserExtensionsContainer::ShowContextMenuAsFallback(
   ShowContextMenu(ui::mojom::MenuSourceType::kNone, action_id);
 }
 
+void WebUIBrowserExtensionsContainer::OnPopupShown(
+    const extensions::ExtensionId& action_id,
+    bool by_user) {}
+
+void WebUIBrowserExtensionsContainer::OnPopupClosed(
+    const extensions::ExtensionId& action_id) {}
+
 void WebUIBrowserExtensionsContainer::CollapseConfirmation() {
   NOTIMPLEMENTED();
 }
