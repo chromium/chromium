@@ -34,8 +34,10 @@ proto::OnDeviceBaseModelMetadata MatchingMetadata(
 }
 
 // TODO: crbug.com/442914748 - Support text safety.
-proto::OnDeviceModelExecutionFeatureConfig UnsafeTestFeatureConfig() {
+proto::OnDeviceModelExecutionFeatureConfig UnsafeFeatureConfig(
+    ModelBasedCapabilityKey feature) {
   proto::OnDeviceModelExecutionFeatureConfig cfg = SimpleTestFeatureConfig();
+  cfg.set_feature(ToModelExecutionFeatureProto(feature));
   cfg.set_can_skip_text_safety(true);
   return cfg;
 }
@@ -49,7 +51,7 @@ class ModelBrokerAndroidFeatureList {
             {features::internal::kOnDeviceModelTestFeature, {}},
             {features::kOptimizationGuideOnDeviceModel, {}},
         },
-        {});
+        {features::kRequirePersistentModeForScamDetection});
   }
   ~ModelBrokerAndroidFeatureList() = default;
 
@@ -70,6 +72,24 @@ class ModelBrokerAndroidFeatureDisabledList {
         });
   }
   ~ModelBrokerAndroidFeatureDisabledList() = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class RequirePersistentModeForScamDetectionEnabledFeatureList {
+ public:
+  RequirePersistentModeForScamDetectionEnabledFeatureList() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kOptimizationGuideModelExecution, {}},
+            {features::internal::kOnDeviceModelTestFeature, {}},
+            {features::kOptimizationGuideOnDeviceModel, {}},
+            {features::kRequirePersistentModeForScamDetection, {}},
+        },
+        {});
+  }
+  ~RequirePersistentModeForScamDetectionEnabledFeatureList() = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -99,15 +119,20 @@ class ModelBrokerAndroidTest : public testing::Test {
         std::make_unique<ModelInfo>(test_asset_.model_info()));
   }
 
+  void InstallScamDetectionFeatureConfig() {
+    provider_.UpdateModelImmediatelyForTesting(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION,
+        std::make_unique<ModelInfo>(scam_detection_asset_.model_info()));
+  }
+
   std::unique_ptr<OptimizationGuideModelExecutor::Session>
-  DownloadModelAndCreateSession(ModelBrokerClient& client) {
+  DownloadModelAndCreateSession(ModelBrokerClient& client,
+                                mojom::ModelBasedCapabilityKey feature) {
     // Requesting the feature we've provided assets for should succeed.
     base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-    client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
-                         SessionConfigParams{}, future.GetCallback());
+    client.CreateSession(feature, SessionConfigParams{}, future.GetCallback());
     base::test::RunUntil([&]() {
-      return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
-                 .unavailable_reason() ==
+      return client.GetSubscriber(feature).unavailable_reason() ==
              mojom::ModelUnavailableReason::kPendingAssets;
     });
     java_helper_.TriggerDownloaderOnAvailable(spec_.model_name,
@@ -127,10 +152,50 @@ class ModelBrokerAndroidTest : public testing::Test {
       "Test", "0.0.1", proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED};
   on_device_model::OnDeviceModelBridgeNativeUnitTestHelper java_helper_;
   FakeAdaptationAsset test_asset_{{
-      .config = UnsafeTestFeatureConfig(),
+      .config = UnsafeFeatureConfig(ModelBasedCapabilityKey::kTest),
+      .metadata = MatchingMetadata(spec_),
+  }};
+  FakeAdaptationAsset scam_detection_asset_{{
+      .config = UnsafeFeatureConfig(ModelBasedCapabilityKey::kScamDetection),
       .metadata = MatchingMetadata(spec_),
   }};
 };
+
+TEST_F(ModelBrokerAndroidTest, RequirePersistentModeForTest) {
+  InstallTestFeatureConfig();
+  ModelBrokerClient client(BindAndPassRemote());
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
+                       SessionConfigParams{}, future.GetCallback());
+  base::test::RunUntil([&]() {
+    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+               .unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingAssets;
+  });
+
+  java_helper_.VerifyDownloaderParams(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST,
+      /*require_persistent_mode=*/true);
+}
+
+TEST_F(ModelBrokerAndroidTest, DoesNotRequirePersistentModeForScamDetection) {
+  InstallScamDetectionFeatureConfig();
+  ModelBrokerClient client(BindAndPassRemote());
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kScamDetection,
+                       SessionConfigParams{}, future.GetCallback());
+  base::test::RunUntil([&]() {
+    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kScamDetection)
+               .unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingAssets;
+  });
+
+  java_helper_.VerifyDownloaderParams(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
+      /*require_persistent_mode=*/false);
+}
 
 // Verify that when requesting a session while assets are still pending, the
 // client will wait for the assets before resolving the callback.
@@ -154,7 +219,8 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModel) {
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote());
 
-  auto session = DownloadModelAndCreateSession(client);
+  auto session = DownloadModelAndCreateSession(
+      client, mojom::ModelBasedCapabilityKey::kTest);
   ASSERT_TRUE(session);
 
   proto::ExampleForTestingRequest context_request;
@@ -192,7 +258,8 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModelAfterModelDisconnected) {
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote());
 
-  auto session = DownloadModelAndCreateSession(client);
+  auto session = DownloadModelAndCreateSession(
+      client, mojom::ModelBasedCapabilityKey::kTest);
   ASSERT_TRUE(session);
 
   // Fast forward time to trigger idle timeout.
@@ -271,8 +338,38 @@ TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
       base::Days(1));
 
   ModelBrokerClient client(BindAndPassRemote());
-  auto session = DownloadModelAndCreateSession(client);
+  auto session = DownloadModelAndCreateSession(
+      client, mojom::ModelBasedCapabilityKey::kTest);
   ASSERT_TRUE(session);
+}
+
+class ModelBrokerAndroidRequirePersistentModeEnabledTest
+    : public ModelBrokerAndroidTest {
+ public:
+  ModelBrokerAndroidRequirePersistentModeEnabledTest() = default;
+  ~ModelBrokerAndroidRequirePersistentModeEnabledTest() override = default;
+
+ private:
+  RequirePersistentModeForScamDetectionEnabledFeatureList feature_list_;
+};
+
+TEST_F(ModelBrokerAndroidRequirePersistentModeEnabledTest,
+       RequirePersistentModeForScamDetection) {
+  InstallScamDetectionFeatureConfig();
+  ModelBrokerClient client(BindAndPassRemote());
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kScamDetection,
+                       SessionConfigParams{}, future.GetCallback());
+  base::test::RunUntil([&]() {
+    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kScamDetection)
+               .unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingAssets;
+  });
+
+  java_helper_.VerifyDownloaderParams(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
+      /*require_persistent_mode=*/true);
 }
 
 class ModelBrokerAndroidFeatureDisabledTest : public ModelBrokerAndroidTest {

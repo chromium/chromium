@@ -10,6 +10,7 @@
 
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "base/feature_list.h"
 #include "components/optimization_guide/core/model_execution/model_broker_impl.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -24,6 +25,10 @@ class OnDeviceModelMojomImpl;
 }  // namespace on_device_model
 
 namespace optimization_guide {
+
+namespace features {
+BASE_DECLARE_FEATURE(kRequirePersistentModeForScamDetection);
+}  // namespace features
 
 class ModelBrokerAndroid;
 
