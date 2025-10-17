@@ -738,16 +738,14 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     }
     base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
     uint8_t* buf = const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>());
-    std::array<uint8_t*, 3> data = {};
-    for (size_t i = 0; i < layout_->planes().size(); i++)
-      data[i] = buf + layout_->planes()[i].offset;
-
-    // TODO(crbug.com/40285824): spanify this usage.
+    std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> data = {};
+    for (size_t i = 0; i < layout_->planes().size(); i++) {
+      // TODO(crbug.com/40285824): spanify this usage.
+      data[i] = UNSAFE_TODO(base::span(buf + layout_->planes()[i].offset,
+                                       layout_->planes()[i].size));
+    }
     auto frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
-        *layout_, visible_rect_, natural_size_,
-        UNSAFE_TODO(base::span(data[0], layout_->planes()[0].size)),
-        UNSAFE_TODO(base::span(data[1], layout_->planes()[1].size)),
-        UNSAFE_TODO(base::span(data[2], layout_->planes()[2].size)),
+        *layout_, visible_rect_, natural_size_, data[0], data[1], data[2],
         frame_timestamp);
     DCHECK(frame);
     frame->BackWithOwnedSharedMemory(std::move(dup_region), std::move(mapping));
@@ -828,27 +826,23 @@ RawDataHelper::~RawDataHelper() = default;
 scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) const {
   uint32_t read_frame_index =
       GetReadFrameIndex(index, reverse_, video_->NumFrames());
-  std::array<uint8_t*, VideoFrame::kMaxPlanes> frame_data = {};
+  std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> frame_data = {};
   const size_t num_planes = VideoFrame::NumPlanes(video_->PixelFormat());
   RawVideo::FrameData src_frame = video_->GetFrame(read_frame_index);
   for (size_t i = 0; i < num_planes; ++i) {
     // The data is never modified but WrapExternalYuvDataWithLayout() only
-    // accepts non-const pointer.
-    frame_data[i] = const_cast<uint8_t*>(src_frame.plane_addrs[i]);
+    // accepts non-const span.
+    // TODO(crbug.com/40285824): spanify this usage.
+    frame_data[i] =
+        UNSAFE_TODO(base::span(const_cast<uint8_t*>(src_frame.plane_addrs[i]),
+                               video_->FrameLayout().planes()[i].size));
   }
 
-  // TODO(crbug.com/40285824): spanify this usage.
   scoped_refptr<VideoFrame> video_frame =
       VideoFrame::WrapExternalYuvDataWithLayout(
           video_->FrameLayout(), video_->VisibleRect(),
-          video_->VisibleRect().size(),
-          UNSAFE_TODO(base::span(frame_data[0],
-                                 video_->FrameLayout().planes()[0].size)),
-          UNSAFE_TODO(base::span(frame_data[1],
-                                 video_->FrameLayout().planes()[1].size)),
-          UNSAFE_TODO(base::span(frame_data[2],
-                                 video_->FrameLayout().planes()[2].size)),
-          base::TimeTicks::Now().since_origin());
+          video_->VisibleRect().size(), frame_data[0], frame_data[1],
+          frame_data[2], base::TimeTicks::Now().since_origin());
   video_frame->AddDestructionObserver(
       base::DoNothingWithBoundArgs(std::move(src_frame)));
   return video_frame;
