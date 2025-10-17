@@ -523,6 +523,9 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<
       guest_contents::mojom::GuestContentsHost, WebUIBrowserUI>(map);
 
+  const bool is_ntp_composebox_enabled =
+      ntp_composebox::IsNtpComposeboxEnabled(Profile::FromBrowserContext(
+          render_frame_host->GetProcess()->GetBrowserContext()));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RegisterWebUIControllerInterfaceBinder<
       app_management::mojom::PageHandlerFactory, WebAppSettingsUI>(map);
@@ -539,9 +542,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<::app_home::mojom::PageHandlerFactory,
                                          webapps::AppHomeUI>(map);
 
-  const bool is_ntp_composebox_enabled =
-      ntp_composebox::IsNtpComposeboxEnabled(Profile::FromBrowserContext(
-          render_frame_host->GetProcess()->GetBrowserContext()));
   const bool is_contextual_tasks_enabled =
       base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
   if (is_ntp_composebox_enabled && is_contextual_tasks_enabled) {
@@ -559,6 +559,11 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   if (is_contextual_tasks_enabled) {
     RegisterWebUIControllerInterfaceBinder<
         contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
+  }
+#else
+  if (is_ntp_composebox_enabled) {
+    RegisterWebUIControllerInterfaceBinder<
+        composebox::mojom::PageHandlerFactory, NewTabPageUI>(map);
   }
 #endif
 }
