@@ -48,10 +48,6 @@ GpuChannelHost::GpuChannelHost(
           this,
           static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface),
           shared_image_capabilities),
-      image_decode_accelerator_proxy_(
-          this,
-          static_cast<int32_t>(
-              GpuChannelReservedRoutes::kImageDecodeAccelerator)),
       sync_point_graph_validation_enabled_(
           features::IsSyncPointGraphValidationEnabled()) {
   mojo::PendingAssociatedRemote<mojom::GpuChannel> channel;

@@ -70,7 +70,6 @@ source_set("client_sources") {
     "gl_helper_scaling.cc",
     "gl_helper_scaling.h",
     "gpu_control.h",
-    "image_decode_accelerator_interface.h",
     "mapped_memory.cc",
     "mapped_memory.h",
     "ring_buffer.cc",

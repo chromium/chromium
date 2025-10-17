@@ -40,7 +40,6 @@ class TransferCacheSerializeHelper;
 namespace gpu {
 
 class GpuControl;
-class ImageDecodeAcceleratorInterface;
 struct SharedMemoryLimits;
 
 namespace raster {
@@ -56,12 +55,10 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                                            public gles2::QueryTrackerClient,
                                            public ClientFontManager::Client {
  public:
-  RasterImplementation(
-      RasterCmdHelper* helper,
-      TransferBufferInterface* transfer_buffer,
-      bool lose_context_when_out_of_memory,
-      GpuControl* gpu_control,
-      ImageDecodeAcceleratorInterface* image_decode_accelerator);
+  RasterImplementation(RasterCmdHelper* helper,
+                       TransferBufferInterface* transfer_buffer,
+                       bool lose_context_when_out_of_memory,
+                       GpuControl* gpu_control);
 
   RasterImplementation(const RasterImplementation&) = delete;
   RasterImplementation& operator=(const RasterImplementation&) = delete;
@@ -391,8 +388,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   std::unique_ptr<cc::ClientPaintCache> paint_cache_;
 
   cc::SkottieSerializationHistory skottie_serialization_history_;
-
-  raw_ptr<ImageDecodeAcceleratorInterface> image_decode_accelerator_;
 
   // Tracing helpers.
   int raster_chromium_id_ = 0;

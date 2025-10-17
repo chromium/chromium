@@ -115,8 +115,7 @@ class RasterImplementationTest : public testing::Test {
 
         gl_ = std::make_unique<RasterImplementation>(
             helper_.get(), transfer_buffer_.get(),
-            lose_context_when_out_of_memory, gpu_control_.get(),
-            nullptr /* image_decode_accelerator */);
+            lose_context_when_out_of_memory, gpu_control_.get());
       }
 
       // The client should be set to something non-null.

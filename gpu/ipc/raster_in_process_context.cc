@@ -78,7 +78,7 @@ ContextResult RasterInProcessContext::Initialize(
   raster_implementation_ = std::make_unique<raster::RasterImplementation>(
       raster_helper.get(), transfer_buffer_.get(),
       /*lose_context_when_out_of_memory=*/lose_context_when_out_of_memory,
-      command_buffer_.get(), nullptr /* image_decode_accelerator */);
+      command_buffer_.get());
   result = raster_implementation_->Initialize(memory_limits);
   raster_implementation_->SetLostContextCallback(base::BindOnce(
       []() { EXPECT_TRUE(false) << "Unexpected lost context."; }));

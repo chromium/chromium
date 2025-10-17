@@ -47,7 +47,6 @@
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "gpu/command_buffer/client/gpu_control.h"
-#include "gpu/command_buffer/client/image_decode_accelerator_interface.h"
 #include "gpu/command_buffer/client/query_tracker.h"
 #include "gpu/command_buffer/client/raster_cmd_helper.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -559,8 +558,7 @@ RasterImplementation::RasterImplementation(
     RasterCmdHelper* helper,
     TransferBufferInterface* transfer_buffer,
     bool lose_context_when_out_of_memory,
-    GpuControl* gpu_control,
-    ImageDecodeAcceleratorInterface* image_decode_accelerator)
+    GpuControl* gpu_control)
     : ImplementationBase(helper, transfer_buffer, gpu_control),
       helper_(helper),
       error_bits_(0),
@@ -571,8 +569,7 @@ RasterImplementation::RasterImplementation(
       font_manager_(this, helper->command_buffer()),
       lost_(false),
       max_inlined_entry_size_(kMaxTransferCacheEntrySizeForTransferBuffer),
-      transfer_cache_(this),
-      image_decode_accelerator_(image_decode_accelerator) {
+      transfer_cache_(this) {
   DCHECK(helper);
   DCHECK(transfer_buffer);
   DCHECK(gpu_control);

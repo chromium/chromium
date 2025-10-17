@@ -21,8 +21,6 @@ component("client") {
     "gpu_channel_host.h",
     "gpu_channel_observer.h",
     "gpu_ipc_client_export.h",
-    "image_decode_accelerator_proxy.cc",
-    "image_decode_accelerator_proxy.h",
     "shared_image_interface_proxy.cc",
     "shared_image_interface_proxy.h",
   ]
