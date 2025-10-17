@@ -2325,6 +2325,14 @@ test("content_browsertests") {
 
   if (is_chromeos) {
     sources += [ "../browser/smart_card/smart_card_browsertest.cc" ]
+    deps += [ "//chromeos/components/firewall_hole" ]
+
+    if (is_component_build) {
+      sources += [
+        "//content/browser/direct_sockets/firewall_hole_delegate.cc",
+        "//content/browser/direct_sockets/firewall_hole_delegate.h",
+      ]
+    }
   }
 
   # HID support is not available without udev.
@@ -3398,6 +3406,16 @@ test("content_unittests") {
     "//ui/webui:test_support",
     "//url",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      "//content/browser/direct_sockets/firewall_hole_delegate_unittest.cc",
+    ]
+    deps += [
+      "//chromeos/components/firewall_hole",
+      "//chromeos/dbus/permission_broker",
+    ]
+  }
 
   if (enable_nocompile_tests) {
     deps += [ ":content_nocompile_tests" ]

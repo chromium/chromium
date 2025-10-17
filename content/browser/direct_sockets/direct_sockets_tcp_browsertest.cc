@@ -50,6 +50,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
+#include "content/browser/direct_sockets/firewall_hole_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The tests in this file use the Network Service implementation of
@@ -591,11 +592,14 @@ class DirectSocketsTcpServerBrowserTest : public DirectSocketsTcpBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
   DirectSocketsTcpServerBrowserTest() {
     chromeos::PermissionBrokerClient::InitializeFake();
-    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting();
+    FirewallHoleDelegate::SetAlwaysOpenFirewallHoleForTesting(true);
   }
 
   ~DirectSocketsTcpServerBrowserTest() override {
     chromeos::PermissionBrokerClient::Shutdown();
+    // Need to reset the flag because there are other tests that
+    // use FirewallHoleDelegate.
+    FirewallHoleDelegate::SetAlwaysOpenFirewallHoleForTesting(false);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };

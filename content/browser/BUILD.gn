@@ -3544,6 +3544,12 @@ source_set("browser") {
       "//ui/base",
     ]
   }
+  if (is_chromeos) {
+    sources += [
+      "//content/browser/direct_sockets/firewall_hole_delegate.cc",
+      "//content/browser/direct_sockets/firewall_hole_delegate.h",
+    ]
+  }
 
   if (enable_devtools_frontend) {
     sources += [
