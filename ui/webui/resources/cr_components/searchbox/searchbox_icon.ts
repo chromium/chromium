@@ -275,10 +275,14 @@ export class SearchboxIconElement extends CrLitElement {
       // Featured enterprise search suggestions have the icon set match.iconUrl.
       if (this.match.type !== HISTORY_CLUSTER_MATCH_TYPE &&
           this.match.type !== FEATURED_ENTERPRISE_SEARCH) {
+        // Ignore the cache because local versions of favicons are updated as
+        // sites are visited; and popup shouldn't show the old icon while the
+        // omnibox and the tab strip show the new icon.
         return getFaviconForPageURL(
             this.match.destinationUrl.url, /* isSyncedUrlForHistoryUi= */ false,
             /* remoteIconUrlForUma= */ '', /* size= */ 16,
-            /* forceLightMode= */ true);
+            /* forceLightMode= */ true, /* fallbackToHost= */ true,
+            /* ignoreCache= */ true);
       }
     }
 

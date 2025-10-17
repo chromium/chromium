@@ -288,7 +288,7 @@ export class SearchboxDropdownElement extends CrLitElement {
    */
   protected groupIdsForSideType_(side: SideType): number[] {
     return [...new Set<number>(
-        this.result?.matches?.map(match => match.suggestionGroupId)
+        this.result?.matches.map(match => match.suggestionGroupId)
             .filter(groupId => this.sideTypeForGroup_(groupId) === side))];
   }
 
@@ -313,7 +313,7 @@ export class SearchboxDropdownElement extends CrLitElement {
    *     so it knows its position in the list of matches.
    */
   protected matchIndex_(match: AutocompleteMatch): number {
-    return this.result?.matches?.indexOf(match) ?? -1;
+    return this.result?.matches.indexOf(match) ?? -1;
   }
 
   /**
