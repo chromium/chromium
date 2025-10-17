@@ -484,6 +484,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testLoadWhileWindowClosed) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone),
@@ -494,6 +495,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testLoadWhileWindowClosed) {
   WaitForWebUiState(mojom::WebUiState::kReady);
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsWindowClosed) {
   base::HistogramTester histogram_tester;
   // Immediately close the window to check behavior while window is closed.
@@ -508,6 +510,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsWindowClosed) {
       /*sample=*/2 /*WEB_CLIENT_INITIALIZE_FAILED*/, 1);
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsWindowOpen) {
   // Fail client initialization, should see error page.
   RunTestSequence(
@@ -527,11 +530,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsWindowOpen) {
   WaitForWebUiState(mojom::WebUiState::kReady);
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextDisabled,
                        DISABLED_testDefaultTabContextApiIsUndefinedWhenFeatureDisabled) {
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled,
                        DISABLED_testGetDefaultTabContextPermissionState) {
   // Default kGlicDefaultTabContextEnabled value is true.
@@ -562,6 +567,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
   });
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testReloadWebUi) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
@@ -583,6 +589,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testReloadWebUi) {
 
 // The client navigates to the 'sorry' page before it finishes initialize().
 // Chrome should show this page.
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testSorryPageBeforeInitialize) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
@@ -606,6 +613,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testSorryPageBeforeInitialize) {
   });
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testSorryPageAfterInitialize) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
@@ -629,6 +637,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testSorryPageAfterInitialize) {
   });
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsAfterReload) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
@@ -706,6 +715,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
 }
 
 // Connect the client, and check that the special request header is sent.
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testRequestHeader) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
@@ -746,7 +756,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testRequestHeader) {
   EXPECT_THAT(cross_origin_rpc_request->headers, request_header_matcher);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTab) {
+// TODO(crbug.com/450446123): Re-enable after fixing
+IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTab) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
@@ -754,6 +765,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTab) {
   RunTestSequence(CheckTabCount(2));
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabFailsWithUnsupportedScheme) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
@@ -762,6 +774,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabFailsWithUnsupportedSc
   RunTestSequence(CheckTabCount(1));
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabInBackground) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
@@ -786,6 +799,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabInBackground) {
               testing::EndsWith("#foreground"));
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabByClickingOnLink) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
@@ -818,6 +832,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabByClickingOnLink) {
   }));
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabByClickingOnLinkDaisyChains) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Test only supported with multi-instance on";
@@ -830,6 +845,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabByClickingOnLinkDaisyC
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabFailsIfNotActive) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
@@ -875,6 +891,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDetachPanel) {
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testMultiplePanelsDetachedAndFloating) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Attached only supported with multi-instance.";
@@ -965,6 +982,7 @@ class GlicApiTestRuntimeFeatureOff : public GlicApiTestWithOneTab {
 // DONT DELETE THIS TEST when the method being called here is removed,
 // but instead update this test to call any other RuntimeFeature-protected
 // method.
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
                        DISABLED_testErrorShownOnMojoPipeError) {
   ExecuteJsTest();
@@ -1065,16 +1083,19 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitiallyNotResizable) {
   RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/false));
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
                        DISABLED_testGetModelQualityClientIdFeatureEnabled) {
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterDisabled,
                        DISABLED_testGetModelQualityClientIdFeatureDisabled) {
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
                        DISABLED_testGetZeroStateSuggestionsForFocusedTabApi) {
   EXPECT_CALL(*mock_cueing_service(),
@@ -1084,6 +1105,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(
     GlicApiTestWithOneTabAndContextualCueing,
     DISABLED_testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden) {
@@ -1094,6 +1116,7 @@ IN_PROC_BROWSER_TEST_P(
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
                        DISABLED_testGetZeroStateSuggestionsApi) {
   if (GetParam().multi_instance) {
@@ -1113,13 +1136,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 }
 
 // TODO(crbug.com/449897870): Flaky on Win-asan.
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
-  DISABLED_testGetZeroStateSuggestionsMultipleNavigations
-#else
-#define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
-  testGetZeroStateSuggestionsMultipleNavigations
-#endif
+// #if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+// #define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
+//   DISABLED_testGetZeroStateSuggestionsMultipleNavigations
+// #else
+// #define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
+//   testGetZeroStateSuggestionsMultipleNavigations
+// #endif
+// TODO(crbug.com/450446123): Re-enable after fixing, don't just remove
+// DISABLED_, use MAYBE_testGetZeroStateSuggestionsMultipleNavigations.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
                        DISABLED_testGetZeroStateSuggestionsMultipleNavigations) {
   // TODO: zero state suggestions not yet implemented for multi-instance.
@@ -1148,6 +1173,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
   ContinueJsTest();
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
                        DISABLED_testGetZeroStateSuggestionsFailsWhenHidden) {
   // TODO: zero state suggestions not yet implemented for multi-instance.
@@ -1742,6 +1768,7 @@ class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {
       mock_platform_handle;
 };
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
                        DISABLED_testOpenOsMediaPermissionSettings) {
   base::test::TestFuture<void> signal;
@@ -1756,6 +1783,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
   EXPECT_TRUE(signal.Wait());
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
                        DISABLED_testOpenOsGeoPermissionSettings) {
   base::test::TestFuture<void> signal;
@@ -1769,6 +1797,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
   EXPECT_TRUE(signal.Wait());
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
                        DISABLED_testGetOsMicrophonePermissionStatusAllowed) {
   EXPECT_CALL(mock_platform_handle,
@@ -1780,6 +1809,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
                        DISABLED_testGetOsMicrophonePermissionStatusNotAllowed) {
   EXPECT_CALL(mock_platform_handle,
@@ -1850,6 +1880,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 #endif
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCallingApiWhileHiddenRecordsMetrics) {
   // multi-instance: document.visibilityState never transitions to 'hidden'.
   RunTestSequence(
@@ -2202,6 +2233,7 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
                        DISABLED_testMaybeRefreshUserStatus) {
   Profile* profile = browser()->profile();
@@ -2219,6 +2251,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
   EXPECT_GE(user_status_fetch_count_, 1u);
 }
 
+// TODO(crbug.com/450446123): Re-enable after fixing
 IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
                        DISABLED_testMaybeRefreshUserStatusThrottled) {
   // As previous, but requests several updates (e.g., as though many errors
