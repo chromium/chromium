@@ -44,6 +44,7 @@ SYSROOT_DIRS = {
 SYSROOT_PRECOMPILED_HEADERS = [
     'fcntl.h',
     'getopt.h',
+    'linux/types.h',
     'sys/ioctl.h',
     'syscall.h',
 ]
@@ -161,6 +162,9 @@ def fix_graph(graph: dict[str, Header],
     # Thus, limits.h exports an undef.
     # if it's textual, limits.h undefs something it defined itself.
     graph['linux/limits.h'].textual = True
+
+    # This is not included on arm32
+    graph['asm-generic/types.h'].textual = True
 
     # On chromeos, x86_64-linux-gnu/foo.h will be either moved to foo.h or to
     # x86_64-cros-gnu.
