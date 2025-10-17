@@ -90,4 +90,8 @@ specific_include_rules = {
     # For CONTENT_SETTING_ALLOW / BLOCK.
     "+components/content_settings/core/common",
   ],
+  "install_signer.cc": [
+    "+rlz/buildflags/buildflags.h",
+    "+rlz/lib/machine_id.h",
+  ],
 }

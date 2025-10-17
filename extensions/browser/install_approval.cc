@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/install_approval.h"
+#include "extensions/browser/install_approval.h"
 
 #include <memory>
 
 #include "base/version.h"
-#include "chrome/browser/extensions/manifest_check_level.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"

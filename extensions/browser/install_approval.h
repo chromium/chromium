@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_INSTALL_APPROVAL_H_
-#define CHROME_BROWSER_EXTENSIONS_INSTALL_APPROVAL_H_
+#ifndef EXTENSIONS_BROWSER_INSTALL_APPROVAL_H_
+#define EXTENSIONS_BROWSER_INSTALL_APPROVAL_H_
 
 #include <memory>
 #include <string>
@@ -12,8 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/manifest_check_level.h"
+#include "extensions/browser/manifest_check_level.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/image/image_skia.h"
@@ -28,6 +27,7 @@ class Version;
 
 namespace extensions {
 
+class Extension;
 class Manifest;
 
 // Contains information about what parts of the extension install process can be
@@ -110,4 +110,4 @@ struct InstallApproval : public base::SupportsUserData::Data {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_INSTALL_APPROVAL_H_
+#endif  // EXTENSIONS_BROWSER_INSTALL_APPROVAL_H_

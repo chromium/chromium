@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/install_verifier.h"
+#include "extensions/browser/install_verifier.h"
 
 #include <algorithm>
 #include <string>
@@ -21,12 +21,6 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/install_signer.h"
-#include "chrome/browser/extensions/install_verifier_factory.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -35,6 +29,8 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/install_signer.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -42,6 +38,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/switches.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -80,9 +77,9 @@ VerifyStatus GetCommandLineStatus() {
   if (!InstallSigner::GetForcedNotFromWebstore().empty())
     return VerifyStatus::ENFORCE;
 
-  if (cmdline->HasSwitch(::switches::kExtensionsInstallVerification)) {
-    std::string value = cmdline->GetSwitchValueASCII(
-        ::switches::kExtensionsInstallVerification);
+  if (cmdline->HasSwitch(switches::kExtensionsInstallVerification)) {
+    std::string value =
+        cmdline->GetSwitchValueASCII(switches::kExtensionsInstallVerification);
     if (value == "bootstrap")
       return VerifyStatus::BOOTSTRAP;
     else if (value == "enforce_strict")
@@ -124,12 +121,6 @@ InstallVerifier::InstallVerifier(ExtensionPrefs* prefs,
 InstallVerifier::~InstallVerifier() = default;
 
 // static
-InstallVerifier* InstallVerifier::Get(
-    content::BrowserContext* browser_context) {
-  return InstallVerifierFactory::GetForBrowserContext(browser_context);
-}
-
-// static
 bool InstallVerifier::ShouldEnforce() {
   return GetStatus() >= VerifyStatus::ENFORCE;
 }
@@ -144,8 +135,8 @@ bool InstallVerifier::NeedsVerification(const Extension& extension,
 bool InstallVerifier::IsFromStore(const Extension& extension,
                                   content::BrowserContext* context) {
   return extension.from_webstore() ||
-         ExtensionManagementFactory::GetForBrowserContext(context)
-             ->UpdatesFromWebstore(extension);
+         ExtensionsBrowserClient::Get()->UpdatesFromWebstore(context,
+                                                             extension);
 }
 
 void InstallVerifier::Init() {
@@ -251,8 +242,8 @@ void InstallVerifier::RemoveMany(const ExtensionIdSet& ids) {
 }
 
 bool InstallVerifier::AllowedByEnterprisePolicy(const std::string& id) const {
-  return ExtensionManagementFactory::GetForBrowserContext(context_)
-      ->IsInstallationExplicitlyAllowed(id);
+  return ExtensionsBrowserClient::Get()->IsInstallationExplicitlyAllowed(
+      context_, id);
 }
 
 std::string InstallVerifier::GetDebugPolicyProviderName() const {
@@ -270,8 +261,8 @@ bool InstallVerifier::MustRemainDisabled(
   if (extension->location() == mojom::ManifestLocation::kComponent)
     return false;
   if (AllowedByEnterprisePolicy(extension->id()) &&
-      !ExtensionManagementFactory::GetForBrowserContext(context_)
-           ->IsForceInstalledInLowTrustEnvironment(*extension)) {
+      !ExtensionsBrowserClient::Get()->IsForceInstalledInLowTrustEnvironment(
+          context_, *extension)) {
     return false;
   }
 
@@ -367,9 +358,7 @@ void InstallVerifier::OnVerificationComplete(bool success, OperationType type) {
         }
       }
       if (success || GetStatus() == VerifyStatus::ENFORCE_STRICT) {
-        ExtensionSystem::Get(context_)
-            ->extension_service()
-            ->CheckManagementPolicy();
+        ExtensionsBrowserClient::Get()->CheckManagementPolicy(context_);
       }
       break;
     // We don't need to check disable reasons for provisional adds or removals.

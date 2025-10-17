@@ -33,10 +33,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
-#include "chrome/browser/extensions/install_verifier.h"
-#include "chrome/browser/extensions/manifest_check_level.h"
+#include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -56,7 +54,10 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install/crx_install_error.h"
+#include "extensions/browser/install_approval.h"
 #include "extensions/browser/install_tracker.h"
+#include "extensions/browser/install_verifier.h"
+#include "extensions/browser/manifest_check_level.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -276,7 +277,7 @@ void WebstoreInstaller::Start() {
   for (i = pending_modules_.begin(); i != pending_modules_.end(); ++i) {
     ids.insert(i->extension_id);
   }
-  InstallVerifier::Get(profile_)->AddProvisional(ids);
+  InstallVerifierFactory::GetForBrowserContext(profile_)->AddProvisional(ids);
 
   const std::string* name =
       approval_->manifest->available_values().FindString(manifest_keys::kName);

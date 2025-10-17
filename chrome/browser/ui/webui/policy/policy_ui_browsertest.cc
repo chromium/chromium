@@ -67,12 +67,12 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/simple_feature.h"
 #endif  // !BUILDFLAG(IS_ANDROID)

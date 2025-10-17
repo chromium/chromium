@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/install_signer.h"
+#include "extensions/browser/install_signer.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -22,12 +22,12 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_switches.h"
 #include "crypto/hash.h"
 #include "crypto/random.h"
 #include "crypto/signature_verifier.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/switches.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "rlz/buildflags/buildflags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -237,7 +237,7 @@ bool InstallSigner::VerifySignature(const InstallSignature& signature) {
 ExtensionIdSet InstallSigner::GetForcedNotFromWebstore() {
   std::string value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ::switches::kExtensionsNotWebstore);
+          switches::kExtensionsNotWebstore);
   if (value.empty())
     return ExtensionIdSet();
 
@@ -288,6 +288,16 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
             "RLZ library, which varies between different installs. This id is "
             "only used to verify the validity of the response."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              owners: "//extensions/OWNERS"
+            }
+          }
+          user_data {
+            type: HW_OS_INFO
+            type: ACCESS_TOKEN
+          }
+          last_reviewed: "2025-10-17"
         }
         policy {
           cookies_allowed: YES

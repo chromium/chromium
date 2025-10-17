@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_INSTALL_VERIFIER_H_
-#define CHROME_BROWSER_EXTENSIONS_INSTALL_VERIFIER_H_
+#ifndef EXTENSIONS_BROWSER_INSTALL_VERIFIER_H_
+#define EXTENSIONS_BROWSER_INSTALL_VERIFIER_H_
 
 #include <memory>
 #include <set>
@@ -49,9 +49,6 @@ class InstallVerifier : public KeyedService,
   InstallVerifier& operator=(const InstallVerifier&) = delete;
 
   ~InstallVerifier() override;
-
-  // Convenience method to return the InstallVerifier for a given `context`.
-  static InstallVerifier* Get(content::BrowserContext* context);
 
   // Returns whether install verification should be enforced.
   static bool ShouldEnforce();
@@ -208,4 +205,4 @@ class ScopedInstallVerifierBypassForTest {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_INSTALL_VERIFIER_H_
+#endif  // EXTENSIONS_BROWSER_INSTALL_VERIFIER_H_

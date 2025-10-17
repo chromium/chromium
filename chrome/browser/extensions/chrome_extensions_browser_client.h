@@ -252,6 +252,15 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context) override;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+  void CheckManagementPolicy(content::BrowserContext* context) override;
+  bool IsForceInstalledInLowTrustEnvironment(
+      content::BrowserContext* context,
+      const Extension& extension) override;
+  bool IsInstallationExplicitlyAllowed(content::BrowserContext* context,
+                                       const ExtensionId& id) override;
+  bool UpdatesFromWebstore(content::BrowserContext* context,
+                           const Extension& extension) override;
+
   static void set_did_chrome_update_for_testing(bool did_update);
 
   void set_on_clear_back_forward_cache_for_test(base::OnceClosure closure) {

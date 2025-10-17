@@ -23,7 +23,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -50,6 +50,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/file_highlighter.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/permissions_manager.h"
@@ -140,7 +141,8 @@ void PerformVerificationCheck(content::BrowserContext* context) {
   }
 
   if (should_do_verification_check) {
-    InstallVerifier::Get(context)->VerifyAllExtensions();
+    InstallVerifierFactory::GetForBrowserContext(context)
+        ->VerifyAllExtensions();
   }
 }
 

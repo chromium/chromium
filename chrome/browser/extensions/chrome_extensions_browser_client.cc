@@ -885,6 +885,32 @@ bool ChromeExtensionsBrowserClient::HasControlledFrameCapability(
                                      CONTROLLED_FRAME) == CONTENT_SETTING_ALLOW;
 }
 
+void ChromeExtensionsBrowserClient::CheckManagementPolicy(
+    content::BrowserContext* context) {
+  ExtensionSystem::Get(context)->extension_service()->CheckManagementPolicy();
+}
+
+bool ChromeExtensionsBrowserClient::IsForceInstalledInLowTrustEnvironment(
+    content::BrowserContext* context,
+    const Extension& extension) {
+  return ExtensionManagementFactory::GetForBrowserContext(context)
+      ->IsForceInstalledInLowTrustEnvironment(extension);
+}
+
+bool ChromeExtensionsBrowserClient::IsInstallationExplicitlyAllowed(
+    content::BrowserContext* context,
+    const ExtensionId& id) {
+  return ExtensionManagementFactory::GetForBrowserContext(context)
+      ->IsInstallationExplicitlyAllowed(id);
+}
+
+bool ChromeExtensionsBrowserClient::UpdatesFromWebstore(
+    content::BrowserContext* context,
+    const Extension& extension) {
+  return ExtensionManagementFactory::GetForBrowserContext(context)
+      ->UpdatesFromWebstore(extension);
+}
+
 // static
 void ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(
     bool did_update) {

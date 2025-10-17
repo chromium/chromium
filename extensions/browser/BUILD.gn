@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
+import("//rlz/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 if (enable_desktop_android_extensions) {
@@ -387,15 +388,21 @@ source_set("browser_sources") {
     "image_loader_factory.h",
     "image_sanitizer.cc",
     "image_sanitizer.h",
+    "install_approval.cc",
+    "install_approval.h",
     "install_flag.h",
     "install_gate.h",
     "install_observer.cc",
     "install_observer.h",
     "install_prefs_helper.cc",
     "install_prefs_helper.h",
+    "install_signer.cc",
+    "install_signer.h",
     "install_stage.h",
     "install_tracker.cc",
     "install_tracker.h",
+    "install_verifier.cc",
+    "install_verifier.h",
     "json_file_sanitizer.cc",
     "json_file_sanitizer.h",
     "l10n_file_util.cc",
@@ -414,6 +421,7 @@ source_set("browser_sources") {
     "load_and_localize_file.h",
     "management_policy.cc",
     "management_policy.h",
+    "manifest_check_level.h",
     "media_capture_util.cc",
     "media_capture_util.h",
     "message_service_api.cc",
@@ -596,6 +604,7 @@ source_set("browser_sources") {
     "//net",
     "//pdf:buildflags",
     "//pdf:features",
+    "//rlz/buildflags",
     "//services/data_decoder/public/cpp",
     "//services/device/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -620,6 +629,12 @@ source_set("browser_sources") {
     deps += [
       "//chromeos/constants",
       "//extensions/browser/api/clipboard:clipboard_types",
+    ]
+  }
+
+  if (enable_rlz) {
+    deps += [
+      "//rlz:rlz_lib"
     ]
   }
 
@@ -958,6 +973,7 @@ source_set("unit_tests") {
     "//components/keyed_service/content",
     "//components/onc",
     "//components/permissions:permissions_common",
+    "//components/policy/core/common:test_support",
     "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",

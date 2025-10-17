@@ -547,6 +547,26 @@ class ExtensionsBrowserClient {
   virtual custom_handlers::ProtocolHandlerRegistry* GetProtocolHandlerRegistry(
       content::BrowserContext* context);
 
+  // Go through each extension and unload those that are not allowed to run by
+  // management policy providers (ie. network admin and Google-managed
+  // blocklist).
+  virtual void CheckManagementPolicy(content::BrowserContext* context);
+
+  // Returns true if a force-installed extension is in a low-trust environment.
+  // Only applies to Windows and MacOS.
+  virtual bool IsForceInstalledInLowTrustEnvironment(
+      content::BrowserContext* context,
+      const Extension& extension);
+
+  // Returns if an extension with id `id` is explicitly allowed by enterprise
+  // policy or not.
+  virtual bool IsInstallationExplicitlyAllowed(content::BrowserContext* context,
+                                               const ExtensionId& id);
+
+  // Returns true if this extension's update URL is from webstore.
+  virtual bool UpdatesFromWebstore(content::BrowserContext* context,
+                                   const Extension& extension);
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };

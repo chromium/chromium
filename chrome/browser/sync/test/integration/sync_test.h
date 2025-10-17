@@ -39,7 +39,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
 #else
-#include "chrome/browser/extensions/install_verifier.h"
+#include "extensions/browser/install_verifier.h"
 #endif
 
 // The E2E tests are designed to run against real backend servers. To identify

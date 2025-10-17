@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/buildflags/buildflags.h"
 

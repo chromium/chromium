@@ -246,4 +246,25 @@ ExtensionsBrowserClient::GetProtocolHandlerRegistry(
   return nullptr;
 }
 
+void ExtensionsBrowserClient::CheckManagementPolicy(
+    content::BrowserContext* context) {}
+
+bool ExtensionsBrowserClient::IsForceInstalledInLowTrustEnvironment(
+    content::BrowserContext* context,
+    const Extension& extension) {
+  return true;
+}
+
+bool ExtensionsBrowserClient::IsInstallationExplicitlyAllowed(
+    content::BrowserContext* context,
+    const ExtensionId& id) {
+  return true;
+}
+
+bool ExtensionsBrowserClient::UpdatesFromWebstore(
+    content::BrowserContext* context,
+    const Extension& extension) {
+  return true;
+}
+
 }  // namespace extensions
