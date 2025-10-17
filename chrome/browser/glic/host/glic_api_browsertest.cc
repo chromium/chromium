@@ -532,8 +532,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsWindowOpen) {
 }
 
 // TODO(crbug.com/450446123): Re-enable after fixing
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextDisabled,
-                       DISABLED_testDefaultTabContextApiIsUndefinedWhenFeatureDisabled) {
+IN_PROC_BROWSER_TEST_P(
+    GlicApiTestWithDefaultTabContextDisabled,
+    DISABLED_testDefaultTabContextApiIsUndefinedWhenFeatureDisabled) {
   ExecuteJsTest();
 }
 
@@ -767,7 +768,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTab) {
 }
 
 // TODO(crbug.com/450446123): Re-enable after fixing
-IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabFailsWithUnsupportedScheme) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       DISABLED_testCreateTabFailsWithUnsupportedScheme) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
@@ -834,7 +836,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabByClickingOnLink) {
 }
 
 // TODO(crbug.com/450446123): Re-enable after fixing
-IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCreateTabByClickingOnLinkDaisyChains) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       DISABLED_testCreateTabByClickingOnLinkDaisyChains) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Test only supported with multi-instance on";
   }
@@ -893,7 +896,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDetachPanel) {
 }
 
 // TODO(crbug.com/450446123): Re-enable after fixing
-IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testMultiplePanelsDetachedAndFloating) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       DISABLED_testMultiplePanelsDetachedAndFloating) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Attached only supported with multi-instance.";
   }
@@ -1146,8 +1150,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 // #endif
 // TODO(crbug.com/450446123): Re-enable after fixing, don't just remove
 // DISABLED_, use MAYBE_testGetZeroStateSuggestionsMultipleNavigations.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       DISABLED_testGetZeroStateSuggestionsMultipleNavigations) {
+IN_PROC_BROWSER_TEST_P(
+    GlicApiTestWithOneTabAndContextualCueing,
+    DISABLED_testGetZeroStateSuggestionsMultipleNavigations) {
   // TODO: zero state suggestions not yet implemented for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
   EXPECT_CALL(*mock_cueing_service(),
@@ -1886,7 +1891,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 }
 
 // TODO(crbug.com/450446123): Re-enable after fixing
-IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testCallingApiWhileHiddenRecordsMetrics) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   // multi-instance: document.visibilityState never transitions to 'hidden'.
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));

@@ -64,7 +64,12 @@ Host::Host(Profile* profile,
       instance_delegate_(instance_delegate),
       glic_instance_(glic_instance),
       sharing_manager_provider_(sharing_manager_provider) {}
-Host::~Host() = default;
+
+Host::~Host() {
+  // Destroying the web contents results in calls back to the host, so do that
+  // first.
+  Shutdown();
+}
 
 void Host::SetDelegate(EmbedderDelegate* new_delegate) {
   CHECK(new_delegate);

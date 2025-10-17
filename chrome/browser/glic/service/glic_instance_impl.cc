@@ -145,7 +145,10 @@ GlicInstanceImpl::GlicInstanceImpl(
   host_observation_.Observe(&host_);
 }
 
-GlicInstanceImpl::~GlicInstanceImpl() = default;
+GlicInstanceImpl::~GlicInstanceImpl() {
+  // Destroying the web contents may result in calls back here, so do it first.
+  host_.Shutdown();
+}
 
 bool GlicInstanceImpl::IsShowing() const {
   return active_embedder_key_.has_value();

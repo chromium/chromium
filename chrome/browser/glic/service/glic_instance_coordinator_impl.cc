@@ -70,7 +70,13 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
   host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
 }
 
-GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
+GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
+  // Delete all instances before destruction. Destroying web contents can result
+  // in various calls to dependencies.
+  auto instances = std::exchange(instances_, {});
+  instances.clear();
+  warmed_instance_.reset();
+}
 
 void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
     GlicInstance* instance,
@@ -375,7 +381,11 @@ void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
     last_active_instance_ = nullptr;
     NotifyLastActiveInstanceChanged();
   }
-  instances_.erase(instance->id());
+  // Remove the instance first, and then delete. This way, GetInstances() will
+  // not return the instance being deleted while it's being deleted.
+  InstanceId id = instance->id();
+  auto instance_value = std::exchange(instances_[id], {});
+  instances_.erase(id);
 }
 
 void GlicInstanceCoordinatorImpl::SwitchConversation(
