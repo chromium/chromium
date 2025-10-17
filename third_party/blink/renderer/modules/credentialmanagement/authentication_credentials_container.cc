@@ -1598,6 +1598,11 @@ AuthenticationCredentialsContainer::create(
           script_state);
   auto promise = resolver->Promise();
 
+  if (options->hasSignal() && options->signal()->aborted()) {
+    resolver->Reject(options->signal()->reason(script_state));
+    return promise;
+  }
+
   if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsCreationEnabled(
           resolver->GetExecutionContext()) &&
       IsDigitalIdentityCredentialType(*options)) {
@@ -1766,10 +1771,6 @@ AuthenticationCredentialsContainer::create(
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
   if (auto* signal = options->getSignalOr(nullptr)) {
-    if (signal->aborted()) {
-      resolver->Reject(signal->reason(script_state));
-      return promise;
-    }
     auto* handle = signal->AddAlgorithm(
         MakeGarbageCollected<PublicKeyRequestAbortAlgorithm>(script_state));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
