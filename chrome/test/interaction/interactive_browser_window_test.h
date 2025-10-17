@@ -549,9 +549,10 @@ InteractiveBrowserWindowTestApi::Screenshot(ElementSpecifier element,
       [](InteractiveBrowserWindowTestApi* test, std::string screenshot_name,
          std::string baseline_cl, std::remove_cvref_t<T> clip_rect,
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
+        ScreenshotOptions options;
+        options.region = ui::test::internal::UnwrapArgument<T>(clip_rect);
         const auto result = InteractionTestUtilBrowser::CompareScreenshot(
-            el, screenshot_name, baseline_cl,
-            ui::test::internal::UnwrapArgument<T>(clip_rect));
+            el, screenshot_name, baseline_cl, options);
         test->private_test_impl().HandleActionResult(seq, el, "Screenshot",
                                                      result);
       },

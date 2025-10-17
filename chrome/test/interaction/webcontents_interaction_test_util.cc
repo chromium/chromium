@@ -45,6 +45,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
+#include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -244,16 +245,18 @@ content::EvalJsResult EvalJsLocal(
       )",
       token.c_str(), function.c_str());
 
-  if (!host->IsRenderFrameLive())
+  if (!host->IsRenderFrameLive()) {
     return content::EvalJsResult(base::Value(), "Error: frame has crashed.");
+  }
 
   // This will queue up a message to be returned from the runner.
   ExecuteScript(host, runner_script);
 
   std::string json;
-  if (!dom_message_queue.WaitForMessage(&json))
+  if (!dom_message_queue.WaitForMessage(&json)) {
     return content::EvalJsResult(base::Value(),
                                  "Cannot communicate with DOMMessageQueue.");
+  }
 
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       json, base::JSON_ALLOW_TRAILING_COMMAS);
@@ -544,8 +547,9 @@ class WebContentsInteractionTestUtil::Poller {
     // Callback can get called again if Evaluate() below stalls. We don't want
     // to stack callbacks because of issues with message passing to/from web
     // contents.
-    if (is_polling_)
+    if (is_polling_) {
       return;
+    }
 
     // If there is no page loaded, then there is nothing to poll.
     if (!owner_->is_page_loaded()) {
@@ -717,7 +721,7 @@ void WebContentsInteractionTestUtil::LoadPage(const GURL& url) {
     navigating_away_from_ = web_contents()->GetURL();
     DiscardCurrentElement();
   }
-  if (url.SchemeIs("chrome") || ForceNavigateWithController()) {
+  if (content::HasWebUIScheme(url) || ForceNavigateWithController()) {
     // Secure pages and non-tab WebViews must be navigated via the controller.
     content::NavigationController::LoadURLParams params(url);
     CHECK(web_contents()->GetController().LoadURLWithParams(params));

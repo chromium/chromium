@@ -120,12 +120,12 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
     views::View* view,
     const std::string& screenshot_prefix,
     const std::string& screenshot_name) {
-  return VerifyPixelUi(view, std::nullopt, screenshot_prefix, screenshot_name);
+  return VerifyPixelUi(view, {}, screenshot_prefix, screenshot_name);
 }
 
 ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
     views::View* view,
-    std::optional<gfx::Rect> region,
+    const ScreenshotOptions& options,
     const std::string& screenshot_prefix,
     const std::string& screenshot_name) {
 #ifdef SUPPORTS_PIXEL_TEST
@@ -143,6 +143,7 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
   // do this unless necessary, since it will close transient UI like menus,
   // which interferes with tests attempting to verify such UI.
   if (auto* const focus_manager = view->GetWidget()->GetFocusManager();
+      options.focus == ScreenshotFocusMode::kClearFocus &&
       focus_manager->GetFocusedView()) {
     focus_manager->ClearFocus();
   }
@@ -164,14 +165,15 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
   window_rect.Offset(bounds.x() - bounds_in_screen.x(),
                      bounds.y() - bounds_in_screen.y());
 
-  if (region) {
+  if (options.region) {
+    const gfx::Rect& region = options.region.value();
     // Further narrow the rectangle to the targeted region.
     auto region_rect = window_rect;
-    region_rect.Offset(region.value().OffsetFromOrigin());
-    region_rect.set_size(region.value().size());
+    region_rect.Offset(region.OffsetFromOrigin());
+    region_rect.set_size(region.size());
     region_rect.Intersect(window_rect);
     if (region_rect.IsEmpty()) {
-      LOG(ERROR) << "Specified screenshot region (" << region.value().ToString()
+      LOG(ERROR) << "Specified screenshot region (" << region.ToString()
                  << ") is outside targeted view size ("
                  << window_rect.size().ToString() << ")";
       return ui::test::ActionResult::kFailed;

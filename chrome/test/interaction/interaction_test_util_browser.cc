@@ -47,11 +47,11 @@ class PixelTestUi : public TestBrowserUi {
   PixelTestUi(views::View* view,
               const std::string& screenshot_name,
               const std::string& baseline,
-              std::optional<gfx::Rect> region)
+              const ScreenshotOptions& options)
       : view_(view),
         screenshot_name_(screenshot_name),
         baseline_(baseline),
-        region_(region) {}
+        options_(options) {}
   ~PixelTestUi() override = default;
 
   // TestBrowserUi:
@@ -71,14 +71,14 @@ class PixelTestUi : public TestBrowserUi {
         screenshot_name_.empty()
             ? baseline_
             : base::StrCat({screenshot_name_, "_", baseline_});
-    return VerifyPixelUi(view_, region_, test_name, screenshot_name);
+    return VerifyPixelUi(view_, options_, test_name, screenshot_name);
   }
 
  private:
   raw_ptr<views::View> view_ = nullptr;
   std::string screenshot_name_;
   std::string baseline_;
-  std::optional<gfx::Rect> region_;
+  ScreenshotOptions options_;
 };
 
 views::View* GetScreenshotTargetView(ui::TrackedElement* element) {
@@ -92,7 +92,7 @@ views::View* GetScreenshotTargetView(ui::TrackedElement* element) {
 
 ui::test::ActionResult CompareScreenshotCommon(
     views::View* view,
-    std::optional<gfx::Rect> region,
+    const ScreenshotOptions& options,
     const std::string& screenshot_name,
     const std::string& baseline_cl) {
   // pixel_browser_tests and pixel_interactive_ui_tests specify this command
@@ -106,7 +106,7 @@ ui::test::ActionResult CompareScreenshotCommon(
     return ui::test::ActionResult::kKnownIncompatible;
   }
 
-  PixelTestUi pixel_test_ui(view, screenshot_name, baseline_cl, region);
+  PixelTestUi pixel_test_ui(view, screenshot_name, baseline_cl, options);
   ui::test::ActionResult result = pixel_test_ui.VerifyUiWithResult();
   if (result == ui::test::ActionResult::kKnownIncompatible) {
     LOG(WARNING) << "Current platform does not support pixel tests.";
@@ -380,12 +380,12 @@ ui::test::ActionResult InteractionTestUtilBrowser::CompareScreenshot(
     ui::TrackedElement* element,
     const std::string& screenshot_name,
     const std::string& baseline_cl,
-    std::optional<gfx::Rect> region) {
+    const ScreenshotOptions& options) {
   views::View* const view = GetScreenshotTargetView(element);
   if (!view) {
     return ui::test::ActionResult::kNotAttempted;
   }
-  return CompareScreenshotCommon(view, region, screenshot_name, baseline_cl);
+  return CompareScreenshotCommon(view, options, screenshot_name, baseline_cl);
 }
 
 // static
@@ -397,6 +397,6 @@ ui::test::ActionResult InteractionTestUtilBrowser::CompareSurfaceScreenshot(
   if (!view || !view->GetWidget()) {
     return ui::test::ActionResult::kNotAttempted;
   }
-  return CompareScreenshotCommon(view->GetWidget()->GetRootView(), std::nullopt,
+  return CompareScreenshotCommon(view->GetWidget()->GetRootView(), {},
                                  screenshot_name, baseline_cl);
 }

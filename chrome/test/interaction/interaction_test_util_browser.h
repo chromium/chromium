@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
 #include "ui/base/interaction/interaction_test_util.h"
 
 namespace ui {
@@ -59,7 +60,7 @@ class InteractionTestUtilBrowser {
       ui::TrackedElement* element,
       const std::string& screenshot_name,
       const std::string& baseline_cl,
-      std::optional<gfx::Rect> region = std::nullopt);
+      const ScreenshotOptions& options = {});
 
   // As `CompareScreenshot()` but takes a screenshot of the entire surface
   // containing `element_in_surface`, not just the element itself. Be careful

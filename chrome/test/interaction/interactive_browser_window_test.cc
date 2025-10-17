@@ -157,8 +157,11 @@ InteractiveBrowserWindowTestApi::ScreenshotWebUi(
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
         // Locate the element within the bounds of the WebContents.
         const auto window_rect = GetRegionInWebContents(el, where);
+        ScreenshotOptions options;
+        options.region = window_rect;
+        options.focus = ScreenshotFocusMode::kLeaveFocusWhereItIs;
         const auto result = InteractionTestUtilBrowser::CompareScreenshot(
-            el, screenshot_name, baseline_cl, window_rect);
+            el, screenshot_name, baseline_cl, options);
         test->private_test_impl().HandleActionResult(seq, el, "Screenshot",
                                                      result);
       },
