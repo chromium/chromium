@@ -87,7 +87,6 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
           timing.largest_contentful_paint_image_bpp,
           largest_text_paint_time,
           timing.largest_text_paint_size,
-          timing.largest_contentful_paint_time,
 
           timing.largest_contentful_paint_image_request_priority,
           merged_unclamped_paint_time};

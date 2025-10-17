@@ -29,7 +29,6 @@ struct LargestContentfulPaintDetails {
   double largest_contentful_paint_image_bpp = 0.0;
   base::TimeTicks largest_text_paint_time;
   uint64_t largest_text_paint_size = 0;
-  base::TimeTicks largest_contentful_paint_time;
   std::optional<WebURLRequest::Priority>
       largest_contentful_paint_image_request_priority = std::nullopt;
 };

@@ -285,7 +285,7 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
   latest_lcp_details_.largest_contentful_paint_image_bpp = image_bpp;
   latest_lcp_details_.largest_contentful_paint_image_request_priority =
       std::move(priority);
-  UpdateLatestLcpDetails();
+  UpdateLatestLcpDetailsTypeIfNeeded();
   return true;
 }
 
@@ -299,44 +299,31 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestTextPaintChanged(
   DCHECK(!text_paint_time.is_null());
   latest_lcp_details_.largest_text_paint_time = text_paint_time;
   latest_lcp_details_.largest_text_paint_size = text_paint_size;
-  UpdateLatestLcpDetails();
+  UpdateLatestLcpDetailsTypeIfNeeded();
 
   return true;
 }
 
-void LargestContentfulPaintCalculator::UpdateLatestLcpDetails() {
-  if (latest_lcp_details_.largest_text_paint_size >
-      latest_lcp_details_.largest_image_paint_size) {
-    latest_lcp_details_.largest_contentful_paint_time =
-        latest_lcp_details_.largest_text_paint_time;
-
-    // We set latest_lcp_details_.largest_contentful_paint_type_ only here
-    // because we use latest_lcp_details_.largest_contentful_paint_type_ to
-    // track the LCP type of the largest image only. When the largest image gets
-    // updated, the latest_lcp_details_.largest_contentful_paint_type_ gets
-    // reset and updated accordingly in the
-    // NotifyMetricsIfLargestImagePaintChanged() method. If the LCP element
-    // turns out to be the largest text, we simply set the
-    // latest_lcp_details_.largest_contentful_paint_type_ to be kText here. This
-    // is possible because currently text elements have only 1 LCP type kText.
-    latest_lcp_details_.largest_contentful_paint_type =
-        LargestContentfulPaintType::kText;
-  } else if (latest_lcp_details_.largest_text_paint_size <
-             latest_lcp_details_.largest_image_paint_size) {
-    latest_lcp_details_.largest_contentful_paint_time =
-        latest_lcp_details_.largest_image_paint_time;
-  } else {
-    // Size is the same, take the shorter time.
-    latest_lcp_details_.largest_contentful_paint_time =
-        std::min(latest_lcp_details_.largest_text_paint_time,
-                 latest_lcp_details_.largest_image_paint_time);
-
-    if (latest_lcp_details_.largest_text_paint_time <
-        latest_lcp_details_.largest_image_paint_time) {
-      latest_lcp_details_.largest_contentful_paint_type =
-          LargestContentfulPaintType::kText;
-    }
+void LargestContentfulPaintCalculator::UpdateLatestLcpDetailsTypeIfNeeded() {
+  if (latest_lcp_details_.largest_text_paint_size <
+          latest_lcp_details_.largest_image_paint_size ||
+      (latest_lcp_details_.largest_text_paint_size ==
+           latest_lcp_details_.largest_image_paint_size &&
+       latest_lcp_details_.largest_text_paint_time >=
+           latest_lcp_details_.largest_image_paint_time)) {
+    return;
   }
+  // We set latest_lcp_details_.largest_contentful_paint_type_ only here
+  // because we use latest_lcp_details_.largest_contentful_paint_type_ to
+  // track the LCP type of the largest image only. When the largest image gets
+  // updated, the latest_lcp_details_.largest_contentful_paint_type_ gets
+  // reset and updated accordingly in the
+  // NotifyMetricsIfLargestImagePaintChanged() method. If the LCP element
+  // turns out to be the largest text, we simply set the
+  // latest_lcp_details_.largest_contentful_paint_type_ to be kText here. This
+  // is possible because currently text elements have only 1 LCP type kText.
+  latest_lcp_details_.largest_contentful_paint_type =
+      LargestContentfulPaintType::kText;
 }
 void LargestContentfulPaintCalculator::Trace(Visitor* visitor) const {
   visitor->Trace(window_performance_);
