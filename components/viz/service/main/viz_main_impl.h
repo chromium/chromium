@@ -141,6 +141,7 @@ class VizMainImpl : public mojom::VizMain {
 #endif
 #if BUILDFLAG(IS_ANDROID)
   void SetHostProcessId(int32_t pid) override;
+  void NotifyWorkloadIncrease() override;
 #endif
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
 #if BUILDFLAG(USE_VIZ_DEBUGGER)

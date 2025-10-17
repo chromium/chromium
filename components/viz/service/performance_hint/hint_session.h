@@ -52,6 +52,7 @@ class VIZ_SERVICE_EXPORT HintSession {
       const base::flat_set<base::PlatformThreadId>& thread_ids) = 0;
 
   virtual void NotifyWorkloadReset() = 0;
+  virtual void NotifyWorkloadIncrease() = 0;
 };
 
 class VIZ_SERVICE_EXPORT HintSessionFactory {
@@ -80,6 +81,8 @@ class VIZ_SERVICE_EXPORT HintSessionFactory {
 
   // Issue an early hint to wake up some session.
   virtual void WakeUp() = 0;
+
+  virtual void NotifyWorkloadIncrease() = 0;
 
   // Returns the full list of threads for the given session type.
   // For animation (SessionType::kAnimation) sessions, this is a union of

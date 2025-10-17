@@ -7344,6 +7344,15 @@ void WebContentsImpl::ReadyToCommitNavigation(
     SetCaptureHandleConfig(blink::mojom::CaptureHandleConfig::New());
   }
 
+  // Notify the OS that the workload is about to increase for main frame
+  // navigations only. This a trade off between latency and power - we don't
+  // want to do it for every navigation.
+  if (navigation_handle->IsInMainFrame()) {
+    static_cast<RenderProcessHostImpl*>(
+        navigation_handle->GetRenderFrameHost()->GetProcess())
+        ->NotifyWorkloadIncrease();
+  }
+
   observers_.NotifyObservers(&WebContentsObserver::ReadyToCommitNavigation,
                              navigation_handle);
 

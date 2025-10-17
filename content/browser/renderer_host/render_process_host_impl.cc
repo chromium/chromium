@@ -5509,6 +5509,20 @@ void RenderProcessHostImpl::SetSubframeProcessReuseThresholdForTesting(
   g_subframe_process_reuse_memory_threshold = threshold;  // IN-TEST
 }
 
+void RenderProcessHostImpl::NotifyWorkloadIncrease() {
+  auto* gpu_process_host =
+      GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false);
+  if (!gpu_process_host) {
+    return;
+  }
+
+  auto* host = gpu_process_host->gpu_host();
+  if (!host) {
+    return;
+  }
+  host->NotifyWorkloadIncrease();
+}
+
 void RenderProcessHostImpl::HasGpuProcess(HasGpuProcessCallback callback) {
   GpuProcessHost::GetHasGpuProcess(std::move(callback));
 }
