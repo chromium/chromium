@@ -105,6 +105,7 @@ const noArgStringNames = [
   'onboardingDialogTranscriptionTurnOnDescription',
   'onboardingDialogTranscriptionTurnOnHeader',
   'onboardingDialogWelcomeDescription',
+  'onboardingDialogWelcomeDescriptionWithoutGenAiFeatures',
   'onboardingDialogWelcomeHeader',
   'onboardingDialogWelcomeNextButton',
   'playbackBackwardButtonTooltip',

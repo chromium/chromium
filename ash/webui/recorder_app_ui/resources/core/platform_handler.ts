@@ -93,6 +93,10 @@ export abstract class PlatformHandler {
     return titleSuggestionModelState;
   }
 
+  isGenAiAvailable(): boolean {
+    return this.getGenAiModelState().kind !== 'unavailable';
+  }
+
   /**
    * Wrapper to download GenAI-related model.
    */
