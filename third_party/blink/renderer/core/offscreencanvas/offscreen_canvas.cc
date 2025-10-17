@@ -281,6 +281,15 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     image = CreateTransparentImage();
   }
   *status = image ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
+
+  if (RuntimeEnabledFeatures::CanvasTextTexImage2DFixEnabled()) {
+    if (plain_text_painter_) {
+      plain_text_painter_->DidSwitchFrame();
+    }
+    if (unique_font_selector_) {
+      unique_font_selector_->DidSwitchFrame();
+    }
+  }
   return image;
 }
 
