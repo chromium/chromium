@@ -669,6 +669,12 @@ bool IsLiquidGlassEffectEnabled() {
   return false;
 }
 
+BASE_FEATURE(kIOSKeyboardAccessoryTwoBubble, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSKeyboardAccessoryTwoBubbleEnabled() {
+  return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryTwoBubble);
+}
+
 BASE_FEATURE(kTabResumption, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A parameter to indicate whether the native UI is enabled for the discover

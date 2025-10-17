@@ -426,6 +426,9 @@ extern const char kIOSExpandedTipsDescription[];
 extern const char kIOSFillRecoveryPasswordName[];
 extern const char kIOSFillRecoveryPasswordDescription[];
 
+extern const char kIOSKeyboardAccessoryTwoBubbleName[];
+extern const char kIOSKeyboardAccessoryTwoBubbleDescription[];
+
 extern const char kIOSManageAccountStorageName[];
 extern const char kIOSManageAccountStorageDescription[];
 

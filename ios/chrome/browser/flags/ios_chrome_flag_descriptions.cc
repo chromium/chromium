@@ -725,6 +725,12 @@ const char kIOSFillRecoveryPasswordDescription[] =
     "When enabled, users will be able to attempt to log in using a recovery "
     "password if the main one didn't work.";
 
+const char kIOSKeyboardAccessoryTwoBubbleName[] =
+    "Enable the two-bubble design for the Keyboard Accessory view";
+const char kIOSKeyboardAccessoryTwoBubbleDescription[] =
+    "When enabled, the two-bubble design is used for the Keyboard Accessory "
+    "view.";
+
 const char kIOSManageAccountStorageName[] = "Allow managing Account storage.";
 const char kIOSManageAccountStorageDescription[] =
     "Add entry points to manage Google One account storage.";
