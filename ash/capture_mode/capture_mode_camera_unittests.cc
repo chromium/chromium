@@ -4620,7 +4620,7 @@ void WaitForAndVerifyRenderedVideoFrame() {
           received_frame_bitmap.allocN32Pixels(frame_size.width(),
                                                frame_size.height());
           cc::SkiaPaintCanvas canvas(received_frame_bitmap);
-          renderer.Copy(frame, &canvas, context_provider.get());
+          renderer.CopyOOPR(frame, &canvas, context_provider.get());
 
           EXPECT_TRUE(gfx::test::AreBitmapsEqual(produced_frame_bitmap,
                                                  received_frame_bitmap));
