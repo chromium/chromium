@@ -11,9 +11,11 @@ import android.app.Instrumentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
@@ -64,6 +66,16 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     private File mStdoutFile;
     private Bundle mTransparentArguments;
     private boolean mKeepUserDataDir;
+    private final ServiceConnection mConnection =
+            new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {}
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    getContext().unbindService(this);
+                }
+            };
 
     @Override
     public void onCreate(Bundle arguments) {
@@ -293,11 +305,28 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
         return i;
     }
 
+    private Intent getProcessKeepaliveServiceIntent() {
+        Intent i = new Intent();
+        i.setComponent(
+                new ComponentName(
+                        getContext().getPackageName(),
+                        "org.chromium.build.gtest_apk.ProcessKeepaliveService"));
+        return i;
+    }
+
     /** Starts the NativeTest Activity. */
     private class ShardStarter implements Runnable {
         @Override
         public void run() {
             getContext().startActivity(createShardMainIntent());
+            // Start a service to keep the test process alive after the Activity finishes. Some
+            // Android 16+ devices seem to otherwise kill the process immediately after the Activity
+            // is destroyed.
+            getContext()
+                    .bindService(
+                            getProcessKeepaliveServiceIntent(),
+                            mConnection,
+                            Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -312,6 +341,8 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
 
         @Override
         public void run() {
+            getContext().unbindService(mConnection);
+
             if (mPid != Process.myPid()) {
                 Process.killProcess(mPid);
                 try {

@@ -149,6 +149,10 @@
             android:name="androidx.startup.InitializationProvider"
             android:exported="false"
             tools:node="remove" />
+
+        <service android:name="org.chromium.build.gtest_apk.ProcessKeepaliveService"
+            android:process=":test_process"
+            android:exported="false" />
     </application>
 
     <instrumentation android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsInstrumentationTestRunner"

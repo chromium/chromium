@@ -77,6 +77,9 @@ found in the LICENSE file.
                  android:isolatedProcess="false"
                  android:exported="false" />
         {% endfor %}
+        <service android:name="org.chromium.build.gtest_apk.ProcessKeepaliveService"
+                 android:process=":test_process"
+                 android:exported="false" />
     </application>
 
     <instrumentation android:name="org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner"
