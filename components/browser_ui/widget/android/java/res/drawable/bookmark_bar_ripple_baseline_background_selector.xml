@@ -10,13 +10,13 @@ found in the LICENSE file.
   <item android:state_hovered="true">
     <shape android:shape="rectangle">
       <solid android:color="@color/baseline_neutral_90_alpha_8" />
-      <corners android:radius="@dimen/default_chip_corner_radius"/>
+      <corners android:radius="@dimen/bookmark_bar_chip_corner_radius"/>
     </shape>
   </item>
   <item android:state_focused="true">
     <shape android:shape="rectangle">
       <solid android:color="@android:color/transparent" />
-      <corners android:radius="@dimen/default_chip_corner_radius"/>
+      <corners android:radius="@dimen/bookmark_bar_chip_corner_radius"/>
       <stroke
           android:color="@color/baseline_neutral_90"
           android:width="@dimen/focused_outline_stroke_width" />
@@ -25,13 +25,13 @@ found in the LICENSE file.
   <item android:state_pressed="true">
     <shape android:shape="rectangle">
       <solid android:color="@color/baseline_neutral_90_alpha_12" />
-      <corners android:radius="@dimen/default_chip_corner_radius"/>
+      <corners android:radius="@dimen/bookmark_bar_chip_corner_radius"/>
     </shape>
   </item>
   <item>
     <shape android:shape="rectangle">
       <solid android:color="@android:color/transparent" />
-      <corners android:radius="@dimen/default_chip_corner_radius"/>
+      <corners android:radius="@dimen/bookmark_bar_chip_corner_radius"/>
     </shape>
   </item>
 </selector>

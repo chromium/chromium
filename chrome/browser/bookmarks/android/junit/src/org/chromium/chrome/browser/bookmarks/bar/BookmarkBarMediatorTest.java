@@ -284,7 +284,7 @@ public class BookmarkBarMediatorTest {
         verify(mAllBookmarksButtonModel)
                 .set(
                         BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID,
-                        R.drawable.default_chip_ripple_baseline);
+                        R.drawable.bookmark_bar_ripple_baseline);
     }
 
     @Test
@@ -326,7 +326,7 @@ public class BookmarkBarMediatorTest {
 
         assertEquals(
                 "New item should have the baseline background",
-                R.drawable.default_chip_ripple_baseline,
+                R.drawable.bookmark_bar_ripple_baseline,
                 itemModel.get(BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID));
     }
 }

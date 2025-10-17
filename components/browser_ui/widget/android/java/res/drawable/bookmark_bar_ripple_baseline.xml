@@ -6,5 +6,5 @@ found in the LICENSE file.
 -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@color/white_alpha_20">
-  <item android:drawable="@drawable/default_chip_ripple_background_selector_baseline" />
+  <item android:drawable="@drawable/bookmark_bar_ripple_baseline_background_selector" />
 </ripple>

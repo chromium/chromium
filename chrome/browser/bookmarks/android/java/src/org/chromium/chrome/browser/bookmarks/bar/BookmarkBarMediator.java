@@ -1096,8 +1096,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         // Select the correct ripple drawable based on the theme.
         mCurrentBackgroundId =
                 isIncognito
-                        ? R.drawable.default_chip_ripple_baseline
-                        : R.drawable.default_chip_ripple;
+                        ? R.drawable.bookmark_bar_ripple_baseline
+                        : R.drawable.bookmark_bar_ripple;
 
         // Update the "All Bookmarks" star icon based on the correct theme.
         mAllBookmarksButtonModel.set(
