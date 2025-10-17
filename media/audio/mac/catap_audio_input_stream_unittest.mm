@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "media/audio/mac/catap_audio_input_stream.h"
 
+#include <CoreAudioTypes/CoreAudioBaseTypes.h>
 #import <Foundation/Foundation.h>
 
 #include <map>
@@ -37,6 +38,9 @@ void LogToStderr(const std::string& message) {
   LOG(INFO) << message;
 }
 
+constexpr int kNumberOfChannelsMono = 1;
+constexpr int kNumberOfChannelsStereo = 2;
+
 // A function pointer to this function is used as an identifier for the tap IO
 // process ID.
 OSStatus AudioDeviceIoProcIdFunction(AudioDeviceID,
@@ -54,7 +58,16 @@ constexpr AudioDeviceIOProcID kTapIoProcId = AudioDeviceIoProcIdFunction;
 constexpr AudioObjectID kAggregateDeviceId = 17;
 constexpr AudioObjectID kTap = 23;
 
+constexpr AudioObjectID kDefaultOutputId = 29;
 constexpr std::string kDefaultOutputUID = "default_output_uid";
+
+API_AVAILABLE(macos(14.2))
+const CatapAudioInputStream::AudioDeviceIds kDefaultOutputIds(
+    kDefaultOutputId,
+    kDefaultOutputUID);
+
+API_AVAILABLE(macos(14.2))
+const CatapAudioInputStream::AudioDeviceIds kNoDefaultOutputIds;
 
 const AudioObjectPropertyAddress kDeviceIsAliveAddress = {
     kAudioDevicePropertyDeviceIsAlive, kAudioObjectPropertyScopeGlobal,
@@ -62,6 +75,10 @@ const AudioObjectPropertyAddress kDeviceIsAliveAddress = {
 
 const AudioObjectPropertyAddress kDefaultOutputDevicePropertyAddress = {
     kAudioHardwarePropertyDefaultOutputDevice, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
+const AudioObjectPropertyAddress kVirtualFormatAddress = {
+    kAudioStreamPropertyVirtualFormat, kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMain};
 
 const AudioObjectPropertyAddress kSampleRateAddress = {
@@ -93,6 +110,8 @@ class FakeAudioInputCallback : public AudioInputStream::AudioInputCallback {
               const AudioGlitchInfo& glitch_info) override {
     ++on_data_call_count_;
     last_capture_time_ = capture_time;
+    last_number_of_channels_ = bus->channels();
+    last_number_of_frames_ = bus->frames();
   }
 
   void OnError() override { on_error_call_count_++; }
@@ -100,11 +119,15 @@ class FakeAudioInputCallback : public AudioInputStream::AudioInputCallback {
   int on_data_call_count() const { return on_data_call_count_; }
   int on_error_call_count() const { return on_error_call_count_; }
   base::TimeTicks last_capture_time() const { return last_capture_time_; }
+  int last_number_of_channels() const { return last_number_of_channels_; }
+  int last_number_of_frames() const { return last_number_of_frames_; }
 
  private:
   int on_data_call_count_ = 0;
   int on_error_call_count_ = 0;
   base::TimeTicks last_capture_time_;
+  int last_number_of_channels_ = 0;
+  int last_number_of_frames_ = 0;
 };
 
 // Fake for all CoreAudio API calls.
@@ -213,6 +236,13 @@ class FakeCatapApi : public CatapApi {
       *ioDataSize = sizeof(CATapDescription*);
       return noErr;
     }
+    if (*in_address == kVirtualFormatAddress) {
+      AudioStreamBasicDescription* stream_format =
+          reinterpret_cast<AudioStreamBasicDescription*>(outData);
+      stream_format->mChannelsPerFrame = number_of_device_channels;
+      *ioDataSize = sizeof(AudioStreamBasicDescription);
+      return noErr;
+    }
     return noErr;
   }
   OSStatus AudioObjectSetPropertyData(
@@ -306,7 +336,10 @@ class FakeCatapApi : public CatapApi {
   // If `true`, the fake device will be reported as "alive". If `false` it will
   // be reported as not alive. This is used to simulate device disconnections.
   bool device_is_alive = true;
-
+  // Used when the `AudioObjectGetPropertyData()` is called to get the stream
+  // format of the default output device. Can be overriden to simulate a mono
+  // device.
+  int number_of_device_channels = kNumberOfChannelsStereo;
   // Used to simulate the list of process audio device IDs that belong to
   // different processes.
   std::vector<AudioDeviceID> process_audio_devices;
@@ -374,33 +407,38 @@ class CatapAudioInputStreamTest : public testing::Test {
   CatapAudioInputStreamTest() = default;
   ~CatapAudioInputStreamTest() override = default;
 
-  void CreateStream(
-      bool with_permissions = true,
-      const std::string& device_id =
-          media::AudioDeviceDescription::kLoopbackInputDeviceId,
-      const std::optional<std::string> default_device_uid = kDefaultOutputUID) {
-    if (@available(macOS 14.2, *)) {
-      auto fake_catap_api_object = std::make_unique<FakeCatapApi>();
-      fake_catap_api_object->with_permissions = with_permissions;
-      fake_catap_api_ = fake_catap_api_object.get();
-
-      auto returning_lambda = [](const std::optional<std::string>& uid)
-          -> std::optional<std::string> { return uid; };
-      auto device_uid_callback =
-          base::BindRepeating(returning_lambda, default_device_uid);
-
-      stream_ = CreateCatapAudioInputStreamForTesting(
-          AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                          ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
-                          kCatapLoopbackDefaultFramesPerBuffer),
-          device_id, base::BindRepeating(LogToStderr), base::DoNothing(),
-          std::move(fake_catap_api_object), std::move(device_uid_callback));
-      EXPECT_TRUE(stream_);
-    }
+  API_AVAILABLE(macos(14.2))
+  void CreateStream(bool with_permissions = true,
+                    const std::string& device_id =
+                        media::AudioDeviceDescription::kLoopbackInputDeviceId) {
+    CreateStream(with_permissions, device_id, kDefaultOutputIds);
   }
 
+  API_AVAILABLE(macos(14.2))
+  void CreateStream(
+      bool with_permissions,
+      const std::string& device_id,
+      const CatapAudioInputStream::AudioDeviceIds default_device_ids) {
+    auto fake_catap_api_object = std::make_unique<FakeCatapApi>();
+    fake_catap_api_object->with_permissions = with_permissions;
+    fake_catap_api_ = fake_catap_api_object.get();
+
+    auto returning_lambda = [](const CatapAudioInputStream::AudioDeviceIds& ids)
+        -> CatapAudioInputStream::AudioDeviceIds { return ids; };
+    auto device_id_callback =
+        base::BindRepeating(returning_lambda, default_device_ids);
+
+    stream_ = CreateCatapAudioInputStreamForTesting(
+        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                        ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
+                        kCatapLoopbackDefaultFramesPerBuffer),
+        device_id, base::BindRepeating(LogToStderr), base::DoNothing(),
+        std::move(fake_catap_api_object), std::move(device_id_callback));
+    EXPECT_TRUE(stream_);
+  }
+
+  API_AVAILABLE(macos(14.2))
   void CheckSuccessfulOpen() {
-    if (@available(macOS 14.2, *)) {
       EXPECT_EQ(fake_catap_api()->io_proc_id_created_for_device,
                 kAggregateDeviceId);
       EXPECT_EQ(fake_catap_api()->set_sample_rate_count, 1);
@@ -410,21 +448,22 @@ class CatapAudioInputStreamTest : public testing::Test {
       EXPECT_FLOAT_EQ(fake_catap_api()->last_set_frames_per_buffer.value(),
                       kCatapLoopbackDefaultFramesPerBuffer);
       EXPECT_EQ(fake_catap_api()->set_tap_description_count, 1);
-    }
   }
 
+  API_AVAILABLE(macos(14.2))
   void EnsureStreamIsActive() {
-    if (@available(macOS 14.2, *)) {
       ASSERT_NE(fake_catap_api()->audio_proc, nullptr);
       const AudioTimeStamp* in_now = nullptr;
       const uint32_t data_byte_size =
-          kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
+          kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) *
+          fake_catap_api()->number_of_device_channels;
       std::vector<uint8_t> data_buffer(data_byte_size);
 
       AudioBufferList input_data;
       input_data.mNumberBuffers = 1;
       AudioBuffer& input_buffer = input_data.mBuffers[0];
-      input_buffer.mNumberChannels = 2;
+      input_buffer.mNumberChannels =
+          fake_catap_api()->number_of_device_channels;
       input_buffer.mDataByteSize = data_byte_size;
       input_buffer.mData = data_buffer.data();
 
@@ -438,7 +477,6 @@ class CatapAudioInputStreamTest : public testing::Test {
                                    output_data, output_time,
                                    fake_catap_api()->client_data);
       EXPECT_GE(fake_callback_.on_data_call_count(), 1);
-    }
   }
 
   void TearDown() override {
@@ -511,14 +549,15 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
     ASSERT_NE(fake_catap_api()->audio_proc, nullptr);
     // Simulate a call to `audio_proc` with some data.
     const AudioTimeStamp* in_now = nullptr;
-    const uint32_t data_byte_size =
-        kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
+    const uint32_t data_byte_size = kCatapLoopbackDefaultFramesPerBuffer *
+                                    sizeof(Float32) * kNumberOfChannelsStereo;
+    ;
     std::vector<uint8_t> data_buffer(data_byte_size);
 
     AudioBufferList input_data;
     input_data.mNumberBuffers = 1;
     AudioBuffer& input_buffer = input_data.mBuffers[0];
-    input_buffer.mNumberChannels = 2;
+    input_buffer.mNumberChannels = kNumberOfChannelsStereo;
     input_buffer.mDataByteSize = data_byte_size;
     input_buffer.mData = data_buffer.data();
 
@@ -550,14 +589,14 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioDataMissingHostTime) {
     ASSERT_NE(fake_catap_api()->audio_proc, nullptr);
     // Simulate a call to `audio_proc_` with some data.
     const AudioTimeStamp* in_now = nullptr;
-    const uint32_t data_byte_size =
-        kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
+    const uint32_t data_byte_size = kCatapLoopbackDefaultFramesPerBuffer *
+                                    sizeof(Float32) * kNumberOfChannelsStereo;
     std::vector<uint8_t> data_buffer(data_byte_size);
 
     AudioBufferList input_data;
     input_data.mNumberBuffers = 1;
     AudioBuffer& input_buffer = input_data.mBuffers[0];
-    input_buffer.mNumberChannels = 2;
+    input_buffer.mNumberChannels = kNumberOfChannelsStereo;
     input_buffer.mDataByteSize = data_byte_size;
     input_buffer.mData = data_buffer.data();
 
@@ -705,14 +744,14 @@ TEST_F(CatapAudioInputStreamTest, ChannelCountChangeIsIgnored) {
 
     // Simulate a call to `audio_proc` with correct data.
     const AudioTimeStamp* in_now = nullptr;
-    const uint32_t data_byte_size =
-        kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
+    const uint32_t data_byte_size = kCatapLoopbackDefaultFramesPerBuffer *
+                                    sizeof(Float32) * kNumberOfChannelsStereo;
     std::vector<uint8_t> data_buffer(data_byte_size);
 
     AudioBufferList input_data;
     input_data.mNumberBuffers = 1;
     AudioBuffer& input_buffer = input_data.mBuffers[0];
-    input_buffer.mNumberChannels = 2;
+    input_buffer.mNumberChannels = kNumberOfChannelsStereo;
     input_buffer.mDataByteSize = data_byte_size;
     input_buffer.mData = data_buffer.data();
 
@@ -729,7 +768,7 @@ TEST_F(CatapAudioInputStreamTest, ChannelCountChangeIsIgnored) {
     EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
 
     // Now simulate a call with a different number of channels.
-    input_buffer.mNumberChannels = 1;
+    input_buffer.mNumberChannels = kNumberOfChannelsMono;
     input_time.mHostTime = mach_absolute_time();
 
     fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
@@ -754,14 +793,14 @@ TEST_F(CatapAudioInputStreamTest, FramesPerBufferChangeIsIgnored) {
 
     // Simulate a call to `audio_proc` with correct data.
     const AudioTimeStamp* in_now = nullptr;
-    const uint32_t data_byte_size =
-        kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
+    const uint32_t data_byte_size = kCatapLoopbackDefaultFramesPerBuffer *
+                                    sizeof(Float32) * kNumberOfChannelsStereo;
     std::vector<uint8_t> data_buffer(data_byte_size);
 
     AudioBufferList input_data;
     input_data.mNumberBuffers = 1;
     AudioBuffer& input_buffer = input_data.mBuffers[0];
-    input_buffer.mNumberChannels = 2;
+    input_buffer.mNumberChannels = kNumberOfChannelsStereo;
     input_buffer.mDataByteSize = data_byte_size;
     input_buffer.mData = data_buffer.data();
 
@@ -896,7 +935,7 @@ TEST_F(CatapAudioInputStreamTest, NoDefaultDevice) {
     CreateStream(
         /*with_permissions=*/true,
         /*device_id=*/media::AudioDeviceDescription::kLoopbackInputDeviceId,
-        /*default_device_uid=*/std::nullopt);
+        /*default_device_ids=*/kNoDefaultOutputIds);
     EXPECT_NE(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count, 0);
     stream_->Close();
@@ -908,7 +947,7 @@ TEST_F(CatapAudioInputStreamTest, NoDefaultDevice) {
     CreateStream(
         /*with_permissions=*/true,
         /*device_id=*/media::AudioDeviceDescription::kLoopbackAllDevicesId,
-        /*default_device_uid=*/std::nullopt);
+        /*default_device_ids=*/kNoDefaultOutputIds);
     EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count, 1);
   }
@@ -955,6 +994,41 @@ TEST_F(CatapAudioInputStreamTest, ReopensStreamSeveralTimes) {
 
     // Check if the catap stream still calls the OnData() callback.
     EnsureStreamIsActive();
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, CaptureStereoDeviceInStereo) {
+  if (@available(macOS 14.2, *)) {
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    CheckSuccessfulOpen();
+    EXPECT_FALSE([fake_catap_api()->last_tap_description isMono]);
+
+    stream_->Start(&fake_callback_);
+    EnsureStreamIsActive();
+    // Verify that the callback receives stereo audio.
+    EXPECT_EQ(fake_callback_.last_number_of_channels(),
+              kNumberOfChannelsStereo);
+    EXPECT_EQ(fake_callback_.last_number_of_frames(),
+              kCatapLoopbackDefaultFramesPerBuffer);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, ForceMonoCaptureForMonoDevice) {
+  if (@available(macOS 14.2, *)) {
+    CreateStream();
+    fake_catap_api()->number_of_device_channels = kNumberOfChannelsMono;
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    CheckSuccessfulOpen();
+    EXPECT_TRUE([fake_catap_api()->last_tap_description isMono]);
+
+    stream_->Start(&fake_callback_);
+    EnsureStreamIsActive();
+    // Verify that the callback receives stereo audio.
+    EXPECT_EQ(fake_callback_.last_number_of_channels(),
+              kNumberOfChannelsStereo);
+    EXPECT_EQ(fake_callback_.last_number_of_frames(),
+              kCatapLoopbackDefaultFramesPerBuffer);
   }
 }
 
