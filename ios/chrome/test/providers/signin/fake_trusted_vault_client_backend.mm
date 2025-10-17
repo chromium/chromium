@@ -65,11 +65,6 @@ FakeTrustedVaultClientBackend::FakeTrustedVaultClientBackend() = default;
 
 FakeTrustedVaultClientBackend::~FakeTrustedVaultClientBackend() = default;
 
-void FakeTrustedVaultClientBackend::
-    SetDeviceRegistrationPublicKeyVerifierForUMA(VerifierCallback verifier) {
-  // Do nothing.
-}
-
 void FakeTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,

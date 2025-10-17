@@ -56,10 +56,6 @@ class MockTrustedVaultClientBackend : public TrustedVaultClientBackend {
   ~MockTrustedVaultClientBackend() override = default;
 
   MOCK_METHOD(void,
-              SetDeviceRegistrationPublicKeyVerifierForUMA,
-              (VerifierCallback verifier),
-              (override));
-  MOCK_METHOD(void,
               FetchKeys,
               (id<SystemIdentity> identity,
                trusted_vault::SecurityDomainId security_domain_id,

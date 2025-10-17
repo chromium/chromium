@@ -17,8 +17,6 @@ class ChromiumTrustedVaultClientBackend final
     : public TrustedVaultClientBackend {
  public:
   // TrustedVaultClientBackend implementation.
-  void SetDeviceRegistrationPublicKeyVerifierForUMA(
-      VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
                  trusted_vault::SecurityDomainId security_domain_id,
                  KeysFetchedCallback completion) final;
@@ -51,11 +49,6 @@ class ChromiumTrustedVaultClientBackend final
       UIView* brandedNavigationItemTitleView,
       UpdateGPMPinCompletionCallback completion) final;
 };
-
-void ChromiumTrustedVaultClientBackend::
-    SetDeviceRegistrationPublicKeyVerifierForUMA(VerifierCallback verifier) {
-  // Do nothing.
-}
 
 void ChromiumTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,

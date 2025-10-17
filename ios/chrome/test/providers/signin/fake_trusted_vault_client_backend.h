@@ -16,8 +16,6 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   ~FakeTrustedVaultClientBackend() final;
 
   // TrustedVaultClientBackend implementation.
-  void SetDeviceRegistrationPublicKeyVerifierForUMA(
-      VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
                  trusted_vault::SecurityDomainId security_domain_id,
                  KeysFetchedCallback completion) final;
