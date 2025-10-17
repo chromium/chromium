@@ -43,6 +43,10 @@ class TouchToFillPaymentMethodViewController {
       const LoyaltyCard& loyalty_card) = 0;
   // Called when the user presses the "OK" button on the error screen.
   virtual void OnErrorOkPressed(JNIEnv* env) = 0;
+  // Called when the user taps on a BNPL issuer in the BNPL issuer selection
+  // bottom sheet.
+  virtual void OnBnplIssuerSuggestionSelected(JNIEnv* env,
+                                              const std::string& issuer_id) = 0;
   virtual int GetJavaResourceId(int native_resource_id) = 0;
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 };

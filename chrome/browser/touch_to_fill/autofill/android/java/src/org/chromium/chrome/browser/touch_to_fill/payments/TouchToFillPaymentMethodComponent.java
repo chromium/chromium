@@ -87,6 +87,13 @@ interface TouchToFillPaymentMethodComponent {
 
         /** Called when the user clicks the "OK" button on the error screen. */
         void onErrorOkPressed();
+
+        /**
+         * Called when the user selects a BNPL issuer.
+         *
+         * @param issuerId The selected BNPL issuer Id.
+         */
+        void onBnplIssuerSuggestionSelected(String issuerId);
     }
 
     /**

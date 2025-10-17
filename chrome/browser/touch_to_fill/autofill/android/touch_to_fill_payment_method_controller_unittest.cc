@@ -147,6 +147,10 @@ class MockTouchToFillDelegateAndroidImpl
               SetSelectedIssuerCallback,
               (base::OnceCallback<void(BnplIssuer)> selected_issuer_callback),
               (override));
+  MOCK_METHOD(void,
+              OnBnplIssuerSuggestionSelected,
+              (const std::string& issuer_id),
+              (override));
 
  private:
   std::unique_ptr<TouchToFillKeyboardSuppressor> suppressor_;
@@ -642,6 +646,28 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   OnAfterAskForValuesToFill();
 
   payment_method_controller().OnDismissed(nullptr, /*dismissed_by_user=*/false);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       OnBnplIssuerSuggestionSelected_ForwardsCallToDelegate) {
+  EXPECT_CALL(*mock_view_,
+              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(ttf_delegate(),
+              OnBnplIssuerSuggestionSelected(/*issuer_id=*/"affirm"));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  payment_method_controller().ShowBnplIssuers(
+      bnpl_issuer_contexts_,
+      /*app_locale=*/"en-US",
+      /*selected_issuer_callback=*/base::DoNothing(),
+      /*cancel_callback=*/base::DoNothing());
+  OnAfterAskForValuesToFill();
+
+  payment_method_controller().OnBnplIssuerSuggestionSelected(
+      nullptr, /*issuer_id=*/"affirm");
 }
 
 }  // namespace

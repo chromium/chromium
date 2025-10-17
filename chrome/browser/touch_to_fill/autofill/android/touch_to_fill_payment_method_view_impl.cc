@@ -104,8 +104,10 @@ CreateJavaBnplIssuerContextFromNative(
           {bnpl_issuer_context});
 
   return autofill::Java_BnplIssuerContext_Constructor(
-      env, image_ids.first.value(), bnpl_issuer_context.issuer.GetDisplayName(),
-      selection_text,
+      env, image_ids.first.value(),
+      std::string(
+          ConvertToBnplIssuerIdString(bnpl_issuer_context.issuer.issuer_id())),
+      bnpl_issuer_context.issuer.GetDisplayName(), selection_text,
       bnpl_issuer_context.issuer.payment_instrument().has_value(),
       bnpl_issuer_context.IsEligible());
 }

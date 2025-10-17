@@ -105,6 +105,8 @@ class TouchToFillPaymentMethodControllerImpl
   void LoyaltyCardSuggestionSelected(JNIEnv* env,
                                      const LoyaltyCard& loyalty_card) override;
   void OnErrorOkPressed(JNIEnv* env) override;
+  void OnBnplIssuerSuggestionSelected(JNIEnv* env,
+                                      const std::string& issuer_id) override;
   int GetJavaResourceId(int native_resource_id) override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
   void ResetJavaObject();

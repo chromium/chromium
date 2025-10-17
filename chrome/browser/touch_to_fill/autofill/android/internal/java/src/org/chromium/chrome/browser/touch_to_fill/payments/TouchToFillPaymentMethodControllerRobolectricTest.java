@@ -384,6 +384,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_LINKED =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.affirm_linked,
+                    /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
                     /* isLinked= */ true,
@@ -391,6 +392,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.affirm_unlinked,
+                    /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
                     /* isLinked= */ false,
@@ -398,6 +400,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_KLARNA_LINKED =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.klarna_linked,
+                    /* issuerId= */ "klarna",
                     /* displayName= */ "Klarna",
                     /* selectionText= */ "Pay in low monthly installments",
                     /* isLinked= */ true,
@@ -405,6 +408,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.klarna_unlinked,
+                    /* issuerId= */ "klarna",
                     /* displayName= */ "Klarna",
                     /* selectionText= */ "Pay in low monthly installments",
                     /* isLinked= */ false,
@@ -412,6 +416,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_ZIP_LINKED =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.zip_linked,
+                    /* issuerId= */ "zip",
                     /* displayName= */ "Zip",
                     /* selectionText= */ "Pay in easy installments",
                     /* isLinked= */ true,
@@ -419,6 +424,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_ZIP_UNLINKED =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.zip_unlinked,
+                    /* issuerId= */ "zip",
                     /* displayName= */ "Zip",
                     /* selectionText= */ "Pay in easy installments",
                     /* isLinked= */ false,
@@ -427,6 +433,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
             BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT =
                     new BnplIssuerContext(
                             /* iconId= */ R.drawable.affirm_linked,
+                            /* issuerId= */ "affirm",
                             /* displayName= */ "Affirm",
                             /* selectionText= */ "Not supported by merchant",
                             /* isLinked= */ true,
@@ -434,6 +441,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.klarna_linked,
+                    /* issuerId= */ "klarna",
                     /* displayName= */ "Klarna",
                     /* selectionText= */ "Purchase must be over $50.00",
                     /* isLinked= */ true,
@@ -441,6 +449,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.zip_unlinked,
+                    /* issuerId= */ "zip",
                     /* displayName= */ "Zip",
                     /* selectionText= */ "Purchase must be under $10,000.00",
                     /* isLinked= */ false,

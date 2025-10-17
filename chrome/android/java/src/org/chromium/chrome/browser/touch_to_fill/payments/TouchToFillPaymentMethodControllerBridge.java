@@ -143,6 +143,15 @@ class TouchToFillPaymentMethodControllerBridge
         }
     }
 
+    @Override
+    public void onBnplIssuerSuggestionSelected(String issuerId) {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .onBnplIssuerSuggestionSelected(
+                            mNativeTouchToFillPaymentMethodViewController, issuerId);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onDismissed(
@@ -173,5 +182,9 @@ class TouchToFillPaymentMethodControllerBridge
                 @JniType("LoyaltyCard") LoyaltyCard loyaltyCardNumber);
 
         void onErrorOkPressed(long nativeTouchToFillPaymentMethodViewController);
+
+        void onBnplIssuerSuggestionSelected(
+                long nativeTouchToFillPaymentMethodViewController,
+                @JniType("std::string") String issuerId);
     }
 }

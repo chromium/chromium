@@ -17,9 +17,11 @@ public class BnplIssuerContextTest {
     @Test
     public void testConstructor() throws Exception {
         BnplIssuerContext bnplIssuerContext =
-                new BnplIssuerContext(123, "Test Issuer", "Test Description", false, true);
+                new BnplIssuerContext(
+                        123, "Test Id", "Test Issuer", "Test Description", false, true);
 
         assertThat(bnplIssuerContext.getIconId()).isEqualTo(123);
+        assertThat(bnplIssuerContext.getIssuerId()).isEqualTo("Test Id");
         assertThat(bnplIssuerContext.getDisplayName()).isEqualTo("Test Issuer");
         assertThat(bnplIssuerContext.getSelectionText()).isEqualTo("Test Description");
         assertThat(bnplIssuerContext.isLinked()).isFalse();

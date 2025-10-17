@@ -336,6 +336,14 @@ void TouchToFillPaymentMethodControllerImpl::OnErrorOkPressed(JNIEnv* env) {
   }
 }
 
+void TouchToFillPaymentMethodControllerImpl::OnBnplIssuerSuggestionSelected(
+    JNIEnv* env,
+    const std::string& issuer_id) {
+  if (delegate_) {
+    delegate_->OnBnplIssuerSuggestionSelected(issuer_id);
+  }
+}
+
 int TouchToFillPaymentMethodControllerImpl::GetJavaResourceId(
     int native_resource_id) {
   return ResourceMapper::MapToJavaDrawableId(native_resource_id);

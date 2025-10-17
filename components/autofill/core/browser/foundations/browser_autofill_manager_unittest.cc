@@ -889,6 +889,10 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
   MOCK_METHOD(void, OnErrorOkPressed, (), (override));
   MOCK_METHOD(void,
+              OnBnplIssuerSuggestionSelected,
+              (const std::string& issuer_id),
+              (override));
+  MOCK_METHOD(void,
               LogMetricsAfterSubmission,
               (const FormStructure&),
               (override));

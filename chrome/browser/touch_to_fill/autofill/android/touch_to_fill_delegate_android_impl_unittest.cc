@@ -213,7 +213,8 @@ class TouchToFillDelegateAndroidImplUnitTest
   TouchToFillDelegateAndroidImplUnitTest() {
     features_.InitWithFeatures(
         {features::kAutofillEnableLoyaltyCardsFilling,
-         features::kAutofillEnableEmailOrLoyaltyCardsFilling},
+         features::kAutofillEnableEmailOrLoyaltyCardsFilling,
+         features::kAutofillEnableBuyNowPayLaterSyncing},
         {});
     // Some date after in the 2000s because Autofill doesn't allow expiration
     // dates before 2000.
@@ -1111,6 +1112,69 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest, OnErrorOkPressed) {
   EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod);
 
   touch_to_fill_delegate_->OnErrorOkPressed();
+}
+
+TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
+       OnBnplIssuerSuggestionSelected) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  BnplIssuer issuer =
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm);
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddBnplIssuer(issuer);
+
+  base::MockCallback<base::OnceCallback<void(BnplIssuer)>>
+      mock_selected_issuer_callback;
+  touch_to_fill_delegate_->SetSelectedIssuerCallback(
+      mock_selected_issuer_callback.Get());
+
+  EXPECT_CALL(mock_selected_issuer_callback, Run(issuer)).Times(1);
+
+  touch_to_fill_delegate_->OnBnplIssuerSuggestionSelected(
+      /*issuer_id=*/"affirm");
+}
+
+TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
+       OnBnplIssuerSuggestionSelected_NoCallbackSet) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  BnplIssuer issuer =
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm);
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddBnplIssuer(issuer);
+
+  base::MockCallback<base::OnceCallback<void(BnplIssuer)>>
+      mock_selected_issuer_callback;
+
+  EXPECT_CALL(mock_selected_issuer_callback, Run(issuer)).Times(0);
+
+  touch_to_fill_delegate_->OnBnplIssuerSuggestionSelected(
+      /*issuer_id=*/"affirm");
+}
+
+TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
+       OnBnplIssuerSuggestionSelected_NoMatchingIssuer) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddBnplIssuer(issuer);
+
+  base::MockCallback<base::OnceCallback<void(BnplIssuer)>>
+      mock_selected_issuer_callback;
+  touch_to_fill_delegate_->SetSelectedIssuerCallback(
+      mock_selected_issuer_callback.Get());
+
+  EXPECT_CALL(mock_selected_issuer_callback, Run(issuer)).Times(0);
+
+  touch_to_fill_delegate_->OnBnplIssuerSuggestionSelected(
+      /*issuer_id=*/"invalidIssuerId");
 }
 
 class TouchToFillDelegateAndroidImplIbanUnitTest

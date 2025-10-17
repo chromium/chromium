@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <variant>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
@@ -443,6 +444,28 @@ void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {
 
 void TouchToFillDelegateAndroidImpl::OnErrorOkPressed() {
   HideTouchToFill();
+}
+
+void TouchToFillDelegateAndroidImpl::OnBnplIssuerSuggestionSelected(
+    const std::string& issuer_id) {
+  // This check is a safeguard. `selected_issuer_callback` is set in
+  // `TouchToFillPaymentMethodControllerImpl::ShowBnplIssuers()` and should
+  // always be non-null here.
+  if (!bnpl_callbacks_.selected_issuer_callback) {
+    return;
+  }
+
+  std::vector<BnplIssuer> issuers = manager_->client()
+                                        .GetPaymentsAutofillClient()
+                                        ->GetPaymentsDataManager()
+                                        .GetBnplIssuers();
+  for (BnplIssuer& issuer : issuers) {
+    if (ConvertToBnplIssuerIdString(issuer.issuer_id()) == issuer_id) {
+      std::move(bnpl_callbacks_.selected_issuer_callback)
+          .Run(std::move(issuer));
+      break;
+    }
+  }
 }
 
 void TouchToFillDelegateAndroidImpl::LogTriggerOutcomeMetrics(

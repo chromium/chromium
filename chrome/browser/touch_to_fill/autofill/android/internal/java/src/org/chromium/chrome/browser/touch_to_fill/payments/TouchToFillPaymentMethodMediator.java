@@ -816,12 +816,16 @@ class TouchToFillPaymentMethodMediator {
         mDelegate.bnplSuggestionSelected(suggestion.getPaymentsPayload().getExtractedAmount());
     }
 
-    private void onAcceptedBnplIssuer() {
-        // TODO(crbug.com/430575808): Handle user clicking a BNPL issuer. During implementation,
-        // make sure that when we hide the bottom sheet to prepare to show the ephemeral tab, we use
-        // `mModel.set(VISIBLE, false)` instead of `hideSheet()`. This preserves the TouchToFill
-        // view and delegate on native side, which is needed when the user completes the flow on the
-        // ephemeral tab and reopens the TTF bottom sheet.
+    private void onAcceptedBnplIssuer(String issuerId) {
+        // TODO(crbug.com/430575808): During implementation, make sure that when we hide the bottom
+        // sheet to prepare to show the ephemeral tab, we use `mModel.set(VISIBLE, false)` instead
+        // of `hideSheet()`. This preserves the TouchToFill view and delegate on native side, which
+        // is needed when the user completes the flow on the ephemeral tab and reopens the TTF
+        // bottom sheet.
+        if (!mInputProtector.shouldInputBeProcessed()) {
+            return;
+        }
+        mDelegate.onBnplIssuerSuggestionSelected(issuerId);
     }
 
     private void onErrorOkPressed() {
@@ -913,7 +917,9 @@ class TouchToFillPaymentMethodMediator {
                         .with(ISSUER_SELECTION_TEXT, issuerContext.getSelectionText())
                         .with(ISSUER_ICON_ID, issuerContext.getIconId())
                         .with(ISSUER_LINKED, issuerContext.isLinked())
-                        .with(ON_ISSUER_CLICK_ACTION, this::onAcceptedBnplIssuer)
+                        .with(
+                                ON_ISSUER_CLICK_ACTION,
+                                () -> this.onAcceptedBnplIssuer(issuerContext.getIssuerId()))
                         .with(APPLY_ISSUER_DEACTIVATED_STYLE, !issuerContext.isEligible());
         return bnplIssuerModelBuilder.build();
     }

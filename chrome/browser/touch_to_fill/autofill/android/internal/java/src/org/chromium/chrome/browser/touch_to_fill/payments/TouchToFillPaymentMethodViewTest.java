@@ -401,6 +401,7 @@ public class TouchToFillPaymentMethodViewTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_LINKED =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.affirm_linked,
+                    /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
                     /* isLinked= */ true,
@@ -408,6 +409,7 @@ public class TouchToFillPaymentMethodViewTest {
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED =
             new BnplIssuerContext(
                     /* iconId= */ R.drawable.affirm_unlinked,
+                    /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
                     /* isLinked= */ false,
@@ -416,6 +418,7 @@ public class TouchToFillPaymentMethodViewTest {
             BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT =
                     new BnplIssuerContext(
                             /* iconId= */ R.drawable.affirm_linked,
+                            /* issuerId= */ "affirm",
                             /* displayName= */ "Affirm",
                             /* selectionText= */ "Not supported by merchant",
                             /* isLinked= */ true,
@@ -1732,7 +1735,8 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(bnplIssuerContextsContainer.getAdapter().getItemCount(), is(1));
 
         View issuerItem = bnplIssuerContextsContainer.getChildAt(0);
-        assertBnplIssuerItemMatches(issuerItem, BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED, actionCallback);
+        assertBnplIssuerItemMatches(
+                issuerItem, BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED, actionCallback);
     }
 
     @Test
@@ -1764,7 +1768,9 @@ public class TouchToFillPaymentMethodViewTest {
 
         View issuerItem = bnplIssuerContextsContainer.getChildAt(0);
         assertBnplIssuerItemMatches(
-                issuerItem, BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT, actionCallback);
+                issuerItem,
+                BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT,
+                actionCallback);
     }
 
     @Test
