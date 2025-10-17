@@ -20,7 +20,6 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -57,8 +56,7 @@ namespace web_app {
 // A TestNavigationObserver that also waits for the browser window containing
 // the navigation to become active.
 class ActiveBrowserWindowNavigationObserver
-    : public content::TestNavigationObserver,
-      public BrowserListObserver {
+    : public content::TestNavigationObserver {
  public:
   explicit ActiveBrowserWindowNavigationObserver(const GURL& target_url)
       : content::TestNavigationObserver(target_url) {
@@ -73,12 +71,21 @@ class ActiveBrowserWindowNavigationObserver
   }
 
  protected:
-  void CheckNavigatedWindowActive(BrowserWindowInterface* active_browser) {
-    ASSERT_TRUE(navigated_contents_);
-    if (active_browser->GetTabStripModel()->GetActiveWebContents() ==
-        navigated_contents_) {
-      active_browser_future_.SetValue(active_browser);
-    }
+  BrowserWindowInterface* FindBrowserForNavigation() {
+    EXPECT_TRUE(navigated_contents_);
+
+    BrowserWindowInterface* browser_for_navigation = nullptr;
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&](BrowserWindowInterface* browser) {
+          if (browser->GetTabStripModel()->GetActiveWebContents() ==
+              navigated_contents_) {
+            browser_for_navigation = browser;
+            return false;  // stop iterating
+          }
+          return true;  // continue iterating
+        });
+
+    return browser_for_navigation;
   }
 
   // TestNavigationObserver:
@@ -87,21 +94,28 @@ class ActiveBrowserWindowNavigationObserver
     ASSERT_FALSE(navigated_contents_);
     navigated_contents_ = navigation_handle->GetWebContents();
 
-    // Check if the navigated WebContents is already active.
-    CheckNavigatedWindowActive(
-        GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+    BrowserWindowInterface* browser = FindBrowserForNavigation();
+    ASSERT_TRUE(browser);
+
+    browser_did_become_active_subscription_ =
+        browser->RegisterDidBecomeActive(base::BindRepeating(
+            &ActiveBrowserWindowNavigationObserver::OnBrowserDidBecomeActive,
+            base::Unretained(this)));
+
+    if (browser->IsActive()) {
+      active_browser_future_.SetValue(browser);
+    }
   }
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override {
-    if (navigated_contents_) {
-      CheckNavigatedWindowActive(browser);
-    }
+  void OnBrowserDidBecomeActive(BrowserWindowInterface* browser) {
+    ASSERT_TRUE(navigated_contents_);
+    active_browser_future_.SetValue(browser);
   }
 
  private:
   raw_ptr<content::WebContents> navigated_contents_ = nullptr;
   base::test::TestFuture<BrowserWindowInterface*> active_browser_future_;
+  base::CallbackListSubscription browser_did_become_active_subscription_;
 };
 
 class ChromeOsWebAppExperimentsBrowserTest
