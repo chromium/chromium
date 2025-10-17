@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
-#include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/task_id.h"
@@ -41,8 +40,9 @@ namespace ui {
 class ActorUiStateManagerInterface;
 }
 
-class ActorTask;
 class ActorPolicyChecker;
+class ActorTask;
+class ActorTaskMetadata;
 class ToolRequest;
 
 using ParentInstanceId = base::Uuid;
