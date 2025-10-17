@@ -118,6 +118,8 @@ source_set("impl") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_list_interface",
       "//components/vector_icons",
     ]
 
@@ -260,6 +262,15 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = []
   deps = []
+
+  if (enable_extensions_core) {
+    sources += [ "extensions_menu_view_model_browsertest.cc" ]
+    deps += [
+      ":extensions",
+      "//chrome/browser/extensions",
+      "//chrome/test:test_support",
+    ]
+  }
 
   if (!is_android) {
     sources += [

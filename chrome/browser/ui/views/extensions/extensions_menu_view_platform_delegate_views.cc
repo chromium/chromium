@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -273,25 +274,6 @@ ExtensionMenuItemView::SiteAccessToggleState GetSiteAccessToggleState(
              : ExtensionMenuItemView::SiteAccessToggleState::kOff;
 }
 
-void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
-  switch (site_access) {
-    case PermissionsManager::UserSiteAccess::kOnClick:
-      base::RecordAction(
-          base::UserMetricsAction("Extensions.Menu.OnClickSelected"));
-      break;
-    case PermissionsManager::UserSiteAccess::kOnSite:
-      base::RecordAction(
-          base::UserMetricsAction("Extensions.Menu.OnSiteSelected"));
-      break;
-    case PermissionsManager::UserSiteAccess::kOnAllSites:
-      base::RecordAction(
-          base::UserMetricsAction("Extensions.Menu.OnAllSitesSelected"));
-      break;
-    default:
-      NOTREACHED() << "Unknown site access";
-  }
-}
-
 }  // namespace
 
 ExtensionsMenuViewPlatformDelegateViews::
@@ -360,11 +342,7 @@ void ExtensionsMenuViewPlatformDelegateViews::CloseBubble() {
 void ExtensionsMenuViewPlatformDelegateViews::OnSiteAccessSelected(
     const extensions::ExtensionId& extension_id,
     PermissionsManager::UserSiteAccess site_access) {
-  LogSiteAccessUpdate(site_access);
-
-  SitePermissionsHelper permissions(browser_->profile());
-  permissions.UpdateSiteAccess(*GetExtension(browser_, extension_id),
-                               GetActiveWebContents(), site_access);
+  menu_model_->UpdateSiteAccess(extension_id, site_access);
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::OnSiteSettingsToggleButtonPressed(
