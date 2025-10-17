@@ -226,6 +226,10 @@ void DataSharingUI::ApiInitComplete() {
   }
 }
 
+bool DataSharingUI::IsApiInitialized() {
+  return page_handler_ && page_handler_->IsApiInitialized();
+}
+
 void DataSharingUI::OnShareLinkRequested(
     const std::string& group_id,
     const std::string& access_token,
