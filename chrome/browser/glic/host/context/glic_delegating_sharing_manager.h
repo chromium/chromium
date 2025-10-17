@@ -9,6 +9,8 @@
 
 namespace glic {
 
+class GlicSharingManagerImpl;
+
 // Sharing manager that delegates to/from another sharing manager instance.
 // Provides stable external api state (e.g. callback list subscriptions), while
 // also enabling hot-swapping of internal delegate.
@@ -16,13 +18,20 @@ namespace glic {
 // Retains its own callback list subsciptions (calls to `Add*Callback` are not
 // delegated), but notify calls from current delegate are
 // forwarded and all non-callback-subsciptions methods are delegated directly.
-class GlicDelegatingSharingManager : public GlicSharingManager {
+//
+// Holds delegate in a WeakPtr because there are no ownership requirements for
+// the delegate, and we must be able to handle empty delegate behavior anyways.
+//
+// This base class doesn't expose a method to set the delegate, to do so use one
+// of the derived classes below instead.
+class GlicDelegatingSharingManagerBase : public GlicSharingManager {
  public:
-  GlicDelegatingSharingManager();
-  ~GlicDelegatingSharingManager() override;
-  GlicDelegatingSharingManager(const GlicDelegatingSharingManager&) = delete;
-  GlicDelegatingSharingManager& operator=(const GlicDelegatingSharingManager&) =
+  GlicDelegatingSharingManagerBase();
+  ~GlicDelegatingSharingManagerBase() override;
+  GlicDelegatingSharingManagerBase(const GlicDelegatingSharingManagerBase&) =
       delete;
+  GlicDelegatingSharingManagerBase& operator=(
+      const GlicDelegatingSharingManagerBase&) = delete;
 
   // SharingManager implementation.
   using FocusedTabChangedCallback =
@@ -73,9 +82,11 @@ class GlicDelegatingSharingManager : public GlicSharingManager {
   GlicFocusedBrowserManagerInterface& focused_browser_manager() override;
   base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
 
+ protected:
   // Sets the sharing manager delegate. Notifies all subscribers for all
   // callback list subscriptions.
   void SetDelegate(base::WeakPtr<GlicSharingManager> sharing_manager_delegate);
+  base::WeakPtr<GlicSharingManager> GetDelegate();
 
  private:
   // Callbacks for subscribing to delegate (will be forwarded).
@@ -123,7 +134,51 @@ class GlicDelegatingSharingManager : public GlicSharingManager {
   base::CallbackListSubscription pinned_tabs_changed_callback_;
   base::CallbackListSubscription pinned_tab_data_changed_callback_;
 
-  base::WeakPtrFactory<GlicDelegatingSharingManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GlicDelegatingSharingManagerBase> weak_ptr_factory_{
+      this};
+};
+
+// A delegating sharing manager that can set any sharing manager as a delegate,
+// but does not support `SubscribeToPinCandidates`.
+//
+// TODO(crbug.com/444463509): Once we remove single instance mode, split
+// GlicSharingManager interface so we don't allow calls to
+// `SubscribeToPinCandidates` (currently triggers NOTREACHED).
+class GlicDelegatingSharingManager : public GlicDelegatingSharingManagerBase {
+ public:
+  GlicDelegatingSharingManager();
+  ~GlicDelegatingSharingManager() override;
+
+  using GlicDelegatingSharingManagerBase::SetDelegate;
+};
+
+// A delegating sharing manager that implements `SubscribeToPinCandidates` by
+// treating GlicPinnedTabManager identity as an invariant among delegates.
+// Behaves just like `GlicDelegatingSharingManager`, but crashes if a delegate
+// is set with a different PinnedTabManager instance than the previous delegate.
+//
+// Useful for cases where non-pinning sharing bevhavior must change on the fly,
+// but not pinning behavior (e.g. attach/detach behavior for side panel).
+//
+// TODO(crbug.com/444463509): Enforce invariant at compile time and move
+// GlicPinnedTabManager out of WeakPtr.
+class GlicStablePinningDelegatingSharingManager
+    : public GlicDelegatingSharingManagerBase {
+ public:
+  explicit GlicStablePinningDelegatingSharingManager(
+      base::WeakPtr<GlicSharingManagerImpl> sharing_manager_delegate);
+  ~GlicStablePinningDelegatingSharingManager() override;
+
+  // Forwards requests to the delegate, under the assumption that the delegate's
+  // GlicPinnedTabManager will never change.
+  void SubscribeToPinCandidates(
+      mojom::GetPinCandidatesOptionsPtr options,
+      mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override;
+
+  // Changes the delegate. Crashes if the GlicPinnedTabManager instance is not
+  // the same as the current delegate.
+  void SetDelegate(
+      base::WeakPtr<GlicSharingManagerImpl> sharing_manager_delegate);
 };
 
 }  // namespace glic

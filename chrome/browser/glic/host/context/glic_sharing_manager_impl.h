@@ -17,6 +17,7 @@
 namespace glic {
 
 class GlicMetrics;
+class GlicStablePinningDelegatingSharingManager;
 
 // Implements GlicSharingManager and provides additional functionality needed
 // by chrome/browser/glic. It also provides some common sharing-related
@@ -37,6 +38,10 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   GlicSharingManagerImpl(const GlicSharingManagerImpl&) = delete;
   GlicSharingManagerImpl& operator=(const GlicSharingManagerImpl&) = delete;
+
+  // Grants special access to internals for enforcing invariants,
+  // without exposing generally.
+  friend class GlicStablePinningDelegatingSharingManager;
 
   // GlicSharingManager implementation.
 
