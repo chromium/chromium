@@ -52,10 +52,6 @@ constexpr char kWindowsSystemProxyResolverSandbox[] = "proxy_resolver_win";
 constexpr char kMirroringSandbox[] = "mirroring";
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_LINUX)
-constexpr char kVideoEffectsSandbox[] = "video_effects";
-#endif
-
 #if BUILDFLAG(IS_FUCHSIA)
 constexpr char kVideoCaptureSandbox[] = "video_capture";
 #endif
@@ -160,9 +156,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kScreenAI:
 #endif
     case Sandbox::kSpeechRecognition:
-#if BUILDFLAG(IS_LINUX)
-    case Sandbox::kVideoEffects:
-#endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     case Sandbox::kOnDeviceTranslation:
 #endif
@@ -258,10 +251,6 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return kPrintBackendSandbox;
     case Sandbox::kScreenAI:
       return kScreenAISandbox;
-#endif
-#if BUILDFLAG(IS_LINUX)
-    case Sandbox::kVideoEffects:
-      return kVideoEffectsSandbox;
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     case Sandbox::kOnDeviceTranslation:
@@ -386,11 +375,6 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   }
   if (sandbox_string == kScreenAISandbox) {
     return Sandbox::kScreenAI;
-  }
-#endif
-#if BUILDFLAG(IS_LINUX)
-  if (sandbox_string == kVideoEffectsSandbox) {
-    return Sandbox::kVideoEffects;
   }
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

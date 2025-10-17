@@ -132,7 +132,6 @@ class UtilityProcessSandboxBrowserTest
       case Sandbox::kNearby:
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_LINUX)
-      case Sandbox::kVideoEffects:
       case Sandbox::kOnDeviceTranslation:
 #endif
       case Sandbox::kNetwork:

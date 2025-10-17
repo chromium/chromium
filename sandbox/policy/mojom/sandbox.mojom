@@ -64,9 +64,6 @@ enum Sandbox {
   // Like kUtility but allows loading of speech recognition libraries.
   kSpeechRecognition,
 
-  // Like kService but allows loading of the optimization guide library.
-  [EnableIf=is_linux] kVideoEffects,
-
   // Equivalent to no sandbox on all non-Fuchsia platforms.
   // Minimally privileged sandbox on Fuchsia.
   [EnableIf=is_fuchsia] kVideoCapture,
