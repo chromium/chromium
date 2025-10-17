@@ -423,8 +423,9 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysExtensionsLoaded(
   }
   // Asynchronously poll all certificate providers to get the list of
   // currently available cryptographic keys.
-  std::unique_ptr<chromeos::CertificateProvider> cert_provider =
-      GetCertificateProviderService()->CreateCertificateProvider();
+  std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+      cert_provider =
+          GetCertificateProviderService()->CreateCertificateProvider();
   cert_provider->GetCertificates(base::BindOnce(
       &ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts,
       weak_ptr_factory_.GetWeakPtr(), account_id,

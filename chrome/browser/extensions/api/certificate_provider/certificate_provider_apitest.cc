@@ -269,8 +269,8 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
 
   std::vector<scoped_refptr<net::X509Certificate>>
   GetAllProvidedCertificates() {
-    std::unique_ptr<chromeos::CertificateProvider> cert_provider =
-        cert_provider_service_->CreateCertificateProvider();
+    std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+        cert_provider = cert_provider_service_->CreateCertificateProvider();
 
     base::test::TestFuture<net::ClientCertIdentityList> get_certificates_future;
     cert_provider->GetCertificates(get_certificates_future.GetCallback());

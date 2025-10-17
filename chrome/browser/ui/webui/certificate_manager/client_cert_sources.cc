@@ -994,7 +994,8 @@ class ExtensionsClientCertSource
     : public CertificateManagerPageHandler::CertSource {
  public:
   explicit ExtensionsClientCertSource(
-      std::unique_ptr<chromeos::CertificateProvider> provider)
+      std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+          provider)
       : provider_(std::move(provider)) {}
   ~ExtensionsClientCertSource() override = default;
 
@@ -1039,7 +1040,8 @@ class ExtensionsClientCertSource
                                          /*is_deletable=*/false);
   }
 
-  std::unique_ptr<chromeos::CertificateProvider> provider_;
+  std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+      provider_;
   std::optional<net::CertificateList> certs_;
   base::WeakPtrFactory<ExtensionsClientCertSource> weak_ptr_factory_{this};
 };

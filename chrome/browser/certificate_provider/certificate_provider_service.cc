@@ -43,7 +43,7 @@ void PostIdentities(
 }  // namespace
 
 class CertificateProviderService::CertificateProviderImpl
-    : public CertificateProvider {
+    : public certificate_provider::CertificateProvider {
  public:
   // This provider must be used on the same thread as the
   // CertificateProviderService.
@@ -301,7 +301,7 @@ bool CertificateProviderService::LookUpCertificate(
                                             extension_id);
 }
 
-std::unique_ptr<CertificateProvider>
+std::unique_ptr<certificate_provider::CertificateProvider>
 CertificateProviderService::CreateCertificateProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

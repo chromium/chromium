@@ -30,7 +30,7 @@ namespace views {
 class Widget;
 }
 
-namespace chromeos {
+namespace chromeos::certificate_provider {
 class CertificateProvider;
 }
 
@@ -142,7 +142,8 @@ class SecurityTokenSessionController
   raw_ptr<views::Widget> fullscreen_notification_ = nullptr;
   base::OneShotTimer action_timer_;
   base::OneShotTimer session_activation_timer_;
-  std::unique_ptr<chromeos::CertificateProvider> certificate_provider_;
+  std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+      certificate_provider_;
   // Whether all of the user's certificates have been provided at least once by
   // the extensions. This field is reset every time the session state changes.
   bool all_required_certificates_were_observed_ = false;

@@ -39,7 +39,8 @@ net::ClientCertIdentityList FilterCertsOnWorkerThread(
 //==============================================================================
 
 ClientCertStoreKcer::ClientCertStoreKcer(
-    std::unique_ptr<chromeos::CertificateProvider> cert_provider,
+    std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+        cert_provider,
     base::WeakPtr<kcer::Kcer> kcer,
     net::ClientCertIssuerSourceGetter issuer_source_getter)
     : cert_provider_(std::move(cert_provider)),

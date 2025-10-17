@@ -112,8 +112,8 @@ class CryptohomeKeyDelegateServiceProviderTest
     chromeos::CertificateProviderService* cert_provider_service =
         chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
             GetOriginalSigninProfile());
-    std::unique_ptr<chromeos::CertificateProvider> cert_provider =
-        cert_provider_service->CreateCertificateProvider();
+    std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+        cert_provider = cert_provider_service->CreateCertificateProvider();
     base::RunLoop run_loop;
     cert_provider->GetCertificates(base::BindLambdaForTesting(
         [&](net::ClientCertIdentityList) { run_loop.Quit(); }));

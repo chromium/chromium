@@ -9,6 +9,7 @@
 #include "net/ssl/client_cert_identity.h"
 
 namespace chromeos {
+namespace certificate_provider {
 
 class COMPONENT_EXPORT(CERTIFICATE_PROVIDER) CertificateProvider {
  public:
@@ -21,6 +22,7 @@ class COMPONENT_EXPORT(CERTIFICATE_PROVIDER) CertificateProvider {
       base::OnceCallback<void(net::ClientCertIdentityList)> callback) = 0;
 };
 
+}  // namespace certificate_provider
 }  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_

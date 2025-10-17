@@ -254,7 +254,8 @@ class CertificateProviderServiceTest : public testing::Test {
       task_runner_current_default_handle_;
   raw_ptr<TestDelegate, DanglingUntriaged> test_delegate_ = nullptr;
   testing::StrictMock<MockObserver> observer_;
-  std::unique_ptr<CertificateProvider> certificate_provider_;
+  std::unique_ptr<certificate_provider::CertificateProvider>
+      certificate_provider_;
   std::unique_ptr<CertificateProviderService> service_;
   const certificate_provider::CertificateInfo cert_info1_;
   const certificate_provider::CertificateInfo cert_info2_;

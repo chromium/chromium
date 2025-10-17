@@ -32,7 +32,9 @@
 
 namespace chromeos {
 
+namespace certificate_provider {
 class CertificateProvider;
+}
 
 // A keyed service that manages registrations of extensions as certificate
 // providers. It exposes all certificates that are provided by extensions
@@ -172,7 +174,8 @@ class CertificateProviderService : public KeyedService {
   // is sufficient to create the CertificateProvider once and then repeatedly
   // call its |GetCertificates()|. The returned provider is valid even after the
   // destruction of this service.
-  std::unique_ptr<CertificateProvider> CreateCertificateProvider();
+  std::unique_ptr<certificate_provider::CertificateProvider>
+  CreateCertificateProvider();
 
   // Called whenever the extension with id |extension_id| unregisters from
   // receiving future certificate requests. This will clear certificates

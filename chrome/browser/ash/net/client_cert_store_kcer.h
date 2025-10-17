@@ -16,7 +16,7 @@
 #include "net/ssl/client_cert_matcher.h"
 #include "net/ssl/client_cert_store.h"
 
-namespace chromeos {
+namespace chromeos::certificate_provider {
 class CertificateProvider;
 }
 
@@ -32,7 +32,8 @@ class ClientCertStoreKcer : public net::ClientCertStore {
   // pathbuilding. It may run its callback either synchronously or
   // asynchronously.
   ClientCertStoreKcer(
-      std::unique_ptr<chromeos::CertificateProvider> cert_provider,
+      std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+          cert_provider,
       base::WeakPtr<kcer::Kcer> kcer,
       net::ClientCertIssuerSourceGetter issuer_source_getter);
 
@@ -70,7 +71,8 @@ class ClientCertStoreKcer : public net::ClientCertStore {
   void ReturnClientCerts(ClientCertListCallback callback,
                          net::ClientCertIdentityList identities);
 
-  std::unique_ptr<chromeos::CertificateProvider> cert_provider_;
+  std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+      cert_provider_;
   // The correct instance of Kcer for this ClientCertStoreKcer (either related
   // to a Profile or device-wide). The Profile-bound Kcer might get invalidated
   // if ClientCertStoreKcer outlives the Profile. This is probably not expected,
