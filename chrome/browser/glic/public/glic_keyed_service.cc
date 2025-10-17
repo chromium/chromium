@@ -411,8 +411,7 @@ GlicKeyedService::AddContextAccessIndicatorStatusChangedCallback(
   return context_access_indicator_callback_list_.Add(std::move(callback));
 }
 
-void GlicKeyedService::CreateTab(
-    content::RenderFrameHost* source,
+tabs::TabInterface* GlicKeyedService::CreateTab(
     const ::GURL& url,
     bool open_in_background,
     const std::optional<int32_t>& window_id,
@@ -421,33 +420,32 @@ void GlicKeyedService::CreateTab(
   // function.
   if (!url.SchemeIsHTTPOrHTTPS()) {
     std::move(callback).Run(nullptr);
-    return;
+    return nullptr;
   }
   NavigateParams params(profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = open_in_background
                            ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
-
-  // Ensure the source is Glic, then set the opener of the navigation.
-  if (source && host_manager().IsGlicWebUiHost(source->GetProcess())) {
-    params.opener = source;
-  }
   base::WeakPtr<content::NavigationHandle> navigation_handle =
       Navigate(&params);
   if (!navigation_handle.get()) {
     std::move(callback).Run(nullptr);
-    return;
+    return nullptr;
   }
   // Right after requesting the navigation, the WebContents will have almost no
   // information to populate TabData, hence the overriding of the URL. Should we
   // ever want to send more data back to the web client, we should wait until
   // the navigation commits.
-  mojom::TabDataPtr tab_data =
-      CreateTabData(navigation_handle.get()->GetWebContents());
+  content::WebContents* new_web_contents =
+      navigation_handle.get()->GetWebContents();
+  mojom::TabDataPtr tab_data = CreateTabData(new_web_contents);
   if (tab_data) {
     tab_data->url = url;
   }
   std::move(callback).Run(std::move(tab_data));
+  return new_web_contents
+             ? tabs::TabInterface::MaybeGetFromContents(new_web_contents)
+             : nullptr;
 }
 
 void GlicKeyedService::SetContextAccessIndicator(bool show) {

@@ -107,8 +107,11 @@ class GlicInstanceImpl : public GlicInstance,
       StateChangeCallback callback) override;
 
   // Host::InstanceDelegate:
-  void CreateTab(
-      content::RenderFrameHost* source,
+  // TODO: Currently, both GlicInstanceImpl and GlicKeyedService implement
+  // Host::InstanceDelegate. The CreateTab function here should only return the
+  // tab for GlicKeyedService, but not GlicInstanceImpl. We should figure out a
+  // way to decouple this.
+  tabs::TabInterface* CreateTab(
       const ::GURL& url,
       bool open_in_background,
       const std::optional<int32_t>& window_id,

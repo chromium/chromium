@@ -172,8 +172,7 @@ class GlicKeyedService : public KeyedService,
   // URL in a new tab. The source is the RenderFrameHost of the Glic
   // instance that is requesting the navigation - this gets set as the
   // navigation handle's opener param.
-  void CreateTab(
-      content::RenderFrameHost* source,
+  tabs::TabInterface* CreateTab(
       const ::GURL& url,
       bool open_in_background,
       const std::optional<int32_t>& window_id,
