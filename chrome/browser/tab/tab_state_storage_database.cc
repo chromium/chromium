@@ -4,6 +4,8 @@
 
 #include "chrome/browser/tab/tab_state_storage_database.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -71,6 +73,35 @@ bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
 
 }  // namespace
 
+TabStateStorageDatabase::Transaction::Transaction(
+    std::unique_ptr<sql::Transaction> transaction)
+    : transaction_(std::move(transaction)) {}
+
+TabStateStorageDatabase::Transaction::~Transaction() {
+  if (transaction_) {
+    transaction_->Rollback();
+  }
+}
+
+bool TabStateStorageDatabase::Transaction::Begin() {
+  DCHECK(!transaction_) << "Transaction already exists.";
+  return transaction_->Begin();
+}
+
+void TabStateStorageDatabase::Transaction::Rollback() {
+  DCHECK(transaction_) << "Transaction already closed.";
+  transaction_.release()->Rollback();
+}
+
+bool TabStateStorageDatabase::Transaction::IsOpen() {
+  return transaction_.get() != nullptr;
+}
+
+bool TabStateStorageDatabase::Transaction::Commit() {
+  DCHECK(transaction_) << "Transaction already closed.";
+  return transaction_.release()->Commit();
+}
+
 TabStateStorageDatabase::TabStateStorageDatabase(
     const base::FilePath& profile_path)
     : profile_path_(profile_path),
@@ -108,16 +139,13 @@ bool TabStateStorageDatabase::Initialize() {
   return true;
 }
 
-bool TabStateStorageDatabase::SaveNode(int id,
+bool TabStateStorageDatabase::SaveNode(Transaction* transaction,
+                                       int id,
                                        TabStorageType type,
                                        std::string payload,
                                        std::string children) {
   CHECK(db_);
-
-  sql::Transaction transaction(db_.get());
-  if (!transaction.Begin()) {
-    return false;
-  }
+  DCHECK(transaction && transaction->IsOpen());
 
   static constexpr char kInsertTabSql[] =
       "INSERT OR REPLACE INTO nodes"
@@ -134,11 +162,14 @@ bool TabStateStorageDatabase::SaveNode(int id,
   write_statement.BindBlob(2, std::move(payload));
   write_statement.BindBlob(3, std::move(children));
 
-  if (!write_statement.Run()) {
-    DLOG(ERROR) << "Could not write to tabs table.";
-    return false;
-  }
-  return transaction.Commit();
+  return write_statement.Run();
+}
+
+std::unique_ptr<TabStateStorageDatabase::Transaction>
+TabStateStorageDatabase::CreateTransaction() {
+  std::unique_ptr<sql::Transaction> sql_transaction =
+      std::make_unique<sql::Transaction>(db_.get());
+  return std::make_unique<Transaction>(std::move(sql_transaction));
 }
 
 std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes() {

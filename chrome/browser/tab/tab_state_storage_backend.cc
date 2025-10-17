@@ -5,17 +5,43 @@
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 
 namespace tabs {
 
+using Transaction = TabStateStorageDatabase::Transaction;
+
 namespace {
 constexpr base::TaskTraits kDBTaskTraits = {
     base::MayBlock(), base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
 }  // namespace
+
+// Runs a set of database `operations` in a transaction.
+bool RunTransaction(TabStateStorageDatabase* db,
+                    base::OnceCallback<bool(Transaction*)> operations) {
+  std::unique_ptr<Transaction> transaction = db->CreateTransaction();
+  if (!transaction->Begin()) {
+    DLOG(ERROR) << "Could not start transaction.";
+    return false;
+  }
+
+  if (!std::move(operations).Run(transaction.get())) {
+    transaction->Rollback();
+    return false;
+  }
+
+  if (!transaction->Commit()) {
+    DLOG(ERROR) << "Could not commit transaction.";
+    return false;
+  }
+
+  return true;
+}
 
 TabStateStorageBackend::TabStateStorageBackend(
     const base::FilePath& profile_path)
@@ -39,16 +65,31 @@ void TabStateStorageBackend::Initialize() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+bool SaveNodeSequence(TabStateStorageDatabase* db,
+                      int id,
+                      TabStorageType type,
+                      std::unique_ptr<StoragePackage> package,
+                      Transaction* transaction) {
+  std::string payload = package->SerializePayload();
+  std::string children = package->SerializeChildren();
+  bool success = db->SaveNode(transaction, id, type, std::move(payload),
+                              std::move(children));
+  if (!success) {
+    DLOG(ERROR) << "Could not perform save node operation.";
+  }
+  return true;
+}
+
 void TabStateStorageBackend::Save(int id,
                                   TabStorageType type,
                                   std::unique_ptr<StoragePackage> package) {
-  std::string payload = package->SerializePayload();
-  std::string children = package->SerializeChildren();
+  base::OnceCallback<bool(Transaction*)> save_sequence =
+      base::BindOnce(&SaveNodeSequence, base::Unretained(database_.get()), id,
+                     type, std::move(package));
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&TabStateStorageDatabase::SaveNode,
-                     base::Unretained(database_.get()), id, type,
-                     std::move(payload), std::move(children)),
+      base::BindOnce(&RunTransaction, base::Unretained(database_.get()),
+                     std::move(save_sequence)),
       base::BindOnce(&TabStateStorageBackend::OnWrite,
                      weak_ptr_factory_.GetWeakPtr()));
 }

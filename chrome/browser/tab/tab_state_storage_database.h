@@ -14,6 +14,7 @@
 namespace sql {
 class Database;
 class MetaTable;
+class Transaction;
 }  // namespace sql
 
 namespace tabs {
@@ -30,6 +31,28 @@ struct NodeState {
 // This class is responsible for all database operations.
 class TabStateStorageDatabase {
  public:
+  // Holds an sql::Transaction. Used as a key for database updates.
+  class Transaction {
+   public:
+    explicit Transaction(std::unique_ptr<sql::Transaction> transaction);
+    ~Transaction();
+
+    // Starts a transaction. Returns false in the case of failures.
+    bool Begin();
+
+    // Rolls back the transaction.
+    void Rollback();
+
+    // Commits the transaction. Returns false in the case of failures.
+    bool Commit();
+
+    // Returns true if the transaction is still open.
+    bool IsOpen();
+
+   private:
+    std::unique_ptr<sql::Transaction> transaction_;
+  };
+
   explicit TabStateStorageDatabase(const base::FilePath& profile_path);
   ~TabStateStorageDatabase();
   TabStateStorageDatabase(const TabStateStorageDatabase&) = delete;
@@ -39,10 +62,14 @@ class TabStateStorageDatabase {
   bool Initialize();
 
   // Saves a node to the database.
-  bool SaveNode(int id,
+  bool SaveNode(Transaction* transaction,
+                int id,
                 TabStorageType type,
                 std::string payload,
                 std::string children);
+
+  // Creates a transaction.
+  std::unique_ptr<Transaction> CreateTransaction();
 
   // Loads all nodes from the database.
   std::vector<NodeState> LoadAllNodes();
