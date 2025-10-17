@@ -1818,115 +1818,16 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       return true;
     }
     case CSSSelector::kPseudoLang: {
-      // If flag is disabled, extended language ranges will not be parsed.
-      if (!RuntimeEnabledFeatures::CSSLangExtendedRangesEnabled()) {
-        const CSSParserToken& ident = stream.Peek();
-        if (ident.GetType() != kIdentToken) {
-          return false;
-        }
-        selector.SetArgumentList(std::make_unique<Vector<AtomicString>>(
-            Vector<AtomicString>{ident.Value().ToAtomicString()}));
-        stream.ConsumeIncludingWhitespace();
-        if (!stream.AtEnd()) {
-          return false;
-        }
-        output_.push_back(std::move(selector));
-        return true;
-      }
-
-      Vector<AtomicString> langs;
-
-      while (!stream.AtEnd()) {
-        StringBuilder lang_range_builder;
-        const CSSParserToken& first = stream.Peek();
-
-        // Initial subtag: identifier, string, or wildcard.
-        if (first.GetType() == kIdentToken) {
-          const StringView& value = first.Value();
-          // Reject identifiers starting with hyphen.
-          if (value.length() > 0 && value[0] == '-') {
-            return false;
-          }
-          lang_range_builder.Append(stream.Consume().Value());
-        } else if (first.GetType() == kStringToken) {
-          lang_range_builder.Append(stream.Consume().Value());
-        } else if (first.GetType() == kDelimiterToken &&
-                   first.Delimiter() == '*') {
-          lang_range_builder.Append('*');
-          stream.Consume();
-        } else {
-          return false;
-        }
-
-        // Hyphen-separated subtags: identifier, wildcard, or number.
-        while (!stream.AtEnd()) {
-          const CSSParserToken& next = stream.Peek();
-
-          if (next.GetType() == kDelimiterToken && next.Delimiter() == '-') {
-            // Isolated hyphen.
-            lang_range_builder.Append('-');
-            stream.Consume();
-
-            if (stream.AtEnd()) {
-              // Trailing hyphen.
-              return false;
-            }
-            const CSSParserToken& after_hyphen = stream.Peek();
-            if (after_hyphen.GetType() == kIdentToken) {
-              lang_range_builder.Append(stream.Consume().Value());
-            } else if (after_hyphen.GetType() == kStringToken) {
-              lang_range_builder.Append(stream.Consume().Value());
-            } else if (after_hyphen.GetType() == kDelimiterToken &&
-                       after_hyphen.Delimiter() == '*') {
-              lang_range_builder.Append('*');
-              stream.Consume();
-            } else if (after_hyphen.GetType() == kNumberToken &&
-                       after_hyphen.GetNumericValueType() ==
-                           kIntegerValueType &&
-                       after_hyphen.NumericValue() >= 0) {
-              lang_range_builder.AppendNumber(
-                  ClampTo<int>(after_hyphen.NumericValue()));
-              stream.Consume();
-            } else {
-              // Unexpected token after hyphen.
-              return false;
-            }
-          } else if (next.GetType() == kDelimiterToken &&
-                     next.Delimiter() == '*' &&
-                     lang_range_builder.ToString().EndsWith('-')) {
-            // Wildcard after hyphen.
-            lang_range_builder.Append('*');
-            stream.Consume();
-          } else if (next.GetType() == kIdentToken &&
-                     next.Value().length() > 0 && next.Value()[0] == '-') {
-            // Identifier that starts with hyphen.
-            lang_range_builder.Append(stream.Consume().Value());
-          } else {
-            break;
-          }
-        }
-
-        langs.push_back(lang_range_builder.ToAtomicString());
-        stream.ConsumeWhitespace();
-
-        if (!stream.AtEnd()) {
-          if (stream.Peek().GetType() != kCommaToken) {
-            return false;
-          }
-          stream.ConsumeIncludingWhitespace();
-          if (stream.AtEnd()) {
-            // Trailing comma.
-            return false;
-          }
-        }
-      }
-
-      if (langs.empty()) {
+      // FIXME: CSS Selectors Level 4 allows :lang(*-foo)
+      const CSSParserToken& ident = stream.Peek();
+      if (ident.GetType() != kIdentToken) {
         return false;
       }
-
-      selector.SetArgumentList(
-          std::make_unique<Vector<AtomicString>>(std::move(langs)));
+      selector.SetArgument(ident.Value().ToAtomicString());
+      stream.ConsumeIncludingWhitespace();
+      if (!stream.AtEnd()) {
+        return false;
+      }
       output_.push_back(std::move(selector));
       return true;
     }

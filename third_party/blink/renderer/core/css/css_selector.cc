@@ -1126,19 +1126,6 @@ static void SerializeNamespacePrefixIfNeeded(const AtomicString& prefix,
   builder.Append('|');
 }
 
-template <typename ListType>
-static void SerializeIdentifierList(StringBuilder& builder,
-                                    const ListType& list) {
-  bool is_first = true;
-  for (const AtomicString& item : list) {
-    if (!is_first) {
-      builder.Append(", ");
-    }
-    SerializeIdentifier(item, builder);
-    is_first = false;
-  }
-}
-
 // static
 template <bool expand_pseudo_references>
 void CSSSelector::SerializeSelectorList(const CSSSelectorList* selector_list,
@@ -1230,17 +1217,12 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         break;
       }
       case kPseudoDir:
+      case kPseudoLang:
       case kPseudoState:
         builder.Append('(');
         SerializeIdentifier(Argument(), builder);
         builder.Append(')');
         break;
-      case kPseudoLang: {
-        builder.Append('(');
-        SerializeIdentifierList(builder, *ArgumentList());
-        builder.Append(')');
-        break;
-      }
       case kPseudoHas:
       case kPseudoNot:
         DCHECK(SelectorList());
@@ -1278,8 +1260,14 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         NOTREACHED();
       case kPseudoActiveViewTransitionType: {
         CHECK(!IdentList().empty());
-        builder.Append('(');
-        SerializeIdentifierList(builder, IdentList());
+        String separator = "(";
+        for (AtomicString type : IdentList()) {
+          builder.Append(separator);
+          if (separator == "(") {
+            separator = ", ";
+          }
+          SerializeIdentifier(type, builder);
+        }
         builder.Append(')');
         break;
       }
@@ -1476,12 +1464,6 @@ String CSSSelector::SimpleSelectorTextForDebug() const {
 void CSSSelector::SetArgument(const AtomicString& value) {
   CreateRareData();
   data_.rare_data_->argument_ = value;
-}
-
-void CSSSelector::SetArgumentList(
-    std::unique_ptr<Vector<AtomicString>> arguments) {
-  CreateRareData();
-  data_.rare_data_->argument_list_ = std::move(arguments);
 }
 
 void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
