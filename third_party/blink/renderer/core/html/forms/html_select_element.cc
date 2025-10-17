@@ -1913,29 +1913,30 @@ void HTMLSelectElement::UpdateAllSelectedcontents(
 }
 
 // static
-HTMLSelectElement* HTMLSelectElement::NearestAncestorSelectNoNesting(
-    const Element& element) {
-  unsigned num_ancestor_optgroups = 0;
+std::pair<HTMLSelectElement*, HTMLOptGroupElement*>
+HTMLSelectElement::AssociatedSelectAndOptgroup(const Element& element) {
+  HTMLOptGroupElement* ancestor_optgroup = nullptr;
   for (Node& ancestor : NodeTraversal::AncestorsOf(element)) {
     if (IsA<HTMLOptionElement>(ancestor)) {
       // Elements nested inside of an <option> are not associated with the
       // <select>.
-      return nullptr;
-    } else if (IsA<HTMLOptGroupElement>(ancestor)) {
-      if (num_ancestor_optgroups || IsA<HTMLOptGroupElement>(element)) {
+      return std::make_pair(nullptr, ancestor_optgroup);
+    } else if (auto* new_ancestor_optgroup =
+                   DynamicTo<HTMLOptGroupElement>(ancestor)) {
+      if (ancestor_optgroup || IsA<HTMLOptGroupElement>(element)) {
         // Doubly-nested <optgroup>s and their descendants are not <select>
         // associated.
-        return nullptr;
+        return std::make_pair(nullptr, ancestor_optgroup);
       }
-      num_ancestor_optgroups++;
+      ancestor_optgroup = new_ancestor_optgroup;
     } else if (IsA<HTMLHRElement>(ancestor)) {
       // Descendants of <hr> elements are not <select> associated.
-      return nullptr;
+      return std::make_pair(nullptr, ancestor_optgroup);
     } else if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
-      return select;
+      return std::make_pair(select, ancestor_optgroup);
     }
   }
-  return nullptr;
+  return std::make_pair(nullptr, ancestor_optgroup);
 }
 
 FocusableState HTMLSelectElement::SupportsFocus(

@@ -120,32 +120,32 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
 }
 
 HTMLSelectElement* HTMLHRElement::OwnerSelectElement() const {
-    DCHECK_EQ(owner_select_,
-              HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
-    return owner_select_;
+  DCHECK_EQ(owner_select_,
+            HTMLSelectElement::AssociatedSelectAndOptgroup(*this).first);
+  return owner_select_;
 }
 
 Node::InsertionNotificationRequest HTMLHRElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
-    owner_select_ = HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
-    if (owner_select_) {
-      owner_select_->HrInsertedOrRemoved(*this);
-    }
+  owner_select_ = HTMLSelectElement::AssociatedSelectAndOptgroup(*this).first;
+  if (owner_select_) {
+    owner_select_->HrInsertedOrRemoved(*this);
+  }
   return kInsertionDone;
 }
 
 void HTMLHRElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
-    HTMLSelectElement* new_ancestor_select =
-        HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
-    if (owner_select_ != new_ancestor_select) {
-      // When removing, we can only lose an associated <select>
-      CHECK(owner_select_);
-      CHECK(!new_ancestor_select);
-      owner_select_->HrInsertedOrRemoved(*this);
-      owner_select_ = new_ancestor_select;
-    }
+  HTMLSelectElement* new_ancestor_select =
+      HTMLSelectElement::AssociatedSelectAndOptgroup(*this).first;
+  if (owner_select_ != new_ancestor_select) {
+    // When removing, we can only lose an associated <select>
+    CHECK(owner_select_);
+    CHECK(!new_ancestor_select);
+    owner_select_->HrInsertedOrRemoved(*this);
+    owner_select_ = new_ancestor_select;
+  }
 }
 
 void HTMLHRElement::Trace(Visitor* visitor) const {

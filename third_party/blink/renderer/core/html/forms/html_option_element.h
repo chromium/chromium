@@ -79,10 +79,9 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   HTMLDataListElement* OwnerDataListElement() const;
 
-  // OwnerSelectElement gets nearest_ancestor_select_ and SetOwnerSelectElement
-  // assigns to it. See comment on nearest_ancestor_select_.
-  HTMLSelectElement* OwnerSelectElement() const;
-  void SetOwnerSelectElement(HTMLSelectElement*);
+  HTMLSelectElement* OwnerSelectElement() const {
+    return nearest_ancestor_select_;
+  }
 
   String label() const;
   void setLabel(const AtomicString&);
@@ -162,6 +161,11 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // instead of a node traversal. That would probably also require changing
   // HTMLOptionsCollection to support flat tree traversals as well.
   Member<HTMLSelectElement> nearest_ancestor_select_;
+
+  // The closest ancestor <optgroup> in the DOM tree. This is created and
+  // maintained just like nearest_ancestor_select_, but doesn't account for any
+  // <optgroup> element ancestor above nearest_ancestor_select_.
+  Member<HTMLOptGroupElement> nearest_ancestor_optgroup_;
 
   // label_container_ contains the text content of DisplayLabel(). Based on UA
   // style rules, it is rendered when this option is not inside of a select

@@ -131,7 +131,7 @@ Node::InsertionNotificationRequest HTMLOptGroupElement::InsertedInto(
   customizable_select_rendering_ = false;
   HTMLElement::InsertedInto(insertion_point);
 
-  owner_select_ = HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
+  owner_select_ = HTMLSelectElement::AssociatedSelectAndOptgroup(*this).first;
   if (owner_select_) {
     owner_select_->OptGroupInsertedOrRemoved(*this);
   }
@@ -150,15 +150,15 @@ Node::InsertionNotificationRequest HTMLOptGroupElement::InsertedInto(
 }
 
 void HTMLOptGroupElement::RemovedFrom(ContainerNode& insertion_point) {
-    HTMLSelectElement* new_ancestor_select =
-        HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
-    if (owner_select_ != new_ancestor_select) {
-      // When removing, we can only lose an associated <select>
-      CHECK(owner_select_);
-      CHECK(!new_ancestor_select);
-      owner_select_->OptGroupInsertedOrRemoved(*this);
-      owner_select_ = new_ancestor_select;
-    }
+  HTMLSelectElement* new_ancestor_select =
+      HTMLSelectElement::AssociatedSelectAndOptgroup(*this).first;
+  if (owner_select_ != new_ancestor_select) {
+    // When removing, we can only lose an associated <select>
+    CHECK(owner_select_);
+    CHECK(!new_ancestor_select);
+    owner_select_->OptGroupInsertedOrRemoved(*this);
+    owner_select_ = new_ancestor_select;
+  }
 
   HTMLElement::RemovedFrom(insertion_point);
 }
@@ -189,7 +189,7 @@ HTMLSelectElement* HTMLOptGroupElement::OwnerSelectElement(
     bool skip_check) const {
   if (!skip_check) {
     DCHECK_EQ(owner_select_,
-              HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
+              HTMLSelectElement::AssociatedSelectAndOptgroup(*this).first);
   }
   return owner_select_;
 }

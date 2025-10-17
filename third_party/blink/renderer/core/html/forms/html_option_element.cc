@@ -128,6 +128,7 @@ HTMLOptionElement* HTMLOptionElement::CreateForJSConstructor(
 void HTMLOptionElement::Trace(Visitor* visitor) const {
   visitor->Trace(text_observer_);
   visitor->Trace(nearest_ancestor_select_);
+  visitor->Trace(nearest_ancestor_optgroup_);
   visitor->Trace(label_container_);
   HTMLElement::Trace(visitor);
 }
@@ -409,15 +410,6 @@ HTMLDataListElement* HTMLOptionElement::OwnerDataListElement() const {
   return Traversal<HTMLDataListElement>::FirstAncestor(*this);
 }
 
-HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
-  return nearest_ancestor_select_;
-}
-
-void HTMLOptionElement::SetOwnerSelectElement(HTMLSelectElement* select) {
-  DCHECK_EQ(select, HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
-  nearest_ancestor_select_ = select;
-}
-
 String HTMLOptionElement::label() const {
   const AtomicString& label = FastGetAttribute(html_names::kLabelAttr);
   if (!label.IsNull())
@@ -432,9 +424,9 @@ void HTMLOptionElement::setLabel(const AtomicString& label) {
 }
 
 String HTMLOptionElement::TextIndentedToRespectGroupLabel() const {
-  ContainerNode* parent = parentNode();
-  if (parent && IsA<HTMLOptGroupElement>(*parent))
+  if (nearest_ancestor_optgroup_) {
     return StrCat({"    ", DisplayLabel()});
+  }
   return DisplayLabel();
 }
 
@@ -445,16 +437,8 @@ bool HTMLOptionElement::OwnElementDisabled() const {
 bool HTMLOptionElement::IsDisabledFormControl() const {
   if (OwnElementDisabled())
     return true;
-  for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
-    if (IsA<HTMLSelectElement>(ancestor) || IsA<HTMLOptionElement>(ancestor) ||
-        IsA<HTMLHRElement>(ancestor)) {
-      return false;
-    }
-    if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(ancestor)) {
-      return optgroup->IsDisabledFormControl();
-    }
-  }
-  return false;
+  return nearest_ancestor_optgroup_ &&
+         nearest_ancestor_optgroup_->IsDisabledFormControl();
 }
 
 String HTMLOptionElement::DefaultToolTip() const {
@@ -510,13 +494,13 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
   auto return_value = HTMLElement::InsertedInto(insertion_point);
 
   HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
-  HTMLSelectElement* new_ancestor_select =
-      HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
-  SetOwnerSelectElement(new_ancestor_select);
+  std::tie(nearest_ancestor_select_, nearest_ancestor_optgroup_) =
+      HTMLSelectElement::AssociatedSelectAndOptgroup(*this);
 
-  if (new_ancestor_select && new_ancestor_select != old_ancestor_select) {
+  if (nearest_ancestor_select_ &&
+      nearest_ancestor_select_ != old_ancestor_select) {
     CHECK(!old_ancestor_select);
-    new_ancestor_select->OptionInserted(*this, Selected());
+    nearest_ancestor_select_->OptionInserted(*this, Selected());
   }
 
   return return_value;
@@ -525,14 +509,13 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
 void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
 
-  HTMLSelectElement* new_ancestor_select =
-      HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
   HTMLSelectElement* old_ancestor_select = nearest_ancestor_select_;
-  if (new_ancestor_select != old_ancestor_select) {
+  std::tie(nearest_ancestor_select_, nearest_ancestor_optgroup_) =
+      HTMLSelectElement::AssociatedSelectAndOptgroup(*this);
+  if (nearest_ancestor_select_ != old_ancestor_select) {
     // We should only get here if we are being removed from a <select>
-    CHECK(!new_ancestor_select);
+    CHECK(!nearest_ancestor_select_);
     CHECK(old_ancestor_select);
-    SetOwnerSelectElement(new_ancestor_select);
     old_ancestor_select->OptionRemoved(*this);
   }
 }
