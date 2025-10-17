@@ -45,6 +45,8 @@ std::string GetTestSuffix(
   switch (param_info.param) {
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
       return "kAddLocalEntityInstanceInSettings";
+    case AutofillAiAction::kAddServerEntityInstanceInSettings:
+      return "kAddServerEntityInstanceInSettings";
     case AutofillAiAction::kCrowdsourcingVote:
       return "kCrowdsourcingVote";
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
@@ -85,6 +87,7 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kAutofillAiWithDataSchema, {}},
          {features::kAutofillAiWalletVehicleRegistration, {}},
+         {features::kAutofillAiWalletFlightReservation, {}},
          {features::kAutofillAiServerModel,
           {{"autofill_ai_model_use_cache_results", "true"}}}},
         {});
@@ -473,6 +476,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     AutofillAiMayPerformActionTest,
     Values(AutofillAiAction::kAddLocalEntityInstanceInSettings,
+           AutofillAiAction::kAddServerEntityInstanceInSettings,
            AutofillAiAction::kCrowdsourcingVote,
            AutofillAiAction::kEditAndDeleteEntityInstanceInSettings,
            AutofillAiAction::kFilling,
@@ -675,6 +679,71 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
       MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
                                  EntityType(EntityTypeName::kVehicle)));
 }
+
+class AutofillAiMayPerformAddServerEntityInstanceInSettingsTest
+    : public AutofillAiPermissionUtilsTest,
+      public ::testing::WithParamInterface<EntityTypeName> {
+ public:
+  AutofillAiMayPerformAddServerEntityInstanceInSettingsTest() {
+    client().GetSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPayments, true);
+    ON_CALL(sync_service(), GetActiveDataTypes())
+        .WillByDefault(Return(syncer::DataTypeSet{syncer::AUTOFILL_VALUABLE}));
+  }
+};
+
+TEST_P(AutofillAiMayPerformAddServerEntityInstanceInSettingsTest,
+       FalseWhenNotSyncingWallet) {
+  client().GetSyncService()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, false);
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kAddServerEntityInstanceInSettings,
+      EntityType(GetParam())));
+}
+
+TEST_P(AutofillAiMayPerformAddServerEntityInstanceInSettingsTest,
+       FalseWhenAutofillValuableIsNotActive) {
+  ON_CALL(sync_service(), GetActiveDataTypes())
+      .WillByDefault(Return(syncer::DataTypeSet()));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kAddServerEntityInstanceInSettings,
+      EntityType(GetParam())));
+}
+
+TEST_P(AutofillAiMayPerformAddServerEntityInstanceInSettingsTest,
+       FalseWhenEntitiesStoredInServerAreNotEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillAiWalletVehicleRegistration,
+                             features::kAutofillAiWalletFlightReservation});
+  ON_CALL(sync_service(), GetActiveDataTypes())
+      .WillByDefault(Return(syncer::DataTypeSet()));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kAddServerEntityInstanceInSettings,
+      EntityType(GetParam())));
+}
+
+TEST_P(AutofillAiMayPerformAddServerEntityInstanceInSettingsTest,
+       FalseWhenSyncFeatureIsNotEnabled) {
+  sync_service().SetSignedOut();
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kAddServerEntityInstanceInSettings,
+      EntityType(GetParam())));
+}
+
+TEST_P(AutofillAiMayPerformAddServerEntityInstanceInSettingsTest,
+       TrueWhenSyncingWallet) {
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kAddServerEntityInstanceInSettings,
+      EntityType(GetParam())));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AutofillAiMayPerformAddServerEntityInstanceInSettingsTest,
+    testing::Values(EntityTypeName::kFlightReservation,
+                    EntityTypeName::kVehicle));
 
 }  // namespace
 
