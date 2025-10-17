@@ -706,6 +706,7 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
   // When kGlicActorUiNudgeRedesign is enabled, the GlicButton should be to the
   // left of the GlicActorTaskIcon.
   if (features::kGlicActorUiNudgeRedesign.Get()) {
+    glic_actor_task_icon_->SetVisible(true);
     glic_actor_button_container_->ReorderChildView(glic_button_, 0u);
   }
 

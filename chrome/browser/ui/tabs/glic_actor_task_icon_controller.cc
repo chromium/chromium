@@ -103,7 +103,6 @@ void GlicActorTaskIconController::OnStateUpdate(
     tab_strip_action_container_->glic_actor_task_icon()
         ->SetFloatyOpenTooltipText();
   } else {
-    tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
     tab_strip_action_container_->glic_actor_task_icon()
         ->SetFloatyClosedTooltipText();
   }

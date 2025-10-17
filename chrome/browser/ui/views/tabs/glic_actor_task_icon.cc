@@ -9,9 +9,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
@@ -27,7 +29,9 @@ GlicActorTaskIcon::GlicActorTaskIcon(TabStripController* tab_strip_controller,
                           std::u16string(),
                           kGlicActorTaskIconElementId,
                           Edge::kNone,
-                          kScreensaverAutoIcon,
+                          features::kGlicActorUiNudgeRedesign.Get()
+                              ? gfx::VectorIcon::EmptyIcon()
+                              : kScreensaverAutoIcon,
                           /*show_close_button=*/false),
       tab_strip_controller_(tab_strip_controller) {
   SetProperty(views::kElementIdentifierKey, kGlicActorTaskIconElementId);
@@ -51,8 +55,11 @@ gfx::Size GlicActorTaskIcon::CalculatePreferredSize(
   const int height = TabStripControlButton::CalculatePreferredSize(
                          views::SizeBounds(full_width, available_size.height()))
                          .height();
-  // Set collapsed size to a square.
-  const int width = std::lerp(height, full_width, GetWidthFactor());
+  int width = std::lerp(height, full_width, GetWidthFactor());
+  if (features::kGlicActorUiNudgeRedesign.Get()) {
+    // Task Icon shouldn't show for the redesign, making the default width 0.
+    width = std::lerp(0, full_width, GetWidthFactor());
+  }
 
   return gfx::Size(width, height);
 }
