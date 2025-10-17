@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "components/open_from_clipboard/clipboard_recent_content_ios.h"
 
 #import <CommonCrypto/CommonDigest.h>
@@ -28,16 +23,18 @@
 namespace {
 
 // Schemes accepted by the ClipboardRecentContentIOS.
-const char* kAuthorizedSchemes[] = {
-    url::kHttpScheme, url::kHttpsScheme, url::kDataScheme, url::kAboutScheme,
+constexpr std::array<const char*, 4> kAuthorizedSchemes = {
+    url::kHttpScheme,
+    url::kHttpsScheme,
+    url::kDataScheme,
+    url::kAboutScheme,
 };
 
 // Get the list of authorized schemes.
-NSSet<NSString*>* getAuthorizedSchemeList(
-    const std::string& application_scheme) {
+NSSet<NSString*>* GetAuthorizedSchemeList(std::string_view application_scheme) {
   NSMutableSet<NSString*>* schemes = [NSMutableSet set];
-  for (size_t i = 0; i < std::size(kAuthorizedSchemes); ++i) {
-    [schemes addObject:base::SysUTF8ToNSString(kAuthorizedSchemes[i])];
+  for (const char* scheme : kAuthorizedSchemes) {
+    [schemes addObject:base::SysUTF8ToNSString(scheme)];
   }
   if (!application_scheme.empty()) {
     [schemes addObject:base::SysUTF8ToNSString(application_scheme)];
@@ -83,12 +80,12 @@ ClipboardContentType ClipboardContentTypeFromContentType(ContentType type) {
 @end
 
 ClipboardRecentContentIOS::ClipboardRecentContentIOS(
-    const std::string& application_scheme,
+    std::string_view application_scheme,
     NSUserDefaults* group_user_defaults,
     bool only_use_clipboard_async)
     : ClipboardRecentContentIOS([[ClipboardRecentContentImplIOS alloc]
                  initWithMaxAge:MaximumAgeOfClipboard().InSecondsF()
-              authorizedSchemes:getAuthorizedSchemeList(application_scheme)
+              authorizedSchemes:GetAuthorizedSchemeList(application_scheme)
                    userDefaults:group_user_defaults
           onlyUseClipboardAsync:only_use_clipboard_async
                        delegate:[[ClipboardRecentContentDelegateImpl alloc]
