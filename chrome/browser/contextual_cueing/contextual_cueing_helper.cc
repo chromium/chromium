@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/history/core/browser/features.h"
 #include "components/optimization_guide/core/hints/hints_processing_util.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #endif
 
 namespace contextual_cueing {
@@ -314,6 +316,18 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
     recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownWindowShowing);
     return true;
   }
+
+  auto* glic_side_panel_coordinator =
+      tab_interface->GetTabFeatures() &&
+              tab_interface->GetTabFeatures()->glic_side_panel_coordinator()
+          ? tab_interface->GetTabFeatures()->glic_side_panel_coordinator()
+          : nullptr;
+  if (glic_side_panel_coordinator && glic_side_panel_coordinator->IsShowing()) {
+    recorder->set_nudge_decision(
+        NudgeDecision::kNudgeNotShownSidePanelForTabShowing);
+    return true;
+  }
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   return false;

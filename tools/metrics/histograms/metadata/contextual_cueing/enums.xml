@@ -85,6 +85,12 @@ chromium-metrics-reviews@google.com.
     The page was eligible for the nudge, but the user already has a window modal
     UI showing.
   </int>
+  <int value="14"
+      label="The nudge was not shown as the user already has the feature side
+             panel open in the tab">
+    The page was eligible for the nudge, but the user already has the feature
+    side panel open in the tab.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeDecision) -->

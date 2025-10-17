@@ -45,8 +45,11 @@ enum class NudgeDecision {
   kNotEnoughTimeSinceLastNudgeShown = 12,
   // User closes the tab/window as a nudge decision is being computed.
   kNudgeNotShownWindowCallToActionUI = 13,
+  // The page was eligible for the nudge, but the user already has the feature
+  // side panel open in the tab.
+  kNudgeNotShownSidePanelForTabShowing = 14,
   // New values above this line.
-  kMaxValue = kNudgeNotShownWindowCallToActionUI,
+  kMaxValue = kNudgeNotShownSidePanelForTabShowing,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeDecision)
 
