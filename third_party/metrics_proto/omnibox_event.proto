@@ -226,6 +226,9 @@ message OmniboxEventProto {
     // having focus in the composebox.
     NTP_COMPOSEBOX = 31;
 
+    // The composebox in the Lens side panel.
+    LENS_SIDE_PANEL_COMPOSEBOX = 32;
+
     // When adding new classifications, please update the `OmniboxPageContext`
     // variants listed in chromium's
     // tools/metrics/histograms/metadata/omnibox/histograms.xml and also

@@ -10,6 +10,7 @@ option java_package = "org.chromium.components.metrics";
 package private_metrics;
 
 import "dwa/deidentified_web_analytics.proto";
+import "private_metrics/domain_keyed_metrics.proto";
 
 // A header included with each uploaded encrypted report in “associated data”,
 // documenting how the report is encrypted and how the report may be used.
@@ -58,7 +59,7 @@ message EncryptedPrivateMetricReport {
 
   // The type of report. This is used to determine the Sawmill location to store
   // the report post upload.
-  // Next tag: 2
+  // Next tag: 3
   enum ReportType {
     REPORT_TYPE_INVALID = 0;
     DWA = 1;
@@ -92,6 +93,7 @@ message PrivateMetricReport {
     // Content/value of the measurement.
     oneof data {
       dwa.DeidentifiedWebAnalyticsEvent dwa_event = 2;
+      DkmEvent dkm_event = 3;
     }
   }
 

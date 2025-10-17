@@ -130,9 +130,9 @@ message Source {
   // navigation source in a tab.
   optional int64 opener_source_id = 12;
 
-  // Data about each URL associated with the Source within the record's
-  // scope, in the order that the URLs were encountered. Data may include full
-  // or partial redirect chains for main frame navigations.
+  // URL information linked to the Source within the record. Only URLs from main
+  // frames are recorded. For redirects, only the initial and final URLs in the
+  // redirect chain are recorded, in that order.
   repeated UrlInfo urls = 8;
 
   // Data about the URL of the Document, copied from the Source message whose
