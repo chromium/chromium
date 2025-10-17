@@ -295,8 +295,8 @@ bool DrawVideoFrameIntoResourceProvider(
   params.reinterpret_as_srgb = reinterpret_video_as_srgb;
   resource_provider->ExternalCanvasDrawHelper(
       [&](MemoryManagedPaintCanvas& canvas) {
-        video_renderer->Paint(frame.get(), &canvas, media_flags, params,
-                              raster_context_provider);
+        video_renderer->PaintOOPR(frame.get(), &canvas, media_flags, params,
+                                  raster_context_provider);
       });
   return true;
 }
