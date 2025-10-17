@@ -1555,15 +1555,18 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kTime:
       // No role description on Android.
       break;
+
+    // Roles not used on Android.
+    case ax::mojom::Role::kListGrid:
+    case ax::mojom::Role::kMenuItemSeparator:
+      NOTREACHED();
+
     case ax::mojom::Role::kFigure:
       // Default is IDS_AX_ROLE_FIGURE.
       return GetLocalizedString(IDS_AX_ROLE_GRAPHIC);
     case ax::mojom::Role::kHeader:
       // Default is IDS_AX_ROLE_HEADER.
       return GetLocalizedString(IDS_AX_ROLE_BANNER);
-    case ax::mojom::Role::kListGrid:
-      // List grid is not used on Android.
-      NOTREACHED();
     case ax::mojom::Role::kMenuItemCheckBox:
       // Default is no special role description.
       return GetLocalizedString(IDS_AX_ROLE_CHECK_BOX);
