@@ -41,6 +41,9 @@
 #include "content/public/common/content_features.h"
 #include "media/audio/audio_features.h"
 #include "media/base/media_switches.h"
+#include "gpu/config/gpu_finch_features.h"
+#include "ui/gl/gl_features.h"
+#include "ui/gl/gl_switches.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -237,6 +240,14 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(chrome::android::kAndroidBookmarkBar);
   feature_overrides.EnableFeature(chrome::android::kAndroidAppearanceSettings);
   feature_overrides.EnableFeature(chrome::android::kTopControlsRefactor);
+
+  // Enable ANGLE/Vulkan features.
+  // TODO (crbug.com//376280554): Enable these features with runtime checks
+  // instead.
+  feature_overrides.EnableFeature(::features::kSkipVulkanBlocklist);
+  feature_overrides.EnableFeature(::features::kDefaultANGLEVulkan);
+  feature_overrides.EnableFeature(::features::kVulkanFromANGLE);
+  feature_overrides.EnableFeature(::features::kDefaultPassthroughCommandDecoder);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
