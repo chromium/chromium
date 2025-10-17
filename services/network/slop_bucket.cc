@@ -23,6 +23,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/system/sys_info.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
@@ -283,27 +284,31 @@ class SlopBucket::Manager : public base::MemoryPressureListener {
     return configuration_.enabled_for_cache_response();
   }
 
-  scoped_refptr<ChunkIOBuffer> RequestChunk(size_t existing_chunks) {
+  base::expected<scoped_refptr<ChunkIOBuffer>, ChunkAllocationFailedReason>
+  RequestChunk(size_t existing_chunks) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (disabled()) {
       DVLOG(1) << "Not allocating chunk because disabled";
-      return nullptr;
+      return base::unexpected(ChunkAllocationFailedReason::kDisabled);
     }
 
     if (existing_chunks == configuration_.max_chunks_per_request()) {
       DVLOG(1)
           << "Not allocating chunk because the request max has been reached";
-      return nullptr;
+      return base::unexpected(
+          ChunkAllocationFailedReason::kMaxChunksPerRequest);
     }
 
-    base::HeapArray<uint8_t> chunk = GetChunk();
-    if (!chunk.data()) {
-      return nullptr;
+    base::expected<base::HeapArray<uint8_t>, ChunkAllocationFailedReason>
+        maybe_chunk = GetChunk();
+    if (!maybe_chunk.has_value()) {
+      return base::unexpected(maybe_chunk.error());
     }
 
     DVLOG(1) << "Acquired chunk";
-
-    return base::MakeRefCounted<ChunkIOBuffer>(std::move(chunk));
+    CHECK(maybe_chunk->data());
+    return base::ok(
+        base::MakeRefCounted<ChunkIOBuffer>(std::move(*maybe_chunk)));
   }
 
   // Returns a chunk to the pool. This method may be called on background
@@ -363,8 +368,9 @@ class SlopBucket::Manager : public base::MemoryPressureListener {
   }
 
   // Encapsulates the locked section of RequestChunk().
-  base::HeapArray<uint8_t> GetChunk()
-      VALID_CONTEXT_REQUIRED(sequence_checker_) {
+
+  base::expected<base::HeapArray<uint8_t>, ChunkAllocationFailedReason>
+  GetChunk() VALID_CONTEXT_REQUIRED(sequence_checker_) {
     base::HeapArray<uint8_t> chunk;
     base::ReleasableAutoLock auto_lock(&lock_);
     if (total_chunks_ == configuration_.max_chunks_total()) {
@@ -372,7 +378,7 @@ class SlopBucket::Manager : public base::MemoryPressureListener {
       auto_lock.Release();
       DVLOG(1)
           << "Not allocating chunk because the global max has been reached";
-      return base::HeapArray<uint8_t>();
+      return base::unexpected(ChunkAllocationFailedReason::kMaxChunksGlobal);
     }
 
     if (!free_pool_.empty()) {
@@ -387,7 +393,7 @@ class SlopBucket::Manager : public base::MemoryPressureListener {
     ++total_chunks_;
     CHECK_LE(total_chunks_ + free_pool_.size(),
              configuration_.max_chunks_total());
-    return chunk;
+    return base::ok(std::move(chunk));
   }
 
   // Responds to a memory pressure notification by emptying the free pool and
@@ -550,6 +556,13 @@ SlopBucket::~SlopBucket() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramCounts100("NetworkService.SlopBucket.PeakChunksAllocated",
                               peak_chunks_allocated_);
+  ChunkAllocationFailedReason chunk_allocation_failed_reason =
+      first_chunk_allocation_failed_reason_
+          ? *first_chunk_allocation_failed_reason_
+          : ChunkAllocationFailedReason::kOK;
+  base::UmaHistogramEnumeration(
+      "NetworkService.SlopBucket.ChunkAllocationFailedReason",
+      chunk_allocation_failed_reason);
 }
 
 std::optional<int> SlopBucket::AttemptRead() {
@@ -638,12 +651,15 @@ size_t SlopBucket::ConsumeSlowPath(base::span<uint8_t> buffer) {
 }
 
 bool SlopBucket::TryToAllocateChunk() {
-  scoped_refptr<ChunkIOBuffer> new_chunk =
-      Manager::Get().RequestChunk(chunks_.size());
-  if (!new_chunk) {
+  base::expected<scoped_refptr<ChunkIOBuffer>, ChunkAllocationFailedReason>
+      maybe_new_chunk = Manager::Get().RequestChunk(chunks_.size());
+  if (!maybe_new_chunk.has_value()) {
+    if (!first_chunk_allocation_failed_reason_) {
+      first_chunk_allocation_failed_reason_ = maybe_new_chunk.error();
+    }
     return false;
   }
-  chunks_.push(std::move(new_chunk));
+  chunks_.push(std::move(*maybe_new_chunk));
   if (chunks_.size() > peak_chunks_allocated_) {
     peak_chunks_allocated_ = chunks_.size();
   }

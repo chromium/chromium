@@ -5278,9 +5278,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.SlopBucket.ChunkAllocationFailedReason"
+    enum="SlopBucketChunkAllocationFailedReason" expires_after="2026-02-22">
+  <owner>ricea@chromium.org</owner>
+  <owner>yoichio@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The first reason why the chunk allocation for a request was blocked.
+    Recorded once per request that made use of SlopBucket, when it is completed.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.SlopBucket.DisabledReason"
     enum="SlopBucketDisabledReason" expires_after="2026-02-22">
   <owner>ricea@chromium.org</owner>
+  <owner>yoichio@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The reason why slop bucket is disabled, if it has been disabled. Is not
@@ -5296,6 +5308,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NetworkService.SlopBucket.PeakChunksAllocated" units="chunks"
     expires_after="2026-02-22">
   <owner>ricea@chromium.org</owner>
+  <owner>yoichio@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The peak number of chunks allocated for a request. Recorded once per request

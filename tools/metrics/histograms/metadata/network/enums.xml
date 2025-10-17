@@ -2299,6 +2299,17 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Error Wrong State"/>
 </enum>
 
+<!-- LINT.IfChange(SlopBucketChunkAllocationFailedReason) -->
+
+<enum name="SlopBucketChunkAllocationFailedReason">
+  <int value="0" label="OK"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="MaxChunksPerRequest"/>
+  <int value="3" label="MaxChunksGlobal"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/slop_bucket.h:ChunkAllocationFailedReason) -->
+
 <enum name="SlopBucketDisabledReason">
   <int value="0" label="Enabled"/>
   <int value="1" label="LowEnd"/>
