@@ -979,6 +979,43 @@ void LayerTreeHost::AddViewTransitionRequest(
   if (auto callback = request->TakeFinishedCallback()) {
     view_transition_callbacks_[request->sequence_id()] = std::move(callback);
   }
+  if (request->maybe_cross_frame_sink() &&
+      features::ShouldAckCOREarlyForViewTransition()) {
+    auto request_token = request->token();
+    auto request_type = request->type();
+    if (request_type == viz::CompositorFrameTransitionDirective::Type::kSave &&
+        !view_transition_needs_new_lsid_.contains(request_token) &&
+        view_transition_needs_new_lsid_.size() <
+            view_transition_needs_new_lsid_max_size_) {
+      view_transition_needs_new_lsid_[request_token] = true;
+    }
+    if (request_type ==
+            viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer &&
+        view_transition_needs_new_lsid_.contains(request_token)) {
+      // For cross frame-sink view transitions, Animate directive from new
+      // document should come to a different Surface than that used for Save
+      // directive for old document, to allow viz to fulfill previous Surface's
+      // CopyOutputRequests in the same frame.
+      if (view_transition_needs_new_lsid_[request_token]) {
+        RequestNewLocalSurfaceId();
+      }
+      // We can be erase entry from the map as it is no longer needed.
+      view_transition_needs_new_lsid_.erase(request_token);
+    }
+    CHECK_NE(view_transition_needs_new_lsid_.size(),
+             view_transition_needs_new_lsid_max_size_);
+    // Clear this map if it has outgrown its size, removing all outdated
+    // ViewTransition requests that were unfulfilled.
+    if (view_transition_needs_new_lsid_.size() ==
+        view_transition_needs_new_lsid_max_size_) {
+      // This can have an effect on last ongoing ViewTransition request which
+      // was added to map on Save but does not have new LSId on Animate as it is
+      // cleared here (if map was filled already with 99 stale ViewTransitions),
+      // but better to clear here than future ViewTransition Animations having
+      // unfulfilled CORs due to same LocalSurfaceId.
+      view_transition_needs_new_lsid_.clear();
+    }
+  }
   pending_commit_state()->view_transition_requests.push_back(
       std::move(request));
   SetNeedsCommit();

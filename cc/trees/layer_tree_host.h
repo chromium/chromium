@@ -1147,6 +1147,14 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   EventsMetricsManager events_metrics_manager_;
 
+  // A map from ViewTransition tokens to whether a new LocalSurfaceId is
+  // needed for this ViewTransitionRequest.
+  base::flat_map<blink::ViewTransitionToken, bool>
+      view_transition_needs_new_lsid_;
+  // Make sure there's no unbounded growth of above map, if Animate never
+  // happens after Save.
+  const uint32_t view_transition_needs_new_lsid_max_size_ = 100;
+
   // A list of callbacks that need to be invoked when they are processed.
   base::flat_map<uint32_t, ViewTransitionRequest::ViewTransitionCaptureCallback>
       view_transition_callbacks_;
