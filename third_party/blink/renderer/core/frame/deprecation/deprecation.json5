@@ -577,6 +577,15 @@
       milestone: 96,
     },
     {
+      name: "WebBluetoothRemoteCharacteristicWriteValue",
+      message: "`BluetoothRemoteGATTCharacteristic.writeValue()` is deprecated. Use `writeValueWithResponse()` or `writeValueWithoutResponse()` instead.",
+      translation_note: "This warning occurs when the deprecated `BluetoothRemoteGATTCharacteristic.writeValue()` method is used. Developers should use `writeValueWithResponse()` or `writeValueWithoutResponse()` instead.",
+      web_features: [
+        "kWebBluetoothRemoteCharacteristicWriteValue",
+      ],
+      chrome_status_feature: 5088568590598144,
+    },
+    {
       name: "XHRJSONEncodingDetection",
       message: "UTF-16 is not supported by response json in `XMLHttpRequest`",
       translation_note: "Warning displayed to developers that they are using `XMLHttpRequest` API in a way that they expect an unsupported character encoding `UTF-16` could be used in the server reply.",
