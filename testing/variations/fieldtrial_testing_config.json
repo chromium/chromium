@@ -6826,6 +6826,38 @@
             ]
         }
     ],
+    "CompensateGestureDetectorTimeouts": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "compensate_gesture_timeouts_for_long_delayed_sequences": "false"
+                    },
+                    "enable_features": [
+                        "CompensateGestureDetectorTimeouts"
+                    ]
+                },
+                {
+                    "name": "EnabledWithLongDelayedSequences",
+                    "params": {
+                        "compensate_gesture_timeouts_for_long_delayed_sequences": "true"
+                    },
+                    "enable_features": [
+                        "CompensateGestureDetectorTimeouts"
+                    ]
+                }
+            ]
+        }
+    ],
     "ComposeAXSnapshot": [
         {
             "platforms": [
