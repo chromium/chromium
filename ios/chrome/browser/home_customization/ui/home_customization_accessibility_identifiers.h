@@ -11,6 +11,10 @@
 // view.
 extern NSString* const kBackgroundPickerCellAccessibilityIdentifier;
 
+// A11y identifier for the gallery picker view.
+extern NSString* const
+    kHomeCustomizationGalleryPickerViewAccessibilityIdentifier;
+
 // A11y identifier for the main customization menu view.
 extern NSString* const kHomeCustomizationMainViewAccessibilityIdentifier;
 

@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
@@ -123,6 +124,8 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                        collectionViewLayout:layout];
   _collectionView.delegate = self;
+  _collectionView.accessibilityIdentifier =
+      kHomeCustomizationGalleryPickerViewAccessibilityIdentifier;
 
   _diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
       initWithCollectionView:_collectionView
@@ -139,8 +142,11 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
         return [weakSelf configuredHeaderForIndexPath:indexPath];
       };
 
-  [_diffableDataSource applySnapshot:[self skeletonSnapshot]
-                animatingDifferences:NO];
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>*
+      initialSnapshot =
+          (_backgroundCollectionConfigurations) ? [self dataSnapshot]
+                                                : [self skeletonSnapshot];
+  [_diffableDataSource applySnapshot:initialSnapshot animatingDifferences:NO];
 
   _loadingTimer =
       [NSTimer scheduledTimerWithTimeInterval:(kAnimationIntervalSeconds)

@@ -172,8 +172,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that a custom gallery background can be set.
-// TODO(crbug.com/450042069): Test is causing almost deterministic failures.
-- (void)DISABLED_testCustomizeGalleryBackground {
+- (void)testCustomizeGalleryBackground {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
@@ -190,14 +189,15 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
               IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESET_GALLERY_TITLE))]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
-                                          kCollectionTitle))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForMatcher:grey_text(base::SysUTF8ToNSString(kCollectionTitle))];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(
-                                   base::SysUTF8ToNSString(kImageAttribution))]
-      performAction:grey_tap()];
+  id<GREYMatcher> cellMatcher = grey_allOf(
+      grey_accessibilityLabel(base::SysUTF8ToNSString(kImageAttribution)),
+      grey_ancestor(grey_accessibilityID(
+          kHomeCustomizationGalleryPickerViewAccessibilityIdentifier)),
+      nil);
+  [[EarlGrey selectElementWithMatcher:cellMatcher] performAction:grey_tap()];
 
   EXPECT_TRUE([NewTabPageAppInterface hasBackgroundImage]);
 

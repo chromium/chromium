@@ -7,6 +7,9 @@
 NSString* const kBackgroundPickerCellAccessibilityIdentifier =
     @"kBackgroundPickerCellAccessibilityIdentifier";
 
+NSString* const kHomeCustomizationGalleryPickerViewAccessibilityIdentifier =
+    @"kHomeCustomizationGalleryPickerViewAccessibilityIdentifier";
+
 NSString* const kHomeCustomizationMainViewAccessibilityIdentifier =
     @"kHomeCustomizationMainViewAccessibilityIdentifier";
 
