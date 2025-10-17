@@ -276,7 +276,6 @@ browser_exposed_mojom_targets = [
   "//services/tracing/public/mojom:mojom",
   "//services/video_capture/public/mojom:constants",
   "//services/video_capture/public/mojom:mojom",
-  "//services/video_effects/public/mojom:mojom",
   "//services/viz/privileged/mojom:mojom",
   "//services/viz/privileged/mojom/compositing:compositing",
   "//services/viz/privileged/mojom/gl:gl",

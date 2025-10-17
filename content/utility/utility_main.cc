@@ -37,7 +37,6 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/file_descriptor_store.h"
@@ -83,10 +82,6 @@
 #endif
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS) && BUILDFLAG(IS_LINUX)
-#include "services/video_effects/video_effects_sandbox_hook_linux.h"  // nogncheck
-#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/services/ime/ime_sandbox_hook.h"
@@ -345,10 +340,6 @@ int UtilityMain(MainFunctionParams parameters) {
 #endif
 #if BUILDFLAG(IS_LINUX)
     case sandbox::mojom::Sandbox::kVideoEffects:
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      pre_sandbox_hook =
-          base::BindOnce(&video_effects::VideoEffectsPreSandboxHook);
-#endif
       break;
 #endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

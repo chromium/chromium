@@ -37,12 +37,6 @@
 #include "services/tracing/tracing_service.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "services/video_capture/video_capture_service_impl.h"
-#include "services/video_effects/public/cpp/buildflags.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_service.mojom.h"  // nogncheck
-#include "services/video_effects/video_effects_service_impl.h"  // nogncheck
-#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/mach_logging.h"
@@ -337,18 +331,6 @@ auto RunVideoCapture(
   return service;
 }
 
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-auto RunVideoEffects(
-    mojo::PendingReceiver<video_effects::mojom::VideoEffectsService> receiver) {
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
-    return std::make_unique<video_effects::VideoEffectsServiceImpl>(
-        std::move(receiver), UtilityThread::Get()->GetIOTaskRunner());
-  }
-
-  return std::unique_ptr<video_effects::VideoEffectsServiceImpl>{};
-}
-#endif
-
 auto RunOnDeviceModel(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
         receiver) {
@@ -414,10 +396,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunStorageService);
   services.Add(RunTracing);
   services.Add(RunVideoCapture);
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  services.Add(RunVideoEffects);
-#endif
 
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   services.Add(RunOOPVideoDecoderFactoryProcessService);

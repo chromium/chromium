@@ -5,7 +5,6 @@
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//services/screen_ai/buildflags/features.gni")
-import("//services/video_effects/args.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -125,10 +124,6 @@ test("services_unittests") {
       "//services/passage_embeddings:tests",
       "//services/video_capture:tests",
     ]
-  }
-
-  if (enable_video_effects) {
-    deps += [ "//services/video_effects:tests" ]
   }
 
   if (is_fuchsia) {
