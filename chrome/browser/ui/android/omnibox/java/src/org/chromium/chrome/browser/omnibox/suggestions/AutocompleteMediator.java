@@ -115,6 +115,8 @@ class AutocompleteMediator
     private final boolean mForcePhoneStyleOmnibox;
     private final Callback<@ControlsPosition Integer> mToolbarPositionChangedCallback =
             this::onToolbarPositionChanged;
+    private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
+            this::onAutocompleteRequestTypeChanged;
 
     private @Nullable AutocompleteController mAutocomplete;
     private @Nullable AutocompleteResult mAutocompleteResult;
@@ -227,6 +229,10 @@ class AutocompleteMediator
 
         mAnimationDriver = initializeAnimationDriver();
 
+        mNavigationAttachmentsCoordinator
+                .getAutocompleteRequestTypeSupplier()
+                .addSyncObserver(mOnAutocompleteRequestTypeChanged);
+
         mDataProvider
                 .getToolbarPositionSupplier()
                 .addObserver(mToolbarPositionChangedCallback, NotifyBehavior.NOTIFY_ON_ADD);
@@ -266,6 +272,9 @@ class AutocompleteMediator
         if (mNativeInitialized) {
             OmniboxActionFactoryImpl.get().destroyNativeFactory();
         }
+        mNavigationAttachmentsCoordinator
+                .getAutocompleteRequestTypeSupplier()
+                .removeObserver(mOnAutocompleteRequestTypeChanged);
         mHandler.removeCallbacksAndMessages(null);
         mDropdownViewInfoListBuilder.destroy();
         mLifecycleDispatcher.unregister(this);
@@ -921,6 +930,15 @@ class AutocompleteMediator
 
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);
         measureSuggestionRequestToUiModelTime(isFinal);
+    }
+
+    public void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
+        if (mOmniboxFocused) {
+            mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(type));
+            onTextChanged(
+                    mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                    /* isOnFocusContext= */ false);
+        }
     }
 
     /**

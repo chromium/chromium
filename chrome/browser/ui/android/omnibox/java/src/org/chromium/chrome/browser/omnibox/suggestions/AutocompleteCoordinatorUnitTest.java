@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -53,7 +54,10 @@ public class AutocompleteCoordinatorUnitTest {
     private Context mContext;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private final ObservableSupplierImpl<@ControlsPosition Integer> mControlsPositionSupplier =
-            new ObservableSupplierImpl<>();
+            new ObservableSupplierImpl<>(ControlsPosition.TOP);
+    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
+            mAutocompleteRequestTypeSupplier =
+                    new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
 
     @Mock private AutocompleteDelegate mAutocompleteDelegate;
     @Mock private OmniboxSuggestionsDropdownEmbedder mDropdownEmbedder;
@@ -79,10 +83,16 @@ public class AutocompleteCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        when(mParentView.getContext()).thenReturn(mContext);
-        mControlsPositionSupplier.set(ControlsPosition.TOP);
-        when(mLocationBarDataProvider.getToolbarPositionSupplier())
+
+        lenient().when(mParentView.getContext()).thenReturn(mContext);
+        lenient()
+                .when(mLocationBarDataProvider.getToolbarPositionSupplier())
                 .thenReturn(mControlsPositionSupplier);
+
+        lenient()
+                .doReturn(mAutocompleteRequestTypeSupplier)
+                .when(mNavigationAttachmentsCoordinator)
+                .getAutocompleteRequestTypeSupplier();
 
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(

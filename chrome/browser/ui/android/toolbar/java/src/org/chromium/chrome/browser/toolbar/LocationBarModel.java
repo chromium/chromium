@@ -627,6 +627,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public int getPageClassification(@AutocompleteRequestType int type) {
+        if (type == AutocompleteRequestType.AI_MODE) {
+            return PageClassification.NTP_COMPOSEBOX_VALUE;
+        }
+
         if (mNativeLocationBarModelAndroid == 0) return PageClassification.INVALID_SPEC_VALUE;
 
         return LocationBarModelJni.get()
