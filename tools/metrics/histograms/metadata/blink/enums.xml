@@ -6332,6 +6332,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5700" label="CoopAccessViolationReportBodyToJSON"/>
   <int value="5701" label="TestReportBodyToJSON"/>
   <int value="5702" label="SpeculationRulesPrerenderUntilScript"/>
+  <int value="5703" label="ClipboardChangeEventChangeIdAttribute"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
