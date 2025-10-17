@@ -9448,9 +9448,10 @@
     "name": "spotlight-never-retain-index",
     "owners": [
       "bling-flags@google.com",
-      "stkhapugin@chromium.org"
+      "stkhapugin@chromium.org",
+      "ameurhosni@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "start-surface",
