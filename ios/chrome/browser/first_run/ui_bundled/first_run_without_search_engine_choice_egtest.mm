@@ -707,14 +707,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                                         kHistorySyncEqualWeightedFromCapability)
                          forHistogram:@"Signin.SyncButtons.Shown"],
       @"Failed to record History Sync button type histogram.");
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:static_cast<int>(
-                                          signin_metrics::SyncButtonClicked::
-                                              kHistorySyncOptInEqualWeighted)
-                         forHistogram:@"Signin.SyncButtons.Clicked"],
-      @"Failed to record History Sync buttons clicked histogram.");
 }
 
 // Tests that the History Sync Opt-In screen will not have equally weighted
@@ -765,15 +757,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                                               kHistorySyncNotEqualWeighted)
                          forHistogram:@"Signin.SyncButtons.Shown"],
       @"Failed to record History Sync button type histogram.");
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:
-                                static_cast<int>(
-                                    signin_metrics::SyncButtonClicked::
-                                        kHistorySyncCancelNotEqualWeighted)
-                         forHistogram:@"Signin.SyncButtons.Clicked"],
-      @"Failed to record History Sync buttons clicked histogram.");
 }
 
 // Tests that the History Sync Opt-In screen will have equally weighted button
@@ -846,14 +829,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                                         kHistorySyncEqualWeightedFromDeadline)
                          forHistogram:@"Signin.SyncButtons.Shown"],
       @"Failed to record History Sync button type histogram.");
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:static_cast<int>(
-                                          signin_metrics::SyncButtonClicked::
-                                              kHistorySyncOptInEqualWeighted)
-                         forHistogram:@"Signin.SyncButtons.Clicked"],
-      @"Failed to record History Sync buttons clicked histogram.");
 }
 
 // Tests that the History Sync Opt-In screen for users with unknown minor mode
@@ -908,14 +883,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                                         kHistorySyncEqualWeightedFromDeadline)
                          forHistogram:@"Signin.SyncButtons.Shown"],
       @"Failed to record History Sync button type histogram.");
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:static_cast<int>(
-                                          signin_metrics::SyncButtonClicked::
-                                              kHistorySyncCancelEqualWeighted)
-                         forHistogram:@"Signin.SyncButtons.Clicked"],
-      @"Failed to record History Sync buttons clicked histogram.");
 }
 
 #pragma mark - Sync UI Disabled
@@ -1033,14 +1000,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                                               kHistorySyncNotEqualWeighted)
                          forHistogram:@"Signin.SyncButtons.Shown"],
       @"Failed to record History Sync button type histogram.");
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:static_cast<int>(
-                                          signin_metrics::SyncButtonClicked::
-                                              kHistorySyncOptInNotEqualWeighted)
-                         forHistogram:@"Signin.SyncButtons.Clicked"],
-      @"Failed to record History Sync buttons clicked histogram.");
 }
 
 // Tests that the correct subtitle is shown in the FRE sign-in screen if the

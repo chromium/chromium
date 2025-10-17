@@ -44,7 +44,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -350,20 +349,11 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     /** Implements {@link HistorySyncDelegate} */
     @Override
     public void recordHistorySyncOptIn(
-            @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonClicked) {
-        switch (syncButtonClicked) {
-            case SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED:
-            case SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED:
-                SigninMetricsUtils.logHistorySyncAcceptButtonClicked(
-                        accessPoint, syncButtonClicked);
-                break;
-            case SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED:
-            case SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED:
-                SigninMetricsUtils.logHistorySyncDeclineButtonClicked(
-                        accessPoint, syncButtonClicked);
-                break;
-            default:
-                throw new IllegalStateException("Unrecognized sync button type");
+            @SigninAccessPoint int accessPoint, boolean isHistorySyncAccepted) {
+        if (isHistorySyncAccepted) {
+            SigninMetricsUtils.logHistorySyncAcceptButtonClicked(accessPoint);
+        } else {
+            SigninMetricsUtils.logHistorySyncDeclineButtonClicked(accessPoint);
         }
     }
 

@@ -53,7 +53,6 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
@@ -159,9 +158,7 @@ public class HistorySyncTest {
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT,
-                        SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
         verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
         verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
     }
@@ -182,9 +179,7 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT,
-                        SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
@@ -206,8 +201,7 @@ public class HistorySyncTest {
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT, SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
         verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
     }
 
@@ -227,8 +221,7 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT, SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
@@ -245,9 +238,7 @@ public class HistorySyncTest {
 
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT,
-                        SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock, atLeastOnce())
                 .dismissHistorySync(/* isHistorySyncAccepted= */ false);
         CriteriaHelper.pollUiThread(

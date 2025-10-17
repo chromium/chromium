@@ -75,7 +75,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -374,9 +373,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Signin.HistorySyncOptIn.Completed", mSigninAccessPoint)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
                         .expectNoRecords(
                                 "Signin.SignIn.Timestamps.Fullscreen.ManagementStatusLoaded")
                         .expectNoRecords("Signin.SignIn.Timestamps.Fullscreen.SigninCompleted")
@@ -403,9 +399,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Signin.HistorySyncOptIn.Completed", mSigninAccessPoint)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
                         .build();
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
@@ -429,9 +422,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Signin.HistorySyncOptIn.Declined", mSigninAccessPoint)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
                         .build();
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
@@ -459,9 +449,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Signin.HistorySyncOptIn.Declined", mSigninAccessPoint)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
                         .build();
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);

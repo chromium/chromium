@@ -74,7 +74,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -147,13 +146,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_requiredHistoryOptIn() {
-        HistogramWatcher historySyncHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", mSigninAccessPoint)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
-                        .build();
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
         launchActivity(
@@ -163,19 +155,11 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         verifyCollapsedBottomSheetAndSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
-        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testWithAadcMinorAccount_requiredHistoryOptIn() {
-        HistogramWatcher historySyncHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", mSigninAccessPoint)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
-                        .build();
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
         launchActivity(
@@ -185,7 +169,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         verifyCollapsedBottomSheetAndSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
-        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test
@@ -281,13 +264,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_optOutHistorySync() {
-        HistogramWatcher historySyncHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", mSigninAccessPoint)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
-                        .build();
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
         launchActivity(
@@ -322,19 +298,11 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
-        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testWithAadcMinorAccount_signIn_optOutHistorySync() {
-        HistogramWatcher historySyncHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", mSigninAccessPoint)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
-                        .build();
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
         launchActivity(
@@ -354,7 +322,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
-        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test

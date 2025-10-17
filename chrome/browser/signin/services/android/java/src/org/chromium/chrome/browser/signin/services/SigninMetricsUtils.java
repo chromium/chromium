@@ -14,7 +14,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninPromoAction;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 
 import java.lang.annotation.Retention;
@@ -87,23 +86,14 @@ public class SigninMetricsUtils {
                 "Signin.AddAccountState", state, State.NUM_STATES);
     }
 
-    public static void logHistorySyncAcceptButtonClicked(
-            @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType) {
+    public static void logHistorySyncAcceptButtonClicked(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.HistorySyncOptIn.Completed", accessPoint, SigninAccessPoint.MAX_VALUE);
-        recordButtonTypeClicked(syncButtonType);
     }
 
-    public static void logHistorySyncDeclineButtonClicked(
-            @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType) {
+    public static void logHistorySyncDeclineButtonClicked(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.HistorySyncOptIn.Declined", accessPoint, SigninAccessPoint.MAX_VALUE);
-        recordButtonTypeClicked(syncButtonType);
-    }
-
-    public static void recordButtonTypeClicked(@SyncButtonClicked int type) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SyncButtons.Clicked", type, SyncButtonClicked.MAX_VALUE);
     }
 
     public static void recordButtonsShown(@SyncButtonsType int type) {

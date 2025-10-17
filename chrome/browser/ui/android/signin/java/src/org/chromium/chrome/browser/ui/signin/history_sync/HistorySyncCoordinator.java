@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 @NullMarked
@@ -34,7 +33,7 @@ public class HistorySyncCoordinator {
         void dismissHistorySync(boolean isHistorySyncAccepted);
 
         void recordHistorySyncOptIn(
-                @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType);
+                @SigninAccessPoint int accessPoint, boolean isHistorySyncAccepted);
     }
 
     private final Activity mActivity;

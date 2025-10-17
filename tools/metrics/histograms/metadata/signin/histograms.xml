@@ -3426,31 +3426,9 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SyncButtons.Clicked" enum="SyncButtonClicked"
-    expires_after="2026-02-16">
-  <owner>tju@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the flavor of the button clicked on sync or history sync opt in
-    screens, including buttons function (accept or decline) and appearance
-    (equal or not-equal weighted).
-
-    Recorded when the user clicks on the button.
-
-    Note: the metric doesn't record when the user dismissed the screen in
-    alternative way (eg. with Esc key or by swiping the application on mobile
-    device).
-
-    Warning: Buckets related to the History Sync Screen are recorded incorrectly
-    on Android pre-M128, see https://crbug.com/352495951.
-
-    Pre-stable M132 and M133 Desktop binaries have missing data.
-  </summary>
-</histogram>
-
 <histogram name="Signin.SyncButtons.Shown" enum="SyncButtonsType"
     expires_after="2026-01-18">
-  <owner>tju@chromium.org</owner>
+  <owner>tju@google.com</owner>
   <owner>chrome-kids-team@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -3459,18 +3437,7 @@ kept as long as profile signout is possible -->
 
     Note: On some platforms (eg. Android) that allow selecting account for the
     consent, this is recorded each time that the account is changed and the
-    buttons have to be redrawn. If you want to see what kind of buttons were
-    ultimately presented to the user before they selected one of the sync
-    consent screen options, sum up Signin.SyncButtons.Clicked entries from the
-    same appearance category, for example use the following formula:
-
-    &quot;Signin.SyncButtons.Clicked::0 + Signin.SyncButtons.Clicked::1 +
-    Signin.SyncButtons.Clicked::2&quot;
-
-    to see the count of equally weighted buttons that resulted in some user
-    decision.
-
-    Pre-stable M132 and M133 Desktop binaries have missing data.
+    buttons have to be redrawn.
   </summary>
 </histogram>
 

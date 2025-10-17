@@ -68,7 +68,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -307,9 +306,6 @@ public class FirstRunActivitySigninAndSyncTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.HistorySyncOptIn.Completed", SigninAccessPoint.START_PAGE)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
                         .build();
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
@@ -335,9 +331,6 @@ public class FirstRunActivitySigninAndSyncTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.HistorySyncOptIn.Completed", SigninAccessPoint.START_PAGE)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
                         .build();
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
@@ -363,9 +356,6 @@ public class FirstRunActivitySigninAndSyncTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.HistorySyncOptIn.Declined", SigninAccessPoint.START_PAGE)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
                         .build();
         mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -391,9 +381,6 @@ public class FirstRunActivitySigninAndSyncTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.HistorySyncOptIn.Declined", SigninAccessPoint.START_PAGE)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
                         .build();
         mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
         launchFirstRunActivityAndWaitForNativeInitialization();

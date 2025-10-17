@@ -168,10 +168,6 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeUnrestrictedAccepted) {
   handler_->Accept();
   EXPECT_TRUE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
-
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.SyncButtons.Clicked",
-      signin_metrics::SyncButtonClicked::kHistorySyncOptInNotEqualWeighted, 1);
 }
 
 // Tests that the handler records ScreenMode::kUnrestricted metrics
@@ -191,10 +187,6 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeUnrestrictedRejected) {
   handler_->Reject();
   EXPECT_FALSE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
-
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.SyncButtons.Clicked",
-      signin_metrics::SyncButtonClicked::kHistorySyncCancelNotEqualWeighted, 1);
 }
 
 // Tests that the handler records ScreenMode::kRestricted metrics.
@@ -235,10 +227,6 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeRestrictedAccepted) {
   handler_->Accept();
   EXPECT_TRUE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
-
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.SyncButtons.Clicked",
-      signin_metrics::SyncButtonClicked::kHistorySyncOptInEqualWeighted, 1);
 }
 
 // Tests that the handler records ScreenMode::kRestricted metrics
@@ -258,10 +246,6 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeRestrictedRejected) {
   handler_->Reject();
   EXPECT_FALSE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
-
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.SyncButtons.Clicked",
-      signin_metrics::SyncButtonClicked::kHistorySyncCancelEqualWeighted, 1);
 }
 
 // Tests that the handler send ScreenMode::kDeadlined if account capabilities
@@ -283,9 +267,6 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeTimeout) {
   histogram_tester_.ExpectUniqueSample(
       "Signin.SyncButtons.Shown",
       signin_metrics::SyncButtonsType::kSyncEqualWeightedFromDeadline, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.SyncButtons.Clicked",
-      signin_metrics::SyncButtonClicked::kHistorySyncOptInEqualWeighted, 1);
   histogram_tester_.ExpectTotalCount(
       "Signin.AccountCapabilities.UserVisibleLatency", 1);
   histogram_tester_.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",

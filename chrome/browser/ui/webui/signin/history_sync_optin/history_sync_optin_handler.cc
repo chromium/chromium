@@ -37,7 +37,6 @@ constexpr char kSigninAccountCapabilitiesFetchLatency[] =
 constexpr char kSigninAccountCapabilitiesImmediatelyAvailable[] =
     "Signin.AccountCapabilities.ImmediatelyAvailable";
 constexpr char kSigninSyncButtonsShown[] = "Signin.SyncButtons.Shown";
-constexpr char kSignInSyncButtonsClicked[] = "Signin.SyncButtons.Clicked";
 
 enum class ButtonType : bool { kAccept = true, kReject = false };
 
@@ -63,30 +62,6 @@ signin_metrics::SyncButtonsType GetButtonTypeMetricValue(ScreenMode mode) {
       return signin_metrics::SyncButtonsType::kSyncEqualWeightedFromDeadline;
     case ScreenMode::kUnrestricted:
       return signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
-    // Metrics are not emitted when the buttons are not visible.
-    case ScreenMode::kPending:
-      NOTREACHED();
-  }
-}
-
-// Convert ScreenMode to the metric describing Accept/Reject button types.
-signin_metrics::SyncButtonClicked GetButtonClickedMetricValue(
-    ScreenMode mode,
-    ButtonType button_type) {
-  switch (mode) {
-    case ScreenMode::kRestricted:
-    case ScreenMode::kDeadlined:
-      return button_type == ButtonType::kAccept
-                 ? signin_metrics::SyncButtonClicked::
-                       kHistorySyncOptInEqualWeighted
-                 : signin_metrics::SyncButtonClicked::
-                       kHistorySyncCancelEqualWeighted;
-    case ScreenMode::kUnrestricted:
-      return button_type == ButtonType::kAccept
-                 ? signin_metrics::SyncButtonClicked::
-                       kHistorySyncOptInNotEqualWeighted
-                 : signin_metrics::SyncButtonClicked::
-                       kHistorySyncCancelNotEqualWeighted;
     // Metrics are not emitted when the buttons are not visible.
     case ScreenMode::kPending:
       NOTREACHED();
@@ -133,16 +108,10 @@ HistorySyncOptinHandler::~HistorySyncOptinHandler() {
 
 void HistorySyncOptinHandler::Accept() {
   AddHistorySyncConsent();
-  base::UmaHistogramEnumeration(
-      kSignInSyncButtonsClicked,
-      GetButtonClickedMetricValue(screen_mode_, ButtonType::kAccept));
   FinishAndCloseDialog(HistorySyncOptinHelper::ScreenChoiceResult::kAccepted);
 }
 
 void HistorySyncOptinHandler::Reject() {
-  base::UmaHistogramEnumeration(
-      kSignInSyncButtonsClicked,
-      GetButtonClickedMetricValue(screen_mode_, ButtonType::kReject));
   FinishAndCloseDialog(HistorySyncOptinHelper::ScreenChoiceResult::kDeclined);
 }
 

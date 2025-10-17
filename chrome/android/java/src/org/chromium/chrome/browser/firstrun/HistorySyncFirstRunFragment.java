@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 
 @NullMarked
 public class HistorySyncFirstRunFragment extends Fragment
@@ -124,23 +123,11 @@ public class HistorySyncFirstRunFragment extends Fragment
     /** Implements {@link HistorySyncDelegate} */
     @Override
     public void recordHistorySyncOptIn(
-            @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonClicked) {
-        FirstRunPageDelegate delegate = assumeNonNull(getPageDelegate());
-        switch (syncButtonClicked) {
-            case SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED:
-            case SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED:
-                delegate.recordFreProgressHistogram(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
-                SigninMetricsUtils.logHistorySyncAcceptButtonClicked(
-                        SigninAccessPoint.START_PAGE, syncButtonClicked);
-                break;
-            case SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED:
-            case SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED:
-                delegate.recordFreProgressHistogram(MobileFreProgress.HISTORY_SYNC_DISMISSED);
-                SigninMetricsUtils.logHistorySyncDeclineButtonClicked(
-                        SigninAccessPoint.START_PAGE, syncButtonClicked);
-                break;
-            default:
-                throw new IllegalStateException("Unrecognized sync button type");
+            @SigninAccessPoint int accessPoint, boolean isHistorySyncAccepted) {
+        if (isHistorySyncAccepted) {
+            SigninMetricsUtils.logHistorySyncAcceptButtonClicked(accessPoint);
+        } else {
+            SigninMetricsUtils.logHistorySyncDeclineButtonClicked(accessPoint);
         }
     }
 
