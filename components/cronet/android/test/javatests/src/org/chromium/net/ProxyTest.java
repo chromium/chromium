@@ -52,8 +52,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
 public class ProxyTest {
-    // See http://go/android-sdk-docs-sdk-extensions.
-    private static final int HTTPENGINE_PROXY_API_SDK_EXTENSION = 21;
+    // TODO(https://crbug.com/421344207): Set to the correct value once the translation layer for
+    // the proxy APIs from Android to Chromium is present.
+    private static final int HTTPENGINE_PROXY_API_SDK_EXTENSION = Integer.MAX_VALUE;
 
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 

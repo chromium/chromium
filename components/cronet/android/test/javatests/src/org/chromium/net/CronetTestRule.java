@@ -42,19 +42,6 @@ import java.util.EnumSet;
 
 /** Custom TestRule for Cronet instrumentation tests. */
 public class CronetTestRule implements TestRule {
-    /**
-     * This should only be updated after an emulator image update causes a test to start failing
-     * against AOSP_PLAFORM.
-     *
-     * <p>Along side this, you should also update all IgnoreFor annotations that do not override
-     * requiredSdkExtensionForPlatform, but whose test is passing for AOSP_PLATFORM. This makes it
-     * possible to automatically find the minimum SDK extension for which a test can run against
-     * AOSP_PLATFORM.
-     *
-     * <p>Also, see http://go/android-sdk-docs-sdk-extensions.
-     */
-    public static final int LAST_SDK_EXTENSION_WITH_FAILING_TESTS = 20;
-
     private static final String TAG = "CronetTestRule";
 
     private CronetTestFramework mCronetTestFramework;
@@ -113,8 +100,8 @@ public class CronetTestRule implements TestRule {
                 break;
             case AOSP_PLATFORM:
             case FALLBACK:
-                // Internal error codes aren't supported in the fallback implementation, and
-                // inaccessible in AOSP
+                // Internal error codes aren't supported in the fallback implementation and
+                // inaccessible from AOSP_PLATFORM.
                 break;
         }
     }
@@ -221,6 +208,14 @@ public class CronetTestRule implements TestRule {
                 implementationsUnderTest.add(
                         CronetTestFramework.CronetImplementation.AOSP_PLATFORM);
             }
+            // If not set to the requiredSdkExtensionForPlatform's sentiel value, always run within
+            // the Android repository. See IgnoreFor#requiredSdkExtensionForPlatform's
+            // documentation.
+            if (BuildConfig.CRONET_FOR_AOSP_BUILD
+                    && ignoreFor.requiredSdkExtensionForPlatform() != Integer.MAX_VALUE) {
+                implementationsUnderTest.add(
+                        CronetTestFramework.CronetImplementation.AOSP_PLATFORM);
+            }
         }
 
         assertWithMessage(
@@ -234,7 +229,7 @@ public class CronetTestRule implements TestRule {
             implementationsUnderTest.remove(CronetTestFramework.CronetImplementation.AOSP_PLATFORM);
             assumeFalse(
                     desc.getMethodName()
-                            + " skipped because it's supposed to run against only AOSP_PLATFORM but"
+                            + " skipped because it's supposed to run against only AOSP_PLAFORM but"
                             + " test device is not U+",
                     implementationsUnderTest.isEmpty());
         }
@@ -363,25 +358,29 @@ public class CronetTestRule implements TestRule {
         String reason();
 
         /**
-         * Allows ignoring AOSP_PLATFORM if the device does not bundle a recent enough SDK
-         * extension.
+         * Controls more strictly whether a test should, or should not, run against AOSP_PLATFORM.
          *
-         * <p>This is useful when writing tests that cannot currently run against AOSP_PLATFORM
-         * because the code being tested has not been released via HttpEngine yet (this could be a
-         * bug fix, or a new API).
+         * <p>Integer.MAX_VALUE is a special sentiel value. If set to that, the test will will never
+         * run against AOSP_PLATFORM.
          *
-         * <p>We default to the SDK extension that follows the last one that had any test breakage.
-         * This helps us find the SDK extension for which a test start passing against
-         * AOSP_PLATFORM. See LAST_SDK_EXTENSION_WITH_FAILING_TESTS's documentations to understand
-         * how this is handled.
+         * <p>For any other value, the test will only run against AOSP_PLATFORM when it bundles the
+         * necessary code for the test to pass. This differs depending on whether the test is
+         * running within, or outside, the Android repository.
          *
-         * <p>For tests which will never be able to target AOSP_PLATFORM, this should be manually
-         * set, in the each test's IgnoreFor annotation, to Integer.MAX_VALUE.
+         * <p>More precisely; if the test is running within the Android repository, the test code
+         * and code being tested are always in sync. With that in mind, AOSP_PLATFORM always bundles
+         * the code necesary for the test to run. If the test is running outside of the Android
+         * repository, the test code and code being tested are never in sync: the code being tested
+         * comes from the system image installed on the device, while the test code comes from the
+         * local repository. In this scenario, we can only run the test if the device has a recent
+         * enough SDK extension.
          *
-         * <p>For tests that will eventually be able to target AOSP_PLATFORM, this should be set to
-         * the lowest SDK extension that allows doing so.
+         * <p>For tests that rely on Cronet internals, not accessible from AOSP_PLATFORM, this
+         * should be set to Integer.MAX_VALUE. For tests that don't, this should be set to the SDK
+         * extension that shipped a version of HttpEngine that contains the necessary Cronet changes
+         * (see http://go/android-sdk-docs-sdk-extensions).
          */
-        int requiredSdkExtensionForPlatform() default LAST_SDK_EXTENSION_WITH_FAILING_TESTS + 1;
+        int requiredSdkExtensionForPlatform() default Integer.MAX_VALUE;
     }
 
     /**
