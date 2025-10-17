@@ -188,6 +188,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3047590466164881923">Zavrieť dialógové okno spätnej väzby</translation>
 <translation id="306179102415443347">Pomocou odkazu rýchlo prejdete do Správcu hesiel Google. Odkaz môžete v počítači presunúť na plochu alebo do Spúšťača aplikácií.</translation>
 <translation id="3065168410429928842">Karta Chromu</translation>
+<translation id="3073571714401714450">Prepnúť Gemini v Chrome Dev</translation>
 <translation id="3080151273017101988">Po zatvorení prehliadača Google Chrome nechať aplikácie na pozadí spustené</translation>
 <translation id="308397506772922478">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Pomenujte svoj profil Chromu</translation>
@@ -376,6 +377,7 @@ Niektoré funkcie môžu byť nedostupné. Zadajte iný adresár profilu alebo p
 <translation id="5368118228313795342">Ďalší kód: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chrome alebo pri vyhľadávaní pomocou všeobecného poľa.</translation>
 <translation id="5394833366792865639">Zdieľanie karty Chromu</translation>
+<translation id="5402307365844630024">Prepnúť Gemini v Chrome Beta</translation>
 <translation id="5430073640787465221">Súbor predvolieb je poškodený alebo neplatný. 
 
 Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
@@ -427,6 +429,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5941711191222866238">Minimalizovať</translation>
 <translation id="5941830788786076944">Nastaviť prehľadávač Google Chrome ako predvolený</translation>
 <translation id="5947104538377036631">Odkaz na Chrome</translation>
+<translation id="5960071705175224773">Vaše nastavenia zmenila neznáma aplikácia</translation>
 <translation id="5968400720580217226">Režim AI</translation>
 <translation id="5980111191913430208">Rozšírenia, aplikácie a motívy z neznámych zdrojov môžu poškodiť vaše zariadenie. Chrome odporúča ich inštaláciu iba zo zdroja <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Sťahuje sa… Zostávajúci čas: <ph name="HOURS" /> h</translation>
@@ -650,6 +653,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8362914115861174987">Preklad do jazyka</translation>
 <translation id="8366770919198174997">Zníži výkonnosť, ale Chrome bude odolnejší voči útokom</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
+<translation id="8377158135256176353">Prepnúť Gemini v Chrome Canary</translation>
 <translation id="8387459386171870978">Pokračovať v používaní Chromu</translation>
 <translation id="8394720698884623075">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome</translation>
 <translation id="8403038600646341038">Logo Chromu na obrazovke počítača.</translation>
@@ -698,12 +702,14 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8914504000324227558">Znova spustiť prehliadač Chrome</translation>
 <translation id="8922193594870374009">Ak chcete zo zariadenia <ph name="ORIGIN" /> odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do Chromu.</translation>
 <translation id="8922998289262614701">Odstrániť dáta tejto aplikácie z Chromu</translation>
+<translation id="8936233353620149764">Prepnúť Gemini v Chrome</translation>
 <translation id="8948460679427074738">Toto rozšírenie nemá zverejnené spôsoby ochrany súkromia, napríklad to, ako zhromažďuje a používa údaje. Chrome odporúča, aby ste ho odstránili.</translation>
 <translation id="8958307504142971576">Teraz máte v Chrome k dispozícii viac funkcií</translation>
 <translation id="8991530961471831170">Otvoriť Gemini v Chrome</translation>
 <translation id="8992769679401294069">Údaje sú šifrované pomocou vašej prístupovej frázy. Zadajte ju, ak chcete používať a ukladať údaje Chromu do svojho účtu Google.</translation>
 <translation id="8999117580775242387">Keď HTTPS nie je k dispozícii, Chrome bude bez upozornenia používať nezabezpečené pripojenie</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozícii aktualizácia Chromu}=1{Je k dispozícii aktualizácia Chromu}few{Aktualizácia Chromu je k dispozícii už # dni}many{Aktualizácia Chromu je k dispozícii už # dňa}other{Aktualizácia Chromu je k dispozícii už # dní}}</translation>
+<translation id="9010418943148193727">Váš predvolený vyhľadávač bol zmenený z prostredia mimo Chromu. Chrome ho resetoval, aby vás ochránil.</translation>
 <translation id="9014771989710951291">Chrome spravuje viac organizácií</translation>
 <translation id="9024318700713112071">Nastavte Chrome ako predvolený prehliadač</translation>
 <translation id="9066987883552592250">Zavrieť Gemini v Chrome Canary</translation>

@@ -109,7 +109,6 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="1419753403124156396">Ponovo pokrenuti Chrome?</translation>
 <translation id="1428770807407000502">Želite li isključiti sinkronizaciju?</translation>
 <translation id="1430915738399379752">Ispis</translation>
-<translation id="1433478348197382180">Čitački način</translation>
 <translation id="1435593198351412143">Automatsko otvaranje PDF-ova</translation>
 <translation id="1437543266176261764">Izvodi se u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Praćene proizvode organizirajte u mapi Oznake</translation>
@@ -370,7 +369,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2718352093833049315">Samo na Wi-Fiju</translation>
 <translation id="2718846868787000099">Da bi prikazivale sadržaj na jezicima koje preferirate, web-lokacije koje posjećujete mogu vidjeti vaše preferencije</translation>
 <translation id="2723001399770238859">zvuk</translation>
-<translation id="2734335652257251631">Prikaži u čitačkom načinu</translation>
 <translation id="2739887572830526131">Zadržite ovu grupu da biste kasnije dodali kartice ili je izbrišite ako vam više nije potrebna.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> – trenutačno nije dostupno.</translation>
 <translation id="2760805590727089264">MM/GG</translation>
@@ -1139,6 +1137,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="6232535412751077445">Omogućivanje opcije "Nemoj pratiti" znači da će se u promet pregledavanja uključiti zahtjev. Učinak ovisi o tome odgovara li web-lokacija na taj zahtjev i kako se zahtjev tumači.
 
 Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikažu oglase koji se ne temelje na drugim web-lokacijama koje ste posjetili. Mnoge web-lokacije i dalje će prikupljati i upotrebljavati vaše podatke o pregledavanju, primjerice, za poboljšanje sigurnosti, pružanje sadržaja, oglasa i preporuka, kao i za generiranje statističkih izvješća.</translation>
+<translation id="623755660902014047">Čitački način</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
 <translation id="6248988683584659830">Pretraživanje postavki</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, višestruko odabrana prikvačena anonimna kartica</translation>
@@ -1397,7 +1396,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7221869452894271364">Ponovno učitaj ovu stranicu</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="7230064152164845085">Prijeđi na anonimni način</translation>
-<translation id="7230836263524391273">Sakrij čitački način</translation>
 <translation id="7237724030342645845">Google upravitelj zaporki više ne funkcionira</translation>
 <translation id="72415438529550637">Prijedlog zaporke je zatvoren.</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
@@ -1732,7 +1730,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="867914734596684889">Prikaz ili skrivanje trake oznaka</translation>
 <translation id="8683039184091909753">slika</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, odabrana kartica</translation>
-<translation id="8693232767599693749">Želite li pregledati u čitačkom načinu?</translation>
 <translation id="8697753151306746444">Umjesto toga podijelite prozor ili zaslon</translation>
 <translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>
 <translation id="8712637175834984815">Shvaćam</translation>

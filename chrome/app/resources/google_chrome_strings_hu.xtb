@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">Visszajelzési párbeszédpanel bezárása</translation>
 <translation id="306179102415443347">Parancsikon segítségével gyorsan megnyithatja a Google Jelszókezelőt. A parancsikont áthelyezheti a számítógép kezdőképernyőjére vagy az alkalmazásindítóba.</translation>
 <translation id="3065168410429928842">Chrome-lap</translation>
+<translation id="3073571714401714450">A Gemini a Chrome Devben be- vagy kikapcsolása</translation>
 <translation id="3080151273017101988">A háttéralkalmazások továbbfuttatása, ha a Google Chrome-ot bezárják</translation>
 <translation id="308397506772922478">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Nevezze el Chrome-profilját</translation>
@@ -373,6 +374,7 @@
 <translation id="5368118228313795342">Extra kód: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chrome indításakor vagy a cím- és keresősávban indított kereséskor.</translation>
 <translation id="5394833366792865639">Chrome-lap megosztása</translation>
+<translation id="5402307365844630024">A Gemini a Chrome Bétában be- vagy kikapcsolása</translation>
 <translation id="5430073640787465221">A beállításait tartalmazó fájl hibás vagy érvénytelen. A Google Chrome nem tudja helyreállítani a beállításait.</translation>
 <translation id="5468572406162360320">A funkciók továbbfejlesztése érdekében a Chrome elküldi a velük végzett műveleteket a Google-nak. Ezeket az adatokat ellenőreink elolvashatják, feldolgozhatják és megjegyzésekkel láthatják el.</translation>
 <translation id="5510398294750420479">Töltse le a Chrome-ot a telefonjára, hogy egy további védelmi réteget kapjon útközben.</translation>
@@ -422,6 +424,7 @@
 <translation id="5941711191222866238">Kis méret</translation>
 <translation id="5941830788786076944">A Google Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="5947104538377036631">Chrome-parancsikon</translation>
+<translation id="5960071705175224773">A beállításokat egy ismeretlen alkalmazás módosította</translation>
 <translation id="5968400720580217226">AI-mód</translation>
 <translation id="5980111191913430208">Az ismeretlen forrásból származó bővítmények, alkalmazások és témák károsíthatják az eszközt. A Chrome azt javasolja, hogy csak a következő helyről telepítse őket: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Letöltés… <ph name="HOURS" /> óra van hátra</translation>
@@ -645,6 +648,7 @@
 <translation id="8362914115861174987">Fordítás a következő nyelvre:</translation>
 <translation id="8366770919198174997">Csökkenti a teljesítményt, de ellenállóbbá teszi a Chrome-ot a támadásokkal szemben</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
+<translation id="8377158135256176353">A Gemini a Chrome Canaryben be- vagy kikapcsolása</translation>
 <translation id="8387459386171870978">A Chrome használatának folytatása</translation>
 <translation id="8394720698884623075">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján.</translation>
 <translation id="8403038600646341038">A Chrome logója egy számítógép képernyőjén.</translation>
@@ -693,12 +697,14 @@
 <translation id="8914504000324227558">A Chrome újraindítása</translation>
 <translation id="8922193594870374009">Ha innen: <ph name="ORIGIN" /> szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>
 <translation id="8922998289262614701">Az alkalmazás adatainak eltávolítása a Chrome-ból</translation>
+<translation id="8936233353620149764">A Gemini a Chrome-ban be- vagy kikapcsolása</translation>
 <translation id="8948460679427074738">Ez a bővítmény nem tett közzé adatvédelmi gyakorlatokat például arra vonatkozóan, hogy hogyan gyűjti és használja fel az adatokat. A Chrome az eltávolítását javasolja.</translation>
 <translation id="8958307504142971576">Mostantól több funkció áll rendelkezésére a Chrome-ban</translation>
 <translation id="8991530961471831170">A Gemini a Chrome-ban megnyitása</translation>
 <translation id="8992769679401294069">Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókjában Chrome-adatokat szeretne használni és menteni.</translation>
 <translation id="8999117580775242387">Ha a HTTPS nem áll rendelkezésre, a Chrome nem biztonságos kapcsolatot fog használni anélkül, hogy figyelmeztetné Önt</translation>
 <translation id="8999208279178790196">{0,plural, =0{Rendelkezésre áll egy Chrome-frissítés}=1{Rendelkezésre áll egy Chrome-frissítés}other{# napja rendelkezésre áll egy Chrome-frissítés}}</translation>
+<translation id="9010418943148193727">Az alapértelmezett keresőmotor a Chrome-on kívülről lett módosítva. A Chrome visszaállította az Ön biztonsága érdekében.</translation>
 <translation id="9014771989710951291">Több szervezet is kezeli a Chrome-ot</translation>
 <translation id="9024318700713112071">A Chrome beállítása alapértelmezettként</translation>
 <translation id="9066987883552592250">A Gemini bezárása a Chrome Canaryban</translation>

@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">Chrome रीस्टार्ट करायचे आहे का?</translation>
 <translation id="1428770807407000502">सिंक बंद करायचे आहे का?</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
-<translation id="1433478348197382180">वाचन मोड</translation>
 <translation id="1435593198351412143">PDFs आपोआप उघडा</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> मध्ये रन होत आहे</translation>
 <translation id="1448440926884431741">तुमची माग ठेवलेली उत्पादने Bookmarks मध्ये व्यवस्थापित करा</translation>
@@ -370,7 +369,6 @@
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
 <translation id="2718846868787000099">तुमच्या प्राधान्यकृत भाषांमध्ये आशय दाखवण्यासाठी, तुम्ही भेट देता त्या साइट तुमची प्राधान्ये पाहू शकतात</translation>
 <translation id="2723001399770238859">ऑडिओ</translation>
-<translation id="2734335652257251631">वाचन मोड दाखवा</translation>
 <translation id="2739887572830526131">नंतर टॅब जोडण्यासाठी हा गट कायम ठेवा किंवा तुम्हाला यापुढे त्याची आवश्यकता नसल्यास, तो हटवा.</translation>
 <translation id="2742373789128106053">सध्या <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> उपलब्ध नाही.</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1139,6 +1137,7 @@
 <translation id="6232535412751077445">'Do Not Track' सुरू करणे म्हणजे तुमच्या ब्राउझिंग ट्रॅफिकमध्‍ये एक विनंती समाविष्‍ट केली जाईल. वेबसाइट विनंतीला प्रतिसाद देते किंवा नाही आणि विनंतीचा निष्‍कर्ष कसा काढला जातो यावर कोणताही प्रभाव अवलंबून असतो.
 
 उदाहरणार्थ, काही वेबसाइट तुम्ही भेट दिलेल्‍या इतर वेबसाइटवर आधारित नसलेल्‍या जाहिराती तुम्हाला दर्शवून या विनंतीस प्रतिसाद देऊ शकतात. अनेक वेबसाइट अद्यापही तुमचा ब्राउझिंग डेटा संकलित करून त्‍याचा वापर करतील - उदाहरणार्थ त्‍यांच्‍या वेबसाइटवर सुरक्षितता सुधारणे, आशय, जाहिराती आणि शिफारशी देऊ करणे आणि अहवाल आकडेवारी निर्माण करणे.</translation>
+<translation id="623755660902014047">वाचन मोड</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6248988683584659830">शोध सेटिंग्ज</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला गुप्त टॅब</translation>
@@ -1397,7 +1396,6 @@
 <translation id="7221869452894271364">हे पेज रीलोड करा</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{एक डाउनलोड बाकी आहे}other{# डाउनलोड बाकी आहेत}}</translation>
 <translation id="7230064152164845085">गुप्त मोड वर स्विच करा</translation>
-<translation id="7230836263524391273">वाचन मोड लपवा</translation>
 <translation id="7237724030342645845">Google Password Manager काम करणे थांबवले आहे</translation>
 <translation id="72415438529550637">पासवर्डसंबंधित सूचना बंद आहे.</translation>
 <translation id="7248671827512403053">ॲप्लिकेशन</translation>
@@ -1732,7 +1730,6 @@
 <translation id="867914734596684889">बुकमार्क बार दाखवा किंवा लपवा</translation>
 <translation id="8683039184091909753">इमेज</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, निवडलेला टॅब</translation>
-<translation id="8693232767599693749">वाचन मोड दाखवायचा आहे का?</translation>
 <translation id="8697753151306746444">त्याऐवजी विंडो किंवा स्क्रीन शेअर करा</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="8712637175834984815">समजले</translation>

@@ -109,7 +109,6 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1419753403124156396">Chrome qayta ishga tushirilsinmi?</translation>
 <translation id="1428770807407000502">Sinxronizatsiya qilinsinmi?</translation>
 <translation id="1430915738399379752">Chop etish</translation>
-<translation id="1433478348197382180">Oʻqish rejimi</translation>
 <translation id="1435593198351412143">PDF fayllar avtomatik ochilsin</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> ilovasida ochilgan</translation>
 <translation id="1448440926884431741">Kuzatiladigan mahsulotlarni bukmarklarda tartiblang</translation>
@@ -370,7 +369,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2718352093833049315">Faqat Wi-Fi orqali</translation>
 <translation id="2718846868787000099">Kontent sizga mos tillarda chiqishi uchun siz ochadigan saytlar til sozlamalaringizni koʻra oladi</translation>
 <translation id="2723001399770238859">audio</translation>
-<translation id="2734335652257251631">Mutolaa rejimini chiqarish</translation>
 <translation id="2739887572830526131">Keyinroq varaqlar kiritish uchun ushbu guruhni saqlab qoling yoki kerak boʻlmasa, uni oʻchirib tashlang.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hozir ishlamayapti.</translation>
 <translation id="2760805590727089264">OO / YY</translation>
@@ -1139,6 +1137,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="6232535412751077445">Agar “Kuzatilmasin” parametri yoniq bo‘lsa, brauzer so‘rovlariga maxsus buyruq qo‘shiladi. Natijasi sayt so‘rovga javob berishi va so‘rov qanday ma’noda tushunilganligiga bog‘liq bo‘ladi.
 
 Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda reklama e’lonlari ko‘rsatilishi mumkin. Boshqa saytlar esa brauzer faoliyati haqidagi ma’lumotlarni (m-n, xavfsizlikni mustahkamlash, kontent ko‘rsatish, reklama taqdimoti, statistik hisobotlar yasash kabi) to‘plashda va bu ma’lumotlardan foydalanishda davom etmoqda.</translation>
+<translation id="623755660902014047">Oʻqish rejimi</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>
 <translation id="6248988683584659830">Sozlamalar ichidan qidirish</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, koʻp tanlangan qadalgan inkognito varaq</translation>
@@ -1397,7 +1396,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7221869452894271364">Bu sahifani yangilash</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ta fayl yuklab olinishi kutilmoqda...}other{# ta fayl yuklab olinishi kutilmoqda...}}</translation>
 <translation id="7230064152164845085">Inkognito rejimga kirish</translation>
-<translation id="7230836263524391273">Mutolaa rejimini yopish</translation>
 <translation id="7237724030342645845">Google Parollar menejeri ishlamay qoldi</translation>
 <translation id="72415438529550637">Parol taklifi yopildi.</translation>
 <translation id="7248671827512403053">Ilova</translation>
@@ -1732,7 +1730,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="867914734596684889">Bukmarklar panelini ochish va yopish</translation>
 <translation id="8683039184091909753">rasm</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, tanlangan varaq</translation>
-<translation id="8693232767599693749">Mutolaa rejimi ochilsinmi?</translation>
 <translation id="8697753151306746444">Oʻrniga oyna yoki ekranni ulashing</translation>
 <translation id="8699120352855309748">Quyidagi tillarga tarjima taklif qilinmasin</translation>
 <translation id="8712637175834984815">Tushunarli</translation>

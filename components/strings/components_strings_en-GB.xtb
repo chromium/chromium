@@ -286,6 +286,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{View 0 reviews}=1{View 1 review}other{View all # reviews}}</translation>
 <translation id="1458059624921545588">People and society</translation>
 <translation id="1458140305240870199">Undergarments</translation>
+<translation id="1458770162980644530">Buy now, pay later Terms of Service screen. Keyboard hidden.</translation>
 <translation id="1459693405370120464">Weather</translation>
 <translation id="1461041542809785877">Performance</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2922,6 +2923,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5817918615728894473">Pair</translation>
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5830698870816298009">camera use and movement</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5832976493438355584">Locked</translation>
 <translation id="5837220895135257862">Free up space in <ph name="CLOUD_PROVIDER" /> before trying again</translation>
@@ -3646,6 +3648,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6997288673234694149">Baseball and Softball Equipment</translation>
 <translation id="6998512609912910179">Fill forms faster</translation>
 <translation id="6999480632062519056">Fitness Instruction and Personal Training</translation>
+<translation id="7002897669829306463">Home address, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Rugs and Carpets</translation>
 <translation id="7003322000677139268">Vehicle parts and accessories</translation>
 <translation id="7004499039102548441">Recent tabs</translation>
@@ -4212,6 +4215,8 @@ Additional details:
 <translation id="7916162853251942238">Flexo base</translation>
 <translation id="791698251820376781">Your organisation doesn't allow you to sign in</translation>
 <translation id="7926503317156566022">Aviation industry</translation>
+<translation id="7930282586031445870">Buy now, pay later Terms of Service screen is closed.</translation>
+<translation id="7932035970207573919">Work address, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Update address?</translation>
 <translation id="7932579305932748336">Coat</translation>
 <translation id="79338296614623784">Enter a valid phone number</translation>
@@ -4624,6 +4629,7 @@ Additional details:
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your activity on a site that you visit using Chrome on this device.</translation>
 <translation id="8601456038554914806">Water Sports Equipment</translation>
 <translation id="8601782593888534566">Science fiction and fantasy</translation>
+<translation id="8604103095921958091">Buy now, pay later Terms of Service screen opened at full height.</translation>
 <translation id="8606988009912891950">Ad topics help sites show you relevant ads while protecting your browsing history and identity. Chrome can note topics of interest based on your recent browsing history. Later, a site that you visit can ask Chrome for relevant topics to personalise the ads that you see.</translation>
 <translation id="8612919051706159390">Online communities</translation>
 <translation id="8617269623452051934">your device use</translation>
@@ -4864,6 +4870,7 @@ Additional details:
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> wants to look for and connect to any device on your local network</translation>
 <translation id="9046864189129893978">Microphones (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Buy now, pay later Terms of Service screen opened at half height.</translation>
 <translation id="9047528041803621289">Your default lets you search the web. You can change it in settings.</translation>
 <translation id="9048035366624198823">These actions require the <ph name="POLICY_NAME" /> policy to be set to <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 in x 36 in</translation>

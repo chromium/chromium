@@ -249,7 +249,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1162479191445552288">Włącz podczas uruchamiania</translation>
 <translation id="1163931534039071049">&amp;Wyświetl źródło ramki</translation>
 <translation id="1164015913575846413">Alt + kliknięcie</translation>
-<translation id="1164286072721995435">Za każdym razem, gdy rozpoczynasz nową rozmowę, udostępnia Gemini bieżącą kartę. W każdej chwili możesz to działanie wstrzymać. Nie używamy Twoich danych do ulepszania modeli generatywnej AI.</translation>
 <translation id="1164891049599601209">Wpisano na stronie wprowadzającej w błąd</translation>
 <translation id="1165039591588034296">Błąd</translation>
 <translation id="1166212789817575481">Zamknij karty po prawej</translation>
@@ -540,7 +539,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1353980523955420967">Nie można znaleźć pliku PPD. Upewnij się, że Chromebook jest podłączony do internetu, i spróbuj ponownie.</translation>
 <translation id="1354045473509304750">Nadal zezwalaj witrynie <ph name="HOST" /> na używanie kamery i poruszanie nią</translation>
 <translation id="1354148503392558902">Zmieniam hasło…</translation>
-<translation id="1354943694624358993">Zawsze udostępniaj bieżącą kartę</translation>
 <translation id="1355088139103479645">Usunąć wszystkie dane?</translation>
 <translation id="1355088659320425659">Historia i karty</translation>
 <translation id="1356376170199999104">Zezwolono – <ph name="PERMISSION_DETAILS" />. Włącz mikrofon za pomocą fizycznego przełącznika.</translation>
@@ -2349,7 +2347,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2605668923777146443">Aby zobaczyć opcje Better Together, otwórz <ph name="LINK_BEGIN" />Ustawienia<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Połącz dane</translation>
 <translation id="2606454609872547359">Nie, kontynuuj bez ChromeVoksa</translation>
-<translation id="2606568927909309675">Automatycznie tworzy napisy dla dźwięku i wideo w języku angielskim. Dźwięk ani napisy nie są wysyłane poza urządzenie.</translation>
 <translation id="2606890864830643943">Eksportuję dane diagnostyczne</translation>
 <translation id="2607101320794533334">Informacje o kluczu publicznym podmiotu</translation>
 <translation id="2609533306502181883">Zbadaj temat</translation>
@@ -5748,7 +5745,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4956593309300508411">Zatrzymać udostępnianie?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Zapisać w folderze tylko na tym urządzeniu?</translation>
-<translation id="4958916254663453555">Bieżąca karta zostanie automatycznie udostępniona, gdy otworzysz Gemini w Chrome. Pełna zawartość i adres URL bieżącej karty są wysyłane do Google.</translation>
 <translation id="4959262764292427323">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu</translation>
 <translation id="4960020053211143927">Nieobsługiwane przez niektóre aplikacje</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5860,7 +5856,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5045367873597907704">Urządzenia HID – informacje</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
 <translation id="504561833207953641">Otwieram w istniejącej sesji przeglądarki.</translation>
-<translation id="5047544190872578914">Za każdym razem, gdy rozpoczynasz nową rozmowę, udostępnia Gemini bieżącą kartę. W każdej chwili możesz to działanie wstrzymać.</translation>
 <translation id="504953514574706691">Karta wykluczona z sugerowanej grupy</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Pobierz niezweryfikowany plik</translation>
@@ -6378,6 +6373,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5414836363063783498">Weryfikuję…</translation>
 <translation id="5415328625985164836">To jest program testów beta. Dzięki Steam możesz teraz grać na Chromebooku w niektóre gry.</translation>
 <translation id="5415497281076257439">Wyrażenie</translation>
+<translation id="5415871492522952905">Będziesz mieć dostęp do swojej historii i kart na wszystkich urządzeniach, więc będzie można kontynuować przeglądanie od ostatniego miejsca</translation>
 <translation id="5417293056300086453">Ta strona może używać identyfikatorów do odtwarzania treści chronionych.</translation>
 <translation id="5417312524372586921">Motywy przeglądarki</translation>
 <translation id="541737483547792035">Powiększenie ekranu</translation>
@@ -6588,6 +6584,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5555760010546505198">Ustawienia odwrócenia i korekcji kolorów, lupy oraz wyświetlania</translation>
 <translation id="555604722231274592">Włącz <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Odśwież</translation>
+<translation id="555671485580955310">Synchronizuj historię i karty</translation>
 <translation id="5558129378926964177">Po&amp;większ</translation>
 <translation id="5558594314398017686">Ustawienie domyślne systemu operacyjnego (jeśli jest dostępne)</translation>
 <translation id="5559311991468302423">Usuń adres</translation>
@@ -10716,7 +10713,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8419098111404128271">Wyniki wyszukiwania dla „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="8419144699778179708">Usuwa historię, również z pola wyszukiwania</translation>
 <translation id="8420308167132684745">Edytuj wpisy w słowniku</translation>
-<translation id="8421361468937925547">Napisy na żywo (tylko w języku angielskim)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Brak tacy</translation>
 <translation id="8424250197845498070">Zablokowany przez Ochronę zaawansowaną</translation>
@@ -11013,6 +11009,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8637688295594795546">Jest dostępna aktualizacja systemu. Trwa przygotowanie do pobrania…</translation>
 <translation id="8638719155236856752">Stan sieci w ChromeOS</translation>
 <translation id="8639635302972078117">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
+<translation id="8639963783467694461">Ustawienia autouzupełniania</translation>
 <translation id="8640575194957831802">Ostatnio otwarto</translation>
 <translation id="8641946446576357115">Używaj haseł na urządzeniach z iOS</translation>
 <translation id="8642577642520207435">Uprawnienia dostępu do aparatu dla aplikacji <ph name="APP_NAME" /></translation>

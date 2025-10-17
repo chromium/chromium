@@ -207,6 +207,7 @@
 <translation id="3296368748942286671">Chromium बंद असताना पार्श्वभूमी ॲप्लिकेशन चालवणे सुरू ठेवा</translation>
 <translation id="3313189106987092621">असुरक्षित कनेक्शन वापरून कोणतीही साइट लोड करण्यापूर्वी Chromium तुम्हाला चेतावणी देईल</translation>
 <translation id="3316771292331273802">तुम्ही Chromium वर साइन इन केले असल्यास, सर्व Chromium विंडो बंद केल्यावर तुमचे Google खाते वगळता तुम्हाला बहुतांश साइटवरून साइन आउट केले जाईल. साइटना तुम्हाला लक्षात ठेवू देण्यासाठी, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">तुमचे डीफॉल्ट सर्च इंजीन Chromium च्या बाहेरून बदलले गेले आहे. तुमचे संरक्षण करण्यासाठी, Chromium ने ते रीसेट केले आहे.</translation>
 <translation id="3352986031709923790">शोध क्षेत्राचा सर्वात वरचा उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, सर्वात वरती <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">तुमच्या खात्यामधील Chromium डेटा</translation>
 <translation id="3369405342922656244">इमेज शोध वापरून हे पेज शोधा</translation>
@@ -399,6 +400,7 @@
 <translation id="5941711191222866238">कमी करा</translation>
 <translation id="5949225980829865667">तुमच्या सर्व डिव्हाइसवर हा बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी, Chromium मध्ये साइन इन करा</translation>
 <translation id="5953657885167112863">Chromium तुम्हाला हवे तसे बनवा</translation>
+<translation id="5960071705175224773">अज्ञात ॲपने तुमची सेटिंग्ज बदलली आहेत</translation>
 <translation id="5968400720580217226">AI मोड</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium १ मिनिटासाठी वापरले जात नाही, तेव्हा तुमची संस्था ते आपोआप बंद करते.}other{Chromium # मिनिटांसाठी वापरले जात नाही, तेव्हा तुमची संस्था ते आपोआप बंद करते.}}</translation>
 <translation id="5987687638152509985">सिंक करण्यासाठी Chromium अपडेट करा</translation>

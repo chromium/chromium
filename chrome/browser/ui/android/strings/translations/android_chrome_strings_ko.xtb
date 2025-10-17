@@ -109,7 +109,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1419753403124156396">Chrome을 다시 시작하시겠습니까?</translation>
 <translation id="1428770807407000502">동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1430915738399379752">인쇄</translation>
-<translation id="1433478348197382180">읽기 모드</translation>
 <translation id="1435593198351412143">자동으로 PDF 열기</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />에서 실행 중</translation>
 <translation id="1448440926884431741">추적 중인 제품을 북마크로 정리하세요.</translation>
@@ -370,7 +369,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
 <translation id="2718846868787000099">콘텐츠를 기본 언어로 표시하기 위해 방문하는 사이트에서 기본 설정을 확인할 수 있습니다.</translation>
 <translation id="2723001399770238859">오디오</translation>
-<translation id="2734335652257251631">읽기 모드 표시</translation>
 <translation id="2739887572830526131">이 그룹을 유지하여 나중에 탭을 추가하거나 더 이상 필요하지 않으면 삭제하세요.</translation>
 <translation id="2742373789128106053">지금은 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 사용할 수 없습니다.</translation>
 <translation id="2760805590727089264">MM/YY</translation>
@@ -1139,6 +1137,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6232535412751077445">‘추적 안함’을 사용하도록 설정하면 요청이 사용자의 인터넷 사용 트래픽에 포함됩니다. 웹사이트가 요청에 응답하는지 여부와 요청이 해석되는 방법에 따라 결과가 결정됩니다.
 
 예를 들어 어떤 웹사이트는 사용자가 방문한 다른 웹사이트를 기반으로 하지 않는 광고를 표시하여 이 요청에 응답할 수 있습니다. 그러나 대부분의 웹사이트에서는 보안을 개선하거나 웹사이트에 콘텐츠, 광고, 권장사항 등을 제공하거나 보고서 통계를 생성하기 위해 사용자의 인터넷 사용 기록을 계속 수집하고 사용합니다.</translation>
+<translation id="623755660902014047">읽기 모드</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6248988683584659830">설정 검색</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, 여러 개 선택된 시크릿 탭 고정</translation>
@@ -1397,7 +1396,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7221869452894271364">페이지 새로고침</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{다운로드 1개 대기 중}other{다운로드 #개 대기 중}}</translation>
 <translation id="7230064152164845085">시크릿 모드로 전환</translation>
-<translation id="7230836263524391273">읽기 모드 숨기기</translation>
 <translation id="7237724030342645845">Google 비밀번호 관리자 작동이 중지됨</translation>
 <translation id="72415438529550637">비밀번호 추천이 종료되었습니다.</translation>
 <translation id="7248671827512403053">애플리케이션</translation>
@@ -1732,7 +1730,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="867914734596684889">북마크바 표시 또는 숨기기</translation>
 <translation id="8683039184091909753">이미지</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, 선택된 탭</translation>
-<translation id="8693232767599693749">읽기 모드로 보시겠습니까?</translation>
 <translation id="8697753151306746444">대신 창 또는 화면 공유</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
 <translation id="8712637175834984815">확인</translation>

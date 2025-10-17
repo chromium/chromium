@@ -249,7 +249,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1162479191445552288">Pokreni pri pokretanju uređaja</translation>
 <translation id="1163931534039071049">&amp;Prikaži izvor okvira</translation>
 <translation id="1164015913575846413">alt + klik</translation>
-<translation id="1164286072721995435">Deli aktuelnu karticu sa Gemini-jem svaki put kada započnete novu konverzaciju. U svakom trenutku možete da pauzirate deljenje aktuelne kartice. Podaci se ne koriste za poboljšavanje modela generativne veštačke inteligencije.</translation>
 <translation id="1164891049599601209">Uneto je na obmanjujućem sajtu</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1166212789817575481">Zatvori kartice sa desne strane</translation>
@@ -540,7 +539,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1353980523955420967">Ne možemo da pronađemo PPD. Proverite da li je Chromebook onlajn i probajte ponovo.</translation>
 <translation id="1354045473509304750">Nastavite da dozvoljavate sajtu <ph name="HOST" /> da koristi i pomera kameru</translation>
 <translation id="1354148503392558902">Menja se lozinka…</translation>
-<translation id="1354943694624358993">Uvek deli aktuelnu karticu</translation>
 <translation id="1355088139103479645">Želite li da izbrišete sve podatke?</translation>
 <translation id="1355088659320425659">Istorija i kartice</translation>
 <translation id="1356376170199999104">Dozvoljeno je – <ph name="PERMISSION_DETAILS" />. Uključite mikrofon pomoću fizičkog prekidača.</translation>
@@ -1236,6 +1234,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1829192082282182671">Zoom &amp;Out (Umanji)</translation>
 <translation id="1830550083491357902">Niste prijavljeni</translation>
 <translation id="1831848493690504725">Ne možemo da pristupimo Google-u preko povezane mreže. Izaberite drugu mrežu ili proverite podešavanja mreže ili podešavanja proksija (ako koristite proksi).</translation>
+<translation id="1832414451155700364">Odaberite da li ćete sinhronizovati istoriju i kartice</translation>
 <translation id="1832459821645506983">Da, omogući</translation>
 <translation id="1832511806131704864">Promena telefona je ažurirana</translation>
 <translation id="1832848789136765277">Da biste bili sigurni da uvek možete da pristupate sinhronizovanim podacima, potvrdite da ste to vi</translation>
@@ -2361,7 +2360,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2605668923777146443">Idite u <ph name="LINK_BEGIN" />Podešavanja<ph name="LINK_END" /> da biste videli opcije za Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
 <translation id="2606454609872547359">Ne, nastavi bez ChromeVox-a</translation>
-<translation id="2606568927909309675">Automatski pravi titl za audio i video na engleskom. Audio fajl i titl uvek ostaju na uređaju.</translation>
 <translation id="2606890864830643943">Izvoz dijagnostičkih podataka</translation>
 <translation id="2607101320794533334">Informacije o javnom ključu subjekta</translation>
 <translation id="2609533306502181883">Istražite temu</translation>
@@ -5767,7 +5765,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4956593309300508411">Zaustavljate deljenje?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Želite da sačuvate u folderu samo na ovom uređaju?</translation>
-<translation id="4958916254663453555">Aktuelna kartica će se automatski deliti kada otvorite Gemini u Chrome-u. Ceo sadržaj i URL aktuelne kartice se šalju Google-u.</translation>
 <translation id="4959262764292427323">Lozinke se čuvaju na Google nalogu da biste mogli da ih koristite na bilo kom uređaju</translation>
 <translation id="4960020053211143927">Neke aplikacije ne podržavaju ovo</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5879,7 +5876,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5045367873597907704">O HID uređajima</translation>
 <translation id="5045550434625856497">Neispravna lozinka</translation>
 <translation id="504561833207953641">Otvara se u postojećoj sesiji pregledača.</translation>
-<translation id="5047544190872578914">Deli aktuelnu karticu sa Gemini-jem svaki put kada započnete novu konverzaciju. U svakom trenutku možete da pauzirate deljenje aktuelne kartice.</translation>
 <translation id="504953514574706691">Kartica je izuzeta iz predložene grupe</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Preuzmi neverifikovani fajl</translation>
@@ -6397,6 +6393,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5414836363063783498">Verifikuju se...</translation>
 <translation id="5415328625985164836">Ovo je beta program. Sada možete da koristite Steam da biste igrali neke igre na Chromebook-u.</translation>
 <translation id="5415497281076257439">Fraza</translation>
+<translation id="5415871492522952905">Imaćete istoriju i kartice na svim uređajima da biste mogli da nastavite ono što ste radili</translation>
 <translation id="5417293056300086453">Ovaj sajt može da koristi identifikatore za puštanje zaštićenog sadržaja.</translation>
 <translation id="5417312524372586921">Teme za pregledač</translation>
 <translation id="541737483547792035">Uvećaj ekran</translation>
@@ -6607,6 +6604,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5555760010546505198">Podešavanja inverzije boja, korekcije boja, lupe i ekrana</translation>
 <translation id="555604722231274592">Omogući <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
+<translation id="555671485580955310">Sinhronizuj istoriju i kartice</translation>
 <translation id="5558129378926964177">Zoom &amp;In (Uvećaj)</translation>
 <translation id="5558594314398017686">Podrazumevano za OS (kada je dostupno)</translation>
 <translation id="5559311991468302423">Izbrišite adresu</translation>
@@ -8788,6 +8786,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7088960765736518739">Pristup pomoću prekidača</translation>
 <translation id="7089253021944603172">Kartica je ponovo aktivna</translation>
 <translation id="7090714929377281710">Automatski isključi hotspot</translation>
+<translation id="7092452922791061650">Kliknite desnim tasterom na ovu karticu i izaberite Novi podeljeni prikaz sa aktuelnom karticom</translation>
 <translation id="7092504544229909737">Ne može da se koristi sa Android aplikacijama</translation>
 <translation id="7093220653036489319">Brzi odgovori</translation>
 <translation id="7093866338626856921">Razmena podataka sa uređajima sledećih naziva: <ph name="HOSTNAMES" /></translation>
@@ -10739,7 +10738,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8419098111404128271">Rezultati pretrage za „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="8419144699778179708">Briše istoriju, uključujući istoriju u okviru za pretragu</translation>
 <translation id="8420308167132684745">Izmeni unose u rečniku</translation>
-<translation id="8421361468937925547">Titl uživo (samo na engleskom)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Nedostaje fioka</translation>
 <translation id="8424250197845498070">Blokira Napredna zaštita</translation>
@@ -11036,6 +11034,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8637688295594795546">Dostupno je ažuriranje sistema. Priprema za preuzimanje...</translation>
 <translation id="8638719155236856752">ChromeOS stanje mreže</translation>
 <translation id="8639635302972078117">Šaljite podatke o korišćenju i dijagnostičke podatke. Ovaj uređaj trenutno automatski šalje podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. Te informacije se neće koristiti za identifikaciju deteta i pomoći će u održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako za dete uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu deteta.</translation>
+<translation id="8639963783467694461">Podešavanja Automatskog popunjavanja</translation>
 <translation id="8640575194957831802">Poslednji put otvoreno</translation>
 <translation id="8641946446576357115">Koristite lozinke na iOS uređajima</translation>
 <translation id="8642577642520207435">Dozvola za kameru za: <ph name="APP_NAME" /></translation>

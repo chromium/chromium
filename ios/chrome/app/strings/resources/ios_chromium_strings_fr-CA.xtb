@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">Cela signifie que Chromium demandera toujours la version mobile du site.</translation>
 <translation id="1115463765356382667">Effectuez les actions suggérées ci-dessous pour tirer le meilleur parti de Chromium.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
+<translation id="1211450393895337634">Ouvrez Chromium plus rapidement lorsque vous êtes prêt à naviguer sur votre iPad.</translation>
 <translation id="1229234641991056119">Utilisez vos mots de passe, votre historique, vos favoris et vos cartes de crédit Safari dans Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer des images, touchez Paramètres et autorisez Chromium à les ajouter à vos photos</translation>
 <translation id="1260702988262336471">Ouvrez le menu Chromium</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">Un flux personnalisé conçu pour vous. Comprend les actualités, les sports et la météo.</translation>
 <translation id="1561849081734670621">Pour désactiver le mode de confinement dans Chromium, désactivez-le sur votre iPhone.</translation>
 <translation id="1569258826720962327">Utiliser les actions Chromium sur iOS</translation>
+<translation id="1573441572176948907">Déplacez Chromium vers votre Dock</translation>
 <translation id="159029779861043703">Chromium protège vos données confidentielles avec Face ID.</translation>
 <translation id="1591119736686995611">Ouvre la grille d'onglets de Chromium.</translation>
 <translation id="16001233025397167">Vérification de sécurité vous protège contre les violations de données, les sites Web dangereux et bien plus encore. Recevez des alertes concernant tout problème de confidentialité ou de sécurité que Chromium détecte pour vous.</translation>
@@ -66,6 +68,7 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="2340423701577464731">Ajouter un élément à la Liste de lecture dans Chromium</translation>
 <translation id="2374627437126809292">Chromium utilise Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="2386292341327187942">Dans le champ Widgets de recherche, entrez Chromium</translation>
+<translation id="2389827884654658221">Accédez à Chromium plus rapidement à partir de l'écran d'accueil de votre iPad.</translation>
 <translation id="2426113998523353159">Votre organisation vous demande de vous connecter pour utiliser Chromium.</translation>
 <translation id="2450140762465183767">Vous pouvez maintenant utiliser Chromium chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="2459183986985456602">Ouvrez Mon dernier onglet dans Chromium.</translation>
@@ -74,11 +77,15 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="2485774047568879945">Définissez Chromium comme navigateur par défaut pour partager et ouvrir facilement des liens</translation>
 <translation id="2512597191798760956">Maintenir l'icône de Chromium enfoncée et cliquer sur « Modifier l'écran d'accueil »</translation>
 <translation id="2517624234762908348">Synchroniser vos données Chromium</translation>
+<translation id="2575968074225731646">Accédez à Chromium plus rapidement à partir du Dock de votre iPhone.</translation>
 <translation id="2592940277904433508">Continuer à utiliser Chromium</translation>
 <translation id="2607609479243848905">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">Astuce Chromium : Recherchez ce que vous voyez avec Lentille Google</translation>
 <translation id="2650312721222849884">Pour voir vos onglets partout où vous utilisez Chromium, activez la synchronisation</translation>
 <translation id="2684230048001240293">Définissez Chromium comme navigateur par défaut pour synchroniser vos onglets, vos mots de passe et vos renseignements de paiement sur tous vos appareils</translation>
+<translation id="2729836253097154631">Connectez-vous à Chromium pour accéder à vos données</translation>
 <translation id="2730884209570016437">Chromium ne peut pas utiliser votre appareil photo, car il est utilisé par une autre application</translation>
+<translation id="2742952311155593352">Vous avez presque terminé la configuration de Chromium!</translation>
 <translation id="2798503587425057129">Ouvre la liste de lecture Chromium.</translation>
 <translation id="28276745681323897">Vous pouvez <ph name="BEGIN_LINK" />gérer les données Chromium enregistrées<ph name="END_LINK" /> dans votre compte Google.
 
@@ -98,6 +105,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}}</translation>
 <translation id="3410395242749598859">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte <ph name="EMAIL" />.
 Essayez d'attendre quelques minutes avant de changer de compte. Si vous changez de compte maintenant, ces données seront supprimées.</translation>
+<translation id="3420586870838853527">Astuce Chromium : La navigation sécurisée améliorée vous protège</translation>
 <translation id="3440830787838130530">Partagez facilement et en toute sécurité une copie d'un mot de passe avec votre groupe familial dans le gestionnaire de mots de passe Google</translation>
 <translation id="3472200483164753384">Fonctionnalité non prise en charge par Chromium Canary</translation>
 <translation id="347967311580159871">Afin d'accéder à plus de paramètres utilisant des données pour améliorer votre expérience Chromium, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
@@ -173,6 +181,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="5131565040785979529">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chromium est utilisé.</translation>
 <translation id="5134464247000681876">Ouvrez des liens à partir de Gmail, Maps, YouTube et d'autres applis dans Chromium</translation>
 <translation id="5203244847421322551">Enregistrez et remplissez automatiquement les mots de passe dans Chromium</translation>
+<translation id="5218806323985098884">Découvrir les nouveautés de Chromium</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5259423875997548710">Recherchez des visuels dans Chromium.</translation>
 <translation id="5284913972719948193">Importez vos données pour utiliser vos mots de passe, votre historique, vos favoris et vos cartes de crédit sur Chromium</translation>
@@ -194,6 +203,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="5521125884468363740">Pour voir vos onglets partout où vous utilisez Chromium, connectez-vous et activez la synchronisation</translation>
 <translation id="5534584691915394889">Les événements seront créés dans votre Calendrier Apple à partir de Chromium et de la Lentille Google.</translation>
 <translation id="5571094606370987472">Ouvre les onglets récents de Chromium.</translation>
+<translation id="5596644122344097310">Touchez ici pour tirer le meilleur parti de Chromium sur votre iPhone.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Basculez Chromium</translation>
 <translation id="5664395081284292058">Ouvrir Mon dernier onglet dans Chromium</translation>
@@ -235,11 +245,15 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="6424492062988593837">Une nouvelle version améliorée de Chromium est maintenant offerte.</translation>
 <translation id="6433172051771630690">Conseils pour tirer le meilleur parti de Chromium.</translation>
 <translation id="65045991564554105">Voir les favoris Chromium</translation>
+<translation id="6519797228806907665">Accédez à Chromium plus rapidement à partir de l'écran d'accueil de votre iPhone.</translation>
 <translation id="6538713818758208754">Ouvre la page de paramètres des modes de paiement dans Chromium.</translation>
 <translation id="6540186279384079894">Ouvrir un nouvel onglet dans Chromium</translation>
 <translation id="6563921047760808519">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chromium préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
+<translation id="6564769014061914792">Touchez ici pour tirer le meilleur parti de Chromium sur votre iPad.</translation>
+<translation id="6566303693324540692">Astuce Chromium : Déplacez Chromium vers votre écran d'accueil</translation>
 <translation id="6574750762636192517">Gérer les mots de passe dans Chromium</translation>
 <translation id="6590232959690355435">Ouvre la page de votre historique Chromium.</translation>
+<translation id="6649269674808477353">Ouvrez Chromium plus rapidement lorsque vous êtes prêt à naviguer sur votre iPhone.</translation>
 <translation id="6674470628873622334">Ouvre un nouvel onglet de navigation privée dans Chromium.</translation>
 <translation id="6680609900732453726">Gardez votre navigation privée avec l'authentification de l'appareil lorsque vous fermez Chromium</translation>
 <translation id="6752854822223394465">Votre organisation est en train de configurer Chromium…</translation>
@@ -289,6 +303,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7934404985878918282">Voir la liste de lecture Chromium</translation>
 <translation id="7935734571048689933">Chromium est géré</translation>
 <translation id="7951793218148208717">Ouvre un nouvel onglet dans Chromium.</translation>
+<translation id="7957726318578167662">Utilisez facilement Chromium chaque fois que vous touchez des liens dans les messages ou dans d'autres applis.</translation>
 <translation id="7980860476903281594">Chromium partage votre position avec les sites que vous autorisez.</translation>
 <translation id="7994322153108931467">Pour obtenir des conseils utiles sur Chromium, activez les notifications dans vos réglages iOS.</translation>
 <translation id="7997159823054171568">Définir Chromium comme navigateur par défaut</translation>
@@ -324,6 +339,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="8860548555286245440">Ouvrir les URL dans Chromium en Navigation privée</translation>
 <translation id="8880024619507699923">Votre organisation vous demande de vous connecter pour utiliser Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Profiter de la sécurité la plus robuste de Chromium</translation>
+<translation id="8908791447256515663">Accédez à Chromium plus rapidement à partir du Dock de votre iPad.</translation>
 <translation id="8925569192291721236">Soyez au courant des mises à jour de suivi des prix et des astuces Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes}}</translation>
 <translation id="8963279154877372067">Autoriser les notifications de Chromium à vous envoyer des alertes relatives aux réductions de prix</translation>

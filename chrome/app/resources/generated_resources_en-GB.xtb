@@ -249,7 +249,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1162479191445552288">Launch at startup</translation>
 <translation id="1163931534039071049">&amp;View frame source</translation>
 <translation id="1164015913575846413">alt + click</translation>
-<translation id="1164286072721995435">Shares the current tab with Gemini every time you start a new conversation. You can pause sharing your current tab at any time. Your data is not used to improve generative AI models.</translation>
 <translation id="1164891049599601209">Entered on deceptive site</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Close Tabs to the Right</translation>
@@ -538,7 +537,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1353980523955420967">Can’t find PPD. Make sure that your Chromebook is online and try again.</translation>
 <translation id="1354045473509304750">Continue allowing <ph name="HOST" /> to use and move your camera</translation>
 <translation id="1354148503392558902">Changing password…</translation>
-<translation id="1354943694624358993">Always share current tab</translation>
 <translation id="1355088139103479645">Delete all data?</translation>
 <translation id="1355088659320425659">History and tabs</translation>
 <translation id="1356376170199999104">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on microphone using a physical switch.</translation>
@@ -2376,7 +2374,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2605668923777146443">Go to <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" /> to see your options for Better Together.</translation>
 <translation id="2606246518223360146">Link data</translation>
 <translation id="2606454609872547359">No, continue without ChromeVox</translation>
-<translation id="2606568927909309675">Automatically creates captions for English audio and video. Audio and captions never leave your device.</translation>
 <translation id="2606890864830643943">Exporting diagnostic data</translation>
 <translation id="2607101320794533334">Subject Public Key Info</translation>
 <translation id="2609533306502181883">Research a topic</translation>
@@ -2428,6 +2425,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2636266464805306348">Window Titles</translation>
 <translation id="2637313651144986786">Search Tabs…</translation>
 <translation id="2637400434494156704">Incorrect PIN. You have one attempt remaining.</translation>
+<translation id="263796568413910992">Ask <ph name="SEARCH_ENGINE_NAME" /> or type a URL</translation>
 <translation id="2638662041295312666">Sign-in image</translation>
 <translation id="2640299212685523844">Use GTK</translation>
 <translation id="264083724974021997">Connect to your phone – dialogue</translation>
@@ -5781,7 +5779,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4956593309300508411">Stop sharing?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Save to a folder only on this device?</translation>
-<translation id="4958916254663453555">Your current tab will be automatically shared when you open Gemini in Chrome. The current tab's full content and URL are sent to Google.</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
 <translation id="4960020053211143927">Not supported by some apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5893,7 +5890,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5045367873597907704">About HID devices</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="504561833207953641">Opening in existing browser session.</translation>
-<translation id="5047544190872578914">Shares the current tab with Gemini every time you start a new conversation. You can pause sharing your current tab at any time.</translation>
 <translation id="504953514574706691">Tab excluded from suggested group</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Download unverified file</translation>
@@ -6413,6 +6409,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5414836363063783498">Verifying…</translation>
 <translation id="5415328625985164836">This is a beta program. You can now use Steam to play some games on your Chromebook.</translation>
 <translation id="5415497281076257439">Phrase</translation>
+<translation id="5415871492522952905">You’ll have your history and tabs on all your devices so that you can continue what you were doing</translation>
 <translation id="5417293056300086453">This site can use identifiers to play protected content.</translation>
 <translation id="5417312524372586921">Browser themes</translation>
 <translation id="541737483547792035">Magnify screen</translation>
@@ -6623,6 +6620,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5555760010546505198">Colour inversion, colour correction, magnifier, and display settings</translation>
 <translation id="555604722231274592">Enable <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Reload</translation>
+<translation id="555671485580955310">Sync history and tabs</translation>
 <translation id="5558129378926964177">Zoom &amp;In</translation>
 <translation id="5558594314398017686">OS default (when available)</translation>
 <translation id="5559311991468302423">Delete address</translation>
@@ -10589,6 +10587,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8310409247509201074"><ph name="NUM" /> tabs</translation>
 <translation id="831207808878314375">Definition</translation>
 <translation id="8312841338723044391">LIVE</translation>
+<translation id="8313308349366087671">Application options</translation>
 <translation id="8314089908545021657">Pair with new phone</translation>
 <translation id="8314381333424235892">Missing or uninstalled extension</translation>
 <translation id="831440797644402910">Can't open this folder</translation>
@@ -10749,7 +10748,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8419098111404128271">Search results for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="8419144699778179708">Deletes history, including in the search box</translation>
 <translation id="8420308167132684745">Edit dictionary entries</translation>
-<translation id="8421361468937925547">Live Caption (English only)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Tray is missing</translation>
 <translation id="8424250197845498070">Blocked by Advanced Protection</translation>
@@ -11046,6 +11044,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8637688295594795546">System update available. Preparing to download…</translation>
 <translation id="8638719155236856752">ChromeOS Network Health</translation>
 <translation id="8639635302972078117">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
+<translation id="8639963783467694461">Auto-fill settings</translation>
 <translation id="8640575194957831802">Last opened</translation>
 <translation id="8641946446576357115">Use your passwords on your iOS devices</translation>
 <translation id="8642577642520207435"><ph name="APP_NAME" /> camera permission</translation>

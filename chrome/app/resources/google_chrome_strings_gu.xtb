@@ -189,6 +189,7 @@
 <translation id="3047590466164881923">પ્રતિસાદનો સંવાદ બંધ કરો</translation>
 <translation id="306179102415443347">Google Password Manager પર ઝડપથી જવા માટે તમારા શૉર્ટકટનો ઉપયોગ કરો. તમે તમારા શૉર્ટકટને તમારા કમ્પ્યુટરની હોમ સ્ક્રીન અથવા ઍપ લૉન્ચર પર ખસેડી શકો છો.</translation>
 <translation id="3065168410429928842">Chrome ટૅબ</translation>
+<translation id="3073571714401714450">Chrome Devમાં Gemini ટૉગલ કરો</translation>
 <translation id="3080151273017101988">જ્યારે Google Chrome બંધ થાય ત્યારે બૅકગ્રાઉન્ડમાં ઍપ ચલાવવાનું ચાલુ રાખો</translation>
 <translation id="308397506772922478">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chrome ડેટા ડિલીટ કરો<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">તમારી Chrome પ્રોફાઇલને નામ આપો</translation>
@@ -378,6 +379,7 @@
 <translation id="5368118228313795342">વધારાનો કોડ: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">જ્યારે તમે Chrome શરૂ કરો અથવા ઑમ્નિબૉક્સ પરથી શોધ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="5394833366792865639">Chrome ટૅબ શેર કરો</translation>
+<translation id="5402307365844630024">Chrome બીટામાં Gemini ટૉગલ કરો</translation>
 <translation id="5430073640787465221">તમારી પસંદગીઓ ફાઇલ દૂષિત અથવા અમાન્ય છે.
 
 Google Chrome તમારા સેટિંગને રિકવર કરી શકતું નથી.</translation>
@@ -429,6 +431,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5941711191222866238">નાનું કરો</translation>
 <translation id="5941830788786076944">Google Chrome ને ડિફૉલ્ટ બ્રાઉઝર બનાવો</translation>
 <translation id="5947104538377036631">Chrome શૉર્ટકટ</translation>
+<translation id="5960071705175224773">કોઈ અજાણી ઍપ દ્વારા તમારા સેટિંગ બદલવામાં આવ્યા હતા</translation>
 <translation id="5968400720580217226">AI મોડ</translation>
 <translation id="5980111191913430208">અજાણ્યા સૉર્સ પરના એક્સ્ટેન્શન, ઍપ અને થીમ તમારા ડિવાઇસને નુકસાન પહોંચાડી શકે છે. Chromium તેને <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> પરથી જ ઇન્સ્ટૉલ કરવાનો સુઝાવ આપે છે</translation>
 <translation id="6003112304606738118">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="HOURS" /> કલાક બાકી છે</translation>
@@ -652,6 +655,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8362914115861174987">આ ભાષામાં અનુવાદ કરો</translation>
 <translation id="8366770919198174997">પર્ફોર્મન્સ ઘટાડે છે પરંતુ Chromeને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે</translation>
 <translation id="8370517070665726704">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
+<translation id="8377158135256176353">Chrome Canaryમાં Gemini ટૉગલ કરો</translation>
 <translation id="8387459386171870978">Chromeનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="8394720698884623075">URLsને Chromeમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે સરખાવીને ચેક કરે છે</translation>
 <translation id="8403038600646341038">કમ્પ્યૂટરની સ્ક્રીનમાં Chromeનો લોગો.</translation>
@@ -700,12 +704,14 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8914504000324227558">Chrome ફરીથી લોંચ કરો</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />માંથી તમારા Android ફોન પર નંબર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="8922998289262614701">Chromeમાંથી આ ઍપનો ડેટા કાઢી નાખો</translation>
+<translation id="8936233353620149764">Chromeમાં Gemini ટૉગલ કરો</translation>
 <translation id="8948460679427074738">આ એક્સ્ટેન્શન દ્વારા તેની ડેટા એકત્રિત કરવાની અને તેનો ઉપયોગ કરવાની રીત જેવી પ્રાઇવસી પ્રૅક્ટિસ પબ્લિશ કરવામાં આવી નથી. Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે.</translation>
 <translation id="8958307504142971576">Chromeમાં હવે તમારા માટે વધુ સુવિધાઓ ઉપલબ્ધ છે</translation>
 <translation id="8991530961471831170">Chromeમાં Gemini ખોલો</translation>
 <translation id="8992769679401294069">તમારો ડેટા તમારા પાસફ્રેઝ વડે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
 <translation id="8999117580775242387">જ્યારે HTTPS ઉપલબ્ધ ન હોય, ત્યારે Chrome તમને ચેતવણી આપ્યા વિના અસુરક્ષિત કનેક્શનનો ઉપયોગ કરશે</translation>
 <translation id="8999208279178790196">{0,plural, =0{એક Chrome અપડેટ ઉપલબ્ધ છે}=1{એક Chrome અપડેટ ઉપલબ્ધ છે}one{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}other{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}}</translation>
+<translation id="9010418943148193727">તમારું ડિફૉલ્ટ શોધ એન્જિન Chromeની બહારથી બદલવામાં આવ્યું હતું. તમારી સુરક્ષા માટે, Chrome તેને રીસેટ કરે છે.</translation>
 <translation id="9014771989710951291">એકથી વધુ સંસ્થાઓ Chromeને મેનેજ કરે છે</translation>
 <translation id="9024318700713112071">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="9066987883552592250">Chrome Canaryમાં Gemini બંધ કરો</translation>

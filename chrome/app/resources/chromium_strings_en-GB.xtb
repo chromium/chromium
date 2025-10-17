@@ -208,6 +208,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3296368748942286671">Continue running background apps when Chromium is closed</translation>
 <translation id="3313189106987092621">Chromium will warn you before loading any site using an insecure connection</translation>
 <translation id="3316771292331273802">You'll be signed out of most sites when you close all Chromium windows, except your Google Account if you're signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Your default search engine was changed from outside of Chromium. To protect you, Chromium reset it.</translation>
 <translation id="3352986031709923790">top-right corner of search area: right <ph name="RIGHT" />%, top <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Chromium data in your account</translation>
 <translation id="3369405342922656244">Search this page with image search</translation>
@@ -400,6 +401,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5941711191222866238">Minimise</translation>
 <translation id="5949225980829865667">To get this bookmark and more on all your devices, sign in to Chromium</translation>
 <translation id="5953657885167112863">Make Chromium yours</translation>
+<translation id="5960071705175224773">Your settings were changed by an unknown app</translation>
 <translation id="5968400720580217226">AI Mode</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Your organisation closes Chromium automatically when it isn't used for one minute.}other{Your organisation closes Chromium automatically when it isn't used for # minutes.}}</translation>
 <translation id="5987687638152509985">Update Chromium to start sync</translation>

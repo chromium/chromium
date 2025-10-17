@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">Пикир терезесин жабуу</translation>
 <translation id="306179102415443347">Сырсөздөрдү башкаргычка тез өтүү үчүн ыкчам баскычты колдонуңуз. Ыкчам баскычты компьютердин башкы экранына же колдонмолорду ишке киргизгичке жылдыра аласыз.</translation>
 <translation id="3065168410429928842">Chrome өтмөгү</translation>
+<translation id="3073571714401714450">Chrome Dev'деги Gemini'ды өчүрүү/күйгүзүү</translation>
 <translation id="3080151273017101988">Google Chrome жабылганда фондук колдонмолор иштей берсин</translation>
 <translation id="308397506772922478">Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chrome маалыматын өчүрүңүз<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Chrome профилиңиздин аталышын коюңуз</translation>
@@ -379,6 +380,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="5368118228313795342">Кошумча код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Chrome'ду иштетип баштаганда же Omnibox'тон издегенде көрсөтүлө турган баракты да көзөмөлдөйт.</translation>
 <translation id="5394833366792865639">Chrome өтмөгүн бөлүшүү</translation>
+<translation id="5402307365844630024">Chrome Бетадагы Gemini'ды өчүрүү/күйгүзүү</translation>
 <translation id="5430073640787465221">Жеке параметрлер файлыңыз бузулган же жараксыз.
 
 Google Chrome параметрлериңизди калыбына келтире албайт.</translation>
@@ -430,6 +432,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="5941711191222866238">Кичирейтүү</translation>
 <translation id="5941830788786076944">Google Chrome'ду демейки серепчи кылуу</translation>
 <translation id="5947104538377036631">Chrome ыкчам баскыч</translation>
+<translation id="5960071705175224773">Параметрлерди белгисиз колдонмо өзгөрттү</translation>
 <translation id="5968400720580217226">ЖИ режими</translation>
 <translation id="5980111191913430208">Белгисиз булактардан алынган кеңейтүүлөр, колдонмолор жана темалар түзмөгүңүзгө зыян келтириши мүмкүн. Chrome аларды <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> кызматынан гана орнотууну сунуштайт</translation>
 <translation id="6003112304606738118">Жүктөлүп алынууда... <ph name="HOURS" /> саат калды</translation>
@@ -653,6 +656,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8362914115861174987">Кайсы тилге:</translation>
 <translation id="8366770919198174997">Майнаптуулук төмөндөйт, бирок Chrome чабуулдарга туруктуураак болуп калат</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Баардык укуктар корголгон.</translation>
+<translation id="8377158135256176353">Chrome Canary'деги Gemini'ды өчүрүү/күйгүзүү</translation>
 <translation id="8387459386171870978">Chrome'ду колдоно берүү</translation>
 <translation id="8394720698884623075">Chrome'догу кооптуу сайттардын тизмесиндеги URL даректерин текшерет</translation>
 <translation id="8403038600646341038">Компьютердин экранындагы Chrome логотиби.</translation>
@@ -701,12 +705,14 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8914504000324227558">Chrome'ду кайрадан ишке киргизүү</translation>
 <translation id="8922193594870374009">Номерди <ph name="ORIGIN" /> сайтынан Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chrome'го кириңиз.</translation>
 <translation id="8922998289262614701">Бул колдонмодогу нерселерди Chrome'дон өчүрүү</translation>
+<translation id="8936233353620149764">Chrome'догу Gemini'ды өчүрүү/күйгүзүү</translation>
 <translation id="8948460679427074738">Бул кеңейтүү маалыматты кантип чогултуу жана колдонуу сыяктуу купуялыкты камсыз кылуу ыкмаларын жарыялаган эмес. Chrome аны өчүрүүнү сунуштайт.</translation>
 <translation id="8958307504142971576">Эми Chrome'до көбүрөөк функцияларды колдоно аласыз</translation>
 <translation id="8991530961471831170">Chrome'догу Gemini'ды ачуу</translation>
 <translation id="8992769679401294069">Маалыматыңыз сыр сүйлөм менен шифрленген. Google аккаунтуңузга Chrome маалыматын сактоо жана колдонуу үчүн аны киргизиңиз.</translation>
 <translation id="8999117580775242387">HTTPS жеткиликсиз болгондо, Chrome кооптуу туташууну сизге эскертпестен колдонот</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome'дун жаңы версиясы жеткиликтүү}=1{Chrome'дун жаңы версиясы жеткиликтүү}other{Chrome'дун жаңы версиясы # күндөн бери жеткиликтүү}}</translation>
+<translation id="9010418943148193727">Демейки издөө куралыңыз Chrome'дон тышкары өзгөртүлдү. Коопсуздугуңуз үчүн Chrome аны баштапкы абалга келтирди.</translation>
 <translation id="9014771989710951291">Chrome'ду бир нече уюм тескейт</translation>
 <translation id="9024318700713112071">Chrome'ду демейки серепчи кылуу</translation>
 <translation id="9066987883552592250">Chrome Canary'деги Gemini'ды жабуу</translation>

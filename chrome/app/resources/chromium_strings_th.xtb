@@ -205,6 +205,7 @@
 <translation id="3296368748942286671">เรียกใช้แอปพลิเคชันพื้นหลังต่อไปเมื่อปิด Chromium</translation>
 <translation id="3313189106987092621">Chromium จะแจ้งเตือนคุณก่อนโหลดเว็บไซต์โดยใช้การเชื่อมต่อที่ไม่ปลอดภัย</translation>
 <translation id="3316771292331273802">คุณจะออกจากระบบของเว็บไซต์ส่วนใหญ่เมื่อปิดหน้าต่าง Chromium ทั้งหมด ยกเว้นบัญชี Google ที่ลงชื่อเข้าใช้ Chromium หากต้องการให้เว็บไซต์จดจำคุณ ให้<ph name="SETTINGS_LINK" /></translation>
+<translation id="3322413454779348750">มีการเปลี่ยนเครื่องมือค้นหาเริ่มต้นของคุณจากภายนอก Chromium Chromium จึงรีเซ็ตเครื่องมือดังกล่าวเพื่อปกป้องคุณ</translation>
 <translation id="3352986031709923790">มุมขวาบนของพื้นที่การค้นหา: ขวา <ph name="RIGHT" />% บน <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">ข้อมูล Chromium ในบัญชี</translation>
 <translation id="3369405342922656244">ค้นหาหน้านี้ด้วยการค้นหารูปภาพ</translation>
@@ -397,6 +398,7 @@
 <translation id="5941711191222866238">ย่อเล็กสุด</translation>
 <translation id="5949225980829865667">ลงชื่อเข้าใช้ Chromium เพื่อดูบุ๊กมาร์กนี้และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5953657885167112863">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>
+<translation id="5960071705175224773">แอปที่ไม่รู้จักเปลี่ยนการตั้งค่าของคุณ</translation>
 <translation id="5968400720580217226">โหมด AI</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{องค์กรจะปิด Chromium โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา 1 นาที}other{องค์กรจะปิด Chromium โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา # นาที}}</translation>
 <translation id="5987687638152509985">อัปเดต Chromium เพื่อเริ่มการซิงค์</translation>

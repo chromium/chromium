@@ -190,6 +190,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3047590466164881923">Zapiranje pogovornega okna za povratne informacije</translation>
 <translation id="306179102415443347">Z bližnjico lahko hitro odprete Googlovega upravitelja gesel. Bližnjico lahko premaknete na začetni zaslon računalnika ali v zaganjalnik aplikacij.</translation>
 <translation id="3065168410429928842">Zavihek v Chromu</translation>
+<translation id="3073571714401714450">Preklop Geminija v Chromu Dev</translation>
 <translation id="3080151273017101988">Nadaljuj izvajanje programov v ozadju, ko je Google Chrome zaprt</translation>
 <translation id="308397506772922478">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Poimenujte profil v Chromu</translation>
@@ -379,6 +380,7 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 <translation id="5368118228313795342">Dodatna koda: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Določa tudi, katera stran je prikazana, ko zaženete Chrome ali iščete v naslovni vrstici.</translation>
 <translation id="5394833366792865639">Deljenje zavihka v Chromu</translation>
+<translation id="5402307365844630024">Preklop Geminija v Chromu beta</translation>
 <translation id="5430073640787465221">Datoteka z nastavitvami je poškodovana ali neveljavna.
 
 Google Chrome ne more obnoviti vaših nastavitev.</translation>
@@ -430,6 +432,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5941830788786076944">Nastavi Google Chrome kot privzeti brskalnik</translation>
 <translation id="5947104538377036631">Bližnjica za Chrome</translation>
+<translation id="5960071705175224773">Neznana aplikacija je spremenila vaše nastavitve</translation>
 <translation id="5968400720580217226">Način umetne inteligence</translation>
 <translation id="5980111191913430208">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chrome priporoča, da jih namestite samo tukaj: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Prenašanje … Še <ph name="HOURS" /> h.</translation>
@@ -653,6 +656,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8362914115861174987">Prevedi v jezik</translation>
 <translation id="8366770919198174997">Zmanjša učinkovitost delovanja, vendar je Chrome odpornejši proti napadom</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
+<translation id="8377158135256176353">Preklop Geminija v Chromu Canary</translation>
 <translation id="8387459386171870978">Še naprej uporabljaj Chrome</translation>
 <translation id="8394720698884623075">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu.</translation>
 <translation id="8403038600646341038">Chromov logotip na zaslonu računalnika.</translation>
@@ -701,12 +705,14 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8914504000324227558">Znova zaženi Chrome</translation>
 <translation id="8922193594870374009">Če želite telefonsko številko iz <ph name="ORIGIN" /> poslati v telefon Android, se prijavite v Chrome v obeh napravah.</translation>
 <translation id="8922998289262614701">Odstrani podatke te aplikacije iz Chroma</translation>
+<translation id="8936233353620149764">Preklop Geminija v Chromu</translation>
 <translation id="8948460679427074738">Ta razširitev še ni objavila postopkov zagotavljanja zasebnosti, na primer kako zbira in uporablja podatke. Chrome priporoča, da jo odstranite.</translation>
 <translation id="8958307504142971576">V Chromu je zdaj na voljo več funkcij</translation>
 <translation id="8991530961471831170">Odpri Geminija v Chromu</translation>
 <translation id="8992769679401294069">Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma uporabljati in shranjevati v računu Google.</translation>
 <translation id="8999117580775242387">Če HTTPS ni na voljo, Chrome uporabi povezavo, ki ni varna, ne da bi vas opozoril</translation>
 <translation id="8999208279178790196">{0,plural, =0{Posodobitev za Chrome je na voljo}=1{Posodobitev za Chrome je na voljo}one{Posodobitev za Chrome je na voljo že # dan}two{Posodobitev za Chrome je na voljo že # dneva}few{Posodobitev za Chrome je na voljo že # dni}other{Posodobitev za Chrome je na voljo že # dni}}</translation>
+<translation id="9010418943148193727">Privzeti iskalnik je bil spremenjen zunaj Chroma. Chrome ga je ponastavil zaradi vaše zaščite.</translation>
 <translation id="9014771989710951291">Chrome upravlja več organizacij</translation>
 <translation id="9024318700713112071">Nastavite Chrome kot privzeto možnost</translation>
 <translation id="9066987883552592250">Zapiranje Geminija v Chromu Canary</translation>

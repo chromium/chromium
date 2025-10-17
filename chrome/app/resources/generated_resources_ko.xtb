@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">시작할 때 실행</translation>
 <translation id="1163931534039071049">프레임 소스 보기(&amp;V)</translation>
 <translation id="1164015913575846413">Alt + 클릭</translation>
-<translation id="1164286072721995435">새 대화를 시작할 때마다 현재 탭이 Gemini와 공유됩니다. 언제든지 현재 탭 공유를 일시중지할 수 있습니다. 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="1164891049599601209">사기성 사이트에서 입력됨</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1166212789817575481">오른쪽 탭 닫기</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">PPD를 찾을 수 없습니다. Chromebook이 온라인 상태인지 확인하고 다시 시도해 보세요.</translation>
 <translation id="1354045473509304750"><ph name="HOST" />의 카메라 사용 및 이동을 계속 허용</translation>
 <translation id="1354148503392558902">비밀번호 변경 중...</translation>
-<translation id="1354943694624358993">항상 현재 탭 공유</translation>
 <translation id="1355088139103479645">모든 데이터를 삭제하시겠습니까?</translation>
 <translation id="1355088659320425659">방문 기록 및 탭</translation>
 <translation id="1356376170199999104">허용됨 – <ph name="PERMISSION_DETAILS" />. 물리적 스위치를 사용하여 마이크를 사용 설정하세요.</translation>
@@ -2378,7 +2376,6 @@
 <translation id="2605668923777146443">Better Together 옵션을 확인하려면 <ph name="LINK_BEGIN" />설정<ph name="LINK_END" />으로 이동하세요</translation>
 <translation id="2606246518223360146">데이터 연결</translation>
 <translation id="2606454609872547359">아니요, ChromeVox 활성화 없이 계속</translation>
-<translation id="2606568927909309675">영어 음성 및 영상 자막을 자동으로 생성합니다. 오디오와 자막은 기기 외부로 유출되지 않습니다.</translation>
 <translation id="2606890864830643943">진단 데이터 내보내기</translation>
 <translation id="2607101320794533334">대상 공개 키 정보</translation>
 <translation id="2609533306502181883">주제 연구하기</translation>
@@ -2430,6 +2427,7 @@
 <translation id="2636266464805306348">창 제목</translation>
 <translation id="2637313651144986786">탭 검색...</translation>
 <translation id="2637400434494156704">잘못된 PIN입니다. 앞으로 1번 더 시도할 수 있습니다.</translation>
+<translation id="263796568413910992"><ph name="SEARCH_ENGINE_NAME" />에 물어보거나 URL을 입력하세요.</translation>
 <translation id="2638662041295312666">로그인 이미지</translation>
 <translation id="2640299212685523844">GTK 사용</translation>
 <translation id="264083724974021997">휴대전화에 연결 - 대화상자</translation>
@@ -5782,7 +5780,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4956593309300508411">공유를 중지하시겠습니까?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">이 기기의 폴더에만 저장하시겠습니까?</translation>
-<translation id="4958916254663453555">Chrome의 Gemini를 열면 현재 탭이 자동으로 공유됩니다. 현재 탭의 전체 콘텐츠와 URL이 Google로 전송됩니다.</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="4960020053211143927">일부 앱에서 지원되지 않습니다.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5894,7 +5891,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5045367873597907704">HID 기기 정보</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
-<translation id="5047544190872578914">새 대화를 시작할 때마다 현재 탭이 Gemini와 공유됩니다. 언제든지 현재 탭 공유를 일시중지할 수 있습니다.</translation>
 <translation id="504953514574706691">추천 그룹에서 탭이 제외됨</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">확인되지 않은 파일 다운로드</translation>
@@ -6414,6 +6410,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5414836363063783498">인증 중...</translation>
 <translation id="5415328625985164836">이 프로그램은 베타 버전입니다. 이제 Chromebook에서 Steam을 사용하여 게임을 즐길 수 있습니다.</translation>
 <translation id="5415497281076257439">구문</translation>
+<translation id="5415871492522952905">모든 기기에 방문 기록과 탭이 유지되므로 이전에 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="5417293056300086453">이 사이트에서 식별자를 사용하여 보호된 콘텐츠를 재생할 수 있습니다.</translation>
 <translation id="5417312524372586921">브라우저 테마</translation>
 <translation id="541737483547792035">화면 확대</translation>
@@ -6624,6 +6621,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5555760010546505198">색상 반전, 색상 보정, 돋보기, 디스플레이 설정</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> 사용 설정</translation>
 <translation id="5556459405103347317">새로고침</translation>
+<translation id="555671485580955310">방문 기록 및 탭 동기화</translation>
 <translation id="5558129378926964177">확대(&amp;I)</translation>
 <translation id="5558594314398017686">OS 기본값(가능한 경우)</translation>
 <translation id="5559311991468302423">주소 삭제</translation>
@@ -10590,6 +10588,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8310409247509201074">탭 <ph name="NUM" />개</translation>
 <translation id="831207808878314375">정의</translation>
 <translation id="8312841338723044391">라이브</translation>
+<translation id="8313308349366087671">애플리케이션 옵션</translation>
 <translation id="8314089908545021657">새 스마트폰과 페어링</translation>
 <translation id="8314381333424235892">확장 프로그램이 없거나 설치되지 않음</translation>
 <translation id="831440797644402910">이 폴더를 열 수 없음</translation>
@@ -10750,7 +10749,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />'에 대한 검색결과</translation>
 <translation id="8419144699778179708">검색창에 입력한 내용을 비롯한 방문 기록 삭제</translation>
 <translation id="8420308167132684745">사전 항목 수정</translation>
-<translation id="8421361468937925547">실시간 자막(영어 전용)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">트레이 없음</translation>
 <translation id="8424250197845498070">고급 보호 기능으로 차단됨</translation>
@@ -11047,6 +11045,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8637688295594795546">시스템 업데이트 사용가능. 다운로드 준비 중…</translation>
 <translation id="8638719155236856752">ChromeOS 네트워크 상태</translation>
 <translation id="8639635302972078117">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
+<translation id="8639963783467694461">자동 완성 설정</translation>
 <translation id="8640575194957831802">마지막으로 열어본 날짜</translation>
 <translation id="8641946446576357115">iOS 기기에서 비밀번호 사용</translation>
 <translation id="8642577642520207435"><ph name="APP_NAME" /> 카메라 권한</translation>

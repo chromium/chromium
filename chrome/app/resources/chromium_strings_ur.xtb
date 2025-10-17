@@ -207,6 +207,7 @@
 <translation id="3296368748942286671">‏Chromium بند ہو جانے پر پس منظر کی ایپس چلانا جاری رکھیں</translation>
 <translation id="3313189106987092621">‏غیر محفوظ کنکشن کا استعمال کر کے کسی بھی سائٹ کو لوڈ کرنے سے پہلے Chromium آپ کو متنبہ کرے گا</translation>
 <translation id="3316771292331273802">‏اگر آپ Chromium میں سائن ان ہیں تو اپنے Google اکاؤنٹ کے علاوہ، سبھی Chromium ونڈوز بند کرنے پر آپ بیشتر سائٹس سے سائن آؤٹ ہو جائیں گے۔ سائٹس کو آپ کی معلومات یاد رکھنے کی اجازت دینے کے لیے، <ph name="SETTINGS_LINK" /> پر جائیں۔</translation>
+<translation id="3322413454779348750">‏آپ کا ڈیفالٹ سرچ انجن Chromium کے باہر سے تبدیل کیا گیا تھا۔ آپ کی حفاظت کے لیے، Chromium نے اسے ری سیٹ کر دیا۔</translation>
 <translation id="3352986031709923790">تلاش کے حلقے کا اوپری بایاں کونا: <ph name="RIGHT" /> فیصد بائیں، <ph name="TOP" /> فیصد اوپر</translation>
 <translation id="3366305173356742781">‏آپ کے اکاؤنٹ میں Chromium ڈیٹا</translation>
 <translation id="3369405342922656244">اس صفحہ کو تصاویر کا استعمال کر کے تلاش کے ساتھ تلاش کریں</translation>
@@ -399,6 +400,7 @@
 <translation id="5941711191222866238">چھوٹا کریں</translation>
 <translation id="5949225980829865667">‏اپنے سبھی آلات پر یہ بُک مارک اور مزید حاصل کرنے کے لیے، Chromium میں سائن ان کریں</translation>
 <translation id="5953657885167112863">‏‫Chromium کو اپنا بنائیں</translation>
+<translation id="5960071705175224773">آپ کی ترتیبات کو ایک نامعلوم ایپ نے تبدیل کر دیا</translation>
 <translation id="5968400720580217226">‏‫AI وضع</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{‏1 منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر اسے بند کر دیتی ہے۔}other{‏# منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر اسے بند کر دیتی ہے۔}}</translation>
 <translation id="5987687638152509985">‏مطابقت پذیری شروع کرنے کیلئے Chromium کو اپ ڈیٹ کریں</translation>

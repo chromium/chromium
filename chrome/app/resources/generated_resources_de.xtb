@@ -249,7 +249,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1162479191445552288">Bei Hangout-Anruf automatisch starten</translation>
 <translation id="1163931534039071049">Frame-Quelltext &amp;anzeigen</translation>
 <translation id="1164015913575846413">Alt + Klick</translation>
-<translation id="1164286072721995435">Der aktuelle Tab wird dann jedes Mal, wenn du eine neue Unterhaltung beginnst, mit Gemini geteilt. Du kannst das Teilen des aktuellen Tabs jederzeit pausieren. Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1166212789817575481">Tabs rechts schließen</translation>
@@ -538,7 +537,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1353980523955420967">PPD kann nicht gefunden werden. Vergewissere dich, dass dein Chromebook online ist und versuche es noch einmal.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen</translation>
 <translation id="1354148503392558902">Passwort wird geändert…</translation>
-<translation id="1354943694624358993">Aktuellen Tab immer teilen</translation>
 <translation id="1355088139103479645">Alle Daten löschen?</translation>
 <translation id="1355088659320425659">Verlauf und Tabs</translation>
 <translation id="1356376170199999104">Zugelassen – <ph name="PERMISSION_DETAILS" />. Aktiviere das Mikrofon über den physischen Schalter.</translation>
@@ -2360,7 +2358,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2605668923777146443">Rufe <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> auf, um Better Together zu konfigurieren.</translation>
 <translation id="2606246518223360146">Daten verknüpfen</translation>
 <translation id="2606454609872547359">Nein, ohne ChromeVox fortfahren</translation>
-<translation id="2606568927909309675">Erstellt automatisch Untertitel für englischsprachige Audioinhalte und Videos. Audioinhalte und Untertitel werden ausschließlich auf dem Gerät gespeichert.</translation>
 <translation id="2606890864830643943">Diagnosedaten werden exportiert</translation>
 <translation id="2607101320794533334">Informationen zum öffentlichen Schlüssel des Antragstellers</translation>
 <translation id="2609533306502181883">Ein Thema recherchieren</translation>
@@ -2412,6 +2409,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2636266464805306348">Fenstertitel</translation>
 <translation id="2637313651144986786">Tabs suchen…</translation>
 <translation id="2637400434494156704">Falsche PIN. Du hast noch einen Eingabeversuch.</translation>
+<translation id="263796568413910992"><ph name="SEARCH_ENGINE_NAME" /> fragen oder URL eingeben</translation>
 <translation id="2638662041295312666">Log-in-Bild</translation>
 <translation id="2640299212685523844">GTK verwenden</translation>
 <translation id="264083724974021997">Mit dem Smartphone verbinden – Dialogfenster</translation>
@@ -4609,7 +4607,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4133265950310064865">Erweitertes Safe Browsing</translation>
 <translation id="4134838386867070505">Schritt 1 von 4: Problem beschreiben</translation>
 <translation id="413534985210133938">„<ph name="LOCAL_FOLDER" />“ ist nur auf diesem Gerät gespeichert. Wenn du dieses Lesezeichen in den Ordner „<ph name="LOCAL_FOLDER" />“ verschiebst, ist es auf deinen anderen Geräten nicht mehr verfügbar.</translation>
-<translation id="4135746311382563554">Zusätzliche Nutzungsbedingungen für Google Chrome und Chrome OS</translation>
+<translation id="4135746311382563554">Zusatzbedingungen für Google Chrome und Chrome OS</translation>
 <translation id="4136203100490971508">Das Nachtlicht wird automatisch bei Sonnenaufgang deaktiviert</translation>
 <translation id="41365691917097717">Wenn du fortfährst, erlaubst du der ADB-Fehlerbehebung, Android-Apps zu erstellen und zu testen. Durch diese Aktion können Android-Apps installiert werden, die nicht von Google geprüft wurden. Zum Deaktivieren ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
 <translation id="4137923333452716643">Markiere den Text, der im Lesemodus aufgerufen werden soll</translation>
@@ -5762,7 +5760,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4956593309300508411">Freigabe beenden?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">In einem Ordner auf diesem Gerät speichern?</translation>
-<translation id="4958916254663453555">Dein aktueller Tab wird automatisch geteilt, wenn du Gemini in Chrome öffnest. Der gesamte Inhalt und die URL des aktuellen Tabs werden an Google gesendet.</translation>
 <translation id="4959262764292427323">Passwörter werden in deinem Google-Konto gespeichert, sodass du sie auf jedem Gerät verwenden kannst</translation>
 <translation id="4960020053211143927">Wird von manchen Apps nicht unterstützt</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5874,7 +5871,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5045367873597907704">Info über HID-Geräte</translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
 <translation id="504561833207953641">Wird in einer aktuellen Browsersitzung geöffnet.</translation>
-<translation id="5047544190872578914">Der aktuelle Tab wird dann jedes Mal, wenn du eine neue Unterhaltung beginnst, mit Gemini geteilt. Du kannst das Teilen des aktuellen Tabs jederzeit pausieren.</translation>
 <translation id="504953514574706691">Tab wurde aus der vorgeschlagenen Gruppe ausgeschlossen</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Ungeprüfte Datei herunterladen</translation>
@@ -6393,6 +6389,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5414836363063783498">Wird überprüft...</translation>
 <translation id="5415328625985164836">Dies ist ein Betaprogramm. Du kannst jetzt Steam verwenden, um einige Games auf Chromebook zu spielen.</translation>
 <translation id="5415497281076257439">Wortgruppe</translation>
+<translation id="5415871492522952905">Du kannst deinen Verlauf und deine Tabs auf allen deinen Geräten abrufen, sodass du dort weitermachen kannst, wo du vorher aufgehört hast</translation>
 <translation id="5417293056300086453">Diese Website kann Kennungen verwenden, um geschützte Inhalte wiederzugeben.</translation>
 <translation id="5417312524372586921">Browserdesigns</translation>
 <translation id="541737483547792035">Anzeige vergrößern</translation>
@@ -6603,6 +6600,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5555760010546505198">Farbumkehr, Farbkorrektur, Lupe und Anzeigeeinstellungen</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> aktivieren</translation>
 <translation id="5556459405103347317">Neu laden</translation>
+<translation id="555671485580955310">Verlauf und Tabs synchronisieren</translation>
 <translation id="5558129378926964177">Ver&amp;größern</translation>
 <translation id="5558594314398017686">Standardeinstellung des Betriebssystems (falls verfügbar)</translation>
 <translation id="5559311991468302423">Adresse löschen</translation>
@@ -10566,6 +10564,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8310409247509201074"><ph name="NUM" /> Tabs</translation>
 <translation id="831207808878314375">Definition</translation>
 <translation id="8312841338723044391">LIVE</translation>
+<translation id="8313308349366087671">Anwendungsoptionen</translation>
 <translation id="8314089908545021657">Mit neuem Smartphone koppeln</translation>
 <translation id="8314381333424235892">Erweiterung fehlt oder wurde deinstalliert</translation>
 <translation id="831440797644402910">Dieser Ordner kann nicht geöffnet werden</translation>
@@ -10726,7 +10725,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8419098111404128271">Suchergebnisse für "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8419144699778179708">Löscht den Verlauf, auch im Suchfeld</translation>
 <translation id="8420308167132684745">Wörterbucheinträge bearbeiten</translation>
-<translation id="8421361468937925547">Automatische Untertitel (nur auf Englisch)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Fach fehlt</translation>
 <translation id="8424250197845498070">Vom erweiterten Sicherheitsprogramm blockiert</translation>
@@ -11023,6 +11021,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8637688295594795546">Systemupdate verfügbar. Download wird vorbereitet...</translation>
 <translation id="8638719155236856752">ChromeOS-Netzwerkstatus</translation>
 <translation id="8639635302972078117">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert.</translation>
+<translation id="8639963783467694461">AutoFill-Einstellungen</translation>
 <translation id="8640575194957831802">Zuletzt geöffnet</translation>
 <translation id="8641946446576357115">Passwörter auf iOS-Geräten verwenden</translation>
 <translation id="8642577642520207435">Kameraberechtigung für <ph name="APP_NAME" /></translation>

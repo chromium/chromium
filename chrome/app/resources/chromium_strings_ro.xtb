@@ -206,6 +206,7 @@
 <translation id="3296368748942286671">Rulați în continuare aplicații de fundal când Chromium este închis</translation>
 <translation id="3313189106987092621">Chromium te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
 <translation id="3316771292331273802">Dacă te-ai conectat la Chromium, când închizi toate ferestrele Chromium fără să te deconectezi de la Contul Google, te vei deconecta de pe majoritatea site-urilor. Pentru ca site-urile să te rețină, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Motorul de căutare prestabilit a fost schimbat din afara browserului Chromium. Pentru a te proteja, Chromium l-a resetat.</translation>
 <translation id="3352986031709923790">colțul din dreapta sus al zonei de căutare: dreapta <ph name="RIGHT" /> %, sus <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Datele Chromium din cont</translation>
 <translation id="3369405342922656244">Caută această pagină cu Căutarea de imagini</translation>
@@ -398,6 +399,7 @@
 <translation id="5941711191222866238">Minimizează</translation>
 <translation id="5949225980829865667">Pentru a accesa acest marcaj și altele pe toate dispozitivele, conectează-te la Chromium</translation>
 <translation id="5953657885167112863">Personalizează Chromium</translation>
+<translation id="5960071705175224773">Setările au fost modificate de o aplicație necunoscută</translation>
 <translation id="5968400720580217226">Modul AI</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organizația ta închide automat Chromium dacă nu este folosit timp de un minut.}few{Organizația ta închide automat Chromium dacă nu este folosit timp de # minute.}other{Organizația ta închide automat Chromium dacă nu este folosit timp de # de minute.}}</translation>
 <translation id="5987687638152509985">Actualizează Chromium pentru a începe sincronizarea</translation>

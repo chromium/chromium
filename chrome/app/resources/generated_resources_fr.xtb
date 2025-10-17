@@ -249,7 +249,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1162479191445552288">Lancer au démarrage</translation>
 <translation id="1163931534039071049">&amp;Afficher le code source du cadre</translation>
 <translation id="1164015913575846413">Alt+Clic</translation>
-<translation id="1164286072721995435">Partage l'onglet actuel avec Gemini chaque fois que vous démarrez une nouvelle conversation. Vous pouvez suspendre le partage de l'onglet actuel à tout moment. Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="1164891049599601209">Saisi sur un site trompeur</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1166212789817575481">Fermer les onglets sur la droite</translation>
@@ -539,7 +538,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1353980523955420967">Impossible de trouver le fichier PPD. Vérifiez que votre Chromebook est connecté, puis réessayez.</translation>
 <translation id="1354045473509304750">Continuer d'autoriser <ph name="HOST" /> à utiliser et bouger la caméra</translation>
 <translation id="1354148503392558902">Modification du mot de passe...</translation>
-<translation id="1354943694624358993">Toujours partager l'onglet actuel</translation>
 <translation id="1355088139103479645">Supprimer toutes les données ?</translation>
 <translation id="1355088659320425659">Historique et onglets</translation>
 <translation id="1356376170199999104">Accordée – <ph name="PERMISSION_DETAILS" />. Activez le micro à l'aide du bouton physique.</translation>
@@ -2364,7 +2362,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2605668923777146443">Accédez aux <ph name="LINK_BEGIN" />paramètres<ph name="LINK_END" /> afin de voir vos options pour Better Together.</translation>
 <translation id="2606246518223360146">Associer les données</translation>
 <translation id="2606454609872547359">Non, continuer sans ChromeVox</translation>
-<translation id="2606568927909309675">Génère automatiquement des sous-titres pour les contenus audio et vidéo en anglais. Le flux audio et les sous-titres ne sont jamais exportés hors de votre appareil.</translation>
 <translation id="2606890864830643943">Exportation des données de diagnostic…</translation>
 <translation id="2607101320794533334">Infos sur la clé publique de l'objet</translation>
 <translation id="2609533306502181883">Fais des recherches sur un thème</translation>
@@ -2416,6 +2413,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2636266464805306348">Titres des fenêtres</translation>
 <translation id="2637313651144986786">Rechercher dans les onglets…</translation>
 <translation id="2637400434494156704">Code incorrect. Il vous reste une tentative.</translation>
+<translation id="263796568413910992">Posez une question à <ph name="SEARCH_ENGINE_NAME" /> ou saisissez une URL</translation>
 <translation id="2638662041295312666">Image de connexion</translation>
 <translation id="2640299212685523844">Utiliser GTK</translation>
 <translation id="264083724974021997">Connexion à votre téléphone – Boîte de dialogue</translation>
@@ -5766,7 +5764,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4956593309300508411">Arrêter le partage ?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Enregistrer dans un dossier sur cet appareil uniquement ?</translation>
-<translation id="4958916254663453555">Votre onglet actuel sera partagé automatiquement lorsque vous ouvrirez Gemini dans Chrome. Tout le contenu et l'URL de l'onglet actuel sont envoyés à Google.</translation>
 <translation id="4959262764292427323">Les mots de passe sont enregistrés dans votre compte Google, afin que vous puissiez les utiliser sur tous vos appareils</translation>
 <translation id="4960020053211143927">Non compatible avec certaines applis</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5878,7 +5875,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5045367873597907704">À propos des appareils HID</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="504561833207953641">Ouverture dans une session de navigateur existante.</translation>
-<translation id="5047544190872578914">Partage l'onglet actuel avec Gemini chaque fois que vous démarrez une nouvelle conversation. Vous pouvez suspendre le partage de l'onglet actuel à tout moment.</translation>
 <translation id="504953514574706691">Onglet exclu du groupe suggéré</translation>
 <translation id="5050330054928994520">Synthèse vocale</translation>
 <translation id="5051461727068120271">Télécharger le fichier non vérifié</translation>
@@ -6397,6 +6393,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5414836363063783498">Validation…</translation>
 <translation id="5415328625985164836">Il s'agit d'un programme bêta. Vous pouvez désormais utiliser Steam pour jouer à certains jeux sur votre Chromebook.</translation>
 <translation id="5415497281076257439">Expression</translation>
+<translation id="5415871492522952905">Comme vous aurez accès à votre historique et à vos onglets sur tous vos appareils, vous pourrez continuer vos activités</translation>
 <translation id="5417293056300086453">Ce site peut utiliser des identifiants pour lire du contenu protégé.</translation>
 <translation id="5417312524372586921">Thèmes du navigateur</translation>
 <translation id="541737483547792035">Agrandir l'écran</translation>
@@ -6607,6 +6604,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5555760010546505198">Inversion des couleurs, correction des couleurs, loupe et paramètres d'affichage</translation>
 <translation id="555604722231274592">Activer le <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Actualiser</translation>
+<translation id="555671485580955310">Synchroniser l'historique et les onglets</translation>
 <translation id="5558129378926964177">Zoom &amp;avant</translation>
 <translation id="5558594314398017686">Valeur par défaut de l'OS (si disponible)</translation>
 <translation id="5559311991468302423">Supprimer l'adresse</translation>
@@ -8742,6 +8740,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7055451306017383754">Impossible d'annuler le partage, car une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Parallels Desktop.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Navigation privée}one{# fenêtre de navigation privée ouverte}other{# fenêtres de navigation privée ouvertes}}</translation>
 <translation id="7056526158851679338">&amp;Inspecter les appareils</translation>
+<translation id="7057567173736333354">Décrire votre image</translation>
 <translation id="70577934383983846">Utiliser ce mot de passe sur tous vos appareils</translation>
 <translation id="7058024590501568315">Réseau masqué</translation>
 <translation id="7059858479264779982">Lancement automatique</translation>
@@ -9947,6 +9946,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7899720074434636454">Fermer la demande de <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Votre organisation peut consulter des informations sur cet appareil (système d'exploitation, navigateur, paramètres et logiciels installés) pour s'assurer qu'il peut être utilisé de façon sûre</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Créer des images</translation>
 <translation id="7903429136755645827">Cliquer pour personnaliser les commandes de jeu</translation>
 <translation id="7903481341948453971">Utiliser le verrouillage de l'écran pour saisir les mots de passe</translation>
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
@@ -10574,6 +10574,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8310409247509201074"><ph name="NUM" /> onglets</translation>
 <translation id="831207808878314375">Définition</translation>
 <translation id="8312841338723044391">EN DIRECT</translation>
+<translation id="8313308349366087671">Options d'applications</translation>
 <translation id="8314089908545021657">Associer à un nouveau téléphone</translation>
 <translation id="8314381333424235892">Extension manquante ou non installée</translation>
 <translation id="831440797644402910">Impossible d'ouvrir ce dossier</translation>
@@ -10725,6 +10726,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8413795581997394485">Protection contre les extensions, sites et téléchargements connus pour être dangereux. Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
 <translation id="8413956290606243087">Voulez-vous activer ChromeVox, le lecteur d'écran intégré pour Chrome OS ?</translation>
 <translation id="8414396119627470038">Se connecter à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Rechercher quelque chose</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
 <translation id="8417065541337558100">Aperçu de votre caméra</translation>
 <translation id="8417548266957501132">Mot de passe du parent</translation>
@@ -10733,7 +10735,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8419098111404128271">Résultats de recherche pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8419144699778179708">Supprime l'historique, y compris dans le champ de recherche</translation>
 <translation id="8420308167132684745">Modifier des entrées du dictionnaire</translation>
-<translation id="8421361468937925547">Sous-titres instantanés (anglais uniquement)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Bac à papier manquant</translation>
 <translation id="8424250197845498070">Bloqué par la Protection Avancée</translation>
@@ -11030,6 +11031,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8637688295594795546">Mise à jour du système disponible. Préparation du téléchargement…</translation>
 <translation id="8638719155236856752">État du réseau ChromeOS</translation>
 <translation id="8639635302972078117">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données liées à son utilisation et à celle des applications, ainsi que des données de diagnostic. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Si vous avez activé le paramètre "Activité additionnelle sur le Web et les applications" pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
+<translation id="8639963783467694461">Paramètres de saisie automatique</translation>
 <translation id="8640575194957831802">Dernier ouvert</translation>
 <translation id="8641946446576357115">Utilisez vos mots de passe sur vos appareils iOS</translation>
 <translation id="8642577642520207435">Autorisation d'accéder à l'appareil photo de <ph name="APP_NAME" /></translation>

@@ -249,7 +249,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1162479191445552288">Apri all'avvio</translation>
 <translation id="1163931534039071049">&amp;Visualizza sorgente frame</translation>
 <translation id="1164015913575846413">Alt + clic</translation>
-<translation id="1164286072721995435">Condivide la scheda corrente con Gemini ogni volta che avvii una nuova conversazione. Puoi mettere in pausa la condivisione della scheda corrente in qualsiasi momento. I tuoi dati non vengono usati per migliorare i modelli di AI generativa.</translation>
 <translation id="1164891049599601209">Inserita in un sito ingannevole</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1166212789817575481">Chiudi schede a destra</translation>
@@ -538,7 +537,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1353980523955420967">Impossibile trovare il file PPD. Assicurati che il Chromebook sia online e riprova.</translation>
 <translation id="1354045473509304750">Continua a consentire a <ph name="HOST" /> di utilizzare e spostare la videocamera</translation>
 <translation id="1354148503392558902">Modifica della password in corso…</translation>
-<translation id="1354943694624358993">Condividi sempre la scheda corrente</translation>
 <translation id="1355088139103479645">Vuoi eliminare tutti i dati?</translation>
 <translation id="1355088659320425659">Cronologia e schede</translation>
 <translation id="1356376170199999104">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva il microfono usando l'interruttore fisico.</translation>
@@ -1237,6 +1235,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1829192082282182671">Riduc&amp;i</translation>
 <translation id="1830550083491357902">Accesso non eseguito</translation>
 <translation id="1831848493690504725">Impossibile accedere a Google tramite la rete collegata. Prova a scegliere un'altra rete oppure a controllare le impostazioni di rete o le impostazioni del proxy (se ne usi uno).</translation>
+<translation id="1832414451155700364">Scegli se sincronizzare la cronologia e le schede</translation>
 <translation id="1832459821645506983">Ok</translation>
 <translation id="1832511806131704864">Cambio di telefono aggiornato</translation>
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
@@ -2363,7 +2362,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2605668923777146443">Vai alle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" /> per visualizzare le opzioni disponibili per Better Together.</translation>
 <translation id="2606246518223360146">Collega dati</translation>
 <translation id="2606454609872547359">No, continua senza ChromeVox</translation>
-<translation id="2606568927909309675">Vengono creati automaticamente i sottotitoli per i contenuti audio e video in inglese. Audio e sottotitoli non possono essere trasferiti dal dispositivo.</translation>
 <translation id="2606890864830643943">Esportazione dati diagnostici in corso…</translation>
 <translation id="2607101320794533334">Info sulla chiave pubblica del soggetto</translation>
 <translation id="2609533306502181883">Ricerca un argomento</translation>
@@ -2415,6 +2413,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2636266464805306348">Titoli finestre</translation>
 <translation id="2637313651144986786">Cerca tra le schede…</translation>
 <translation id="2637400434494156704">PIN errato. Hai ancora a disposizione un tentativo.</translation>
+<translation id="263796568413910992">Chiedi a <ph name="SEARCH_ENGINE_NAME" /> o digita un URL</translation>
 <translation id="2638662041295312666">Immagine accesso</translation>
 <translation id="2640299212685523844">Usa GTK</translation>
 <translation id="264083724974021997">Collegati al telefono - Finestra di dialogo</translation>
@@ -5767,7 +5766,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4956593309300508411">Interrompere la condivisione?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvare in una cartella solo su questo dispositivo?</translation>
-<translation id="4958916254663453555">La scheda corrente verrà condivisa automaticamente quando apri Gemini in Chrome. I contenuti completi e l'URL della scheda corrente vengono inviati a Google.</translation>
 <translation id="4959262764292427323">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo</translation>
 <translation id="4960020053211143927">Non supportata da alcune app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5879,7 +5877,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5045367873597907704">Informazioni dispositivi HID</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
 <translation id="504561833207953641">Apertura nella sessione del browser esistente.</translation>
-<translation id="5047544190872578914">Condivide la scheda corrente con Gemini ogni volta che avvii una nuova conversazione. Puoi mettere in pausa la condivisione della scheda corrente in qualsiasi momento.</translation>
 <translation id="504953514574706691">Scheda esclusa dal gruppo suggerito</translation>
 <translation id="5050330054928994520">Sintesi vocale</translation>
 <translation id="5051461727068120271">Scarica file non verificato</translation>
@@ -6399,6 +6396,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5414836363063783498">Verifica in corso…</translation>
 <translation id="5415328625985164836">Questo è un programma beta. Ora puoi usare Steam per giocare ad alcuni giochi su Chromebook.</translation>
 <translation id="5415497281076257439">Frase</translation>
+<translation id="5415871492522952905">La cronologia e le schede saranno disponibili su tutti i tuoi dispositivi, così potrai continuare ciò che stavi facendo</translation>
 <translation id="5417293056300086453">Questo sito può usare identificatori per riprodurre contenuti protetti.</translation>
 <translation id="5417312524372586921">Temi del browser</translation>
 <translation id="541737483547792035">Ingrandisci lo schermo</translation>
@@ -6609,6 +6607,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5555760010546505198">Inversione dei colori, correzione del colore, lente d'ingrandimento e impostazioni di visualizzazione</translation>
 <translation id="555604722231274592">Attiva <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Ricarica</translation>
+<translation id="555671485580955310">Sincronizza cronologia e schede</translation>
 <translation id="5558129378926964177">&amp;Ingrandisci</translation>
 <translation id="5558594314398017686">Sistema operativo predefinito (quando disponibile)</translation>
 <translation id="5559311991468302423">Elimina indirizzo</translation>
@@ -8782,6 +8781,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Scheda di nuovo attiva</translation>
 <translation id="7090714929377281710">Disattiva automaticamente l'hotspot</translation>
+<translation id="7092452922791061650">Fai clic con il tasto destro del mouse su questa scheda e seleziona "Nuova visualizzazione divisa con la scheda corrente"</translation>
 <translation id="7092504544229909737">Non può essere utilizzato con app per Android</translation>
 <translation id="7093220653036489319">Risposte rapide</translation>
 <translation id="7093866338626856921">Scambio di dati con i dispositivi: <ph name="HOSTNAMES" /></translation>
@@ -10572,6 +10572,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8310409247509201074"><ph name="NUM" /> schede</translation>
 <translation id="831207808878314375">Definizione</translation>
 <translation id="8312841338723044391">IN DIRETTA</translation>
+<translation id="8313308349366087671">Opzioni applicazione</translation>
 <translation id="8314089908545021657">Accoppia con nuovo telefono</translation>
 <translation id="8314381333424235892">Estensione mancante o non installata</translation>
 <translation id="831440797644402910">Impossibile aprire questa cartella</translation>
@@ -10732,7 +10733,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8419098111404128271">Risultati di ricerca per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8419144699778179708">Consente di eliminare la cronologia, anche nella casella di ricerca.</translation>
 <translation id="8420308167132684745">Modifica voci dizionario</translation>
-<translation id="8421361468937925547">Sottotitoli in tempo reale (solo in inglese)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Vassoio mancante</translation>
 <translation id="8424250197845498070">Bloccato dalla protezione avanzata</translation>
@@ -11029,6 +11029,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8637688295594795546">Aggiornamento del sistema disponibile. Preparazione per il download in corso…</translation>
 <translation id="8638719155236856752">Integrità della rete ChromeOS</translation>
 <translation id="8639635302972078117">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google.</translation>
+<translation id="8639963783467694461">Impostazioni di Compilazione automatica</translation>
 <translation id="8640575194957831802">Ultimi aperti</translation>
 <translation id="8641946446576357115">Usa le tue password sui tuoi dispositivi iOS</translation>
 <translation id="8642577642520207435">Autorizzazione fotocamera di <ph name="APP_NAME" /></translation>

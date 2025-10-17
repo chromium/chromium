@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2379925928934107488">Прилагане на тъмната тема към сайтовете, стига да е възможно и когато Chrome използва тъмната тема</translation>
 <translation id="2390272837142897736">Увеличаване на нивото на мащаба</translation>
+<translation id="2397689164757137845">Разрешено • Точно</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2403474027143565107">Точно</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Помощ и отзиви</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2533138527374486328">Когато настройката е включена, сайтовете могат да извеждат запитвания за свързване с устройства в локалната ви мрежа. Когато е изключена, те не могат да се свързват с устройства в локалната ви мрежа.</translation>
+<translation id="2536779053640817375">Разрешено този път • Точно</translation>
 <translation id="2544997614631598250">Тъмен цвят на темата</translation>
 <translation id="2546283357679194313">„Бисквитки“ и данни за сайтове</translation>
 <translation id="2570922361219980984">Достъпът до местоположението е изключен и за това устройство. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>

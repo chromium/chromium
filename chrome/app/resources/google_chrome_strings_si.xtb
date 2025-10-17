@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">ප්‍රතිපෝෂණ සංවාදය වසන්න</translation>
 <translation id="306179102415443347">Google මුරපද කළමනාකරු වෙත ඉක්මණින් යාමට ඔබේ කෙටිමඟ භාවිත කරන්න ඔබට පරිගණකයේ මුල් තිරය හෝ යෙදුම් දියත්කරණය වෙත ඔබේ කෙටිමඟ ගෙන යා හැක.</translation>
 <translation id="3065168410429928842">Chrome පටිත්ත</translation>
+<translation id="3073571714401714450">Chrome සංවර්ධක හි Gemini ටොගල් කරන්න</translation>
 <translation id="3080151273017101988">Google Chrome වසා ඇති විට පසුබිම් යෙදුම් ධාවනය අඛණ්ඩව කරන්න</translation>
 <translation id="308397506772922478">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">ඔබගේ Chrome පැතිකඩ නම් කරන්න</translation>
@@ -378,6 +379,7 @@
 <translation id="5368118228313795342">අමතර කේතය: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">තවද එය ඔබ Chrome විවෘත කරන විට හෝ Omnibox වෙතින් සොයන විට පෙන්වන වෙබ් පිටුව නිර්ණය කරයි.</translation>
 <translation id="5394833366792865639">Chrome පටිත්තක් බෙදා ගන්න</translation>
+<translation id="5402307365844630024">Chrome බීටා හි Gemini ටොගල් කරන්න</translation>
 <translation id="5430073640787465221">ඔබගේ මනාප ගොනුව හානිවී හෝ අවලංගුයි.
 
 Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසාධනය කිරීමට නොහැක.</translation>
@@ -429,6 +431,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="5941711191222866238">කුඩා කරන්න</translation>
 <translation id="5941830788786076944">Google Chrome පෙරනිමි බ්‍රව්සරය කරන්න</translation>
 <translation id="5947104538377036631">Chrome කෙටිමඟ</translation>
+<translation id="5960071705175224773">ඔබේ සැකසීම් නොදන්නා යෙදුමක් මගින් වෙනස් කරන ලදි</translation>
 <translation id="5968400720580217226">AI මාදිලිය</translation>
 <translation id="5980111191913430208">නොදන්නා මූලාශ්‍ර වෙතින් වන දිගු, යෙදුම්, සහ තේමා ඔබේ උපාංගයට හානි කළ හැක. Chrome ඒවා <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> වෙතින් පමණක් බාගැනීමට නිර්දේශ කරයි</translation>
 <translation id="6003112304606738118">බාගනිමින්... පැය <ph name="HOURS" />ක් ඉතිරිව ඇත</translation>
@@ -652,6 +655,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8362914115861174987">පරිවර්තනය කරන්න</translation>
 <translation id="8366770919198174997">කාර්යසාධනය අඩු කරන නමුත් Chrome ප්‍රහාරවලට ඉතා විරුද්ධයි</translation>
 <translation id="8370517070665726704">ප්‍රකාශන හිමිකම <ph name="YEAR" /> Google LLC. සියලුම හිමිකම් ඇවිරිණි.</translation>
+<translation id="8377158135256176353">Chrome කැනරි හි Gemini ටොගල් කරන්න</translation>
 <translation id="8387459386171870978">Chrome භාවිතා කිරීම දිගටම කරගෙන යන්න</translation>
 <translation id="8394720698884623075">Chrome තුළ ගබඩා කර ඇති අනාරක්ෂිත වෙබ් අඩවි ලැයිස්තුවක් සමඟ URL පරීක්ෂා කරයි.</translation>
 <translation id="8403038600646341038">පරිගණක තිරයක් තුළ Chrome ලාංඡනය.</translation>
@@ -700,12 +704,14 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8914504000324227558">Chrome නැවත දියත් කරන්න</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> වෙතින් ඔබගේ Android දුරකථනයට අංකයක් යැවීමට, උපාංග දෙකෙහිම Chrome වෙත පුරන්න.</translation>
 <translation id="8922998289262614701">Chrome වෙතින් මෙම යෙදුම් දත්ත ඉවත් කරන්න</translation>
+<translation id="8936233353620149764">Chrome හි Gemini ටොගල් කරන්න</translation>
 <translation id="8948460679427074738">මෙම දිගුව මෙය දත්ත රැස් කර භාවිත කරන ආකාරය වැනි පෞද්ගලිකත්ව පුරුදු ප්‍රකාශන කර නැත. Chrome ඔබ එය ඉවත් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="8958307504142971576">දැන් ඔබට Chrome හි තවත් විශේෂාංග තිබේ</translation>
 <translation id="8991530961471831170">Chrome හි Gemini විවෘත කරන්න</translation>
 <translation id="8992769679401294069">ඔබේ දත්ත ඔබේ මුර-වැකිකඩ සමග සංකේතනය කර ඇත. ඔබේ Google ගිණුම තුළ Chrome දත්ත භාවිත කිරීමට සහ සුරැකීමට එය ඇතුළත් කරන්න.</translation>
 <translation id="8999117580775242387">HTTPS නොමැති විට, Chrome ඔබට අනතුරු ඇඟවීමකින් තොරව අනාරක්ෂිත සම්බන්ධතාවයක් භාවිතා කරනු ඇත</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome යාවත්කාලීනයක් තිබේ}=1{Chrome යාවත්කාලීනයක් තිබේ}one{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}other{දින # කට Chrome යාවත්කාලීනයක් ලැබී ඇත}}</translation>
+<translation id="9010418943148193727">ඔබේ පෙරනිමි සෙවීම් යන්ත්‍රය Chrome වෙතින් පිටතින් වෙනස් කර ඇත. ඔබව ආරක්ෂා කිරීමට, Chrome එය යළි සකසයි.</translation>
 <translation id="9014771989710951291">බහුවිධ සංවිධාන Chrome කළමනාකරණය කරයි</translation>
 <translation id="9024318700713112071">Chrome ඔබේ පෙරනිමිය ලෙස සකසන්න</translation>
 <translation id="9066987883552592250">Chrome කැනරි හි Gemini වසන්න</translation>

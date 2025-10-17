@@ -205,6 +205,7 @@
 <translation id="3296368748942286671">关闭 Chromium 后继续运行后台应用</translation>
 <translation id="3313189106987092621">Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="3316771292331273802">关闭所有 Chromium 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chromium，则您的 Google 账号不会退出。若要让网站记住您，请<ph name="SETTINGS_LINK" />。</translation>
+<translation id="3322413454779348750">您的默认搜索引擎已在 Chromium 外部更改。为保护您的安全，Chromium 已将其重置。</translation>
 <translation id="3352986031709923790">搜索区域的右上角：右侧 <ph name="RIGHT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">您账号中的 Chromium 数据</translation>
 <translation id="3369405342922656244">使用图片搜索功能搜索此页面</translation>
@@ -397,6 +398,7 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5949225980829865667">如需在您的所有设备上获取此书签等内容，请登录 Chromium</translation>
 <translation id="5953657885167112863">打造您的专属 Chromium</translation>
+<translation id="5960071705175224773">未知应用更改了您的设置</translation>
 <translation id="5968400720580217226">AI 模式</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动关闭它。}other{您的组织会在 Chromium 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="5987687638152509985">更新 Chromium 以开始同步</translation>

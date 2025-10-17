@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{مشاهده ۰ مرور}=1{مشاهده ۱ مرور}one{مشاهده همه # مرور}other{مشاهده همه # مرور}}</translation>
 <translation id="1458059624921545588">افراد و اجتماع</translation>
 <translation id="1458140305240870199">لباس زیر</translation>
+<translation id="1458770162980644530">صفحه شرایط خدمات «حالا خرید کنید، بعداً بپردازید». صفحه‌کلید پنهان است.</translation>
 <translation id="1459693405370120464">آب‌وهوا</translation>
 <translation id="1461041542809785877">کارآیی</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2291,6 +2292,7 @@
 <translation id="4758311279753947758">افزودن اطلاعات تماس</translation>
 <translation id="4761326898079498987">مرور جزئیات بیشتر</translation>
 <translation id="4761869838909035636">‏راندن «بررسی ایمنی» در Chrome</translation>
+<translation id="4762097990764616058">به پرداخت با <ph name="BNPL_ISSUER_NAME" /> ادامه می‌دهید؟</translation>
 <translation id="4763196677855776703">شرایط خدمات را <ph name="URL" /> ارائه داده است</translation>
 <translation id="4764680219299728632">اجاق، کوره، و فر</translation>
 <translation id="4764776831041365478">ممکن است صفحهٔ وب <ph name="URL" /> موقتاً خراب باشد یا ممکن است برای همیشه به آدرس وب جدید منتقل شده باشد.</translation>
@@ -2922,6 +2924,7 @@
 <translation id="5817918615728894473">مرتبط‌سازی</translation>
 <translation id="5826507051599432481">‏نام مشترک (CN)</translation>
 <translation id="5830698870816298009">استفاده و حرکت دوربین</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">ناشناس</translation>
 <translation id="5832976493438355584">قفل شده است</translation>
 <translation id="5837220895135257862">پیش‌از امتحان مجدد، فضای کافی در <ph name="CLOUD_PROVIDER" /> آزاد کنید</translation>
@@ -3432,6 +3435,7 @@
 <translation id="6649510485211003056">۲۷۰ × ۱۹۵ میلی‌متر</translation>
 <translation id="6651270836885078973">مدیریت توسط:</translation>
 <translation id="6652101503459149953">‏استفاده از Windows Hello</translation>
+<translation id="6653684225271066234">‫<ph name="BNPL_ISSUER_NAME" /> واجدشرایط بودن شما را بررسی خواهد کرد (این کار تأثیری بر امتیاز اعتباری‌تان نخواهد داشت). اگر از معیارهای واجدشرایط بودن برخوردار باشید، <ph name="BNPL_ISSUER_NAME" /> طرح(های) پرداخت احتمالی را ارائه می‌کند تا خریدتان تکمیل شود.</translation>
 <translation id="6654224358955673568">رسمی کردن</translation>
 <translation id="6654244995031366386">شیشه (مشجر)</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
@@ -3595,6 +3599,7 @@
 <translation id="6925267999184670015">‏B+‎ آمریکای شمالی</translation>
 <translation id="6926216138694948720">هنر بدن</translation>
 <translation id="692638818576287323">خودروهای تجاری</translation>
+<translation id="6927057753277044239">‏پس‌از بررسی سفارشتان، باید به سیستم وارد شوید یا با <ph name="BNPL_ISSUER_NAME" /> حساب ایجاد کنید. این حساب به‌طور خودکار به «حساب Google» شما پیوند داده خواهد شد.</translation>
 <translation id="6930607614725241390">جستجو در پانل کناری</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />موتور جستجوی پیش‌فرض به شما امکان می‌دهد در وب جستجو کنید و ویژگی‌های Chrome را تقویت می‌کند<ph name="END_BOLD" />، مثلاً جستجو از نوار نشانی و از تصاویر موجود در صفحه‌های وب. اگر موتور جستجوی شما از ویژگی‌ای پشتیبانی نکند، شاید آن ویژگی دردسترس نباشد.</translation>
 <translation id="6934672428414710184">‏این نام از حساب Google شما گرفته شده است</translation>
@@ -3646,6 +3651,7 @@
 <translation id="6997288673234694149">تجهیزات بیس‌بال و سافت‌بال</translation>
 <translation id="6998512609912910179">فرم‌ها را سریع‌تر تکمیل کنید</translation>
 <translation id="6999480632062519056">آموزش تناسب اندام و تعلیم شخصی</translation>
+<translation id="7002897669829306463">نشانی خانه، <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">فرش و قالیچه</translation>
 <translation id="7003322000677139268">قطعات و لوازم جانبی خودرو</translation>
 <translation id="7004499039102548441">زبانه‌های جدید</translation>
@@ -4212,6 +4218,8 @@
 <translation id="7916162853251942238">پایه فلکسو</translation>
 <translation id="791698251820376781">سازمانتان به شما اجازه نمی‌دهد به سیستم وارد شوید</translation>
 <translation id="7926503317156566022">صنعت هوانوردی</translation>
+<translation id="7930282586031445870">صفحه شرایط خدمات «حالا خرید کنید، بعداً بپردازید» بسته شد.</translation>
+<translation id="7932035970207573919">نشانی محل کار، <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">نشانی به‌روزرسانی شود؟</translation>
 <translation id="7932579305932748336">جلد</translation>
 <translation id="79338296614623784">شماره تلفن معتبری وارد کنید</translation>
@@ -4624,6 +4632,7 @@
 <translation id="8601027005147870853">‏<ph name="BEGIN_BOLD" />از چه داده‌هایی استفاده می‌شود:<ph name="END_BOLD" /> فعالیت شما در سایتی که بااستفاده از Chrome در این دستگاه بازدید می‌کنید.</translation>
 <translation id="8601456038554914806">تجهیزات ورزش‌های آبی</translation>
 <translation id="8601782593888534566">علمی-تخیلی و فانتزی</translation>
+<translation id="8604103095921958091">صفحه شرایط خدمات «حالا خرید کنید، بعداً بپردازید» به‌صورت کامل باز شده است.</translation>
 <translation id="8606988009912891950">‏موضوع‌های آگهی کمک می‌کنند سایت‌ها آگهی‌های مربوط به شما نشان دهند و درعین‌حال از سابقه مرور و هویت شما محافظت می‌کنند. Chrome می‌تواند براساس سابقه مرور اخیرتان موضوعات موردعلاقه شما را ثبت کند. بعداً سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی‌سازی آگهی‌هایی که می‌بینید، موضوع‌های مرتبط را از Chrome درخواست کند.</translation>
 <translation id="8612919051706159390">انجمن آنلاین</translation>
 <translation id="8617269623452051934">استفاده از دستگاه</translation>
@@ -4864,6 +4873,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618">‫<ph name="URL" /> می‌خواهد دستگاه‌های موجود در شبکه محلی شما را جستجو کند و به آن‌ها متصل شود</translation>
 <translation id="9046864189129893978">میکروفون‌ها (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">صفحه شرایط خدمات «حالا خرید کنید، بعداً بپردازید» به‌صورت نیمه باز شده است.</translation>
 <translation id="9047528041803621289">موتور جستجوی پیش‌فرضتان به شما امکان می‌دهد در وب جستجو کنید. می‌توانید آن را در تنظیمات تغییر دهید.</translation>
 <translation id="9048035366624198823">برای این کنش‌ها، خط‌مشی <ph name="POLICY_NAME" /> باید روی <ph name="POLICY_VALUE" /> تنظیم شود: <ph name="ACTION_LIST" /></translation>
 <translation id="9048662076076074925">۳۶ × ۲۴ اینچ</translation>

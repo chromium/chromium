@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">Chrome রিস্টার্ট করতে চান?</translation>
 <translation id="1428770807407000502">সিঙ্ক করা বন্ধ করতে চান?</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
-<translation id="1433478348197382180">Reading Mode</translation>
 <translation id="1435593198351412143">পিডিএফ অটোমেটিক খোলার সুবিধা</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />-এ চলছে</translation>
 <translation id="1448440926884431741">Bookmarks-এ আপনার ট্র্যাক করা সমস্ত প্রোডাক্ট সাজিয়ে রাখুন</translation>
@@ -370,7 +369,6 @@
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
 <translation id="2718846868787000099">আপনার পছন্দের ভাষায় কন্টেন্ট দেখাতে, আপনি যেসব সাইট ভিজিট করেন সেগুলি আপনার ভাষার পছন্দ দেখতে পাবে</translation>
 <translation id="2723001399770238859">অডিও</translation>
-<translation id="2734335652257251631">রিডিং মোডে দেখুন</translation>
 <translation id="2739887572830526131">পরে ট্যাব যোগ করার জন্য এই গ্রুপ রেখে দিন অথবা এটি আপনার আর প্রয়োজন না থাকলে মুছে দিন।</translation>
 <translation id="2742373789128106053">এই মুহুর্তে <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> উপলভ্য নয়।</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1139,6 +1137,7 @@
 <translation id="6232535412751077445">"ট্র্যাক করবেন না" চালু করার অর্থ হল আপনার ব্রাউজিং ট্র্যাফিকের সাথে একটি অনুরোধ অন্তর্ভুক্ত হবে৷ অনুরোধটিতে কোনো ওয়েবসাইট প্রতিক্রিয়া করে কি না এবং অনুরোধটিকে কীভাবে ব্যাখ্যা করা হয় তার উপর যেকোনো প্রভাব নির্ভর করে৷
 
 উদাহরণস্বরূপ, কিছু ওয়েবসাইট আপনার দেখা অন্য ওয়েবসাইট ভিত্তিক নয় এমন বিজ্ঞাপন দেখিয়ে এই অনুরোধে প্রতিক্রিয়া জানাতে পারে৷ অনেক ওয়েবসাইট তারপরও আপনার ব্রাউজিং ডেটা সংগ্রহ এবং ব্যবহার করবে - উদাহরণস্বরূপ, আপনার নিরাপত্তা বাড়াতে, সামগ্রী, বিজ্ঞাপন এবং প্রস্তাবনা প্রদান করতে এবং রিপোর্ট পরিসংখ্যান তৈরি করতে৷</translation>
+<translation id="623755660902014047">Reading mode</translation>
 <translation id="6247557882553405851">Google পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="6248988683584659830">সার্চ সেটিংস</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া পিন করা ছদ্মবেশী ট্যাব</translation>
@@ -1397,7 +1396,6 @@
 <translation id="7221869452894271364">এই পৃষ্ঠাটি রিলোড করুন</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১টি ডাউনলোড বাকি আছে}one{#টি ডাউনলোড বাকি আছে}other{#টি ডাউনলোড বাকি আছে}}</translation>
 <translation id="7230064152164845085">ছদ্মবেশী মোডে যান</translation>
-<translation id="7230836263524391273">রিডিং মোড লুকান</translation>
 <translation id="7237724030342645845">Google Password Manager কাজ করা বন্ধ করে দিয়েছে</translation>
 <translation id="72415438529550637">পাসওয়ার্ড সাজেশন দেওয়ার সুবিধা বন্ধ করা আছে।</translation>
 <translation id="7248671827512403053">অ্যাপ্লিকেশান</translation>
@@ -1732,7 +1730,6 @@
 <translation id="867914734596684889">বুকমার্ক বার দেখুন বা লুকান</translation>
 <translation id="8683039184091909753">ছবি</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, বেছে নেওয়া ট্যাব</translation>
-<translation id="8693232767599693749">রিডিং মোড চালু করবেন?</translation>
 <translation id="8697753151306746444">এর পরিবর্তে উইন্ডো বা স্ক্রিন শেয়ার করুন</translation>
 <translation id="8699120352855309748">এইসব ভাষায় অনুবাদ হবে না</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>

@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">Search ${searchPhrase} in Chrome</translation>
 <translation id="1237769345474105984">From Chrome</translation>
 <translation id="124228879633599436">Your Chrome is out of date. Update it to stay safe.</translation>
+<translation id="1258531953614971819">Chrome tip: Move Chrome to your Home Screen</translation>
 <translation id="1333745675627230582">Play Chrome Dino Game</translation>
 <translation id="1352919863522755794">Google Password Manager couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="1394995526009609883">You can update your selections at any time in Chrome settings.</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">Set Chrome as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="1504372625950710826">Chrome couldn't check for updates. Try checking your Internet connection.</translation>
 <translation id="1516692594929310090">Opens the Chrome Tab Grid.</translation>
+<translation id="152319127067424683">Access Chrome faster from your iPhone's Dock.</translation>
 <translation id="1526327845902180576">When on:
 <ph name="BEGIN_INDENT" />  • Help make Chrome better for people who use it the way you do.<ph name="END_INDENT" />
 
@@ -58,6 +60,7 @@ Things to consider:
 <translation id="2199719347983604670">Data from Chrome sync</translation>
 <translation id="2213327331203157297">To disable Lockdown mode in Chrome, turn it off on your iPhone.</translation>
 <translation id="2242467532204595597">Use Chrome anytime that you tap links in messages, documents and other apps.</translation>
+<translation id="2256384876478573507">Open Chrome faster when you're ready to browse on your iPhone.</translation>
 <translation id="2311240109311056604">Opens the Chrome Dino Game.</translation>
 <translation id="2339201583852607431">Your password will be saved in your Google Account (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome shares your location with sites that you allow.</translation>
@@ -66,6 +69,7 @@ Things to consider:
 <translation id="2427791862912929107">Chrome has features that help you manage your Internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{This happens when Chrome isn't used for {THRESHOLD} minute. This could include history and autofill.}other{This happens when Chrome isn't used for {THRESHOLD} minutes. This could include history and autofill.}}</translation>
+<translation id="2531823184391665648">Open Chrome faster when you're ready to browse on your iPad.</translation>
 <translation id="2561231791489583059">Use Chrome as your default browser to stay protected from dangerous sites and keep your passwords safe</translation>
 <translation id="2574249610672786438">To see your tabs from wherever you use Chrome, sign in on all of your devices</translation>
 <translation id="2576431527583832481">Chrome just got better! A new version is available.</translation>
@@ -81,6 +85,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="2767464022270041271">No saved passwords. Google Password Manager can check your passwords when you save them.</translation>
 <translation id="2788811701191021538">Opens the payment methods setting page in Chrome.</translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
+<translation id="2922914028977213693">Tap here to get the most out of Chrome on your iPad.</translation>
 <translation id="292371311537977079">Chrome settings</translation>
 <translation id="2923827943290349720">Lock incognito tabs when you close Chrome</translation>
 <translation id="2940565985148833945">Chrome tip: Search with Lens</translation>
@@ -97,6 +102,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="3140589780564632473">Search visuals in Chrome</translation>
 <translation id="314782365035065913">Access Chrome faster from your Home Screen Dock</translation>
 <translation id="3167189358072330585">Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
+<translation id="320747600144551583">Chrome tip: Enhanced Safe Browsing will save your day</translation>
 <translation id="322254490661677575">To use and save Chrome data in your Google Account, enter your passphrase.</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3303503998967553377">Use Chrome actions on iOS</translation>
@@ -109,6 +115,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="3440830787838130530">Easily and securely share a copy of a password with your family group in Google Password Manager</translation>
 <translation id="3460369101684070455">To easily get your saved passwords in your other apps, choose Chrome for Autofill</translation>
 <translation id="3472587960215700950">Chrome uses Google Maps to give you directions and local info on detected addresses.</translation>
+<translation id="3482807551645716768">Access Chrome faster from your iPad's Home Screen.</translation>
 <translation id="3503014945441706099">Get Enhanced Safe Browsing for this Chrome profile, too</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
 <translation id="364480321352456989">Your Chrome is out of date.</translation>
@@ -125,16 +132,19 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="3988789688219830639">Google Chrome does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4064699917955374540">To use and save Chrome data in your Google Account, verify that it's you.</translation>
 <translation id="411154422556990518">Keep up with price tracking updates and Chrome tips.</translation>
+<translation id="4167555379306984168">Check out what's new in Chrome</translation>
 <translation id="417201473131094001">Not supported on Chrome Canary</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4430797724889237570">Open links from Gmail, Maps, YouTube and other apps in Chrome</translation>
 <translation id="447252321002412580">Help improve Chrome's features and performance</translation>
 <translation id="4523886039239821078">Some add-ons cause Chrome to crash. Please uninstall:</translation>
+<translation id="4568024439284012497">Access Chrome faster from your iPhone's Home Screen.</translation>
 <translation id="4574806550936185355">Turn on 'Lock Incognito tabs when you close Chrome'</translation>
 <translation id="4633328489441962921">Chrome can't check for updates</translation>
 <translation id="4636900170638246267">Sign in to this site and Chrome.</translation>
 <translation id="4647910807533196601">Open my latest tab in Chrome.</translation>
 <translation id="4693084815234024320">You're in Chrome Incognito</translation>
+<translation id="4708857722625759026">Access Chrome faster from your iPad's Dock.</translation>
 <translation id="4713740144985377441">Return to Chrome to upload your file</translation>
 <translation id="4713907610796204963">Learn the helpful Chrome basics to get you started</translation>
 <translation id="4724297637870447613">Use Chrome everywhere</translation>
@@ -149,6 +159,8 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="4903674399067644695">This card shows you suggestions on how to get the most out of Chrome.</translation>
 <translation id="49200511069271369">Your organisation, <ph name="DOMAIN" />, manages the account that you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="4925322001044117929">Use Chrome on iPad by default</translation>
+<translation id="4934496192263958600">Sign in to Chrome to get your stuff</translation>
+<translation id="496747131578053942">Chrome tip: Search what you see with Google Lens</translation>
 <translation id="498985224078955265">To send this tab to another device, sign in to Chrome on both devices.</translation>
 <translation id="5030102366287574140">Chrome can help keep you safe from data breaches, unsafe websites and more.</translation>
 <translation id="5109169629909011627">See Chrome bookmarks</translation>
@@ -225,16 +237,19 @@ Your data is encrypted with your passphrase. Enter it to use and save Chrome dat
 <translation id="6684809838922667136">Make Chrome better</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{This happens when Chrome isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}other{This happens when Chrome isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}</translation>
 <translation id="6709398533399187136">Your password was exposed in a data breach. Google Password Manager recommends changing it now.</translation>
+<translation id="6718973358446066955">You're almost finished setting up Chrome!</translation>
 <translation id="6820553595690137150">Passphrase encryption doesn't include payment methods and addresses.
 
 To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="6838525730752203626">Use Chrome by default</translation>
+<translation id="6864705365700484754">Tap here to get the most out of Chrome on your iPhone.</translation>
 <translation id="686691656039982452">You can <ph name="BEGIN_LINK" />manage what Chrome data is saved<ph name="END_LINK" /> in your Google Account.
 
 For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Delete browsing data in Chrome.</translation>
 <translation id="6924922227983877439">Open links in Chrome by default</translation>
 <translation id="6975725306479268850">Choose Chrome for auto-fill</translation>
+<translation id="7001031184470316752">Move Chrome to your Dock</translation>
 <translation id="7038674195294813388">Open Default Apps settings in iOS, then tap on 'Browser App' and select Chrome.</translation>
 <translation id="7056826488869329999">Opens and Runs Safety Check in Chrome.</translation>
 <translation id="7061455974939528301">Press and hold the Chrome icon and click 'Edit home screen'</translation>
@@ -305,6 +320,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8371138994040262994">Opens the settings in Chrome.</translation>
+<translation id="8375378038757507658">Easily use Chrome whenever you tap links in messages or other apps.</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>
 <translation id="8392023217086447677">Opened in Chrome Incognito</translation>
 <translation id="840168496893712993">Some add-ons cause Chrome to crash. Please try uninstalling them.</translation>

@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Vezi 0 recenzii}=1{Vezi o recenzie}few{Vezi toate cele # recenzii}other{Vezi toate cele # de recenzii}}</translation>
 <translation id="1458059624921545588">Oameni și societate</translation>
 <translation id="1458140305240870199">Lenjerie de corp</translation>
+<translation id="1458770162980644530">Ecranul cu termenii și condițiile opțiunii Cumpără acum, plătește mai târziu. Tastatura este ascunsă.</translation>
 <translation id="1459693405370120464">Meteo</translation>
 <translation id="1461041542809785877">Performanță</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2922,6 +2923,7 @@
 <translation id="5817918615728894473">Asociază</translation>
 <translation id="5826507051599432481">Nume comun (CN)</translation>
 <translation id="5830698870816298009">folosirea și mișcarea camerei</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Necunoscut</translation>
 <translation id="5832976493438355584">Blocat</translation>
 <translation id="5837220895135257862">Eliberează spațiu în <ph name="CLOUD_PROVIDER" /> înainte de a încerca din nou</translation>
@@ -3646,6 +3648,7 @@
 <translation id="6997288673234694149">Echipament pentru baseball și softball</translation>
 <translation id="6998512609912910179">Completează mai rapid formularele</translation>
 <translation id="6999480632062519056">Antrenamente de fitness și antrenor personal</translation>
+<translation id="7002897669829306463">Adresa de acasă, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Covoare și preșuri</translation>
 <translation id="7003322000677139268">Piese și accesorii pentru vehicule</translation>
 <translation id="7004499039102548441">File recente</translation>
@@ -4212,6 +4215,8 @@ Detalii suplimentare:
 <translation id="7916162853251942238">Bază Flexo</translation>
 <translation id="791698251820376781">Organizația nu îți permite să te conectezi</translation>
 <translation id="7926503317156566022">Domeniul aviației</translation>
+<translation id="7930282586031445870">Ecranul cu termenii și condițiile opțiunii Cumpără acum, plătește mai târziu este închis.</translation>
+<translation id="7932035970207573919">Adresa de serviciu, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Actualizezi adresa?</translation>
 <translation id="7932579305932748336">Acoperire</translation>
 <translation id="79338296614623784">Introdu un număr de telefon valid</translation>
@@ -4625,6 +4630,7 @@ Detalii suplimentare:
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Ce date se folosesc:<ph name="END_BOLD" /> activitatea ta de pe un site pe care l-ai accesat folosind Chrome pe acest dispozitiv.</translation>
 <translation id="8601456038554914806">Echipament pentru sporturi nautice</translation>
 <translation id="8601782593888534566">SF și fantasy</translation>
+<translation id="8604103095921958091">Ecranul cu termenii și condițiile opțiunii Cumpără acum, plătește mai târziu deschis la înălțimea completă.</translation>
 <translation id="8606988009912891950">Pe baza subiectelor anunțurilor, site-urile îți afișează anunțuri relevante și îți protejează istoricul de navigare și identitatea. Chrome poate reține subiectele de interes în funcție de istoricul tău de navigare recent. Ulterior, un site pe care îl accesezi poate solicita subiecte relevante de la browserul Chrome pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="8612919051706159390">Comunități online</translation>
 <translation id="8617269623452051934">folosirea dispozitivului</translation>
@@ -4865,6 +4871,7 @@ Detalii suplimentare:
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> dorește să caute și să se conecteze la orice dispozitiv din rețeaua locală</translation>
 <translation id="9046864189129893978">Microfoane (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Ecranul cu termenii și condițiile opțiunii Cumpără acum, plătește mai târziu deschis la jumătate din înălțime.</translation>
 <translation id="9047528041803621289">Setarea prestabilită îți dă posibilitatea să cauți pe web. Poți modifica opțiunea în setări.</translation>
 <translation id="9048035366624198823">Aceste acțiuni necesită ca politica <ph name="POLICY_NAME" /> să fie setată la <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>

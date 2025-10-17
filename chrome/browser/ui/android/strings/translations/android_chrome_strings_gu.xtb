@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">Chromeને ફરી શરૂ કરીએ?</translation>
 <translation id="1428770807407000502">સિંક બંધ કરીએ?</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
-<translation id="1433478348197382180">વાંચન મોડ</translation>
 <translation id="1435593198351412143">ઑટોમૅટિક રીતે PDFs ખોલો</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />માં ચાલી રહી છે</translation>
 <translation id="1448440926884431741">Bookmarksમાં તમારી ટ્રૅક કરેલી પ્રોડક્ટની ગોઠવણ કરો</translation>
@@ -370,7 +369,6 @@
 <translation id="2718352093833049315">ફક્ત વાઇ-ફાઇ પર</translation>
 <translation id="2718846868787000099">તમારી પસંદગીની ભાષાઓમાં કન્ટેન્ટ બતાવવા માટે, તમે મુલાકાત લો તે સાઇટ તમારી પસંદગીઓ જોઈ શકશે</translation>
 <translation id="2723001399770238859">ઑડિઓ</translation>
-<translation id="2734335652257251631">વાંચન મોડ બતાવો</translation>
 <translation id="2739887572830526131">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેની જરૂર ન હોય, તો તેને ડિલીટ કરો.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> અત્યારે ઉપલબ્ધ નથી.</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1139,6 +1137,7 @@
 <translation id="6232535412751077445">'ટ્રૅક કરશો નહીં’ ને સક્ષમ કરવાનો અર્થ છે કે તમારા બ્રાઉઝિંગ ટ્રાફિકમાં વિનંતી શામેલ કરવામાં આવશે. કોઈ વેબસાઇટ, વિનંતી પર પ્રતિસાદ કરે છે કે નહીં અને વિનંતીનું અર્થઘટન કેવી રીતે કર્યું તેના પર કોઈ પણ અસર આધારિત હોય છે.
 
 ઉદાહરણ તરીકે, કેટલીક વેબસાઇટ, તમે મુલાકાત લીધેલી બીજા વેબસાઇટ પર આધારિત ન હોય તેવી જાહેરાતો તમને બતાવીને આ વિનંતી પર પ્રતિસાદ આપી શકે છે. ઘણી વેબસાઇટ હજી પણ તમારા બ્રાઉઝિંગ ડેટાને ભેગો કરશે અને ઉપયોગ કરશે — ઉદાહરણ તરીકે સુરક્ષાને બહેતર બનાવવા, કન્ટેન્ટ, જાહેરાતો અને ભલામણો આપવા અને રિપોર્ટિંગ આંકડા જનરેટ કરવા માટે.</translation>
+<translation id="623755660902014047">વાંચન મોડ</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
 <translation id="6248988683584659830">શોધ સેટિંગ</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલા છૂપા ટૅબ જે પિન કરેલા છે</translation>
@@ -1397,7 +1396,6 @@
 <translation id="7221869452894271364">આ પેજને ફરીથી લોડ કરો</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ડાઉનલોડ બાકી}one{# ડાઉનલોડ બાકી}other{# ડાઉનલોડ બાકી}}</translation>
 <translation id="7230064152164845085">છૂપા મોડ પર સ્વિચ કરો</translation>
-<translation id="7230836263524391273">વાંચન મોડ છુપાવો</translation>
 <translation id="7237724030342645845">Google Password Manager કામ કરતું અટકી ગયું</translation>
 <translation id="72415438529550637">પાસવર્ડ સૂચવવાની સુવિધા બંધ છે.</translation>
 <translation id="7248671827512403053">ઍપ્લિકેશન</translation>
@@ -1732,7 +1730,6 @@
 <translation id="867914734596684889">બુકમાર્ક બાર બતાવો અથવા છુપાવો</translation>
 <translation id="8683039184091909753">છબી</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, પસંદ કરેલું ટૅબ</translation>
-<translation id="8693232767599693749">વાંચન મોડ જોઈએ?</translation>
 <translation id="8697753151306746444">તેના બદલે વિન્ડો અથવા સ્ક્રીન શેર કરો</translation>
 <translation id="8699120352855309748">આ ભાષાઓનો અનુવાદ કરવાનું ઑફર કરશો નહીં</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>

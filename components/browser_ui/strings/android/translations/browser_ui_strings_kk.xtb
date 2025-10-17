@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2379925928934107488">Chrome қараңғы режим қолданғанда, сайттарға да мүмкіндігінше қараңғы режим қолданыңыз.</translation>
 <translation id="2390272837142897736">Масштабты көбейту</translation>
+<translation id="2397689164757137845">Рұқсат берілді • Нақты</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2403474027143565107">Нақты</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Анықтама және пікір</translation>
 <translation id="2501278716633472235">Артқа қайту</translation>
 <translation id="2533138527374486328">Қосулы болса, сайттар жергілікті желідегі кез келген құрылғыға қосылуды сұрай алады. Өшірулі болса, сайттар жергілікті желідегі құрылғыларға қосыла алмайды.</translation>
+<translation id="2536779053640817375">Бұл жолы рұқсат берілді • Нақты</translation>
 <translation id="2544997614631598250">Қараңғы тақырып түсі</translation>
 <translation id="2546283357679194313">Cookie файлдары және торап деректері</translation>
 <translation id="2570922361219980984">Бұл құрылғыда да орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>

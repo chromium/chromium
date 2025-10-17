@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 ವಿಮರ್ಶೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ}=1{1 ವಿಮರ್ಶೆಯನ್ನು ವೀಕ್ಷಿಸಿ}one{ಎಲ್ಲಾ # ವಿಮರ್ಶೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ}other{ಎಲ್ಲಾ # ವಿಮರ್ಶೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ}}</translation>
 <translation id="1458059624921545588">ಜನರು ಮತ್ತು ಸಮಾಜ</translation>
 <translation id="1458140305240870199">ಒಳಉಡುಪುಗಳು</translation>
+<translation id="1458770162980644530">ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ ಸೇವಾ ನಿಯಮಗಳ ಸ್ಕ್ರೀನ್. ಕೀಬೋರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1459693405370120464">ಹವಾಮಾನ</translation>
 <translation id="1461041542809785877">ಪರ್ಫಾರ್ಮೆನ್ಸ್</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2288,6 +2289,7 @@
 <translation id="4758311279753947758">ಸಂಪರ್ಕ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4761326898079498987">ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4761869838909035636">Chrome ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆಯನ್ನು ರನ್ ಮಾಡಿ</translation>
+<translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" /> ಮೂಲಕ ಪಾವತಿಸುವುದನ್ನು ಮುಂದುವರಿಸಬೇಕೆ?</translation>
 <translation id="4763196677855776703">ನಿಯಮಗಳು ಮತ್ತು ನಿಬಂಧನೆಗಳನ್ನು <ph name="URL" /> ಒದಗಿಸಿದೆ</translation>
 <translation id="4764680219299728632">ರೇಂಜ್‌ಗಳು, ಅಡುಗೆ ಸಲಕರಣೆಗಳು ಮತ್ತು ಓವನ್‌ಗಳು</translation>
 <translation id="4764776831041365478"><ph name="URL" /> ನಲ್ಲಿರುವ ವೆಬ್‌ಪುಟವು ತಾತ್ಕಾಲಿಕವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು ಅಥವಾ ಅದನ್ನು ಶಾಶ್ವತವಾಗಿ ಹೊಸ ವೆಬ್ ವಿಳಾಸಕ್ಕೆ ಸರಿಸಲಾಗಿರಬಹುದು.</translation>
@@ -2919,6 +2921,7 @@
 <translation id="5817918615728894473">ಜೋಡಿಸು</translation>
 <translation id="5826507051599432481">ಸಾಮಾನ್ಯ ಹೆಸರು (CN)</translation>
 <translation id="5830698870816298009">ಕ್ಯಾಮರಾದ ಬಳಕೆ ಮತ್ತು ಚಲನೆ</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5832976493438355584">ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5837220895135257862">ಪುನಃ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು <ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>
@@ -3428,6 +3431,7 @@
 <translation id="6649510485211003056">195 x 270 ಮಿಮೀ</translation>
 <translation id="6651270836885078973">ಈ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ:</translation>
 <translation id="6652101503459149953">Windows Hello ಬಳಸಿ</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ನಿಮ್ಮ ಅರ್ಹತೆಯನ್ನು ಪರಿಶೀಲಿಸುತ್ತದೆ (ಇದು ನಿಮ್ಮ ಕ್ರೆಡಿಟ್ ಸ್ಕೋರ್ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರುವುದಿಲ್ಲ). ನೀವು ಅರ್ಹತೆಯ ಮಾನದಂಡವನ್ನು ಪೂರೈಸಿದರೆ, ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು <ph name="BNPL_ISSUER_NAME" /> ಸಂಭಾವ್ಯ ಪಾವತಿ ಪ್ಲಾನ್(ಗಳನ್ನು) ಒದಗಿಸುತ್ತದೆ.</translation>
 <translation id="6654224358955673568">ಶಿಷ್ಟ ಭಾಷೆ ಬಳಸಿ</translation>
 <translation id="6654244995031366386">ಗ್ಲಾಸ್ (ವಿನ್ಯಾಸವುಳ್ಳ)</translation>
 <translation id="6657585470893396449">ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -3592,6 +3596,7 @@
 <translation id="6925267999184670015">ಉತ್ತರ ಅಮೇರಿಕನ್ B+</translation>
 <translation id="6926216138694948720">ಬಾಡಿ ಆರ್ಟ್</translation>
 <translation id="692638818576287323">ವಾಣಿಜ್ಯ ವಾಹನಗಳು</translation>
+<translation id="6927057753277044239">ನಿಮ್ಮ ಆರ್ಡರ್ ಅನ್ನು ನೀವು ಪರಿಶೀಲಿಸಿದ ನಂತರ, ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕು ಅಥವಾ <ph name="BNPL_ISSUER_NAME" /> ಖಾತೆಯನ್ನು ರಚಿಸಬೇಕು. ಈ ಖಾತೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿಮ್ಮ Google ಖಾತೆಗೆ ಲಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="6930607614725241390">ಸೈಡ್ ಪ್ಯಾನೆಲ್‌ನಲ್ಲಿ Search</translation>
 <translation id="6934236486840930310">ವಿಳಾಸ ಪಟ್ಟಿಯಿಂದ ಮತ್ತು ವೆಬ್ ಪುಟಗಳಲ್ಲಿನ ಚಿತ್ರಗಳ ಮೂಲಕ ಹುಡುಕುವಂತಹ <ph name="BEGIN_BOLD" />Chrome ಫೀಚರ್‌ಗಳನ್ನು ಒದಗಿಸುವುದು ಹಾಗೂ ವೆಬ್ ಅನ್ನು ಹುಡುಕಲು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ<ph name="END_BOLD" />. ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ ಅದನ್ನು ಬೆಂಬಲಿಸದಿದ್ದರೆ ಈ ಫೀಚರ್ ಲಭ್ಯವಿಲ್ಲದಿರಬಹುದು.</translation>
 <translation id="6934672428414710184">ಈ ಹೆಸರು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಬಂದಿದೆ</translation>
@@ -3643,6 +3648,7 @@
 <translation id="6997288673234694149">ಬೇಸ್‌ಬಾಲ್ ಮತ್ತು ಸಾಫ್ಟ್‌ಬಾಲ್ ಉಪಕರಣ</translation>
 <translation id="6998512609912910179">ಫಾರ್ಮ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ಭರ್ತಿ ಮಾಡಿ</translation>
 <translation id="6999480632062519056">ಫಿಟ್ನೆಸ್ ಸೂಚನೆ ಮತ್ತು ವೈಯಕ್ತಿಕ ತರಬೇತಿ</translation>
+<translation id="7002897669829306463">ಮನೆ ವಿಳಾಸ, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">ಕಂಬಳಿಗಳು ಮತ್ತು ರತ್ನಗಂಬಳಿಗಳು</translation>
 <translation id="7003322000677139268">ವಾಹನದ ಬಿಡಿಭಾಗಗಳು ಮತ್ತು ಆ್ಯಕ್ಸೆಸ್ಸರಿಗಳು</translation>
 <translation id="7004499039102548441">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
@@ -4208,6 +4214,8 @@
 <translation id="7916162853251942238">ಫ್ಲೆಕ್ಸೊ ಬೇಸ್</translation>
 <translation id="791698251820376781">ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="7926503317156566022">ವಿಮಾನಯಾನ ಉದ್ಯಮ</translation>
+<translation id="7930282586031445870">ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ ಸೇವಾ ನಿಯಮಗಳ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
+<translation id="7932035970207573919">ಕೆಲಸದ ಸ್ಥಳ, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">ವಿಳಾಸವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="7932579305932748336">ಹಚ್ಚು</translation>
 <translation id="79338296614623784">ಮಾನ್ಯವಾದ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</translation>
@@ -4621,6 +4629,7 @@
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />ಯಾವ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ:<ph name="END_BOLD" /> ಈ ಸಾಧನದಲ್ಲಿ Chrome ಬಳಸಿಕೊಂಡು ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ನಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆ.</translation>
 <translation id="8601456038554914806">ಜಲ ಕ್ರೀಡಾ ಉಪಕರಣ</translation>
 <translation id="8601782593888534566">ವೈಜ್ಞಾನಿಕ ಕಾದಂಬರಿ ಮತ್ತು ಫ್ಯಾಂಟಸಿ</translation>
+<translation id="8604103095921958091">ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ ಸೇವಾ ನಿಯಮಗಳ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="8606988009912891950">ನಿಮ್ಮ ಗುರುತು ಮತ್ತು ನಿಮ್ಮ ಆ್ಯಪ್ ಬಳಕೆಯ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ರಕ್ಷಿಸುವ ಸಂದರ್ಭದಲ್ಲಿ, ನಿಮಗೆ ಸಂಬಂಧಪಟ್ಟ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಆ್ಯಡ್ ವಿಷಯವು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ನೀವು ಇತ್ತೀಚೆಗೆ ಬಳಸಿದ ಆ್ಯಪ್‌ಗಳ ಆಧಾರದ ಮೇಲೆ ಆಸಕ್ತಿಯ ವಿಷಯಗಳನ್ನು Chrome ಗುರುತು ಹಾಕಿಕೊಳ್ಳಬಹುದು. ನಂತರ, ನಿಮಗೆ ಕಾಣಿಸುವ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಸಂಬಂಧಿತ ವಿಷಯಗಳಿಗಾಗಿ ನೀವು ಬಳಸುವ ಒಂದು ಆ್ಯಪ್‌ Chrome ಅನ್ನು ಕೇಳಬಹುದು.</translation>
 <translation id="8612919051706159390">ಆನ್‌ಲೈನ್ ಸಮುದಾಯಗಳು</translation>
 <translation id="8617269623452051934">ನಿಮ್ಮ ಸಾಧನದ ಬಳಕೆ</translation>
@@ -4861,6 +4870,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> ನಿಮ್ಮ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಯಾವುದೇ ಸಾಧನವನ್ನು ಹುಡುಕಲು ಮತ್ತು ಕನೆಕ್ಟ್ ಆಗಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="9046864189129893978">ಮೈಕ್ರೊಫೋನ್‌ಗಳು (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ ಸೇವಾ ನಿಯಮಗಳ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="9047528041803621289">ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ನಿಮಗೆ ವೆಬ್‌ನಲ್ಲಿ ಹುಡುಕಲು ಅನುಮತಿಸುತ್ತದೆ. ನೀವು ಅದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="9048035366624198823">ಈ ಕ್ರಿಯೆಗಳಿಗೆ <ph name="POLICY_NAME" /> ನೀತಿಯನ್ನು <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" /> ಗೆ ಸೆಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="9048662076076074925">24 x 36 ಇಂಚು</translation>

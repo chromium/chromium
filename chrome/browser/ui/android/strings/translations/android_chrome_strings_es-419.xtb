@@ -109,7 +109,6 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="1419753403124156396">¿Quieres reiniciar Chrome?</translation>
 <translation id="1428770807407000502">¿Quieres desactivar la sincronización?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
-<translation id="1433478348197382180">Modo de lectura</translation>
 <translation id="1435593198351412143">Abrir archivos PDF de forma automática</translation>
 <translation id="1437543266176261764">Se ejecuta en <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizar tus productos con seguimiento en Favoritos</translation>
@@ -370,7 +369,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
 <translation id="2718846868787000099">Para poder mostrar contenido en tus idiomas preferidos, los sitios que visitas deberán acceder a tus preferencias</translation>
 <translation id="2723001399770238859">audio</translation>
-<translation id="2734335652257251631">Mostrar Modo de lectura</translation>
 <translation id="2739887572830526131">Conserva este grupo para agregar pestañas más tarde o bórralo si ya no lo necesitas.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> no está disponible en este momento.</translation>
 <translation id="2760805590727089264">MM/AA</translation>
@@ -1139,6 +1137,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="6232535412751077445">Si se habilita la opción de "No realizar seguimiento", se incluirá una solicitud con tu tráfico de navegación. Los efectos dependerán de si hay algún sitio web que responda a la solicitud y de cómo se interprete.
 
 Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncios que no están basados en otros sitios web que hayas visitado. Muchos sitios web seguirán recopilando y utilizando tus datos de navegación, por ejemplo, para mejorar la seguridad, proporcionar contenido, anuncios y recomendaciones, y generar estadísticas de informes.</translation>
+<translation id="623755660902014047">Modo de lectura</translation>
 <translation id="6247557882553405851">Administrador de contraseñas de Google</translation>
 <translation id="6248988683584659830">Buscar en configuración</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, pestaña de incógnito fijada con selección múltiple</translation>
@@ -1397,7 +1396,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7221869452894271364">Volver a cargar esta página</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
 <translation id="7230064152164845085">Cambiar al modo Incógnito</translation>
-<translation id="7230836263524391273">Ocultar el Modo de lectura</translation>
 <translation id="7237724030342645845">El Administrador de contraseñas de Google dejó de funcionar</translation>
 <translation id="72415438529550637">La sugerencia de contraseña está cerrada.</translation>
 <translation id="7248671827512403053">Aplicación</translation>
@@ -1732,7 +1730,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="867914734596684889">Mostrar u ocultar la barra de Favoritos</translation>
 <translation id="8683039184091909753">imagen</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestaña seleccionada</translation>
-<translation id="8693232767599693749">¿Quieres ver el Modo de lectura?</translation>
 <translation id="8697753151306746444">Compartir ventana o pantalla</translation>
 <translation id="8699120352855309748">No ofrecer la traducción de estos idiomas</translation>
 <translation id="8712637175834984815">Entendido</translation>

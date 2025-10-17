@@ -206,6 +206,7 @@
 <translation id="3296368748942286671">Continuar a executar aplicações em segundo plano quando o Chromium está fechado</translation>
 <translation id="3313189106987092621">O Chromium envia-lhe um aviso antes de carregar qualquer site através de uma ligação insegura</translation>
 <translation id="3316771292331273802">A sua sessão é terminada na maioria dos sites quando fecha todas as janelas do Chromium, exceto na sua Conta Google se tiver sessão iniciada no Chromium. Para permitir que os sites se lembrem de si, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">O seu motor de pesquisa predefinido foi alterado fora do Chromium. Para sua proteção, o Chromium repôs a definição.</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: direita <ph name="RIGHT" />%, parte superior <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
 <translation id="3369405342922656244">Pesquise esta página com a pesquisa de imagens</translation>
@@ -398,6 +399,7 @@
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5949225980829865667">Para ter este marcador e muito mais em todos os seus dispositivos, inicie sessão no Chromium</translation>
 <translation id="5953657885167112863">Personalize o Chromium</translation>
+<translation id="5960071705175224773">As suas definições foram alteradas por uma app desconhecida</translation>
 <translation id="5968400720580217226">Modo de IA</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{A sua organização fecha automaticamente o Chromium quando não é usado durante 1 minuto.}other{A sua organização fecha automaticamente o Chromium quando não é usado durante # minutos.}}</translation>
 <translation id="5987687638152509985">Atualize o Chromium para iniciar a sincronização</translation>

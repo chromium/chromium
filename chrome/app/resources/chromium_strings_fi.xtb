@@ -206,6 +206,7 @@
 <translation id="3296368748942286671">Jätä taustasovellukset käyntiin, kun Chromium suljetaan</translation>
 <translation id="3313189106987092621">Chromium varoittaa sinua ennen kuin lataat sivustoja suojaamattomalla yhteydellä</translation>
 <translation id="3316771292331273802">Sinut kirjataan ulos useimmilta sivustoilta, kun suljet kaikki Chromium-ikkunat. Tämä ei kuitenkaan koske Google-tiliäsi, jos olet kirjautuneena Chromiumiin. <ph name="SETTINGS_LINK" />, jotta sivustot muistavat sinut.</translation>
+<translation id="3322413454779348750">Oletushakukone on vaihdettu Chromiumin ulkopuolelta. Chromium on nollannut sen suojellakseen sinua.</translation>
 <translation id="3352986031709923790">hakualueen oikea yläkulma: oikea <ph name="RIGHT" /> %, ylä <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Tilisi Chromium-data</translation>
 <translation id="3369405342922656244">Hae tältä sivulta kuvahaulla</translation>
@@ -398,6 +399,7 @@
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5949225980829865667">Kirjaudu Chromiumiin, niin voit käyttää tätä kirjanmerkkiä ja muuta sisältöä kaikilla laitteillasi</translation>
 <translation id="5953657885167112863">Tee Chromiumista näköisesi</translation>
+<translation id="5960071705175224773">Tuntematon sovellus on muuttanut asetuksiasi</translation>
 <translation id="5968400720580217226">Tekoälytila</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty 1 minuuttiin.}other{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty # minuuttiin.}}</translation>
 <translation id="5987687638152509985">Aloita synkronointi päivittämällä Chromium.</translation>

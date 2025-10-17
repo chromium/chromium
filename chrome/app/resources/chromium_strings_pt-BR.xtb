@@ -204,6 +204,7 @@
 <translation id="3296368748942286671">Continuar executando os aplicativos em segundo plano quando o Chromium for fechado</translation>
 <translation id="3313189106987092621">O Chromium vai enviar um aviso antes de carregar qualquer site usando uma conexão sem segurança</translation>
 <translation id="3316771292331273802">Sua conta será desconectada da maioria dos sites quando você fechar todas as janelas do Chromium, exceto sua Conta do Google, se tiver feito login no navegador. Para permitir que os sites se lembrem de você, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Seu mecanismo de pesquisa padrão foi alterado fora do Chromium. Para sua proteção, o Chromium redefiniu essa configuração.</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: <ph name="RIGHT" />% à direita, <ph name="TOP" />% acima</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
 <translation id="3369405342922656244">Pesquise esta página com a pesquisa por imagens</translation>
@@ -396,6 +397,7 @@
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5949225980829865667">Faça login no Chromium para acessar este favorito e muito mais em todos os seus dispositivos</translation>
 <translation id="5953657885167112863">Deixe o Chromium do seu jeito</translation>
+<translation id="5960071705175224773">Suas configurações foram alteradas por um app desconhecido</translation>
 <translation id="5968400720580217226">Modo IA</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{A organização vai fechar o Chromium automaticamente se ele não for usado por 1 minuto.}one{A organização vai fechar o Chromium automaticamente se ele não for usado por # minuto.}other{A organização vai fechar o Chromium automaticamente se ele não for usado por # minutos.}}</translation>
 <translation id="5987687638152509985">Atualize o Chromium para começar a sincronizar</translation>

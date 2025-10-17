@@ -109,7 +109,6 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1419753403124156396">Reiniciar o Chrome?</translation>
 <translation id="1428770807407000502">Desativar a sincronização?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
-<translation id="1433478348197382180">Modo de leitura</translation>
 <translation id="1435593198351412143">Abrir PDFs automaticamente</translation>
 <translation id="1437543266176261764">Em execução na app <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organize os produtos monitorizados nos Marcadores</translation>
@@ -370,7 +369,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2718352093833049315">Apenas em Wi-Fi</translation>
 <translation id="2718846868787000099">Para apresentar conteúdo nos seus idiomas preferidos, os sites que visitar podem ver as suas preferências.</translation>
 <translation id="2723001399770238859">áudio</translation>
-<translation id="2734335652257251631">Mostrar Modo de leitura</translation>
 <translation id="2739887572830526131">Mantenha este grupo para adicionar separadores mais tarde ou elimine-o se já não precisar dele.</translation>
 <translation id="2742373789128106053">De momento, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> não está disponível.</translation>
 <translation id="2760805590727089264">MM/AA</translation>
@@ -1139,6 +1137,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="6232535412751077445">A ativação da funcionalidade "Não Monitorizar" significa que é incluído um pedido no seu tráfego de navegação. Qualquer efeito depende de um Website responder ou não ao pedido e do modo como o pedido é interpretado.
 
 Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios que não são baseados noutros Sites que tenha visitado. Ainda assim, muitos Sites continuam a recolher e a utilizar os seus dados de navegação para, por exemplo, melhorar a segurança, fornecer conteúdo, anúncios e recomendações, e gerar estatísticas de relatórios.</translation>
+<translation id="623755660902014047">Modo de leitura</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
 <translation id="6248988683584659830">Pesquisar definições</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, separador de navegação anónima fixo e multisselecionado</translation>
@@ -1397,7 +1396,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7221869452894271364">Recarregar esta página</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 transferência pendente}other{# transferências pendentes}}</translation>
 <translation id="7230064152164845085">Mudar para Navegação anónima</translation>
-<translation id="7230836263524391273">Ocultar modo de leitura</translation>
 <translation id="7237724030342645845">O Gestor de Palavras-passe da Google deixou de funcionar</translation>
 <translation id="72415438529550637">A sugestão de palavra-passe está fechada.</translation>
 <translation id="7248671827512403053">Aplicação</translation>
@@ -1732,7 +1730,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="867914734596684889">Mostrar ou ocultar a barra de marcadores</translation>
 <translation id="8683039184091909753">imagem</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, separador selecionado</translation>
-<translation id="8693232767599693749">Ver Modo de leitura?</translation>
 <translation id="8697753151306746444">Em alternativa, partilhe a janela ou o ecrã</translation>
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
 <translation id="8712637175834984815">OK</translation>

@@ -457,7 +457,6 @@
 <translation id="2721190673959776287">Primer detaljne pomoći u proizvodu za kontekstualno okno koje treba da se prikazuje više puta dnevno.</translation>
 <translation id="2739887572830526131">Zadržite ovu grupu da biste dodali kartice kasnije ili je izbrišite ako vam više ne treba.</translation>
 <translation id="2747003861858887689">Prethodno polje</translation>
-<translation id="2749231692441336879">Pratite kanal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755485474385016903">Svi u grupi vide unete promene</translation>
 <translation id="2755595981383829244">Sada ćete dobijati obaveštenja o sadržaju</translation>
 <translation id="2761788987260570878">Slikajte pretragu</translation>
@@ -504,7 +503,6 @@
 <translation id="29153882450867370">Sakrij „Prati cenu“</translation>
 <translation id="291754862089661335">Postavite QR ili bar-kod u ovaj okvir</translation>
 <translation id="2918688092312652908">Označi kao nepročitano</translation>
-<translation id="2920866371965792875">Da biste videli novosti sa ovog sajta, idite ovde.</translation>
 <translation id="2922210239002704889">Idite na početnu stranicu ili tastaturu</translation>
 <translation id="2924940770243654951">Otvori na novoj kartici bez arhiviranja</translation>
 <translation id="2931440415625410757">Prikaži uputstva</translation>
@@ -659,6 +657,7 @@
 <translation id="3575426792457739946">Ova lista sadrži sve učitane profile.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, ovim upravlja organizacija.</translation>
 <translation id="3581564640715911333">Ponudi prevod stranica na drugim jezicima</translation>
+<translation id="3587482841069643663">Sve</translation>
 <translation id="3587885837929752825">Organizacija ograničava sadržaj koji možete da čuvate na Google nalogu.</translation>
 <translation id="3588820906588687999">Otvori sliku na novoj kartici</translation>
 <translation id="3595252146048399851">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
@@ -954,7 +953,6 @@
 <translation id="4752348350801431746">Isključi obaveštenja Provere bezbednosti…</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4764612367328936189">Organizacija vam dozvoljava da se prijavite samo pomoću određenih naloga. Nalozi koji nisu dozvoljeni su skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="4766112107778026136">Otkrivanje i praćenje</translation>
 <translation id="4769198578611055647">Pomaže vam da pristupate sačuvanim pristupnim ključevima na bilo kom uređaju</translation>
 <translation id="4782952780741793211">Kôd za potvrdu:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1284,6 +1282,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5971459446352190251">Pretraga QR kodova</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 obeleživač je izbrisan}one{{count} obeleživač je izbrisan}few{{count} obeleživača su izbrisana}other{{count} obeleživača je izbrisano}}</translation>
 <translation id="5972844218283131174">Opozovi sve</translation>
+<translation id="5976160379964388480">Drugi</translation>
 <translation id="5977976211062815271">Na ovom uređaju</translation>
 <translation id="5986043348928676121">Dalje</translation>
 <translation id="598634819525651074">Površina</translation>
@@ -1330,6 +1329,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6140600850356225166">Zatraži otvaranje linkova iz drugih aplikacija u režimu bez arhiviranja</translation>
 <translation id="6140948187512243695">Prikaži detalje</translation>
 <translation id="6144589619057374135">Otvori ${url} u režimu bez arhiviranja</translation>
+<translation id="6146563240635539929">Videi</translation>
 <translation id="6147279996212084542">Objasni</translation>
 <translation id="6151006591088192882">Otključaj kartice bez arhiviranja pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Neaktivno</translation>
@@ -1372,7 +1372,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6271824294945464304">Lozinka se deli</translation>
 <translation id="628251768213143684">Uvek možete da upravljate sadržajem koji se čuva na Google nalogu</translation>
 <translation id="6284652193729350524">Ponudi prevod za <ph name="LANGUAGE" /></translation>
-<translation id="6289501276895392862">Opozvali ste praćenje kanala <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Da biste uključili Bezbedno pregledanje, otvorite <ph name="BEGIN_LINK" />Google usluge<ph name="END_LINK" /> i dodirnite Bezbedno pregledanje.</translation>
 <translation id="6295751040240588413">Nevažeći nadimak kartice</translation>
 <translation id="629730747756840877">nalog</translation>
@@ -1504,7 +1503,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6708501134077648845">Opcije za lozinke</translation>
 <translation id="6709964700841491574">Režim zaključavanja</translation>
 <translation id="6710079714193676716">Ovim upravlja organizacija. Neke funkcije možda nisu dostupne. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="671310123089116995">Idi na fid</translation>
 <translation id="6713676799463473249">Izmenjeno <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Primljene kartice</translation>
 <translation id="6723740634201835758">Na Google nalogu</translation>
@@ -1897,6 +1895,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8221665793629393739">Podsetnik da ponovo posetite</translation>
 <translation id="8232956427053453090">Zadrži podatke</translation>
 <translation id="8233237502828137700">Zatvorite promotivni baner</translation>
+<translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8258734532103758067">I've exported my data (Izvezao/la sam podatke)</translation>
 <translation id="8258999165172757081">Dodato</translation>
 <translation id="8261506727792406068">Izbriši</translation>
@@ -2121,7 +2120,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="9055291197094969722">Pravite grupe kartica da biste organizovali otvorene kartice i ostali produktivni</translation>
 <translation id="9055580485132823283">Izbrisaćete lozinke ({password_count}), pristupne ključeve ({passkey_count}) i listu sajtova i aplikacija za koje ste odabrali da nikada ne čuvate podatke za prijavljivanje. Nalozi koje ste otvorili za sajtove i aplikacije neće biti izbrisani.</translation>
 <translation id="9057030985451135243">Saznajte više o deljenim grupama kartica</translation>
-<translation id="9057972802061533987">Praćenje nije uspelo. Došlo je do greške.</translation>
 <translation id="9065203028668620118">Izmeni</translation>
 <translation id="9066097352053395362">Sakrij opciju Izmeni obeleživače</translation>
 <translation id="9070824521421603770">Odjavićete se i kartice će biti zatvorene</translation>
@@ -2134,7 +2132,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="9087339162317338348">Koristite HTTPS kad god je to moguće i dobijajte upozorenje pre učitavanja sajtova koji ga ne podržavaju.</translation>
 <translation id="9090979472668095374">Izgovaraj odgovore</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>
-<translation id="9097506547406246598">Opozivanje praćenja nije uspelo. Došlo je do greške.</translation>
 <translation id="9098541895599151034">Želite li da izbrišete lozinke za <ph name="NUMBER_OF_ACCOUNTS" /> naloga?</translation>
 <translation id="9099233023029360602">Svaki put pitaj koji nalog želim da koristim</translation>
 <translation id="9099821309562615674">Uverite se da je tekst koji prevodite jasan i u kadru.</translation>
@@ -2165,6 +2162,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="9203951165704618409">Prebacite traku za adresu od vrha do dna da biste imali prilagođeni doživljaj pregledanja.</translation>
 <translation id="9205189991633470489">Zaključavanje kartica bez arhiviranja</translation>
 <translation id="9206887540681440657">Brzina</translation>
+<translation id="9219103736887031265">Slike</translation>
 <translation id="9219154867334666734">Pretražite kartice…</translation>
 <translation id="9223358826628549784">Izveštaj o otkazivanju je poslat.</translation>
 <translation id="926455622548529175">Promeni i izbriši</translation>

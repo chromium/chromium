@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">关闭反馈对话框</translation>
 <translation id="306179102415443347">使用快捷方式可快速访问 Google 密码管理工具。您可以将快捷方式移动到计算机的主屏幕上或应用启动器中。</translation>
 <translation id="3065168410429928842">Chrome 标签页</translation>
+<translation id="3073571714401714450">在 Chrome 开发者版中开启/关闭 Gemini</translation>
 <translation id="3080151273017101988">关闭 Google Chrome 后继续运行后台应用</translation>
 <translation id="308397506772922478">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">请为您的 Chrome 个人资料命名</translation>
@@ -372,6 +373,7 @@
 <translation id="5368118228313795342">额外代码：<ph name="EXTRA_CODE" />。</translation>
 <translation id="5386244825306882791">它还能够控制您启动Chrome后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5394833366792865639">共享 Chrome 标签页</translation>
+<translation id="5402307365844630024">在 Chrome Beta 版中开启/关闭 Gemini</translation>
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
 <translation id="5468572406162360320">为帮助改进这些功能，Chrome 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
 <translation id="5510398294750420479">在手机上下载 Chrome，随时随地享受额外安全保障</translation>
@@ -421,6 +423,7 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">将 Google Chrome 浏览器设为默认浏览器</translation>
 <translation id="5947104538377036631">Chrome 快捷方式</translation>
+<translation id="5960071705175224773">未知应用更改了您的设置</translation>
 <translation id="5968400720580217226">AI 模式</translation>
 <translation id="5980111191913430208">来源不明的扩展程序、应用和主题可能会危害您的设备。Chrome 建议只从 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安装这些内容</translation>
 <translation id="6003112304606738118">正在下载…还需 <ph name="HOURS" /> 小时</translation>
@@ -644,6 +647,7 @@
 <translation id="8362914115861174987">目标语言</translation>
 <translation id="8366770919198174997">降低性能，但提高 Chrome 防范攻击的能力</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
+<translation id="8377158135256176353">在 Chrome Canary 版中开启/关闭 Gemini</translation>
 <translation id="8387459386171870978">继续使用 Chrome</translation>
 <translation id="8394720698884623075">将网址与存储在 Chrome 中的不安全网站列表进行比对</translation>
 <translation id="8403038600646341038">计算机屏幕中的 Chrome 徽标。</translation>
@@ -692,12 +696,14 @@
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8922193594870374009">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
 <translation id="8922998289262614701">从 Chrome 中移除此应用的数据</translation>
+<translation id="8936233353620149764">在 Chrome 中开启/关闭 Gemini</translation>
 <translation id="8948460679427074738">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chrome 建议您移除它。</translation>
 <translation id="8958307504142971576">您现在可以在 Chrome 中使用更多功能了</translation>
 <translation id="8991530961471831170">打开 Chrome 中的 Gemini</translation>
 <translation id="8992769679401294069">系统将使用您的口令加密您的数据。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="8999117580775242387">如果 HTTPS 不可用，Chrome 会在不向您发出警告的情况下使用不安全的连接</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>
+<translation id="9010418943148193727">您的默认搜索引擎已在 Chrome 外部更改。为保护您的安全，Chrome 已将其重置。</translation>
 <translation id="9014771989710951291">多个组织负责管理 Chrome</translation>
 <translation id="9024318700713112071">将 Chrome 设为默认浏览器</translation>
 <translation id="9066987883552592250">关闭 Chrome Canary 版中的 Gemini</translation>

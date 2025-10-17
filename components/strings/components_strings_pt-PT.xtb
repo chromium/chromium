@@ -2292,6 +2292,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4758311279753947758">Adicionar informações de contacto</translation>
 <translation id="4761326898079498987">Reveja para obter mais detalhes</translation>
 <translation id="4761869838909035636">Executar verificação de segurança do Chrome</translation>
+<translation id="4762097990764616058">Continuar a pagar com a <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Termos de utilização facultados por <ph name="URL" /></translation>
 <translation id="4764680219299728632">Fogões, placas e fornos</translation>
 <translation id="4764776831041365478">A página Web em <ph name="URL" /> poderá estar temporariamente inactiva ou poderá ter sido movida permanentemente para um novo endereço Web.</translation>
@@ -2923,6 +2924,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5826507051599432481">Nome comum (CN)</translation>
 <translation id="5830698870816298009">utilização e movimento da câmara</translation>
+<translation id="5831217499016131155">Carteira do Google</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5832976493438355584">Bloqueado</translation>
 <translation id="5837220895135257862">Liberte espaço no <ph name="CLOUD_PROVIDER" /> antes de tentar novamente</translation>
@@ -3433,6 +3435,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Gerido por:</translation>
 <translation id="6652101503459149953">Usar o Windows Hello</translation>
+<translation id="6653684225271066234">A <ph name="BNPL_ISSUER_NAME" /> vai verificar a sua elegibilidade (este procedimento não tem impacto na sua pontuação de crédito). Se cumprir os critérios de elegibilidade, a <ph name="BNPL_ISSUER_NAME" /> oferece planos de pagamento potenciais para concluir a compra.</translation>
 <translation id="6654224358955673568">Tornar mais formal</translation>
 <translation id="6654244995031366386">Vidro (com textura)</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
@@ -3596,6 +3599,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6925267999184670015">B+ norte-americano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
+<translation id="6927057753277044239">Depois de rever a encomenda, tem de iniciar sessão ou criar uma conta da <ph name="BNPL_ISSUER_NAME" />. Esta conta vai ser associada automaticamente à sua Conta Google.</translation>
 <translation id="6930607614725241390">Pesquise no painel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O seu motor de pesquisa predefinido permite-lhe pesquisar na Web e ativar as funcionalidades do Chrome<ph name="END_BOLD" />, como pesquisar a partir da barra de endereço e de imagens em páginas Web. É possível que uma funcionalidade não esteja disponível se o seu motor de busca não a suportar.</translation>
 <translation id="6934672428414710184">Este nome é proveniente da sua Conta Google.</translation>
@@ -3647,6 +3651,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6997288673234694149">Equipamento de basebol e softbol</translation>
 <translation id="6998512609912910179">Preencha formulários mais rapidamente</translation>
 <translation id="6999480632062519056">Ensino de fitness e treino pessoal</translation>
+<translation id="7002897669829306463">Morada de casa, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Tapetes e carpetes</translation>
 <translation id="7003322000677139268">Peças e acessórios para veículos</translation>
 <translation id="7004499039102548441">Separadores recentes</translation>
@@ -4213,6 +4218,7 @@ Detalhes adicionais:
 <translation id="791698251820376781">A sua organização não lhe permite iniciar sessão</translation>
 <translation id="7926503317156566022">Indústria da aviação</translation>
 <translation id="7930282586031445870">O ecrã dos Termos de Utilização do método Comprar agora e pagar depois está fechado.</translation>
+<translation id="7932035970207573919">Morada do trabalho, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Quer atualizar o endereço?</translation>
 <translation id="7932579305932748336">Revestir</translation>
 <translation id="79338296614623784">Introduza um número de telefone válido</translation>

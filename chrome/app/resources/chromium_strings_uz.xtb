@@ -203,6 +203,7 @@
 <translation id="3296368748942286671">Chromium yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
 <translation id="3313189106987092621">Xavfsiz ulanishli har qanday saytga kirganingizda Chromium sizni ogohlantiradi</translation>
 <translation id="3316771292331273802">Barcha Chromium oynalari yopilganda aksariyat saytlardan chiqib ketasiz, ammo Chromium hisobingizga kirganingizda Google hisobingizdan chiqmaysiz. Saytlarga sizni eslab qolishga ruxsat berish uchun <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Birlamchi qidiruv vositasi Chromiumdan tashqarida oʻzgartirildi. Sizni himoya qilish uchun Chromium uni tikladi.</translation>
 <translation id="3352986031709923790">qidiruv hududining yuqori oʻng burchagi: oʻng <ph name="RIGHT" />%, yuqori <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Hisobingizdagi Chromium maʼlumotlari</translation>
 <translation id="3369405342922656244">Rasmli qidiruv orqali bu sahifani topish</translation>
@@ -395,6 +396,7 @@
 <translation id="5941711191222866238">Yig‘ish</translation>
 <translation id="5949225980829865667">Bu bukmark va boshqalardan barcha qurilmalarda foydalanish uchun Chromium hisobiga kiring</translation>
 <translation id="5953657885167112863">Chromiumni oʻzingizga moslang</translation>
+<translation id="5960071705175224773">Sozlamalar notanish ilova tomonidan oʻzgartirildi</translation>
 <translation id="5968400720580217226">AI rejimi</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}other{Chromium # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}}</translation>
 <translation id="5987687638152509985">Sinxronizatsiyani boshlash uchun Chromium brauzerini yangilang</translation>

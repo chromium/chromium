@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">‏‫Chrome کو ری اسٹارٹ کریں؟</translation>
 <translation id="1428770807407000502">مطابقت پذیری کو آف کریں؟</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
-<translation id="1433478348197382180">Reading Mode</translation>
 <translation id="1435593198351412143">‏خودکار طور پر PDFs کھولیں</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> میں چل رہا ہے</translation>
 <translation id="1448440926884431741">اپنے ٹریک کردہ پروڈکٹس کو بُک مارکس میں منظم کریں</translation>
@@ -370,7 +369,6 @@
 <translation id="2718352093833049315">‏صرف Wi-Fi پر</translation>
 <translation id="2718846868787000099">اپنی ترجیحی زبانوں میں مواد دکھانے کے لیے، آپ جو سائٹس ملاحظہ کرتے ہیں وہ آپ کی ترجیحات دیکھ سکتی ہیں</translation>
 <translation id="2723001399770238859">آڈیو</translation>
-<translation id="2734335652257251631">ریڈنگ موڈ دکھائیں</translation>
 <translation id="2739887572830526131">اس گروپ کو بعد میں ٹیبز شامل کرنے کیلئے برقرار رکھیں یا اگر آپ کو اس کی مزید ضرورت نہیں ہے تو اسے حذف کریں۔</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ابھی دستیاب نہیں ہے۔</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1139,6 +1137,7 @@
 <translation id="6232535412751077445">ٹریک نہ کریں' کو فعال کرنے کا مطلب یہ ہے کہ آپ کی براؤزنگ ٹریفک کے ساتھ ایک درخواست شامل کر دی جائے گی۔ کسی بھی اثر کا انحصار اس بات پر ہوتا ہے کہ آیا ویب سائٹ درخواست کا جواب دیتی ہے اور درخواست کی ترجمانی کس طرح کی جاتی ہے۔
 
 مثلاً، کچھ ویب سائٹس آپ کو ایسے اشتہارات دکھا کر اس درخواست کا جواب دے سکتی ہیں جو آپ کی ملاحظہ کردہ دوسری ویب سائٹس پر مبنی نہیں ہیں۔ بہت ساری ویب سائٹس اب بھی آپ کا براؤزنگ ڈیٹا اکٹھا اور استعمال کریں گی — مثلاً، سیکیورٹی کو بہتر بنانے، مواد، اشتہارات اور تجاویز فراہم کرنے اوراطلاع دہندگی کے اعداد و شمار تیار کرنے کیلئے۔</translation>
+<translation id="623755660902014047">Reading Mode</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
 <translation id="6248988683584659830">تلاش کی ترتیبات</translation>
 <translation id="6250847299079540062">‫<ph name="TAB_TITLE" />، متعدد منتخب پن کردہ پوشیدگی ٹیب</translation>
@@ -1397,7 +1396,6 @@
 <translation id="7221869452894271364">یہ صفحہ دوبارہ لوڈ کریں</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ زير التوا ہے}other{# ڈاؤن لوڈز زير التوا ہیں}}</translation>
 <translation id="7230064152164845085">پوشیدگی میں سوئچ کریں</translation>
-<translation id="7230836263524391273">ریڈنگ موڈ کو چھپائیں</translation>
 <translation id="7237724030342645845">‏‫Google پاس ورڈ مینیجر نے کام کرنا بند کر دیا ہے</translation>
 <translation id="72415438529550637">پاس ورڈ کی تجویز بند ہے۔</translation>
 <translation id="7248671827512403053">اطلاق</translation>
@@ -1732,7 +1730,6 @@
 <translation id="867914734596684889">بُک مارکس بار دکھائیں یا چھپائیں</translation>
 <translation id="8683039184091909753">تصویر</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />، منتخب کردہ ٹیب</translation>
-<translation id="8693232767599693749">ریڈنگ موڈ دیکھیں؟</translation>
 <translation id="8697753151306746444">اس کے بجائے ونڈو یا اسکرین کا اشتراک کریں</translation>
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>

@@ -208,6 +208,7 @@
 <translation id="3296368748942286671">ສືບຕໍ່ແລ່ນແອັບພື້ນຫຼັງ ເມື່ອ Chromium ປິດ</translation>
 <translation id="3313189106987092621">Chromium ຈະເຕືອນທ່ານກ່ອນການໂຫຼດເວັບໄຊໃດກໍຕາມທີ່ກຳລັງໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ</translation>
 <translation id="3316771292331273802">ທ່ານຈະອອກຈາກລະບົບຂອງເວັບໄຊສ່ວນໃຫຍ່ເມື່ອທ່ານປິດໜ້າຈໍ Chromium ທັງໝົດຍົກເວັ້ນບັນຊີ Google ຂອງທ່ານຫາກທ່ານເຂົ້າສູ່ລະບົບ Chromium. ເພື່ອໃຫ້ເວັບໄຊຈື່ທ່ານໄດ້, ກະລຸນາ <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">ມີການປ່ຽນໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານຈາກພາຍນອກ Chromium. ເພື່ອປົກປ້ອງທ່ານ, Chromium ຈຶ່ງຣີເຊັດໂປຣແກຣມດັ່ງກ່າວ.</translation>
 <translation id="3352986031709923790">ມຸມຂວາເທິງຂອງພື້ນທີ່ຊອກຫາ: ຂວາ <ph name="RIGHT" />%, ເທິງ <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">ຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ</translation>
 <translation id="3369405342922656244">ຊອກຫາໜ້ານີ້ດ້ວຍຄຸນສົມບັດຊອກຫາຮູບ</translation>
@@ -400,6 +401,7 @@
 <translation id="5941711191222866238">ຫຍໍ້ລົງ</translation>
 <translation id="5949225980829865667">ເພື່ອຮັບເອົາບຸກມາກນີ້ ແລະ ອື່ນໆອີກໃນທຸກອຸປະກອນຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="5953657885167112863">ເຮັດໃຫ້ Chromium ເປັນຂອງທ່ານ</translation>
+<translation id="5960071705175224773">ແອັບທີ່ບໍ່ຮູ້ຈັກປ່ຽນການຕັ້ງຄ່າຂອງທ່ານ</translation>
 <translation id="5968400720580217226">ໂໝດ AI</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{ອົງກອນຂອງທ່ານຈະປິດ Chromium ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ 1 ນາທີ.}other{ອົງກອນຂອງທ່ານຈະປິດ Chromium ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ # ນາທີ.}}</translation>
 <translation id="5987687638152509985">ອັບເດດ Chromium ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ</translation>

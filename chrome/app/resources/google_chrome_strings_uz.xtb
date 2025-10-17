@@ -187,6 +187,7 @@
 <translation id="3047590466164881923">Fikr-mulohaza yuborish oynasini yopish</translation>
 <translation id="306179102415443347">Google Parollar menejerini ochish uchun yorliqdan foydalaning Yorliqni kompyuter bosh ekraniga yoki ilovalar launcheriga joylashingiz mumkin</translation>
 <translation id="3065168410429928842">Chrome sahifasi</translation>
+<translation id="3073571714401714450">Chrome Dev ichida Gemini tugmasi</translation>
 <translation id="3080151273017101988">Google Chrome yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
 <translation id="308397506772922478">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Chrome profilingizga nom bering</translation>
@@ -375,6 +376,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tan
 <translation id="5368118228313795342">Qoʻshimcha kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Bundan tashqari kengaytma Chrome boshlash sahifasini va omniboksdagi so‘rovlar uchun foydalaniladigan birlamchi qidiruv tizimini o‘zgartirdi.</translation>
 <translation id="5394833366792865639">Chrome sahifasini namoyish qilish</translation>
+<translation id="5402307365844630024">Chrome Beta ichida Gemini tugmasi</translation>
 <translation id="5430073640787465221">Sozlamalar fayli shikastlangan yoki yaroqsiz holatda.
 
 Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
@@ -426,6 +428,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5941711191222866238">Yig‘ish</translation>
 <translation id="5941830788786076944">Google Chrome standart brauzer qilib belgilansin</translation>
 <translation id="5947104538377036631">Chrome tezkor tugmasi</translation>
+<translation id="5960071705175224773">Sozlamalar notanish ilova tomonidan oʻzgartirildi</translation>
 <translation id="5968400720580217226">AI rejimi</translation>
 <translation id="5980111191913430208">Nomaʼlum manbalar kengaytmalari, ilovalari va mavzulari qurilmangizni zararlashi mumkin. Chrome ularni faqat <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> orqali oʻrnatishni tavsiya qiladi</translation>
 <translation id="6003112304606738118">Yuklab olinmoqda... <ph name="HOURS" /> soat qoldi</translation>
@@ -649,6 +652,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8362914115861174987">Bu tilga tarjima qilish</translation>
 <translation id="8366770919198174997">Unumdorlik pasayadi, ammo Chrome hujumlarga yaxshiroq qarshilik qiladi</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
+<translation id="8377158135256176353">Chrome Canary ichida Gemini tugmasi</translation>
 <translation id="8387459386171870978">Chrome yopilmasin</translation>
 <translation id="8394720698884623075">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi</translation>
 <translation id="8403038600646341038">Kompyuter ekranida Chrome logotipi aks etgan tasvir</translation>
@@ -697,12 +701,14 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8914504000324227558">Chrome’ni qayta ishga tushiring</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> orqali Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8922998289262614701">Bu ilova maʼlumotlarini Chrome xotirasidan olib tashlang</translation>
+<translation id="8936233353620149764">Chrome ichida Gemini tugmasi</translation>
 <translation id="8948460679427074738">Bu kengaytma axborot jamlashi va ishlatishi kabi maxfiylikka oid ochiqlama joylamagan. Chrome uni olib tashlashni tavsiya qiladi.</translation>
 <translation id="8958307504142971576">Endi koʻproq Chrome funksiyalaridan foydalanishingiz mumkin</translation>
 <translation id="8991530961471831170">Chrome ichida Gemini ochish</translation>
 <translation id="8992769679401294069">Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chrome maʼlumotlarini Google hisobingizda saqlash va ulardan foydalanish uchun uni kiriting.</translation>
 <translation id="8999117580775242387">HTTPS mavjud boʻlmasa, Chrome sizni ogohlantirmasdan himoyalanmagan ulanishdan foydalanadi.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome uchun yangilanish mavjud}=1{Chrome uchun yangilanish mavjud}other{Chrome uchun yangilanish mavjud (# kun)}}</translation>
+<translation id="9010418943148193727">Birlamchi qidiruv vositasi Chromedan tashqarida oʻzgartirildi. Sizni himoyalash uchun Chrome uni tikladi.</translation>
 <translation id="9014771989710951291">Chrome bir nechta tashkilot boshqaruvida</translation>
 <translation id="9024318700713112071">Chromeni birlamchi brauzer etib belgilang.</translation>
 <translation id="9066987883552592250">Chrome Canary ichida Gemini oynasini yopish</translation>

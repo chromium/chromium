@@ -249,7 +249,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1162479191445552288">Lancarkan pada permulaan</translation>
 <translation id="1163931534039071049">&amp;Lihat sumber bingkai</translation>
 <translation id="1164015913575846413">Alt + klik</translation>
-<translation id="1164286072721995435">Berkongsi tab semasa dengan Gemini setiap kali anda memulakan perbualan baharu. Anda boleh menjeda perkongsian tab semasa anda pada bila-bila masa. Data anda tidak digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="1164891049599601209">Dimasukkan pada tapak penipuan</translation>
 <translation id="1165039591588034296">Ralat</translation>
 <translation id="1166212789817575481">Tutup Tab di sebelah Kanan</translation>
@@ -538,7 +537,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1353980523955420967">Tidak menemui PPD. Pastikan Chromebook anda berada dalam talian dan cuba lagi.</translation>
 <translation id="1354045473509304750">Teruskan membenarkan <ph name="HOST" /> menggunakan dan mengalihkan kamera anda</translation>
 <translation id="1354148503392558902">Menukar kata laluan...</translation>
-<translation id="1354943694624358993">Sentiasa kongsi tab semasa</translation>
 <translation id="1355088139103479645">Padamkan semua data?</translation>
 <translation id="1355088659320425659">Sejarah dan tab</translation>
 <translation id="1356376170199999104">Dibenarkan – <ph name="PERMISSION_DETAILS" />. Hidupkan mikrofon menggunakan suis fizikal.</translation>
@@ -2376,7 +2374,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2605668923777146443">Pergi ke <ph name="LINK_BEGIN" />Tetapan<ph name="LINK_END" /> untuk melihat pilihan anda untuk Better Together.</translation>
 <translation id="2606246518223360146">Pautkan Data</translation>
 <translation id="2606454609872547359">Tidak, teruskan tanpa ChromeVox</translation>
-<translation id="2606568927909309675">Membuat sari kata untuk audio dan video bahasa Inggeris secara automatik. Audio dan sari kata tidak sekali-kali dihantar keluar daripada peranti anda.</translation>
 <translation id="2606890864830643943">Mengeksport data diagnostik</translation>
 <translation id="2607101320794533334">Maklumat Penting Subjek Awam</translation>
 <translation id="2609533306502181883">Kaji sesuatu topik</translation>
@@ -5782,7 +5779,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4956593309300508411">Hentikan Perkongsian?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Simpan dalam folder pada peranti ini sahaja?</translation>
-<translation id="4958916254663453555">Tab semasa anda akan dikongsi secara automatik apabila anda membuka Gemini dalam Chrome. Kandungan dan URL penuh tab semasa dihantar kepada Google.</translation>
 <translation id="4959262764292427323">Kata laluan disimpan dalam Google Account anda supaya anda dapat menggunakannya pada mana-mana peranti</translation>
 <translation id="4960020053211143927">Tidak disokong oleh sesetengah apl</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5894,7 +5890,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5045367873597907704">Perihal peranti HID</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
 <translation id="504561833207953641">Membuka sesi penyemak imbas yang sedia ada.</translation>
-<translation id="5047544190872578914">Berkongsi tab semasa dengan Gemini setiap kali anda memulakan perbualan baharu. Anda boleh menjeda perkongsian tab semasa anda pada bila-bila masa.</translation>
 <translation id="504953514574706691">Tab dikecualikan daripada kumpulan yang dicadangkan</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Muat turun fail yang tidak disahkan</translation>
@@ -6414,6 +6409,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5414836363063783498">Mengesahkan…</translation>
 <translation id="5415328625985164836">Program ini ialah program beta. Kini anda boleh menggunakan Steam untuk bermain permainan pada Chromebook anda.</translation>
 <translation id="5415497281076257439">Frasa</translation>
+<translation id="5415871492522952905">Sejarah dan tab anda boleh didapati pada semua peranti anda supaya anda boleh meneruskan perkara yang sedang anda lakukan</translation>
 <translation id="5417293056300086453">Laman ini boleh menggunakan pengecam untuk memainkan kandungan yang dilindungi.</translation>
 <translation id="5417312524372586921">Tema penyemak imbas</translation>
 <translation id="541737483547792035">Besarkan skrin</translation>
@@ -6624,6 +6620,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5555760010546505198">Tetapan penyongsangan warna, pembetulan warna, penggadang dan paparan</translation>
 <translation id="555604722231274592">Dayakan <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Muat Semula</translation>
+<translation id="555671485580955310">Segerakkan sejarah dan tab</translation>
 <translation id="5558129378926964177">Zum &amp;Masuk</translation>
 <translation id="5558594314398017686">Lalai OS (apabila tersedia)</translation>
 <translation id="5559311991468302423">Padamkan alamat</translation>
@@ -10752,7 +10749,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8419098111404128271">Hasil carian untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="8419144699778179708">Memadamkan sejarah, termasuk item dalam kotak carian</translation>
 <translation id="8420308167132684745">Edit entri kamus</translation>
-<translation id="8421361468937925547">Sari Kata Langsung (bahasa Inggeris sahaja)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Dulang tiada</translation>
 <translation id="8424250197845498070">Disekat oleh Perlindungan Lanjutan</translation>
@@ -11049,6 +11045,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8637688295594795546">Kemas kini sistem tersedia. Bersedia untuk  muat turun…</translation>
 <translation id="8638719155236856752">Kesihatan Rangkaian ChromeOS</translation>
 <translation id="8639635302972078117">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Akaun Googlenya.</translation>
+<translation id="8639963783467694461">Tetapan auto isi</translation>
 <translation id="8640575194957831802">Terakhir dibuka</translation>
 <translation id="8641946446576357115">Gunakan Kata Laluan Anda pada Peranti iOS Anda</translation>
 <translation id="8642577642520207435">Kebenaran kamera <ph name="APP_NAME" /></translation>

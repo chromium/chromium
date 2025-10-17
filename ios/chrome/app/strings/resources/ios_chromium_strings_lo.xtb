@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">ນີ້ໝາຍຄວາມວ່າ Chromium ຈະຮ້ອງຂໍເວັບໄຊມືຖືທຸກເທື່ອ.</translation>
 <translation id="1115463765356382667">ເຮັດສຳເລັດການກະທຳທີ່ແນະນຳຕໍ່ໄປນີ້ເພື່ອຮັບປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
+<translation id="1211450393895337634">ເປີດ Chromium ໄດ້ໄວຂຶ້ນເມື່ອທ່ານພ້ອມທີ່ຈະທ່ອງເວັບຢູ່ iPad ຂອງທ່ານ.</translation>
 <translation id="1229234641991056119">ໃຊ້ລະຫັດຜ່ານ, ປະຫວັດ, ບຸກມາກ ແລະ ບັດເຄຣດິດຈາກ Safari ຂອງທ່ານໃນ Chromium</translation>
 <translation id="1257458525759135959">ເພື່ອບັນທຶກຮູບພາບ, ກະລຸນາແຕະໃສ່ການຕັ້ງຄ່າເພື່ອອະນຸຍາດໃຫ້ Chromium ເພີ່ມໃສ່ຮູບພາບຂອງທ່ານ</translation>
 <translation id="1260702988262336471">ເປີດເມນູ Chromium</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">ຟີດກຳນົດເອງທີ່ສ້າງມາເພື່ອທ່ານ. ຮວມທັງຂ່າວ, ກິລາ ແລະ ສະພາບອາກາດ.</translation>
 <translation id="1561849081734670621">ເພື່ອປິດການນຳໃຊ້ໂໝດການລັອກດາວໃນ Chromium ໃຫ້ປິດມັນຢູ່ iPhone ຂອງທ່ານ.</translation>
 <translation id="1569258826720962327">ໃຊ້ຄຳສັ່ງ Chromium ຢູ່ iOS</translation>
+<translation id="1573441572176948907">ຍ້າຍ Chromium ໄປໃສ່ດັອກຂອງທ່ານ</translation>
 <translation id="159029779861043703">Chromium ຮັກສາຂໍ້ມູນລະອຽດອ່ອນຂອງທ່ານໃຫ້ປອດໄພດ້ວຍ Face ID.</translation>
 <translation id="1591119736686995611">ເປີດໂຄງຮ່າງຕາຕະລາງຂອງແຖບ Chromium.</translation>
 <translation id="16001233025397167">ການກວດສອບຄວາມປອດໄພຊ່ວຍໃຫ້ທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆ. ຮັບການແຈ້ງເຕືອນກ່ຽວກັບບັນຫາດ້ານຄວາມເປັນສ່ວນຕົວ ຫຼື ຄວາມປອດໄພທີ່ Chromium ກວດຫາໃຫ້ທ່ານ.</translation>
@@ -66,6 +68,7 @@
 <translation id="2340423701577464731">ເພີ່ມລາຍການຂອງລາຍຊື່ການອ່ານໃສ່ໃນ Chromium</translation>
 <translation id="2374627437126809292">Chromium ໃຊ້ Google ແຜນທີ່ເພື່ອບອກເສັ້ນທາງ ແລະ ຂໍ້ມູນໃນທ້ອງຖິ່ນໃຫ້ທ່ານຢູ່ທີ່ຢູ່ທີ່ກວດພົບ.</translation>
 <translation id="2386292341327187942">ໃນຊ່ອງວິດເຈັດຊອກຫາ, ໃຫ້ລະບຸ Chromium</translation>
+<translation id="2389827884654658221">ເຂົ້າເຖິງ Chromium ໄດ້ໄວຂຶ້ນຈາກໂຮມສະກຣີນຂອງ iPad ຂອງທ່ານ.</translation>
 <translation id="2426113998523353159">ອົງການຂອງທ່ານຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chromium.</translation>
 <translation id="2450140762465183767">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chromium ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="2459183986985456602">ເປີດແຖບຫຼ້າສຸດຂອງຂ້ອຍໃນ Chromium.</translation>
@@ -74,11 +77,15 @@
 <translation id="2485774047568879945">ຕັ້ງຄ່າ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເພື່ອແບ່ງປັນ ແລະ ເປີດລິ້ງໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="2512597191798760956">ກົດໄອຄອນ Chromium ຄ້າງໄວ້ ແລ້ວຄລິກ "ແກ້ໄຂໂຮມສະກຣີນ"</translation>
 <translation id="2517624234762908348">ຊິ້ງຂໍ້ມູນ Chromium ຂອງທ່ານ</translation>
+<translation id="2575968074225731646">ເຂົ້າເຖິງ Chromium ໄດ້ໄວຂຶ້ນຈາກດັອກຂອງ iPhone ຂອງທ່ານ.</translation>
 <translation id="2592940277904433508">ສືບຕໍ່ນຳໃຊ້ Chromium</translation>
 <translation id="2607609479243848905">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">ເຄັດລັບສຳລັບ Chromium: ຊອກຫາສິ່ງທີ່ທ່ານເຫັນດ້ວຍ Google Lens</translation>
 <translation id="2650312721222849884">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="2684230048001240293">ຕັ້ງ Chromium ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອຊິ້ງຂໍ້ມູນແຖບ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
+<translation id="2729836253097154631">ເຂົ້າສູ່ລະບົບ Chromium ເພື່ອຮັບຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="2730884209570016437">Chromium ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ ເພາະວ່າກ້ອງຖືກໃຊ້ໂດຍແອັບພລິເຄຊັນອື່ນ</translation>
+<translation id="2742952311155593352">ທ່ານໃກ້ຈະຕັ້ງຄ່າ Chromium ສຳເລັດແລ້ວ!</translation>
 <translation id="2798503587425057129">ເປີດລາຍຊື່ການອ່ານ Chromium.</translation>
 <translation id="28276745681323897">ທ່ານສາມາດ <ph name="BEGIN_LINK" />ຈັດການວ່າຈະບັນທຶກຂໍ້ມູນ Chromium ໃດ<ph name="END_LINK" /> ໃສ່ໃນບັນຊີ Google ຂອງທ່ານໄດ້.
 
@@ -98,6 +105,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ. ສິ່ງນີ້ສາມາດຮວມເອົາປະຫວັດ ແລະ ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ.}other{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ. ສິ່ງນີ້ສາມາດຮວມເອົາປະຫວັດ ແລະ ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ.}}</translation>
 <translation id="3410395242749598859">ຂໍ້ມູນ Chromium ບາງສ່ວນຂອງທ່ານຍັງບໍ່ໄດ້ຖືກບັນທຶກໄປໃສ່ໃນ <ph name="EMAIL" /> ເທື່ອ.
 ກະລຸນາລໍຖ້າສອງສາມນາທີກ່ອນສະຫຼັບບັນຊີ. ຫາກທ່ານສະຫຼັບບັນຊີຕອນນີ້, ຂໍ້ມູນນີ້ຈະຖືກລຶບ.</translation>
+<translation id="3420586870838853527">ເຄັດລັບສຳລັບ Chromium: Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຈະຊ່ວຍທ່ານໄດ້</translation>
 <translation id="3440830787838130530">ແບ່ງປັນສຳເນົາລະຫັດຜ່ານກັບກຸ່ມຄອບຄົວຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ ແລະ ປອດໄພໃນຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="3472200483164753384">ບໍ່ຮອງຮັບໃນ Chromium Canary</translation>
 <translation id="347967311580159871">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ໃຊ້ຂໍ້ມູນເພື່ອປັບປຸງປະສົບການ Chromium ຂອງທ່ານ, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />ບໍລິການ Google<ph name="END_LINK" />.</translation>
@@ -173,6 +181,7 @@
 <translation id="5131565040785979529">ອົງກອນ <ph name="DOMAIN" /> ຂອງທ່ານຈະເປັນຜູ້ຈັດການບັນຊີທີ່ທ່ານເຂົ້າສູ່ລະບົບ ແລະ ວິທີໃຊ້ Chromium.</translation>
 <translation id="5134464247000681876">ເປີດລິ້ງຈາກ Gmail, ແຜນທີ່, YouTube ແລະ ແອັບອື່ນໆໃນ Chromium</translation>
 <translation id="5203244847421322551">ບັນທຶກ ແລະ ຕື່ມລະຫັດຜ່ານອັດຕະໂນມັດໃນ Chromium</translation>
+<translation id="5218806323985098884">ກວດເບິ່ງວ່າມີຫຍັງໃໝ່ໃນ Chromium</translation>
 <translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
 <translation id="5259423875997548710">ຊອກຫາພາບໃນ Chromium.</translation>
 <translation id="5284913972719948193">ນຳເຂົ້າຂໍ້ມູນຂອງທ່ານເພື່ອໃຊ້ລະຫັດຜ່ານ, ປະຫວັດ, ບຸກມາກ ແລະ ບັດເຄຣດິດຂອງທ່ານໃນ Chromium</translation>
@@ -194,6 +203,7 @@
 <translation id="5521125884468363740">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="5534584691915394889">ຂໍ້ມູນນີ້ຈະໃຊ້ເພື່ອສ້າງນັດໝາຍໃນປະຕິທິນ Apple ຂອງທ່ານຈາກ Chromium ແລະ Google Lens.</translation>
 <translation id="5571094606370987472">ເປີດແຖບຫຼ້າສຸດໃນ Chromium.</translation>
+<translation id="5596644122344097310">ແຕະບ່ອນນີ້ເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium ຢູ່ iPhone ຂອງທ່ານ.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">ເປີດ Chromium</translation>
 <translation id="5664395081284292058">ເປີດແຖບຫຼ້າສຸດຂອງຂ້ອຍໃນ Chromium</translation>
@@ -235,11 +245,15 @@
 <translation id="6424492062988593837">Chromium ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
 <translation id="6433172051771630690">ເຄັດລັບໃນການໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
 <translation id="65045991564554105">ເບິ່ງບຸກມາກ Chromium</translation>
+<translation id="6519797228806907665">ເຂົ້າເຖິງ Chromium ໄດ້ໄວຂຶ້ນຈາກໂຮມສະກຣີນຂອງ iPhone ຂອງທ່ານ.</translation>
 <translation id="6538713818758208754">ເປີດໜ້າການຕັ້ງຄ່າວິທີການຈ່າຍເງິນໃນ Chromium.</translation>
 <translation id="6540186279384079894">ເປີດແຖບໃໝ່ໃນ Chromium</translation>
 <translation id="6563921047760808519">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK" />ວິທີທີ່ Chromium ຮັກສາຂໍ້ມູນຂອງທ່ານໃຫ້ເປັນສ່ວນຕົວ<ph name="END_LINK" /></translation>
+<translation id="6564769014061914792">ແຕະບ່ອນນີ້ເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium ຢູ່ iPad ຂອງທ່ານ.</translation>
+<translation id="6566303693324540692">ເຄັດລັບສຳລັບ Chromium: ຍ້າຍ Chromium ໄປໃສ່ໂຮມສະກຣີນຂອງທ່ານ</translation>
 <translation id="6574750762636192517">ຈັດການລະຫັດຜ່ານໃນ Chromium</translation>
 <translation id="6590232959690355435">ເປີດໜ້າປະຫວັດໃນ Chromium ຂອງທ່ານ.</translation>
+<translation id="6649269674808477353">ເປີດ Chromium ໄດ້ໄວຂຶ້ນເມື່ອທ່ານພ້ອມທີ່ຈະທ່ອງເວັບຢູ່ iPhone ຂອງທ່ານ.</translation>
 <translation id="6674470628873622334">ເປີດແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ໃນ Chromium.</translation>
 <translation id="6680609900732453726">ຮັກສາຄວາມເປັນສ່ວນຕົວໃນການເລືອກເບິ່ງຂອງທ່ານດ້ວຍການພິສູດຢືນຢັນອຸປະກອນເມື່ອທ່ານປິດ Chromium</translation>
 <translation id="6752854822223394465">ອົງການຂອງທ່ານກຳລັງຕັ້ງຄ່າ Chromium...</translation>
@@ -289,6 +303,7 @@
 <translation id="7934404985878918282">ເບິ່ງລາຍຊື່ການອ່ານ Chromium</translation>
 <translation id="7935734571048689933">Chromium ໄດ້ຮັບການຈັດການ</translation>
 <translation id="7951793218148208717">ເປີດແຖບໃໝ່ໃນ Chromium.</translation>
+<translation id="7957726318578167662">ໃຊ້ Chromium ໄດ້ຢ່າງງ່າຍດາຍໃນທຸກເທື່ອທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ ຫຼື ແອັບອື່ນໆ.</translation>
 <translation id="7980860476903281594">Chromium ຈະແບ່ງປັນສະຖານທີ່ຂອງທ່ານໃຫ້ກັບເວັບໄຊທີ່ທ່ານອະນຸຍາດ.</translation>
 <translation id="7994322153108931467">ເພື່ອຮັບເຄັດລັບ Chromium ທີ່ເປັນປະໂຫຍດ, ໃຫ້ເປີດການແຈ້ງເຕືອນໃນການຕັ້ງຄ່າ iOS ຂອງທ່ານ.</translation>
 <translation id="7997159823054171568">ຕັ້ງຄ່າ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
@@ -324,6 +339,7 @@
 <translation id="8860548555286245440">ເປີດ URL ໃນ Chromium ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="8880024619507699923">ອົງກອນຂອງທ່ານກຳນົດໃຫ້ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chromium. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">ຮັບການຮັກສາຄວາມປອດໄພທີ່ເຂັ້ມງວດທີ່ສຸດຂອງ Chromium</translation>
+<translation id="8908791447256515663">ເຂົ້າເຖິງ Chromium ໄດ້ໄວຂຶ້ນຈາກດັອກຂອງ iPad ຂອງທ່ານ.</translation>
 <translation id="8925569192291721236">ຕິດຕາມຂໍ້ມູນອັບເດດກ່ຽວກັບການຕິດຕາມລາຄາ ແລະ ເຄັດລັບ Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ}other{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ}}</translation>
 <translation id="8963279154877372067">ອະນຸຍາດການແຈ້ງເຕືອນ Chromium ເພື່ອຮັບການແຈ້ງເຕືອນການຫຼຸດລາຄາ</translation>

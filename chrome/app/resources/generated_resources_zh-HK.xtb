@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">開機時啟動</translation>
 <translation id="1163931534039071049">檢視頁框原始碼(&amp;V)</translation>
 <translation id="1164015913575846413">Alt 鍵 + 按一下左鍵</translation>
-<translation id="1164286072721995435">每次開始新對話時與 Gemini 分享當前分頁。你可以隨時暫停分享當前分頁。你的資料不會用於改善生成式 AI 模型。</translation>
 <translation id="1164891049599601209">已在欺詐網站上輸入</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1166212789817575481">關閉右側分頁</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">找不到 PPD。請確認 Chromebook 已連線，然後再試一次。</translation>
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用和移動相機</translation>
 <translation id="1354148503392558902">正在變更密碼…</translation>
-<translation id="1354943694624358993">一律分享當前分頁</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1355088659320425659">記錄和分頁</translation>
 <translation id="1356376170199999104">已允許 – <ph name="PERMISSION_DETAILS" />。使用實體開關開啟麥克風。</translation>
@@ -2376,7 +2374,6 @@
 <translation id="2605668923777146443">前往「<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />」以查看您 Better Together 的選項。﻿</translation>
 <translation id="2606246518223360146">連結資料</translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
-<translation id="2606568927909309675">自動建立英文音訊和影片字幕。音訊和字幕絕不會外洩。</translation>
 <translation id="2606890864830643943">正在匯出診斷資料</translation>
 <translation id="2607101320794533334">主體公開金鑰資料</translation>
 <translation id="2609533306502181883">研究主題</translation>
@@ -2428,6 +2425,7 @@
 <translation id="2636266464805306348">視窗標題</translation>
 <translation id="2637313651144986786">搜尋分頁…</translation>
 <translation id="2637400434494156704">PIN 不正確。您還可再試 1 次。</translation>
+<translation id="263796568413910992">問 <ph name="SEARCH_ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="2638662041295312666">登入圖片</translation>
 <translation id="2640299212685523844">使用 GTK</translation>
 <translation id="264083724974021997">連接去你部手機 - 對話框</translation>
@@ -5774,7 +5772,6 @@
 <translation id="4956593309300508411">要停止分享嗎？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">只將資料夾儲存至此裝置嗎？</translation>
-<translation id="4958916254663453555">當你開啟 Chrome 版 Gemini 時，系統會自動分享當前分頁。當前分頁的所有內容和網址都會傳送到 Google。</translation>
 <translation id="4959262764292427323">密碼會儲存在您的 Google 帳戶中，讓您可在任何裝置上使用</translation>
 <translation id="4960020053211143927">部分應用程式不支援此設定</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5886,7 +5883,6 @@
 <translation id="5045367873597907704">關於 HID 裝置</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="504561833207953641">正在現有的瀏覽器工作階段中開啟。</translation>
-<translation id="5047544190872578914">每次開始新對話時與 Gemini 分享當前分頁。你可以隨時暫停分享當前分頁。</translation>
 <translation id="504953514574706691">喺建議群組度排除咗分頁</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">下載未經驗證的檔案</translation>
@@ -6405,6 +6401,7 @@
 <translation id="5414836363063783498">正在驗證…</translation>
 <translation id="5415328625985164836">這是 Beta 版本計劃。您現在可使用 Steam 在 Chromebook 上玩遊戲。</translation>
 <translation id="5415497281076257439">詞句</translation>
+<translation id="5415871492522952905">所有已同步的裝置上都會有你的記錄和分頁，方便你繼續執行先前的工作</translation>
 <translation id="5417293056300086453">此網站可使用識別碼來播放受保護的內容。</translation>
 <translation id="5417312524372586921">瀏覽器主題背景</translation>
 <translation id="541737483547792035">放大畫面</translation>
@@ -6615,6 +6612,7 @@
 <translation id="5555760010546505198">色彩反轉、色彩校正、放大鏡和顯示設定</translation>
 <translation id="555604722231274592">啟用「<ph name="FEATURE_NAME" />」</translation>
 <translation id="5556459405103347317">重新載入</translation>
+<translation id="555671485580955310">同步記錄和分頁</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
 <translation id="5558594314398017686">OS 預設選項 (如有提供)</translation>
 <translation id="5559311991468302423">刪除地址</translation>
@@ -10575,6 +10573,7 @@
 <translation id="8310409247509201074"><ph name="NUM" /> 個分頁</translation>
 <translation id="831207808878314375">定義</translation>
 <translation id="8312841338723044391">直播</translation>
+<translation id="8313308349366087671">應用程式選項</translation>
 <translation id="8314089908545021657">與新手機配對</translation>
 <translation id="8314381333424235892">缺少或未安裝擴充程式</translation>
 <translation id="831440797644402910">無法開啟此資料夾</translation>
@@ -10735,7 +10734,6 @@
 <translation id="8419098111404128271">「<ph name="SEARCH_TEXT" />」嘅搜尋結果</translation>
 <translation id="8419144699778179708">刪除記錄 (包括搜尋框中的記錄)</translation>
 <translation id="8420308167132684745">編輯字典條目</translation>
-<translation id="8421361468937925547">即時字幕 (僅支援英文)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">沒有紙匣</translation>
 <translation id="8424250197845498070">已由進階保護功能封鎖</translation>
@@ -11032,6 +11030,7 @@
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
 <translation id="8638719155236856752">ChromeOS 網絡健康狀態</translation>
 <translation id="8639635302972078117">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
+<translation id="8639963783467694461">自動填入設定</translation>
 <translation id="8640575194957831802">上次開啟日期</translation>
 <translation id="8641946446576357115">在 iOS 裝置上使用密碼</translation>
 <translation id="8642577642520207435"><ph name="APP_NAME" /> 相機權限</translation>

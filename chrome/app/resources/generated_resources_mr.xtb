@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">सुरू केल्यावर लाँच करा</translation>
 <translation id="1163931534039071049">फ्रेम स्रोत &amp;पहा</translation>
 <translation id="1164015913575846413">alt + click</translation>
-<translation id="1164286072721995435">प्रत्येक वेळी तुम्ही नवीन संभाषण सुरू करता, तेव्हा सद्य टॅब Gemini सोबत शेअर करते. तुम्ही तुमचा सद्य टॅब शेअर करणे कधीही थांबवू शकता. तुमचा डेटा जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी वापरला जात नाही.</translation>
 <translation id="1164891049599601209">फसव्या साइटवर एंटर केला</translation>
 <translation id="1165039591588034296">एरर</translation>
 <translation id="1166212789817575481">उजवीकडील टॅब बंद करा</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">PPD सापडत नाही. तुमचे Chromebook ऑनलाइन असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> ला तुमचा कॅमेरा वापरण्याची आणि हलवण्याची अनुमती देणे सुरू ठेवा</translation>
 <translation id="1354148503392558902">पासवर्ड बदलत आहे...</translation>
-<translation id="1354943694624358993">सद्य टॅब नेहमी शेअर करा</translation>
 <translation id="1355088139103479645">सर्व डेटा हटवायचा का?</translation>
 <translation id="1355088659320425659">इतिहास आणि टॅब</translation>
 <translation id="1356376170199999104">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. प्रत्यक्ष स्विच वापरून मायक्रोफोन सुरू करा.</translation>
@@ -2376,7 +2374,6 @@
 <translation id="2605668923777146443">Better Together साठी तुमचे पर्याय पाहण्याकरिता <ph name="LINK_BEGIN" />सेटिंग्ज<ph name="LINK_END" /> वर जा.</translation>
 <translation id="2606246518223360146">डेटा लिंक करा</translation>
 <translation id="2606454609872547359">नाही, ChromeVox शिवाय पुढे सुरू ठेवा</translation>
-<translation id="2606568927909309675">इंग्रजी ऑडिओ आणि व्हिडिओसाठी आपोआप कॅप्शन तयार करते. ऑडिओ आणि कॅप्शन तुमच्या डिव्हाइसमध्येच राहतात.</translation>
 <translation id="2606890864830643943">निदानासंबंधित डेटा एक्सपोर्ट करत आहे</translation>
 <translation id="2607101320794533334">विषय सार्वजनिक की माहिती</translation>
 <translation id="2609533306502181883">विषयावर संशोधन करा</translation>
@@ -2428,6 +2425,7 @@
 <translation id="2636266464805306348">Window शीर्षके</translation>
 <translation id="2637313651144986786">टॅब शोधा...</translation>
 <translation id="2637400434494156704">चुकीचा पिन. तुमच्याकडे एक प्रयत्न शिल्लक आहे.</translation>
+<translation id="263796568413910992"><ph name="SEARCH_ENGINE_NAME" /> ला विचारा किंवा URL टाइप करा</translation>
 <translation id="2638662041295312666">साइन इन इमेज</translation>
 <translation id="2640299212685523844">GTK वापरा</translation>
 <translation id="264083724974021997">तुमच्या फोनशी कनेक्ट करा - डायलॉग</translation>
@@ -5779,7 +5777,6 @@
 <translation id="4956593309300508411">शेअर करणे थांबवायचे आहे का?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">फक्त या डिव्हाइसवरील फोल्डरमध्ये सेव्ह करायचा आहे का?</translation>
-<translation id="4958916254663453555">तुम्ही Chrome मधील Gemini उघडाल, तेव्हा तुमचा सद्य टॅब आपोआप शेअर केला जाईल. सद्य टॅबचा संपूर्ण आशय आणि URL या गोष्टी Google ला पाठवल्या जातात.</translation>
 <translation id="4959262764292427323">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावे यासाठी तुमच्या Google खात्यामध्ये पासवर्ड सेव्ह केले जातात</translation>
 <translation id="4960020053211143927">काही ॲप्स सपोर्ट करत नाहीत</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5891,7 +5888,6 @@
 <translation id="5045367873597907704">HID डिव्हाइसबद्दल</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="504561833207953641">अस्तित्वात असलेल्या ब्राउझर सेशनमध्ये उघडत आहे.</translation>
-<translation id="5047544190872578914">प्रत्येक वेळी तुम्ही नवीन संभाषण सुरू करता, तेव्हा सद्य टॅब Gemini सोबत शेअर करते. तुम्ही तुमचा सद्य टॅब शेअर करणे कधीही थांबवू शकता.</translation>
 <translation id="504953514574706691">सुचवलेल्या गटामधून टॅब वगळण्यात आला आहे</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">पडताळणी न केलेली फाइल डाउनलोड करा</translation>
@@ -6411,6 +6407,7 @@
 <translation id="5414836363063783498">सत्यापित करत आहे...</translation>
 <translation id="5415328625985164836">हा बीटा प्रोग्राम आहे. तुम्ही आता तुमच्या Chromebook वर काही गेम खेळण्यासाठी Steam वापरू शकता.</translation>
 <translation id="5415497281076257439">वाक्य</translation>
+<translation id="5415871492522952905">तुमच्याकडे तुमच्या सर्व डिव्हाइसवर तुमचा इतिहास आणि टॅब असतील, त्यामुळे तुम्ही काय करत होतात ते तुम्ही पुढे सुरू ठेवू शकता</translation>
 <translation id="5417293056300086453">ही साइट संरक्षित आशय प्ले करण्यासाठी आयडेंटिफायर वापरू शकते.</translation>
 <translation id="5417312524372586921">ब्राउझर थीम</translation>
 <translation id="541737483547792035">स्‍क्रीन मॅग्निफाय करा</translation>
@@ -6621,6 +6618,7 @@
 <translation id="5555760010546505198">कलर इन्व्हर्जन, रंग सुधारणा, मॅग्निफायर आणि डिस्प्ले सेटिंग्ज</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> सुरू करा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
+<translation id="555671485580955310">इतिहास आणि टॅब सिंक करा</translation>
 <translation id="5558129378926964177">झूम &amp;वाढवा</translation>
 <translation id="5558594314398017686">OS डीफॉल्ट (उपलब्ध असताना)</translation>
 <translation id="5559311991468302423">पत्ता हटवा</translation>
@@ -10590,6 +10588,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> टॅब</translation>
 <translation id="831207808878314375">परिभाषा</translation>
 <translation id="8312841338723044391">लाइव्ह</translation>
+<translation id="8313308349366087671">अ‍ॅप्लिकेशनचे पर्याय</translation>
 <translation id="8314089908545021657">नवीन फोनसह पेअर करा</translation>
 <translation id="8314381333424235892">गहाळ किंवा अनइंस्टॉल केलेले एक्स्टेंशन</translation>
 <translation id="831440797644402910">हे फोल्डर उघडू शकत नाही</translation>
@@ -10750,7 +10749,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' साठी शोध परिणाम</translation>
 <translation id="8419144699778179708">सर्च बॉक्समधील इतिहासाच्या समावेशासह, इतिहास हटवते</translation>
 <translation id="8420308167132684745">शब्दकोश एंट्री संपादित करा</translation>
-<translation id="8421361468937925547">लाइव्ह कॅप्शन (फक्त इंग्रजी)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">ट्रे सापडला नाही</translation>
 <translation id="8424250197845498070">प्रगत संरक्षण याद्वारे ब्लॉक केले आहे</translation>
@@ -11047,6 +11045,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8637688295594795546">सिस्टीम अपडेट उपलब्ध. डाउनलोड करण्याची तयारी करत आहे…</translation>
 <translation id="8638719155236856752">ChromeOS नेटवर्क आरोग्य</translation>
 <translation id="8639635302972078117">वापर आणि निदान डेटा पाठवा. हे डिव्हाइस सध्या Google ला निदान, डिव्हाइस आणि अ‍ॅप वापर डेटा आपोआप पाठवत आहे. हे तुमच्या मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्टीम व अ‍ॅप स्थिरता तसेच इतर सुधारणांमध्ये मदत करेल. काही ॲग्रिगेट डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यांसारख्या भागीदारांनादेखील मदत करेल. तुमच्या मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेले असल्यास, हा डेटा त्यांच्या Google खात्यामध्ये स्टोअर केला जाऊ शकतो.</translation>
+<translation id="8639963783467694461">ऑटोफिल सेटिंग्ज</translation>
 <translation id="8640575194957831802">शेवटी उघडलेले</translation>
 <translation id="8641946446576357115">तुमच्या iOS डिव्हाइसवर तुमचे पासवर्ड वापरा</translation>
 <translation id="8642577642520207435"><ph name="APP_NAME" /> ची कॅमेराशी संबंधित परवानगी</translation>

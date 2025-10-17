@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">Chrome තුළ ${searchPhrase} සොයන්න</translation>
 <translation id="1237769345474105984">Chrome වෙතින්</translation>
 <translation id="124228879633599436">ඔබේ Chrome යල් පැන ඇත. ආරක්ෂිතව සිටීමට එය යාවත්කාලීන කරන්න.</translation>
+<translation id="1258531953614971819">Chrome ඉඟිය: Chrome ඔබේ මුල් තිරය වෙත ගෙන යන්න</translation>
 <translation id="1333745675627230582">Chrome Dino ක්‍රීඩාව කරන්න</translation>
 <translation id="1352919863522755794">Google මුරපද කළමනාකරු හට ඔබේ මුරපද පරීක්ෂා කිරීමට නොහැකි විය. ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්ෂා කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="1394995526009609883">ඔබට ඕනෑම වේලාවක Chrome සැකසුම් තුළින් ඔබේ තේරීම් යාවත්කාලීන කළ හැක.</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">ඔබගේ සියලු උපාංගවල ටැබ, මුරපද සහ ගෙවීම් තොරතුරු සමමුහුර්ත කිරීමට පෙරනිමි ලෙස Chrome සකසන්න</translation>
 <translation id="1504372625950710826">Chrome හට යාවත්කාලීන සඳහා පරීක්‍ෂා කළ නොහැකි විය. ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්ෂා කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="1516692594929310090">Chrome පටිති ජාලකය විවෘත කරයි.</translation>
+<translation id="152319127067424683">ඔබේ iPhone හි ඩොක් එකෙන් Chrome වෙත වේගයෙන් ප්‍රවේශ වන්න.</translation>
 <translation id="1526327845902180576">සක්‍රීය වූ විට:
 <ph name="BEGIN_INDENT" />  • ඔබ භාවිත කරන ආකාරයෙන් ම එය භාවිත කරන අය සඳහා Chrome ඉතා හොඳ කිරීමට උදවු කරන්න.<ph name="END_INDENT" />
 
@@ -58,6 +60,7 @@
 <translation id="2199719347983604670">Chrome සමමුහුර්තයෙන් දත්ත</translation>
 <translation id="2213327331203157297">Chrome තුළ අගුළු දැමීමේ ප්‍රකාරය අබල කිරීම සඳහා එය ඔබේ iPhone මත ක්‍රියාවිරහිත කරන්න.</translation>
 <translation id="2242467532204595597">ඔබ පණිවිඩ, ලේඛන, සහ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක Chrome භාවිතා කරන්න.</translation>
+<translation id="2256384876478573507">ඔබ ඔබේ iPhone හි බ්‍රවුස් කිරීමට සූදානම් වූ විට Chrome වේගයෙන් විවෘත කරන්න.</translation>
 <translation id="2311240109311056604">Chrome Dino ක්‍රීඩාව විවෘත කරයි.</translation>
 <translation id="2339201583852607431">ඔබගේ මුරපදය ඔබගේ Google ගිණුම තුළ සුරකිනු ඇත (<ph name="EMAIL" />)</translation>
 <translation id="2342919707875585281">Chrome ඔබ ඉඩ දෙන අඩවි සමඟ ඔබගේ ස්ථානය බෙදා ගනී.</translation>
@@ -66,6 +69,7 @@
 <translation id="2427791862912929107">Chrome හට ඔබගේ අන්තර්ජාල දත්ත සහ ඔබට කොතරම් ඉක්මනින් වෙබ් පිටු පූරණය කළ හැකිද යන්න කළමනාකරණය කිරීමට උදවු වන විශේෂාංග ඇත.
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}one{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}other{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ. මෙයට ඉතිහාසය සහ ස්වයං පිරවීම ඇතුළත් විය හැක.}}</translation>
+<translation id="2531823184391665648">ඔබ ඔබේ iPad මත බ්‍රවුස් කිරීමට සූදානම් වූ විට Chrome වේගයෙන් විවෘත කරන්න.</translation>
 <translation id="2561231791489583059">අනතුරුදායක අඩවිවලින් ආරක්ෂා වීමට සහ ඔබගේ මුරපද ආරක්ෂිතව තබා ගැනීමට ඔබගේ පෙරනිමි බ්‍රව්සරය ලෙස Chrome භාවිත කරන්න</translation>
 <translation id="2574249610672786438">ඔබ Chrome භාවිත කරන ඕනෑම ස්ථානයක සිට ඔබේ ටැබ බැලීමට, ඔබේ සියලු උපාංගවල පුරන්න</translation>
 <translation id="2576431527583832481">Chrome දැන් ටිකක් හොඳයි! නව සංස්කරණයක් ඇත.</translation>
@@ -81,6 +85,7 @@
 <translation id="2767464022270041271">සුරැකි මුරපද නැත. ඔබ ඔබේ මුරපද සුරකින විට Google මුරපද කළමනාකරු හට ඒවා පරීක්ෂා කළ හැක.</translation>
 <translation id="2788811701191021538">Chrome තුළ ගෙවීම් ක්‍රම සැකසීම් පිටුව විවෘත කරයි.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ඔබේ දත්ත පෞද්ගලිකව තබා ගන්නා ආකාරය<ph name="END_LINK" /> පිළිබඳව තව දැන ගන්න</translation>
+<translation id="2922914028977213693">ඔබේ iPad මත Chrome වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට මෙතැන තට්ටු කරන්න.</translation>
 <translation id="292371311537977079">Chrome සැකසීම්</translation>
 <translation id="2923827943290349720">ඔබ Chrome වසන විට අප්‍රසිද්ධ ටැබ අගුලු දමන්න</translation>
 <translation id="2940565985148833945">Chrome ඉඟිය: Lens සමග සොයන්න</translation>
@@ -97,6 +102,7 @@
 <translation id="3140589780564632473">Chrome තුළ දෘශ්‍ය සොයන්න</translation>
 <translation id="314782365035065913">ඔබේ මුල් තිර ඩොක් එකෙන් Chrome වෙත වේගයෙන් ප්‍රවේශ වන්න</translation>
 <translation id="3167189358072330585">ඔබේ ගිණුම Google Chrome තුළ ක්‍රියා නොකරයි. කරුණාකර ඔබේ වසම් පරිපාලක අමතන්න, නැතහොත් නිතර භාවිත කරන Google ගිණුමකින් පුරන්න.</translation>
+<translation id="320747600144551583">Chrome ඉඟිය: ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම ඔබේ දවස ඉතිරි කරයි</translation>
 <translation id="322254490661677575">ඔබේ Google ගිණුමේ Chrome දත්ත භාවිතා කිරීමට සහ සුරැකීමට, ඔබේ මුර-වැකිකඩ ඇතුළු කරන්න.</translation>
 <translation id="3282568296779691940">Chrome වෙත පුරන්න</translation>
 <translation id="3303503998967553377">iOS මත Chrome ක්‍රියා භාවිත කරන්න</translation>
@@ -109,6 +115,7 @@
 <translation id="3440830787838130530">Google මුරපද කළමනාකරු තුළ ඔබේ පවුලේ කණ්ඩායම සමග මුරපදයක පිටපතක් පහසුවෙන් සහ ආරක්ෂිතව බෙදා ගන්න</translation>
 <translation id="3460369101684070455">ඔබේ අනෙකුත් යෙදුම්වල සුරකින ලද මුරපද පහසුවෙන් ලබා ගැනීමට, ස්වයං පිරවීම සඳහා Chrome තෝරන්න</translation>
 <translation id="3472587960215700950">අනාවරණය කරගත් ලිපින පිළිබඳ ඔබට උපදෙස් සහ ස්ථානික තතු ලබා දීමට Chrome Google සිතියම් භාවිත කරයි.</translation>
+<translation id="3482807551645716768">ඔබේ iPad හි මුල් තිරයෙන් Chrome වෙත වේගයෙන් ප්‍රවේශ වන්න.</translation>
 <translation id="3503014945441706099">මෙම Chrome පැතිකඩ සඳහා ද ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම ලබා ගන්න</translation>
 <translation id="3522659714780527202">ඔබ Chrome භාවිත කරන ඕනෑම ස්ථානයක සිට ඔබේ ටැබ බැලීමට, සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="364480321352456989">ඔබේ Chrome යල් පැන ගොස් ඇත.</translation>
@@ -125,16 +132,19 @@
 <translation id="3988789688219830639">Google Chrome හට ඔබේ ඡායාරූප හෝ වීඩියෝවලට ප්‍රවේශය නැත. iOS සැකසීම් &gt; රහස්‍යතාව &gt; ඡායාරූප තුළ ප්‍රවේශය සබල කරන්න.</translation>
 <translation id="4064699917955374540">ඔබේ Google ගිණුමේ Chrome දත්ත භාවිතා කිරීමට සහ සුරැකීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න.</translation>
 <translation id="411154422556990518">මිල ලුහුබැඳීමේ යාවත්කාලීන කිරීම් සහ Chrome ඉඟි සමග යාවත්කාලීනව සිටින්න.</translation>
+<translation id="4167555379306984168">Chrome හි අලුත් දේ පරීක්ෂා කරන්න</translation>
 <translation id="417201473131094001">Chrome කැනරි වල සහාය නොදක්වයි</translation>
 <translation id="424864128008805179">Chrome වෙතින් වරන්න</translation>
 <translation id="4430797724889237570">Chrome හි Gmail, සිතියම්, YouTube සහ අනෙකුත් යෙදුම් වලින් සබැඳි විවෘත කරන්න</translation>
 <translation id="447252321002412580">Chrome හි විශේෂාංග සහ කාර්යසාධනය වැඩි දියුණු කිරීමට උපකාරී වේ</translation>
 <translation id="4523886039239821078">ඇතැම් ඈඳුම් Chrome බිඳ වැටීමට හේතු වේ. කරුණාකර අස්ථාපනය කරන්න.</translation>
+<translation id="4568024439284012497">ඔබේ iPhone හි මුල් තිරය වෙතින් Chrome වෙත වේගයෙන් ප්‍රවේශ වන්න.</translation>
 <translation id="4574806550936185355">"ඔබ Chrome වසා දැමූ විට අප්‍රසිද්ධ පටිති අගුළු දමන්න" ක්‍රියාත්මක කරන්න</translation>
 <translation id="4633328489441962921">Chrome හට යාවත්කාලීන සඳහා පරීක්ෂා කළ නොහැකිය</translation>
 <translation id="4636900170638246267">මෙම අඩවිය සහ Chrome වෙත පුරන්න.</translation>
 <translation id="4647910807533196601">Chrome තුළ මගේ නවතම පටිත්ත විවෘත කරන්න.</translation>
 <translation id="4693084815234024320">ඔබ Chrome අප්‍රසිද්ධව සිටී</translation>
+<translation id="4708857722625759026">ඔබේ iPad හි ඩොක් එකෙන් Chrome වෙත වේගයෙන් ප්‍රවේශ වන්න.</translation>
 <translation id="4713740144985377441">ඔබේ ගොනුව උඩුගත කිරීමට Chrome වෙත ආපසු යන්න</translation>
 <translation id="4713907610796204963">පටන් ගැනීමට ප්‍රයෝජනවත් Chrome මූලික කරුණු ඉගෙන ගන්න</translation>
 <translation id="4724297637870447613">සෑම තැනකම Chrome භාවිතා කරන්න</translation>
@@ -149,6 +159,8 @@
 <translation id="4903674399067644695">මෙම කාඩ්පත ඔබට Chrome වෙතින් උපරිම ප්‍රයෝජන ගන්නා ආකාරය පිළිබඳ යෝජනා පෙන්වයි.</translation>
 <translation id="49200511069271369">ඔබේ සංවිධානය, <ph name="DOMAIN" />, ඔබ පුරනය වන ගිණුම සහ Chrome භාවිතා කළ හැකි ආකාරය කළමනාකරණය කරයි. ඔබේ පරිපාලකයාට ඇතැම් විශේෂාංග පිහිටුවීමට හෝ සීමා කිරීමට හැක.</translation>
 <translation id="4925322001044117929">පෙරනිමියෙන් iPad මත Chrome භාවිතා කරන්න</translation>
+<translation id="4934496192263958600">ඔබේ දේවල් ලබා ගැනීමට Chrome වෙත පුරන්න</translation>
+<translation id="496747131578053942">Chrome ඉඟිය: Google Lens සමග ඔබ දකින දේ සොයන්න</translation>
 <translation id="498985224078955265">මෙම පටිත්ත වෙනත් උපාංගයකට යැවීමට, උපාංග දෙකම මත Chrome වෙත පුරන්න.</translation>
 <translation id="5030102366287574140">Chrome දත්ත කඩ කිරීම්, අනාරක්ෂිත වෙබ් අඩවි, සහ තවත් ඒවාවලින් ඔබව ආරක්ෂිතව තබා ගැනීමට උදවු කළ හැකිය.</translation>
 <translation id="5109169629909011627">Chrome පිටුසන් බලන්න</translation>
@@ -225,16 +237,19 @@
 <translation id="6684809838922667136">Chrome වඩාත් යහපත් කරන්න</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{මෙය Chrome {THRESHOLD} විනාඩියක් භාවිත නොකරන විට සිදු වෙයි. ඔබ පුරන වී සිටි විට මෙම උපාංගයට පමණක් සුරකින ලද දත්ත මකනු ලැබේ. මෙයට ඉතිහාසය සහ මුරපද ඇතුළු විය හැක.}one{මෙය Chrome විනාඩි {THRESHOLD} ක් භාවිත නොකරන විට සිදු වෙයි. ඔබ පුරන වී සිටි විට මෙම උපාංගයට පමණක් සුරකින ලද දත්ත මකනු ලැබේ. මෙයට ඉතිහාසය සහ මුරපද ඇතුළු විය හැක.}other{මෙය Chrome විනාඩි {THRESHOLD} ක් භාවිත නොකරන විට සිදු වෙයි. ඔබ පුරන වී සිටි විට මෙම උපාංගයට පමණක් සුරකින ලද දත්ත මකනු ලැබේ. මෙයට ඉතිහාසය සහ මුරපද ඇතුළු විය හැක.}}</translation>
 <translation id="6709398533399187136">ඔබගේ මුරපදය දත්ත කඩ කිරීමකින් නිරාවරණය විය. Google මුරපද කළමනාකරු එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
+<translation id="6718973358446066955">ඔබ Chrome පිහිටුවීම අවසන් කිරීමට ආසන්නයි!</translation>
 <translation id="6820553595690137150">මුර වැකිකඩ සංකේතනයට ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු නොවේ.
 
 මෙම සැකසීම වෙනස් කිරීමට <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" />.</translation>
 <translation id="6838525730752203626">පෙරනිමියෙන් Chrome භාවිත කරන්න</translation>
+<translation id="6864705365700484754">ඔබේ iPhone හි Chrome වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට මෙහි තට්ටු කරන්න.</translation>
 <translation id="686691656039982452">ඔබට ඔබේ Google ගිණුමේ <ph name="BEGIN_LINK" />සුරැකි Chrome දත්ත කළමනාකරණය<ph name="END_LINK" /> කළ හැක.
 
 ඔබේ Chrome අත්දැකීම වැඩි දියුණු කිරීමට දත්ත භාවිතා කරන තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> වෙත යන්න.</translation>
 <translation id="6922332667202044570">Chrome තුළ බ්‍රවුස් කිරීමේ දත්ත මකන්න.</translation>
 <translation id="6924922227983877439">පෙරනිමියෙන් Chrome හි සබැඳි විවෘත කරන්න</translation>
 <translation id="6975725306479268850">ස්වයං පිරවුම සඳහා Chrome තෝරා ගන්න</translation>
+<translation id="7001031184470316752">Chrome ඔබේ ඩොකයට ගෙන යන්න</translation>
 <translation id="7038674195294813388">iOS හි පෙරනිමි යෙදුම් සැකසීම් විවෘත කර, ඉන්පසු "බ්‍රවුසර් යෙදුම" මත තට්ටු කර Chrome තෝරන්න.</translation>
 <translation id="7056826488869329999">Chrome තුළ ආරක්ෂක පරීක්ෂාව විවෘත කර ධාවනය කරයි.</translation>
 <translation id="7061455974939528301">Chrome නිරූපකය ඔබා අල්ලාගෙන "මුල් තිරය සංස්කරණය කරන්න" ක්ලික් කරන්න</translation>
@@ -305,6 +320,7 @@
 ඔබේ සංකේතිත දත්ත කියවිය හැක්කේ ඔබේ මුර වැකිකඩ සහිත කෙනෙකුට පමණි. මුර වැකිකඩ Google වෙත යවන්නේ හෝ ගබඩා කරන්නේ නැත. ඔබට ඔබේ මුර-වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">ප්‍රකාශන හිමිකම <ph name="YEAR" /> Google LLC. සියලුම හිමිකම් ඇවිරිණි.</translation>
 <translation id="8371138994040262994">Chrome තුළ සැකසීම් විවෘත කරයි.</translation>
+<translation id="8375378038757507658">ඔබ පණිවිඩ හෝ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක Chrome පහසුවෙන් භාවිතා කරන්න.</translation>
 <translation id="8387459386171870978">Chrome භාවිතා කිරීම දිගටම කරගෙන යන්න</translation>
 <translation id="8392023217086447677">Chrome අප්‍රසිද්ධව විවෘත කරන ලදි</translation>
 <translation id="840168496893712993">ඇතැම් ඈඳුම් Chrome බිඳ වැටීමට හේතු වේ. ඒවා අස්ථාපනය කිරීමට උත්සාහ කරන්න.</translation>

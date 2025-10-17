@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">重启 Chrome？</translation>
 <translation id="1428770807407000502">关闭同步功能？</translation>
 <translation id="1430915738399379752">打印</translation>
-<translation id="1433478348197382180">阅读模式</translation>
 <translation id="1435593198351412143">自动打开 PDF 文件</translation>
 <translation id="1437543266176261764">正在“<ph name="APP_NAME" />”应用内运行</translation>
 <translation id="1448440926884431741">在“书签”页面中整理您跟踪的商品</translation>
@@ -370,7 +369,6 @@
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
 <translation id="2718846868787000099">您访问的网站可查看您的偏好设置，以便能够以您的首选语言显示网页内容</translation>
 <translation id="2723001399770238859">音频</translation>
-<translation id="2734335652257251631">显示阅读模式</translation>
 <translation id="2739887572830526131">您可以保留此分组，以便日后添加标签页；如果不再需要，也可以将其删除。</translation>
 <translation id="2742373789128106053">目前无法使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1139,6 +1137,7 @@
 <translation id="6232535412751077445">如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。
 
 例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。</translation>
+<translation id="623755660902014047">朗读模式</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6248988683584659830">搜索设置</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />，已多选的固定无痕式标签页</translation>
@@ -1395,7 +1394,6 @@
 <translation id="7221869452894271364">重新加载此页</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{有 1 项下载尚待处理}other{有 # 项下载尚待处理}}</translation>
 <translation id="7230064152164845085">切换到无痕模式</translation>
-<translation id="7230836263524391273">隐藏阅读模式</translation>
 <translation id="7237724030342645845">Google 密码管理工具已停止运行</translation>
 <translation id="72415438529550637">已关闭密码建议。</translation>
 <translation id="7248671827512403053">应用</translation>
@@ -1730,7 +1728,6 @@
 <translation id="867914734596684889">显示或隐藏书签栏</translation>
 <translation id="8683039184091909753">图片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，所选的标签页</translation>
-<translation id="8693232767599693749">要在阅读模式下查看吗？</translation>
 <translation id="8697753151306746444">改为共享窗口或屏幕</translation>
 <translation id="8699120352855309748">不询问是否翻译这些语言</translation>
 <translation id="8712637175834984815">知道了</translation>

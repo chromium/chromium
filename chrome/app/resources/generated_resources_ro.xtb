@@ -249,7 +249,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1162479191445552288">Lansează la pornire</translation>
 <translation id="1163931534039071049">&amp;Afișează sursa cadrului</translation>
 <translation id="1164015913575846413">Alt + clic</translation>
-<translation id="1164286072721995435">Permite accesul serviciului Gemini la fila actuală de fiecare dată când începi o conversație nouă. Poți întrerupe oricând afișarea filei actuale. Datele tale nu sunt folosite pentru a îmbunătăți modelele de AI generativ.</translation>
 <translation id="1164891049599601209">A fost introdusă pe un site înșelător</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1166212789817575481">Închide filele de la dreapta</translation>
@@ -539,7 +538,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1353980523955420967">Nu se poate găsi fișierul PPD. Asigură-te că Chromebookul este online și încearcă din nou.</translation>
 <translation id="1354045473509304750">Permite în continuare ca <ph name="HOST" /> să folosească și să miște camera</translation>
 <translation id="1354148503392558902">Se schimbă parola...</translation>
-<translation id="1354943694624358993">Permite întotdeauna accesul la fila actuală</translation>
 <translation id="1355088139103479645">Ștergi toate datele?</translation>
 <translation id="1355088659320425659">Istoric și file</translation>
 <translation id="1356376170199999104">Se permite – <ph name="PERMISSION_DETAILS" />. Activează microfonul folosind comutatorul fizic.</translation>
@@ -2364,7 +2362,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2605668923777146443">Accesează <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" /> ca să vezi opțiunile pentru Better Together.</translation>
 <translation id="2606246518223360146">Conectează datele</translation>
 <translation id="2606454609872547359">Nu, continui fără ChromeVox</translation>
-<translation id="2606568927909309675">Creează automat subtitrări pentru conținut audio și video în limba engleză. Conținutul audio și subtitrările nu părăsesc niciodată dispozitivul.</translation>
 <translation id="2606890864830643943">Se exportă datele de diagnosticare</translation>
 <translation id="2607101320794533334">Informații privind cheia publică a subiectului</translation>
 <translation id="2609533306502181883">Cercetează un subiect</translation>
@@ -2416,6 +2413,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2636266464805306348">Titlurile ferestrelor</translation>
 <translation id="2637313651144986786">Caută în file...</translation>
 <translation id="2637400434494156704">Codul PIN este incorect. Mai ai o încercare.</translation>
+<translation id="263796568413910992">Întreabă <ph name="SEARCH_ENGINE_NAME" /> sau introdu o adresă URL</translation>
 <translation id="2638662041295312666">Imagine de autentificare</translation>
 <translation id="2640299212685523844">Folosește GTK</translation>
 <translation id="264083724974021997">Conectează-te la telefon – dialog</translation>
@@ -5767,7 +5765,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4956593309300508411">Nu mai permiți accesul?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvezi într-un dosar numai pe acest dispozitiv?</translation>
-<translation id="4958916254663453555">Fila actuală va fi afișată automat când deschizi Gemini în Chrome. Tot conținutul și adresa URL ale filei actuale sunt trimise la Google.</translation>
 <translation id="4959262764292427323">Parolele sunt salvate în Contul tău Google, astfel încât să le poți folosi pe orice dispozitiv</translation>
 <translation id="4960020053211143927">Nu este acceptată de unele aplicații</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5879,7 +5876,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5045367873597907704">Despre dispozitivele HID</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
 <translation id="504561833207953641">Se deschide în sesiunea de browser existentă.</translation>
-<translation id="5047544190872578914">Permite accesul serviciului Gemini la fila actuală de fiecare dată când începi o conversație nouă. Poți întrerupe oricând afișarea filei actuale.</translation>
 <translation id="504953514574706691">Fila a fost exclusă din grupul sugerat</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Descarcă fișierul neconfirmat</translation>
@@ -6398,6 +6394,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5414836363063783498">Se verifică...</translation>
 <translation id="5415328625985164836">Acesta este un program beta. Acum poți folosi Steam pentru a juca anumite jocuri pe Chromebook.</translation>
 <translation id="5415497281076257439">Expresie</translation>
+<translation id="5415871492522952905">Vei avea istoricul și filele pe toate dispozitivele, ca să-ți poți continua activitatea</translation>
 <translation id="5417293056300086453">Acest site poate folosi identificatori pentru a reda conținut protejat.</translation>
 <translation id="5417312524372586921">Teme pentru browser</translation>
 <translation id="541737483547792035">Mărește ecranul</translation>
@@ -6608,6 +6605,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5555760010546505198">Inversarea culorilor, corecția culorii, lupa și setările de afișare</translation>
 <translation id="555604722231274592">Activează <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
+<translation id="555671485580955310">Sincronizează istoricul și filele</translation>
 <translation id="5558129378926964177">Măr&amp;ește</translation>
 <translation id="5558594314398017686">Prestabilit pentru sistemul de operare (când este disponibil)</translation>
 <translation id="5559311991468302423">Șterge adresa</translation>
@@ -10576,6 +10574,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8310409247509201074"><ph name="NUM" /> file</translation>
 <translation id="831207808878314375">Definiție</translation>
 <translation id="8312841338723044391">LIVE</translation>
+<translation id="8313308349366087671">Opțiuni de aplicații</translation>
 <translation id="8314089908545021657">Asociază cu un telefon nou</translation>
 <translation id="8314381333424235892">Extensia lipsește sau a fost dezinstalată</translation>
 <translation id="831440797644402910">Dosarul nu poate fi deschis</translation>
@@ -10736,7 +10735,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8419098111404128271">Rezultatele de căutare pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="8419144699778179708">Șterge istoricul, inclusiv din caseta de căutare</translation>
 <translation id="8420308167132684745">Editează intrările din dicționar</translation>
-<translation id="8421361468937925547">Subtitrări live (numai în limba engleză)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Tavă lipsă</translation>
 <translation id="8424250197845498070">Blocat de Protecția avansată</translation>
@@ -11033,6 +11031,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8637688295594795546">Este disponibilă o actualizare de sistem. Se pregătește descărcarea...</translation>
 <translation id="8638719155236856752">Starea rețelei ChromeOS</translation>
 <translation id="8639635302972078117">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google.</translation>
+<translation id="8639963783467694461">Setări pentru Completare automată</translation>
 <translation id="8640575194957831802">Data ultimei deschideri</translation>
 <translation id="8641946446576357115">Folosește parolele pe dispozitivele iOS</translation>
 <translation id="8642577642520207435">Permisiune pentru camera foto pentru <ph name="APP_NAME" /></translation>

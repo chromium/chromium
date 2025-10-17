@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2379925928934107488">Chrome tungi mavzudan foydalansa, saytlarga ham u tatbiq etiladi</translation>
 <translation id="2390272837142897736">Kattalashtirish</translation>
+<translation id="2397689164757137845">Ruxsat berildi • Aniq</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Aniq</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Yordam/fikr-mulohaza</translation>
 <translation id="2501278716633472235">Ortga qaytish</translation>
 <translation id="2533138527374486328">Yoqilsa, saytlar mahalliy tarmoqdagi istalgan qurilmaga ulanish uchun ruxsat soʻrashi mumkin. Yoqilmasa, saytlar mahalliy tarmoqdagi qurilmalarga ulana olmaydi.</translation>
+<translation id="2536779053640817375">Shu safar ruxsat berildi • Aniq</translation>
 <translation id="2544997614631598250">Mavzu rangi: tungi</translation>
 <translation id="2546283357679194313">Cookie fayllari va sayt ma’lumotlari</translation>
 <translation id="2570922361219980984">Bu qurilmada joylashuv xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>

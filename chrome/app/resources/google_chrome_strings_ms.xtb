@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">Tutup dialog maklum balas</translation>
 <translation id="306179102415443347">Gunakan pintasan anda untuk mengakses Google Password Manager dengan pantas. Anda boleh mengalihkan pintasan anda kepada skrin utama atau pelancar apl komputer anda.</translation>
 <translation id="3065168410429928842">Tab Chrome</translation>
+<translation id="3073571714401714450">Togol Gemini dalam Chrome Dev</translation>
 <translation id="3080151273017101988">Terus menjalankan apl latar belakang apabila Google Chrome ditutup</translation>
 <translation id="308397506772922478">Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam akaun anda<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Namakan profil Chrome anda</translation>
@@ -373,6 +374,7 @@
 <translation id="5368118228313795342">Kod tambahan: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chrome atau membuat carian dari Kotak Omni.</translation>
 <translation id="5394833366792865639">Kongsi tab Chrome</translation>
+<translation id="5402307365844630024">Togol Gemini dalam Chrome Beta</translation>
 <translation id="5430073640787465221">Fail pilihan anda rosak atau tidak sah. Google Chrome tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="5468572406162360320">Untuk membantu meningkatkan ciri ini, Chrome menghantar interaksi anda dengan ciri tersebut kepada Google. Data ini boleh dibaca, diproses dan dianotasikan oleh jurusemak.</translation>
 <translation id="5510398294750420479">Muat turun Chrome pada telefon anda untuk menambahkan lapisan perlindungan tambahan semasa dalam perjalanan</translation>
@@ -422,6 +424,7 @@
 <translation id="5941711191222866238">Minimumkan</translation>
 <translation id="5941830788786076944">Jadikan Google Chrome penyemak imbas lalai</translation>
 <translation id="5947104538377036631">Pintasan Chrome</translation>
+<translation id="5960071705175224773">Tetapan anda telah diubah oleh apl yang tidak diketahui</translation>
 <translation id="5968400720580217226">AI Mode</translation>
 <translation id="5980111191913430208">Sambungan, apl dan tema daripada sumber yang tidak diketahui boleh membahayakan peranti anda. Chrome mengesyorkan agar fail dipasang daripada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sahaja</translation>
 <translation id="6003112304606738118">Memuat turun… <ph name="HOURS" /> jam lagi</translation>
@@ -645,6 +648,7 @@
 <translation id="8362914115861174987">Terjemahkan kepada</translation>
 <translation id="8366770919198174997">Mengurangkan prestasi tetapi menjadikan Chrome lebih tahan kepada serangan</translation>
 <translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>
+<translation id="8377158135256176353">Togol Gemini dalam Chrome Canary</translation>
 <translation id="8387459386171870978">Terus menggunakan Chrome</translation>
 <translation id="8394720698884623075">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chrome</translation>
 <translation id="8403038600646341038">Logo Chrome dalam skrin komputer.</translation>
@@ -693,12 +697,14 @@
 <translation id="8914504000324227558">Lancarkan semula Chrome</translation>
 <translation id="8922193594870374009">Untuk menghantar nombor daripada <ph name="ORIGIN" /> ke telefon Android anda, log masuk ke Chrome pada kedua-dua peranti.</translation>
 <translation id="8922998289262614701">Alih keluar data apl ini daripada Chrome</translation>
+<translation id="8936233353620149764">Togol Gemini dalam Chrome</translation>
 <translation id="8948460679427074738">Sambungan ini belum menerbitkan amalan privasi, seperti cara sambungan ini mengumpulkan dan menggunakan data. Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut.</translation>
 <translation id="8958307504142971576">Kini anda mempunyai lebih banyak ciri yang tersedia dalam Chrome</translation>
 <translation id="8991530961471831170">Buka Gemini dalam Chrome</translation>
 <translation id="8992769679401294069">Data anda telah disulitkan dengan ungkapan laluan anda. Masukkan ungkapan laluan tersebut untuk menggunakan dan menyimpan data Chrome dalam Google Account anda.</translation>
 <translation id="8999117580775242387">Apabila HTTPS tidak tersedia, Chrome akan menggunakan sambungan yang tidak selamat tanpa memberi anda amaran</translation>
 <translation id="8999208279178790196">{0,plural, =0{Kemas kini Chrome tersedia}=1{Kemas kini Chrome tersedia}other{Kemas kini Chrome telah tersedia selama # hari}}</translation>
+<translation id="9010418943148193727">Enjin carian lalai anda telah ditukar dari luar Chrome. Untuk melindungi anda, Chrome telah menetapkan semula tetapan tersebut.</translation>
 <translation id="9014771989710951291">Berbilang organisasi mengurus Chrome</translation>
 <translation id="9024318700713112071">Tetapkan Chrome sebagai lalai anda</translation>
 <translation id="9066987883552592250">Tutup Gemini dalam Chrome Canary</translation>

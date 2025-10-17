@@ -249,7 +249,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1162479191445552288">Aktivovať pre spustení</translation>
 <translation id="1163931534039071049">&amp;Zobraziť zdrojový kód rámu</translation>
 <translation id="1164015913575846413">alt + kliknutie</translation>
-<translation id="1164286072721995435">Aktuálna karta sa zdieľa s Gemini pri každom začatí novej konverzácie. Jej zdieľanie môžete kedykoľvek pozastaviť. Pomocou vašich údajov sa nezlepšujú modely generatívnej umelej inteligencie.</translation>
 <translation id="1164891049599601209">Zadané na klamlivom webe</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1166212789817575481">Zatvoriť karty vpravo</translation>
@@ -540,7 +539,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1353980523955420967">Súbor PPD sa nepodarilo nájsť. Skontrolujte, či je Chromebook online, a skúste to znova.</translation>
 <translation id="1354045473509304750">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru a hýbať ňou</translation>
 <translation id="1354148503392558902">Mení sa heslo…</translation>
-<translation id="1354943694624358993">Vždy zdieľať aktuálnu kartu</translation>
 <translation id="1355088139103479645">Chcete odstrániť všetky dáta?</translation>
 <translation id="1355088659320425659">História a karty</translation>
 <translation id="1356376170199999104">Povolený – <ph name="PERMISSION_DETAILS" />. Fyzickým prepínačom zapnite mikrofón.</translation>
@@ -2365,7 +2363,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2605668923777146443">Možnosti funkcie Better Together nájdete v <ph name="LINK_BEGIN" />Nastaveniach<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Prepojiť dáta</translation>
 <translation id="2606454609872547359">Nie, pokračovať bez čítačky ChromeVox</translation>
-<translation id="2606568927909309675">Automatické vytváranie titulkov pre zvuk a video v angličtine. Zvuk a titulky nikdy neopustia zariadenie.</translation>
 <translation id="2606890864830643943">Exportujú sa diagnostické údaje</translation>
 <translation id="2607101320794533334">Informácie verejného kľúča subjektu</translation>
 <translation id="2609533306502181883">Preskúmať tému</translation>
@@ -2417,6 +2414,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2636266464805306348">Názvy okien</translation>
 <translation id="2637313651144986786">Vyhľadajte karty…</translation>
 <translation id="2637400434494156704">Nesprávny PIN. Zostáva posledný pokus.</translation>
+<translation id="263796568413910992">Zadajte otázku vo vyhľadávači <ph name="SEARCH_ENGINE_NAME" /> alebo napíšte webovú adresu</translation>
 <translation id="2638662041295312666">Obrázok na prihlasovacej obrazovke</translation>
 <translation id="2640299212685523844">Použiť GTK</translation>
 <translation id="264083724974021997">Pripojte sa k svojmu telefónu – dialógové okno</translation>
@@ -5769,7 +5767,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4956593309300508411">Chcete zastaviť zdieľanie?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Chcete uložiť do priečinka iba v tomto zariadení?</translation>
-<translation id="4958916254663453555">Keď otvoríte Gemini v Chrome, vaša aktuálna karta sa bude automaticky zdieľať. Celý jej obsah a webová adresa sa odošlú Googlu.</translation>
 <translation id="4959262764292427323">Heslá sa ukladajú do účtu Google, takže ich môžete používať v ľubovoľnom zariadení</translation>
 <translation id="4960020053211143927">Niektoré aplikácie to nepodporujú</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5881,7 +5878,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5045367873597907704">Zariadenia s ľudským rozhraním</translation>
 <translation id="5045550434625856497">Nesprávne heslo</translation>
 <translation id="504561833207953641">Otvára sa v existujúcej relácii prehliadača.</translation>
-<translation id="5047544190872578914">Aktuálna karta sa zdieľa s Gemini pri každom začatí novej konverzácie. Jej zdieľanie môžete kedykoľvek pozastaviť.</translation>
 <translation id="504953514574706691">Karta bola vylúčená z navrhovanej skupiny</translation>
 <translation id="5050330054928994520">Prevod textu na reč</translation>
 <translation id="5051461727068120271">Stiahnuť neoverený súbor</translation>
@@ -6400,6 +6396,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5414836363063783498">Overuje sa...</translation>
 <translation id="5415328625985164836">Toto je beta program. Pomocou aplikácie Steam môžete teraz hrať v Chromebooku niektoré hry.</translation>
 <translation id="5415497281076257439">Fráza</translation>
+<translation id="5415871492522952905">Históriu aj karty budete mať vo všetkých zariadeniach, aby ste mohli pokračovať v tom, čo ste robili</translation>
 <translation id="5417293056300086453">Tento web môže prehrávať chránený obsah pomocou identifikátorov.</translation>
 <translation id="5417312524372586921">Motívy prehliadača</translation>
 <translation id="541737483547792035">Zväčšiť obrazovku</translation>
@@ -6610,6 +6607,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5555760010546505198">Inverzia farieb, úprava farieb, lupa a nastavenia zobrazenia</translation>
 <translation id="555604722231274592">Povoliť <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Znova načítať</translation>
+<translation id="555671485580955310">Synchronizovať históriu a karty</translation>
 <translation id="5558129378926964177">Priblíž&amp;iť</translation>
 <translation id="5558594314398017686">Predvolené nastavenie operačného systému (ak je k dispozícii)</translation>
 <translation id="5559311991468302423">Odstrániť adresu</translation>
@@ -10579,6 +10577,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8310409247509201074">Počet kariet: <ph name="NUM" /></translation>
 <translation id="831207808878314375">Definícia</translation>
 <translation id="8312841338723044391">NAŽIVO</translation>
+<translation id="8313308349366087671">Možnosti aplikácií</translation>
 <translation id="8314089908545021657">Párovať s novým telefónom</translation>
 <translation id="8314381333424235892">Chýbajúce alebo neplatné rozšírenie</translation>
 <translation id="831440797644402910">Tento priečinok nie je možné otvoriť</translation>
@@ -10739,7 +10738,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8419098111404128271">Výsledky vyhľadávania pre výraz „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="8419144699778179708">Odstráni históriu, aj vo vyhľadávacom poli</translation>
 <translation id="8420308167132684745">Upraviť záznamy slovníka</translation>
-<translation id="8421361468937925547">Živý prepis (iba v angličtine)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Chýba zásobník</translation>
 <translation id="8424250197845498070">Blokované rozšírenou ochranou</translation>
@@ -11036,6 +11034,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8637688295594795546">K dispozícii je systémová aktualizácia. Pripravuje sa stiahnutie...</translation>
 <translation id="8638719155236856752">Stav siete v systéme ChromeOS</translation>
 <translation id="8639635302972078117">Odosielanie údajov o využití a diagnostiky. Toto zariadenie momentálne automaticky odosiela Googlu diagnostiky a údaje o používaní zariadenia a aplikácií. Nebudú slúžiť na zistenie totožnosti vášho dieťaťa. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie zlepšenia. Niektoré súhrnné údaje tiež pomôžu aplikáciám Google a partnerom, ako napríklad vývojárom pre Android. Ak pre dieťa zapnete nastavenie ďalšej aktivity na internete a v aplikáciách, tieto údaje sa môžu uložiť do jeho účtu Google.</translation>
+<translation id="8639963783467694461">Nastavenia automatického dopĺňania</translation>
 <translation id="8640575194957831802">naposledy otvorené</translation>
 <translation id="8641946446576357115">Používajte svoje heslá v zariadeniach so systémom iOS</translation>
 <translation id="8642577642520207435">Povolenie používať kameru pre aplikáciu <ph name="APP_NAME" /></translation>

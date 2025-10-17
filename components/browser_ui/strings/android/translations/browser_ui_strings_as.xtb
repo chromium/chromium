@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2379925928934107488">সম্ভৱ হ’লে, Chromeএ গাঢ় ৰঙৰ থীম ব্যৱহাৰ কৰাৰ সময়ত ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ কৰক</translation>
 <translation id="2390272837142897736">জুম বঢ়াওক</translation>
+<translation id="2397689164757137845">অনুমতি দিয়া হৈছে • সঠিক</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> এম. বি.</translation>
 <translation id="2403474027143565107">সঠিক</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">সহায় আৰু মতামত</translation>
 <translation id="2501278716633472235">উভতি যাওক</translation>
 <translation id="2533138527374486328">অন কৰা থাকিলে, ছাইটসমূহে আপোনাৰ স্থানীয় নেটৱৰ্কৰ যিকোনো ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ অনুমতি বিচাৰিব পাৰে। অফ থাকিলে, ছাইটসমূহে আপোনাৰ স্থানীয় নেটৱৰ্কৰ ডিভাইচৰ সৈতে সংযোগ কৰিব নোৱাৰে।</translation>
+<translation id="2536779053640817375">এইবাৰ অনুমতি দিয়ক • সঠিক</translation>
 <translation id="2544997614631598250">থীমৰ ৰং গাঢ়</translation>
 <translation id="2546283357679194313">কুকি আৰু ছাইট ডেটা</translation>
 <translation id="2570922361219980984">এই ডিভাইচটোৰ বাবে অৱস্থান এক্সেছো অফ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />-লৈ গৈ অন কৰক।</translation>

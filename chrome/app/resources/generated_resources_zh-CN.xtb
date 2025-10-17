@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">在开机时启动</translation>
 <translation id="1163931534039071049">查看框架的源代码(&amp;V)</translation>
 <translation id="1164015913575846413">alt + 点击</translation>
-<translation id="1164286072721995435">每次开始新对话时，都与 Gemini 分享当前标签页。您可以随时暂停分享当前标签页。您的数据不会用于改进生成式 AI 模型。</translation>
 <translation id="1164891049599601209">在诈骗网站上输入过</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1166212789817575481">关闭右侧标签页</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">找不到 PPD。请确保您的 Chromebook 已连接到网络，然后重试。</translation>
 <translation id="1354045473509304750">继续允许 <ph name="HOST" /> 使用和移动您的摄像头</translation>
 <translation id="1354148503392558902">正在更改密码…</translation>
-<translation id="1354943694624358993">始终分享当前标签页</translation>
 <translation id="1355088139103479645">删除所有数据？</translation>
 <translation id="1355088659320425659">历史记录和标签页</translation>
 <translation id="1356376170199999104">已允许 - <ph name="PERMISSION_DETAILS" />。请使用实物开关开启麦克风。</translation>
@@ -2355,7 +2353,6 @@
 <translation id="2605668923777146443">转到<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />即可查看您的 Better Together 选项。</translation>
 <translation id="2606246518223360146">关联数据</translation>
 <translation id="2606454609872547359">否，不启用 ChromeVox 并继续操作</translation>
-<translation id="2606568927909309675">自动为英文版音频和视频创建字幕。音频和字幕绝不会从设备中泄露出去。</translation>
 <translation id="2606890864830643943">正在导出诊断数据</translation>
 <translation id="2607101320794533334">证书持有者的公共密钥信息</translation>
 <translation id="2609533306502181883">研究主题</translation>
@@ -2407,6 +2404,7 @@
 <translation id="2636266464805306348">窗口标题</translation>
 <translation id="2637313651144986786">搜索标签页…</translation>
 <translation id="2637400434494156704">PIN 码不正确。您还剩 1 次尝试机会。</translation>
+<translation id="263796568413910992">询问<ph name="SEARCH_ENGINE_NAME" />或输入网址</translation>
 <translation id="2638662041295312666">登录账号图片</translation>
 <translation id="2640299212685523844">使用 GTK</translation>
 <translation id="264083724974021997">连接到您的手机 - 对话框</translation>
@@ -5756,7 +5754,6 @@
 <translation id="4956593309300508411">要停止分享吗？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要保存到仅位于此设备上的某个文件夹吗？</translation>
-<translation id="4958916254663453555">打开 Chrome 中的 Gemini 时，系统会自动分享当前标签页。当前标签页的完整内容和网址都会发送给 Google。</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5868,7 +5865,6 @@
 <translation id="5045367873597907704">关于 HID 设备</translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="504561833207953641">正在现有的浏览器会话中打开。</translation>
-<translation id="5047544190872578914">每次开始新对话时，都与 Gemini 分享当前标签页。您可以随时暂停分享当前标签页。</translation>
 <translation id="504953514574706691">已从建议的分组中排除标签页</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">下载未经验证的文件</translation>
@@ -6387,6 +6383,7 @@
 <translation id="5414836363063783498">正在验证…</translation>
 <translation id="5415328625985164836">这是一项 Beta 版计划。现在，您可以在 Chromebook 上使用 Steam 玩某些游戏了。</translation>
 <translation id="5415497281076257439">词组</translation>
+<translation id="5415871492522952905">在您的所有设备上同步历史记录和标签页，以便您继续执行先前未完成的工作</translation>
 <translation id="5417293056300086453">此网站可以使用标识符播放受保护内容。</translation>
 <translation id="5417312524372586921">浏览器主题背景</translation>
 <translation id="541737483547792035">放大屏幕</translation>
@@ -6597,6 +6594,7 @@
 <translation id="5555760010546505198">颜色反转、色彩校正、放大镜和显示设置</translation>
 <translation id="555604722231274592">启用“<ph name="FEATURE_NAME" />”功能</translation>
 <translation id="5556459405103347317">重新加载</translation>
+<translation id="555671485580955310">同步历史记录和标签页</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
 <translation id="5558594314398017686">操作系统默认设置（若有）</translation>
 <translation id="5559311991468302423">删除此地址</translation>
@@ -10560,6 +10558,7 @@
 <translation id="8310409247509201074"><ph name="NUM" /> 个标签页</translation>
 <translation id="831207808878314375">定义</translation>
 <translation id="8312841338723044391">实时</translation>
+<translation id="8313308349366087671">应用选项</translation>
 <translation id="8314089908545021657">与新手机配对</translation>
 <translation id="8314381333424235892">扩展程序缺失或已卸载</translation>
 <translation id="831440797644402910">无法打开此文件夹</translation>
@@ -10720,7 +10719,6 @@
 <translation id="8419098111404128271">与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="8419144699778179708">删除历史记录，包括搜索框中的历史记录</translation>
 <translation id="8420308167132684745">修改字典条目</translation>
-<translation id="8421361468937925547">实时字幕（仅支持英文）</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">缺少送纸盘</translation>
 <translation id="8424250197845498070">已被“高级保护”机制屏蔽</translation>
@@ -11017,6 +11015,7 @@
 <translation id="8637688295594795546">有系统更新，开始下载...</translation>
 <translation id="8638719155236856752">ChromeOS 网络运行状况</translation>
 <translation id="8639635302972078117">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 账号中。</translation>
+<translation id="8639963783467694461">自动填充设置</translation>
 <translation id="8640575194957831802">上次打开时间</translation>
 <translation id="8641946446576357115">在 iOS 设备上使用您的密码</translation>
 <translation id="8642577642520207435"><ph name="APP_NAME" /> 摄像头使用权限</translation>

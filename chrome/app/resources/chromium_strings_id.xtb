@@ -206,6 +206,7 @@
 <translation id="3296368748942286671">Lanjutkan aplikasi yang berjalan di latar belakang jika Chromium ditutup</translation>
 <translation id="3313189106987092621">Chromium akan memperingatkan Anda sebelum memuat situs apa pun menggunakan koneksi yang tidak aman</translation>
 <translation id="3316771292331273802">Anda akan logout dari sebagian besar situs saat menutup semua jendela Chromium, kecuali Akun Google Anda jika Anda login ke Chromium. Agar situs mengingat Anda, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Mesin telusur default Anda diubah dari luar Chromium. Untuk melindungi Anda, Chromium meresetnya.</translation>
 <translation id="3352986031709923790">pojok kanan atas area penelusuran: kanan <ph name="RIGHT" />%, atas <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Data Chromium di akun Anda</translation>
 <translation id="3369405342922656244">Telusuri halaman ini dengan Penelusuran Gambar</translation>
@@ -398,6 +399,7 @@
 <translation id="5941711191222866238">Perkecil</translation>
 <translation id="5949225980829865667">Untuk mendapatkan bookmark ini dan lainnya di semua perangkat Anda, login ke Chromium</translation>
 <translation id="5953657885167112863">Personalisasi Chromium Anda</translation>
+<translation id="5960071705175224773">Setelan Anda diubah oleh aplikasi yang tidak dikenal</translation>
 <translation id="5968400720580217226">Mode AI</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama 1 menit.}other{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama # menit.}}</translation>
 <translation id="5987687638152509985">Perbarui Chromium untuk memulai sinkronisasi</translation>

@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{० रिभ्यू हेर्नुहोस्}=1{एउटा रिभ्यू हेर्नुहोस्}other{सबै # वटा रिभ्यू हेर्नुहोस्}}</translation>
 <translation id="1458059624921545588">जनता तथा समाज</translation>
 <translation id="1458140305240870199">भित्री वस्त्रहरू</translation>
+<translation id="1458770162980644530">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" का सेवाका सर्तहरू देखाइएको स्क्रिन। किबोर्ड लुकाइएको छ।</translation>
 <translation id="1459693405370120464">मौसम</translation>
 <translation id="1461041542809785877">प्रदर्शन</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2920,6 +2921,7 @@
 <translation id="5817918615728894473">जोडा  बनाउनुहोस्</translation>
 <translation id="5826507051599432481">साझा नाम (CN)</translation>
 <translation id="5830698870816298009">क्यामेराको प्रयोग र हलचल</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5832976493438355584">लक गरिएको</translation>
 <translation id="5837220895135257862">फेरि प्रयास गर्नुअघि <ph name="CLOUD_PROVIDER" /> मा ठाउँ खाली गर्नुहोस्</translation>
@@ -3311,7 +3313,7 @@
 <translation id="6433501201775827830">आफ्नो सर्च इन्जिन छनौट गर्नुहोस्</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ले जडान गर्न अस्वीकार गर्यो।</translation>
 <translation id="6433797564277305076">अबदेखि डिभाइस अनलक प्रयोग गरेर आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्नुहोस्</translation>
-<translation id="6436994298828707228">तपाईंको लोकल नेटवर्कमा भएका डिभाइस वा सर्भरहरूमा सार्वजनिक पेजमार्फत कनेक्ट गर्ने प्रयास गरिएको हुनाले कनेक्सन ब्लक गरिएको छ।</translation>
+<translation id="6436994298828707228">कुनै सार्वजनिक पेजले तपाईंको लोकल नेटवर्कमा भएका डिभाइस वा सर्भरहरूमा कनेक्ट गर्ने प्रयोजनका लागि सुरु गरेको हुनाले यो कनेक्सन ब्लक गरिएको छ।</translation>
 <translation id="6437647869369934905">Google रेखाचित्र</translation>
 <translation id="643917412048333145">पोसाकहरू</translation>
 <translation id="6440503408713884761">उपेक्षित</translation>
@@ -3644,6 +3646,7 @@
 <translation id="6997288673234694149">बेसबल तथा सफ्टबल उपकरण</translation>
 <translation id="6998512609912910179">फारामहरू अझ छिटो भर्नुहोस्</translation>
 <translation id="6999480632062519056">फिटनेससम्बन्धी निर्देशन तथा व्यक्तिगत प्रशिक्षण</translation>
+<translation id="7002897669829306463">घरको ठेगाना, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">रग तथा कार्पेटहरू</translation>
 <translation id="7003322000677139268">गाडीका पाटपुर्जा तथा सहायक उपकरणहरू</translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
@@ -4209,6 +4212,8 @@
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>
 <translation id="791698251820376781">तपाईंको सङ्गठनले तपाईंलाई साइन इन गर्ने अनुमति दिएको छैन</translation>
 <translation id="7926503317156566022">उड्डयन उद्योग</translation>
+<translation id="7930282586031445870">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" सुविधाका सेवाका सर्तहरू देखाइएको स्क्रिन बन्द गरिएको छ।</translation>
+<translation id="7932035970207573919">कार्यस्थलको ठेगाना, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">ठेगाना बदल्ने हो?</translation>
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फोन नम्बर प्रविष्टि गर्नुहोस्</translation>
@@ -4621,6 +4626,7 @@
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />के कस्ता जानकारी प्रयोग गरिन्छ:<ph name="END_BOLD" /> तपाईंले यो डिभाइसमा Chrome प्रयोग गरी खोल्ने साइटमा गर्ने गतिविधिसम्बन्धी जानकारी।</translation>
 <translation id="8601456038554914806">पानीमा खेलिने खेलसम्बन्धी उपकरण</translation>
 <translation id="8601782593888534566">विज्ञान कथा तथा स्वैरकल्पना</translation>
+<translation id="8604103095921958091">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" का सेवाका सर्तहरू देखाइएको स्क्रिन पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="8606988009912891950">"विज्ञापनका विषयहरू" अन गरिएका खण्डमा साइटहरूले तपाईंको ब्राउजिङ हिस्ट्री तथा पहिचान सुरक्षित राखेर तपाईंलाई सान्दर्भिक विज्ञापनहरू देखाउन सक्छन्। Chrome ले तपाईंको हालसालैको ब्राउजिङ हिस्ट्रीका आधारमा तपाईंका रुचिका विषयहरू थाहा पाउन सक्छ। तपाईंले यसपछि खोल्ने साइटले Chrome सँग तपाईंलाई देखाइने विज्ञापनहरू पर्सनलाइज गर्ने प्रयोजनका लागि सान्दर्भिक विषयसम्बन्धी जानकारी माग्न सक्छ।</translation>
 <translation id="8612919051706159390">अनलाइन समुदायहरू</translation>
 <translation id="8617269623452051934">तपाईंको डिभाइसको प्रयोग</translation>
@@ -4796,7 +4802,7 @@
 <translation id="8922734931659847428">तपाईंले खोलेका <ph name="BEGIN_LINK" />लिगेसी प्रविधिसम्बन्धी कार्यक्रमहरू<ph name="END_LINK" /> देखाइएका पेजका URL हरूको सीमित सूची</translation>
 <translation id="892588693504540538">सिरानको दायाँपट्टि प्वाल</translation>
 <translation id="8926389886865778422">फेरि नसोध्नुहोस्</translation>
-<translation id="8926400492587758246">मासिक रूपमा किस्तामा भुक्तानी गर्दा कम तिर्नुहोस्</translation>
+<translation id="8926400492587758246">मासिक रूपमा थोरै रकमको किस्तामा भुक्तानी गर्नुहोस्</translation>
 <translation id="8932102934695377596">तपाईंको घडी ढिला छ</translation>
 <translation id="893332455753468063">नाम थप्नुहोस्</translation>
 <translation id="8938242527120341116">तपाईंको डिभाइसका सामग्रीसम्बन्धी फिल्टरहरूले <ph name="BLOCKED_URL" /> ब्लक गरेका छन्</translation>
@@ -4861,6 +4867,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> तपाईंको स्थानीय नेटवर्कमा भएको जुनसुकै डिभाइस खोज्न र त्यसमा कनेक्ट हुन चाहन्छ</translation>
 <translation id="9046864189129893978">माइक्रोफोनहरू (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" का सेवाका सर्तहरू भएको स्क्रिन आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="9047528041803621289">तपाईं डिफल्ट सर्च इन्जिनमार्फत वेबमा कुनै कुरा खोज्न सक्नुहुन्छ। तपाईं सेटिङमा गई यो कुरा बदल्न सक्नुहुन्छ।</translation>
 <translation id="9048035366624198823">यी कारबाही गर्न <ph name="POLICY_NAME" /> नामक नीति बदलेर <ph name="POLICY_VALUE" /> बनाउनु पर्ने हुन्छ: <ph name="ACTION_LIST" />।</translation>
 <translation id="9048662076076074925">२४ x ३६ इन्च</translation>

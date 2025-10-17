@@ -190,6 +190,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3047590466164881923">Close feedback dialogue</translation>
 <translation id="306179102415443347">Use your shortcut to quickly get to the Google Password Manager. You can move your shortcut to your computer's home screen or app launcher.</translation>
 <translation id="3065168410429928842">Chrome tab</translation>
+<translation id="3073571714401714450">Toggle Gemini in Chrome Dev</translation>
 <translation id="3080151273017101988">Continue running background apps when Google Chrome is closed</translation>
 <translation id="308397506772922478">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Name your Chrome profile</translation>
@@ -379,6 +380,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">It also controls what page is shown when you start Chrome or search from the Omnibox.</translation>
 <translation id="5394833366792865639">Share a Chrome tab</translation>
+<translation id="5402307365844630024">Toggle Gemini in Chrome Beta</translation>
 <translation id="5430073640787465221">Your preferences file is corrupt or invalid.
 
 Google Chrome is unable to recover your settings.</translation>
@@ -430,6 +432,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5941711191222866238">Minimise</translation>
 <translation id="5941830788786076944">Make Google Chrome the default browser</translation>
 <translation id="5947104538377036631">Chrome shortcut</translation>
+<translation id="5960071705175224773">Your settings were changed by an unknown app</translation>
 <translation id="5968400720580217226">AI Mode</translation>
 <translation id="5980111191913430208">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
@@ -653,6 +656,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8362914115861174987">Translate to</translation>
 <translation id="8366770919198174997">Reduces performance but makes Chrome more resistant to attacks</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
+<translation id="8377158135256176353">Toggle Gemini in Chrome Canary</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
 <translation id="8403038600646341038">Chrome logo inside a computer screen.</translation>
@@ -701,12 +705,14 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8922998289262614701">Remove this app's data from Chrome</translation>
+<translation id="8936233353620149764">Toggle Gemini in Chrome</translation>
 <translation id="8948460679427074738">This extension hasn't published privacy practices, such as how it collects and uses data. Chrome recommends that you remove it.</translation>
 <translation id="8958307504142971576">You now have more features available in Chrome</translation>
 <translation id="8991530961471831170">Open Gemini in Chrome</translation>
 <translation id="8992769679401294069">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
 <translation id="8999117580775242387">When HTTPS isn't available, Chrome will use an insecure connection without warning you</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
+<translation id="9010418943148193727">Your default search engine was changed from outside of Chrome. To protect you, Chrome reset it.</translation>
 <translation id="9014771989710951291">Multiple organisations manage Chrome</translation>
 <translation id="9024318700713112071">Set Chrome as your default</translation>
 <translation id="9066987883552592250">Close Gemini in Chrome Canary</translation>

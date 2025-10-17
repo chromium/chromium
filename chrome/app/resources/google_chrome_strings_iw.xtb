@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">סגירה של תיבת דו-שיח של משוב</translation>
 <translation id="306179102415443347">‏באמצעות קיצורי הדרך אפשר להגיע מהר למנהל הסיסמאות של Google. ניתן להעביר את קיצור הדרך למרכז האפליקציות או למסך הבית של המחשב.</translation>
 <translation id="3065168410429928842">‏כרטיסייה של Chrome</translation>
+<translation id="3073571714401714450">‏הפעלה או השבתה של Gemini ב-Chrome פיתוח</translation>
 <translation id="3080151273017101988">‏המשך הפעלת אפליקציות ברקע כאשר Google Chrome סגור</translation>
 <translation id="308397506772922478">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chrome בחשבון<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">‏בחירת שם לפרופיל Chrome שלך</translation>
@@ -373,6 +374,7 @@
 <translation id="5368118228313795342">קוד נוסף: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome או כשמבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="5394833366792865639">‏שיתוף כרטיסיית Chrome</translation>
+<translation id="5402307365844630024">‏הפעלה או השבתה של Gemini ב-Chrome בטא</translation>
 <translation id="5430073640787465221">‏קובץ ההעדפות שלך פגום או לא חוקי. Google Chrome לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="5468572406162360320">‏כדי לשפר את התכונות האלו, Chrome שולח את האינטראקציות שלך איתן ל-Google. בודקים אנושיים יכולים לקרוא את הנתונים האלה, לעבד אותם ולהוסיף להם הערות.</translation>
 <translation id="5510398294750420479">‏רוצה עוד שכבת הגנה בכל מקום? כדאי להוריד את Chrome לטלפון</translation>
@@ -422,6 +424,7 @@
 <translation id="5941711191222866238">מזעור</translation>
 <translation id="5941830788786076944">‏Google Chrome יהיה דפדפן ברירת המחדל</translation>
 <translation id="5947104538377036631">‏קיצור דרך ב-Chrome</translation>
+<translation id="5960071705175224773">ההגדרות שלך שונו על ידי אפליקציה לא ידועה</translation>
 <translation id="5968400720580217226">‏מצב AI</translation>
 <translation id="5980111191913430208">‏תוספים, אפליקציות ועיצובים ממקורות לא מוכרים עלולים להזיק למכשיר. ההמלצה של Chromium היא להתקין אותם רק מ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">מתבצעת הורדה… יש עוד <ph name="HOURS" /> שע'</translation>
@@ -645,6 +648,7 @@
 <translation id="8362914115861174987">תרגום ל</translation>
 <translation id="8366770919198174997">‏ירידה ברמת הביצועים בתמורה להגברת העמידות של Chrome בפני מתקפות</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
+<translation id="8377158135256176353">‏הפעלה או השבתה של Gemini ב-Chrome Canary</translation>
 <translation id="8387459386171870978">‏המשך השימוש ב-Chrome</translation>
 <translation id="8394720698884623075">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chrome</translation>
 <translation id="8403038600646341038">‏הלוגו של Chromium בתוך מסך מחשב.</translation>
@@ -693,12 +697,14 @@
 <translation id="8914504000324227558">‏הפעלה מחדש של Chrome</translation>
 <translation id="8922193594870374009">‏כדי לשלוח מספר מ-<ph name="ORIGIN" /> לטלפון Android, יש להיכנס אל Chrome בשני המכשירים.</translation>
 <translation id="8922998289262614701">‏להסיר את הנתונים של האפליקציה הזאת מ-Chrome?</translation>
+<translation id="8936233353620149764">‏הפעלה או השבתה של Gemini ב-Chrome</translation>
 <translation id="8948460679427074738">‏לתוסף הזה לא פורסמו נוהלי פרטיות, למשל האופן שבו הוא אוסף נתונים ומשתמש בהם. ההמלצה של Chrome היא להסיר אותו.</translation>
 <translation id="8958307504142971576">‏עכשיו יש לך יותר תכונות זמינות ב-Chrome</translation>
 <translation id="8991530961471831170">‏פתיחת Gemini ב-Chrome</translation>
 <translation id="8992769679401294069">‏הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה. כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה.</translation>
 <translation id="8999117580775242387">‏כש-HTTPS לא יהיה זמין, Chrome ישתמש בחיבור לא מאובטח בלי להציג אזהרה</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏יש עדכון זמין ל-Chrome}=1{‏יש עדכון זמין ל-Chrome}one{‏עדכון ל-Chrome זמין כבר # ימים}two{‏עדכון ל-Chrome זמין כבר # ימים}other{‏עדכון ל-Chrome זמין כבר # ימים}}</translation>
+<translation id="9010418943148193727">‏מנוע החיפוש שמוגדר כברירת מחדל השתנה מחוץ ל-Chrome. כדי להגן עליך, Chrome איפס את ההגדרה.</translation>
 <translation id="9014771989710951291">‏מספר ארגונים מנהלים את Chrome</translation>
 <translation id="9024318700713112071">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="9066987883552592250">‏סגירת Gemini ב-Chrome Canary</translation>

@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">ষ্টাৰ্টআপত লঞ্চ কৰক</translation>
 <translation id="1163931534039071049">ফ্ৰে'মৰ উৎস &amp;চাওক</translation>
 <translation id="1164015913575846413">alt + ক্লিক</translation>
-<translation id="1164286072721995435">আপুনি প্ৰতিবাৰ নতুন বাৰ্তালাপ আৰম্ভ কৰোঁতে বৰ্তমানৰ টেবটো Geminiৰ সৈতে শ্বেয়াৰ কৰে। আপুনি যিকোনো সময়তে আপোনাৰ বৰ্তমানৰ টেবটো শ্বেয়াৰ কৰাটো পজ কৰিব পাৰে। Generative AI মডেলসমূহ উন্নত কৰিবলৈ আপোনাৰ ডেটাখিনি ব্যৱহাৰ কৰা নহয়।</translation>
 <translation id="1164891049599601209">বিভ্ৰান্তিকৰ ছাইটত দিছে</translation>
 <translation id="1165039591588034296">আসোঁৱাহ</translation>
 <translation id="1166212789817575481">সোঁফালৰ টেববোৰ বন্ধ কৰক</translation>
@@ -539,7 +538,6 @@
 <translation id="1353980523955420967">PPD বিচাৰি পোৱা নগ’ল। আপোনাৰ Chromebook অনলাইন হৈ থকাটো সুনিশ্চিত কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="1354045473509304750"><ph name="HOST" />ক আপোনাৰ কেমেৰা ব্যৱহাৰ আৰু লৰচৰ কৰিবলৈ অনুমতি দিয়াটো অব্যাহত ৰাখক</translation>
 <translation id="1354148503392558902">পাছৱৰ্ড সলনি কৰি থকা হৈছে...</translation>
-<translation id="1354943694624358993">সদায় বৰ্তমানৰ টেবটো শ্বেয়াৰ কৰক</translation>
 <translation id="1355088139103479645">আটাইবোৰ ডেটা মচিব নেকি?</translation>
 <translation id="1355088659320425659">ইতিহাস আৰু টেব</translation>
 <translation id="1356376170199999104">অনুমতি দিয়া আছে – <ph name="PERMISSION_DETAILS" />। কায়িক ছুইচ ব্যৱহাৰ কৰি মাইক্ৰ’ফ’ন অন কৰক।</translation>
@@ -1244,6 +1242,7 @@
 <translation id="1829192082282182671">জুম &amp;আউট কৰক</translation>
 <translation id="1830550083491357902">ছাইন ইন কৰা নাই</translation>
 <translation id="1831848493690504725">সংযুক্ত নেটৱৰ্কটোৰ জৰিয়তে আমি Google এক্সেছ কৰিব নোৱাৰোঁ। এটা বেলেগ নেটৱৰ্ক বাছনি কৰি চাওক অথবা আপোনাৰ নেটৱৰ্কৰ ছেটিং অথবা প্ৰক্সি ছেটিং পৰীক্ষা কৰক (যদি আপুনি কোনো প্ৰক্সি ব্যৱহাৰ কৰি আছে)।</translation>
+<translation id="1832414451155700364">ইতিহাস আৰু টেব ছিংক কৰিবনে নকৰে সেইটো বাছনি কৰক</translation>
 <translation id="1832459821645506983">হয়, মই সন্মত</translation>
 <translation id="1832511806131704864">ফ’ন সলনি কৰাটো আপডে’ট কৰা হ’ল</translation>
 <translation id="1832848789136765277">আপোনাৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
@@ -2374,7 +2373,6 @@
 <translation id="2605668923777146443">উন্নত সমাযোজনৰ বাবে আপোনাৰ বিকল্প চাবলৈ <ph name="LINK_BEGIN" />ছেটিঙ<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="2606246518223360146">ডেটা লিংক কৰক</translation>
 <translation id="2606454609872547359">নহয়, ChromeVoxৰ অবিহনে অব্যাহত ৰাখক</translation>
-<translation id="2606568927909309675">ইংৰাজী অডিঅ’ আৰু ভিডিঅ’ৰ বাবে স্বয়ংক্ৰিয়ভাৱে কেপশ্বন সৃষ্টি কৰে। অডিঅ’ আৰু কেপশ্বন আপোনাৰ ডিভাইচটোৰ পৰা কেতিয়াও আঁতৰি নাযায়।</translation>
 <translation id="2606890864830643943">ডায়গন’ষ্টিক ডেটা ৰপ্তানি কৰি থকা হৈছে</translation>
 <translation id="2607101320794533334">প্ৰমাণপত্ৰ প্ৰাপকৰ ৰাজহুৱা চাবিৰ তথ্য</translation>
 <translation id="2609533306502181883">এটা বিষয়বস্তুত গৱেষণা কৰক</translation>
@@ -2426,6 +2424,7 @@
 <translation id="2636266464805306348">ৱিণ্ড’ৰ শিৰোনাম</translation>
 <translation id="2637313651144986786">সন্ধানৰ টেব…</translation>
 <translation id="2637400434494156704">ভুল পিন। আপোনাৰ এটা প্ৰচেষ্টা বাকী আছে।</translation>
+<translation id="263796568413910992"><ph name="SEARCH_ENGINE_NAME" />ক সোধক বা এটা URL টাইপ কৰক</translation>
 <translation id="2638662041295312666">ছাইন-ইন প্ৰতিচ্ছবি</translation>
 <translation id="2640299212685523844">GTK ব্যৱহাৰ কৰক</translation>
 <translation id="264083724974021997">আপোনাৰ ফ’নৰ সৈতে সংযোগ কৰক - ডায়ল’গ</translation>
@@ -5778,7 +5777,6 @@
 <translation id="4956593309300508411">শ্বেয়াৰ কৰাটো বন্ধ কৰিবনে?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">কেৱল এই ডিভাইচটোৰ এটা ফ’ল্ডাৰত ছেভ কৰিবনে?</translation>
-<translation id="4958916254663453555">আপুনি Chromeত Gemini খুলিলে আপোনাৰ বৰ্তমানৰ টেবটো স্বয়ংক্ৰিয়ভাৱে শ্বেয়াৰ কৰা হয়। বৰ্তমানৰ টেবটোৰ সম্পূৰ্ণ সমল আৰু URLটো Googleলৈ পঠিওৱা হয়।</translation>
 <translation id="4959262764292427323">আপুনি সকলো ডিভাইচতে ব্যৱহাৰ কৰিব পৰাকৈ নিজৰ Google একাউণ্টত পাছৱর্ডসমূহ ছেভ কৰা হয়</translation>
 <translation id="4960020053211143927">কিছুমান এপে সমৰ্থন নকৰে</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5890,7 +5888,6 @@
 <translation id="5045367873597907704">HID ডিভাইচৰ বিষয়ে</translation>
 <translation id="5045550434625856497">ভুল পাছৱৰ্ড</translation>
 <translation id="504561833207953641">পূর্বে থকা ব্ৰাউজাৰ ছেশ্বনত খুলি আছে।</translation>
-<translation id="5047544190872578914">আপুনি প্ৰতিবাৰ নতুন বাৰ্তালাপ আৰম্ভ কৰোঁতে বৰ্তমানৰ টেবটো Geminiৰ সৈতে শ্বেয়াৰ কৰে। আপুনি যিকোনো সময়তে আপোনাৰ বৰ্তমানৰ টেবটো শ্বেয়াৰ কৰাটো পজ কৰিব পাৰে।</translation>
 <translation id="504953514574706691">পৰামৰ্শিত গোটৰ পৰা টেব বহিৰ্ভূত কৰা হৈছে</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">সত্যাপন নকৰা ফাইল ডাউনল'ড কৰক</translation>
@@ -6410,6 +6407,7 @@
 <translation id="5414836363063783498">সত্যাপন কৰি থকা হৈছে…</translation>
 <translation id="5415328625985164836">এইটো এটা বিটা প্ৰ’গ্ৰাম। এতিয়া আপুনি নিজৰ Chromebookত কিছুমান গে’ম খেলিবলৈ Steam ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="5415497281076257439">বাক্যাংশ</translation>
+<translation id="5415871492522952905">আপোনাৰ আটাইবোৰ ডিভাইচতে আপোনাৰ ইতিহাস আৰু টেবসমূহ থাকিব, যাতে আপুনি কৰি থকা কামটো অব্যাহত ৰাখিব পাৰে</translation>
 <translation id="5417293056300086453">এই ছাইটটোৱে সুৰক্ষিত সমল প্লে’ কৰিবলৈ চিনাক্তকাৰী ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="5417312524372586921">ব্ৰাউজাৰৰ থীম</translation>
 <translation id="541737483547792035">স্ক্ৰীন বিৱৰ্ধন কৰক</translation>
@@ -6620,6 +6618,7 @@
 <translation id="5555760010546505198">ৰং বিপৰীতকৰণ, ৰং শুধৰণী, বিৱৰ্ধক আৰু ডিছপ্লে’ৰ ছেটিং</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> সক্ষম কৰক</translation>
 <translation id="5556459405103347317">পুনৰ ল’ড কৰক</translation>
+<translation id="555671485580955310">ইতিহাস আৰু টেব ছিংক কৰক</translation>
 <translation id="5558129378926964177">জুম &amp;ইন কৰক</translation>
 <translation id="5558594314398017686">OS ডিফ’ল্ট (উপলব্ধ হ’লে)</translation>
 <translation id="5559311991468302423">ঠিকনা মচক</translation>
@@ -8797,6 +8796,7 @@
 <translation id="7088960765736518739">ছুইচ্চ এক্সেছ</translation>
 <translation id="7089253021944603172">আকৌ সক্ৰিয় কৰকত টিপক</translation>
 <translation id="7090714929377281710">স্বয়ংক্ৰিয়ভাৱে হটস্পট অফ কৰক</translation>
+<translation id="7092452922791061650">এই টেবটোত ৰাইট-ক্লিক কৰক আৰু “বৰ্তমানৰ টেবৰ সৈতে নতুন বিভাজিত ভিউ” বাছনি কৰক</translation>
 <translation id="7092504544229909737">Android এপৰ সৈতে ব্যৱহাৰ কৰিব নোৱাৰি</translation>
 <translation id="7093220653036489319">দ্ৰুত উত্তৰ</translation>
 <translation id="7093866338626856921">এই ডিভাইচসমূহৰ সৈতে ডেটা বিনিময় কৰক: <ph name="HOSTNAMES" /></translation>
@@ -10586,6 +10586,7 @@
 <translation id="8310409247509201074"><ph name="NUM" /> টা টেব</translation>
 <translation id="831207808878314375">সংজ্ঞা</translation>
 <translation id="8312841338723044391">লাইভ</translation>
+<translation id="8313308349366087671">আৱেদনৰ বিকল্প</translation>
 <translation id="8314089908545021657">নতুন ফ’নৰ সৈতে পেয়াৰ কৰক</translation>
 <translation id="8314381333424235892">এক্সটেনশ্বনটো নাই আনইনষ্টল কৰা হৈছে</translation>
 <translation id="831440797644402910">এই ফ’ল্ডাৰটো খুলিব নোৱাৰে</translation>
@@ -10746,7 +10747,6 @@
 <translation id="8419098111404128271">’<ph name="SEARCH_TEXT" />’ৰ সন্ধানৰ ফলাফল</translation>
 <translation id="8419144699778179708">সন্ধানৰ বাকচটোত থকাসমূহকে ধৰি ব্ৰাউজিঙৰ ইতিহাস মচে</translation>
 <translation id="8420308167132684745">অভিধানৰ প্ৰৱিষ্টিসমূহ সম্পাদনা কৰক</translation>
-<translation id="8421361468937925547">লাইভ কেপশ্বন (কেৱল ইংৰাজীত)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">ট্ৰে’ উপলব্ধ নহয়</translation>
 <translation id="8424250197845498070">সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাটোৱে অৱৰোধ কৰিছে</translation>

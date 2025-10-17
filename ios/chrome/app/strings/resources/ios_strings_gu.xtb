@@ -457,7 +457,6 @@
 <translation id="2721190673959776287">સાંદર્ભિક પૅનલ માટે નમૂનાથી સમૃદ્ધ પ્રોડક્ટમાંથી સહાય, જે દિવસમાં એકથી વધુ વખત દેખાવી જોઈએ.</translation>
 <translation id="2739887572830526131">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેની જરૂર ન હોય, તો તેને ડિલીટ કરો.</translation>
 <translation id="2747003861858887689">પાછલી ફીલ્ડ</translation>
-<translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ફૉલો કરી રહ્યાં છીએ</translation>
 <translation id="2755485474385016903">કરવામાં આવેલા ફેરફારો ગ્રૂપના પ્રત્યેક સભ્યને દેખાય છે</translation>
 <translation id="2755595981383829244">હવે તમે કન્ટેન્ટ માટેના નોટિફિકેશન મેળવશો</translation>
 <translation id="2761788987260570878">તમારી શોધનો ફોટો લો</translation>
@@ -504,7 +503,6 @@
 <translation id="29153882450867370">"કિંમતને ટ્રૅક કરો" છુપાવો</translation>
 <translation id="291754862089661335">QR કોડ અથવા બારકોડને આ ફ્રેમમાં મૂકો</translation>
 <translation id="2918688092312652908">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
-<translation id="2920866371965792875">આ સાઇટ પરની અપડેટ જોવા માટે, અહીં ક્લિક કરીને તેને ફૉલો કરો.</translation>
 <translation id="2922210239002704889">તમારા હોમપેજ અથવા કીબોર્ડ પર જાઓ</translation>
 <translation id="2924940770243654951">નવા છૂપા ટૅબમાં ખોલો</translation>
 <translation id="2931440415625410757">સૂચનાઓ બતાવો</translation>
@@ -659,6 +657,7 @@
 <translation id="3575426792457739946">લોડ થયેલી બધી પ્રોફાઇલ આ સૂચિમાં છે.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="3581564640715911333">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાનું ઑફર કરો</translation>
+<translation id="3587482841069643663">બધા</translation>
 <translation id="3587885837929752825">તમારી સંસ્થા તમે તમારા Google એકાઉન્ટમાં શુંં સાચવી શકો છો તે મર્યાદિત કરે છે.</translation>
 <translation id="3588820906588687999">નવા ટેબમાં છબી ખોલો</translation>
 <translation id="3595252146048399851">શું સિંક કરવું, તે તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
@@ -954,7 +953,6 @@
 <translation id="4752348350801431746">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન બંધ કરો…</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4764612367328936189">તમારી સંસ્થા માત્ર અમુક ચોક્કસ એકાઉન્ટ વડે તમને સાઇન ઇન કરવાની મંજૂરી આપે છે. મંજૂરી ન હોય એવા એકાઉન્ટને છુપાવવામાં આવે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="4766112107778026136">Discover અને ફૉલો કરી રહ્યાં છીએ</translation>
 <translation id="4769198578611055647">કોઈપણ ડિવાઇસ પર સાચવેલી પાસકી ઍક્સેસ કરવામાં તમને સહાય કરે છે</translation>
 <translation id="4782952780741793211">કન્ફર્મેશન કોડ:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1284,6 +1282,7 @@
 <translation id="5971459446352190251">QR કોડની શોધ</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 બુકમાર્ક ડિલીટ કર્યું}one{{count} બુકમાર્ક ડિલીટ કર્યું}other{{count} બુકમાર્ક ડિલીટ કર્યા}}</translation>
 <translation id="5972844218283131174">તમામને નાપસંદ કરો</translation>
+<translation id="5976160379964388480">અન્ય લોકો</translation>
 <translation id="5977976211062815271">આ ડિવાઇસ પર</translation>
 <translation id="5986043348928676121">આગળ</translation>
 <translation id="598634819525651074">ક્ષેત્ર</translation>
@@ -1330,6 +1329,7 @@
 <translation id="6140600850356225166">અન્ય ઍપમાંની લિંકને છૂપા મોડમાં ખોલવાનું જણાવો</translation>
 <translation id="6140948187512243695">વિગતો બતાવો</translation>
 <translation id="6144589619057374135">છૂપા મોડમાં ${url} ખોલો</translation>
+<translation id="6146563240635539929">વીડિયો</translation>
 <translation id="6147279996212084542">સમજાવો</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે છૂપા ટૅબ અનલૉક કરો</translation>
 <translation id="6152340033632117531">નિષ્ક્રિય</translation>
@@ -1372,7 +1372,6 @@
 <translation id="6271824294945464304">પાસવર્ડ શેર કરી રહ્યાં છીએ</translation>
 <translation id="628251768213143684">તમારા Google એકાઉન્ટમાં સાચવેલી દરેક બાબતો તમે હંમેશાં મેનેજ કરી જ શકો છો</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />નો અનુવાદ કરવાનું કહો</translation>
-<translation id="6289501276895392862"><ph name="CHANNEL_NAME" />ને અનફૉલો કર્યું</translation>
 <translation id="6293101329759844770">Safe Browsingની સુવિધા ચાલુ કરવા માટે, <ph name="BEGIN_LINK" />Google સેવાઓ<ph name="END_LINK" /> ખોલો અને Safe Browsing પર ટૅપ કરો.</translation>
 <translation id="6295751040240588413">કાર્ડનું અમાન્ય ઉપનામ</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
@@ -1504,7 +1503,6 @@
 <translation id="6708501134077648845">પાસવર્ડના વિકલ્પો</translation>
 <translation id="6709964700841491574">લૉકડાઉન મોડ</translation>
 <translation id="6710079714193676716">તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે. અમુક સુવિધાઓ અનુપલબ્ધ હોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="671310123089116995">ફીડ પર જાઓ</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" />ના રોજ ફેરફાર કર્યો</translation>
 <translation id="6722623263381062480">પ્રાપ્ત કરેલા ટૅબ</translation>
 <translation id="6723740634201835758">તમારા Google એકાઉન્ટમાં</translation>
@@ -1897,6 +1895,7 @@
 <translation id="8221665793629393739">ફરી મુલાકાત લેવા માટેનું તમારું રિમાઇન્ડર</translation>
 <translation id="8232956427053453090">ડેટા રાખો</translation>
 <translation id="8233237502828137700">બૅનર પ્રોમો બંધ કરો</translation>
+<translation id="8250920743982581267">દસ્તાવેજો</translation>
 <translation id="8258734532103758067">મેં મારા ડેટાની નિકાસ કરી છે</translation>
 <translation id="8258999165172757081">ઉમેરી</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
@@ -1943,6 +1942,7 @@
 <translation id="8395180897620197612">લૉગિંગની પ્રક્રિયા રોકો</translation>
 <translation id="8407669440184693619">આ સાઇટ માટે કોઈ પાસવર્ડ મળ્યાં નથી</translation>
 <translation id="8407831512155324054">તમારા પાસવર્ડ સશક્ત લાગે છે</translation>
+<translation id="8414030140103493759">ફોટો લો અથવા વીડિયો બનાવો</translation>
 <translation id="8414283596511250978">તમારા પાસવર્ડ ક્યારેય ભૂલશો નહીં</translation>
 <translation id="842523302461531262">સેટિંગમાં ડિફૉલ્ટ બનાવો…</translation>
 <translation id="8428045167754449968">શહેર/નગર</translation>
@@ -1956,6 +1956,7 @@
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="8474378002946546633">સૂચનાઓને અનુમતિ આપો</translation>
 <translation id="8477178913400731244">ડેટા ડિલીટ કરો</translation>
+<translation id="847939250509903814">ફોટો લાઇબ્રેરી</translation>
 <translation id="8481184073299279701">ભવિષ્યના JavaScript કન્સોલ લૉગ અને બધા ટૅબની ભૂલોને એકત્રિત કરવા "લૉગિંગની પ્રક્રિયા શરૂ કરો" બટન પર ટૅપ કરો. આ પેજ બંધ કરવામાં ન આવે કે "લૉગિંગની પ્રક્રિયા બંધ કરો" પર ટૅપ કરવામાં ન આવે, ત્યાં સુધી લૉગ એકત્રિત કરવામાં આવશે (અને માત્ર મેમરીમાં જ સ્ટોર કરવામાં આવશે).</translation>
 <translation id="8487667956631253959">ચાલુ</translation>
 <translation id="8487700953926739672">ઑફલાઇન ઉપલબ્ધ</translation>
@@ -2119,7 +2120,6 @@
 <translation id="9055291197094969722">તમારા ખુલ્લા ટૅબ ગોઠવવા અને કાર્યક્ષમ રહેવા માટે ટૅબના ગ્રૂપ બનાવો</translation>
 <translation id="9055580485132823283">તમે {password_count} પાસવર્ડ, {passkey_count} પાસકી અને જેના માટે તમે સાઇન-ઇન માહિતી ક્યારેય ન સાચવવાનો વિકલ્પ પસંદ કર્યો છે તેવી સાઇટ અને ઍપની સૂચિ ડિલીટ કરવા જઈ રહ્યાં છો. સાઇટ અને ઍપ માટે તમે બનાવેલું કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="9057030985451135243">શેર કરેલા ટૅબના ગ્રૂપ વિશે જાણો</translation>
-<translation id="9057972802061533987">ફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9066097352053395362">'બુકમાર્કમાં ફેરફાર કરો' છુપાવો</translation>
 <translation id="9070824521421603770">તમને સાઇન આઉટ કરવામાં આવશે અને ટૅબ બંધ કરવામાં આવશે</translation>
@@ -2132,7 +2132,6 @@
 <translation id="9087339162317338348">જ્યારે પણ શક્ય હોય ત્યારે HTTPSનો ઉપયોગ કરો અને તેને સપોર્ટ કરતી ન હોય તેવી સાઇટને લોડ કરતા પહેલાં ચેતવણી મેળવો.</translation>
 <translation id="9090979472668095374">જવાબો પાછા બોલો</translation>
 <translation id="9094033019050270033">પાસવર્ડ અપડેટ કરો</translation>
-<translation id="9097506547406246598">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="9098541895599151034">શું પાસવર્ડ <ph name="NUMBER_OF_ACCOUNTS" /> ડિલીટ કરીએ?</translation>
 <translation id="9099233023029360602">કયા એકાઉન્ટનો ઉપયોગ કરવો છે, તે દરેક વખતે પૂછો</translation>
 <translation id="9099821309562615674">ખાતરી કરો કે તમે જે ટેક્સ્ટનો અનુવાદ કરી રહ્યાં છો તે સ્પષ્ટ છે અને ફ્રેમમાં છે.</translation>
@@ -2163,6 +2162,7 @@
 <translation id="9203951165704618409">કસ્ટમાઇઝ કરેલા બ્રાઉઝિંગ અનુભવ માટે, તમારા ઍડ્રેસ બારને સૌથી ઉપરથી ખસેડીને તળિયાની સ્થિતિ પર સ્વિચ કરો.</translation>
 <translation id="9205189991633470489">છૂપા મોડનું લૉક</translation>
 <translation id="9206887540681440657">ઝડપ</translation>
+<translation id="9219103736887031265">છબીઓ</translation>
 <translation id="9219154867334666734">ટૅબ શોધો…</translation>
 <translation id="9223358826628549784">ક્રૅશ રિપોર્ટ મોકલ્યો.</translation>
 <translation id="926455622548529175">સ્વિચ કરો અને ડિલીટ કરો</translation>

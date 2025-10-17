@@ -188,6 +188,7 @@
 <translation id="3047590466164881923">Aizvērt atsauksmju dialoglodziņu</translation>
 <translation id="306179102415443347">Izmantojot saīsni, varat ātri piekļūt Google paroļu pārvaldniekam. Varat pārvietot saīsni uz datora sākuma ekrānu vai lietotņu palaidēju.</translation>
 <translation id="3065168410429928842">Chrome cilne</translation>
+<translation id="3073571714401714450">Pārslēgt Gemini pārlūka Chrome izstrādātāju versijā</translation>
 <translation id="3080151273017101988">Turpināt lietotņu izpildi fonā, kad Google Chrome ir aizvērts</translation>
 <translation id="308397506772922478">Ja aizmirstat ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus savā kontā<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Chrome profila nosaukšana</translation>
@@ -376,6 +377,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5368118228313795342">Papildu kods: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chrome vai meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="5394833366792865639">Chrome cilnes kopīgošana</translation>
+<translation id="5402307365844630024">Pārslēgt Gemini pārlūka Chrome beta versijā</translation>
 <translation id="5430073640787465221">Jūsu preferenču fails ir bojāts vai nederīgs. Google Chrome nespēj atkopt jūsu iestatījumus.</translation>
 <translation id="5468572406162360320">Lai palīdzētu uzlabot šīs funkcijas, pārlūks Chrome nosūta Google serveriem datus par jūsu mijiedarbību ar tām. Šos datus var lasīt, apstrādāt un anotēt pārskatītāji.</translation>
 <translation id="5510398294750420479">Lejupielādējiet pārlūku Chrome savā tālrunī, lai nodrošinātu papildu aizsardzību, atrodoties ceļā.</translation>
@@ -425,6 +427,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5941711191222866238">Minimizēt</translation>
 <translation id="5941830788786076944">Izveidot Google Chrome par noklusējuma pārlūku</translation>
 <translation id="5947104538377036631">Chrome saīsne</translation>
+<translation id="5960071705175224773">Jūsu iestatījumus mainīja nezināma lietotne</translation>
 <translation id="5968400720580217226">MI režīms</translation>
 <translation id="5980111191913430208">No nezināmiem avotiem iegūti paplašinājumi, lietotnes un motīvi var kaitēt ierīcei. Chrome komanda iesaka instalēt tos tikai no veikala <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Notiek lejupielāde... Atlikušais laiks: <ph name="HOURS" /> stunda(-as).</translation>
@@ -648,6 +651,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="8362914115861174987">Tulkot šādā valodā:</translation>
 <translation id="8366770919198174997">Samazina veiktspēju, taču uzlabo Chrome izturību pret uzbrukumiem.</translation>
 <translation id="8370517070665726704">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
+<translation id="8377158135256176353">Pārslēgt Gemini pārlūkā Chrome Canary</translation>
 <translation id="8387459386171870978">Turpināt lietot Chrome</translation>
 <translation id="8394720698884623075">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošo vietņu sarakstu, kas ir saglabāts pārlūkprogrammā Chrome.</translation>
 <translation id="8403038600646341038">Chrome logotips datora ekrānā.</translation>
@@ -696,12 +700,14 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="8914504000324227558">Atkārtoti palaist pārlūkprogrammu Chrome</translation>
 <translation id="8922193594870374009">Lai nosūtītu numuru no vietnes <ph name="ORIGIN" /> uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
 <translation id="8922998289262614701">Noņemt šīs lietotnes datus no pārlūka Chrome</translation>
+<translation id="8936233353620149764">Pārslēgt Gemini pārlūkā Chrome</translation>
 <translation id="8948460679427074738">Nav norādīta konfidencialitātes prakse šim paplašinājumam, piemēram, kā tas vāc un izmanto datus. Chrome iesaka to noņemt.</translation>
 <translation id="8958307504142971576">Tagad pārlūkā Chrome ir pieejams vairāk funkciju.</translation>
 <translation id="8991530961471831170">Atvērt Gemini pārlūkā Chrome</translation>
 <translation id="8992769679401294069">Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai izmantotu un saglabātu Chrome datus savā Google kontā.</translation>
 <translation id="8999117580775242387">Ja HTTPS nav pieejams, pārlūkā Chrome bez brīdinājuma tiks izmantots nedrošs savienojums.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ir pieejams Chrome atjauninājums}=1{Ir pieejams Chrome atjauninājums}zero{Chrome atjauninājums ir pieejams jau # dienu}one{Chrome atjauninājums ir pieejams jau # dienu}other{Chrome atjauninājums ir pieejams jau # dienas}}</translation>
+<translation id="9010418943148193727">Jūsu noklusējuma meklētājprogramma tika mainīta ārpus pārlūka Chrome. Lai jūs aizsargātu, tā tika atiestatīta Chrome.</translation>
 <translation id="9014771989710951291">Pārlūku Chrome pārvalda vairākas organizācijas</translation>
 <translation id="9024318700713112071">Iestatīt Chrome kā noklusējuma pārlūku</translation>
 <translation id="9066987883552592250">Aizvērt Gemini pārlūkā Chrome Canary</translation>

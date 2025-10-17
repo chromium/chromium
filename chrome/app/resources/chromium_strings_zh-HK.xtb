@@ -207,6 +207,7 @@
 <translation id="3296368748942286671">在 Chromium 關閉時繼續執行背景應用程式</translation>
 <translation id="3313189106987092621">Chromium 會在使用不安全的連線載入任何網站前顯示警告</translation>
 <translation id="3316771292331273802">關閉所有 Chromium 視窗後，系統會將你登出所有網站，但如果你已登入 Chromium，Google 帳戶就會維持登入狀態。如要允許網站記住你的資料，請<ph name="SETTINGS_LINK" />。</translation>
+<translation id="3322413454779348750">你的預設搜尋引擎在 Chromium 以外被更改，Chromium 已重設有關設定以保障你的安全。</translation>
 <translation id="3352986031709923790">搜尋區域嘅右上角：距右側 <ph name="RIGHT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
 <translation id="3369405342922656244">使用「圖片搜尋」搜尋此頁面</translation>
@@ -399,6 +400,7 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5949225980829865667">如要在所有裝置上使用此書籤和其他資料，請登入 Chromium</translation>
 <translation id="5953657885167112863">自訂 Chromium 體驗</translation>
+<translation id="5960071705175224773">不明應用程式變更了你的設定</translation>
 <translation id="5968400720580217226">AI 模式</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{根據機構規定，Chromium 會在閒置 1 分鐘後自動關閉。}other{根據機構規定，Chromium 會在閒置 # 分鐘後自動關閉。}}</translation>
 <translation id="5987687638152509985">更新 Chromium 即可開始同步</translation>

@@ -249,7 +249,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1162479191445552288">Abrir ao iniciar</translation>
 <translation id="1163931534039071049">&amp;Ver orixe do marco</translation>
 <translation id="1164015913575846413">alt + clic</translation>
-<translation id="1164286072721995435">Compartirase con Gemini a pestana na que esteas cada vez que inicies unha nova conversa. Podes pór en pausa este uso compartido cando queiras. Os teus datos non se usarán para mellorar os modelos de IA xenerativa.</translation>
 <translation id="1164891049599601209">O contrasinal utilizouse nun sitio enganoso</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1166212789817575481">Pechar as pestanas situadas á dereita</translation>
@@ -538,7 +537,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1353980523955420967">Non se puido atopar o PPD. Asegúrate de que o dispositivo Chromebook estea en liña e téntao de novo.</translation>
 <translation id="1354045473509304750">Seguir permitindo que <ph name="HOST" /> use e mova a túa cámara</translation>
 <translation id="1354148503392558902">Cambiando contrasinal...</translation>
-<translation id="1354943694624358993">Compartir sempre pestana actual</translation>
 <translation id="1355088139103479645">Queres eliminar todos os datos?</translation>
 <translation id="1355088659320425659">Historial e pestanas</translation>
 <translation id="1356376170199999104">Permiso concedido: <ph name="PERMISSION_DETAILS" />. Usa o interruptor físico para activar o micrófono.</translation>
@@ -2362,7 +2360,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2605668923777146443">Accede a <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" /> se queres ver as opcións dispoñibles para Better Together.</translation>
 <translation id="2606246518223360146">Ligar datos</translation>
 <translation id="2606454609872547359">Non, continuar sen ChromeVox</translation>
-<translation id="2606568927909309675">Crea subtítulos automaticamente para o contido de audio e de vídeo que estea en inglés. O audio e os subtítulos nunca saen do dispositivo.</translation>
 <translation id="2606890864830643943">Exportando datos de diagnóstico</translation>
 <translation id="2607101320794533334">Información de clave pública de entidade</translation>
 <translation id="2609533306502181883">Busca un tema</translation>
@@ -2414,6 +2411,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2636266464805306348">Títulos das ventás</translation>
 <translation id="2637313651144986786">Busca nas pestanas…</translation>
 <translation id="2637400434494156704">O PIN é incorrecto. Quédache un intento.</translation>
+<translation id="263796568413910992">Pregúntalle a <ph name="SEARCH_ENGINE_NAME" /> ou escribe un URL</translation>
 <translation id="2638662041295312666">Imaxe de inicio de sesión</translation>
 <translation id="2640299212685523844">Usar GTK</translation>
 <translation id="264083724974021997">Conectarse ao teléfono: cadro de diálogo</translation>
@@ -5770,7 +5768,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4956593309300508411">Queres deixar de compartir o grupo?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Queres gardar este marcador nun cartafol só neste dispositivo?</translation>
-<translation id="4958916254663453555">A pestana na que esteas compartirase automaticamente cando abras Gemini en Chrome. Todo o contido e o URL da pestana actual enviaranse a Google.</translation>
 <translation id="4959262764292427323">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo</translation>
 <translation id="4960020053211143927">Algunhas aplicacións non admiten esta opción</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />, <ph name="PROFILE_NAME" /></translation>
@@ -5882,7 +5879,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5045367873597907704">Acerca dos dispositivos de interface humana</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="504561833207953641">Abrindo nunha sesión xa aberta do navegador.</translation>
-<translation id="5047544190872578914">Compartirase con Gemini a pestana na que esteas cada vez que inicies unha nova conversa. Podes pór en pausa este uso compartido cando queiras.</translation>
 <translation id="504953514574706691">Pestanas excluídas do grupo suxerido</translation>
 <translation id="5050330054928994520">Texto a voz</translation>
 <translation id="5051461727068120271">Descargar ficheiro sen verificar</translation>
@@ -6402,6 +6398,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5414836363063783498">Verificando...</translation>
 <translation id="5415328625985164836">Este é un programa beta. Xa podes usar Steam para xogar no Chromebook.</translation>
 <translation id="5415497281076257439">Expresión</translation>
+<translation id="5415871492522952905">Terás o teu historial e as pestanas en todos os teus dispositivos para que poidas seguir co que estabas facendo</translation>
 <translation id="5417293056300086453">Este sitio pode usar identificadores para reproducir contido protexido.</translation>
 <translation id="5417312524372586921">Temas do navegador</translation>
 <translation id="541737483547792035">Ampliar pantalla</translation>
@@ -6612,6 +6609,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5555760010546505198">Configuración de pantalla, lupa, corrección da cor e inversión da cor</translation>
 <translation id="555604722231274592">Activar <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Volver cargar</translation>
+<translation id="555671485580955310">Sincronizar historial e pestanas</translation>
 <translation id="5558129378926964177">Achegar</translation>
 <translation id="5558594314398017686">Sistema operativo predeterminado (cando estea dispoñible)</translation>
 <translation id="5559311991468302423">Eliminar o enderezo</translation>
@@ -10573,6 +10571,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8310409247509201074"><ph name="NUM" /> pestanas</translation>
 <translation id="831207808878314375">Definición</translation>
 <translation id="8312841338723044391">DIRECTO</translation>
+<translation id="8313308349366087671">Opcións da aplicación</translation>
 <translation id="8314089908545021657">Vincular cun novo teléfono</translation>
 <translation id="8314381333424235892">Falta a extensión ou non se instalou</translation>
 <translation id="831440797644402910">Non se pode abrir este cartafol</translation>
@@ -10733,7 +10732,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8419098111404128271">Resultados da busca para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8419144699778179708">Elimina o historial, tamén o da caixa de busca</translation>
 <translation id="8420308167132684745">Editar entradas do dicionario</translation>
-<translation id="8421361468937925547">Subtítulos instantáneos (só en inglés)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Falta a bandexa</translation>
 <translation id="8424250197845498070">Bloqueado por Protección avanzada</translation>
@@ -11030,6 +11028,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8637688295594795546">Actualización do sistema dispoñible. Preparando para descargar...</translation>
 <translation id="8638719155236856752">Estado da rede de ChromeOS</translation>
 <translation id="8639635302972078117">Enviar datos de uso e diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa Conta de Google</translation>
+<translation id="8639963783467694461">Configuración de completado automático</translation>
 <translation id="8640575194957831802">Última apertura</translation>
 <translation id="8641946446576357115">Usa os teus contrasinais nos dispositivos iOS</translation>
 <translation id="8642577642520207435">Permiso de acceso á cámara para <ph name="APP_NAME" /></translation>

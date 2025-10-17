@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{查看 0 条评价}=1{查看 1 条评价}other{查看全部 # 条评价}}</translation>
 <translation id="1458059624921545588">人与社会</translation>
 <translation id="1458140305240870199">内衣</translation>
+<translation id="1458770162980644530">“先买后付”服务条款界面。键盘已隐藏。</translation>
 <translation id="1459693405370120464">天气</translation>
 <translation id="1461041542809785877">性能</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2918,6 +2919,7 @@
 <translation id="5817918615728894473">配对</translation>
 <translation id="5826507051599432481">公用名 (CN)</translation>
 <translation id="5830698870816298009">使用和移动摄像头</translation>
+<translation id="5831217499016131155">Google 电子钱包</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5832976493438355584">已锁定</translation>
 <translation id="5837220895135257862">请先释放 <ph name="CLOUD_PROVIDER" /> 中的空间，然后重试</translation>
@@ -3641,6 +3643,7 @@
 <translation id="6997288673234694149">棒球和垒球装备</translation>
 <translation id="6998512609912910179">更快捷地填写表单</translation>
 <translation id="6999480632062519056">健身指导与私人训练</translation>
+<translation id="7002897669829306463">住址：<ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">地垫与地毯</translation>
 <translation id="7003322000677139268">车辆零配件</translation>
 <translation id="7004499039102548441">最近打开的标签页</translation>
@@ -4207,6 +4210,8 @@
 <translation id="7916162853251942238">柔印底基</translation>
 <translation id="791698251820376781">您所在的组织不允许您登录</translation>
 <translation id="7926503317156566022">航空业</translation>
+<translation id="7930282586031445870">“先买后付”服务条款界面已关闭。</translation>
+<translation id="7932035970207573919">工作地址：<ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">更新地址？</translation>
 <translation id="7932579305932748336">涂层</translation>
 <translation id="79338296614623784">请输入有效的电话号码</translation>
@@ -4620,6 +4625,7 @@
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您在此设备上使用 Chrome 访问某个网站时进行的活动。</translation>
 <translation id="8601456038554914806">水上运动装备</translation>
 <translation id="8601782593888534566">科幻与奇幻内容</translation>
+<translation id="8604103095921958091">“先买后付”服务条款界面已以最大高度显示。</translation>
 <translation id="8606988009912891950">广告主题有助于网站向您展示相关广告，同时保护您的浏览记录和身份信息。Chrome 会根据您近期的浏览活动来记录您感兴趣的主题。之后，您访问的网站可请求 Chrome 提供相关主题，以便向您展示个性化广告。</translation>
 <translation id="8612919051706159390">在线社区</translation>
 <translation id="8617269623452051934">您的设备使用情况</translation>
@@ -4860,6 +4866,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> 想要查找并连接到本地网络中的任何设备</translation>
 <translation id="9046864189129893978">麦克风（<ph name="MICS_COUNT" /> 个）</translation>
+<translation id="9046865906192819796">“先买后付”服务条款界面已以一半高度显示。</translation>
 <translation id="9047528041803621289">默认搜索引擎用于搜索网络中的信息，您可以在设置中更改选项。</translation>
 <translation id="9048035366624198823">以下操作需要将 <ph name="POLICY_NAME" /> 政策设置为 <ph name="POLICY_VALUE" />：<ph name="ACTION_LIST" />。</translation>
 <translation id="9048662076076074925">24 x 36 英寸</translation>

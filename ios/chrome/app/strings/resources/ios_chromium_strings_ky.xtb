@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">Chromium'ду ар дайым мобилдик түзмөктө ачуу керек болот.</translation>
 <translation id="1115463765356382667">Chromium'дун бардык мүмкүнчүлүктөрүн пайдалануу үчүн төмөндө сунушталган аракеттерди аткарыңыз.</translation>
 <translation id="1185134272377778587">Chromium жөнүндө</translation>
+<translation id="1211450393895337634">iPad'дан Интернетке киргиңиз келгенде Chromium тезирээк ачылат.</translation>
 <translation id="1229234641991056119">Safari'деги сырсөздөрүңүздү, таржымалыңызды, кыстармаларыңызды жана насыя карталарыңызды Chromium'да колдонуңуз</translation>
 <translation id="1257458525759135959">Сүрөттөрдү сактоо үчүн, Параметрлерди таптап, Chromium'га сүрөттөрүңүздү кошууга уруксат бериңиз.</translation>
 <translation id="1260702988262336471">Chromium менюсун ачуу</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">Сиз үчүн жасалган жеке түрмөк. Жаңылыктар, спорт жана аба ырайы камтылат.</translation>
 <translation id="1561849081734670621">Chromium'да бекем кулпулоо режимин iPhone түзмөгүңүздө өчүрүңүз.</translation>
 <translation id="1569258826720962327">iOS түзмөктөрүндө Chromium аракеттерин колдонуңуз</translation>
+<translation id="1573441572176948907">Chromium'ду док бекетке жылдырыңыз</translation>
 <translation id="159029779861043703">Chromium Face ID'нин жардамы менен купуя маалыматтарыңызды коопсуз сактайт.</translation>
 <translation id="1591119736686995611">Chromium'дагы өтмөк торчосу ачылат.</translation>
 <translation id="16001233025397167">Коопсуздукту текшерүү функциясы маалыматтарды коопсуз сактап, кооптуу вебсайттардан жана башкалардан коргойт. Chromium купуялык же коопсуздукка байланыштуу көйгөйлөрдү аныктаганда, эскертүүлөрдү алыңыз.</translation>
@@ -66,6 +68,7 @@
 <translation id="2340423701577464731">Окуу тизмесиндеги нерсени Chromium'га кошуу</translation>
 <translation id="2374627437126809292">Chromium багыттарды көрсөтүү жана табылган даректер боюнча пайдалуу маалыматты берүү үчүн Google Карталарды колдонот.</translation>
 <translation id="2386292341327187942">Издөө виджетинде Chromium деп жазыңыз</translation>
+<translation id="2389827884654658221">Chromium'га iPad түзмөгүңүздүн башкы экранынан ылдамыраак кирүү</translation>
 <translation id="2426113998523353159">Уюмуңуз Chromium'ду колдонуу үчүн аккаунтуңузга кирүүнү талап кылат.</translation>
 <translation id="2450140762465183767">Эми билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду Chromium’да ача аласыз.</translation>
 <translation id="2459183986985456602">Chromium'да акыркы өтмөгүмдү ачуу.</translation>
@@ -74,11 +77,15 @@
 <translation id="2485774047568879945">Шилтемелерди оңой бөлүшүп жана ачуу үчүн Chromium'ду демейки серепчиңиз катары көрсөтүңүз</translation>
 <translation id="2512597191798760956">Chromium сүрөтчөсүн коё бербей басып туруп, "Башкы экранды түзөтүүнү" чыкылдатыңыз</translation>
 <translation id="2517624234762908348">Chromium дайындарын шайкештирүү</translation>
+<translation id="2575968074225731646">Chromium'га iPhone'дун док бекетинен тез өтүңүз.</translation>
 <translation id="2592940277904433508">Chromium'ду колдоно берүү</translation>
 <translation id="2607609479243848905">Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chromium маалыматын өчүрүңүз<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">Chromium кеңеши: Google Lens аркылуу көрүп турган нерсеңизди издеңиз</translation>
 <translation id="2650312721222849884">Chromium колдонулган түзмөктөрдүн баарындагы өтмөктөрүңүздү көрүү үчүн шайкештирүүнү күйгүзүңүз</translation>
 <translation id="2684230048001240293">Өтмөктөрдү, сырсөздөрдү жана төлөм тууралуу маалыматты демейки жөндөө катары Chromium'да шайкештириңиз</translation>
+<translation id="2729836253097154631">Керектүү нерселериңизди алуу үчүн Chromium'га кириңиз</translation>
 <translation id="2730884209570016437">Chromium камераңызды иштете албайт, себеби аны башка колдонмо пайдаланып жатат</translation>
+<translation id="2742952311155593352">Chromium'ду жөндөп бүтөйүн деп калдыңыз!</translation>
 <translation id="2798503587425057129">Chromium'дагы окуу тизмесинде ачылат.</translation>
 <translation id="28276745681323897"><ph name="BEGIN_LINK" />Chromium'дагы кайсы маалымат<ph name="END_LINK" /> Google аккаунтуңузга сактала турганын тескей аласыз.
 
@@ -98,6 +105,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат. Бул таржымалды жана автотолтурууну камтышы мүмкүн.}other{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат. Бул таржымалды жана автотолтурууну камтышы мүмкүн.}}</translation>
 <translation id="3410395242749598859">Chromium'дагы айрым маалыматыңыз <ph name="EMAIL" /> аккаунтуңузга сактала элек.
 Башка аккаунтка которулуудан мурда бир нече мүнөт күтө туруңуз. Эгер азыр которулсаңыз, бул маалымат өчүрүлөт.</translation>
+<translation id="3420586870838853527">Chromium кеңеши: Өркүндөтүлгөн коопсуз серептөө көйгөйлөрдөн качууга жардам берет</translation>
 <translation id="3440830787838130530">Сырсөздөрдү башкаргычта үй-бүлөлүк тобуңуз менен сырсөздүн көчүрмөсүн оңой жана коопсуз бөлүшүңүз</translation>
 <translation id="3472200483164753384">Chromium Canary'де колдоого алынбайт</translation>
 <translation id="347967311580159871">Chromium'дун ишин жакшыртуу үчүн маалыматтарды колдоно турган кошумча параметрлерди <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнөн көрө аласыз.</translation>
@@ -173,6 +181,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="5131565040785979529">Кирип турган аккаунтуңузду жана Chromium'дун колдонулушун уюмуңуз жана <ph name="DOMAIN" /> тескейт.</translation>
 <translation id="5134464247000681876">Chromium'да Gmail, Карталар, YouTube жана башка колдонмолордогу шилтемелерди ачыңыз</translation>
 <translation id="5203244847421322551">Chromium'да сырсөздөрдү сактоо жана автотолтуруу</translation>
+<translation id="5218806323985098884">Chromium'дагы жаңылыктарды карап көрүңүз</translation>
 <translation id="5224391634244552924">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Chromium аларды текшере алат.</translation>
 <translation id="5259423875997548710">Chromium'да визуалдык графикаларды издөө.</translation>
 <translation id="5284913972719948193">Chromium'да сырсөздөрдү, таржымалды, кыстармаларды жана насыя карталарын колдонуу үчүн маалыматыңызды өткөрүп алыңыз</translation>
@@ -194,6 +203,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="5521125884468363740">Chromium колдонулган түзмөктөрдүн баарындагы өтмөктөрүңүздү көрүү үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз</translation>
 <translation id="5534584691915394889">Бул Chromium жана Google Lens кызматындагы Apple Жылнаамасында иш-чараларды түзүү үчүн колдонулат.</translation>
 <translation id="5571094606370987472">Chromium'дагы акыркы өтмөктөр ачылат.</translation>
+<translation id="5596644122344097310">iPhone'до Chromium'дун бардык мүмкүнчүлүктөрүн колдонуу үчүн бул жерди басыңыз.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Chromium'ду күйгүзүңүз</translation>
 <translation id="5664395081284292058">Chromium'да акыркы өтмөгүмдү ачуу</translation>
@@ -235,11 +245,15 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="6424492062988593837">Chromium жаңы эле жакшыртылды! Эми жаңы нускасы бар.</translation>
 <translation id="6433172051771630690">Chromium'дун бардык мүмкүнчүлүктөрүн колдонуу боюнча кеңештер.</translation>
 <translation id="65045991564554105">Chromium'дагы кыстармаларды көрүү</translation>
+<translation id="6519797228806907665">Chromium'га iPhone'дун башкы экранынан ылдамыраак кирүү.</translation>
 <translation id="6538713818758208754">Төлөм ыкмаларынын параметрлерин Chromium'да ачат.</translation>
 <translation id="6540186279384079894">Chromium'да жаңы өтмөктү ачуу</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium маалыматыңызды кантип купуя сактаары тууралуу<ph name="END_LINK" /> көбүрөөк билип алыңыз</translation>
+<translation id="6564769014061914792">iPad түзмөгүңүздөгү Chromium'дун бардык мүмкүнчүлүктөрүн колдонуу үчүн бул жерди басыңыз.</translation>
+<translation id="6566303693324540692">Chromium кеңеши: Chromium'ду башкы экранга жылдырыңыз</translation>
 <translation id="6574750762636192517">Chromium'да сырсөздөрдү тескөө</translation>
 <translation id="6590232959690355435">Chromium таржымалынын бетин ачат.</translation>
+<translation id="6649269674808477353">iPhone'дон Интернетке киргиңиз келгенде Chromium тезирээк ачылат.</translation>
 <translation id="6674470628873622334">Chromium'да жаңы жашыруун өтмөктү ачат.</translation>
 <translation id="6680609900732453726">Chromium'ду жапканда түзмөктүн аныктыгын текшерүү аркылуу серептөөңүздү купуя сактаңыз</translation>
 <translation id="6752854822223394465">Уюмуңуз Chromium'ду жөндөп жатат...</translation>
@@ -289,6 +303,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="7934404985878918282">Chromium'дагы окуу тизмесин көрүү</translation>
 <translation id="7935734571048689933">Chromium башкарылат</translation>
 <translation id="7951793218148208717">Chromium'да жаңы өтмөк ачылат.</translation>
+<translation id="7957726318578167662">Эми билдирүүлөрдөгү шилтемелерди же башка колдонмолорду Chromium'да оңой ача аласыз.</translation>
 <translation id="7980860476903281594">Chromium кайда жүргөнүңүздү сиз уруксат берген сайттар менен бөлүшөт.</translation>
 <translation id="7994322153108931467">Chromium'дан пайдалуу кеңештерди алуу үчүн iOS параметрлеринде билдирмелерди күйгүзүңүз.</translation>
 <translation id="7997159823054171568">Chromium'ду демейки серепчи катары коюу</translation>
@@ -324,6 +339,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="8860548555286245440">URL даректерин Chromium'да Жашыруун режимде ачыңыз</translation>
 <translation id="8880024619507699923">Уюмуңуз Chromium'ду колдонуу үчүн аккаунтуңузга кирүүнү талап кылат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Chromium'дун эң күчтүү коопсуздук тутумун орнотуп алыңыз</translation>
+<translation id="8908791447256515663">Chromium'га iPad'дын док бекетинен тез өтүңүз.</translation>
 <translation id="8925569192291721236">Бааларга көз салып, Chromium кеңештерин алып туруңуз.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}other{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}}</translation>
 <translation id="8963279154877372067">Баалардын түшкөнүн билип туруу үчүн Chromium билдирмелерине уруксат бериңиз</translation>

@@ -190,6 +190,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3047590466164881923">Dialoogvenster voor feedback sluiten</translation>
 <translation id="306179102415443347">Gebruik je snelkoppeling om snel naar Google Wachtwoordmanager te gaan. Je kunt je snelkoppeling verplaatsen naar het startscherm of de App Launcher van je computer.</translation>
 <translation id="3065168410429928842">Chrome-tabblad</translation>
+<translation id="3073571714401714450">Gemini in Chrome Dev aan-/uitzetten</translation>
 <translation id="3080151273017101988">Achtergrondapps blijven uitvoeren wanneer Google Chrome is gesloten</translation>
 <translation id="308397506772922478">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Je Chrome-profiel een naam geven</translation>
@@ -378,6 +379,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chrome start of vanuit de omnibox zoekt.</translation>
 <translation id="5394833366792865639">Een Chrome-tabblad delen</translation>
+<translation id="5402307365844630024">Gemini in Chrome Bèta aan-/uitzetten</translation>
 <translation id="5430073640787465221">Je bestand met voorkeuren is beschadigd of ongeldig. Google Chrome kan je instellingen niet herstellen.</translation>
 <translation id="5468572406162360320">Chrome stuurt je interacties met deze functies naar Google om de functies te verbeteren. Deze gegevens kunnen worden gelezen, verwerkt en geannoteerd door reviewers.</translation>
 <translation id="5510398294750420479">Download Chrome op je telefoon voor een extra beveiligingslaag als je onderweg bent</translation>
@@ -427,6 +429,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="5941711191222866238">Minimaliseren</translation>
 <translation id="5941830788786076944">Google Chrome instellen als mijn standaardbrowser</translation>
 <translation id="5947104538377036631">Chrome-snelkoppeling</translation>
+<translation id="5960071705175224773">Je instellingen zijn gewijzigd door een onbekende app</translation>
 <translation id="5968400720580217226">AI-modus</translation>
 <translation id="5980111191913430208">Extensies, apps en thema's van onbekende bronnen kunnen schadelijk zijn voor je apparaat. Chrome raadt je aan ze alleen te installeren vanuit de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Downloaden... Nog <ph name="HOURS" /> uur</translation>
@@ -650,6 +653,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8362914115861174987">Vertalen naar het</translation>
 <translation id="8366770919198174997">Vermindert de prestaties maar maakt Chrome beter bestand tegen aanvallen</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
+<translation id="8377158135256176353">Gemini in Chrome Canary aan-/uitzetten</translation>
 <translation id="8387459386171870978">Chrome blijven gebruiken</translation>
 <translation id="8394720698884623075">Checkt URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome</translation>
 <translation id="8403038600646341038">Chrome-logo in een computerscherm.</translation>
@@ -698,12 +702,14 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8914504000324227558">Chrome opnieuw starten</translation>
 <translation id="8922193594870374009">Als je een nummer vanaf <ph name="ORIGIN" /> naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>
 <translation id="8922998289262614701">De gegevens van deze app verwijderen uit Chrome</translation>
+<translation id="8936233353620149764">Gemini in Chrome aan-/uitzetten</translation>
 <translation id="8948460679427074738">Deze extensie heeft geen privacyprocedures gepubliceerd, zoals de manier waarop gegevens worden verzameld en gebruikt. Chrome raadt je aan deze te verwijderen.</translation>
 <translation id="8958307504142971576">Er zijn nu meer functies beschikbaar voor je in Chrome</translation>
 <translation id="8991530961471831170">Gemini in Chrome openen</translation>
 <translation id="8992769679401294069">Je gegevens zijn versleuteld met je wachtwoordzin. Voer deze in om Chrome-gegevens te gebruiken en op te slaan in je Google-account.</translation>
 <translation id="8999117580775242387">Als HTTPS niet beschikbaar is, gebruikt Chrome een niet-beveiligde verbinding zonder je te waarschuwen</translation>
 <translation id="8999208279178790196">{0,plural, =0{Er is een Chrome-update beschikbaar}=1{Er is een Chrome-update beschikbaar}other{Er is al # dagen een Chrome-update beschikbaar}}</translation>
+<translation id="9010418943148193727">Je standaard zoekmachine is gewijzigd buiten Chrome om. Chrome heeft deze gereset om je te beschermen.</translation>
 <translation id="9014771989710951291">Meerdere organisaties beheren Chrome</translation>
 <translation id="9024318700713112071">Chrome instellen als je standaardbrowser</translation>
 <translation id="9066987883552592250">Gemini in Chrome Canary sluiten</translation>

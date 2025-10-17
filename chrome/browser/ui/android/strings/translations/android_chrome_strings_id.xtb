@@ -109,7 +109,6 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="1419753403124156396">Mulai ulang Chrome?</translation>
 <translation id="1428770807407000502">Nonaktifkan sinkronisasi?</translation>
 <translation id="1430915738399379752">Cetak</translation>
-<translation id="1433478348197382180">Mode Baca</translation>
 <translation id="1435593198351412143">Buka PDF secara otomatis</translation>
 <translation id="1437543266176261764">Berjalan di <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Atur produk yang dipantau di Bookmark</translation>
@@ -370,7 +369,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2718352093833049315">Hanya melalui Wi-Fi</translation>
 <translation id="2718846868787000099">Untuk menampilkan konten dalam bahasa pilihan Anda, situs yang dikunjungi dapat melihat preferensi Anda</translation>
 <translation id="2723001399770238859">audio</translation>
-<translation id="2734335652257251631">Tampilkan Mode Baca</translation>
 <translation id="2739887572830526131">Simpan grup ini untuk menambahkan tab nanti, atau hapus grup jika Anda tidak lagi memerlukannya.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> tidak tersedia untuk saat ini.</translation>
 <translation id="2760805590727089264">BB/TT</translation>
@@ -1139,6 +1137,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6232535412751077445">Jika “Jangan Lacak” diaktifkan, permintaan akan disertakan bersama traffic penjelajahan Anda. Dampaknya tergantung pada apakah situs web menanggapi permintaan itu, dan bagaimana permintaan itu diinterpretasikan.
 
 Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangkan iklan yang tidak berdasarkan pada data kunjungan Anda ke situs web lainnya. Banyak situs web masih akan mengumpulkan dan menggunakan data penjelajahan Anda — misalnya, untuk meningkatkan keamanan, menyediakan konten, iklan, dan saran, serta untuk membuat statistik pelaporan.</translation>
+<translation id="623755660902014047">Mode baca</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
 <translation id="6248988683584659830">Telusuri setelan</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, Tab Samaran Tersemat yang Dipilih Beberapa Kali</translation>
@@ -1397,7 +1396,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7221869452894271364">Muat ulang halaman ini</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download tertunda}other{# download tertunda}}</translation>
 <translation id="7230064152164845085">Beralih ke mode Samaran</translation>
-<translation id="7230836263524391273">Sembunyikan Mode Baca</translation>
 <translation id="7237724030342645845">Pengelola Sandi Google berhenti berfungsi</translation>
 <translation id="72415438529550637">Saran sandi ditutup.</translation>
 <translation id="7248671827512403053">Aplikasi</translation>
@@ -1732,7 +1730,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="867914734596684889">Tampilkan atau sembunyikan kolom Bookmark</translation>
 <translation id="8683039184091909753">gambar</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Tab yang Dipilih</translation>
-<translation id="8693232767599693749">Lihat Mode Baca?</translation>
 <translation id="8697753151306746444">Bagikan jendela atau layar</translation>
 <translation id="8699120352855309748">Jangan tawarkan penerjemahan bahasa ini</translation>
 <translation id="8712637175834984815">Mengerti</translation>

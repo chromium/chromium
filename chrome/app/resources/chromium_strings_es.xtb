@@ -208,6 +208,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3296368748942286671">Seguir ejecutando aplicaciones en segundo plano al cerrar Chromium</translation>
 <translation id="3313189106987092621">Chromium te avisará antes de cargar un sitio usando una conexión no segura</translation>
 <translation id="3316771292331273802">Cuando cierres todas las ventanas de Chromium, se cerrará tu sesión en la mayoría de los sitios, salvo la de tu cuenta de Google si has iniciado sesión en Chromium. Para permitir que los sitios te recuerden, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Tu buscador predeterminado se ha cambiado desde fuera de Chromium. Para protegerte, Chromium lo ha restablecido.</translation>
 <translation id="3352986031709923790">esquina superior derecha del área de búsqueda: un <ph name="RIGHT" /> % a la derecha y un <ph name="TOP" /> % arriba</translation>
 <translation id="3366305173356742781">Datos de Chromium en tu cuenta</translation>
 <translation id="3369405342922656244">Busca en esta página con la búsqueda por imágenes</translation>
@@ -400,6 +401,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5949225980829865667">Para obtener este marcador y más en todos tus dispositivos, inicia sesión en Chromium</translation>
 <translation id="5953657885167112863">Personaliza Chromium a tu gusto</translation>
+<translation id="5960071705175224773">Una aplicación desconocida ha cambiado tu configuración</translation>
 <translation id="5968400720580217226">Modo IA</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Tu organización cerrará Chromium automáticamente cuando lleve 1 minuto sin usarse.}other{Tu organización cerrará Chromium automáticamente cuando lleve # minutos sin usarse.}}</translation>
 <translation id="5987687638152509985">Actualiza Chromium para iniciar la sincronización</translation>

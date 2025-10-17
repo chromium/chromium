@@ -109,7 +109,6 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1419753403124156396">Të riniset Chrome?</translation>
 <translation id="1428770807407000502">Të çaktivizohet sinkronizimi?</translation>
 <translation id="1430915738399379752">Printo</translation>
-<translation id="1433478348197382180">Modaliteti i leximit</translation>
 <translation id="1435593198351412143">Hap automatikisht skedarët PDF</translation>
 <translation id="1437543266176261764">Po ekzekutohet në <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizo produktet e tua të monitoruara te "Faqeshënuesit"</translation>
@@ -370,7 +369,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
 <translation id="2718846868787000099">Për të shfaqur përmbajtje në gjuhët e tua të preferuara, sajtet që viziton mund të shikojnë preferencat e tua</translation>
 <translation id="2723001399770238859">audio</translation>
-<translation id="2734335652257251631">Shfaq "Modalitetin e leximit"</translation>
 <translation id="2739887572830526131">Mbaje këtë grup për të shtuar skeda më vonë ose fshije atë nëse nuk të nevojitet më.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nuk ofrohet për momentin.</translation>
 <translation id="2760805590727089264">MM / VV</translation>
@@ -1139,6 +1137,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="6232535412751077445">Aktivizimi i veçorisë "Mos gjurmo" do të thotë se në trafikun e shfletimit do të përfshihet një kërkesë. Çdo efekt varet nëse një uebsajt i përgjigjet kërkesës dhe se si interpretohet kërkesa.
 
 Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të treguar reklama që nuk bazohen në uebsajtet e tjera që ke vizituar. Shumë uebsajte do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, reklama dhe rekomandime, si dhe për të krijuar statistika raportimi.</translation>
+<translation id="623755660902014047">Modaliteti i leximit</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6248988683584659830">Cilësimet e kërkimit</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, skeda "e fshehtë" e gozhduar e zgjedhur me shumë të tjera</translation>
@@ -1397,7 +1396,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7221869452894271364">Ringarkoje këtë faqe</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 shkarkim në pritje}other{# shkarkime në pritje}}</translation>
 <translation id="7230064152164845085">Kalo te modaliteti "I fshehtë"</translation>
-<translation id="7230836263524391273">Fshih "Modalitetin e leximit"</translation>
 <translation id="7237724030342645845">"Menaxheri i fjalëkalimeve i Google" ndaloi së funksionuari</translation>
 <translation id="72415438529550637">Sugjerimi i fjalëkalimit u mbyll.</translation>
 <translation id="7248671827512403053">Aplikacion</translation>
@@ -1732,7 +1730,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="867914734596684889">Shfaq ose fshih shiritin e faqeshënuesve</translation>
 <translation id="8683039184091909753">imazhi</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, skeda e zgjedhur</translation>
-<translation id="8693232767599693749">Dëshiron të shikosh "Modalitetin e leximit"?</translation>
 <translation id="8697753151306746444">Ndaj dritaren ose ekranin më mirë</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
 <translation id="8712637175834984815">E kuptova</translation>

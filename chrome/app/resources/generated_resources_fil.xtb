@@ -249,7 +249,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1162479191445552288">Ilunsad sa startup</translation>
 <translation id="1163931534039071049">&amp;View frame source</translation>
 <translation id="1164015913575846413">alt + pag-click</translation>
-<translation id="1164286072721995435">Shine-share ang kasalukuyang tab sa Gemini sa tuwing magsisimula ka ng bagong pag-uusap. Puwede mong i-pause ang pag-share ng iyong kasalukuyang tab anumang oras. Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model.</translation>
 <translation id="1164891049599601209">Inilagay sa mapanlinlang na site</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Isara ang Mga Tab na nasa Kanan</translation>
@@ -539,7 +538,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1353980523955420967">Hindi makita ang PPD. Tiyaking online ang iyong Chromebook at subukan ulit.</translation>
 <translation id="1354045473509304750">Patuloy na payagan ang <ph name="HOST" /> na gamitin at galawin ang iyong camera</translation>
 <translation id="1354148503392558902">Pinapalitan ang password...</translation>
-<translation id="1354943694624358993">Palaging i-share ang kasalukuyang tab</translation>
 <translation id="1355088139103479645">I-delete ang lahat ng data?</translation>
 <translation id="1355088659320425659">History at mga tab</translation>
 <translation id="1356376170199999104">Pinapayagan – <ph name="PERMISSION_DETAILS" />. I-on ang mikropono gamit ang pisikal na switch.</translation>
@@ -2377,7 +2375,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2605668923777146443">Pumunta sa <ph name="LINK_BEGIN" />Mga Setting<ph name="LINK_END" /> para makita ang iyong mga opsyon para sa Better Together.</translation>
 <translation id="2606246518223360146">I-link ang Data</translation>
 <translation id="2606454609872547359">Hindi, magpatuloy nang walang ChromeVox</translation>
-<translation id="2606568927909309675">Awtomatikong gumagawa ng mga caption para sa English na audio at video. Hindi kailanman lumalabas sa iyong device ang audio at mga caption.</translation>
 <translation id="2606890864830643943">Ine-export ang diagnostic na data</translation>
 <translation id="2607101320794533334">Impormasyon ng Pampublikong Key ng Paksa</translation>
 <translation id="2609533306502181883">Magsaliksik tungkol sa isang paksa</translation>
@@ -2429,6 +2426,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2636266464805306348">Mga Pamagat ng Window</translation>
 <translation id="2637313651144986786">Maghanap sa Mga Tab...</translation>
 <translation id="2637400434494156704">Maling PIN. May isa kang pagtatangkang natitira.</translation>
+<translation id="263796568413910992">Magtanong sa <ph name="SEARCH_ENGINE_NAME" /> o mag-type ng URL</translation>
 <translation id="2638662041295312666">Larawan sa pag-sign in</translation>
 <translation id="2640299212685523844">Gamitin ang GTK</translation>
 <translation id="264083724974021997">Kumonekta sa iyong telepono - Dialog</translation>
@@ -5782,7 +5780,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4956593309300508411">Ihinto ang Pag-share?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">I-save lang sa folder sa device na ito?</translation>
-<translation id="4958916254663453555">Awtomatikong ishe-share ang iyong kasalukuyang tab kapag binuksan mo ang Gemini sa Chrome. Ipinapadala sa Google ang buong content at URL ng kasalukuyang tab.</translation>
 <translation id="4959262764292427323">Sine-save ang mga password sa iyong Google Account para magamit mo ang mga ito sa anumang device</translation>
 <translation id="4960020053211143927">Hindi sinusuportahan ng ilang app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5894,7 +5891,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5045367873597907704">Tungkol sa mga HID device</translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
 <translation id="504561833207953641">Binubuksan sa kasalukuyang session ng browser.</translation>
-<translation id="5047544190872578914">Shine-share ang kasalukuyang tab sa Gemini sa tuwing magsisimula ka ng bagong pag-uusap. Puwede mong i-pause ang pag-share ng iyong kasalukuyang tab anumang oras.</translation>
 <translation id="504953514574706691">Ibinukod ang tab mula sa iminumungkahing grupo</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">I-download ang hindi na-verify na file</translation>
@@ -6414,6 +6410,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5414836363063783498">Vine-verify…</translation>
 <translation id="5415328625985164836">Isa itong beta program. Magagamit mo na ngayon ang Steam para sa ilang laro sa iyong Chromebook.</translation>
 <translation id="5415497281076257439">Parirala</translation>
+<translation id="5415871492522952905">Kakailanganin mo ang iyong history at mga tab sa lahat ng device mo para maipagpatuloy mo ang iyong ginagawa</translation>
 <translation id="5417293056300086453">Puwedeng gamitin ng site na ito ang mga identifier para mag-play ng pinoprotektahang content.</translation>
 <translation id="5417312524372586921">Mga tema ng browser</translation>
 <translation id="541737483547792035">I-magnify ang screen</translation>
@@ -6624,6 +6621,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5555760010546505198">Mga setting ng pag-invert ng kulay, pagtatama ng kulay, magnifier, at display</translation>
 <translation id="555604722231274592">I-enable ang <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">I-reload</translation>
+<translation id="555671485580955310">I-sync ang history at mga tab</translation>
 <translation id="5558129378926964177">Mag-zoom &amp;In</translation>
 <translation id="5558594314398017686">Default ng OS (kapag available)</translation>
 <translation id="5559311991468302423">I-delete ang address</translation>
@@ -10592,6 +10590,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8310409247509201074"><ph name="NUM" /> (na) Tab</translation>
 <translation id="831207808878314375">Kahulugan</translation>
 <translation id="8312841338723044391">LIVE</translation>
+<translation id="8313308349366087671">Mga opsyon sa application</translation>
 <translation id="8314089908545021657">Ipares sa bagong telepono</translation>
 <translation id="8314381333424235892">Nawawala o hindi naka-install ang extension</translation>
 <translation id="831440797644402910">Hindi mabuksan ang folder na ito</translation>
@@ -10752,7 +10751,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8419098111404128271">Mga resulta ng paghahanap para sa '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="8419144699778179708">Dine-delete ang history, kasama ang nasa box para sa paghahanap</translation>
 <translation id="8420308167132684745">I-edit ang mga entry sa diksyunaryo</translation>
-<translation id="8421361468937925547">Instant Caption (English lang)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Nawawala ang tray</translation>
 <translation id="8424250197845498070">Na-block ng Advanced na Proteksyon</translation>
@@ -11050,6 +11048,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8637688295594795546">Available ang update sa system. Hinahandang i-download…</translation>
 <translation id="8638719155236856752">Katayuan ng Network ng ChromeOS</translation>
 <translation id="8639635302972078117">Magpadala ng data ng paggamit at diagnostic. Sa kasalukuyan, ang device na ito ay awtomatikong nagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account.</translation>
+<translation id="8639963783467694461">Mga setting ng autofill</translation>
 <translation id="8640575194957831802">huling binuksan noong</translation>
 <translation id="8641946446576357115">Gamitin ang Mga Password Mo sa Iyong Mga iOS Device</translation>
 <translation id="8642577642520207435">Pahintulot sa camera ng <ph name="APP_NAME" /></translation>

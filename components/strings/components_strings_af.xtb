@@ -286,6 +286,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Bekyk 0 resensies}=1{Bekyk 1 resensie}other{Bekyk al # resensies}}</translation>
 <translation id="1458059624921545588">Mense en samelewing</translation>
 <translation id="1458140305240870199">Onderklere</translation>
+<translation id="1458770162980644530">Koop nou, betaal later se diensbepalingsskerm. Sleutelbord is versteek.</translation>
 <translation id="1459693405370120464">Weer</translation>
 <translation id="1461041542809785877">Werkverrigting</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2922,6 +2923,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5817918615728894473">Bind saam</translation>
 <translation id="5826507051599432481">Algemene naam (AN)</translation>
 <translation id="5830698870816298009">kameragebruik en -beweging</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5832976493438355584">Gesluit</translation>
 <translation id="5837220895135257862">Maak spasie in <ph name="CLOUD_PROVIDER" /> beskikbaar voordat jy weer probeer</translation>
@@ -3646,6 +3648,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6997288673234694149">Bofbal- en sagtebaltoerusting</translation>
 <translation id="6998512609912910179">Vul vorms vinniger in</translation>
 <translation id="6999480632062519056">Fiksheid- en persoonlike afrigting</translation>
+<translation id="7002897669829306463">Huisadres, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Matte en tapyte</translation>
 <translation id="7003322000677139268">Voertuigonderdele en -bykomstighede</translation>
 <translation id="7004499039102548441">Onlangse oortjies</translation>
@@ -4211,6 +4214,8 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7916162853251942238">Fleksobasis</translation>
 <translation id="791698251820376781">Jou organisasie laat jou nie toe om aan te meld nie</translation>
 <translation id="7926503317156566022">Lugvaartbedryf</translation>
+<translation id="7930282586031445870">Koop nou, betaal later se diensbepalingsskerm is toegemaak.</translation>
+<translation id="7932035970207573919">Werkadres, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Dateer adres op?</translation>
 <translation id="7932579305932748336">Bestryk</translation>
 <translation id="79338296614623784">Voer 'n geldige foonnommer in</translation>
@@ -4623,6 +4628,7 @@ Bykomende besonderhede:
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Watter data word gebruik:<ph name="END_BOLD" /> Jou aktiwiteit op ’n werf wat jy besoek deur Chrome op hierdie toestel te gebruik.</translation>
 <translation id="8601456038554914806">Watersporttoerusting</translation>
 <translation id="8601782593888534566">Wetenskapsfiksie en fantasie</translation>
+<translation id="8604103095921958091">Koop nou, betaal later se diensbepalingsskerm is teen volle hoogte oopgemaak.</translation>
 <translation id="8606988009912891950">Advertensie-onderwerpe help werwe om vir jou relevante advertensies te wys terwyl dit jou blaaigeskiedenis en identiteit beskerm. Chrome kan kennis neem van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis. ’n Werf wat jy besoek, kan vir Chrome later vir relevante onderwerpe vra om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="8612919051706159390">Aanlyn gemeenskappe</translation>
 <translation id="8617269623452051934">jou toestelgebruik</translation>
@@ -4863,6 +4869,7 @@ Bykomende besonderhede:
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> wil enige toestel op jou plaaslike netwerk soek en daaraan koppel</translation>
 <translation id="9046864189129893978">Mikrofone (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Koop nou, betaal later se diensbepalingsskerm is teen halwe hoogte oopgemaak.</translation>
 <translation id="9047528041803621289">Jou verstekwaarde laat jou toe om op die web te soek. Jy kan dit in instellings verander.</translation>
 <translation id="9048035366624198823">Die volgende handelinge vereis dat die <ph name="POLICY_NAME" />-beleid op <ph name="POLICY_VALUE" /> gestel moet wees: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24x36 dm.</translation>

@@ -190,6 +190,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3047590466164881923">Vala idayalogi yempendulo</translation>
 <translation id="306179102415443347">Sebenzisa isinqamuleli sakho ukuze ufike ngokushesha ku-Google Password Manager. Ungahambisa isinqamuleli sakho esikrinini sasekhaya sekhompyutha yakho noma isiqalisi se-app.</translation>
 <translation id="3065168410429928842">Ithebhu le-Chrome</translation>
+<translation id="3073571714401714450">Guqula iGemini kuChrome Dev</translation>
 <translation id="3080151273017101988">Qhubeka nokusebenzisa izinhlelo zokusebenza zangemuva ngenkathi i-Google Chrome ivaliwe</translation>
 <translation id="308397506772922478">Uma ukhohlwa umushwana wakho wokungena noma ufuna ukushintsha le sethingi, <ph name="BEGIN_LINK" />sula idatha yeChrome ku-akhawunti yakho<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Qamba iphrofayela lakho le-Chrome</translation>
@@ -378,6 +379,7 @@ Ezinye izici kungenzeka zingatholakali. Sicela ucacise umkhombandlela wephrofaye
 <translation id="5368118228313795342">Ikhodi eyengeziwe: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Iphinda ilawule ukuthi yiliphi ikhasi eliboniswayo uma uqala i-Chrome noma usesho kusuka ku-Omnibox.</translation>
 <translation id="5394833366792865639">Yabelana ngethebhu ye-Chrome</translation>
+<translation id="5402307365844630024">Guqula iGemini kuChrome Beta</translation>
 <translation id="5430073640787465221">Ifayela lakho lokuncamelayo limoshekile noma alivumelekile. 
 
 I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
@@ -429,6 +431,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="5941711191222866238">Nciphisa</translation>
 <translation id="5941830788786076944">Yenza i-Google Chrome ibe isiphequluli sokuzenzakalelayo</translation>
 <translation id="5947104538377036631">Isinqamuleli se-Chrome</translation>
+<translation id="5960071705175224773">Amasethingi akho ashintshwe yi-app engaziwa</translation>
 <translation id="5968400720580217226">Imodi ye-AI</translation>
 <translation id="5980111191913430208">Izandiso, ama-app, namatimu asuka emithonjeni engaziwa angalimaza idivayisi yakho. IChrome incoma ukuzifaka kuphela zisuka ku-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Iyadawuniloda... Kusele amahora angu-<ph name="HOURS" /></translation>
@@ -652,6 +655,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="8362914115861174987">Humushela ku-</translation>
 <translation id="8366770919198174997">Yehlisa indlela yokusebenza kodwa yenza iChrome imelane nakakhulu nokuhlaselwa</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Wonke amalungelo agodliwe.</translation>
+<translation id="8377158135256176353">Guqula iGemini kuChrome Canary</translation>
 <translation id="8387459386171870978">Qhubeka nokusebenzisa i-Chrome</translation>
 <translation id="8394720698884623075">Kuhlola ama-URL anohlu lwamasayithi angaphephile agcinwe ku-Chrome</translation>
 <translation id="8403038600646341038">Ilogo ye-Chrome ngaphakathi kwesikrini sekhompyutha.</translation>
@@ -700,12 +704,14 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="8914504000324227558">Phinda uqalise i-Chrome</translation>
 <translation id="8922193594870374009">Ukuze uthumele inombolo kusukela ku-<ph name="ORIGIN" /> kufoni yakho ye-Android, ngena ngemvume ku-Chrome kuwo womabili amadivayisi.</translation>
 <translation id="8922998289262614701">Susa idatha yale app kusukela kuChrome</translation>
+<translation id="8936233353620149764">Guqula iGemini kuChrome</translation>
 <translation id="8948460679427074738">Lesi sandiso asikashicileli izindlela zangasese zokuziphatha, njengokuthi siyiqoqa futhi siyisebenzise kanjani idatha. I-Chrome incoma ukuthi uyisuse.</translation>
 <translation id="8958307504142971576">Manje unezakhi eziningi ezitholakala kuChrome</translation>
 <translation id="8991530961471831170">Vula iGemini kuChrome</translation>
 <translation id="8992769679401294069">Idatha yakho ibhalwe ngokufihla ngomushwana wokungena. Ifake ukuze usebenzise futhi wonge idatha ye-Chrome ku-akhawunti yakho ye-Google.</translation>
 <translation id="8999117580775242387">Uma i-HTTPS ingatholakali, i-Chrome izosebenzisa uxhumo olungavikelekile ngaphandle kokukuxwayisa</translation>
 <translation id="8999208279178790196">{0,plural, =0{Isibuyekezo se-Chrome siyatholakala}=1{Isibuyekezo se-Chrome siyatholakala}one{Isibuyekezo se-Chrome sitholakale izinsuku ezingu-#}other{Isibuyekezo se-Chrome sitholakale izinsuku ezingu-#}}</translation>
+<translation id="9010418943148193727">Injini yakho yokusesha ezenzakalelayo ishintshwe ngaphandle kweChrome. Ukuze ikuvikele, iChrome iyisethe kabusha.</translation>
 <translation id="9014771989710951291">Izinhlangano eziningi ziphatha iChrome</translation>
 <translation id="9024318700713112071">Setha i-Chrome njengezenzakalelayo</translation>
 <translation id="9066987883552592250">Vala iGemini kuChrome Canary</translation>

@@ -2292,6 +2292,7 @@
 <translation id="4758311279753947758">إضافة معلومات الاتصال</translation>
 <translation id="4761326898079498987">يمكنك المراجعة للاطّلاع على مزيد من التفاصيل.</translation>
 <translation id="4761869838909035636">‏تفعيل ميزة "التحقّق من الأمان" في Chrome</translation>
+<translation id="4762097990764616058">مواصلة الدفع باستخدام "<ph name="BNPL_ISSUER_NAME" />"؟</translation>
 <translation id="4763196677855776703">الأحكام والشروط المقدَّمة من "<ph name="URL" />"</translation>
 <translation id="4764680219299728632">أفران ومواقد</translation>
 <translation id="4764776831041365478">قد تكون صفحة الويب على العنوان <ph name="URL" /> غير متاحة مؤقتًا أو قد يكون تم نقلها نهائيًا إلى عنوان ويب جديد.</translation>
@@ -2923,6 +2924,7 @@
 <translation id="5817918615728894473">إقران</translation>
 <translation id="5826507051599432481">‏الاسم الشائع (CN)</translation>
 <translation id="5830698870816298009">استخدام الكاميرا وتحريكها</translation>
+<translation id="5831217499016131155">‏محفظة Google</translation>
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5832976493438355584">تم قفلها</translation>
 <translation id="5837220895135257862">يُرجى إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> قبل إعادة المحاولة</translation>
@@ -3433,6 +3435,7 @@
 <translation id="6649510485211003056">195 × 270 ملم</translation>
 <translation id="6651270836885078973">تتم إدارة الجهاز من خلال:</translation>
 <translation id="6652101503459149953">‏استخدام Windows Hello</translation>
+<translation id="6653684225271066234">ستتحقّق "<ph name="BNPL_ISSUER_NAME" />" من أهليتك (لن يؤثّر ذلك في درجة الائتمان). في حال استيفاء معايير الأهلية، ستقدّم لك "<ph name="BNPL_ISSUER_NAME" />" خطط الدفع المحتملة لإكمال عملية الشراء.</translation>
 <translation id="6654224358955673568">استخدام الأسلوب الرسمي</translation>
 <translation id="6654244995031366386">زجاج (مزخرف)</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
@@ -3596,6 +3599,7 @@
 <translation id="6925267999184670015">‏‫B+‎ شمال أمريكا</translation>
 <translation id="6926216138694948720">فن الجسد</translation>
 <translation id="692638818576287323">مركبات تجارية</translation>
+<translation id="6927057753277044239">‏بعد مراجعة طلبك، عليك تسجيل الدخول أو إنشاء حساب باستخدام "<ph name="BNPL_ISSUER_NAME" />". وسيتم ربط هذا الحساب تلقائيًا بحسابك على Google.</translation>
 <translation id="6930607614725241390">البحث في اللوحة الجانبية</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />يتيح لك محرك البحث التلقائي البحث على الإنترنت ويفعِّل ميزات Chrome<ph name="END_BOLD" />، مثل البحث من شريط العناوين ومن الصور على صفحات الويب. قد لا تتوفر إحدى الميزات إذا لم يكن محرك البحث الخاص بك يتيحها.</translation>
 <translation id="6934672428414710184">‏هذا الاسم من حسابك على Google</translation>
@@ -3647,6 +3651,7 @@
 <translation id="6997288673234694149">معدّات كرة ليّنة وبيسبول</translation>
 <translation id="6998512609912910179">ملء النماذج بشكل أسرع</translation>
 <translation id="6999480632062519056">دروس في اللياقة البدنية وتدريب شخصي</translation>
+<translation id="7002897669829306463">عنوان المنزل: <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">بِساط وسجاد</translation>
 <translation id="7003322000677139268">إكسسوارات وقطع غيار مركبات</translation>
 <translation id="7004499039102548441">علامات التبويب الأخيرة</translation>
@@ -4214,6 +4219,7 @@
 <translation id="791698251820376781">لا تسمح لك مؤسستك بتسجيل الدخول</translation>
 <translation id="7926503317156566022">صناعة الطيران</translation>
 <translation id="7930282586031445870">‏تم إغلاق شاشة بنود خدمة "الدفع الآجل" (BNPL).</translation>
+<translation id="7932035970207573919">عنوان العمل: <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">هل تريد تعديل العنوان؟</translation>
 <translation id="7932579305932748336">الطبقة الخارجية</translation>
 <translation id="79338296614623784">أدخِل رقم هاتف صحيحًا</translation>

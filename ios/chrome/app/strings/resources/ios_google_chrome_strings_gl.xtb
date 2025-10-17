@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">Busca "${searchPhrase}" en Chrome</translation>
 <translation id="1237769345474105984">De Chrome</translation>
 <translation id="124228879633599436">Estás usando unha versión de Chrome desactualizada. Actualízao para non correr riscos.</translation>
+<translation id="1258531953614971819">Consello de Chrome: Move Chrome á pantalla de inicio</translation>
 <translation id="1333745675627230582">Xogar a xogo do dinosauro de Chrome</translation>
 <translation id="1352919863522755794">O xestor de contrasinais de Google non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="1394995526009609883">Podes actualizar a túa selección en calquera momento na configuración de Chrome.</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">Define Chrome como predeterminado para sincronizar as pestanas, os contrasinais e a información de pago con todos os teus dispositivos</translation>
 <translation id="1504372625950710826">Chrome non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
 <translation id="1516692594929310090">Abre a grade de pestanas de Chrome.</translation>
+<translation id="152319127067424683">Accede a Chrome máis rápido desde a barra de aplicacións do teu iPhone.</translation>
 <translation id="1526327845902180576">Cando esta opción está activada:
 <ph name="BEGIN_INDENT" />  • Axuda a mellorar Chrome para as persoas que o usan do mesmo xeito ca ti.<ph name="END_INDENT" />
 
@@ -58,6 +60,7 @@ Cuestións que debes ter en conta:
 <translation id="2199719347983604670">Datos procedentes da Sincronización de Chrome</translation>
 <translation id="2213327331203157297">Para desactivar o modo de bloqueo en Chrome, desactívao no teu iPhone.</translation>
 <translation id="2242467532204595597">Utiliza Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
+<translation id="2256384876478573507">Abre Chrome máis rápido cando queiras navegar no teu iPhone.</translation>
 <translation id="2311240109311056604">Abre o xogo do dinosauro de Chrome.</translation>
 <translation id="2339201583852607431">O contrasinal gardarase na túa Conta de Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome comparte a localización cos sitios que queiras.</translation>
@@ -66,6 +69,7 @@ Cuestións que debes ter en conta:
 <translation id="2427791862912929107">Chrome inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto. Eses datos poderían incluír o historial e a función de autocompletar.}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos. Eses datos poderían incluír o historial e a función de autocompletar.}}</translation>
+<translation id="2531823184391665648">Abre Chrome máis rápido cando queiras navegar no teu iPad.</translation>
 <translation id="2561231791489583059">Usa Chrome como navegador predeterminado para protexer a túa seguranza contra sitios perigosos e manter a salvo os teus contrasinais</translation>
 <translation id="2574249610672786438">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, inicia sesión en todos eles</translation>
 <translation id="2576431527583832481">Chrome introduciu melloras. Hai dispoñible unha nova versión.</translation>
@@ -81,6 +85,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="2767464022270041271">Non hai contrasinais gardados. O xestor de contrasinais de Google poderá comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="2788811701191021538">Abre a páxina de configuración de métodos de pago en Chrome.</translation>
 <translation id="2876628302275096482">Máis información sobre <ph name="BEGIN_LINK" />como protexe Chrome a privacidade dos teus datos<ph name="END_LINK" /></translation>
+<translation id="2922914028977213693">Toca aquí para aproveitar todo o que Chrome che ofrece no teu iPad.</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
 <translation id="2923827943290349720">Bloquear pestanas do modo de incógnito ao pechar Chrome</translation>
 <translation id="2940565985148833945">Consello de Chrome: Fai buscas con Lens</translation>
@@ -97,6 +102,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="3140589780564632473">Busca elementos visuais en Chrome</translation>
 <translation id="314782365035065913">Accede a Chrome máis rápido desde a barra de aplicacións da pantalla de inicio</translation>
 <translation id="3167189358072330585">A túa conta non funciona en Google Chrome. Ponte en contacto co teu administrador de dominio ou utiliza unha conta normal de Google para iniciar sesión.</translation>
+<translation id="320747600144551583">Consello de Chrome: Navegación segura mellorada é a solución para protexerte</translation>
 <translation id="322254490661677575">Para usar e gardar os datos de Chrome na túa Conta de Google, introduce a túa frase de acceso.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3303503998967553377">Usa Accións de Chrome en iOS</translation>
@@ -109,6 +115,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="3440830787838130530">Comparte de maneira sinxela e segura unha copia dun contrasinal co teu grupo familiar no xestor de contrasinais de Google</translation>
 <translation id="3460369101684070455">Escolle Chrome para autocompletar facilmente noutras aplicacións os teus contrasinais gardados</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
+<translation id="3482807551645716768">Accede a Chrome máis rápido desde a pantalla de inicio do teu iPad.</translation>
 <translation id="3503014945441706099">Activa tamén neste perfil de Chrome a función Navegación segura mellorada</translation>
 <translation id="3522659714780527202">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, activa a sincronización</translation>
 <translation id="364480321352456989">Estás usando unha versión de Chrome desactualizada.</translation>
@@ -125,16 +132,19 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="3988789688219830639">Google Chrome non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="4064699917955374540">Para usar e gardar os datos de Chrome na túa Conta de Google, verifica a túa identidade.</translation>
 <translation id="411154422556990518">Recibe novidades sobre o seguimento de prezos e consellos relacionados con Chrome.</translation>
+<translation id="4167555379306984168">Descubre as novidades de Chrome</translation>
 <translation id="417201473131094001">Non compatible en Chrome Canary</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
 <translation id="4430797724889237570">Abre ligazóns nas aplicacións Gmail, Maps e YouTube, entre outras, en Chrome</translation>
 <translation id="447252321002412580">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
 <translation id="4523886039239821078">Algúns complementos fan que Chrome falle. Desinstala:</translation>
+<translation id="4568024439284012497">Accede a Chrome máis rápido desde a pantalla de inicio do teu iPhone.</translation>
 <translation id="4574806550936185355">Activa Bloquear pestanas do modo de incógnito ao pechar Chrome</translation>
 <translation id="4633328489441962921">Chrome non puido buscar actualizacións</translation>
 <translation id="4636900170638246267">Inicia sesión neste sitio e en Chrome.</translation>
 <translation id="4647910807533196601">Abre a pestana máis recente en Chrome.</translation>
 <translation id="4693084815234024320">Estás no modo de incógnito de Chrome</translation>
+<translation id="4708857722625759026">Accede a Chrome máis rápido desde a barra de aplicacións do teu iPad.</translation>
 <translation id="4713740144985377441">Volve a Chrome para cargar o ficheiro</translation>
 <translation id="4713907610796204963">Aprende os conceptos básicos e útiles de Chrome para botar a andar</translation>
 <translation id="4724297637870447613">Usa Chrome en todas partes</translation>
@@ -149,6 +159,8 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="4903674399067644695">Esta tarxeta móstrache suxestións sobre como tirar o máximo proveito de Chrome.</translation>
 <translation id="49200511069271369">A túa organización, <ph name="DOMAIN" />, xestiona a conta na que estás iniciando sesión e o xeito no que se usa Chrome. A persoa administradora pode configurar ou restrinxir determinadas funcións.</translation>
 <translation id="4925322001044117929">Usa Chrome no iPad de forma predeterminada</translation>
+<translation id="4934496192263958600">Inicia sesión en Chrome para acceder ás túas cousas</translation>
+<translation id="496747131578053942">Consello de Chrome: Busca o que ves con Google Lens</translation>
 <translation id="498985224078955265">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="5030102366287574140">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>
 <translation id="5109169629909011627">Abre os marcadores de Chrome</translation>
@@ -225,16 +237,19 @@ Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar
 <translation id="6684809838922667136">Mellora Chrome</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto. Eliminaranse os datos que se garden só neste dispositivo mentres teñas a sesión inciada. Esta información pode incluír contrasinais e datos do historial.}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos. Eliminaranse os datos que se garden só neste dispositivo mentres teñas a sesión inciada. Esta información pode incluír contrasinais e datos do historial.}}</translation>
 <translation id="6709398533399187136">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies de inmediato.</translation>
+<translation id="6718973358446066955">Xa case acabaches de configurar Chrome!</translation>
 <translation id="6820553595690137150">A encriptación mediante frase de acceso non inclúe os enderezos nin os métodos de pago.
 
 Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="6838525730752203626">Usa Chrome de forma predeterminada</translation>
+<translation id="6864705365700484754">Toca aquí para aproveitar todo o que Chrome che ofrece no teu iPhone.</translation>
 <translation id="686691656039982452">Na túa Conta de Google podes <ph name="BEGIN_LINK" />xestionar que datos de Chrome se gardan<ph name="END_LINK" />.
 
 Se queres ver máis opcións de configuración que usen datos para mellorar a túa experiencia con Chrome, vai a <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Elimina os datos de navegación en Chrome.</translation>
 <translation id="6924922227983877439">Abre ligazóns en Chrome de forma predeterminada</translation>
 <translation id="6975725306479268850">Escolle Chrome para autocompletar</translation>
+<translation id="7001031184470316752">Move Chrome á barra de aplicacións</translation>
 <translation id="7038674195294813388">Abre a configuración de Default Apps (Aplicacións predeterminadas) en iOS, toca Browser App (Aplicación de navegador) e selecciona Chrome.</translation>
 <translation id="7056826488869329999">Abre e executa Comprobación de seguranza en Chrome.</translation>
 <translation id="7061455974939528301">Mantén premida a icona de Chrome e fai clic en na opción Edit Home Screen (Editar pantalla de inicio)</translation>
@@ -305,6 +320,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se a esqueces ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="8371138994040262994">Abre a configuración en Chrome.</translation>
+<translation id="8375378038757507658">Utiliza Chrome facilmente sempre que toques ligazóns en mensaxes ou noutras aplicacións.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>
 <translation id="8392023217086447677">Abriuse no modo de incógnito de Chrome</translation>
 <translation id="840168496893712993">Algúns complementos fan que Chrome falle. Proba a desinstalalos.</translation>

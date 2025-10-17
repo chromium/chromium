@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">Затвори го дијалогот за повратни информации</translation>
 <translation id="306179102415443347">Користете ја вашата кратенка за да го отворите Google Password Manager брзо. Кратенката може да ја преместите на почетниот екран или „Стартерот на апликации“ на вашиот компјутер.</translation>
 <translation id="3065168410429928842">Картичка на Chrome</translation>
+<translation id="3073571714401714450">Вклучете/исклучете го Gemini во Chrome Dev</translation>
 <translation id="3080151273017101988">Продолжи со извршување апликации во заднина кога е затворен Google Chrome</translation>
 <translation id="308397506772922478">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Именувајте го профилот на Chrome</translation>
@@ -379,6 +380,7 @@
 <translation id="5368118228313795342">Дополнителен код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Контролира и која страница се прикажува кога го стартувате Chromе или ако пребарувате од лентата за адреси.</translation>
 <translation id="5394833366792865639">Споделете картичка на Chrome</translation>
+<translation id="5402307365844630024">Вклучете/исклучете го Gemini во Chrome Beta</translation>
 <translation id="5430073640787465221">Вашата датотека со претпочитани вредности е оштетена или неважечка.
 
 Google Chrome не може да ги обнови вашите поставки.</translation>
@@ -430,6 +432,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5941711191222866238">Минимизирај</translation>
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
 <translation id="5947104538377036631">Кратенка за Chrome</translation>
+<translation id="5960071705175224773">Непозната апликација ги промени вашите поставки</translation>
 <translation id="5968400720580217226">AI-режим</translation>
 <translation id="5980111191913430208">Екстензии, апликации и теми од непознати извори може да му наштетат на вашиот уред. Chrome препорачува да ги инсталирате само од <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Се презема… Уште <ph name="HOURS" /> ч.</translation>
@@ -653,6 +656,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8362914115861174987">Преведи на</translation>
 <translation id="8366770919198174997">Ја намалува изведбата, но го прави Chrome поотпорен на напади</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
+<translation id="8377158135256176353">Вклучете/исклучете го Gemini во Chrome Canary</translation>
 <translation id="8387459386171870978">Продолжете да користите Chrome</translation>
 <translation id="8394720698884623075">Ги проверува URL-адресите во список со небезбедни сајтови меморирани во Chrome</translation>
 <translation id="8403038600646341038">Логото на Chrome во екран на компјутер.</translation>
@@ -701,12 +705,14 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8914504000324227558">Рестартирајте го Chrome</translation>
 <translation id="8922193594870374009">За да испратите број од <ph name="ORIGIN" /> до телефонот со Android, најавете се на Chrome на двата уреда.</translation>
 <translation id="8922998289262614701">Отстрани ги податоците поврзани со апликацијава од Chrome</translation>
+<translation id="8936233353620149764">Вклучете/исклучете го Gemini во Chrome</translation>
 <translation id="8948460679427074738">Екстензијава нема објавено практики за приватност, како на пример, како прибира и користи податоци. Chrome препорачува да ја отстраните.</translation>
 <translation id="8958307504142971576">Отсега имате повеќе достапни функции во Chrome</translation>
 <translation id="8991530961471831170">Отвори го Gemini во Chrome</translation>
 <translation id="8992769679401294069">Вашите податоци се шифрирани со вашата лозинка. Внесете ја за да користите и зачувувате податоци од Chrome во вашата сметка на Google.</translation>
 <translation id="8999117580775242387">Кога не е достапна HTTPS, Chrome ќе користи небезбедна врска без да ве предупреди</translation>
 <translation id="8999208279178790196">{0,plural, =0{Достапно е ажурирање за Chrome}=1{Достапно е ажурирање за Chrome}one{Достапно е ажурирање за Chrome веќе # ден}other{Достапно е ажурирање за Chrome веќе # дена}}</translation>
+<translation id="9010418943148193727">Вашиот стандарден пребарувач го промени апликација надвор од Chrome. Chrome го ресетираше за да ве заштити.</translation>
 <translation id="9014771989710951291">Повеќе организации управуваат со Chrome</translation>
 <translation id="9024318700713112071">Поставете го Chrome како стандарден прелистувач</translation>
 <translation id="9066987883552592250">Затворете го Gemini во Chrome Canary</translation>

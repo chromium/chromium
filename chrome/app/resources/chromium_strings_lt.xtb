@@ -208,6 +208,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3296368748942286671">Toliau vykdyti fonines programas, kai „Chromium“ uždaroma</translation>
 <translation id="3313189106987092621">„Chromium“ perspės jus prieš įkeliant bet kokią svetainę, kurioje naudojamas nesaugus ryšys</translation>
 <translation id="3316771292331273802">Būsite atjungti nuo daugelio svetainių, kai uždarysite visus „Chromium“ langus, išskyrus „Google“ paskyrą, jei esate prisijungę prie „Chromium“. Jei norite, kad svetainės jus prisimintų, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Numatytasis paieškos variklis buvo pakeistas ne naršyklėje „Chromium“. Kad apsaugotų jus, „Chromium“ jį nustatė iš naujo.</translation>
 <translation id="3352986031709923790">viršutinis dešinysis paieškos srities kampas: dešinė – <ph name="RIGHT" /> %, viršus – <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">„Chromium“ duomenys jūsų paskyroje</translation>
 <translation id="3369405342922656244">Ieškoti šiame puslapyje naudojant vaizdų paiešką</translation>
@@ -400,6 +401,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="5941711191222866238">Sumažinti</translation>
 <translation id="5949225980829865667">Jei norite pasiekti šią žymę ir kt. visuose įrenginiuose, prisijunkite prie „Chromium“</translation>
 <translation id="5953657885167112863">„Chromium“ suasmeninimas</translation>
+<translation id="5960071705175224773">Nustatymus pakeitė nežinoma programa</translation>
 <translation id="5968400720580217226">DI režimas</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama vieną minutę.}one{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama # minutę.}few{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama # minutes.}many{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama # minutės.}other{Organizacija automatiškai uždaro „Chromium“, kai nenaudojama # minučių.}}</translation>
 <translation id="5987687638152509985">Atnaujinkite „Chromium“, kad galėtumėte pradėti sinchronizuoti</translation>

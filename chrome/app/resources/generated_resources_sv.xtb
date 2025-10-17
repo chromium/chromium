@@ -249,7 +249,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1162479191445552288">Starta vid start</translation>
 <translation id="1163931534039071049">&amp;Visa ramkälla</translation>
 <translation id="1164015913575846413">Alt + Klicka</translation>
-<translation id="1164286072721995435">Delar den aktuella fliken med Gemini varje gång du startar en ny konversation. Du kan pausa delningen av den aktuella fliken när som helst. Din data används inte för att förbättra generativa AI-modeller.</translation>
 <translation id="1164891049599601209">Har angetts på en bedräglig webbplats</translation>
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1166212789817575481">Stäng flikar till höger</translation>
@@ -538,7 +537,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1353980523955420967">Det gick inte att hitta PPD-filen. Kontrollera att Chromebook är ansluten till internet och försök igen.</translation>
 <translation id="1354045473509304750">Tillåt <ph name="HOST" /> att använda och röra din kamera även i fortsättningen</translation>
 <translation id="1354148503392558902">Lösenordet ändras …</translation>
-<translation id="1354943694624358993">Dela alltid den aktuella fliken</translation>
 <translation id="1355088139103479645">Vill du radera all data?</translation>
 <translation id="1355088659320425659">Historik och flikar</translation>
 <translation id="1356376170199999104">Tillåts – <ph name="PERMISSION_DETAILS" />. Slå på mikrofonen med det fysiska reglaget.</translation>
@@ -2376,7 +2374,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2605668923777146443">Du hittar alternativ för Better Together i <ph name="LINK_BEGIN" />inställningarna<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Länka Data</translation>
 <translation id="2606454609872547359">Nej, fortsätt utan ChromeVox</translation>
-<translation id="2606568927909309675">Ljud- och videouppspelning på engelska textas automatiskt. Ljudet och textningen lämnar aldrig enheten.</translation>
 <translation id="2606890864830643943">Exportera diagnostikdata</translation>
 <translation id="2607101320794533334">Information om mottagarens publika nyckel</translation>
 <translation id="2609533306502181883">Gör research om ett ämne</translation>
@@ -2428,6 +2425,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2636266464805306348">Fönstertitlar</translation>
 <translation id="2637313651144986786">Sök bland flikar …</translation>
 <translation id="2637400434494156704">Fel pinkod. Du har ett försök kvar.</translation>
+<translation id="263796568413910992">Fråga <ph name="SEARCH_ENGINE_NAME" /> eller ange en webbadress</translation>
 <translation id="2638662041295312666">Inloggningsbild</translation>
 <translation id="2640299212685523844">Använd GTK</translation>
 <translation id="264083724974021997">Anslut till telefonen – dialogruta</translation>
@@ -5781,7 +5779,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4956593309300508411">Vill du sluta dela?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vill du spara i en mapp bara på den här enheten?</translation>
-<translation id="4958916254663453555">Den aktuella fliken delas automatiskt när du öppnar Gemini i Chrome. Den aktuella flikens fullständiga innehåll och webbadress skickas till Google.</translation>
 <translation id="4959262764292427323">Lösenorden sparas i Google-kontot så att du kan använda dem på vilken enhet som helst</translation>
 <translation id="4960020053211143927">Stöds inte av vissa appar</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5893,7 +5890,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5045367873597907704">Om styrdon</translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
 <translation id="504561833207953641">Öppnas i en befintlig webbläsarsession.</translation>
-<translation id="5047544190872578914">Delar den aktuella fliken med Gemini varje gång du startar en ny konversation. Du kan pausa delningen av den aktuella fliken när som helst.</translation>
 <translation id="504953514574706691">Fliken har uteslutits från föreslagen grupp</translation>
 <translation id="5050330054928994520">Text till tal</translation>
 <translation id="5051461727068120271">Ladda ned overifierad fil</translation>
@@ -6413,6 +6409,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5414836363063783498">Verifierar ...</translation>
 <translation id="5415328625985164836">Det här är ett betaprogram. Nu kan du använda Steam för att spela vissa spel på Chromebook.</translation>
 <translation id="5415497281076257439">Fras</translation>
+<translation id="5415871492522952905">Din historik och dina fikar finns på alla enheter, så att du kan fortsätta där du slutade</translation>
 <translation id="5417293056300086453">Den här webbplatsen får använda identifierare för att spela upp skyddat innehåll.</translation>
 <translation id="5417312524372586921">Webbläsarteman</translation>
 <translation id="541737483547792035">Skärmförstoring</translation>
@@ -6623,6 +6620,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5555760010546505198">Inställningar för inverterade färger, färgkorrigering, skärmförstoring och skärm</translation>
 <translation id="555604722231274592">Aktivera <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Hämta igen</translation>
+<translation id="555671485580955310">Synkronisera historik och flikar</translation>
 <translation id="5558129378926964177">Zooma &amp;in</translation>
 <translation id="5558594314398017686">Standardinställning för operativsystemet (om tillgängligt)</translation>
 <translation id="5559311991468302423">Radera adressen</translation>
@@ -10589,6 +10587,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8310409247509201074"><ph name="NUM" /> flikar</translation>
 <translation id="831207808878314375">Definition</translation>
 <translation id="8312841338723044391">LIVE</translation>
+<translation id="8313308349366087671">Appalternativ</translation>
 <translation id="8314089908545021657">Parkoppla med en ny telefon</translation>
 <translation id="8314381333424235892">Tillägget saknas eller har avinstallerats</translation>
 <translation id="831440797644402910">Det går inte att öppna den här mappen</translation>
@@ -10749,7 +10748,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8419098111404128271">Sökresultat för ”<ph name="SEARCH_TEXT" />”</translation>
 <translation id="8419144699778179708">Raderar historiken, inklusive från sökrutan</translation>
 <translation id="8420308167132684745">Redigera poster i ordlista</translation>
-<translation id="8421361468937925547">Live Caption (endast engelska)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Fack saknas</translation>
 <translation id="8424250197845498070">Blockerades av Avancerat skydd</translation>
@@ -11046,6 +11044,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8637688295594795546">Systemuppdatering tillgänglig. Förbereder nedladdning...</translation>
 <translation id="8638719155236856752">Nätverksstatus för ChromeOS</translation>
 <translation id="8639635302972078117">Skicka diagnostik- och användningsdata. Den här enheten skickar för närvarande diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera och inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot.</translation>
+<translation id="8639963783467694461">Inställningar för Autofyll</translation>
 <translation id="8640575194957831802">Öppnades senast</translation>
 <translation id="8641946446576357115">Använd dina lösenord på iOS-enheter</translation>
 <translation id="8642577642520207435">Kamerabehörighet för <ph name="APP_NAME" /></translation>

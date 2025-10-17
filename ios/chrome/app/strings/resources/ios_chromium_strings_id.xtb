@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">Artinya, Chromium akan selalu meminta situs seluler.</translation>
 <translation id="1115463765356382667">Selesaikan tindakan yang disarankan berikut untuk mengoptimalkan penggunaan Chromium.</translation>
 <translation id="1185134272377778587">Tentang Chromium</translation>
+<translation id="1211450393895337634">Buka Chromium lebih cepat saat Anda siap menjelajah di iPad.</translation>
 <translation id="1229234641991056119">Gunakan sandi, histori, bookmark, dan kartu kredit Safari Anda di Chromium</translation>
 <translation id="1257458525759135959">Untuk menyimpan gambar, ketuk Setelan untuk mengizinkan Chromium menambahkannya ke galeri foto Anda</translation>
 <translation id="1260702988262336471">Buka menu Chromium</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">Feed kustom yang dibuat untuk Anda. Mencakup berita, olahraga, dan cuaca.</translation>
 <translation id="1561849081734670621">Untuk menonaktifkan Mode Kunci Total di Chromium, nonaktifkan di iPhone Anda.</translation>
 <translation id="1569258826720962327">Gunakan tindakan Chromium di iOS</translation>
+<translation id="1573441572176948907">Pindahkan Chromium ke dok</translation>
 <translation id="159029779861043703">Chromium menjaga keamanan data sensitif Anda dengan Face ID.</translation>
 <translation id="1591119736686995611">Membuka Petak Tab Chromium.</translation>
 <translation id="16001233025397167">Pemeriksaan Keamanan melindungi Anda dari pelanggaran data, situs yang tidak aman, dan lainnya. Menerima notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chromium untuk Anda.</translation>
@@ -66,6 +68,7 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="2340423701577464731">Tambahkan item daftar bacaan ke Chromium</translation>
 <translation id="2374627437126809292">Chromium menggunakan Google Maps untuk memberikan rute dan info lokal di alamat yang terdeteksi.</translation>
 <translation id="2386292341327187942">Di kotak Widget Penelusuran, masukkan Chromium</translation>
+<translation id="2389827884654658221">Akses Chromium lebih cepat dari Layar Utama iPad Anda.</translation>
 <translation id="2426113998523353159">Organisasi mengharuskan Anda login untuk menggunakan Chromium.</translation>
 <translation id="2450140762465183767">Anda sekarang dapat menggunakan Chromium kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="2459183986985456602">Membuka tab terbaru saya di Chromium.</translation>
@@ -74,11 +77,15 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="2485774047568879945">Setel Chromium sebagai browser default Anda untuk berbagi dan membuka link dengan mudah</translation>
 <translation id="2512597191798760956">Tekan lama ikon Chromium, lalu klik "Edit layar utama"</translation>
 <translation id="2517624234762908348">Sinkronkan data Chromium Anda</translation>
+<translation id="2575968074225731646">Akses Chromium lebih cepat dari Dok iPhone Anda.</translation>
 <translation id="2592940277904433508">Terus gunakan Chromium</translation>
 <translation id="2607609479243848905">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">Tips Chromium: Telusuri hal yang Anda lihat dengan Google Lens</translation>
 <translation id="2650312721222849884">Untuk melihat tab Chromium Anda dari perangkat lain, aktifkan sinkronisasi</translation>
 <translation id="2684230048001240293">Setel Chromium sebagai browser default untuk menyinkronkan tab, sandi, dan info pembayaran di semua perangkat Anda</translation>
+<translation id="2729836253097154631">Login ke Chromium untuk mendapatkan data Anda</translation>
 <translation id="2730884209570016437">Chromium tidak dapat menggunakan kamera karena sedang digunakan aplikasi lain</translation>
+<translation id="2742952311155593352">Anda hampir selesai menyiapkan Chromium.</translation>
 <translation id="2798503587425057129">Membuka Daftar Bacaan Chromium.</translation>
 <translation id="28276745681323897">Anda dapat <ph name="BEGIN_LINK" />mengelola data Chromium yang disimpan<ph name="END_LINK" /> di Akun Google Anda.
 
@@ -98,6 +105,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chromiu
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data ini dapat mencakup histori dan isi otomatis.}other{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data ini dapat mencakup histori dan isi otomatis.}}</translation>
 <translation id="3410395242749598859">Beberapa data Chromium Anda belum disimpan di <ph name="EMAIL" />.
 Coba tunggu beberapa menit sebelum beralih akun. Jika Anda beralih akun sekarang, data ini akan dihapus.</translation>
+<translation id="3420586870838853527">Tips Chromium: Safe Browsing yang Disempurnakan akan memudahkan keseharian Anda</translation>
 <translation id="3440830787838130530">Bagikan salinan sandi dengan mudah dan aman ke grup keluarga Anda di Pengelola Sandi Google</translation>
 <translation id="3472200483164753384">Tidak didukung di Chromium Canary</translation>
 <translation id="347967311580159871">Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chromium Anda, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
@@ -173,6 +181,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="5131565040785979529">Organisasi Anda, <ph name="DOMAIN" />, mengelola akun yang Anda gunakan untuk login dan cara Chromium digunakan.</translation>
 <translation id="5134464247000681876">Buka link dari Gmail, Maps, YouTube, dan aplikasi lainnya di Chromium</translation>
 <translation id="5203244847421322551">Simpan dan isi otomatis sandi di Chromium</translation>
+<translation id="5218806323985098884">Lihat yang baru di Chromium</translation>
 <translation id="5224391634244552924">Tidak ada sandi yang tersimpan. Chromium dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
 <translation id="5259423875997548710">Menelusuri visual di Chromium.</translation>
 <translation id="5284913972719948193">Impor data Anda untuk menggunakan sandi, histori, bookmark, dan kartu kredit di Chromium</translation>
@@ -194,6 +203,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="5521125884468363740">Untuk melihat tab Chromium Anda dari perangkat lain, login dan aktifkan sinkronisasi</translation>
 <translation id="5534584691915394889">Akses ini akan digunakan untuk mengambil acara dari Chromium dan Google Lens, lalu membuatnya di Apple Calendar.</translation>
 <translation id="5571094606370987472">Membuka Tab Terbaru Chromium.</translation>
+<translation id="5596644122344097310">Ketuk di sini untuk mengoptimalkan penggunaan Chromium di iPhone Anda.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Aktifkan/nonaktifkan Chromium</translation>
 <translation id="5664395081284292058">Buka tab terbaru saya di Chromium</translation>
@@ -235,11 +245,15 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="6424492062988593837">Chromium jadi semakin baik! Versi baru telah tersedia.</translation>
 <translation id="6433172051771630690">Tips untuk mengoptimalkan penggunaan Chromium.</translation>
 <translation id="65045991564554105">Lihat bookmark Chromium</translation>
+<translation id="6519797228806907665">Akses Chromium lebih cepat dari Layar Utama iPhone Anda.</translation>
 <translation id="6538713818758208754">Membuka halaman setelan metode pembayaran di Chromium.</translation>
 <translation id="6540186279384079894">Buka tab baru di Chromium</translation>
 <translation id="6563921047760808519">Pelajari lebih lanjut <ph name="BEGIN_LINK" />cara Chromium menjaga privasi data Anda<ph name="END_LINK" /></translation>
+<translation id="6564769014061914792">Ketuk di sini untuk mengoptimalkan penggunaan Chromium di iPad Anda.</translation>
+<translation id="6566303693324540692">Tips Chromium: Pindahkan Chromium ke layar utama</translation>
 <translation id="6574750762636192517">Kelola sandi di Chromium</translation>
 <translation id="6590232959690355435">Membuka halaman Histori Chromium Anda.</translation>
+<translation id="6649269674808477353">Buka Chromium lebih cepat saat Anda siap menjelajah di iPhone.</translation>
 <translation id="6674470628873622334">Membuka tab Samaran Chromium baru.</translation>
 <translation id="6680609900732453726">Jaga privasi penjelajahan Anda dengan autentikasi perangkat saat Anda menutup Chromium</translation>
 <translation id="6752854822223394465">Organisasi Anda sedang menyiapkan Chromium ...</translation>
@@ -289,6 +303,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="7934404985878918282">Lihat Daftar Bacaan Chromium</translation>
 <translation id="7935734571048689933">Chromium dikelola</translation>
 <translation id="7951793218148208717">Membuka tab baru di Chromium.</translation>
+<translation id="7957726318578167662">Gunakan Chromium dengan mudah kapan saja saat mengetuk link di pesan atau aplikasi lainnya.</translation>
 <translation id="7980860476903281594">Chromium membagikan lokasi Anda ke situs yang diizinkan.</translation>
 <translation id="7994322153108931467">Untuk mendapatkan tips Chromium yang berguna, aktifkan notifikasi di setelan iOS.</translation>
 <translation id="7997159823054171568">Setel Chromium sebagai browser default</translation>
@@ -324,6 +339,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8860548555286245440">Buka URL di Chromium dalam mode Samaran</translation>
 <translation id="8880024619507699923">Organisasi mengharuskan Anda login untuk menggunakan Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Dapatkan Keamanan Terkuat Chromium</translation>
+<translation id="8908791447256515663">Akses Chromium lebih cepat dari Dok iPad Anda.</translation>
 <translation id="8925569192291721236">Dapatkan info terbaru terkait pemantauan harga dan tips Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit}other{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit}}</translation>
 <translation id="8963279154877372067">Izinkan notifikasi Chromium mendapatkan notifikasi diskon</translation>

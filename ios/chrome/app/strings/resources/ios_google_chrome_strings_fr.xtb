@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">Rechercher ${searchPhrase} dans Chrome</translation>
 <translation id="1237769345474105984">Source : Chrome</translation>
 <translation id="124228879633599436">Votre Chrome est obsolète. Mettez-le à jour pour vous protéger.</translation>
+<translation id="1258531953614971819">Astuce Chrome : déplacez Chrome vers votre écran d'accueil</translation>
 <translation id="1333745675627230582">Jouer au jeu Chrome Dino</translation>
 <translation id="1352919863522755794">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
 <translation id="1394995526009609883">Vous pouvez modifier vos sélections à tout moment dans les paramètres Chrome.</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">Définissez Chrome comme navigateur par défaut pour synchroniser vos onglets, mots de passe et informations de paiement sur tous vos appareils</translation>
 <translation id="1504372625950710826">Chrome n'est pas parvenu à rechercher les mises à jour. Vérifiez votre connexion Internet.</translation>
 <translation id="1516692594929310090">Ouvre la grille d'onglets de Chrome.</translation>
+<translation id="152319127067424683">Accédez plus vite à Chrome depuis le dock de votre iPhone.</translation>
 <translation id="1526327845902180576">Lorsque cette option est activée :
 <ph name="BEGIN_INDENT" /> • Vous contribuez à améliorer Chrome pour les personnes qui l'utilisent comme vous.<ph name="END_INDENT" />
 
@@ -58,6 +60,7 @@ Points à prendre en compte :
 <translation id="2199719347983604670">Données de la synchronisation Chrome</translation>
 <translation id="2213327331203157297">Pour désactiver le mode Blocage dans Chrome, désactivez-le sur votre iPhone.</translation>
 <translation id="2242467532204595597">Utilisez Chrome chaque fois que vous appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
+<translation id="2256384876478573507">Ouvrez Chrome plus vite lorsque vous êtes prêt à naviguer sur votre iPhone.</translation>
 <translation id="2311240109311056604">Ouvre le jeu Chrome Dino.</translation>
 <translation id="2339201583852607431">Votre mot de passe sera enregistré dans votre compte Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome partage votre position avec les sites que vous autorisez.</translation>
@@ -66,6 +69,7 @@ Points à prendre en compte :
 <translation id="2427791862912929107">Chrome dispose de fonctionnalités qui vous permettent de gérer vos données Internet et la vitesse de chargement des pages Web.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute. Il peut s'agir de l'historique et de la saisie automatique.}one{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute. Il peut s'agir de l'historique et de la saisie automatique.}other{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minutes. Il peut s'agir de l'historique et de la saisie automatique.}}</translation>
+<translation id="2531823184391665648">Ouvrez Chrome plus vite lorsque vous êtes prêt à naviguer sur votre iPad.</translation>
 <translation id="2561231791489583059">Utilisez Chrome comme navigateur par défaut pour rester à l'abri des sites dangereux et protéger vos mots de passe</translation>
 <translation id="2574249610672786438">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, connectez-vous à votre compte</translation>
 <translation id="2576431527583832481">Google Chrome s'est amélioré ! Une nouvelle version est désormais disponible.</translation>
@@ -81,6 +85,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
 <translation id="2788811701191021538">Ouvre la page de configuration des modes de paiement dans Chrome.</translation>
 <translation id="2876628302275096482">Découvrez <ph name="BEGIN_LINK" />comment Chrome protège la confidentialité de vos données<ph name="END_LINK" /></translation>
+<translation id="2922914028977213693">Appuyez ici pour exploiter tout le potentiel de Chrome sur votre iPad.</translation>
 <translation id="292371311537977079">Paramètres de Chrome</translation>
 <translation id="2923827943290349720">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
 <translation id="2940565985148833945">Astuce Chrome : recherchez avec Lens</translation>
@@ -97,6 +102,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="3140589780564632473">Rechercher des images dans Chrome</translation>
 <translation id="314782365035065913">Accédez plus rapidement à Chrome depuis le dock de l'écran d'accueil</translation>
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
+<translation id="320747600144551583">Astuce Chrome : la navigation sécurisée avec protection renforcée vous sauvera la mise</translation>
 <translation id="322254490661677575">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase secrète.</translation>
 <translation id="3282568296779691940">Se connecter à Chrome</translation>
 <translation id="3303503998967553377">Utiliser Actions Chrome sur iOS</translation>
@@ -109,6 +115,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="3440830787838130530">Partagez facilement et de manière sécurisée une copie d'un mot de passe avec votre groupe familial dans le Gestionnaire de mots de passe de Google</translation>
 <translation id="3460369101684070455">Pour retrouver facilement vos mots de passe enregistrés dans vos autres applis, choisissez Chrome pour la saisie automatique</translation>
 <translation id="3472587960215700950">Chrome utilise Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
+<translation id="3482807551645716768">Accédez plus vite à Chrome depuis l'écran d'accueil de votre iPad.</translation>
 <translation id="3503014945441706099">Profitez aussi sous ce profil Chrome de la navigation sécurisée avec protection renforcée</translation>
 <translation id="3522659714780527202">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, activez la synchronisation</translation>
 <translation id="364480321352456989">Votre version de Chrome est obsolète.</translation>
@@ -125,16 +132,19 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="3988789688219830639">Google Chrome n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
 <translation id="4064699917955374540">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité.</translation>
 <translation id="411154422556990518">Suivez les changements de prix et découvrez des conseils sur Chrome.</translation>
+<translation id="4167555379306984168">Découvrez les nouveautés de Chrome</translation>
 <translation id="417201473131094001">Non disponible dans Chrome Canary</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
 <translation id="4430797724889237570">Ouvrez les liens de Gmail, Maps, YouTube et d'autres applis dans Chrome</translation>
 <translation id="447252321002412580">Contribuer à améliorer les fonctionnalités et performances de Chrome</translation>
 <translation id="4523886039239821078">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez les désinstaller.</translation>
+<translation id="4568024439284012497">Accédez plus vite à Chrome depuis l'écran d'accueil de votre iPhone.</translation>
 <translation id="4574806550936185355">Activez "Verrouiller les onglets de navigation privée lorsque vous fermez Chrome"</translation>
 <translation id="4633328489441962921">Chrome ne parvient pas à rechercher les mises à jour</translation>
 <translation id="4636900170638246267">Connectez-vous à ce site et à Chrome.</translation>
 <translation id="4647910807533196601">Ouvrez votre dernier onglet dans Chrome.</translation>
 <translation id="4693084815234024320">Vous êtes en navigation privée Chrome</translation>
+<translation id="4708857722625759026">Accédez plus vite à Chrome depuis le dock de votre iPad.</translation>
 <translation id="4713740144985377441">Retournez dans Chrome pour importer votre fichier</translation>
 <translation id="4713907610796204963">Découvrez les bases utiles de Chrome pour bien démarrer</translation>
 <translation id="4724297637870447613">Utilisez Chrome où que vous soyez</translation>
@@ -149,6 +159,8 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="4903674399067644695">Cette fiche vous propose des suggestions pour profiter pleinement de Chrome.</translation>
 <translation id="49200511069271369">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous vous connectez et la manière dont Chrome peut être utilisé. Votre administrateur peut configurer ou limiter certaines fonctionnalités.</translation>
 <translation id="4925322001044117929">Utilisez Chrome sur iPad par défaut</translation>
+<translation id="4934496192263958600">Connectez-vous à Chrome pour accéder à vos données</translation>
+<translation id="496747131578053942">Astuce Chrome : recherchez ce que vous voyez avec Google Lens</translation>
 <translation id="498985224078955265">Pour envoyer cet onglet à un autre appareil, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="5030102366287574140">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
 <translation id="5109169629909011627">Afficher les favoris Chrome</translation>
@@ -225,16 +237,19 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 <translation id="6684809838922667136">Améliorer Chrome</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil lorsque vous étiez connecté seront supprimées. Il peut s'agir de l'historique et de mots de passe.}one{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil lorsque vous étiez connecté seront supprimées. Il peut s'agir de l'historique et de mots de passe.}other{Cela se produit quand Chrome est inutilisé pendant {THRESHOLD} minutes. Les données enregistrées uniquement sur cet appareil lorsque vous étiez connecté seront supprimées. Il peut s'agir de l'historique et de mots de passe.}}</translation>
 <translation id="6709398533399187136">Votre mot de passe a été compromis lors d'une violation des données. Le Gestionnaire de mots de passe de Google vous recommande de le modifier immédiatement.</translation>
+<translation id="6718973358446066955">Vous avez presque terminé de configurer Chrome !</translation>
 <translation id="6820553595690137150">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="6838525730752203626">Utiliser Chrome par défaut</translation>
+<translation id="6864705365700484754">Appuyez ici pour exploiter tout le potentiel de Chrome sur votre iPhone.</translation>
 <translation id="686691656039982452">Vous pouvez <ph name="BEGIN_LINK" />gérer les données Chrome à enregistrer<ph name="END_LINK" /> dans votre compte Google.
 
 Pour voir d'autres paramètres qui utilisent les données pour améliorer votre expérience Chrome, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Supprimez les données de navigation dans Chrome.</translation>
 <translation id="6924922227983877439">Ouvrir les liens dans Chrome par défaut</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour la saisie automatique</translation>
+<translation id="7001031184470316752">Déplacez Chrome vers votre dock</translation>
 <translation id="7038674195294813388">Ouvrez les réglages des apps par défaut dans iOS, appuyez sur "App du navigateur", puis sélectionnez Chrome.</translation>
 <translation id="7056826488869329999">Lance le contrôle de sécurité dans Chrome.</translation>
 <translation id="7061455974939528301">Appuyez de manière prolongée sur l'icône Chrome, puis cliquez sur "Modifier l'écran d'accueil"</translation>
@@ -305,6 +320,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8371138994040262994">Ouvre les réglages dans Chrome.</translation>
+<translation id="8375378038757507658">Utilisez facilement Chrome chaque fois que vous appuyez sur un lien dans un message ou une autre appli.</translation>
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>
 <translation id="8392023217086447677">Ouvert dans la navigation privée Chrome</translation>
 <translation id="840168496893712993">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez essayer de les désinstaller.</translation>

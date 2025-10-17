@@ -205,6 +205,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="3296368748942286671">Apps weiter im Hintergrund ausführen, wenn Chromium geschlossen wird</translation>
 <translation id="3313189106987092621">Chromium warnt dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="3316771292331273802">Wenn du alle Chromium-Fenster schließt, wirst du auf den meisten Websites abgemeldet – mit Ausnahme deines Google-Kontos, falls du in Chromium angemeldet bist. Wenn du möchtest, dass Websites dich wiedererkennen, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Deine Standardsuchmaschine wurde außerhalb von Chromium geändert. Zu deinem Schutz hat Chromium die Änderung rückgängig gemacht.</translation>
 <translation id="3352986031709923790">Rechte obere Ecke des Suchbereichs: rechts <ph name="RIGHT" /> %, oben <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Chromium-Daten in deinem Konto</translation>
 <translation id="3369405342922656244">Diese Seite mit der Bildersuche durchsuchen</translation>
@@ -397,6 +398,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="5941711191222866238">Minimieren</translation>
 <translation id="5949225980829865667">Wenn du auf allen deinen Geräten auf dieses Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="5953657885167112863">Chromium personalisieren</translation>
+<translation id="5960071705175224773">Deine Einstellungen wurden von einer unbekannten App geändert</translation>
 <translation id="5968400720580217226">KI‑Modus</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chromium automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird.}other{Deine Organisation hat festgelegt, dass Chromium automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird.}}</translation>
 <translation id="5987687638152509985">Aktualisiere Chromium, um die Synchronisierung zu starten</translation>

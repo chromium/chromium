@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">Закрыць дыялогавае акно водгуку</translation>
 <translation id="306179102415443347">Каб хутка адкрываць Менеджар пароляў Google, выкарыстоўвайце ярлык. Яго можна перамясціць на панэль запуску праграм або на галоўны экран камп’ютара.</translation>
 <translation id="3065168410429928842">Укладка Chrome</translation>
+<translation id="3073571714401714450">Уключыць/выключыць Gemini ў Chrome для распрацоўшчыкаў</translation>
 <translation id="3080151273017101988">Працягваць выконваць фонавыя праграмы, калі Google Chrome закрыты</translation>
 <translation id="308397506772922478">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Дайце назву свайму профілю Chrome</translation>
@@ -378,6 +379,7 @@
 <translation id="5368118228313795342">Дадатковы код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Таксама вызначае, якая старонка паказваецца пры запуску Chrome або пошуку з амнібокса.</translation>
 <translation id="5394833366792865639">Абагульце ўкладку Chrome</translation>
+<translation id="5402307365844630024">Уключыць/выключыць Gemini ў бэта-версіі Chrome</translation>
 <translation id="5430073640787465221">Файл параметраў пашкоджаны або няправільны.
 
 Не ўдалося аднавіць налады ў браўзеры Google Chrome.</translation>
@@ -429,6 +431,7 @@
 <translation id="5941711191222866238">Згарнуць</translation>
 <translation id="5941830788786076944">Зрабіць Google Chrome стандартным браўзерам</translation>
 <translation id="5947104538377036631">Ярлык для Chrome</translation>
+<translation id="5960071705175224773">Невядомая праграма змяніла вашы налады</translation>
 <translation id="5968400720580217226">Рэжым AI</translation>
 <translation id="5980111191913430208">Пашырэнні, праграмы і тэмы з невядомых крыніц могуць прычыніць шкоду вашай прыладзе. Chrome рэкамендуе ўсталёўваць іх толькі з наступнай крыніцы: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Ідзе спампоўванне… Застаецца <ph name="HOURS" /> гадз</translation>
@@ -652,6 +655,7 @@
 <translation id="8362914115861174987">Мова перакладу:</translation>
 <translation id="8366770919198174997">Зніжае прадукцыйнасць, але павышае ўстойлівасць Chrome супраць атак</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
+<translation id="8377158135256176353">Уключыць/выключыць Gemini ў Chrome Canary</translation>
 <translation id="8387459386171870978">Працягнуць работу ў Chrome</translation>
 <translation id="8394720698884623075">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chrome</translation>
 <translation id="8403038600646341038">Лагатып Chrome на экране камп’ютара.</translation>
@@ -700,12 +704,14 @@
 <translation id="8914504000324227558">Перазапусціць Chrome</translation>
 <translation id="8922193594870374009">Каб адпраўляць нумары з <ph name="ORIGIN" /> на свой тэлефон Android, увайдзіце ў Chrome на абедзвюх прыладах.</translation>
 <translation id="8922998289262614701">Выдаліць даныя гэтай праграмы з Chrome</translation>
+<translation id="8936233353620149764">Уключыць/выключыць Gemini ў Chrome</translation>
 <translation id="8948460679427074738">Для гэтага пашырэння не апублікаваны меры забеспячэння прыватнасці, напрыклад звесткі пра тое, як яно збірае і выкарыстоўвае даныя. Chrome рэкамендуе выдаліць яго.</translation>
 <translation id="8958307504142971576">Цяпер для вас даступна больш функцый у Chrome</translation>
 <translation id="8991530961471831170">Адкрыць Gemini ў Chrome</translation>
 <translation id="8992769679401294069">Вашы даныя зашыфраваны фразай-паролем. Каб захоўваць даныя Chrome ва Уліковым запісе Google і выкарыстоўваць іх, увядзіце фразу-пароль.</translation>
 <translation id="8999117580775242387">Калі пратакол HTTPS недаступны, Chrome без папярэджання будзе выкарыстоўваць неабароненае падключэнне</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ёсць абнаўленне Chrome}=1{Ёсць абнаўленне Chrome}one{Абнаўленне Chrome выйшла ўжо # дзень таму}few{Абнаўленне Chrome выйшла # дні таму}many{Абнаўленне Chrome выйшла # дзён таму}other{Абнаўленне Chrome выйшла # дня таму}}</translation>
+<translation id="9010418943148193727">Стандартная пошукавая сістэма была зменена па-за межамі Chrome. У мэтах бяспекі Chrome скінуў яе налады.</translation>
 <translation id="9014771989710951291">Некалькі арганізацый кіруюць браўзерам Chrome</translation>
 <translation id="9024318700713112071">Зрабіць Chrome стандартным браўзерам</translation>
 <translation id="9066987883552592250">Закрыць Gemini ў Chrome Canary</translation>

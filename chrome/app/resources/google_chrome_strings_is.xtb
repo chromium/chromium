@@ -190,6 +190,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3047590466164881923">Loka ábendingaglugga</translation>
 <translation id="306179102415443347">Notaðu flýtileiðina til að komast í Google-aðgangsorðastjórnun á skjótan hátt. Þú getur fært flýtileiðina á heimaskjá tölvunnar eða í ræsiforritið.</translation>
 <translation id="3065168410429928842">Chrome flipi</translation>
+<translation id="3073571714401714450">Velja/afvelja Gemini í Chrome Dev</translation>
 <translation id="3080151273017101988">Halda áfram að keyra forrit í bakgrunni þegar Google Chrome er lokað</translation>
 <translation id="308397506772922478">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-gögnunum á reikningnum þínum<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Gefðu Chrome prófílnum þínum heiti</translation>
@@ -379,6 +380,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="5368118228313795342">Viðbótarkóði: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Þetta stýrir því einnig hvaða síða er birt þegar þú ræsir Chrome eða leitar úr veffangastikunni.</translation>
 <translation id="5394833366792865639">Deila Chrome flipa</translation>
+<translation id="5402307365844630024">Velja/afvelja Gemini í Chrome Beta</translation>
 <translation id="5430073640787465221">Kjörstillingaskráin þín er skemmd eða ógild.
 
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
@@ -430,6 +432,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5941711191222866238">Minnka</translation>
 <translation id="5941830788786076944">Gera Google Chrome að sjálfgefnum vafra</translation>
 <translation id="5947104538377036631">Chrome-flýtilykill</translation>
+<translation id="5960071705175224773">Óþekkt forrit breytti stillingunum þínum</translation>
 <translation id="5968400720580217226">Gervigreindarstilling</translation>
 <translation id="5980111191913430208">Viðbætur, forrit og þemu frá óþekktum uppruna geta skaðað tækið þitt. Chrome mælir með að sækja slíkar skrár aðeins í <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Sækir... <ph name="HOURS" /> klst. eftir</translation>
@@ -653,6 +656,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8362914115861174987">Þýða yfir á</translation>
 <translation id="8366770919198174997">Dregur úr afköstum en auðveldar Chrome að verjast árásum</translation>
 <translation id="8370517070665726704">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
+<translation id="8377158135256176353">Velja/afvelja Gemini í Chrome Canary</translation>
 <translation id="8387459386171870978">Halda áfram að nota Chrome</translation>
 <translation id="8394720698884623075">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome</translation>
 <translation id="8403038600646341038">Chrome-lógó á tölvuskjá.</translation>
@@ -701,12 +705,14 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8922193594870374009">Til að senda númer úr <ph name="ORIGIN" /> í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
 <translation id="8922998289262614701">Fjarlægja þessi forritsgögn úr Chrome</translation>
+<translation id="8936233353620149764">Velja/afvelja Gemini í Chrome</translation>
 <translation id="8948460679427074738">Þessi viðbót hefur ekki gefið út vinnureglur um persónuvernd, svo sem hvernig hún safnar og notar gögn. Chrome mælir með að þú fjarlægir hana.</translation>
 <translation id="8958307504142971576">Nú standa fleiri eiginleikar þér til boða í Chrome</translation>
 <translation id="8991530961471831170">Opna Gemini í Chrome</translation>
 <translation id="8992769679401294069">Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
 <translation id="8999117580775242387">Ef HTTPS er ekki í boði mun Chrome notast við ótrygga tengingu án þess að vara þig við</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>
+<translation id="9010418943148193727">Sjálfgefnu leitarvélinni þinni var breytt utan Chrome. Chrome endurstillti hana til að vernda þig.</translation>
 <translation id="9014771989710951291">Mörg fyrirtæki hafa umsjón með Chrome</translation>
 <translation id="9024318700713112071">Stilltu Chrome sem sjálfgefinn vafra</translation>
 <translation id="9066987883552592250">Loka Gemini í Chrome Canary</translation>

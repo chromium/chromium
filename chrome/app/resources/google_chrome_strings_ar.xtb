@@ -188,6 +188,7 @@
 <translation id="3047590466164881923">إغلاق مربّع حوار الملاحظات</translation>
 <translation id="306179102415443347">‏استخدِم هذا الاختصار للوصول بسرعة إلى "مدير كلمات المرور في Google". بإمكانك نقل هذا الاختصار إلى الشاشة الرئيسية أو مشغِّل التطبيقات في جهاز الكمبيوتر.</translation>
 <translation id="3065168410429928842">‏علامة تبويب Chrome</translation>
+<translation id="3073571714401714450">‏تفعيل Gemini أو إيقافه في "إصدار مطوّري البرامج من Chrome"</translation>
 <translation id="3080151273017101988">‏استمرار تشغيل تطبيقات الخلفية عند إغلاق Google Chrome</translation>
 <translation id="308397506772922478">‏إذا نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">‏تسمية ملفك الشخصى على Chrome</translation>
@@ -377,6 +378,7 @@
 <translation id="5368118228313795342">الرمز البرمجي الإضافي: <ph name="EXTRA_CODE" /></translation>
 <translation id="5386244825306882791">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
+<translation id="5402307365844630024">‏تفعيل Gemini أو إيقافه في "الإصدار التجريبي من Chrome"</translation>
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
 <translation id="5468572406162360320">‏يُرسل Chrome تفاعلاتك مع هذه الميزات إلى Google للمساعدة في تحسينها. وقد يقرأ المراجعون هذه البيانات ويعالجونها ويضيفون تعليقات توضيحية إليها.</translation>
 <translation id="5510398294750420479">‏يكفي تنزيل متصفِّح Chrome على هاتفك للحصول على طبقة حماية إضافية أثناء التنقّل</translation>
@@ -426,6 +428,7 @@
 <translation id="5941711191222866238">تصغير</translation>
 <translation id="5941830788786076944">‏جعل Google Chrome المتصفّح التلقائي</translation>
 <translation id="5947104538377036631">‏اختصار Chrome</translation>
+<translation id="5960071705175224773">غيَّرَ تطبيق غير معروف إعداداتك</translation>
 <translation id="5968400720580217226">‏وضع AI</translation>
 <translation id="5980111191913430208">‏إنّ الإضافات والتطبيقات والمظاهر الواردة من مصادر غير معروفة يمكن أن تتسبّب في إلحاق الضرر بجهازك. ينصح Chrome بإجراء عملية التثبيت من خلال <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فقط.</translation>
 <translation id="6003112304606738118">جارٍ التنزيل… الساعات المتبقّية: <ph name="HOURS" /></translation>
@@ -649,6 +652,7 @@
 <translation id="8362914115861174987">الترجمة إلى</translation>
 <translation id="8366770919198174997">‏يقلِّل هذا الخيار من مستوى الأداء ويعزِّز من مقاومة Chrome للهجمات</translation>
 <translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
+<translation id="8377158135256176353">‏تفعيل Gemini في Chrome Canary أو إيقافه</translation>
 <translation id="8387459386171870978">‏مواصلة استخدام Chrome</translation>
 <translation id="8394720698884623075">‏يعمل هذا الوضع على التحقّق من عناوين URL باستخدام قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chrome.</translation>
 <translation id="8403038600646341038">‏شعار Chrome على شاشة كمبيوتر</translation>
@@ -697,12 +701,14 @@
 <translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>
 <translation id="8922193594870374009">‏لإرسال رقم من <ph name="ORIGIN" /> إلى هاتفك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>
 <translation id="8922998289262614701">‏إزالة بيانات هذا التطبيق من Chrome</translation>
+<translation id="8936233353620149764">‏تفعيل "Gemini في Chrome" أو إيقافه</translation>
 <translation id="8948460679427074738">‏لم تنشر هذه الإضافة الممارسات المتعلقة بالخصوصية، مثل كيفية جمعها للبيانات واستخدامها. ينصح متصفِّح Chrome بإزالتها.</translation>
 <translation id="8958307504142971576">‏تتوفّر الآن ميزات إضافية في Chrome</translation>
 <translation id="8991530961471831170">‏فتح Gemini في Chrome</translation>
 <translation id="8992769679401294069">‏تم تشفير بياناتك باستخدام عبارة المرور. ولاستخدام بيانات Chrome وحفظها في حسابك على Google، يجب إدخال عبارة المرور.</translation>
 <translation id="8999117580775242387">‏سيستخدم Chrome اتصالاً غير آمن بدون تحذيرك في حال عدم توفُّر بروتوكول HTTPS.</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏يتوفر تحديث لمتصفح Chrome}=1{‏يتوفر تحديث لمتصفح Chrome}two{‏يتوفر تحديث لمتصفح Chrome منذ يومين}few{‏يتوفر تحديث لمتصفح Chrome منذ # أيام}many{‏يتوفر تحديث لمتصفح Chrome منذ # يومًا}other{‏يتوفر تحديث لمتصفح Chrome منذ # يوم}}</translation>
+<translation id="9010418943148193727">‏تم تغيير محرك البحث التلقائي من مصدر خارج Chrome. ولحمايتك، أعاد Chrome ضبطه.</translation>
 <translation id="9014771989710951291">‏تدير مؤسسات متعدّدة متصفِّح Chrome</translation>
 <translation id="9024318700713112071">‏ضبط Chrome كمتصفّح تلقائي</translation>
 <translation id="9066987883552592250">‏إغلاق Gemini في Chrome Canary</translation>

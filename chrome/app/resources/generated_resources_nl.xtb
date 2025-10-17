@@ -249,7 +249,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1162479191445552288">Openen bij opstarten</translation>
 <translation id="1163931534039071049">&amp;Framebron bekijken</translation>
 <translation id="1164015913575846413">Alt + klikken</translation>
-<translation id="1164286072721995435">Deelt het huidige tabblad met Gemini elke keer als je een nieuw gesprek begint. Je kunt het delen van je huidige tabblad altijd onderbreken. Je gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="1164891049599601209">Ingevoerd op misleidende site</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1166212789817575481">Tabbladen aan de rechterkant sluiten</translation>
@@ -538,7 +537,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1353980523955420967">PPD kan niet worden gevonden. Zorg dat je Chromebook online is en probeer het opnieuw.</translation>
 <translation id="1354045473509304750">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt</translation>
 <translation id="1354148503392558902">Wachtwoord wijzigen...</translation>
-<translation id="1354943694624358993">Huidig tabblad altijd delen</translation>
 <translation id="1355088139103479645">Alle gegevens verwijderen?</translation>
 <translation id="1355088659320425659">Geschiedenis en tabbladen</translation>
 <translation id="1356376170199999104">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet de microfoon aan met de fysieke schakelaar.</translation>
@@ -1237,6 +1235,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1829192082282182671">Uitz&amp;oomen</translation>
 <translation id="1830550083491357902">Niet ingelogd</translation>
 <translation id="1831848493690504725">We kunnen Google niet bereiken via het verbonden netwerk. Kies een ander netwerk of check je netwerkinstellingen of proxyinstellingen (als je een proxy gebruikt).</translation>
+<translation id="1832414451155700364">Kies of je je geschiedenis en tabbladen wilt synchroniseren</translation>
 <translation id="1832459821645506983">Ja, is goed</translation>
 <translation id="1832511806131704864">Telefoonwijziging geüpdatet</translation>
 <translation id="1832848789136765277">Bevestig dat jij het bent zodat je altijd toegang hebt tot je synchronisatiegegevens</translation>
@@ -2363,7 +2362,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2605668923777146443">Ga naar <ph name="LINK_BEGIN" />Instellingen<ph name="LINK_END" /> om je opties voor Better Together te bekijken.</translation>
 <translation id="2606246518223360146">Gegevens linken</translation>
 <translation id="2606454609872547359">Nee, doorgaan zonder ChromeVox</translation>
-<translation id="2606568927909309675">Maakt automatisch een ondertiteling voor audio en video in het Engels. De audio en ondertiteling worden nooit doorgestuurd vanaf je apparaat.</translation>
 <translation id="2606890864830643943">Diagnostische gegevens exporteren</translation>
 <translation id="2607101320794533334">Informatie van openbare sleutel van entiteit</translation>
 <translation id="2609533306502181883">Doe onderzoek naar een onderwerp</translation>
@@ -2415,6 +2413,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2636266464805306348">Venstertitels</translation>
 <translation id="2637313651144986786">Tabbladen doorzoeken...</translation>
 <translation id="2637400434494156704">Onjuiste pincode. Je hebt nog één poging over.</translation>
+<translation id="263796568413910992">Vraag het aan <ph name="SEARCH_ENGINE_NAME" /> of typ een URL</translation>
 <translation id="2638662041295312666">Inlogafbeelding</translation>
 <translation id="2640299212685523844">GTK gebruiken</translation>
 <translation id="264083724974021997">Verbinding maken met je telefoon: dialoogvenster</translation>
@@ -5764,7 +5763,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4956593309300508411">Delen stoppen?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Alleen opslaan in een map op dit apparaat?</translation>
-<translation id="4958916254663453555">Je huidige tabblad wordt automatisch gedeeld als je Gemini opent in Chrome. De volledige content en URL van het huidige tabblad worden naar Google gestuurd.</translation>
 <translation id="4959262764292427323">Wachtwoorden worden in je Google-account opgeslagen, zodat je deze op elk apparaat kunt gebruiken</translation>
 <translation id="4960020053211143927">Niet ondersteund door bepaalde apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5876,7 +5874,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5045367873597907704">Over HID-apparaten</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="504561833207953641">Wordt geopend in een bestaande browsersessie.</translation>
-<translation id="5047544190872578914">Deelt het huidige tabblad met Gemini elke keer als je een nieuw gesprek begint. Je kunt het delen van je huidige tabblad altijd onderbreken.</translation>
 <translation id="504953514574706691">Tabblad uitgesloten van voorgestelde groep</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Niet-geverifieerd bestand downloaden</translation>
@@ -6395,6 +6392,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5414836363063783498">Verifiëren…</translation>
 <translation id="5415328625985164836">Dit is een bètaprogramma. Je kunt Steam nu gebruiken om bepaalde games op je Chromebook te spelen.</translation>
 <translation id="5415497281076257439">Woordgroep</translation>
+<translation id="5415871492522952905">Je krijgt toegang tot je geschiedenis en tabbladen op al je apparaten, zodat je kunt doorgaan met waar je mee bezig was</translation>
 <translation id="5417293056300086453">Deze site kan ID's gebruiken om beveiligde content af te spelen.</translation>
 <translation id="5417312524372586921">Browserthema's</translation>
 <translation id="541737483547792035">Scherm vergroten</translation>
@@ -6605,6 +6603,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5555760010546505198">Kleurinversie, kleurcorrectie, vergrootglas en weergave-instellingen</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> aanzetten</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
+<translation id="555671485580955310">Geschiedenis en tabbladen synchroniseren</translation>
 <translation id="5558129378926964177">&amp;Inzoomen</translation>
 <translation id="5558594314398017686">OS-standaard (indien beschikbaar)</translation>
 <translation id="5559311991468302423">Adres verwijderen</translation>
@@ -8778,6 +8777,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7088960765736518739">Toegang via schakelaar</translation>
 <translation id="7089253021944603172">Tabblad weer actief</translation>
 <translation id="7090714929377281710">Hotspot automatisch uitzetten</translation>
+<translation id="7092452922791061650">Klik met de rechtermuisknop op dit tabblad en selecteer Nieuwe gesplitste weergave met huidig tabblad</translation>
 <translation id="7092504544229909737">Kan niet worden gebruikt met Android-apps</translation>
 <translation id="7093220653036489319">Snelle antwoorden</translation>
 <translation id="7093866338626856921">Gegevens uitwisselen met de apparaten met de naam: <ph name="HOSTNAMES" /></translation>
@@ -10567,6 +10567,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8310409247509201074"><ph name="NUM" /> tabbladen</translation>
 <translation id="831207808878314375">Definitie</translation>
 <translation id="8312841338723044391">LIVE</translation>
+<translation id="8313308349366087671">App-opties</translation>
 <translation id="8314089908545021657">Koppelen met nieuwe telefoon</translation>
 <translation id="8314381333424235892">Ontbrekende of verwijderde extensie</translation>
 <translation id="831440797644402910">Kan deze map niet openen</translation>
@@ -10727,7 +10728,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8419098111404128271">Zoekresultaten voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="8419144699778179708">Hiermee verwijder je de geschiedenis, waaronder die in het zoekvak</translation>
 <translation id="8420308167132684745">Woordenboekitems bewerken</translation>
-<translation id="8421361468937925547">Live ondertiteling (alleen Engels)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Lade ontbreekt</translation>
 <translation id="8424250197845498070">Geblokkeerd door Geavanceerde beveiliging</translation>
@@ -11024,6 +11024,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8637688295594795546">Systeemupdate beschikbaar. Download voorbereiden...</translation>
 <translation id="8638719155236856752">ChromeOS-netwerkstatus</translation>
 <translation id="8639635302972078117">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
+<translation id="8639963783467694461">Instellingen voor Automatisch invullen</translation>
 <translation id="8640575194957831802">Laatst geopend</translation>
 <translation id="8641946446576357115">Je wachtwoorden gebruiken op je iOS-apparaten</translation>
 <translation id="8642577642520207435">Camerarecht voor <ph name="APP_NAME" /></translation>

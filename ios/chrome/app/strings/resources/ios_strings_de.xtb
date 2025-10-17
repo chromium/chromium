@@ -457,7 +457,6 @@
 <translation id="2721190673959776287">Beispiel für ein umfassendes Infofeld im Kontextmenü, das mehrmals täglich angezeigt wird.</translation>
 <translation id="2739887572830526131">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie löschen, wenn du sie nicht mehr benötigst.</translation>
 <translation id="2747003861858887689">Vorheriges Feld</translation>
-<translation id="2749231692441336879">Du folgst <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755485474385016903">Änderungen sind für alle Gruppenmitglieder sichtbar</translation>
 <translation id="2755595981383829244">Du erhältst jetzt Benachrichtigungen zu Inhalten</translation>
 <translation id="2761788987260570878">Mach ein Foto von deiner Suche</translation>
@@ -480,6 +479,7 @@
 <translation id="2816489851009559785">„Menü“ → Einstellungen → „Standardbrowser“</translation>
 <translation id="2818821771744632548">Du wurdest beim Zurücksetzen deines iPhones von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="2819667972867209401">Wenn diese Option aktiviert ist, werden Daten in deinem Google-Konto gespeichert. Ist sie deaktiviert, werden die Daten nur auf diesem Gerät gespeichert und gelöscht, wenn du dich abmeldest.</translation>
+<translation id="2825777862277359739">Melde dich an, um deine Passwörter, Tabs, Lesezeichen und andere Daten abzurufen.</translation>
 <translation id="2827760117436553203">Daten getrennt halten?</translation>
 <translation id="2829172210806130158">Auf dem Bildschirm suchen</translation>
 <translation id="2831109159746537587">Zum Suchen kannst du das Bild einkreisen oder darauf tippen</translation>
@@ -503,7 +503,6 @@
 <translation id="29153882450867370">„Preis beobachten“ ausblenden</translation>
 <translation id="291754862089661335">Positioniere den QR-Code oder Barcode in diesem Bereich</translation>
 <translation id="2918688092312652908">Als ungelesen markieren</translation>
-<translation id="2920866371965792875">Wenn du Neuigkeiten von dieser Website sehen möchtest, klicke hier, um ihr zu folgen.</translation>
 <translation id="2922210239002704889">Rufe die Startseite oder Tastatur auf</translation>
 <translation id="2924940770243654951">In neuem Inkognitotab öffnen</translation>
 <translation id="2931440415625410757">Anleitung einblenden</translation>
@@ -606,6 +605,7 @@
 <translation id="3371831930909698441">Übersetzer ist verfügbar. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="3377063233124932127">Deine gespeicherten Lesezeichen, Passwörter und mehr werden jetzt oben angezeigt.</translation>
 <translation id="3380352560400387991">Diese Website versucht, eine App zu öffnen. Dadurch verlässt du den Inkognitomodus.</translation>
+<translation id="3385742921291399323">Du kannst deine gespeicherten Passwörter, Tabs, Lesezeichen und andere Daten abrufen.</translation>
 <translation id="3392923070107623576">Mit Tabgruppen den Überblick behalten</translation>
 <translation id="3404232721752787413">In Google Fotos speichern</translation>
 <translation id="3406506285180498376">Seite teilen…</translation>
@@ -633,6 +633,7 @@
 <translation id="3504377992102007712">Einstellungen</translation>
 <translation id="35083190962747987">${url} öffnen</translation>
 <translation id="3511519535430890904">Browsing-Schutz hinzufügen</translation>
+<translation id="3512572904898385012">Du kannst jetzt mit deiner Kamera einkaufen und Texte übersetzen lassen. Tippe, um es auszuprobieren.</translation>
 <translation id="3517216995152707259">Durch das Löschen deiner Browserdaten wirst du nicht von deinem Google-Konto abgemeldet. Wenn du dich von deinem Google-Konto abmelden möchtest, <ph name="BEGIN_LINK" />melde dich von Chrome ab<ph name="END_LINK" />.</translation>
 <translation id="3519792890877853853">Auf dieser Karte werden Rezensionen für Produkte auf deinen geöffneten Tabs angezeigt</translation>
 <translation id="3519905498307021260">{count,plural, =1{Tab öffnen}other{{count} Tabs öffnen}}</translation>
@@ -656,6 +657,7 @@
 <translation id="3575426792457739946">Diese Liste enthält alle geladenen Profile.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, von deiner Organisation verwaltet.</translation>
 <translation id="3581564640715911333">Übersetzung für Seiten in andere Sprachen anbieten</translation>
+<translation id="3587482841069643663">Alle</translation>
 <translation id="3587885837929752825">Deine Organisation legt fest, was du in deinem Google-Konto speichern kannst.</translation>
 <translation id="3588820906588687999">Bild in neuem Tab öffnen</translation>
 <translation id="3595252146048399851">In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
@@ -951,7 +953,6 @@
 <translation id="4752348350801431746">„Sicherheitscheck“-Benachrichtigungen deaktivieren…</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4764612367328936189">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="4766112107778026136">Discover &amp; Folgen</translation>
 <translation id="4769198578611055647">Mit dieser PIN kannst du von jedem Gerät auf deine gespeicherten Passkeys zugreifen</translation>
 <translation id="4782952780741793211">Bestätigungscode:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1060,6 +1061,7 @@
 <translation id="5145331760738811130">Tab-Wechsler beenden</translation>
 <translation id="5148717509369231739">Safari-Daten importieren</translation>
 <translation id="5152483358138813104">Schneller auf allen deinen Geräten anmelden</translation>
+<translation id="5155502059906700593">Du kannst die Adressleiste nach oben oder unten verschieben.</translation>
 <translation id="5157638238828697074">Ein Fehler ist aufgetreten. Die App konnte nicht geöffnet werden.</translation>
 <translation id="5163417375525818870">PDF‑Dateien</translation>
 <translation id="5168414296986405587">Entwickelt für iPadOS</translation>
@@ -1135,6 +1137,7 @@
 <translation id="5457082343331641453">Suchanfrage ergänzen</translation>
 <translation id="5457226814769348910">Offlineversion öffnen</translation>
 <translation id="5467163657366219870">Maps-Vorabversion deaktivieren</translation>
+<translation id="5474397204728336997">Passwörter für Familienmitglieder, neue Anpassungsoptionen und mehr. Tippe, um weitere Informationen zu erhalten.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Kein Passwort importiert}=1{{count} Passwort importiert}other{{count} Passwörter importiert}}</translation>
 <translation id="5478327362747197944">Du kannst Kalendertermine durch Klicken auf ein Datum auf einer Webseite direkt erstellen.</translation>
 <translation id="5482922178977937393">Möchtest du auf deine Interessen abgestimmte Benachrichtigungen zu aktuellen Nachrichten, Sport und mehr erhalten?</translation>
@@ -1279,6 +1282,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5971459446352190251">QR‑Code-Suche</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 Lesezeichen gelöscht}other{{count} Lesezeichen gelöscht}}</translation>
 <translation id="5972844218283131174">Auswahl für alle aufheben</translation>
+<translation id="5976160379964388480">Sonstige</translation>
 <translation id="5977976211062815271">Auf diesem Gerät</translation>
 <translation id="5986043348928676121">Weiter</translation>
 <translation id="598634819525651074">Bereich</translation>
@@ -1308,6 +1312,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6084848228346514841">Tabs auswählen</translation>
 <translation id="6089212833343035912">PIN für Google Passwortmanager</translation>
 <translation id="6090760257419195752">Geschlossene Warnungen</translation>
+<translation id="6094325891006032858">Erweitertes Safe Browsing aktivieren</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> gefunden</translation>
 <translation id="6100617279104942061">Angemeldet als <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
 <translation id="6100676328067737810">Deine Daten werden in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert.</translation>
@@ -1324,6 +1329,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6140600850356225166">Links aus anderen Apps im Inkognitomodus öffnen</translation>
 <translation id="6140948187512243695">Details ansehen</translation>
 <translation id="6144589619057374135">${url} im Inkognitomodus öffnen</translation>
+<translation id="6146563240635539929">Videos</translation>
 <translation id="6147279996212084542">Erklären</translation>
 <translation id="6151006591088192882">Inkognitotabs mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="6152340033632117531">Inaktiv</translation>
@@ -1343,6 +1349,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6196207969502475924">Sprachsuche</translation>
 <translation id="6198252989419008588">PIN ändern</translation>
+<translation id="6199783146233591178">Mit dem erweiterten Safe Browsing in Echtzeit geschützt sein</translation>
 <translation id="6210079381482819663">Tabs, die <ph name="THRESHOLD" /> Tage oder länger nicht verwendet wurden, werden hierhin verschoben. Du kannst dies jederzeit <ph name="BEGIN_LINK" />in den Einstellungen<ph name="END_LINK" /> ändern.</translation>
 <translation id="6213281885682386884">Keine Adressen gefunden</translation>
 <translation id="6218508144653756827">Fuchsiafarbenes Design</translation>
@@ -1365,7 +1372,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6271824294945464304">Passwort teilen</translation>
 <translation id="628251768213143684">Du kannst jederzeit festlegen, was in deinem Google-Konto gespeichert werden soll</translation>
 <translation id="6284652193729350524">Übersetzung für <ph name="LANGUAGE" /> anbieten</translation>
-<translation id="6289501276895392862">Du folgst <ph name="CHANNEL_NAME" /> nicht mehr</translation>
 <translation id="6293101329759844770">Wenn du Safe Browsing aktivieren möchtest, öffne <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" /> und tippe auf „Safe Browsing“.</translation>
 <translation id="6295751040240588413">Ungültiger Kartenalias</translation>
 <translation id="629730747756840877">Konto</translation>
@@ -1394,6 +1400,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="63519665078626091">Wenn du den Web Inspector verwenden möchtest, musst du auf einem Computer mithilfe eines Kabels eine Verbindung zu Safari herstellen und über das Menü „Entwickler“ auf das iPad zugreifen. Du kannst das Menü „Entwickler“ im Bereich „Erweitert“ in den Safari-Einstellungen auf deinem Computer aktivieren.</translation>
 <translation id="6355820183143562453">Karte „Preis-Tracking“ ausblenden</translation>
 <translation id="6355820205320395730">Schwache Passwörter sind einfach zu erraten. Erstelle deshalb am besten starke Passwörter. <ph name="BEGIN_LINK" />Weitere Sicherheitstipps ansehen.<ph name="END_LINK" /></translation>
+<translation id="6357455205205567365">Melde dich an, um alle deine Daten wie z. B. Passwörter und Lesezeichen abzurufen.</translation>
 <translation id="6368038301482806847">Wählen Sie die Suchmaschine aus der Liste.</translation>
 <translation id="6368102751067608420">So löschst du alle Daten im Passwortmanager</translation>
 <translation id="6372558618707314581">Rufe eine beliebige Seite auf</translation>
@@ -1468,6 +1475,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6625830436658400045">Deine Synchronisierungseinstellungen werden auf Grundlage deiner letzten Sicherung wiederhergestellt. In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> kannst du auswählen, was synchronisiert werden soll.</translation>
 <translation id="6627583120233659107">Ordner bearbeiten</translation>
 <translation id="6629759408545977279">Von: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="66306952800092318">Dank zusätzlicher Schutzmaßnahmen kannst du dich besser vor Onlinebedrohungen schützen.</translation>
 <translation id="6634432609054530164">Deine Organisation hat den Inkognitomodus deaktiviert</translation>
 <translation id="6637478299472506933">Fehler beim Download</translation>
 <translation id="6638511529934826365">Text zoomen…</translation>
@@ -1495,7 +1503,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6708501134077648845">Passwortoptionen</translation>
 <translation id="6709964700841491574">Sperrmodus</translation>
 <translation id="6710079714193676716">Von deiner Organisation verwaltet. Einige Funktionen sind möglicherweise nicht verfügbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="671310123089116995">Zum Feed</translation>
 <translation id="6713676799463473249">Geändert: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Erhaltene Tabs</translation>
 <translation id="6723740634201835758">Im Google-Konto</translation>
@@ -1888,6 +1895,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8221665793629393739">Erinnerung zum erneuten Besuch dieser Webseite</translation>
 <translation id="8232956427053453090">Daten aufbewahren</translation>
 <translation id="8233237502828137700">Werbebanner schließen</translation>
+<translation id="8250920743982581267">Dokumente</translation>
 <translation id="8258734532103758067">Ich habe meine Daten exportiert</translation>
 <translation id="8258999165172757081">Hinzugefügt</translation>
 <translation id="8261506727792406068">Löschen</translation>
@@ -1934,6 +1942,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8395180897620197612">Protokollierung anhalten</translation>
 <translation id="8407669440184693619">Keine Passwörter für diese Website gefunden</translation>
 <translation id="8407831512155324054">Deine Passwörter sind stark</translation>
+<translation id="8414030140103493759">Foto / Video aufnehmen</translation>
 <translation id="8414283596511250978">Nie wieder Passwörter vergessen</translation>
 <translation id="842523302461531262">Zu den Einstellungen</translation>
 <translation id="8428045167754449968">Stadt/Ort</translation>
@@ -1947,6 +1956,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8473863474539038330">Adressen und andere Daten</translation>
 <translation id="8474378002946546633">Benachrichtigungen zulassen</translation>
 <translation id="8477178913400731244">Daten löschen</translation>
+<translation id="847939250509903814">Fotogalerie</translation>
 <translation id="8481184073299279701">Tippe auf die Schaltfläche „Protokollierung starten“, um künftig Protokolle und Fehler von allen Tabs der JavaScript-Konsole zu erheben. Protokolle werden erfasst und ausschließlich im Speicher aufbewahrt, bis die Seite geschlossen oder auf „Protokoll anhalten“ getippt wird.</translation>
 <translation id="8487667956631253959">An</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
@@ -2110,7 +2120,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="9055291197094969722">Mit Tabgruppen kannst du deine geöffneten Tabs organisieren und bist produktiver</translation>
 <translation id="9055580485132823283">Du bist im Begriff, {password_count} Passwörter, {passkey_count} Passkeys und die Liste der Websites und Apps zu löschen, für die du festgelegt hast, dass Anmeldedaten nie gespeichert werden sollen. Konten, die du für Websites und Apps erstellt hast, werden nicht gelöscht.</translation>
 <translation id="9057030985451135243">Informationen zu geteilten Tabgruppen</translation>
-<translation id="9057972802061533987">Folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9066097352053395362">„Lesezeichen bearbeiten“ ausblenden</translation>
 <translation id="9070824521421603770">Du wirst abgemeldet und Tabs werden geschlossen</translation>
@@ -2123,7 +2132,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="9087339162317338348">Es wird nach Möglichkeit HTTPS verwendet und du erhältst eine Warnung, bevor Websites geladen werden, die das Protokoll nicht unterstützen.</translation>
 <translation id="9090979472668095374">Per Stimme antworten</translation>
 <translation id="9094033019050270033">Passwort aktualisieren</translation>
-<translation id="9097506547406246598">Nicht mehr folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> Passwörter löschen?</translation>
 <translation id="9099233023029360602">Jedes Mal nachfragen, welches Konto verwendet werden soll</translation>
 <translation id="9099821309562615674">Achte darauf, dass der Text, den du übersetzen möchtest, vollständig lesbar und im Bild ist.</translation>
@@ -2154,6 +2162,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="9203951165704618409">Du kannst festlegen, dass die Adressleiste unten statt oben angezeigt wird, und so den Browser deinen Wünschen entsprechend anpassen.</translation>
 <translation id="9205189991633470489">Inkognitosperre</translation>
 <translation id="9206887540681440657">Geschwindigkeit</translation>
+<translation id="9219103736887031265">Bilder</translation>
 <translation id="9219154867334666734">Auf Tabs suchen…</translation>
 <translation id="9223358826628549784">Absturzbericht wurde gesendet.</translation>
 <translation id="926455622548529175">Wechseln und löschen</translation>

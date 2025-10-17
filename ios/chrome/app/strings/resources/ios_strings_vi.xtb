@@ -457,7 +457,6 @@
 <translation id="2721190673959776287">Ví dụ về thông tin trợ giúp chi tiết trong sản phẩm cho Bảng theo ngữ cảnh. Thông tin này sẽ xuất hiện nhiều lần trong ngày.</translation>
 <translation id="2739887572830526131">Giữ lại nhóm này để thêm thẻ sau hoặc xoá nhóm này nếu bạn không cần nữa.</translation>
 <translation id="2747003861858887689">Trường trước</translation>
-<translation id="2749231692441336879">Đang theo dõi <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755485474385016903">Mọi người trong nhóm đều thấy các thay đổi đã thực hiện</translation>
 <translation id="2755595981383829244">Từ giờ, bạn sẽ nhận được thông báo về nội dung</translation>
 <translation id="2761788987260570878">Chụp ảnh nội dung bạn muốn tìm kiếm</translation>
@@ -504,7 +503,6 @@
 <translation id="29153882450867370">Ẩn "Theo dõi giá"</translation>
 <translation id="291754862089661335">Đặt mã QR hoặc mã vạch vào khung này</translation>
 <translation id="2918688092312652908">Đánh dấu là chưa đọc</translation>
-<translation id="2920866371965792875">Để xem thông tin cập nhật của trang web này, hãy theo dõi tại đây.</translation>
 <translation id="2922210239002704889">Chuyển đến trang chủ hoặc bàn phím</translation>
 <translation id="2924940770243654951">Mở trong thẻ Ẩn danh mới</translation>
 <translation id="2931440415625410757">Hiện hướng dẫn</translation>
@@ -659,6 +657,7 @@
 <translation id="3575426792457739946">Danh sách này chứa mọi hồ sơ đã tải.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, do tổ chức của bạn quản lý.</translation>
 <translation id="3581564640715911333">Đề xuất dịch trang viết bằng các ngôn ngữ khác</translation>
+<translation id="3587482841069643663">Tất cả</translation>
 <translation id="3587885837929752825">Tổ chức của bạn giới hạn những nội dung bạn có thể lưu trong Tài khoản Google.</translation>
 <translation id="3588820906588687999">Mở ảnh trong thẻ mới</translation>
 <translation id="3595252146048399851">Bạn có thể chọn nội dung muốn đồng bộ hoá trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> bất cứ lúc nào. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
@@ -954,7 +953,6 @@
 <translation id="4752348350801431746">Tắt thông báo của tính năng Kiểm tra an toàn…</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4764612367328936189">Tổ chức của bạn chỉ cho phép bạn đăng nhập bằng một số tài khoản nhất định. Các tài khoản không được phép sẽ bị ẩn. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
-<translation id="4766112107778026136">Khám phá và theo dõi</translation>
 <translation id="4769198578611055647">Giúp bạn sử dụng khoá truy cập đã lưu trên mọi thiết bị</translation>
 <translation id="4782952780741793211">Mã xác nhận:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1284,6 +1282,7 @@
 <translation id="5971459446352190251">Tìm kiếm mã QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Đã xoá 1 dấu trang}other{Đã xoá {count} dấu trang}}</translation>
 <translation id="5972844218283131174">Bỏ chọn tất cả</translation>
+<translation id="5976160379964388480">Khác</translation>
 <translation id="5977976211062815271">Trên thiết bị này</translation>
 <translation id="5986043348928676121">Tiếp theo</translation>
 <translation id="598634819525651074">Diện tích</translation>
@@ -1330,6 +1329,7 @@
 <translation id="6140600850356225166">Yêu cầu mở đường liên kết từ các ứng dụng khác ở chế độ ẩn danh</translation>
 <translation id="6140948187512243695">Hiển thị chi tiết</translation>
 <translation id="6144589619057374135">Mở ${url} ở Chế độ ẩn danh</translation>
+<translation id="6146563240635539929">Video</translation>
 <translation id="6147279996212084542">Giải thích</translation>
 <translation id="6151006591088192882">Mở khoá các thẻ Ẩn danh bằng <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Không hoạt động</translation>
@@ -1372,7 +1372,6 @@
 <translation id="6271824294945464304">Chuẩn bị chia sẻ mật khẩu</translation>
 <translation id="628251768213143684">Bạn luôn có thể quản lý nội dung đã lưu trong Tài khoản Google của mình</translation>
 <translation id="6284652193729350524">Đề xuất dịch <ph name="LANGUAGE" /></translation>
-<translation id="6289501276895392862">Đã ngừng theo dõi <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Để bật tính năng Duyệt web an toàn, hãy mở <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /> rồi nhấn vào Duyệt web an toàn.</translation>
 <translation id="6295751040240588413">Biệt hiệu của thẻ không hợp lệ</translation>
 <translation id="629730747756840877">Tài khoản</translation>
@@ -1504,7 +1503,6 @@
 <translation id="6708501134077648845">Các lựa chọn mật khẩu</translation>
 <translation id="6709964700841491574">Chế độ khoá</translation>
 <translation id="6710079714193676716">Do tổ chức của bạn quản lý. Bạn có thể không dùng được một số tính năng. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
-<translation id="671310123089116995">Chuyển đến Nguồn cấp dữ liệu</translation>
 <translation id="6713676799463473249">Đã sửa đổi vào <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Đã nhận thẻ</translation>
 <translation id="6723740634201835758">Trong Tài khoản Google của bạn</translation>
@@ -1897,6 +1895,7 @@
 <translation id="8221665793629393739">Lời nhắc bạn truy cập lại</translation>
 <translation id="8232956427053453090">Lưu giữ dữ liệu</translation>
 <translation id="8233237502828137700">Đóng biểu ngữ gợi ý mẹo</translation>
+<translation id="8250920743982581267">Tài liệu</translation>
 <translation id="8258734532103758067">Tôi đã xuất dữ liệu của mình</translation>
 <translation id="8258999165172757081">Đã thêm</translation>
 <translation id="8261506727792406068">Xoá</translation>
@@ -2121,7 +2120,6 @@
 <translation id="9055291197094969722">Tạo nhóm thẻ để sắp xếp các thẻ đang mở và luôn làm việc hiệu quả</translation>
 <translation id="9055580485132823283">Bạn sắp xoá {password_count} mật khẩu, {passkey_count} khoá truy cập cũng như danh sách trang web và ứng dụng mà bạn chọn không bao giờ lưu thông tin đăng nhập. Mọi tài khoản bạn tạo cho các trang web và ứng dụng sẽ không bị xoá.</translation>
 <translation id="9057030985451135243">Tìm hiểu về nhóm thẻ được chia sẻ</translation>
-<translation id="9057972802061533987">Không theo dõi được. Đã xảy ra lỗi.</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9066097352053395362">Ẩn tuỳ chọn Chỉnh sửa dấu trang</translation>
 <translation id="9070824521421603770">Hệ thống sẽ đăng xuất bạn và đóng các thẻ</translation>
@@ -2134,7 +2132,6 @@
 <translation id="9087339162317338348">Sử dụng HTTPS bất cứ khi nào có thể và nhận thông tin cảnh báo trước khi tải những trang web không hỗ trợ HTTPS.</translation>
 <translation id="9090979472668095374">Nói câu trả lời</translation>
 <translation id="9094033019050270033">Cập nhật mật khẩu</translation>
-<translation id="9097506547406246598">Không ngừng theo dõi được. Đã xảy ra lỗi.</translation>
 <translation id="9098541895599151034">Xoá <ph name="NUMBER_OF_ACCOUNTS" /> mật khẩu?</translation>
 <translation id="9099233023029360602">Luôn hỏi xem tôi muốn dùng tài khoản nào</translation>
 <translation id="9099821309562615674">Hãy đảm bảo rằng văn bản bạn đang dịch được trình bày rõ ràng và nằm trong khung hình.</translation>
@@ -2165,6 +2162,7 @@
 <translation id="9203951165704618409">Chuyển thanh địa chỉ từ trên cùng xuống dưới cùng để có trải nghiệm duyệt web phù hợp với nhu cầu riêng.</translation>
 <translation id="9205189991633470489">Khoá Chế độ ẩn danh</translation>
 <translation id="9206887540681440657">Tốc độ</translation>
+<translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="9219154867334666734">Tìm thẻ…</translation>
 <translation id="9223358826628549784">Đã gửi báo cáo lỗi.</translation>
 <translation id="926455622548529175">Đổi và xoá</translation>

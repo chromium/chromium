@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">フィードバック ダイアログを閉じる</translation>
 <translation id="306179102415443347">ショートカットを使用して Google パスワード マネージャーにすばやくアクセスできます。ショートカットはパソコンのホーム画面やアプリ ランチャーに移動できます。</translation>
 <translation id="3065168410429928842">Chrome タブ</translation>
+<translation id="3073571714401714450">Gemini in Chrome Dev を切り替える</translation>
 <translation id="3080151273017101988">Google Chrome を閉じた際にバックグラウンド アプリの処理を続行する</translation>
 <translation id="308397506772922478">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />してください。</translation>
 <translation id="3100998948628680988">Chrome プロファイルの名前を設定</translation>
@@ -372,6 +373,7 @@
 <translation id="5368118228313795342">他のコード: <ph name="EXTRA_CODE" />。</translation>
 <translation id="5386244825306882791">この拡張機能では、Chrome の起動時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="5394833366792865639">Chrome タブの共有</translation>
+<translation id="5402307365844630024">Gemini in Chrome Beta を切り替える</translation>
 <translation id="5430073640787465221">ユーザー設定ファイルが壊れているか無効です。設定を復元できません。</translation>
 <translation id="5468572406162360320">Chrome では、これらの機能を改善するため、ユーザーの操作内容を Google に送信します。このデータは人間のレビュアーによって読み取られ、処理され、注釈が付けられる可能性があります。</translation>
 <translation id="5510398294750420479">スマートフォンに Chrome をダウンロードして、外出先でのセキュリティを強化できます</translation>
@@ -421,6 +423,7 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">Google Chrome を既定のブラウザにする</translation>
 <translation id="5947104538377036631">Chrome のショートカット</translation>
+<translation id="5960071705175224773">不明なアプリによって設定が変更されました</translation>
 <translation id="5968400720580217226">AI モード</translation>
 <translation id="5980111191913430208">提供元不明の拡張機能、アプリ、テーマはデバイスに危害を及ぼす可能性があります。<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> で公開されているアイテムのみをインストールすることをおすすめします</translation>
 <translation id="6003112304606738118">ダウンロードしています... 残り <ph name="HOURS" /> 時間です</translation>
@@ -644,6 +647,7 @@
 <translation id="8362914115861174987">訳文の言語</translation>
 <translation id="8366770919198174997">パフォーマンスは低下しますが、攻撃に対する Chrome の耐性が強化されます</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
+<translation id="8377158135256176353">Gemini in Chrome Canary を切り替える</translation>
 <translation id="8387459386171870978">Chrome を引き続き使用</translation>
 <translation id="8394720698884623075">Chrome に保存されている安全でないサイトのリストと URL を照合します</translation>
 <translation id="8403038600646341038">パソコンの画面に表示された Chrome のロゴ。</translation>
@@ -692,12 +696,14 @@
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8922998289262614701">Chrome からこのアプリのデータを削除する</translation>
+<translation id="8936233353620149764">Gemini in Chrome を切り替える</translation>
 <translation id="8948460679427074738">この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません。削除することをおすすめします。</translation>
 <translation id="8958307504142971576">Chrome で新機能をご利用いただけるようになりました</translation>
 <translation id="8991530961471831170">Gemini in Chrome を開く</translation>
 <translation id="8992769679401294069">データはパスフレーズで暗号化されます。Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください。</translation>
 <translation id="8999117580775242387">HTTPS を使用できない場合、Chrome では警告を表示せずに安全でない接続を使用します</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>
+<translation id="9010418943148193727">デフォルトの検索エンジンが Chrome の外部から変更されました。ユーザー保護のため、Chrome でリセットしました。</translation>
 <translation id="9014771989710951291">Chrome は複数の組織によって管理されています</translation>
 <translation id="9024318700713112071">Chrome を既定として設定</translation>
 <translation id="9066987883552592250">Gemini in Chrome Canary を閉じる</translation>

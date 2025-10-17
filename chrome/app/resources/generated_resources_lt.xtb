@@ -249,7 +249,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1162479191445552288">Paleisti per paleistį</translation>
 <translation id="1163931534039071049">&amp;Rodyti rėmelio šaltinį</translation>
 <translation id="1164015913575846413">„alt“ + paspaudimas</translation>
-<translation id="1164286072721995435">Dabartinis skirtukas bendrinamas su „Gemini“ kiekvieną kartą, kai pradedate naują pokalbį. Galite bet kada pristabdyti dabartinio skirtuko bendrinimą. Jūsų duomenys nenaudojami generatyviniams DI modeliams tobulinti.</translation>
 <translation id="1164891049599601209">Įvesta apgaulingoje svetainėje</translation>
 <translation id="1165039591588034296">Klaida</translation>
 <translation id="1166212789817575481">Uždaryti dešinėje esančius skirtukus</translation>
@@ -541,7 +540,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1353980523955420967">Nepavyko rasti PPD. Įsitikinkite, kad „Chromebook“ prijungtas, ir bandykite dar kartą.</translation>
 <translation id="1354045473509304750">Ir toliau leisti <ph name="HOST" /> naudoti ir judinti kamerą</translation>
 <translation id="1354148503392558902">Keičiamas slaptažodis...</translation>
-<translation id="1354943694624358993">Visada bendrinti dabartinį skirtuką</translation>
 <translation id="1355088139103479645">Ištrinti visus duomenis?</translation>
 <translation id="1355088659320425659">Istorija ir skirtukai</translation>
 <translation id="1356376170199999104">Leidžiama – <ph name="PERMISSION_DETAILS" />. Įjunkite mikrofoną naudodami fizinį jungiklį.</translation>
@@ -2379,7 +2377,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2605668923777146443">Jei norite peržiūrėti „Better Together“ parinktis, eikite į skiltį <ph name="LINK_BEGIN" />„Nustatymai“<ph name="LINK_END" /></translation>
 <translation id="2606246518223360146">Susieti duomenis</translation>
 <translation id="2606454609872547359">Ne, tęsti be „ChromeVox“</translation>
-<translation id="2606568927909309675">Automatiškai kuriami garso ir vaizdo įrašų subtitrai anglų k. Garso įrašai ir subtitrai visada lieka įrenginyje.</translation>
 <translation id="2606890864830643943">Eksportuojami diagnostikos duomenys</translation>
 <translation id="2607101320794533334">Subjekto privačiojo rakto informacija</translation>
 <translation id="2609533306502181883">Tyrinėti temą</translation>
@@ -5785,7 +5782,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4956593309300508411">Nebebendrinti?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Išsaugoti aplanke tik šiame įrenginyje?</translation>
-<translation id="4958916254663453555">Atidarius „Gemini“ naršyklėje „Chrome“, dabartinis skirtukas bus bendrinamas automatiškai. Visas dabartinio skirtuko turinys ir URL siunčiami „Google“.</translation>
 <translation id="4959262764292427323">Slaptažodžiai išsaugoti „Google“ paskyroje, todėl galite juos naudoti bet kuriame įrenginyje</translation>
 <translation id="4960020053211143927">Nepalaikoma kai kuriose programose</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5897,7 +5893,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5045367873597907704">Apie ŽSĮ įrenginius</translation>
 <translation id="5045550434625856497">Neteisingas slaptažodis</translation>
 <translation id="504561833207953641">Atidaroma esamoje naršyklės sesijoje.</translation>
-<translation id="5047544190872578914">Dabartinis skirtukas bendrinamas su „Gemini“ kiekvieną kartą, kai pradedate naują pokalbį. Galite bet kada pristabdyti dabartinio skirtuko bendrinimą.</translation>
 <translation id="504953514574706691">Skirtukas išskirtas iš siūlomos grupės</translation>
 <translation id="5050330054928994520">TĮK</translation>
 <translation id="5051461727068120271">Atsisiųsti nepatvirtintą failą</translation>
@@ -6417,6 +6412,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5414836363063783498">Patvirtinama…</translation>
 <translation id="5415328625985164836">Tai beta versijos programa. Dabar galite naudodami „Steam“ žaisti kai kuriuos žaidimus „Chromebook“ įrenginyje.</translation>
 <translation id="5415497281076257439">Frazė</translation>
+<translation id="5415871492522952905">Istorija ir skirtukai bus rodomi visuose jūsų įrenginiuose, todėl galėsite tęsti tai, ką darėte</translation>
 <translation id="5417293056300086453">Ši svetainė gali naudoti identifikatorius apsaugotam turiniui leisti.</translation>
 <translation id="5417312524372586921">Naršyklės temos</translation>
 <translation id="541737483547792035">Ekrano didinimas</translation>
@@ -6627,6 +6623,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5555760010546505198">Spalvų inversija, spalvų taisymas, didintuvas ir pateikties nustatymai</translation>
 <translation id="555604722231274592">Įgalinti „<ph name="FEATURE_NAME" />“</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
+<translation id="555671485580955310">Sinchronizuoti istoriją ir skirtukus</translation>
 <translation id="5558129378926964177">Artin&amp;ti</translation>
 <translation id="5558594314398017686">Numatytoji OS (kai pasiekiama)</translation>
 <translation id="5559311991468302423">Ištrinti adresą</translation>
@@ -10761,7 +10758,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8419098111404128271">Paieškos rezultatai pagal užklausą „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="8419144699778179708">Ištrinama istorija, įskaitant paieškos laukelį</translation>
 <translation id="8420308167132684745">Redaguoti žodyno įrašus</translation>
-<translation id="8421361468937925547">Subtitrai realiuoju laiku (tik anglų k.)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Nėra dėklo</translation>
 <translation id="8424250197845498070">Užblokavo Papildoma apsauga</translation>
@@ -11058,6 +11054,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8637688295594795546">Galimas sistemos naujinys. Ruošiamasi atsisiųsti...</translation>
 <translation id="8638719155236856752">„ChromeOS“ tinklo būsena</translation>
 <translation id="8639635302972078117">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai nebus naudojama siekiant nustatyti jūsų vaiko tapatybę ir padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas vaiko įrenginyje, šie duomenys gali būti išsaugoti vaiko „Google“ paskyroje.</translation>
+<translation id="8639963783467694461">Automatinio pildymo nustatymai</translation>
 <translation id="8640575194957831802">Paskutinį kartą atidaryta</translation>
 <translation id="8641946446576357115">Slaptažodžių naudojimas „iOS“ įrenginiuose</translation>
 <translation id="8642577642520207435">„<ph name="APP_NAME" />“ fotoaparato leidimas</translation>

@@ -109,7 +109,6 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="1419753403124156396">Mulakan semula Chrome?</translation>
 <translation id="1428770807407000502">Matikan penyegerakan?</translation>
 <translation id="1430915738399379752">Cetak</translation>
-<translation id="1433478348197382180">Mod Membaca</translation>
 <translation id="1435593198351412143">Buka PDF secara automatik</translation>
 <translation id="1437543266176261764">Dijalankan dalam <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Atur produk yang dijejaki dalam Penanda Halaman</translation>
@@ -370,7 +369,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2718352093833049315">Hanya pada Wi-Fi</translation>
 <translation id="2718846868787000099">Untuk memaparkan kandungan dalam bahasa pilihan anda, tapak yang anda lawati dapat melihat pilihan anda</translation>
 <translation id="2723001399770238859">audio</translation>
-<translation id="2734335652257251631">Tunjukkan Mod Membaca</translation>
 <translation id="2739887572830526131">Simpan kumpulan ini untuk menambahkan tab kemudian atau padamkan jika anda tidak memerlukan kumpulan ini lagi.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> tidak tersedia sekarang.</translation>
 <translation id="2760805590727089264">BB / TT</translation>
@@ -1139,6 +1137,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6232535412751077445">Tindakan mendayakan "Jangan Kesan" bermaksud permintaan akan disertakan dengan trafik penyemakan imbas anda. Sebarang kesan bergantung pada sama ada laman web memberi respons kepada permintaan dan cara permintaan ditafsirkan.
 
 Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan ini dengan memaparkan iklan yang tidak berdasarkan laman web lain yang anda lawati. Pelbagai laman web masih akan mengumpul dan menggunakan data penyemakan imbas anda — contohnya, untuk meningkatkan keselamatan, untuk menyediakan kandungan, iklan dan cadangan serta untuk menjana statistik pelaporan.</translation>
+<translation id="623755660902014047">Mod membaca</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6248988683584659830">Tetapan carian</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, Tab Inkognito Tersemat Berbilang Pilihan</translation>
@@ -1397,7 +1396,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7221869452894271364">Muatkan semula halaman ini</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 muat turun belum selesai}other{# muat turun belum selesai}}</translation>
 <translation id="7230064152164845085">Beralih kepada Inkognito</translation>
-<translation id="7230836263524391273">Sembunyikan Mod Membaca</translation>
 <translation id="7237724030342645845">Google Password Manager berhenti berfungsi</translation>
 <translation id="72415438529550637">Cadangan kata laluan telah ditutup.</translation>
 <translation id="7248671827512403053">Aplikasi</translation>
@@ -1732,7 +1730,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="867914734596684889">Tunjukkan atau sembunyikan bar Penanda Halaman</translation>
 <translation id="8683039184091909753">imej</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Tab yang Dipilih</translation>
-<translation id="8693232767599693749">Lihat Mod Membaca?</translation>
 <translation id="8697753151306746444">Kongsi tetingkap atau skrin</translation>
 <translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>
 <translation id="8712637175834984815">Faham</translation>

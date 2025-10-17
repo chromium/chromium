@@ -457,7 +457,6 @@
 <translation id="2721190673959776287">Näidis kontekstuaalse paneeli täiemahulisest tootesisesest abist, mis peaks ilmuma mitu korda päevas.</translation>
 <translation id="2739887572830526131">Saate selle grupi säilitada, et lisada vahelehed hiljem, või selle kustutada, kui seda enam vaja pole.</translation>
 <translation id="2747003861858887689">Eelmine väli</translation>
-<translation id="2749231692441336879">Jälgitakse kanalit <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755485474385016903">Tehtud muudatusi näevad kõik grupi liikmed</translation>
 <translation id="2755595981383829244">Nüüd saate sisumärguandeid</translation>
 <translation id="2761788987260570878">Tehke oma otsingust pilt</translation>
@@ -480,6 +479,7 @@
 <translation id="2816489851009559785">Menüü → Seaded → Vaikebrauser</translation>
 <translation id="2818821771744632548">Teid logiti iPhone'i lähtestamise raames teie kontolt <ph name="USER_NAME" /> välja. Uuesti sisselogimiseks puudutage allpool nuppu „Jätka”.</translation>
 <translation id="2819667972867209401">Kui see on sees, salvestatakse andmed teie Google'i kontole. Kui see on väljas, salvestatakse andmed ainult sellesse seadmesse ja kustutatakse väljalogimisel.</translation>
+<translation id="2825777862277359739">Logige sisse, et saada juurdepääs oma paroolidele, vahelehtedele, järjehoidjatele ja muule.</translation>
 <translation id="2827760117436553203">Kas hoida andmed eraldi?</translation>
 <translation id="2829172210806130158">Ekraanilt otsimine</translation>
 <translation id="2831109159746537587">Otsimiseks proovige pildile ring ümber tõmmata või seda puudutada</translation>
@@ -503,7 +503,6 @@
 <translation id="29153882450867370">Peida valik „Jälgi hinda”</translation>
 <translation id="291754862089661335">Paigutage QR-kood või ribakood sellesse kaadrisse</translation>
 <translation id="2918688092312652908">Märgi mitteloetuks</translation>
-<translation id="2920866371965792875">Saidi värskenduste vaatamiseks jälgige seda siin.</translation>
 <translation id="2922210239002704889">Minge oma avalehele või klaviatuurile</translation>
 <translation id="2924940770243654951">Ava uuel inkognito vahelehel</translation>
 <translation id="2931440415625410757">Kuva juhised</translation>
@@ -606,6 +605,7 @@
 <translation id="3371831930909698441">Tõlkimine on saadaval. Valikud on saadaval ekraanikuva allosas.</translation>
 <translation id="3377063233124932127">Nüüd on teie salvestatud järjehoidjad, paroolid ja muu ülaosas.</translation>
 <translation id="3380352560400387991">See sait üritab rakendust avada. See suunab teid inkognito režiimist välja.</translation>
+<translation id="3385742921291399323">Saate juurdepääsu salvestatud paroolidele, vahelehtedele, järjehoidjatele ja muule.</translation>
 <translation id="3392923070107623576">Hoidke vahelehegruppide loomise abil korda</translation>
 <translation id="3404232721752787413">Salvesta teenusesse Google Photos</translation>
 <translation id="3406506285180498376">Lehe jagamine …</translation>
@@ -633,6 +633,7 @@
 <translation id="3504377992102007712">Seaded</translation>
 <translation id="35083190962747987">Avage ${url}</translation>
 <translation id="3511519535430890904">Lisage sirvimise kaitse</translation>
+<translation id="3512572904898385012">Nüüd saate oma kaamera abil ostelda ja tõlkida. Puudutage seda proovimiseks.</translation>
 <translation id="3517216995152707259">Sirvimisandmete kustutamine ei logi teid Google'i kontolt välja. Selleks <ph name="BEGIN_LINK" />logige Chrome'ist välja<ph name="END_LINK" />.</translation>
 <translation id="3519792890877853853">Sellel kaardil kuvatakse teie avatud vahelehtedel olevate toodete arvustused</translation>
 <translation id="3519905498307021260">{count,plural, =1{Ava vaheleht}other{Ava {count} vahelehte}}</translation>
@@ -656,6 +657,7 @@
 <translation id="3575426792457739946">See loend hõlmab kõiki laaditud profiile.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, haldab teie organisatsioon.</translation>
 <translation id="3581564640715911333">Paku muudes keeltes olevate lehtede tõlkimist</translation>
+<translation id="3587482841069643663">Kõik</translation>
 <translation id="3587885837929752825">Teie organisatsioon piirab, mida saate oma Google'i kontole salvestada.</translation>
 <translation id="3588820906588687999">Ava kujutis uuel vahelehel</translation>
 <translation id="3595252146048399851">Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
@@ -951,7 +953,6 @@
 <translation id="4752348350801431746">Lülitage ohutuskontrolli märguanded välja …</translation>
 <translation id="4759238208242260848">Allalaadimised</translation>
 <translation id="4764612367328936189">Teie organisatsioon lubab sisse logida vaid teatud kontodega. Kontod, mis pole lubatud, on peidetud. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="4766112107778026136">Discover ja jälgimine</translation>
 <translation id="4769198578611055647">Selle abil pääsete juurde oma salvestatud pääsuvõtmetele igas seadmes</translation>
 <translation id="4782952780741793211">Kinnituskood:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1060,6 +1061,7 @@
 <translation id="5145331760738811130">Välju vahelehtede vahetist</translation>
 <translation id="5148717509369231739">Safari importimised</translation>
 <translation id="5152483358138813104">Logige kõikides seadmetes kiiremini sisse</translation>
+<translation id="5155502059906700593">Võite vahetada aadressiriba asukohta, et kuvada see üleval või all.</translation>
 <translation id="5157638238828697074">Midagi läks valesti. Rakendust ei õnnestunud avada.</translation>
 <translation id="5163417375525818870">PDF-id</translation>
 <translation id="5168414296986405587">Loodud iPadOS-ile</translation>
@@ -1135,6 +1137,7 @@
 <translation id="5457082343331641453">Täiendage otsingut</translation>
 <translation id="5457226814769348910">Ava võrguühenduseta versioon</translation>
 <translation id="5467163657366219870">Lülita kaartide eelvaated välja</translation>
+<translation id="5474397204728336997">Pereparoolid, uued kohandamisvalikud ja palju muud. Puudutage lisateabe saamiseks.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Ühtegi parooli ei imporditud}=1{{count} parool imporditi}other{{count} parooli imporditi}}</translation>
 <translation id="5478327362747197944">Looge kalendrisündmusi otse veebilehelt, klõpsates selles sisalduval kuupäeval.</translation>
 <translation id="5482922178977937393">Kas soovite märguandeid uudiste, spordi ja muu kohta, mis põhinevad teie huvidel?</translation>
@@ -1279,6 +1282,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5971459446352190251">QR-koodi otsing</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 järjehoidja kustutati}other{{count} järjehoidjat kustutati}}</translation>
 <translation id="5972844218283131174">Tühista kõik valikud</translation>
+<translation id="5976160379964388480">Muud</translation>
 <translation id="5977976211062815271">Selles seadmes</translation>
 <translation id="5986043348928676121">Järgmine</translation>
 <translation id="598634819525651074">Pindala</translation>
@@ -1308,6 +1312,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6084848228346514841">Valige vahelehed</translation>
 <translation id="6089212833343035912">Google'i paroolihalduri PIN-kood</translation>
 <translation id="6090760257419195752">Hoiatustest loobuti</translation>
+<translation id="6094325891006032858">Lülitage sisse täiustatud ohutu sirvimine</translation>
 <translation id="6096965253650248286">Leiti <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Sisse logitud kasutajana <ph name="USER_EMAIL" />. Avab seaded.</translation>
 <translation id="6100676328067737810">Teie andmed salvestatakse teie Google'i kontole, <ph name="USER_EMAIL" /></translation>
@@ -1324,6 +1329,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6140600850356225166">Küsi, kas avada teiste rakenduste lingid inkognito režiimis</translation>
 <translation id="6140948187512243695">Üksikasjade kuvamine</translation>
 <translation id="6144589619057374135">Ava ${url} inkognito aknas</translation>
+<translation id="6146563240635539929">Videod</translation>
 <translation id="6147279996212084542">Selgita</translation>
 <translation id="6151006591088192882">Ava inkognito vahelehed meetodiga <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Mitteaktiivne</translation>
@@ -1343,6 +1349,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6193448654517602979">Valige vahelehed</translation>
 <translation id="6196207969502475924">Häälotsing</translation>
 <translation id="6198252989419008588">Muuda PIN-koodi</translation>
+<translation id="6199783146233591178">Hankige reaalajas kaitse täiustatud ohutu sirvimisega</translation>
 <translation id="6210079381482819663">Vahelehed, mida vähemalt <ph name="THRESHOLD" /> päeva ei kasutata, teisaldatakse siia. Saate seda <ph name="BEGIN_LINK" />seadetes<ph name="END_LINK" /> alati muuta.</translation>
 <translation id="6213281885682386884">Ühtki aadressi ei leitud</translation>
 <translation id="6218508144653756827">Fuksiaroosa teema</translation>
@@ -1365,7 +1372,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6271824294945464304">Parooli jagamine</translation>
 <translation id="628251768213143684">Google'i kontole salvestatud teavet saate alati hallata</translation>
 <translation id="6284652193729350524">Paku tõlkimist keelde <ph name="LANGUAGE" /></translation>
-<translation id="6289501276895392862">Kanali <ph name="CHANNEL_NAME" /> jälgimine lõpetati</translation>
 <translation id="6293101329759844770">Google'i ohutu sirvimise sisselülitamiseks avage jaotis <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" /> ja puudutage valikut Google'i ohutu sirvimine.</translation>
 <translation id="6295751040240588413">Kaardi sobimatu hüüdnimi</translation>
 <translation id="629730747756840877">Konto</translation>
@@ -1394,6 +1400,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="63519665078626091">Veebiinspektori kasutamiseks looge oma arvutis kaabli abil ühendus Safariga ja avage oma iPad menüüs Develop. Arendusmenüü saate lubada oma arvuti Safari seadete jaotises Advanced.</translation>
 <translation id="6355820183143562453">Hinnajälgimise kaardi peitmine</translation>
 <translation id="6355820205320395730">Nõrku paroole on lihtne ära arvata. Veenduge, et looksite tugevad paroolid. <ph name="BEGIN_LINK" />Vaadake rohkem turvanõuandeid.<ph name="END_LINK" /></translation>
+<translation id="6357455205205567365">Logige sisse, et saada juurdepääs oma asjadele, nagu paroolid, järjehoidjad ja muu.</translation>
 <translation id="6368038301482806847">Valige loendist otsingumootor.</translation>
 <translation id="6368102751067608420">Kõigi paroolihalduri andmete kustutamiseks</translation>
 <translation id="6372558618707314581">Avage soovitud leht</translation>
@@ -1468,6 +1475,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6625830436658400045">Sünkroonimisseaded taastatakse teie viimase varukoopia alusel. Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida.</translation>
 <translation id="6627583120233659107">Muuda kausta</translation>
 <translation id="6629759408545977279">Allikas: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="66306952800092318">Lisage see täiendav kaitsekiht võrguohtude eest.</translation>
 <translation id="6634432609054530164">Teie organisatsioon lülitas inkognito režiimi välja</translation>
 <translation id="6637478299472506933">Allalaadimine nurjus</translation>
 <translation id="6638511529934826365">Teksti suumimine …</translation>
@@ -1495,7 +1503,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6708501134077648845">Paroolivalikud</translation>
 <translation id="6709964700841491574">Lukustamisrežiim</translation>
 <translation id="6710079714193676716">Haldab teie organisatsioon. Mõni funktsioon ei pruugi olla saadaval. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="671310123089116995">Ava voog</translation>
 <translation id="6713676799463473249">Viimati muudetud <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Vastuvõetud vahelehed</translation>
 <translation id="6723740634201835758">Teie Google’i kontol</translation>
@@ -1888,6 +1895,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8221665793629393739">Teie meeldetuletus uuesti külastamiseks</translation>
 <translation id="8232956427053453090">Säilita andmed</translation>
 <translation id="8233237502828137700">Promobänneri sulgemine</translation>
+<translation id="8250920743982581267">Dokumendid</translation>
 <translation id="8258734532103758067">Olen oma andmed eksportinud</translation>
 <translation id="8258999165172757081">Lisatud</translation>
 <translation id="8261506727792406068">Kustuta</translation>
@@ -1934,6 +1942,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8395180897620197612">Lõpeta logimine</translation>
 <translation id="8407669440184693619">Selle saidi jaoks ei leitud paroole</translation>
 <translation id="8407831512155324054">Teie paroolid on tugevad</translation>
+<translation id="8414030140103493759">Foto või video jäädvustamine</translation>
 <translation id="8414283596511250978">Paroolid ei unune kunagi</translation>
 <translation id="842523302461531262">Muuda seadetes vaikevalikuks …</translation>
 <translation id="8428045167754449968">Linn</translation>
@@ -1947,6 +1956,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8473863474539038330">Aadressid ja muu</translation>
 <translation id="8474378002946546633">Luba märguanded</translation>
 <translation id="8477178913400731244">Kustuta andmed</translation>
+<translation id="847939250509903814">Fotokogu</translation>
 <translation id="8481184073299279701">Puudutage nuppu „Alusta logimist”, et koguda edaspidi JavaScripti konsooli logisid ja vigu kõikidelt vahelehtedelt. Logisid kogutakse (need salvestatakse ainult mällu) seni, kuni see leht suletakse või puudutate nuppu „Lõpeta logimine”.</translation>
 <translation id="8487667956631253959">Sees</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
@@ -2110,7 +2120,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="9055291197094969722">Looge vahelehegruppe, et korrastada avatud vahelehti ja olla produktiivne</translation>
 <translation id="9055580485132823283">Jätkates kustutate {password_count} parooli, {passkey_count} pääsuvõtit ning loendi saitidest ja rakendustest, mille sisselogimisteabe salvestamise olete keelanud. Saitidel ja rakendustel loodud kontosid ei kustutata.</translation>
 <translation id="9057030985451135243">Teave jagatud vahelehegruppide kohta</translation>
-<translation id="9057972802061533987">Ei saa jälgida. Midagi läks valesti.</translation>
 <translation id="9065203028668620118">Muuda</translation>
 <translation id="9066097352053395362">Peida valik Muuda järjehoidjat</translation>
 <translation id="9070824521421603770">Teid logitakse välja ja vahelehed suletakse</translation>
@@ -2123,7 +2132,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="9087339162317338348">Kasutage võimalusel alati HTTPS-i ja saate enne HTTPS-i toetuseta saitide laadimist hoiatuse.</translation>
 <translation id="9090979472668095374">Esita vastused kõnes</translation>
 <translation id="9094033019050270033">Värskenda parooli</translation>
-<translation id="9097506547406246598">Ei saa jälgimist lõpetada. Midagi läks valesti.</translation>
 <translation id="9098541895599151034">Kas kustutada <ph name="NUMBER_OF_ACCOUNTS" /> parooli?</translation>
 <translation id="9099233023029360602">Küsi iga kord, millist kontot kasutada</translation>
 <translation id="9099821309562615674">Veenduge, et tõlgitav tekst oleks selge ja asuks kaadris.</translation>
@@ -2154,6 +2162,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="9203951165704618409">Kohandatud sirvimiskogemuse jaoks teisaldage aadressiriba ülaservast allserva.</translation>
 <translation id="9205189991633470489">Inkognito lukk</translation>
 <translation id="9206887540681440657">Kiirus</translation>
+<translation id="9219103736887031265">Pildid</translation>
 <translation id="9219154867334666734">Otsimine vahelehtedelt …</translation>
 <translation id="9223358826628549784">Krahhiaruanne on saadetud.</translation>
 <translation id="926455622548529175">Vaheta ja kustuta</translation>

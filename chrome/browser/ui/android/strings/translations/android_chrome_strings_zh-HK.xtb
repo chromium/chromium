@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">重新啟動 Chrome 嗎？</translation>
 <translation id="1428770807407000502">要關閉同步功能嗎？</translation>
 <translation id="1430915738399379752">列印</translation>
-<translation id="1433478348197382180">閱讀模式</translation>
 <translation id="1435593198351412143">自動開啟 PDF</translation>
 <translation id="1437543266176261764">正在 <ph name="APP_NAME" /> 中執行</translation>
 <translation id="1448440926884431741">在「書籤」中整理追蹤的產品</translation>
@@ -370,7 +369,6 @@
 <translation id="2718352093833049315">僅限 Wi-Fi 連線時</translation>
 <translation id="2718846868787000099">為了要以您偏好的語言顯示內容，您瀏覽的網站將能看到偏好設定</translation>
 <translation id="2723001399770238859">音效檔案</translation>
-<translation id="2734335652257251631">顯示閱讀模式</translation>
 <translation id="2739887572830526131">如果保留群組，你之後可新增分頁；如果不再使用，則可刪除群組。</translation>
 <translation id="2742373789128106053">目前無法使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」。</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1139,6 +1137,7 @@
 <translation id="6232535412751077445">啟用「不追蹤」即表示您的瀏覽流量將包含一個要求，其效用視乎網站會否回應要求，以及如何解讀要求。
 
 舉例來說，部分網站可能會在顯示廣告時，選擇不根據您所瀏覽的網站記錄來顯示廣告。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
+<translation id="623755660902014047">閱讀模式</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6248988683584659830">搜尋設定</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />，複選咗嘅固定無痕式分頁</translation>
@@ -1397,7 +1396,6 @@
 <translation id="7221869452894271364">重新載入這個網頁</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載操作尚待處理}other{# 項下載操作尚待處理}}</translation>
 <translation id="7230064152164845085">開啟無痕模式</translation>
-<translation id="7230836263524391273">隱藏「閱讀模式」</translation>
 <translation id="7237724030342645845">「Google 密碼管理工具」已停止運作</translation>
 <translation id="72415438529550637">閂咗密碼建議功能。</translation>
 <translation id="7248671827512403053">應用程式</translation>
@@ -1732,7 +1730,6 @@
 <translation id="867914734596684889">顯示或隱藏「書籤列」</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，已選取的分頁</translation>
-<translation id="8693232767599693749">要進入閱讀模式嗎？</translation>
 <translation id="8697753151306746444">改為分享視窗或畫面</translation>
 <translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>
 <translation id="8712637175834984815">我知道了</translation>

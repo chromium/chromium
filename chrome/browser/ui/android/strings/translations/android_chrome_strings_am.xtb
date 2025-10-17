@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">Chrome ዳግም ያስጀምራሉ?</translation>
 <translation id="1428770807407000502">ስምረት ይጥፋ?</translation>
 <translation id="1430915738399379752">አትም</translation>
-<translation id="1433478348197382180">የንባብ ሁነታ</translation>
 <translation id="1435593198351412143">PDFዎችን በራስ-ሰር ክፈት</translation>
 <translation id="1437543266176261764">በ<ph name="APP_NAME" /> በመሄድ ላይ</translation>
 <translation id="1448440926884431741">ክትትል የሚደረግባቸውን ምርቶች በዕልባቶች ውስጥ ያደራጁ</translation>
@@ -370,7 +369,6 @@
 <translation id="2718352093833049315">በWi-Fi ላይ ብቻ</translation>
 <translation id="2718846868787000099">በመረጡት ቋንቋዎች ውስጥ ይዘትን ለማሳየት፣ የሚጎበኟቸው ጣቢያዎች ምርጫዎችዎን ማየት ይችላሉ</translation>
 <translation id="2723001399770238859">ድምፅ</translation>
-<translation id="2734335652257251631">የንባብ ሁነታ አሳይ</translation>
 <translation id="2739887572830526131">በኋላ ላይ ትሮችን ለማከል ይህን ቡድን ያቆዩት ወይም ከእንግዲህ የማያስፈልግዎ ከሆነ ይሰርዙት።</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አሁን ላይ አይገኝም።</translation>
 <translation id="2760805590727089264">ወወ / ዓዓ</translation>
@@ -1139,6 +1137,7 @@
 <translation id="6232535412751077445">«አትከታተል»ን ማንቃት ማለት አንድ ጥያቄ በአሰሳ ትራፊክዎ ላይ ይካተታል ማለት ነው። ማንኛውም ውጤት አንድ ድር ጣቢያ ለጥያቄው ምላሽ ከሰጠና ጥያቄውን በሚተረጎምበት መንገድ ላይ የሚወሰን ነው።
 
 ለምሳሌ፣ አንዳንድ ድር ጣቢያዎች ሌሎች በጎበኟቸው ድር ጣቢያዎች ላይ ያልተመሠረቱ ማስታወቂያዎችን በማሳየት ለዚህ ጥያቄ ምላሽ ሊሰጡ ይችላሉ። ብዙ ድር ጣቢያዎች አሁንም የአሰሳ ውሂብዎን ይሰበስቡና ይጠቀሙበታል — ለምሳሌ ደህንነትን ለማሻሻል፤ ይዘት፣ ማስታወቂያዎችና ምክሮች በድር ጣቢያዎች ላይ ለማቅረብ፤ እና የሪፖርት አደራረግ ስታቲስቲክስን ለማመንጨት።</translation>
+<translation id="623755660902014047">የንባብ ሁነታ</translation>
 <translation id="6247557882553405851">Google የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="6248988683584659830">የፍለጋ ቅንብሮች </translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ የተሰካ ማንነት የማያሳውቅ ትር</translation>
@@ -1397,7 +1396,6 @@
 <translation id="7221869452894271364">ይህን ገፅ ዳግም ጫን</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ውርድን በመጠባበቅ ላይ}one{# ውርዶችን በመጠባበቅ ላይ}other{# ውርዶችን በመጠባበቅ ላይ}}</translation>
 <translation id="7230064152164845085">ወደ ማንነት የማያሳውቅ ቀይር</translation>
-<translation id="7230836263524391273">የንባብ ሁነታን ደብቅ</translation>
 <translation id="7237724030342645845">Google የይለፍ ቃል አስተዳዳሪ መስራት አቁሟል</translation>
 <translation id="72415438529550637">የይለፍ ቃል ጥቆማ ተዘግቷል።</translation>
 <translation id="7248671827512403053">መተግበሪያ</translation>
@@ -1732,7 +1730,6 @@
 <translation id="867914734596684889">የዕልባቶች አሞሌን አሳይ ወይም ደብቅ</translation>
 <translation id="8683039184091909753">ምስል</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />፣ የተመረጠው ትር</translation>
-<translation id="8693232767599693749">የንባብ ሁነታ ይታይ?</translation>
 <translation id="8697753151306746444">በምትኩ መስኮት ወይም ማያ ገፅ ያጋሩ</translation>
 <translation id="8699120352855309748">እነዚህን ቋንቋዎች ለመተርጎም አያቅርቡ</translation>
 <translation id="8712637175834984815">ገባኝ</translation>

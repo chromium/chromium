@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">${searchPhrase} – Chrome orqali qidirish</translation>
 <translation id="1237769345474105984">Chromedan</translation>
 <translation id="124228879633599436">Chrome eskirgan. Himoya ostida qolish uchun yangilang.</translation>
+<translation id="1258531953614971819">Chrome maslahati: Chromeni bosh ekranga oling</translation>
 <translation id="1333745675627230582">Chrome Dino oʻyinini boshlash</translation>
 <translation id="1352919863522755794">Google Parollar menejeri parollarni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="1394995526009609883">Tanlovlarni istalgan vaqt Chrome sozlamalari orqali yangilash mumkin.</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">Chrome brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
 <translation id="1504372625950710826">Chrome yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="1516692594929310090">Chromeda varaqlar jadvalini ochadi.</translation>
+<translation id="152319127067424683">Chromeni iPhone dok-paneliga mahkamlab, tezroq oching.</translation>
 <translation id="1526327845902180576">Yoniq boʻlsa:
 <ph name="BEGIN_INDENT" />  • Chrome siz kabi foydalanuvchilar uchun yaxshilashga yordam beradi<ph name="END_INDENT" />
 
@@ -59,6 +61,7 @@ Bularni hisobga olish kerak:
 <translation id="2199719347983604670">Chrome sync maʼlumotlari</translation>
 <translation id="2213327331203157297">Chromeda Lokdaun rejimini faolsizlantirish uchun iPhone qurilmangizdan oʻchiring.</translation>
 <translation id="2242467532204595597">Xabarlar, hujjatlar va boshqa ilovalardagi havolalarni bosganda Chrome ochiladi.</translation>
+<translation id="2256384876478573507">iPhone qurilmangizda kezishga tayyor boʻlganingizda Chromeni tezroq oching.</translation>
 <translation id="2311240109311056604">Chrome Dino oʻyinini ochadi.</translation>
 <translation id="2339201583852607431">Parolingiz Google hisobingizda (<ph name="EMAIL" />) saqlanadi.</translation>
 <translation id="2342919707875585281">Chrome joylashuvingiz axborotini siz ruxsat bergan saytlarga ulashadi.</translation>
@@ -67,6 +70,7 @@ Bularni hisobga olish kerak:
 <translation id="2427791862912929107">Google Chrome brauzerida Internet maʼlumotlarini qayta ishlash parametrlari va sahifalarning yuklanish tezligini belgilash mumkin.
 <ph name="BEGIN_LINK" />Batafsil axborot<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}other{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Bunga tarix va avtomatik kiritish maʼlumotlari kirishi mumkin.}}</translation>
+<translation id="2531823184391665648">iPad qurilmangizda internetga kirishga tayyor boʻlganingizda Chromeni tezroq oching.</translation>
 <translation id="2561231791489583059">Internetni xavfsiz kezish va parollaringizni himoyalashda Chrome birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="2574249610672786438">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>
 <translation id="2576431527583832481">Chrome ancha yaxshilandi! Uning yangi versiyasi chiqdi.</translation>
@@ -82,6 +86,7 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="2767464022270041271">Hech qanday parol saqlanmagan. Google Parollar menejeri parollarni saqlanishidan oldin tekshirishi mumkin.</translation>
 <translation id="2788811701191021538">Chromeda toʻlov usullari sozlamalari sahifasini ochadi.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome maʼlumotlaringizni qanday xavfsiz saqlashi<ph name="END_LINK" /> haqida batafsil</translation>
+<translation id="2922914028977213693">iPad qurilmangizda Chromedan unumli foydalanish uchun bu yerga bosing.</translation>
 <translation id="292371311537977079">Chrome sozlamalari</translation>
 <translation id="2923827943290349720">Chrome yopilganda Inkognito varaqlar qulflansin</translation>
 <translation id="2940565985148833945">Chrome maslahati: Lens bilan qidiring</translation>
@@ -98,6 +103,7 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="3140589780564632473">Chrome orqali vizual qidiruv</translation>
 <translation id="314782365035065913">Chromeni bosh ekranga mahkamlab, tezroq oching</translation>
 <translation id="3167189358072330585">Hisobingiz Google Chrome tizimida ishlamaydi. Domen administratoriga murojaat qiling yoki tizimga oddiy Google hisobidan kiring.</translation>
+<translation id="320747600144551583">Chrome maslahati: Saytlarni kuchaytirilgan rejimda xavfsiz kezish vaqtingizni tejaydi</translation>
 <translation id="322254490661677575">Chrome maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun kodli iborani kiriting.</translation>
 <translation id="3282568296779691940">Chrome hisobiga kirish</translation>
 <translation id="3303503998967553377">iOS tizimida Chrome amallarini ishlatish</translation>
@@ -110,6 +116,7 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="3440830787838130530">Google Parollar menejeri orqali parol nusxasini oilaviy guruhingizga oson va xavfsiz ulashing</translation>
 <translation id="3460369101684070455">Boshqa ilovalarda saqlangan parollarni oson ochish uchun Chrome avtomatik kiritishini tanlang</translation>
 <translation id="3472587960215700950">Manzillar aniqlanganda Chrome marshrut va mahalliy axborotlarni Google Xaritalar orqali ochadi.</translation>
+<translation id="3482807551645716768">Chromeni iPad qurilmangiz bosh ekraniga mahkamlab, tezroq oching.</translation>
 <translation id="3503014945441706099">Bu Chrome profili orqali xavfsiz qidiruvni ham kuchaytirilgan rejimda himoyalang</translation>
 <translation id="3522659714780527202">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="364480321352456989">Chrome eskirgan.</translation>
@@ -126,16 +133,19 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="3988789688219830639">Google Chrome rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasida ruxsat bering.</translation>
 <translation id="4064699917955374540">Chrome maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
 <translation id="411154422556990518">Chrome foydali maslahatlari va narx kuzatuvi xabarlarini olish.</translation>
+<translation id="4167555379306984168">Yangilangan Chrome bilan tanishing</translation>
 <translation id="417201473131094001">Chrome Canary nashrida ishlamaydi</translation>
 <translation id="424864128008805179">Chrome hisobidan chiqmoqchimisiz?</translation>
 <translation id="4430797724889237570">Gmail, Xaritalar, YouTube va boshqa ilovalardagi havolalarni Chrome orqali ochish</translation>
 <translation id="447252321002412580">Chrome funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
 <translation id="4523886039239821078">Ba’zi kengaytmalar Chrome brauzerini ishdan chiqaradi. O‘chirilishi kerak bo‘lgan kengaytmalar:</translation>
+<translation id="4568024439284012497">Chromeni iPhone bosh ekraniga mahkamlab, tezroq oching.</translation>
 <translation id="4574806550936185355">“Chrome yopilganda Inkognito varaqlar qulflansin” parametrini yoqing</translation>
 <translation id="4633328489441962921">Chrome yangilanishlar chiqqanini tekshira olmadi</translation>
 <translation id="4636900170638246267">Bu sayt va Chrome hisobiga kiring.</translation>
 <translation id="4647910807533196601">Oxirgi varaq Chromeda ochilsin</translation>
 <translation id="4693084815234024320">Siz Chrome Inkognito rejimidasiz</translation>
+<translation id="4708857722625759026">Chromeni iPad dok-paneliga mahkamlab, tezroq oching.</translation>
 <translation id="4713740144985377441">Faylni yuklash uchun Chrome brauzeriga qayting</translation>
 <translation id="4713907610796204963">Ishni boshlash uchun foydali Chrome tavsiyalari bilan tanishing</translation>
 <translation id="4724297637870447613">Chrome doim yoningizda</translation>
@@ -150,6 +160,8 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="4903674399067644695">Bu bildirgi Chromening barcha imkoniyatlaridan foydalanish yuzasidan takliflar chiqaradi.</translation>
 <translation id="49200511069271369">Siz kirayotgan hisob va Chrome profilingiz qanday ishlatilishi tashkilotingiz (<ph name="DOMAIN" />) boshqaruvida. Administrator ayrim funksiyalarni sozlashi va cheklashi mumkin.</translation>
 <translation id="4925322001044117929">iPadda Chrome birlamchi brauzer boʻlsin</translation>
+<translation id="4934496192263958600">Maʼlumotlaringizdan foydalanish uchun Chrome hisobiga kiring</translation>
+<translation id="496747131578053942">Chrome maslahati: Google Lens yordamida koʻrgan narsangizni qidiring</translation>
 <translation id="498985224078955265">Bu varaqni boshqa qurilmaga yuborish uchun har ikki qurilmada Chrome hisobiga kiring.</translation>
 <translation id="5030102366287574140">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi.</translation>
 <translation id="5109169629909011627">Chrome bukmarklarini koʻrish</translation>
@@ -226,16 +238,19 @@ Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chrome maʼlumotlarini Google h
 <translation id="6684809838922667136">Chromeni yaxshilash</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}other{Chrome {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}}</translation>
 <translation id="6709398533399187136">Parolingiz oshkor qilingan. Google Parollar menejeri uni hoziroq almashtirishni tavsiya etadi.</translation>
+<translation id="6718973358446066955">Chrome deyarli sozlandi!</translation>
 <translation id="6820553595690137150">Kodli ibora bilan shifrlash ichiga toʻlov usullari va manzillar kirmaydi.
 
 Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="6838525730752203626">Chrome birlamchi boʻlsin</translation>
+<translation id="6864705365700484754">iPhone qurilmangizda Chromedan unumli foydalanish uchun bu yerga bosing.</translation>
 <translation id="686691656039982452">Google hisobida <ph name="BEGIN_LINK" />saqlangan Chrome maʼlumotlarini boshqarish<ph name="END_LINK" /> mumkin.
 
 Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> sahifasida ochish mumkin.</translation>
 <translation id="6922332667202044570">Chrome brauzeri maʼlumotlarini oʻchirish.</translation>
 <translation id="6924922227983877439">Havolalarni doim Chromeda oching</translation>
 <translation id="6975725306479268850">Avtomatik kiritish uchun Chromeni tanlang</translation>
+<translation id="7001031184470316752">Chromeni dok-panelga oling</translation>
 <translation id="7038674195294813388">iOS sozlamalarida Birlamchi ilovalar sahifasini ochib, “Brauzer ilovasi” ustiga bosing va Chromiumni tanlang.</translation>
 <translation id="7056826488869329999">Chromeda xavfsizliktekshiruvini ishga tushiradi.</translation>
 <translation id="7061455974939528301">Chrome belgisini bosib turing va "Bosh ekranni tahrirlash" ustiga bosing</translation>
@@ -306,6 +321,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="8371138994040262994">Chromeda sozlamalar sahifasini ochadi.</translation>
+<translation id="8375378038757507658">Xabarlar yoki boshqa ilovalardagi havolalar bosilganda Chrome oson ochilsin.</translation>
 <translation id="8387459386171870978">Chrome yopilmasin</translation>
 <translation id="8392023217086447677">Chrome Inkognito rejimida ochildi</translation>
 <translation id="840168496893712993">Ba’zi kengaytmalar Chrome brauzerini ishdan chiqaradi. Ularni o‘chirib tashlang.</translation>

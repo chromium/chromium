@@ -109,7 +109,6 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1419753403124156396">Vil du genstarte Chrome?</translation>
 <translation id="1428770807407000502">Vil du deaktivere synkronisering?</translation>
 <translation id="1430915738399379752">Udskriv</translation>
-<translation id="1433478348197382180">Læsetilstand</translation>
 <translation id="1435593198351412143">Åbn PDF-filer automatisk</translation>
 <translation id="1437543266176261764">Kører i <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiser de produkter, du holder øje med, i Bogmærker</translation>
@@ -370,7 +369,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2718352093833049315">Kun på Wi-Fi</translation>
 <translation id="2718846868787000099">For at vise indhold på dine foretrukne sprog kan de websites, du besøger, se dine præferencer</translation>
 <translation id="2723001399770238859">lyd</translation>
-<translation id="2734335652257251631">Vis Læsetilstand</translation>
 <translation id="2739887572830526131">Behold denne gruppe for at tilføje faner senere, eller slet den, hvis du ikke længere skal bruge den.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> er ikke tilgængelig lige nu.</translation>
 <translation id="2760805590727089264">MM/ÅÅ</translation>
@@ -1139,6 +1137,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6232535412751077445">Aktivering af "Do Not Track" betyder, at en anmodning medtages i din browsertrafik. Effekten afhænger af, om et website reagerer på anmodningen, og hvordan anmodningen fortolkes.
 
 Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, som ikke er baseret på andre websites, du har besøgt. Mange websites vil fortsat indsamle og bruge browserdata til f.eks. at forbedre sikkerheden, til at levere indhold, annoncer og anbefalinger og til at generere rapporteringsstatistik.</translation>
+<translation id="623755660902014047">Læsetilstand</translation>
 <translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
 <translation id="6248988683584659830">Søg i indstillinger</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, fastgjort inkognitofane med multivalg</translation>
@@ -1397,7 +1396,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7221869452894271364">Genindlæs denne side</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download afventer}one{# download afventer}other{# downloads afventer}}</translation>
 <translation id="7230064152164845085">Skift til inkognito</translation>
-<translation id="7230836263524391273">Skjul Læsetilstand</translation>
 <translation id="7237724030342645845">Google Adgangskodeadministrator stoppede med at fungere</translation>
 <translation id="72415438529550637">Adgangskodeforslaget er lukket.</translation>
 <translation id="7248671827512403053">Applikation</translation>
@@ -1732,7 +1730,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="867914734596684889">Vis eller skjul bogmærkelinjen</translation>
 <translation id="8683039184091909753">billede</translation>
 <translation id="8688183792442786085">Valgt fane: <ph name="TAB_TITLE" /></translation>
-<translation id="8693232767599693749">Vil du se Læsetilstand?</translation>
 <translation id="8697753151306746444">Del vindue eller skærm i stedet</translation>
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>
 <translation id="8712637175834984815">Forstået</translation>

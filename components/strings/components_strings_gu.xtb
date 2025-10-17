@@ -2292,6 +2292,7 @@
 <translation id="4758311279753947758">સંપર્ક માહિતી ઉમેરો</translation>
 <translation id="4761326898079498987">વધુ વિગતો માટે રિવ્યૂ કરો</translation>
 <translation id="4761869838909035636">Chromeની સલામતી માટે તપાસ ચલાવો</translation>
+<translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" /> વડે ચુકવણી કરવાનું ચાલુ રાખીએ?</translation>
 <translation id="4763196677855776703"><ph name="URL" /> દ્વારા પૂરા પાડવામાં આવેલા નિયમો અને શરતો</translation>
 <translation id="4764680219299728632">ભઠ્ઠીચૂલા, કૂકટૉપ અને અવન</translation>
 <translation id="4764776831041365478"><ph name="URL" /> પરનાં વેબપેજ અસ્થાયી ધોરણે બંધ હોઈ શકે છે અથવા તે કાયમ માટે નવા વેબ ઍડ્રેસ પર ખસેડવામાં આવ્યા હોઈ શકે છે.</translation>
@@ -2923,6 +2924,7 @@
 <translation id="5817918615728894473">જોડી કરો</translation>
 <translation id="5826507051599432481">કોમન નેમ (CN)</translation>
 <translation id="5830698870816298009">કૅમેરાનો ઉપયોગ અને હિલચાલ</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5832976493438355584">લૉક કરેલ</translation>
 <translation id="5837220895135257862">ફરી પ્રયાસ કરતા પહેલાં <ph name="CLOUD_PROVIDER" />માં સ્પેસ ખાલી કરો</translation>
@@ -3433,6 +3435,7 @@
 <translation id="6649510485211003056">195 x 270 મિમી</translation>
 <translation id="6651270836885078973">આમના દ્વારા મેનેજ કરવામાં આવે છે:</translation>
 <translation id="6652101503459149953">Windows Helloનો ઉપયોગ કરો</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> તમારી યોગ્યતા ચેક કરશે (આનાથી તમારા ક્રેડિટ સ્કોરને કોઈ અસર થશે નહીં). જો તમે યોગ્યતાના માપદંડ પૂરા કરો, તો તમારી ખરીદી પૂર્ણ કરવા માટે <ph name="BNPL_ISSUER_NAME" /> ચુકવણીનો(ચુકવણીના) સંભવિત પ્લાન પ્રદાન કરશે.</translation>
 <translation id="6654224358955673568">ફોર્મલ બનાવો</translation>
 <translation id="6654244995031366386">કાચ (ટેક્ષચરવાળો)</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
@@ -3596,6 +3599,7 @@
 <translation id="6925267999184670015">નૉર્થ અમેરિકન બી+</translation>
 <translation id="6926216138694948720">બૉડી આર્ટ</translation>
 <translation id="692638818576287323">વ્યાવસાયિક વાહનો</translation>
+<translation id="6927057753277044239">તમે તમારા ઑર્ડરનો રિવ્યૂ કરી લો, પછી તમારે <ph name="BNPL_ISSUER_NAME" />માં સાઇન ઇન કરવું કે તેમાં નવું એકાઉન્ટ બનાવવું આવશ્યક છે. આ એકાઉન્ટ ઑટોમૅટિક રીતે તમારા Google એકાઉન્ટ સાથે લિંક થઈ જશે.</translation>
 <translation id="6930607614725241390">બાજુની પૅનલમાં શોધો</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />તમારા ડિફૉલ્ટ શોધ એન્જિન વડે તમે વેબ પર શોધ કરી શકો છો તેમજ તે Chromeની સુવિધાઓને સશક્ત કરે છે<ph name="END_BOLD" /> જેમ કે, ઍડ્રેસ બારમાંથી તેમજ વેેબપેજ પરની છબીઓમાંથી શોધ કરવા જેવી સુવિધાઓ. તમારું શોધ એન્જિન સપોર્ટ ન કરતું હોય તેવી સુવિધા ઉપલબ્ધ ન હોય એમ બની શકે છે.</translation>
 <translation id="6934672428414710184">આ નામ તમારા Google એકાઉન્ટમાંથી લીધું છે</translation>
@@ -3647,6 +3651,7 @@
 <translation id="6997288673234694149">બૅઝબૉલ અને સૉફ્ટબૉલનું સાધન</translation>
 <translation id="6998512609912910179">ફોર્મ વધુ ઝડપથી ભરો</translation>
 <translation id="6999480632062519056">ફિટનેસ સંબંધિત સૂચના અને વ્યક્તિગત પ્રશિક્ષણ</translation>
+<translation id="7002897669829306463">ઘરનું સરનામું, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">ગોદડા અને જાજમો</translation>
 <translation id="7003322000677139268">વાહનના પાર્ટ અને ઍક્સેસરી</translation>
 <translation id="7004499039102548441">તાજેતરના ટૅબ્સ</translation>
@@ -4214,6 +4219,7 @@
 <translation id="791698251820376781">તમારી સંસ્થા તમને સાઇન ઇન કરવાની મંજૂરી આપતી નથી</translation>
 <translation id="7926503317156566022">ઉડ્ડયન ઉદ્યોગ</translation>
 <translation id="7930282586031445870">"હમણાં ખરીદો, પછીથી ચુકવો" સેવાની શરતોની સ્ક્રીન બંધ છે.</translation>
+<translation id="7932035970207573919">ઑફિસનું સરનામું, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">સરનામું અપડેટ કરીએ?</translation>
 <translation id="7932579305932748336">કોટ કરો</translation>
 <translation id="79338296614623784">એક માન્ય ફોન નંબર દાખલ કરો</translation>

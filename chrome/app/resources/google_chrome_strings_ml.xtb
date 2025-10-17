@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">ഫീഡ്ബാക്ക് ഡയലോഗ് അടയ്ക്കുക</translation>
 <translation id="306179102415443347">Google Password Manager-ലേക്ക് വേഗത്തിൽ എത്താൻ നിങ്ങളുടെ കുറുക്കുവഴി ഉപയോഗിക്കുക. നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്റെ ഹോം സ്‌ക്രീനിലേക്കോ ആപ്പ് ലോഞ്ചറിലേക്കോ കുറുക്കുവഴി നീക്കാം.</translation>
 <translation id="3065168410429928842">Chrome ടാബ്</translation>
+<translation id="3073571714401714450">Chrome Dev-ലെ Gemini ടോഗിൾ ചെയ്യുക</translation>
 <translation id="3080151273017101988">Google Chrome അടച്ചാലും പശ്ചാത്തല ആപ്പുകള്‍ പ്രവര്‍ത്തിപ്പിക്കുന്നത് തുടരുക</translation>
 <translation id="308397506772922478">നിങ്ങൾ പാസ്ഫ്രെയ്‌സ് മറന്നാലോ ഈ ക്രമീകരണം മാറ്റണമെന്നുണ്ടെങ്കിലോ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ ഇല്ലാതാക്കുക<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">നിങ്ങളുടെ Chrome പ്രൊഫൈലിന് പേര് നൽകുക</translation>
@@ -379,6 +380,7 @@
 <translation id="5368118228313795342">അധിക കോഡ്: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">നിങ്ങൾ Chrome ആരംഭിയ്ക്കുമ്പോഴോ ഓമ്‌നിബോക്‌സിൽ നിന്ന് തിരയുമ്പോഴോ ദൃശ്യമാകുന്ന പേജും അത് നിയന്ത്രിയ്ക്കുന്നു.</translation>
 <translation id="5394833366792865639">ഒരു Chrome ടാബ് പങ്കിടുക</translation>
+<translation id="5402307365844630024">Chrome ബീറ്റയിലെ Gemini ടോഗിൾ ചെയ്യുക</translation>
 <translation id="5430073640787465221">നിങ്ങളുടെ മുൻഗണനാ ഫയൽ കേടായതാണ് അല്ലെങ്കിൽ അസാധുവാണ്.
 
 നിങ്ങളുടെ ക്രമീകരണം വീണ്ടെടുക്കാൻ Google Chrome-ന് കഴിയില്ല.</translation>
@@ -430,6 +432,7 @@
 <translation id="5941711191222866238">ചെറുതാക്കുക</translation>
 <translation id="5941830788786076944">Google Chrome-നെ ഡിഫോൾട്ട് ബ്രൗസർ ആക്കുക</translation>
 <translation id="5947104538377036631">Chrome കുറുക്കുവഴി</translation>
+<translation id="5960071705175224773">ഒരു അജ്ഞാത ആപ്പ് നിങ്ങളുടെ ക്രമീകരണം മാറ്റി</translation>
 <translation id="5968400720580217226">AI മോഡ്</translation>
 <translation id="5980111191913430208">അറിയാത്ത ഉറവിടങ്ങളിൽ നിന്നുള്ള വിപുലീകരണങ്ങൾ, ആപ്പുകൾ, തീമുകൾ എന്നിവ നിങ്ങളുടെ ഉപകരണത്തിന് ദോഷകരമാകാം. അവ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> എന്നതിൽ നിന്ന് മാത്രം ഇൻസ്റ്റാൾ ചെയ്യാൻ Chrome നിർദ്ദേശിക്കുന്നു</translation>
 <translation id="6003112304606738118">ഡൗൺലോഡ് ചെയ്യുന്നു... <ph name="HOURS" /> മണിക്കൂർ ശേഷിക്കുന്നു</translation>
@@ -653,6 +656,7 @@
 <translation id="8362914115861174987">ഈ ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="8366770919198174997">പ്രകടനം കുറയ്ക്കുന്നു, എന്നാൽ ആക്രമണങ്ങൾക്കെതിരായി Chrome-ന്റെ പ്രതിരോധം വളരെയധികം വർദ്ധിപ്പിക്കുന്നു</translation>
 <translation id="8370517070665726704">പകർപ്പവകാശം <ph name="YEAR" /> Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‍തം.</translation>
+<translation id="8377158135256176353">Chrome Canary-യിലെ Gemini ടോഗിൾ ചെയ്യുക</translation>
 <translation id="8387459386171870978">Chrome ഉപയോഗിക്കുന്നത് തുടരുക</translation>
 <translation id="8394720698884623075">Chrome-ൽ സംഭരിച്ചിരിക്കുന്ന സുരക്ഷിതമല്ലാത്ത സൈറ്റുകളുടെ ലിസ്റ്റ് ഉപയോഗിച്ച് URL-കൾ പരിശോധിക്കുന്നു</translation>
 <translation id="8403038600646341038">ഒരു കമ്പ്യൂട്ടർ സ്ക്രീനിനുള്ളിലെ Chrome ലോഗോ.</translation>
@@ -701,12 +705,14 @@
 <translation id="8914504000324227558">Chrome വീണ്ടും സമാരംഭിക്കുക</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> എന്നതിൽ നിന്ന് നിങ്ങളുടെ Android ഫോണിലേക്ക് ഒരു നമ്പർ അയയ്‌ക്കാൻ, രണ്ട് ഉപകരണങ്ങളിൽ നിന്നും Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="8922998289262614701">Chrome-ൽ നിന്ന് ഈ ആപ്പിന്റെ ഡാറ്റ നീക്കം ചെയ്യുക</translation>
+<translation id="8936233353620149764">Chrome-ലെ Gemini ടോഗിൾ ചെയ്യുക</translation>
 <translation id="8948460679427074738">ഡാറ്റ ശേഖരിക്കുന്നതും ഉപയോഗിക്കുന്നതും എങ്ങനെയെന്നത് പോലുള്ള സ്വകാര്യതാ വ്യവസ്ഥകൾ ഈ വിപുലീകരണം പ്രസിദ്ധീകരിച്ചിട്ടില്ല. അത് നീക്കം ചെയ്യാണമെന്ന് Chrome നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="8958307504142971576">നിങ്ങൾക്ക് ഇപ്പോൾ Chrome-ൽ കൂടുതൽ ഫീച്ചറുകൾ ലഭ്യമാണ്</translation>
 <translation id="8991530961471831170">Chrome-ലെ Gemini തുറക്കുക</translation>
 <translation id="8992769679401294069">നിങ്ങളുടെ പാസ്ഫ്രെയ്‌സ് ഉപയോഗിച്ച് നിങ്ങളുടെ ഡാറ്റ എൻക്രിപ്റ്റ് ചെയ്‌തു. നിങ്ങളുടെ Google Account-ലെ Chrome ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും ആ പാസ്ഫ്രെയ്‌സ് നൽകുക.</translation>
 <translation id="8999117580775242387">HTTPS ലഭ്യമല്ലാത്തപ്പോൾ, നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകാതെ Chrome ഒരു സുരക്ഷിതമല്ലാത്ത കണക്ഷൻ ഉപയോഗിക്കും</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}=1{Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}other{# ദിവസമായി Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}}</translation>
+<translation id="9010418943148193727">Chrome-ന് പുറത്ത് നിന്ന് നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിൻ മാറ്റി. നിങ്ങൾക്ക് പരിരക്ഷ നൽകാൻ, Chrome അത് റീസെറ്റ് ചെയ്തു.</translation>
 <translation id="9014771989710951291">ഒന്നിലധികം സ്ഥാപനങ്ങൾ Chrome മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="9024318700713112071">Chrome ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുക</translation>
 <translation id="9066987883552592250">Chrome Canary-യിലെ Gemini അടയ്ക്കുക</translation>

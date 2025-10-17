@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2379925928934107488">ಡಾರ್ಕ್ ಥೀಮ್‌ ಅನ್ನು Chrome ಬಳಸುವಾಗ, ಸಾಧ್ಯವಾದರೆ ಡಾರ್ಕ್ ಥೀಮ್‌ ಅನ್ನು ಸೈಟ್‌ಗಳಿಗೆ ಅನ್ವಯಿಸಿ</translation>
 <translation id="2390272837142897736">ಝೂಮ್ ಅನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
+<translation id="2397689164757137845">ಅನುಮತಿಸಲಾಗಿದೆ • ನಿಖರವಾದದ್ದು</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">ನಿಖರ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಸಂಗತಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">ಸಹಾಯ ಮತ್ತು ಪ್ರತಿಕ್ರಿಯೆ</translation>
 <translation id="2501278716633472235">ಹಿಂದಿರುಗಿ</translation>
 <translation id="2533138527374486328">ಆನ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಯಾವುದೇ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು. ಆಫ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಆಗಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="2536779053640817375">ಈ ಬಾರಿ ಅನುಮತಿಸಲಾಗಿದೆ • ನಿಖರವಾದದ್ದು</translation>
 <translation id="2544997614631598250">ಥೀಮ್ ಕಲರ್ ಡಾರ್ಕ್</translation>
 <translation id="2546283357679194313">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="2570922361219980984">ಈ ಸಾಧನದ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಸಹ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಆನ್ ಮಾಡಿ.</translation>

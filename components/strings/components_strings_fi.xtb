@@ -286,6 +286,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Näytä 0 arvostelua}=1{Näytä 1 arvostelu}other{Näytä kaikki # arvostelua}}</translation>
 <translation id="1458059624921545588">Ihmiset ja yhteiskunta</translation>
 <translation id="1458140305240870199">Alusasut</translation>
+<translation id="1458770162980644530">Osta nyt, maksa myöhemmin ‐käyttöehtojen näyttö. Näppäimistö piilotettu.</translation>
 <translation id="1459693405370120464">Sää</translation>
 <translation id="1461041542809785877">Suorituskyky</translation>
 <translation id="1462245070427461050">JIS B9 (45 mm x 64 mm)</translation>
@@ -2292,6 +2293,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4758311279753947758">Lisää yhteystiedot</translation>
 <translation id="4761326898079498987">Katso lisätietoja</translation>
 <translation id="4761869838909035636">Tee Chromen turvatarkistus</translation>
+<translation id="4762097990764616058">Jatketaanko maksamista palvelulla <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Käyttöehtojen lähde: <ph name="URL" /></translation>
 <translation id="4764680219299728632">Liedet, keittotasot ja uunit</translation>
 <translation id="4764776831041365478">Osoitteessa <ph name="URL" /> oleva sivu saattaa olla väliaikaisesti pois käytöstä tai se on voitu siirtää pysyvästi uuteen osoitteeseen.</translation>
@@ -2923,6 +2925,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5817918615728894473">Muodosta laitepari</translation>
 <translation id="5826507051599432481">Yleinen nimi (CN)</translation>
 <translation id="5830698870816298009">kameran käyttö ja liike</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5832976493438355584">Poistettu käytöstä</translation>
 <translation id="5837220895135257862">Vapauta tilaa (<ph name="CLOUD_PROVIDER" />) ja yritä uudelleen</translation>
@@ -3433,6 +3436,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Ylläpitäjä:</translation>
 <translation id="6652101503459149953">Käytä Windows Hellota</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> tarkastaa, täytätkö ehdot (tämä ei vaikuta luottokelpoisuuteesi). Jos täytät kelpoisuusehdot, <ph name="BNPL_ISSUER_NAME" /> toimittaa mahdolliset sopimukset ostoksesi viimeistelemiseksi.</translation>
 <translation id="6654224358955673568">Korjaa muodollisemmaksi</translation>
 <translation id="6654244995031366386">Lasi (teksturoitu)</translation>
 <translation id="6657585470893396449">Salasana</translation>
@@ -3596,6 +3600,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6925267999184670015">Pohjoisamerikkalainen B+</translation>
 <translation id="6926216138694948720">Tatuoinnit ja lävistykset</translation>
 <translation id="692638818576287323">Hyötyajoneuvot</translation>
+<translation id="6927057753277044239">Kun olet tarkistanut tilauksen, sinun on kirjauduttava palvelun <ph name="BNPL_ISSUER_NAME" /> tilille tai luotava sellainen. Tili linkitetään automaattisesti Google-tiliisi.</translation>
 <translation id="6930607614725241390">Hae sivupaneelista</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Oletushakukoneellasi voit tehdä hakuja verkosta ja hyödyntää Chromen ominaisuuksia<ph name="END_BOLD" />, esimerkiksi hakea osoitepalkista ja verkkosivuilla olevien kuvien avulla. Ominaisuus ei välttämättä ole käytettävissä, jos hakukone ei tue sitä.</translation>
 <translation id="6934672428414710184">Tämä nimi on peräisin Google-tililtäsi</translation>
@@ -3647,6 +3652,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6997288673234694149">Baseball- ja softball-välineet</translation>
 <translation id="6998512609912910179">Täytä lomakkeet nopeammin</translation>
 <translation id="6999480632062519056">Kuntoiluohjeet ja henkilökohtainen valmennus</translation>
+<translation id="7002897669829306463">Kotiosoite, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Matot ja kokolattiamatot</translation>
 <translation id="7003322000677139268">Ajoneuvojen varaosat ja lisälaitteet</translation>
 <translation id="7004499039102548441">Hiljattain suljetut välilehdet</translation>
@@ -4213,6 +4219,8 @@ Lisätietoja:
 <translation id="7916162853251942238">Flexo-pohja</translation>
 <translation id="791698251820376781">Organisaatio ei salli sisäänkirjautumista</translation>
 <translation id="7926503317156566022">Lentokoneteollisuus</translation>
+<translation id="7930282586031445870">Osta nyt, maksa myöhemmin ‐käyttöehtojen näyttö on suljettu.</translation>
+<translation id="7932035970207573919">Työosoite, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Päivitetäänkö osoite?</translation>
 <translation id="7932579305932748336">Päällystys</translation>
 <translation id="79338296614623784">Anna kelvollinen puhelinnumero.</translation>
@@ -4626,6 +4634,7 @@ Lisätietoja:
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Toimintasi sivustolla, jolla käyt Chromella tällä laitteella.</translation>
 <translation id="8601456038554914806">Vesiurheilulajien välineet</translation>
 <translation id="8601782593888534566">Scifi ja fantasia</translation>
+<translation id="8604103095921958091">Osta nyt, maksa myöhemmin ‑käyttöehtojen näyttö kokonaan avattuna.</translation>
 <translation id="8606988009912891950">Mainosaiheiden avulla sivustot voivat näyttää sinulle osuvia mainoksia niin, että selaushistoriasi ja henkilöllisyytesi pysyvät suojattuina. Chrome voi havaita viimeaikaisen selaushistoriasi perusteella sinua kiinnostavia aiheita. Avaamasi sivustot voivat myöhemmin pyytää osuvia aiheita Chromelta personoidakseen näkemiäsi mainoksia.</translation>
 <translation id="8612919051706159390">Verkkoyhteisöt</translation>
 <translation id="8617269623452051934">laitteesi käyttö</translation>
@@ -4866,6 +4875,7 @@ Lisätietoja:
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> haluaa etsiä paikallisessa verkossa olevia laitteita ja muodostaa niihin yhteyden</translation>
 <translation id="9046864189129893978">Mikrofonit (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Osta nyt, maksa myöhemmin ‐käyttöehtojen näyttö puoliksi avattuna.</translation>
 <translation id="9047528041803621289">Oletusvalinnoilla voit tehdä verkkohakuja. Voit muuttaa niitä asetuksista.</translation>
 <translation id="9048035366624198823">Nämä toiminnot edellyttävät, että <ph name="POLICY_NAME" />-käytännön arvo on <ph name="POLICY_VALUE" /> .<ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 tuumaa</translation>

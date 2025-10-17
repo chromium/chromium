@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">Închide dialogul de feedback</translation>
 <translation id="306179102415443347">Folosește comanda rapidă pentru a accesa rapid Managerul de parole Google. Poți muta comanda rapidă pe ecranul de pornire sau în lansatorul de aplicații al computerului.</translation>
 <translation id="3065168410429928842">Fila Chrome</translation>
+<translation id="3073571714401714450">Activează / dezactivează Gemini în Chrome Dev</translation>
 <translation id="3080151273017101988">Rulează în continuare aplicații în fundal când Google Chrome este închis</translation>
 <translation id="308397506772922478">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Denumește profilul Chrome</translation>
@@ -373,6 +374,7 @@
 <translation id="5368118228313795342">Cod suplimentar: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Stabilește și ce pagină se afișează când porniți Chrome sau când căutați din caseta polivalentă.</translation>
 <translation id="5394833366792865639">Arată o filă Chrome</translation>
+<translation id="5402307365844630024">Activează / dezactivează Gemini în Chrome Beta</translation>
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
 <translation id="5468572406162360320">Pentru a contribui la îmbunătățirea acestor funcții, Chrome îți trimite interacțiunile cu acestea la Google. Aceste date pot fi citite, procesate și adnotate de evaluatori umani.</translation>
 <translation id="5510398294750420479">Descarcă Chrome pe telefon pentru a adăuga un nivel suplimentar de protecție când ești în mișcare</translation>
@@ -422,6 +424,7 @@
 <translation id="5941711191222866238">Minimizează</translation>
 <translation id="5941830788786076944">Setează Google Chrome ca browser prestabilit</translation>
 <translation id="5947104538377036631">Comandă rapidă pentru Chrome</translation>
+<translation id="5960071705175224773">Setările au fost modificate de o aplicație necunoscută</translation>
 <translation id="5968400720580217226">Modul AI</translation>
 <translation id="5980111191913430208">Extensiile, aplicațiile și temele din surse necunoscute pot să dăuneze dispozitivului. Chrome recomandă să le instalezi numai din <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Se descarcă… Au rămas <ph name="HOURS" /> ore</translation>
@@ -645,6 +648,7 @@
 <translation id="8362914115861174987">Tradu în</translation>
 <translation id="8366770919198174997">Reduce performanța, dar face Chrome mai rezistent la atacuri</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
+<translation id="8377158135256176353">Activează / dezactivează Gemini în Chrome Canary</translation>
 <translation id="8387459386171870978">Continuă să folosești Chrome</translation>
 <translation id="8394720698884623075">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome</translation>
 <translation id="8403038600646341038">Sigla Chrome pe un ecran de computer.</translation>
@@ -693,12 +697,14 @@
 <translation id="8914504000324227558">Relansați Chrome</translation>
 <translation id="8922193594870374009">Pentru a trimite un număr de pe <ph name="ORIGIN" /> pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8922998289262614701">Elimină datele aplicației din Chrome</translation>
+<translation id="8936233353620149764">Activează / dezactivează Gemini în Chrome</translation>
 <translation id="8948460679427074738">Extensia nu a publicat practici de confidențialitate, cum ar fi modul în care colectează și folosește date. Chrome recomandă să o elimini.</translation>
 <translation id="8958307504142971576">Acum ai mai multe funcții disponibile în Chrome</translation>
 <translation id="8991530961471831170">Deschide Gemini în Chrome</translation>
 <translation id="8992769679401294069">Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a salva datele Chrome în Contul Google.</translation>
 <translation id="8999117580775242387">Când HTTPS nu este disponibil, Chrome va folosi o conexiune nesecurizată fără să te avertizeze</translation>
 <translation id="8999208279178790196">{0,plural, =0{Este disponibilă o actualizare Chrome}=1{Este disponibilă o actualizare Chrome}few{O actualizare Chrome este disponibilă de # zile}other{O actualizare Chrome este disponibilă de # de zile}}</translation>
+<translation id="9010418943148193727">Motorul de căutare prestabilit a fost schimbat din afara browserului Chrome. Pentru a te proteja, Chrome l-a resetat.</translation>
 <translation id="9014771989710951291">Mai multe organizații gestionează Chrome</translation>
 <translation id="9024318700713112071">Setează Chrome ca prestabilit</translation>
 <translation id="9066987883552592250">Închide Gemini în Chrome Canary</translation>

@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">Geri bildirim iletişim kutusunu kapat</translation>
 <translation id="306179102415443347">Google Şifre Yöneticisi'ne hızlıca gitmek için kısayolunuzu kullanın. Kısayolunuzu bilgisayarınızın ana ekranına veya uygulama başlatıcıya taşıyabilirsiniz.</translation>
 <translation id="3065168410429928842">Chrome Sekmesi</translation>
+<translation id="3073571714401714450">Chrome Dev'de Gemini'ı aç/kapat</translation>
 <translation id="3080151273017101988">Google Chrome kapandığında arka plan uygulamaları çalıştırmaya devam et</translation>
 <translation id="308397506772922478">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini silin<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Chrome profilinize bir ad verin</translation>
@@ -374,6 +375,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5368118228313795342">Ekstra kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Ayrıca, Chrome'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="5394833366792865639">Chrome sekmesi paylaşın</translation>
+<translation id="5402307365844630024">Chrome Beta'da Gemini'ı aç/kapat</translation>
 <translation id="5430073640787465221">Tercih dosyanız bozuk veya geçersiz. Google Chrome, ayarlarınızı kurtaramıyor.</translation>
 <translation id="5468572406162360320">Chrome, özelliklerle olan etkileşimlerinizi Google'a göndererek bu özelliklerin iyileştirilmesini sağlar. İnceleme uzmanları bu verileri okuyabilir, işleyebilir ve bunlara ek açıklama ekleyebilir.</translation>
 <translation id="5510398294750420479">Hareket halindeyken ek koruma katmanı için telefonunuza Chrome'u indirin</translation>
@@ -423,6 +425,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5941711191222866238">Küçült</translation>
 <translation id="5941830788786076944">Google Chrome varsayılan tarayıcı olsun</translation>
 <translation id="5947104538377036631">Chrome Kısayolu</translation>
+<translation id="5960071705175224773">Ayarlarınız bilinmeyen bir uygulama tarafından değiştirildi</translation>
 <translation id="5968400720580217226">AI Modu</translation>
 <translation id="5980111191913430208">Bilinmeyen kaynaklardan gelen uzantılar, uygulamalar ve temalar cihazınıza zarar verebilir. Chrome bunların yalnızca <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> kaynağından yüklenmesini önerir.</translation>
 <translation id="6003112304606738118">İndiriliyor... <ph name="HOURS" /> saat kaldı</translation>
@@ -646,6 +649,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8362914115861174987">Şu dile çevir:</translation>
 <translation id="8366770919198174997">Performansı düşürür ancak Chrome'u saldırılara karşı daha dirençli hale getirir</translation>
 <translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
+<translation id="8377158135256176353">Chrome Canary'de Gemini'ı aç/kapat</translation>
 <translation id="8387459386171870978">Chrome'u kullanmaya devam et</translation>
 <translation id="8394720698884623075">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder</translation>
 <translation id="8403038600646341038">Bilgisayar ekranındaki Chrome logosu.</translation>
@@ -694,12 +698,14 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> sitesinden Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
 <translation id="8922998289262614701">Bu uygulamanın verilerini Chrome'dan kaldır</translation>
+<translation id="8936233353620149764">Chrome'da Gemini'ı aç/kapat</translation>
 <translation id="8948460679427074738">Bu uzantı, verileri nasıl topladığı ve kullandığı gibi gizlilik uygulamalarını yayınlamadı. Chrome, bu uzantıyı kaldırmanızı önerir.</translation>
 <translation id="8958307504142971576">Artık Chrome'da daha fazla özellik kullanabilirsiniz</translation>
 <translation id="8991530961471831170">Chrome'da Gemini'ı aç</translation>
 <translation id="8992769679401294069">Verileriniz parolanızla şifrelenir. Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için bu kodu girin.</translation>
 <translation id="8999117580775242387">Chrome, HTTPS kullanılamadığında size uyarı göndermeden güvenli olmayan bir bağlantı kullanır</translation>
 <translation id="8999208279178790196">{0,plural, =0{Bir Chrome güncellemesi var}=1{Bir Chrome güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chrome güncellemesi var}}</translation>
+<translation id="9010418943148193727">Varsayılan arama motorunuz Chrome dışından değiştirildi. Chrome, sizi korumak için bu işlemi geri aldı.</translation>
 <translation id="9014771989710951291">Chrome'u birden fazla kuruluş yönetiyor</translation>
 <translation id="9024318700713112071">Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="9066987883552592250">Chrome Canary'de Gemini'ı kapat</translation>

@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">شروعات میں لانچ کریں</translation>
 <translation id="1163931534039071049">&amp;فریم کا ماخذ دیکھیں</translation>
 <translation id="1164015913575846413">‏alt + کلک</translation>
-<translation id="1164286072721995435">‏جب بھی آپ کوئی نئی گفتگو شروع کرتے ہیں تو موجودہ ٹیب کا Gemini کے ساتھ اشتراک کرتا ہے۔ آپ کسی بھی وقت اپنے موجودہ ٹیب کا اشتراک موقوف کر سکتے ہیں۔ تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کیلئے، آپ کے ڈیٹا کا استعمال نہیں کیا جاتا ہے۔</translation>
 <translation id="1164891049599601209">فریب والی سائٹ پر درج کیا گیا</translation>
 <translation id="1165039591588034296">خرابی</translation>
 <translation id="1166212789817575481">دائیں جانب والے ٹیبز بند کریں</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">‏PPD کو تلاش نہیں کر سکتا۔ یقینی بنائیں کہ آپ کا Chromebook آن لائن ہے اور دوبارہ کوشش کریں۔</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> کو اپنا کیمرا استعمال اور منتقل کرنے کی اجازت دینا جاری رکھیں</translation>
 <translation id="1354148503392558902">پاس ورڈ تبدیل ہو رہا ہے…</translation>
-<translation id="1354943694624358993">موجودہ ٹیب کا ہمیشہ اشتراک کریں</translation>
 <translation id="1355088139103479645">سبھی ڈیٹا حذف کریں؟</translation>
 <translation id="1355088659320425659">سرگزشت اور ٹیبز</translation>
 <translation id="1356376170199999104">اجازت دی گئی – <ph name="PERMISSION_DETAILS" />۔ فزیکل سوئچ کا استعمال کرتے ہوئے مائیکروفون آن کریں۔</translation>
@@ -2365,7 +2363,6 @@
 <translation id="2605668923777146443">‏Better Together کی خاطر اپنے اختیارات دیکھنے کیلئے <ph name="LINK_BEGIN" />ترتیبات<ph name="LINK_END" /> پر جائیں۔</translation>
 <translation id="2606246518223360146">ڈیٹا کو لنک کریں</translation>
 <translation id="2606454609872547359">‏نہیں، بغیر ChromeVox کے جاری رکھیں</translation>
-<translation id="2606568927909309675">یہ خصوصیت انگریزی آڈیو اور ویڈیو کیلئے خودکار طور پر کیپشنز تخلیق کرتی ہے۔ آڈیو اور کیپشنز ہمیشہ آلے پر ہی رہتے ہیں۔</translation>
 <translation id="2606890864830643943">ڈائیگناسٹک ڈیٹا برآمد کیا جا رہا ہے</translation>
 <translation id="2607101320794533334">موضوع عوامی کلید معلومات</translation>
 <translation id="2609533306502181883">کسی موضوع پر تحقیق کریں</translation>
@@ -5768,7 +5765,6 @@
 <translation id="4956593309300508411">اشتراک کرنا روکیں؟</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">صرف اس آلے پر کسی فولڈر میں محفوظ کریں؟</translation>
-<translation id="4958916254663453555">‏‫Chrome میں Gemini کھولنے پر آپ کے موجودہ ٹیب کا اشتراک خودکار طور پر ہو جائے گا۔ موجودہ ٹیب کا مکمل مواد اور URL‏ Google کو بھیجے گئے ہیں۔</translation>
 <translation id="4959262764292427323">‏آپ کے Google اکاؤنٹ میں پاس ورڈز محفوظ ہیں اس لیے آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں</translation>
 <translation id="4960020053211143927">کچھ ایپس کے ذریعے تعاون یافتہ نہیں ہے</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5880,7 +5876,6 @@
 <translation id="5045367873597907704">‏HID آلات کے بارے میں</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
 <translation id="504561833207953641">موجودہ براؤزر کے سیشن میں کھل رہا ہے۔</translation>
-<translation id="5047544190872578914">‏جب بھی آپ کوئی نئی گفتگو شروع کرتے ہیں تو موجودہ ٹیب کا Gemini کے ساتھ اشتراک کرتا ہے۔ آپ کسی بھی وقت اپنے موجودہ ٹیب کا اشتراک موقوف کر سکتے ہیں۔</translation>
 <translation id="504953514574706691">ٹیب کو تجویز کردہ گروپ سے خارج کر دیا گیا</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">غیر تصدیق شدہ فائل ڈاؤن لوڈ کریں</translation>
@@ -6398,6 +6393,7 @@
 <translation id="5414836363063783498">توثیق ہو رہی ہے…</translation>
 <translation id="5415328625985164836">‏یہ ایک بی ٹا پروگرام ہے۔ اب آپ اپنے Chromebook پر کچھ گیمز کھیلنے کے لیے Steam کا استعمال کر سکتے ہیں۔</translation>
 <translation id="5415497281076257439">فقرہ</translation>
+<translation id="5415871492522952905">آپ کے تمام آلات پر آپ کی سرگزشت اور ٹیبز موجود ہوں گے تاکہ آپ جو کچھ کر رہے تھے اسے جاری رکھ سکیں</translation>
 <translation id="5417293056300086453">یہ سائٹ تحفظ یافتہ مواد چلانے کے لیے شناخت کنندگان کا استعمال کر سکتی ہے۔</translation>
 <translation id="5417312524372586921">براؤزر تھیمز</translation>
 <translation id="541737483547792035">اسکرین کو بڑا کریں</translation>
@@ -6608,6 +6604,7 @@
 <translation id="5555760010546505198">رنگوں کی تقلیب، رنگ کی اصلاح، میگنیفائر اور ڈسپلے کی ترتیبات</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> کو فعال کریں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
+<translation id="555671485580955310">سرگزشت اور ٹیبز کی مطابقت پذیری کریں</translation>
 <translation id="5558129378926964177">زوم &amp;ان کریں</translation>
 <translation id="5558594314398017686">‏OS ڈیفالٹ (جب دستیاب ہو)</translation>
 <translation id="5559311991468302423">پتہ حذف کریں</translation>
@@ -10733,7 +10730,6 @@
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' کیلئے تلاش کے نتائج</translation>
 <translation id="8419144699778179708">تلاش کے خانے میں موجود سرگزشت سمیت سبھی سرگزشت حذف ہو جاتی ہیں</translation>
 <translation id="8420308167132684745">لغت کے اندراجات میں ترمیم کریں</translation>
-<translation id="8421361468937925547">لائیو کیپشن (صرف انگریزی)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">ٹرے موجود نہیں ہے</translation>
 <translation id="8424250197845498070">اعلی تحفظ نے مسدود کر دیا</translation>
@@ -11030,6 +11026,7 @@
 <translation id="8637688295594795546">سسٹم اپ ڈیٹ دستیاب ہے۔ ڈاؤن لوڈ کرنے کی تیاری ہو رہی ہے…</translation>
 <translation id="8638719155236856752">‏ChromeOS نیٹ ورک کی صحت</translation>
 <translation id="8639635302972078117">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔</translation>
+<translation id="8639963783467694461">آٹو فل ترتیبات</translation>
 <translation id="8640575194957831802">آخری بار کھولا ہوا</translation>
 <translation id="8641946446576357115">‏اپنے iOS آلات پر اپنے پاس ورڈز استعمال کریں</translation>
 <translation id="8642577642520207435"><ph name="APP_NAME" /> کے لیے کیمرے کی اجازت</translation>

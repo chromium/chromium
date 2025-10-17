@@ -109,7 +109,6 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="1419753403124156396">Vai restartēt pārlūku Chrome?</translation>
 <translation id="1428770807407000502">Vai izslēgt sinhronizāciju?</translation>
 <translation id="1430915738399379752">Drukāt</translation>
-<translation id="1433478348197382180">Lasīšanas režīms</translation>
 <translation id="1435593198351412143">Automātiska PDF failu atvēršana</translation>
 <translation id="1437543266176261764">Darbojas pārlūkā <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Kārtojiet savus izsekotos produktus grāmatzīmēs</translation>
@@ -370,7 +369,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2718352093833049315">Tikai Wi-Fi</translation>
 <translation id="2718846868787000099">Apmeklētajām vietnēm ir atļauta piekļuve jūsu preferencēm, lai nodrošinātu satura rādīšanu jūsu izvēlētajā valodā.</translation>
 <translation id="2723001399770238859">audio</translation>
-<translation id="2734335652257251631">Rādīt lasīšanas režīmu</translation>
 <translation id="2739887572830526131">Paturiet šo grupu, lai vēlāk pievienotu cilnes, vai izdzēsiet to, ja tā jums vairs nav vajadzīga.</translation>
 <translation id="2742373789128106053">Identitātes nodrošinātājs <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> pašlaik nav pieejams.</translation>
 <translation id="2760805590727089264">MM/GG</translation>
@@ -1139,6 +1137,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6232535412751077445">Iespējojot funkciju “Nesekot”, jūsu pārlūkošanas datplūsmā tiks iekļauts pieprasījums. Rezultāts būs atkarīgs no tā, vai vietne nodrošinās atbildi uz pieprasījumu un kā pieprasījums tiks interpretēts.
 
 Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums reklāmas, kuru pamatā nav citas jūsu apmeklētās vietnes. Tomēr daudzas vietnes vāks un izmantos jūsu pārlūkošanas datus, piemēram, lai uzlabotu drošību, nodrošinātu saturu, reklāmas un ieteikumus un ģenerētu pārskatu statistiku.</translation>
+<translation id="623755660902014047">Lasīšanas režīms</translation>
 <translation id="6247557882553405851">Google paroļu pārvaldnieks</translation>
 <translation id="6248988683584659830">Meklēt iestatījumus</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, vairākkārt atlasīta piespraustā inkognito cilne</translation>
@@ -1397,7 +1396,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7221869452894271364">Pārlādēt šo lapu</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Tiek gaidīta 1 lejupielāde}zero{Tiek gaidītas # lejupielādes}one{Tiek gaidīta # lejupielāde}other{Tiek gaidītas # lejupielādes}}</translation>
 <translation id="7230064152164845085">Pārslēgties uz inkognito režīmu</translation>
-<translation id="7230836263524391273">Paslēpt lasīšanas režīmu</translation>
 <translation id="7237724030342645845">Tika apturēta Google paroļu pārvaldnieka darbība</translation>
 <translation id="72415438529550637">Paroles ieteikums ir aizvērts.</translation>
 <translation id="7248671827512403053">Lietojumprogramma</translation>
@@ -1732,7 +1730,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="867914734596684889">Rādīt vai paslēpt grāmatzīmju joslu</translation>
 <translation id="8683039184091909753">attēls</translation>
 <translation id="8688183792442786085">“<ph name="TAB_TITLE" />”, atlasītā cilne</translation>
-<translation id="8693232767599693749">Vai skatīt lasīšanas režīmu?</translation>
 <translation id="8697753151306746444">Tā vietā kopīgojiet logu vai ekrānu</translation>
 <translation id="8699120352855309748">Nepiedāvāt tulkot no šīm valodām</translation>
 <translation id="8712637175834984815">Sapratu!</translation>

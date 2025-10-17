@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">ຊອກຫາ ${searchPhrase} ໃນ Chrome</translation>
 <translation id="1237769345474105984">ຈາກ Chrome</translation>
 <translation id="124228879633599436">Chrome ຂອງທ່ານເປັນເວີຊັນເກົ່າ. ກະລຸນາອັບເດດເພື່ອຄວາມປອດໄພ.</translation>
+<translation id="1258531953614971819">ເຄັດລັບສຳລັບ Chrome: ຍ້າຍ Chrome ໄປໃສ່ໂຮມສະກຣີນຂອງທ່ານ</translation>
 <translation id="1333745675627230582">ຫຼິ້ນເກມ Chrome Dino</translation>
 <translation id="1352919863522755794">ຕົວຈັດການລະຫັດຜ່ານ Google ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
 <translation id="1394995526009609883">ທ່ານສາມາດອັບເດດສິ່ງທີ່ທ່ານເລືອກໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ Chrome.</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອຊິ້ງຂໍ້ມູນແຖບ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="1504372625950710826">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
 <translation id="1516692594929310090">ເປີດໂຄງຮ່າງຕາຕະລາງຂອງແຖບ Chrome.</translation>
+<translation id="152319127067424683">ເຂົ້າເຖິງ Chrome ໄດ້ໄວຂຶ້ນຈາກດັອກຂອງ iPhone ຂອງທ່ານ.</translation>
 <translation id="1526327845902180576">ເມື່ອເປີດ:
 <ph name="BEGIN_INDENT" />  • ຊ່ວຍປັບປຸງ Chrome ໃຫ້ດີຂຶ້ນສຳລັບຜູ້ທີ່ນຳໃຊ້ໃນລັກສະນະດຽວກັບທ່ານ.<ph name="END_INDENT" />
 
@@ -58,6 +60,7 @@
 <translation id="2199719347983604670">ຂໍ້ມູນຈາກ Chrome sync</translation>
 <translation id="2213327331203157297">ເພື່ອປິດໂໝດລັອກໄວ້ໃນ Chrome ໃຫ້ປິດມັນຢູ່ iPhone ຂອງທ່ານ.</translation>
 <translation id="2242467532204595597">ໃຊ້ Chrome ໄດ້ທຸກເວລາທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
+<translation id="2256384876478573507">ເປີດ Chrome ໄດ້ໄວຂຶ້ນເມື່ອທ່ານພ້ອມທີ່ຈະທ່ອງເວັບຢູ່ iPhone ຂອງທ່ານ.</translation>
 <translation id="2311240109311056604">ເປີດເກມ Chrome Dino.</translation>
 <translation id="2339201583852607431">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ຂອງທ່ານ (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome ຈະແບ່ງປັນສະຖານທີ່ຂອງທ່ານໃຫ້ກັບເວັບໄຊທີ່ທ່ານອະນຸຍາດ.</translation>
@@ -66,6 +69,7 @@
 <translation id="2427791862912929107">Chrome ມີຄຸນສົມບັດຕ່າງໆທີ່ຊ່ວຍທ່ານຈັດການຂໍ້ມູນອິນເຕີເນັດຂອງທ່ານ ແລະ ວິທີທີ່ທ່ານສາມາດໂຫຼດໜ້າເວັບໄດ້ຢ່າງວ່ອງໄວ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chrome ເປັນເວລາ {THRESHOLD} ນາທີ. ສິ່ງນີ້ສາມາດຮວມເອົາປະຫວັດ ແລະ ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ.}other{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chrome ເປັນເວລາ {THRESHOLD} ນາທີ. ສິ່ງນີ້ສາມາດຮວມເອົາປະຫວັດ ແລະ ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ.}}</translation>
+<translation id="2531823184391665648">ເປີດ Chrome ໄດ້ໄວຂຶ້ນເມື່ອທ່ານພ້ອມທີ່ຈະທ່ອງເວັບຢູ່ iPad ຂອງທ່ານ.</translation>
 <translation id="2561231791489583059">ໃຊ້ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເພື່ອປ້ອງກັນເວັບໄຊທີ່ເປັນອັນຕະລາຍ ແລະ ຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ</translation>
 <translation id="2574249610672786438">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chrome, ກະລຸນາເຂົ້າສູ່ລະບົບໃນອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="2576431527583832481">Chrome ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
@@ -81,6 +85,7 @@
 <translation id="2767464022270041271">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ທ່ານບັນທຶກພວກມັນໄດ້.</translation>
 <translation id="2788811701191021538">ເປີດໜ້າການຕັ້ງຄ່າວິທີການຈ່າຍເງິນໃນ Chrome.</translation>
 <translation id="2876628302275096482">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK" />ວິທີທີ່ Chrome ຮັກສາຂໍ້ມູນຂອງທ່ານໃຫ້ເປັນສ່ວນຕົວ<ph name="END_LINK" /></translation>
+<translation id="2922914028977213693">ແຕະບ່ອນນີ້ເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome ຢູ່ iPad ຂອງທ່ານ.</translation>
 <translation id="292371311537977079">ການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2923827943290349720">ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານປິດ Chrome</translation>
 <translation id="2940565985148833945">ເຄັດລັບສຳລັບ Chrome: ຊອກຫາດ້ວຍ Lens</translation>
@@ -97,6 +102,7 @@
 <translation id="3140589780564632473">ຊອກຫາພາບໃນ Chrome</translation>
 <translation id="314782365035065913">ເຂົ້າເຖິງ Chrome ໄດ້ໄວຂຶ້ນຈາກຖາດແອັບໃນໂຮມສະກຣີນຂອງທ່ານ</translation>
 <translation id="3167189358072330585">ບັນຊີຂອງທ່ານໃຊ້ບໍ່ໄດ້ຢູ່ໃນ Google Chrome. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງໂດເມນຂອງທ່ານ ຫຼືໃຊ້ບັນຊີ Google ປົກກະຕິ ເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
+<translation id="320747600144551583">ເຄັດລັບ Chrome: Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຈະຊ່ວຍທ່ານໄດ້</translation>
 <translation id="322254490661677575">ເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາໃສ່ລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="3282568296779691940">ລົງຊື່ເຂົ້າ​ໃຊ້ Chrome</translation>
 <translation id="3303503998967553377">ໃຊ້ຄຳສັ່ງ Chrome ຢູ່ iOS</translation>
@@ -109,6 +115,7 @@
 <translation id="3440830787838130530">ແບ່ງປັນສຳເນົາລະຫັດຜ່ານກັບກຸ່ມຄອບຄົວຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ ແລະ ປອດໄພໃນຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="3460369101684070455">ເພື່ອເບິ່ງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນແອັບອື່ນໆຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ, ໃຫ້ເລືອກ Chrome ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="3472587960215700950">Chrome ໃຊ້ Google ແຜນທີ່ເພື່ອບອກເສັ້ນທາງ ແລະ ຂໍ້ມູນໃນທ້ອງຖິ່ນໃຫ້ທ່ານຢູ່ທີ່ຢູ່ທີ່ກວດພົບ.</translation>
+<translation id="3482807551645716768">ເຂົ້າເຖິງ Chrome ໄດ້ໄວຂຶ້ນຈາກໂຮມສະກຣີນຂອງ iPad ຂອງທ່ານ.</translation>
 <translation id="3503014945441706099">ຮັບSafe Browsing ທີ່ປັບປຸງດີຂຶ້ນສຳລັບໂປຣໄຟລ໌ Chrome ນີ້ນຳ</translation>
 <translation id="3522659714780527202">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chrome, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="364480321352456989">Chrome ຂອງທ່ານເປັນເວີຊັນເກົ່າ.</translation>
@@ -125,16 +132,19 @@
 <translation id="3988789688219830639">Google Chrome ບໍ່​ມີ​ການ​ເຂົ້າເຖິງຮູບຖ່າຍ ຫຼື ​ວິ​ດີ​ໂອ​ຂອງ​ທ່ານ. ເປີດ​ໃຊ້​ການ​ເຂົ້າ​ເຖິງ​ຢູ່​ໃນ​ການ​ຕັ້ງ​ຄ່າ iOS &gt; Privacy &gt; Photos.</translation>
 <translation id="4064699917955374540">ເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ.</translation>
 <translation id="411154422556990518">ຕິດຕາມຂໍ້ມູນອັບເດດກ່ຽວກັບການຕິດຕາມລາຄາ ແລະ ເຄັດລັບ Chrome.</translation>
+<translation id="4167555379306984168">ລອງເບິ່ງວ່າມີຫຍັງໃໝ່ໃນ Chrome</translation>
 <translation id="417201473131094001">ບໍ່ຮອງຮັບໃນ Chrome Canary</translation>
 <translation id="424864128008805179">ອອກຈາກລະບົບ Chrome ບໍ?</translation>
 <translation id="4430797724889237570">ເປີດລິ້ງຈາກ Gmail, ແຜນທີ່, YouTube ແລະ ແອັບອື່ນໆໃນ Chrome</translation>
 <translation id="447252321002412580">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chrome</translation>
 <translation id="4523886039239821078">ການ​ເພີ່ມ​ໃສ່​ບາງ​ອັນ​ເຮັດ​ໃຫ້ Chrome ເກີດ​ຂັດ​ຂ້ອງ. ກະ​ລຸ​ນາ​ຖອນ​ຕິດ​ຕັ້ງ​.</translation>
+<translation id="4568024439284012497">ເຂົ້າເຖິງ Chrome ໄດ້ໄວຂຶ້ນຈາກໂຮມສະກຣີນຂອງ iPhone ຂອງທ່ານ.</translation>
 <translation id="4574806550936185355">ເປີດ "ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານປິດ Chrome"</translation>
 <translation id="4633328489441962921">Chrome ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="4636900170638246267">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊນີ້ ແລະ Chrome.</translation>
 <translation id="4647910807533196601">ເປີດແຖບຫຼ້າສຸດຂອງຂ້ອຍໃນ Chrome.</translation>
 <translation id="4693084815234024320">ທ່ານກຳລັງຢູ່ໃນ Chrome ແບບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="4708857722625759026">ເຂົ້າເຖິງ Chrome ໄດ້ໄວຂຶ້ນຈາກດັອກຂອງ iPad ຂອງທ່ານ.</translation>
 <translation id="4713740144985377441">ກັບຄືນໄປຫາ Chrome ເພື່ອອັບໂຫຼດໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="4713907610796204963">ສຶກສາພື້ນຖານ Chrome ທີ່ເປັນປະໂຫຍດເພື່ອໃຫ້ທ່ານເລີ່ມຕົ້ນ</translation>
 <translation id="4724297637870447613">ໃຊ້ Chrome ໄດ້ຢູ່ທົ່ວທຸກບ່ອນ</translation>
@@ -149,6 +159,8 @@
 <translation id="4903674399067644695">ບັດນີ້ຈະສະແດງການແນະນຳໃຫ້ທ່ານກ່ຽວກັບວິທີໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome.</translation>
 <translation id="49200511069271369">ອົງກອນ <ph name="DOMAIN" /> ຂອງທ່ານຈະເປັນຜູ້ຈັດການບັນຊີທີ່ທ່ານກຳລັງເຂົ້າສູ່ລະບົບ ແລະ ວິທີໃຊ້ Chrome. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດຕັ້ງຄ່າ ຫຼື ຈຳກັດຄຸນສົມບັດບາງຢ່າງໄດ້.</translation>
 <translation id="4925322001044117929">ໃຊ້ Chrome ຢູ່ iPad ແບບເລີ່ມຕົ້ນ</translation>
+<translation id="4934496192263958600">ເຂົ້າສູ່ລະບົບ Chrome ເພື່ອຮັບຂໍ້ມູນຂອງທ່ານ</translation>
+<translation id="496747131578053942">ເຄັດລັບສຳລັບ Chrome: ຊອກຫາສິ່ງທີ່ທ່ານເຫັນດ້ວຍ Google Lens</translation>
 <translation id="498985224078955265">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chrome ຢູ່ທັງສອງອຸປະກອນ.</translation>
 <translation id="5030102366287574140">Chrome ສາມາດຊ່ວຍຮັກສາທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆອີກ.</translation>
 <translation id="5109169629909011627">ເບິ່ງບຸກມາກ Chrome</translation>
@@ -225,16 +237,19 @@
 <translation id="6684809838922667136">ເຮັດໃຫ້ Chrome ດີຂຶ້ນ</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{ການດຳເນີນການນີ້ຈະເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chrome ເປັນເວລາ {THRESHOLD} ນາທີ. ລະບົບຈະລຶບຂໍ້ມູນທີ່ບັນທຶກໄວ້ສະເພາະໃນອຸປະກອນນີ້ໃນລະຫວ່າງທີ່ທ່ານເຂົ້າສູ່ລະບົບ. ເຊິ່ງອາດຮວມທັງປະຫວັດ ແລະ ລະຫັດຜ່ານ.}other{ການດຳເນີນການນີ້ຈະເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chrome ເປັນເວລາ {THRESHOLD} ນາທີ. ລະບົບຈະລຶບຂໍ້ມູນທີ່ບັນທຶກໄວ້ສະເພາະໃນອຸປະກອນນີ້ໃນລະຫວ່າງທີ່ທ່ານເຂົ້າສູ່ລະບົບ. ເຊິ່ງອາດຮວມທັງປະຫວັດ ແລະ ລະຫັດຜ່ານ.}}</translation>
 <translation id="6709398533399187136">ລະຫັດຜ່ານຂອງທ່ານຖືກເປີດເຜີຍໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ຕົວຈັດການລະຫັດຜ່ານ Google ແນະນຳໃຫ້ປ່ຽນມັນດຽວນີ້.</translation>
+<translation id="6718973358446066955">ທ່ານໃກ້ຈະຕັ້ງຄ່າ Chrome ສຳເລັດແລ້ວ!</translation>
 <translation id="6820553595690137150">ການເຂົ້າລະຫັດດ້ວຍລະຫັດຜ່ານບໍ່ຮວມເຖິງວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່.
 
 ເພື່ອປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" /> ກ່ອນ.</translation>
 <translation id="6838525730752203626">ໃຊ້ Chrome ໂດຍຄ່າເລີ່ມຕົ້ນ</translation>
+<translation id="6864705365700484754">ແຕະບ່ອນນີ້ເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome ຢູ່ iPhone ຂອງທ່ານ.</translation>
 <translation id="686691656039982452">ທ່ານສາມາດ <ph name="BEGIN_LINK" />ຈັດການວ່າຈະບັນທຶກຂໍ້ມູນ Chrome ໃດ<ph name="END_LINK" /> ໃສ່ໃນບັນຊີ Google ຂອງທ່ານໄດ້.
 
 ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ໃຊ້ຂໍ້ມູນເພື່ອປັບປຸງປະສົບການ Chrome ຂອງທ່ານ, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />ບໍລິການ Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">ລຶບຂໍ້ມູນການທ່ອງເວັບໃນ Chrome.</translation>
 <translation id="6924922227983877439">ເປີດລິ້ງໃນ Chrome ຕາມຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="6975725306479268850">ເລືອກ Chrome ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
+<translation id="7001031184470316752">ຍ້າຍ Chrome ໄປໃສ່ດັອກຂອງທ່ານ</translation>
 <translation id="7038674195294813388">ເປີດການຕັ້ງຄ່າແອັບເລີ່ມຕົ້ນໃນ iOS, ຈາກນັ້ນແຕະ "ແອັບໂປຣແກຣມທ່ອງເວັບ" ແລ້ວເລືອກ Chrome.</translation>
 <translation id="7056826488869329999">ເປີດ ແລະ ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພໃນ Chrome.</translation>
 <translation id="7061455974939528301">ກົດໄອຄອນ Chrome ຄ້າງໄວ້ ແລ້ວຄລິກ "ແກ້ໄຂໂຮມສະກຣີນ"</translation>
@@ -305,6 +320,7 @@
 ມີພຽງບຸກຄົນທີ່ມີລະຫັດຜ່ານຂອງທ່ານເທົ່ານັ້ນທີ່ສາມາດອ່ານຂໍ້ມູນທີ່ໄດ້ຖືກເຂົ້າລະຫັດໄວ້ຂອງທ່ານ. Google ຈະບໍ່ໄດ້ຮັບ ຫຼື ຈັດເກັບລະຫັດຜ່ານດັ່ງກ່າວໄວ້. ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" /> ກ່ອນ.</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="8371138994040262994">ເປີດການຕັ້ງຄ່າໃນ Chrome.</translation>
+<translation id="8375378038757507658">ໃຊ້ Chrome ໄດ້ຢ່າງງ່າຍດາຍໃນທຸກເທື່ອທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ ຫຼື ແອັບອື່ນໆ.</translation>
 <translation id="8387459386171870978">ສືບຕໍ່ນຳໃຊ້ Chrome</translation>
 <translation id="8392023217086447677">ເປີດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນຂອງ Chrome</translation>
 <translation id="840168496893712993">ການ​ເພີ່ມ​ໃສ່​ບາງ​ອັນ​ເຮັດ​ໃຫ້ Chrome ເກີດ​ຂັດ​ຂ້ອງ. ກະ​ລຸ​ນາ​ລອງຖອນ​ຕິດ​ຕັ້ງ​ພວກ​ມັນ.</translation>

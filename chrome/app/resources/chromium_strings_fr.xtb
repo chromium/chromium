@@ -206,6 +206,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3296368748942286671">Poursuivre l'exécution des applications en arrière-plan après la fermeture de Chromium</translation>
 <translation id="3313189106987092621">Chromium vous avertit avant de charger un site à l'aide d'une connexion non sécurisée</translation>
 <translation id="3316771292331273802">Lorsque vous fermerez toutes les fenêtres Chromium, vous serez déconnecté de la plupart des sites, à l'exception de votre compte Google si vous êtes connecté à Chromium. Pour autoriser les sites à se souvenir de vous, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Votre moteur de recherche par défaut a été modifié en dehors de Chromium. Pour vous protéger, Chromium l'a réinitialisé.</translation>
 <translation id="3352986031709923790">angle supérieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="TOP" /> % haut</translation>
 <translation id="3366305173356742781">Données Chromium de votre compte</translation>
 <translation id="3369405342922656244">Rechercher sur cette page avec la recherche dans des images</translation>
@@ -398,6 +399,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5949225980829865667">Pour accéder à ce favori et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="5953657885167112863">Personnalisez Chromium</translation>
+<translation id="5960071705175224773">Vos paramètres ont été modifiés par une appli inconnue</translation>
 <translation id="5968400720580217226">Mode IA</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant 1 minute.}one{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minute.}other{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minutes.}}</translation>
 <translation id="5987687638152509985">Mettre à jour Chromium pour lancer la synchronisation</translation>

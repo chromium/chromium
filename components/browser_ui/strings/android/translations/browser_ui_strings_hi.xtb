@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2379925928934107488">जब भी हो सके, तो साइटों पर तब गहरे रंग वाली थीम लागू करें जब Chrome इस थीम पर सेट हो</translation>
 <translation id="2390272837142897736">ज़ूम इन करें</translation>
+<translation id="2397689164757137845">अनुमति दी गई • सटीक</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> एमबी</translation>
 <translation id="2403474027143565107">जगह की सटीक जानकारी</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को इस्तेमाल करने की अनुमति दी गई}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को इस्तेमाल करने की अनुमति दी गई}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को इस्तेमाल करने की अनुमति दी गई}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">सहायता और फ़ीडबैक</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2533138527374486328">इस सेटिंग के चालू होने पर, साइटें आपके लोकल नेटवर्क पर मौजूद किसी डिवाइस से कनेक्ट करने के लिए अनुमति का अनुरोध कर सकती हैं. इस सेटिंग के बंद होने पर, साइटें आपके लोकल नेटवर्क पर मौजूद डिवाइसों से कनेक्ट नहीं कर सकतीं.</translation>
+<translation id="2536779053640817375">इस बार अनुमति दी गई • सटीक</translation>
 <translation id="2544997614631598250">गहरे रंग वाली थीम</translation>
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
 <translation id="2570922361219980984">इस डिवाइस के लिए जगह की जानकारी का एक्सेस भी बंद है. इसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>

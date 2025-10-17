@@ -457,7 +457,6 @@
 <translation id="2721190673959776287">Vöruaðstoð með fjölbreyttum dæmum fyrir samhengissvæðið, sem ætti að birtast nokkrum sinnum á dag.</translation>
 <translation id="2739887572830526131">Haltu flipahópnum ef þú vilt bæta flipum við síðar eða eyddu honum ef þú hefur ekki þörf fyrir hann lengur.</translation>
 <translation id="2747003861858887689">Fyrri reitur</translation>
-<translation id="2749231692441336879">Fylgir <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755485474385016903">Allir í hópnum geta séð breytingar sem gerðar eru</translation>
 <translation id="2755595981383829244">Héðan í frá færðu efnistilkynningar</translation>
 <translation id="2761788987260570878">Taktu mynd af leitarfyrirspurninni þinni</translation>
@@ -480,6 +479,7 @@
 <translation id="2816489851009559785">Valmynd → Stillingar → Sjálfgefinn vafri</translation>
 <translation id="2818821771744632548">Þú skráðist út af reikningnum þínum, <ph name="USER_NAME" />, í tengslum við endurstillingu iPhone. Ýttu á „Halda áfram“ hér fyrir neðan til að skrá þig aftur inn.</translation>
 <translation id="2819667972867209401">Ef kveikt er á þessu verða gögn vistuð á Google-reikningnum þínum. Ef slökkt er á þessu eru gögn eingöngu vistuð í þessu tæki og þeim er eytt ef þú skráir þig út.</translation>
+<translation id="2825777862277359739">Skráðu þig inn til að sækja aðgangsorð, flipa, bókamerki og fleira.</translation>
 <translation id="2827760117436553203">Halda gögnum aðskildum?</translation>
 <translation id="2829172210806130158">Leita á skjánum þínum</translation>
 <translation id="2831109159746537587">Prófaðu að draga hring um eða ýta á myndina á skjánum</translation>
@@ -503,7 +503,6 @@
 <translation id="29153882450867370">Fela „Vakta verð“</translation>
 <translation id="291754862089661335">Staðsettu QR-kóða eða strikamerkið innan rammans</translation>
 <translation id="2918688092312652908">Merkja sem ólesið</translation>
-<translation id="2920866371965792875">Til að sjá uppfærslur frá þessu vefsvæði skaltu fylgja því hér.</translation>
 <translation id="2922210239002704889">Farðu á heimaskjáinn eða lyklaborðið</translation>
 <translation id="2924940770243654951">Opna í nýjum huliðsflipa</translation>
 <translation id="2931440415625410757">Sýna leiðbeiningar</translation>
@@ -606,6 +605,7 @@
 <translation id="3371831930909698441">Þýðing er í boði. Valkostir eru neðst á skjánum</translation>
 <translation id="3377063233124932127">Nú eru vistuð bókamerki, aðgangsorð og fleira efst</translation>
 <translation id="3380352560400387991">Þetta vefsvæði er að reyna að opna forrit. Slökkt verður á huliðsstillingu í kjölfarið.</translation>
+<translation id="3385742921291399323">Sæktu vistuðu aðgangsorðin, flipana, bókamerkin og fleira.</translation>
 <translation id="3392923070107623576">Haltu skipulagi með því að búa til flipahópa</translation>
 <translation id="3404232721752787413">Vista í Google-myndum</translation>
 <translation id="3406506285180498376">Deila síðu…</translation>
@@ -633,6 +633,7 @@
 <translation id="3504377992102007712">Stillingar</translation>
 <translation id="35083190962747987">Opna ${url}</translation>
 <translation id="3511519535430890904">Auktu vafravernd</translation>
+<translation id="3512572904898385012">Nú geturðu verslað og þýtt með myndavélinni þinni. Pikkaðu til að prófa</translation>
 <translation id="3517216995152707259">Þú skráist ekki út af Google-reikningnum þínum þegar þú eyðir vefskoðunargögnum. Til að gera það skaltu <ph name="BEGIN_LINK" />skrá þig út úr Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519792890877853853">Þetta spjald sýnir umsagnir um vörur í opnu flipunum þínum</translation>
 <translation id="3519905498307021260">{count,plural, =1{Opna flipann}one{Opna {count} flipa}other{Opna {count} flipa}}</translation>
@@ -656,6 +657,7 @@
 <translation id="3575426792457739946">Listinn sýnir alla prófíla sem var hlaðið.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" /> (stjórnað af fyrirtækinu þínu).</translation>
 <translation id="3581564640715911333">Bjóðast til að þýða síður á önnur tungumál</translation>
+<translation id="3587482841069643663">Allar</translation>
 <translation id="3587885837929752825">Fyrirtækið þitt takmarkar hvað þú getur vistað á Google-reikningnum þínum.</translation>
 <translation id="3588820906588687999">Opna mynd í nýjum flipa</translation>
 <translation id="3595252146048399851">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
@@ -951,7 +953,6 @@
 <translation id="4752348350801431746">Slökkva á tilkynningum öryggisathugunar…</translation>
 <translation id="4759238208242260848">Niðurhal</translation>
 <translation id="4764612367328936189">Fyrirtækið þitt leyfir þér eingöngu að skrá þig inn með tilteknum reikningum. Bannaðir reikningar eru faldir. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
-<translation id="4766112107778026136">Tillögur og fylgir</translation>
 <translation id="4769198578611055647">Auðveldar þér aðgang að vistuðum aðgangslyklum í öllum tækjum</translation>
 <translation id="4782952780741793211">Staðfestingarkóði:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1060,6 +1061,7 @@
 <translation id="5145331760738811130">Loka flipavali</translation>
 <translation id="5148717509369231739">Safari-innflutningur</translation>
 <translation id="5152483358138813104">Vertu fljótari að skrá þig inn í tækin þín</translation>
+<translation id="5155502059906700593">Færðu veffangastikuna efst eða neðst.</translation>
 <translation id="5157638238828697074">Eitthvað fór úrskeiðis. Ekki tókst að opna forritið.</translation>
 <translation id="5163417375525818870">PDF-skrár</translation>
 <translation id="5168414296986405587">Hannað fyrir iPadOS</translation>
@@ -1135,6 +1137,7 @@
 <translation id="5457082343331641453">Bættu við leitina</translation>
 <translation id="5457226814769348910">Opna útgáfu án nettengingar</translation>
 <translation id="5467163657366219870">Slökkva á forskoðun á Kortum</translation>
+<translation id="5474397204728336997">Aðgangsorð fjölskyldu, nýjar sérstillingar og fleira. Ýttu til að fá frekari upplýsingar.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Ekkert aðgangsorð flutt inn}=1{{count} aðgangsorð flutt inn}one{{count} aðgangsorð flutt inn}other{{count} aðgangsorð flutt inn}}</translation>
 <translation id="5478327362747197944">Búðu til dagatalsviðburði með því að smella á dagsetningu á vefsíðu.</translation>
 <translation id="5482922178977937393">Viltu fá tilkynningar fyrir fréttir, íþróttir og fleira byggt á áhugamálum þínum?</translation>
@@ -1279,6 +1282,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5971459446352190251">QR-kóðaleit</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bókamerki eytt}one{{count} bókamerki eytt}other{{count} bókamerkjum eytt}}</translation>
 <translation id="5972844218283131174">Afvelja allt</translation>
+<translation id="5976160379964388480">Annað</translation>
 <translation id="5977976211062815271">Í þessu tæki</translation>
 <translation id="5986043348928676121">Áfram</translation>
 <translation id="598634819525651074">Flatarmál</translation>
@@ -1308,6 +1312,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6084848228346514841">Velja flipa</translation>
 <translation id="6089212833343035912">PIN-númer Google-aðgangsorðastjórnunar</translation>
 <translation id="6090760257419195752">Hunsaðar viðvaranir</translation>
+<translation id="6094325891006032858">Kveikja á enn öruggari vefskoðun</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> fannst/fundust</translation>
 <translation id="6100617279104942061">Skráð(ur) inn sem <ph name="USER_EMAIL" />. Opnar stillingar.</translation>
 <translation id="6100676328067737810">Gögnin þín verða vistuð á Google-reikningnum þínum, <ph name="USER_EMAIL" /></translation>
@@ -1324,6 +1329,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6140600850356225166">Biðja um að opna tengla úr öðrum forritum í huliðsstillingu</translation>
 <translation id="6140948187512243695">Sýna upplýsingar</translation>
 <translation id="6144589619057374135">Opna ${url} í huliðsstillingu</translation>
+<translation id="6146563240635539929">Myndskeið</translation>
 <translation id="6147279996212084542">Útskýring</translation>
 <translation id="6151006591088192882">Taka huliðsflipa úr lás með <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Óvirkt</translation>
@@ -1343,6 +1349,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6193448654517602979">Velja flipa</translation>
 <translation id="6196207969502475924">Raddleit</translation>
 <translation id="6198252989419008588">Breyta PIN-númeri</translation>
+<translation id="6199783146233591178">Fáðu rauntímavernd með Enn öruggri vefskoðun</translation>
 <translation id="6210079381482819663">Flipar sem eru ekki notaðir í <ph name="THRESHOLD" /> daga eða meira eru færðir hingað. Þú getur breytt þessu hvenær sem er í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Engin heimilisföng fundust</translation>
 <translation id="6218508144653756827">Fúksíuþema</translation>
@@ -1365,7 +1372,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6271824294945464304">Aðgangsorði deilt</translation>
 <translation id="628251768213143684">Þú getur alltaf stjórnað því sem er vistað á Google-reikningnum þínum</translation>
 <translation id="6284652193729350524">Bjóðast til að þýða <ph name="LANGUAGE" /></translation>
-<translation id="6289501276895392862">Hætti að fylgja <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Til að kveikja á öruggri vefskoðun skaltu opna <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" /> og ýta á „Örugg vefskoðun“.</translation>
 <translation id="6295751040240588413">Ógilt gælunafn korts</translation>
 <translation id="629730747756840877">Reikningur</translation>
@@ -1394,6 +1400,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="63519665078626091">Til að nota Web Inspector skaltu tengjast Safari í tölvunni með snúru og fá aðgang að iPad frá valmyndinni „Develop“. Þú getur virkjað valmyndina „Develop“ í hlutanum „Advanced“ í stillingum Safari í tölvunni.</translation>
 <translation id="6355820183143562453">Fela spjaldið „Verðvöktun“</translation>
 <translation id="6355820205320395730">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Gakktu úr skugga um að þú búir til traust aðgangsorð. <ph name="BEGIN_LINK" />Sjá fleiri öryggisábendingar.<ph name="END_LINK" /></translation>
+<translation id="6357455205205567365">Skráðu þig inn til að fá aðgang að öllu þínu, s.s. aðgangsorðum, bókamerkjum og fleiru.</translation>
 <translation id="6368038301482806847">Veldu leitarvél af listanum.</translation>
 <translation id="6368102751067608420">Til að eyða öllum gögnum aðgangsorðastjórnunar</translation>
 <translation id="6372558618707314581">Farðu á hvaða síðu sem er</translation>
@@ -1468,6 +1475,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6625830436658400045">Samstillingarkostirnir þínir verða endurheimtir í samræmi við síðustu öryggisafritun. Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Breyta möppu</translation>
 <translation id="6629759408545977279">Af: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="66306952800092318">Auktu vörn gegn netógnum.</translation>
 <translation id="6634432609054530164">Fyrirtækið þitt slökkti á huliðsstillingu</translation>
 <translation id="6637478299472506933">Niðurhal mistókst</translation>
 <translation id="6638511529934826365">Stækka/minnka texta…</translation>
@@ -1495,7 +1503,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6708501134077648845">Valkostir fyrir aðgangsorð</translation>
 <translation id="6709964700841491574">Læst stilling</translation>
 <translation id="6710079714193676716">Stjórnað af fyrirtækinu þínu. Sumir eiginleikar gætu verið óaðgengilegir. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
-<translation id="671310123089116995">Opna straum</translation>
 <translation id="6713676799463473249">Breytt <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Mótteknir flipar</translation>
 <translation id="6723740634201835758">Á Google reikningnum þínum</translation>
@@ -1888,6 +1895,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8221665793629393739">Áminning þín um að skoða aftur</translation>
 <translation id="8232956427053453090">Halda gögnum</translation>
 <translation id="8233237502828137700">Loka borðakynningu</translation>
+<translation id="8250920743982581267">Skjöl</translation>
 <translation id="8258734532103758067">Ég hef flutt gögnin mín út</translation>
 <translation id="8258999165172757081">Bætt við</translation>
 <translation id="8261506727792406068">Eyða</translation>
@@ -1934,6 +1942,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8395180897620197612">Stöðva skráningu</translation>
 <translation id="8407669440184693619">Engin aðgangsorð fundust fyrir þetta vefsvæði</translation>
 <translation id="8407831512155324054">Aðgangsorðin þín virðast traust</translation>
+<translation id="8414030140103493759">Taka mynd eða vídeó</translation>
 <translation id="8414283596511250978">Þú gleymir aldrei aðgangsorðunum þínum</translation>
 <translation id="842523302461531262">Gera sjálfgefinn í stillingum…</translation>
 <translation id="8428045167754449968">Borg/bær</translation>
@@ -1947,6 +1956,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
 <translation id="8474378002946546633">Leyfa tilkynningar</translation>
 <translation id="8477178913400731244">Eyða gögnum</translation>
+<translation id="847939250509903814">Myndasafn</translation>
 <translation id="8481184073299279701">Ýttu á hnappinn „Hefja annálaskráningu“ til að safna annálum JavaScript-stjórnborðs og villum úr öllum flipum. Annálum verður safnað (og þeir aðeins geymdir í minni) þar til þessari síðu er lokað eða ýtt er á „Stöðva annálaskráningu“.</translation>
 <translation id="8487667956631253959">Kveikt</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>
@@ -2110,7 +2120,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="9055291197094969722">Búðu til flipahópa til að flokka opnu flipana þína og afkasta meiru</translation>
 <translation id="9055580485132823283">Þú ert í þann mund að fara að eyða {password_count} aðgangsorðum, {passkey_count} aðgangslyklum og listanum yfir vefsvæðin og forritin sem þú valdir að þurfa aldrei að skrá þig inn á/í. Engum reikningum sem þú hefur búið til á vefsvæðum eða í forritum verður eytt.</translation>
 <translation id="9057030985451135243">Nánar um sameiginlega flipahópa</translation>
-<translation id="9057972802061533987">Ekki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="9065203028668620118">Breyta</translation>
 <translation id="9066097352053395362">Fela „Breyta bókamerki“</translation>
 <translation id="9070824521421603770">Þú verður skráð(ur) út og flipum verður lokað</translation>
@@ -2123,7 +2132,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="9087339162317338348">Nota HTTPS þegar hægt er og fá viðvörun áður en síðum sem styðja það ekki er hlaðið.</translation>
 <translation id="9090979472668095374">Lesa upp svör</translation>
 <translation id="9094033019050270033">Uppfæra aðgangsorð</translation>
-<translation id="9097506547406246598">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="9098541895599151034">Eyða <ph name="NUMBER_OF_ACCOUNTS" /> aðgangsorðum?</translation>
 <translation id="9099233023029360602">Spyrja hvaða reikning á að nota í hvert skipti</translation>
 <translation id="9099821309562615674">Gættu þess að textinn sem þú ert að þýða sé skýr og innan rammans.</translation>
@@ -2154,6 +2162,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="9203951165704618409">Færðu veffangastikuna neðst á skjáinn fyrir sérsniðna vafraupplifun.</translation>
 <translation id="9205189991633470489">Lás huliðsstillingar</translation>
 <translation id="9206887540681440657">Hraði</translation>
+<translation id="9219103736887031265">Myndir</translation>
 <translation id="9219154867334666734">Leita í flipum…</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>
 <translation id="926455622548529175">Skipta um og eyða</translation>

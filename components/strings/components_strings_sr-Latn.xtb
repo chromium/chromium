@@ -2292,6 +2292,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4758311279753947758">Dodaj kontakt informacije</translation>
 <translation id="4761326898079498987">Više detalja potražite u pregledu</translation>
 <translation id="4761869838909035636">Pokrenite Chrome bezbednosnu proveru</translation>
+<translation id="4762097990764616058">Želite da nastavite da plaćate pomoću načina plaćanja <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Uslove i odredbe pruža <ph name="URL" /></translation>
 <translation id="4764680219299728632">Štednjaci, grejne ploče i pećnice</translation>
 <translation id="4764776831041365478">Moguće je da veb-stranica na adresi <ph name="URL" /> privremeno ne funkcioniše ili da je trajno premeštena na novu veb adresu.</translation>
@@ -2923,6 +2924,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5817918615728894473">Upari</translation>
 <translation id="5826507051599432481">Opšte ime (CN)</translation>
 <translation id="5830698870816298009">korišćenje i kretanje kamere</translation>
+<translation id="5831217499016131155">Google novčanik</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5832976493438355584">Zaključano</translation>
 <translation id="5837220895135257862">Oslobodite prostor u usluzi <ph name="CLOUD_PROVIDER" /> pre nego što probate ponovo</translation>
@@ -3432,6 +3434,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6649510485211003056">195×270 mm</translation>
 <translation id="6651270836885078973">Ovim upravlja:</translation>
 <translation id="6652101503459149953">Koristi Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> će proveriti da li ispunjavate uslove (to neće uticati na vaš kreditni rejting). Ako ispunjavate kriterijume, <ph name="BNPL_ISSUER_NAME" /> će vam ponuditi potencijalne pakete za plaćanje da biste dovršili kupovinu.</translation>
 <translation id="6654224358955673568">Formalno</translation>
 <translation id="6654244995031366386">Staklo (sa teksturom)</translation>
 <translation id="6657585470893396449">Lozinka</translation>
@@ -3595,6 +3598,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Bodi art</translation>
 <translation id="692638818576287323">Komercijalna vozila</translation>
+<translation id="6927057753277044239">Kada pregledate porudžbinu, morate da se prijavite na <ph name="BNPL_ISSUER_NAME" /> nalog ili da ga otvorite. Ovaj nalog će se automatski povezati sa Google nalogom.</translation>
 <translation id="6930607614725241390">Pretraga na bočnoj tabli</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Podrazumevani pretraživač vam omogućava da pretražujete veb i omogućava Chrome funkcije<ph name="END_BOLD" /> poput pretraživanja iz trake za adresu i slika na veb-stranicama. Funkcija možda nije dostupna ako je pretraživač ne podržava.</translation>
 <translation id="6934672428414710184">To je ime sa vašeg Google naloga</translation>

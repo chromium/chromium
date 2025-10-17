@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">Закрити вікно відгуку</translation>
 <translation id="306179102415443347">Швидко відкривайте Google Менеджер паролів за допомогою ярлика. Ви можете перемістити ярлик на головний екран або панель запуску додатків комп’ютера.</translation>
 <translation id="3065168410429928842">Chrome</translation>
+<translation id="3073571714401714450">Увімкнути або вимкнути Gemini у Chrome для розробників</translation>
 <translation id="3080151273017101988">Продовжувати роботу фонових програм, коли Google Chrome закрито</translation>
 <translation id="308397506772922478">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Додайте назву свого профілю Chrome</translation>
@@ -373,6 +374,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5368118228313795342">Додатковий код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Розширення також змінило сторінку, яка відкривається під час запуску Chrome або пошуку в універсальному вікні пошуку.</translation>
 <translation id="5394833366792865639">Поділитися вкладкою Chrome</translation>
+<translation id="5402307365844630024">Увімкнути або вимкнути Gemini у бета-версії Chrome</translation>
 <translation id="5430073640787465221">Ваш файл налаштувань пошкоджений або недійсний. Google Chrome не може відновити ваші налаштування.</translation>
 <translation id="5468572406162360320">Щоб покращити ці функції, Chrome надсилає дані про вашу взаємодію з ними в Google. Наші спеціалісти можуть читати, обробляти й коментувати ці дані.</translation>
 <translation id="5510398294750420479">Завантажте Chrome на телефон, щоб додатково захистити себе в дорозі</translation>
@@ -422,6 +424,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5941711191222866238">Згорнути</translation>
 <translation id="5941830788786076944">Зробити Google Chrome переглядачем за промовчанням</translation>
 <translation id="5947104538377036631">Ярлик Chrome</translation>
+<translation id="5960071705175224773">Невідомий додаток змінив ваші налаштування</translation>
 <translation id="5968400720580217226">Режим ШІ</translation>
 <translation id="5980111191913430208">Розширення, додатки й теми з невідомих джерел можуть зашкодити вашому пристрою. Рекомендоване джерело встановлень у Chrome – <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Завантаження… Залишилося: <ph name="HOURS" /> год.</translation>
@@ -645,6 +648,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8362914115861174987">Перекласти такою мовою:</translation>
 <translation id="8366770919198174997">Знижує продуктивність, але робить вебпереглядач Chrome стійкішим до атак</translation>
 <translation id="8370517070665726704">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
+<translation id="8377158135256176353">Увімкнути або вимкнути Gemini у Chrome Canary</translation>
 <translation id="8387459386171870978">Продовжити використовувати Chrome</translation>
 <translation id="8394720698884623075">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chrome</translation>
 <translation id="8403038600646341038">Логотип Chrome на екрані комп’ютера.</translation>
@@ -693,12 +697,14 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8914504000324227558">Перезапустити Chrome</translation>
 <translation id="8922193594870374009">Щоб надіслати номер із сайту <ph name="ORIGIN" /> на телефон Android, увійдіть у Chrome на обох пристроях.</translation>
 <translation id="8922998289262614701">Видалити дані цього додатка з Chrome</translation>
+<translation id="8936233353620149764">Увімкнути або вимкнути Gemini у Chrome</translation>
 <translation id="8948460679427074738">Немає відомостей про конфіденційність цього розширення, зокрема про те, як воно збирає і використовує дані. Chrome радить вилучити його.</translation>
 <translation id="8958307504142971576">Тепер у Chrome доступно більше функцій</translation>
 <translation id="8991530961471831170">Відкрити Gemini у Chrome</translation>
 <translation id="8992769679401294069">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chrome в обліковому записі Google.</translation>
 <translation id="8999117580775242387">Якщо протокол HTTPS недоступний, Chrome використовуватиме незахищене з’єднання без попередження</translation>
 <translation id="8999208279178790196">{0,plural, =0{Доступне оновлення Chrome}=1{Доступне оновлення Chrome}one{Оновлення Chrome доступне вже # день}few{Оновлення Chrome доступне вже # дні}many{Оновлення Chrome доступне вже # днів}other{Оновлення Chrome доступне вже # дня}}</translation>
+<translation id="9010418943148193727">Пошукову систему за умовчанням змінено за межами Chrome. Щоб захистити вас, вебпереглядач Chrome скинув її.</translation>
 <translation id="9014771989710951291">Вебпереглядачем Chrome керують кілька організацій</translation>
 <translation id="9024318700713112071">Зробіть Chrome вебпереглядачем за умовчанням</translation>
 <translation id="9066987883552592250">Закрити Gemini у Chrome Canary</translation>

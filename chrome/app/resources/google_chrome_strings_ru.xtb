@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">Закрыть диалоговое окно с отзывом</translation>
 <translation id="306179102415443347">Ярлык позволит быстро открывать Google Менеджер паролей. Вы можете переместить ярлык на главный экран или в панель запуска приложений.</translation>
 <translation id="3065168410429928842">Вкладка Chrome</translation>
+<translation id="3073571714401714450">Включить или отключить Gemini в Chrome для разработчиков</translation>
 <translation id="3080151273017101988">Не отключать работающие в фоновом режиме сервисы при закрытии браузера</translation>
 <translation id="308397506772922478">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Введите название профиля Chrome</translation>
@@ -372,6 +373,7 @@
 <translation id="5368118228313795342">Дополнительный код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Кроме того, расширение изменило стартовую страницу Chrome и поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="5394833366792865639">Откройте доступ к вкладке Chrome</translation>
+<translation id="5402307365844630024">Включить или отключить бета-версию Gemini в Chrome</translation>
 <translation id="5430073640787465221">Файл настроек поврежден или недействителен. Google Chrome не может восстановить ваши параметры.</translation>
 <translation id="5468572406162360320">Chrome отправляет в Google информацию о том, как вы используете эти функции, чтобы мы могли их улучшить. Наши специалисты могут изучать, аннотировать и обрабатывать эти данные.</translation>
 <translation id="5510398294750420479">Скачайте Chrome на телефон для дополнительной защиты устройства.</translation>
@@ -421,6 +423,7 @@
 <translation id="5941711191222866238">Свернуть</translation>
 <translation id="5941830788786076944">Назначить Google Chrome браузером по умолчанию</translation>
 <translation id="5947104538377036631">Ярлык Chrome</translation>
+<translation id="5960071705175224773">Настройки были изменены неизвестным приложением</translation>
 <translation id="5968400720580217226">Режим ИИ</translation>
 <translation id="5980111191913430208">Расширения, приложения и темы из неизвестных источников могут навредить устройству. Чтобы устанавливать подобное ПО, рекомендуем использовать этот сервис (<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />).</translation>
 <translation id="6003112304606738118">Скачивание… Осталось: <ph name="HOURS" /> ч.</translation>
@@ -644,6 +647,7 @@
 <translation id="8362914115861174987">Перевести на</translation>
 <translation id="8366770919198174997">Производительность снизится, но Chrome станет более устойчив к атакам</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" />. Все права защищены.</translation>
+<translation id="8377158135256176353">Включить или отключить Gemini в Chrome Canary</translation>
 <translation id="8387459386171870978">Продолжить работу в Chrome</translation>
 <translation id="8394720698884623075">Сверяет URL со списком небезопасных сайтов в Chrome.</translation>
 <translation id="8403038600646341038">Логотип Chrome на экране компьютера.</translation>
@@ -692,12 +696,14 @@
 <translation id="8914504000324227558">Перезапустить Chrome</translation>
 <translation id="8922193594870374009">Чтобы отправить номер с сайта <ph name="ORIGIN" /> на свой телефон Android, войдите в Chrome на обоих устройствах.</translation>
 <translation id="8922998289262614701">Удалить данные этого приложения из Chrome</translation>
+<translation id="8936233353620149764">Включить или отключить Gemini в Chrome</translation>
 <translation id="8948460679427074738">Для этого расширения не опубликованы меры по обеспечению конфиденциальности, например сведения о том, как оно собирает и использует данные. Chrome рекомендует удалить его.</translation>
 <translation id="8958307504142971576">Теперь вам доступно больше функций в Chrome.</translation>
 <translation id="8991530961471831170">Открыть Gemini в Chrome</translation>
 <translation id="8992769679401294069">Ваши данные зашифрованы кодовой фразой. Введите ее, чтобы пользоваться данными Chrome и сохранять их в аккаунте Google.</translation>
 <translation id="8999117580775242387">Если протокол HTTPS недоступен, Chrome будет использовать незащищенное соединение, не предупреждая вас</translation>
 <translation id="8999208279178790196">{0,plural, =0{Доступно обновление Chrome}=1{Доступно обновление Chrome}one{Обновление Chrome доступно # день}few{Обновление Chrome доступно # дня}many{Обновление Chrome доступно # дней}other{Обновление Chrome доступно # дня}}</translation>
+<translation id="9010418943148193727">Поисковая система по умолчанию была изменена не в Chrome. В целях безопасности Chrome ее сбросил.</translation>
 <translation id="9014771989710951291">Несколько организаций управляют Chrome</translation>
 <translation id="9024318700713112071">Сделайте Chrome браузером по умолчанию</translation>
 <translation id="9066987883552592250">Закрыть Gemini в Chrome Canary</translation>

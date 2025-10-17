@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2379925928934107488">Aplique o tema escuro aos sites quando o Chrome utiliza o tema escuro, quando possível</translation>
 <translation id="2390272837142897736">Aumentar zoom</translation>
+<translation id="2397689164757137845">Permitida • Exata</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Exata</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Ajuda e comentários</translation>
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="2533138527374486328">Quando esta opção está ativada, os sites podem pedir para fazer ligação a qualquer dispositivo na sua rede local. Quando esta opção está desativada, os sites não podem fazer ligação aos dispositivos na sua rede local.</translation>
+<translation id="2536779053640817375">Permitida desta vez • Exata</translation>
 <translation id="2544997614631598250">Cor do tema: escuro</translation>
 <translation id="2546283357679194313">Cookies e dados de Web sites</translation>
 <translation id="2570922361219980984">O acesso à localização também está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>

@@ -249,7 +249,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1162479191445552288">Zaženi ob zagonu</translation>
 <translation id="1163931534039071049">&amp;Ogled vira okvirja</translation>
 <translation id="1164015913575846413">alt in klik</translation>
-<translation id="1164286072721995435">Deli trenutni zavihek z Geminijem vsakič, ko začnete nov pogovor. Deljenje trenutnega zavihka lahko kadar koli začasno zaustavite. Vaši podatki se ne uporabljajo za izboljšanje modelov generativne umetne inteligence.</translation>
 <translation id="1164891049599601209">Vneseno na zavajajočem spletnem mestu</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1166212789817575481">Zapri zavihke na desni</translation>
@@ -541,7 +540,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1353980523955420967">Datoteke PPD ni mogoče najti. Preverite, ali je Chromebook povezan v splet, in poskusite znova.</translation>
 <translation id="1354045473509304750">Še naprej dovoli, da gostitelj <ph name="HOST" /> uporablja in premika kamero</translation>
 <translation id="1354148503392558902">Spreminjanje gesla …</translation>
-<translation id="1354943694624358993">Vedno deli trenutni zavihek</translation>
 <translation id="1355088139103479645">Želite izbrisati vse podatke?</translation>
 <translation id="1355088659320425659">Zgodovina in zavihki</translation>
 <translation id="1356376170199999104">Dovoljeno – <ph name="PERMISSION_DETAILS" />. Vklopite mikrofon s fizičnim stikalom.</translation>
@@ -2379,7 +2377,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2605668923777146443">Odprite <ph name="LINK_BEGIN" />nastavitve<ph name="LINK_END" />, če si želite ogledati možnosti funkcije Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
 <translation id="2606454609872547359">Ne, nadaljuj brez ChromeVoxa</translation>
-<translation id="2606568927909309675">Samodejno ustvari podnapise za zvok in video v angleščini. Zvok in podnapisi nikoli ne zapustijo naprave.</translation>
 <translation id="2606890864830643943">Izvažanje diagnostičnih podatkov</translation>
 <translation id="2607101320794533334">Informacije o javnem ključu subjekta</translation>
 <translation id="2609533306502181883">Razišči temo</translation>
@@ -2431,6 +2428,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2636266464805306348">Naslovi oken</translation>
 <translation id="2637313651144986786">Iskanje zavihkov …</translation>
 <translation id="2637400434494156704">Napačna koda PIN. Imate še en poskus.</translation>
+<translation id="263796568413910992">Vprašajte <ph name="SEARCH_ENGINE_NAME" /> ali vnesite URL</translation>
 <translation id="2638662041295312666">Slika za prijavo</translation>
 <translation id="2640299212685523844">Uporabi GTK</translation>
 <translation id="264083724974021997">Povezovanje s telefonom – pogovorno okno</translation>
@@ -5784,7 +5782,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4956593309300508411">Želite ustaviti deljenje?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Želite shraniti v mapo samo v tej napravi?</translation>
-<translation id="4958916254663453555">Trenutni zavihek bo samodejno deljen, ko odprete Geminija v Chromu. Celotna vsebina in URL trenutnega zavihka se pošljeta Googlu.</translation>
 <translation id="4959262764292427323">Gesla so shranjena v Google Računu, da jih lahko uporabite v kateri koli napravi</translation>
 <translation id="4960020053211143927">Nekatere aplikacije ne podpirajo tega</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5896,7 +5893,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5045367873597907704">O vnosnih napravah</translation>
 <translation id="5045550434625856497">Nepravilno geslo</translation>
 <translation id="504561833207953641">Odpiranje v obstoječi seji brskalnika.</translation>
-<translation id="5047544190872578914">Deli trenutni zavihek z Geminijem vsakič, ko začnete nov pogovor. Deljenje trenutnega zavihka lahko kadar koli začasno zaustavite.</translation>
 <translation id="504953514574706691">Zavihek je izključen iz predlagane skupine</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Prenesi nepreverjeno datoteko</translation>
@@ -6416,6 +6412,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5414836363063783498">Preverjanje …</translation>
 <translation id="5415328625985164836">To je program različic beta. Zdaj lahko aplikacijo Steam uporabljate za igranje nekaterih iger v Chromebooku.</translation>
 <translation id="5415497281076257439">Besedna zveza</translation>
+<translation id="5415871492522952905">Zgodovino in zavihke boste imeli v vseh napravah, da boste lahko nadaljevali, kar ste počeli</translation>
 <translation id="5417293056300086453">To spletno mesto lahko uporablja identifikatorje za predvajanje zaščitene vsebine.</translation>
 <translation id="5417312524372586921">Teme brskalnika</translation>
 <translation id="541737483547792035">Povečanje zaslona</translation>
@@ -6626,6 +6623,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5555760010546505198">Inverzija barv, popravljanje barv, lupa in nastavitve zaslona</translation>
 <translation id="555604722231274592">Omogočanje funkcije <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Znova naloži</translation>
+<translation id="555671485580955310">Sinhronizacija zgodovine in zavihkov</translation>
 <translation id="5558129378926964177">Po&amp;večaj</translation>
 <translation id="5558594314398017686">Privzeta nastavitev operacijskega sistema (če je na voljo)</translation>
 <translation id="5559311991468302423">Izbris naslova</translation>
@@ -10600,6 +10598,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8310409247509201074">Št. zavihkov: <ph name="NUM" /></translation>
 <translation id="831207808878314375">Opredelitev</translation>
 <translation id="8312841338723044391">V ŽIVO</translation>
+<translation id="8313308349366087671">Možnosti aplikacije</translation>
 <translation id="8314089908545021657">Seznanjanje z novim telefonom</translation>
 <translation id="8314381333424235892">Manjkajoča ali nenameščena razširitev</translation>
 <translation id="831440797644402910">Te mape ni mogoče odpreti</translation>
@@ -10760,7 +10759,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8419098111404128271">Rezultati iskanja za poizvedbo »<ph name="SEARCH_TEXT" />«</translation>
 <translation id="8419144699778179708">Izbriše zgodovino, vključno s tisto v iskalnem polju</translation>
 <translation id="8420308167132684745">Urejanje slovarskih vnosov</translation>
-<translation id="8421361468937925547">Samodejni podnapisi (samo angleščina)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Ni pladnja</translation>
 <translation id="8424250197845498070">Blokirala dodatna zaščita</translation>
@@ -11057,6 +11055,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8637688295594795546">Na voljo je sistemska posodobitev. Priprava za prenos ...</translation>
 <translation id="8638719155236856752">Stanje omrežja v sistemu ChromeOS</translation>
 <translation id="8639635302972078117">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google.</translation>
+<translation id="8639963783467694461">Nastavitve samodejnega izpolnjevanja</translation>
 <translation id="8640575194957831802">Nazadnje odprti</translation>
 <translation id="8641946446576357115">Uporaba gesel v napravah iOS</translation>
 <translation id="8642577642520207435">Dovoljenje za kamero za aplikacijo <ph name="APP_NAME" /></translation>

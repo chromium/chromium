@@ -109,7 +109,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1419753403124156396">Riavviare Chrome?</translation>
 <translation id="1428770807407000502">Vuoi disattivare la sincronizzazione?</translation>
 <translation id="1430915738399379752">Stampa</translation>
-<translation id="1433478348197382180">Modalità Lettura</translation>
 <translation id="1435593198351412143">Apri automaticamente i PDF</translation>
 <translation id="1437543266176261764">Esecuzione in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizza i tuoi prodotti monitorati in Segnalibri</translation>
@@ -370,7 +369,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2718352093833049315">Solo su Wi-Fi</translation>
 <translation id="2718846868787000099">Per mostrare i contenuti nelle tue lingue preferite, i siti che visiti possono vedere le tue preferenze</translation>
 <translation id="2723001399770238859">audio</translation>
-<translation id="2734335652257251631">Mostra modalità Lettura</translation>
 <translation id="2739887572830526131">Mantieni questo gruppo per aggiungere schede in un secondo momento o eliminalo se non ti serve più.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> non è al momento disponibile.</translation>
 <translation id="2760805590727089264">MM/AA</translation>
@@ -1139,6 +1137,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6232535412751077445">Se attivi l'opzione "Non tenere traccia", verrà inclusa una richiesta nel tuo traffico di navigazione. Gli effetti dipendono dall'eventuale risposta dei siti web alla richiesta e dall'interpretazione di quest'ultima.
 
 Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annunci non basati su altri siti web visitati. Molti siti web continueranno tuttavia a raccogliere e a utilizzare i dati di navigazione, ad esempio per aumentare la sicurezza, fornire contenuti, annunci e consigli, nonché per generare statistiche sui rapporti.</translation>
+<translation id="623755660902014047">Modalità Lettura</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6248988683584659830">Cerca nelle impostazioni</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, schede Incognito bloccate selezionate</translation>
@@ -1397,7 +1396,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7221869452894271364">Ricarica questa pagina</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in attesa}other{# download in attesa}}</translation>
 <translation id="7230064152164845085">Passa alla navigazione in incognito</translation>
-<translation id="7230836263524391273">Nascondi modalità Lettura</translation>
 <translation id="7237724030342645845">Gestore delle password di Google ha smesso di funzionare</translation>
 <translation id="72415438529550637">Il suggerimento per la password è chiuso.</translation>
 <translation id="7248671827512403053">Applicazione</translation>
@@ -1732,7 +1730,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="867914734596684889">Mostra o nascondi la barra dei preferiti</translation>
 <translation id="8683039184091909753">immagine</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, scheda selezionata</translation>
-<translation id="8693232767599693749">Visualizzare modalità Lettura?</translation>
 <translation id="8697753151306746444">Condividi una finestra o uno schermo</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
 <translation id="8712637175834984815">Ok</translation>

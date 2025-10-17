@@ -109,7 +109,6 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1419753403124156396">Vil du starte Chrome på nytt?</translation>
 <translation id="1428770807407000502">Vil du slå av synkronisering?</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
-<translation id="1433478348197382180">Lesemodus</translation>
 <translation id="1435593198351412143">Åpne PDF-filer automatisk</translation>
 <translation id="1437543266176261764">Kjører i <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiser sporede produkter i Bokmerker</translation>
@@ -370,7 +369,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2718352093833049315">Bare når Wifi er på</translation>
 <translation id="2718846868787000099">For å kunne vise innhold på språkene du foretrekker, kan nettstedene du besøker, se preferansene dine</translation>
 <translation id="2723001399770238859">lyd</translation>
-<translation id="2734335652257251631">Vis lesemodus</translation>
 <translation id="2739887572830526131">Behold denne gruppen for å legge til faner senere, eller slett den hvis du ikke trenger den lenger.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> er ikke tilgjengelig akkurat nå.</translation>
 <translation id="2760805590727089264">MM/ÅÅ</translation>
@@ -1139,6 +1137,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6232535412751077445">Hvis du slår på «Deaktivering av sporing», blir det sendt en forespørsel sammen med nettrafikken din. Hvilke virkninger dette eventuelt får, avhenger av om det aktuelle nettstedet svarer på forespørselen eller ikke, samt hvordan forespørselen tolkes.
 
 Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg annonser som ikke er basert på andre nettsteder du har besøkt. Mange nettsteder samler likevel inn og bruker nettlesingsdataene dine – for eksempel for å forbedre sikkerheten, for å levere innhold, annonser og anbefalinger og for å generere rapporteringsstatistikk.</translation>
+<translation id="623755660902014047">Lesemodus</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6248988683584659830">Søk i innstillingene</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, flere valgte festede inkognitofaner</translation>
@@ -1397,7 +1396,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7221869452894271364">Last inn denne siden på nytt</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedlasting venter}other{# nedlastinger venter}}</translation>
 <translation id="7230064152164845085">Bytt til Inkognito</translation>
-<translation id="7230836263524391273">Skjul lesemodus</translation>
 <translation id="7237724030342645845">Google Passordlagring har sluttet å fungere</translation>
 <translation id="72415438529550637">Passordforslaget er lukket.</translation>
 <translation id="7248671827512403053">App</translation>
@@ -1732,7 +1730,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="867914734596684889">Vis eller skjul bokmerkeraden</translation>
 <translation id="8683039184091909753">bilde</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> – valgt fane</translation>
-<translation id="8693232767599693749">Vil du se lesemodusen?</translation>
 <translation id="8697753151306746444">Del vinduet eller skjermen i stedet</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
 <translation id="8712637175834984815">Skjønner</translation>

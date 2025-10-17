@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">เปิดใช้เมื่อเริ่มต้นระบบ</translation>
 <translation id="1163931534039071049">&amp;ดูรหัสต้นฉบับของเฟรม</translation>
 <translation id="1164015913575846413">Alt + คลิก</translation>
-<translation id="1164286072721995435">แชร์แท็บปัจจุบันกับ Gemini ทุกครั้งที่คุณเริ่มการสนทนาใหม่ คุณหยุดแชร์แท็บปัจจุบันชั่วคราวได้ทุกเมื่อ ระบบไม่ได้ใช้ข้อมูลของคุณในการปรับปรุงโมเดล Generative AI</translation>
 <translation id="1164891049599601209">มีการป้อนในเว็บไซต์ที่มีการหลอกลวง</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1166212789817575481">ปิดแท็บทางด้านขวา</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">ไม่พบ PPD โปรดตรวจสอบว่า Chromebook ออนไลน์อยู่และลองอีกครั้ง</translation>
 <translation id="1354045473509304750">อนุญาตให้ <ph name="HOST" /> ใช้และเคลื่อนย้ายกล้องของคุณต่อไป</translation>
 <translation id="1354148503392558902">กำลังเปลี่ยนรหัสผ่าน...</translation>
-<translation id="1354943694624358993">แชร์แท็บปัจจุบันเสมอ</translation>
 <translation id="1355088139103479645">ลบข้อมูลทั้งหมดใช่ไหม</translation>
 <translation id="1355088659320425659">ประวัติการเข้าชมและแท็บ</translation>
 <translation id="1356376170199999104">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิดไมโครโฟนโดยใช้สวิตช์จริง</translation>
@@ -2363,7 +2361,6 @@
 <translation id="2605668923777146443">ไปที่<ph name="LINK_BEGIN" />การตั้งค่า<ph name="LINK_END" />เพื่อดูตัวเลือกสำหรับ Better Together</translation>
 <translation id="2606246518223360146">ลิงก์ข้อมูล</translation>
 <translation id="2606454609872547359">ไม่ ดำเนินการต่อโดยไม่ใช้ ChromeVox</translation>
-<translation id="2606568927909309675">สร้างคำบรรยายแทนเสียงสำหรับเสียงและวิดีโอภาษาอังกฤษโดยอัตโนมัติ ระบบจะไม่ส่งเสียงและคำบรรยายแทนเสียงออกไปจากอุปกรณ์</translation>
 <translation id="2606890864830643943">กำลังส่งออกข้อมูลการวินิจฉัย</translation>
 <translation id="2607101320794533334">ข้อมูลหัวเรื่องคีย์สาธารณะ</translation>
 <translation id="2609533306502181883">ค้นคว้าข้อมูลในหัวข้อที่ต้องการ</translation>
@@ -5766,7 +5763,6 @@
 <translation id="4956593309300508411">หยุดการแชร์ใช่ไหม</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">บันทึกลงในโฟลเดอร์ในอุปกรณ์นี้เท่านั้นไหม</translation>
-<translation id="4958916254663453555">ระบบจะแชร์แท็บปัจจุบันโดยอัตโนมัติเมื่อคุณเปิด Gemini ใน Chrome โดยจะส่งเนื้อหาและ URL เต็มของแท็บปัจจุบันไปยัง Google</translation>
 <translation id="4959262764292427323">เราจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="4960020053211143927">บางแอปไม่รองรับ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5878,7 +5874,6 @@
 <translation id="5045367873597907704">เกี่ยวกับอุปกรณ์ HID</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="504561833207953641">กำลังเปิดในเซสชันเบราว์เซอร์ที่มีอยู่</translation>
-<translation id="5047544190872578914">แชร์แท็บปัจจุบันกับ Gemini ทุกครั้งที่คุณเริ่มการสนทนาใหม่ คุณหยุดแชร์แท็บปัจจุบันชั่วคราวได้ทุกเมื่อ</translation>
 <translation id="504953514574706691">ยกเว้นแท็บออกจากกลุ่มที่แนะนำแล้ว</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">ดาวน์โหลดไฟล์ที่ไม่ได้รับการยืนยัน</translation>
@@ -6397,6 +6392,7 @@
 <translation id="5414836363063783498">กำลังยืนยัน…</translation>
 <translation id="5415328625985164836">โปรแกรมนี้เป็นเวอร์ชันเบต้า ตอนนี้คุณใช้ Steam เพื่อเล่นเกมบางเกมใน Chromebook ได้แล้ว</translation>
 <translation id="5415497281076257439">วลี</translation>
+<translation id="5415871492522952905">อุปกรณ์ทุกเครื่องจะมีประวัติการเข้าชมและแท็บของคุณอยู่ ดังนั้นคุณสามารถทำสิ่งที่ดำเนินการอยู่ต่อได้</translation>
 <translation id="5417293056300086453">เว็บไซต์นี้ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครองได้</translation>
 <translation id="5417312524372586921">ธีมของเบราว์เซอร์</translation>
 <translation id="541737483547792035">ขยายหน้าจอ</translation>
@@ -6607,6 +6603,7 @@
 <translation id="5555760010546505198">การตั้งค่าการกลับสี การแก้สี แว่นขยาย และการแสดงผล</translation>
 <translation id="555604722231274592">เปิดใช้<ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
+<translation id="555671485580955310">ซิงค์ประวัติการเข้าชมและแท็บ</translation>
 <translation id="5558129378926964177">ขยาย&amp;</translation>
 <translation id="5558594314398017686">ค่าเริ่มต้นของระบบปฏิบัติการ (หากมี)</translation>
 <translation id="5559311991468302423">ลบที่อยู่</translation>
@@ -10730,7 +10727,6 @@
 <translation id="8419098111404128271">ผลการค้นหาของ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8419144699778179708">ลบประวัติการเข้าชม รวมถึงสิ่งที่อยู่ในช่องค้นหา</translation>
 <translation id="8420308167132684745">แก้ไขรายการในพจนานุกรม</translation>
-<translation id="8421361468937925547">คำบรรยายสด (ภาษาอังกฤษเท่านั้น)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">ไม่มีถาด</translation>
 <translation id="8424250197845498070">บล็อกโดยการปกป้องขั้นสูง</translation>
@@ -11027,6 +11023,7 @@
 <translation id="8637688295594795546">มีอัปเดตระบบพร้อมใช้งาน กำลังเตรียมการดาวน์โหลด…</translation>
 <translation id="8638719155236856752">สถานภาพเครือข่าย ChromeOS</translation>
 <translation id="8639635302972078117">ส่งข้อมูลการใช้งานและการวินิจฉัย ปัจจุบันอุปกรณ์นี้ส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ โดยจะไม่มีการใช้ข้อมูลนี้ในการระบุชื่อบุตรหลานของคุณ และจะช่วยให้แอปและระบบมีความเสถียร พร้อมทั้งปรับปรุงด้านอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน</translation>
+<translation id="8639963783467694461">การตั้งค่าป้อนอัตโนมัติ</translation>
 <translation id="8640575194957831802">เปิดล่าสุด</translation>
 <translation id="8641946446576357115">ใช้รหัสผ่านของคุณในอุปกรณ์ iOS</translation>
 <translation id="8642577642520207435">สิทธิ์เข้าถึงกล้องของ <ph name="APP_NAME" /></translation>

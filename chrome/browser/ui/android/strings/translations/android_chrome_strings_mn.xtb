@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">Chrome-г дахин эхлүүлэх үү?</translation>
 <translation id="1428770807407000502">Синк хийхийг унтраах уу?</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
-<translation id="1433478348197382180">Уншлагын горим</translation>
 <translation id="1435593198351412143">PDF-үүдийг автоматаар нээх</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" />-д ажиллуулж байна</translation>
 <translation id="1448440926884431741">Хянаж буй бүтээгдэхүүнүүдээ Хавчуургад цэгцлээрэй</translation>
@@ -370,7 +369,6 @@
 <translation id="2718352093833049315">Зөвхөн Wi-Fi-аар</translation>
 <translation id="2718846868787000099">Таны сонгосон хэлнүүдийн контентыг харуулахын тулд таны зочилдог сайтууд таны сонголтыг харах боломжтой</translation>
 <translation id="2723001399770238859">Дуу</translation>
-<translation id="2734335652257251631">Унших горимыг харуулах</translation>
 <translation id="2739887572830526131">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл уг бүлэг танд цаашид хэрэггүй болсон бол устгана уу.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> одоогоор боломжгүй байна.</translation>
 <translation id="2760805590727089264">СС / ЖЖ</translation>
@@ -1139,6 +1137,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6232535412751077445">"Бүү дага" тохиргоог идэвхжүүлснээр тухайн хүсэлтийг таны хайлтын хэсэгт хадгална. Гарах үр дүн нь веб хуудаснаас тухайн хүсэлтэд хариу өгч байгаа эсэх, тухайн хүсэлтийг хэрхэн тайлбарлаж байна гэдгээс хамаарна.
 
 Жишээ нь: зарим веб хуудас тухайн хүсэлтэд таны өмнө нь зочилж байсан бусад веб хуудаснаас хамаарахгүйгээр зар сурталчилгаа үзүүлэх замаар хариу өгч болно. Ихэнх веб хуудас нь аюулгүй байдлыг сайжруулах, веб хуудасны мэдээлэл, зар, зөвлөгөөг харуулах, мөн тайлагнах статистик мэдээлэл гаргах зорилгоор таны хөтчийн мэдээллийг цуглуулан ашиглаж магадгүй.</translation>
+<translation id="623755660902014047">Уншлагын горим</translation>
 <translation id="6247557882553405851">Google-н Нууц үгний менежер</translation>
 <translation id="6248988683584659830">Хайлтын тохиргоо</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, Олноор нь сонгож бэхэлсэн нууцлалтай таб</translation>
@@ -1397,7 +1396,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7221869452894271364">Энэ хуудсыг дахин ачаалла</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 таталт хүлээгдэж байна}other{# таталт хүлээгдэж байна}}</translation>
 <translation id="7230064152164845085">Нууцлалтай горим руу сэлгэх</translation>
-<translation id="7230836263524391273">Унших горимыг нуух</translation>
 <translation id="7237724030342645845">Google Нууц үгний менежер ажиллахаа больсон</translation>
 <translation id="72415438529550637">Нууц үгний зөвлөмжийг хаасан.</translation>
 <translation id="7248671827512403053">Аппликейшн</translation>
@@ -1732,7 +1730,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="867914734596684889">Хавчуургын хэсгийг харуулах, нуух</translation>
 <translation id="8683039184091909753">зураг</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, сонгосон таб</translation>
-<translation id="8693232767599693749">Унших горимыг харах уу?</translation>
 <translation id="8697753151306746444">Оронд нь цонх эсвэл дэлгэц хуваалцана уу</translation>
 <translation id="8699120352855309748">Эдгээр хэлийг орчуулахыг бүү санал болго</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>

@@ -286,6 +286,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Angalia maoni 0}=1{Angalia maoni 1}other{Angalia maoni yote #}}</translation>
 <translation id="1458059624921545588">Watu na Jamii</translation>
 <translation id="1458140305240870199">Mavazi ya ndani</translation>
+<translation id="1458770162980644530">Skrini ya sheria na masharti ya mbinu ya Nunua Sasa, Lipa Baadaye. Kibodi imefichwa.</translation>
 <translation id="1459693405370120464">Hali ya Hewa</translation>
 <translation id="1461041542809785877">Utandaji</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2922,6 +2923,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5817918615728894473">Unganisha</translation>
 <translation id="5826507051599432481">Jina la Kawaida (CN)</translation>
 <translation id="5830698870816298009">utumiaji na usogezaji wa kamera</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Haijulikani</translation>
 <translation id="5832976493438355584">Kimefungwa</translation>
 <translation id="5837220895135257862">Futa faili ili upate nafasi kwenye <ph name="CLOUD_PROVIDER" /> kabla ya kujaribu tena</translation>
@@ -3646,6 +3648,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6997288673234694149">Vifaa vya Besiboli na Softiboli</translation>
 <translation id="6998512609912910179">Jaza fomu kwa haraka</translation>
 <translation id="6999480632062519056">Maelekezo ya Mazoezi ya Mwili na Mafunzo Binafsi</translation>
+<translation id="7002897669829306463">Anwani ya nyumbani, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Mikeka na Mazulia</translation>
 <translation id="7003322000677139268">Vipuri na Vifuasi vya Magari</translation>
 <translation id="7004499039102548441">Vichupo vya Hivi Punde</translation>
@@ -4210,6 +4213,8 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7916162853251942238">Msingi wa Flekso</translation>
 <translation id="791698251820376781">Shirika lako halikuruhusu uingie katika akaunti</translation>
 <translation id="7926503317156566022">Sekta ya Usafiri wa Anga</translation>
+<translation id="7930282586031445870">Skrini ya sheria na masharti ya mbinu ya Nunua Sasa, Lipa Baadaye imefungwa.</translation>
+<translation id="7932035970207573919">Anwani ya kazini, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Ungependa kusasisha anwani?</translation>
 <translation id="7932579305932748336">Koleza</translation>
 <translation id="79338296614623784">Andika namba sahihi ya simu</translation>
@@ -4621,6 +4626,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Data gani inatumiwa:<ph name="END_BOLD" /> Shughuli zako kwenye tovuti unazotembelea ukitumia Chrome kwenye kifaa hiki.</translation>
 <translation id="8601456038554914806">Vifaa vya Michezo ya Majini</translation>
 <translation id="8601782593888534566">Sayansi Dhahania na Njozi</translation>
+<translation id="8604103095921958091">Skrini ya sheria na masharti ya mbinu ya Nunua Sasa, Lipa Baadaye imefunguliwa katika skrini nzima.</translation>
 <translation id="8606988009912891950">Mada za matangazo husaidia tovuti kukuonyesha matangazo yanayokufaa huku zikilinda historia yako ya kuvinjari na utambulisho wako. Chrome inaweza kutambua mada zinazokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni. Baadaye, tovuti unayoitembelea inaweza kuiomba Chrome mada zinazokufaa ili iweke mapendeleo kwenye matangazo unayoona.</translation>
 <translation id="8612919051706159390">Jumuiya za Mtandaoni</translation>
 <translation id="8617269623452051934">matumizi ya kifaa chako</translation>
@@ -4861,6 +4867,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> ingependa kutafuta na kuunganisha na kifaa chochote kwenye mtandao wako wa karibu</translation>
 <translation id="9046864189129893978">Maikrofoni (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Skrini ya sheria na masharti ya mbinu ya Nunua Sasa, Lipa Baadaye imefunguliwa katika skrini nusu.</translation>
 <translation id="9047528041803621289">Mtambo wako chaguomsingi hukuruhusu kutafuta kwenye wavuti. Unaweza kuubadilisha kwenye mipangilio.</translation>
 <translation id="9048035366624198823">Vitendo hivi vinahitaji sera ya <ph name="POLICY_NAME" /> iwekwe kuwa <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">Inchi 24 x 36</translation>

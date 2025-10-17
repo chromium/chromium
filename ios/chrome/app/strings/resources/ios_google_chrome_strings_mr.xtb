@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">Chrome मध्ये ${searchPhrase} शोधा</translation>
 <translation id="1237769345474105984">Chrome मधून</translation>
 <translation id="124228879633599436">तुमचे Chrome कालबाह्य झाले आहे. सुरक्षित राहण्यासाठी अपडेट करा.</translation>
+<translation id="1258531953614971819">Chrome टीप: Chrome तुमच्या होम स्क्रीनवर हलवा</translation>
 <translation id="1333745675627230582">Chrome Dino गेम खेळा</translation>
 <translation id="1352919863522755794">Google Password Manager ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="1394995526009609883">तुम्ही Chrome सेटिंग्जमध्ये तुमच्या निवडी कधीही अपडेट करू शकता.</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब, पासवर्ड आणि पेमेंटशी संबंधित माहिती सिंक करण्यासाठी Chrome डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="1504372625950710826">Chrome ला अपडेट तपासता आली नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="1516692594929310090">Chrome टॅब ग्रिड उघडते.</translation>
+<translation id="152319127067424683">तुमच्या iPhone च्या डॉक वरून Chrome अधिक जलद अ‍ॅक्सेस करा.</translation>
 <translation id="1526327845902180576">सुरू असल्यास:
 <ph name="BEGIN_INDENT" />  • तुमच्याप्रमाणे Chrome वापरणाऱ्या लोकांसाठी ते आणखी चांगले करण्यात मदत करा.<ph name="END_INDENT" />
 
@@ -58,6 +60,7 @@
 <translation id="2199719347983604670">Chrome सिंक मधील डेटा</translation>
 <translation id="2213327331203157297">Chrome मध्ये लॉकडाउन मोड बंद करण्यासाठी तो तुमच्या iPhone वर बंद करा.</translation>
 <translation id="2242467532204595597">तुम्ही मेसेज, दस्तऐवज आणि इतर ॲप्समध्ये लिंकवर टॅप करता, तेव्हा कधीही Chrome वापरा.</translation>
+<translation id="2256384876478573507">तुम्ही तुमच्या iPhone वर ब्राउझ करण्यासाठी तयार असाल, तेव्हा Chrome अधिक जलद उघडा.</translation>
 <translation id="2311240109311056604">Chrome Dino गेम उघडते.</translation>
 <translation id="2339201583852607431">तुमचा पासवर्ड तुमचे Google खाते (<ph name="EMAIL" />) मध्ये सेव्ह केला जाईल.</translation>
 <translation id="2342919707875585281">Chrome तुमचे स्थान तुम्ही अनुमती दिलेल्या साइटसोबत शेअर करते.</translation>
@@ -66,6 +69,7 @@
 <translation id="2427791862912929107">Chrome कडे अशी वैशिष्ट्ये आहेत जी तुम्हाला तुमचा इंटरनेट डेटा आणि तुम्ही किती झटापट वेबपेज लोड करू शकता हे व्यवस्थापित करण्यात मदत करतात.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome {THRESHOLD} मिनिटासाठी वापरले जात नाही, तेव्हा हे होते. यामध्ये इतिहास आणि ऑटोफिलचा समावेश असू शकतो.}other{Chrome {THRESHOLD} मिनिटांसाठी वापरले जात नाही, तेव्हा हे होते. यामध्ये इतिहास आणि ऑटोफिलचा समावेश असू शकतो.}}</translation>
+<translation id="2531823184391665648">तुम्ही तुमच्या iPad वर ब्राउझ करण्यास तयार असाल, तेव्हा Chrome अधिक जलद उघडा.</translation>
 <translation id="2561231791489583059">धोकादायक साइटपासून संरक्षित राहण्यासाठी आणि तुमचे पासवर्ड सुरक्षित ठेवण्यासाठी तुमचा डीफॉल्ट ब्राउझर म्हणून Chrome वापरा</translation>
 <translation id="2574249610672786438">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, तुमच्या सर्व डिव्हाइसवर साइन इन करा</translation>
 <translation id="2576431527583832481">Chrome आता आणखी सर्वोत्तम झाले आहे! नवीन आवृत्ती उपलब्ध आहे.</translation>
@@ -81,6 +85,7 @@
 <translation id="2767464022270041271">सेव्ह केलेले कोणतेही पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह करता, तेव्हा Google Password Manager तुमचे पासवर्ड तपासू शकते.</translation>
 <translation id="2788811701191021538">Chrome मध्ये पेमेंट पद्धती सेटिंग पेज उघडते.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome तुमचा डेटा खाजगी कसा ठेवते<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या</translation>
+<translation id="2922914028977213693">तुमच्या iPad वर Chrome चा पुरेपूर वापर करण्यासाठी इथे टॅप करा.</translation>
 <translation id="292371311537977079">Chrome सेटिंग्ज</translation>
 <translation id="2923827943290349720">तुम्ही Chrome बंद करता तेव्हा गुप्त टॅब लॉक करा</translation>
 <translation id="2940565985148833945">Chrome टीप: Lens वापरून शोधा</translation>
@@ -97,6 +102,7 @@
 <translation id="3140589780564632473">Chrome मध्ये व्हिज्युअल शोधा</translation>
 <translation id="314782365035065913">तुमच्या होम स्क्रीन डॉकवरून Chrome आणखी जलद ॲक्सेस करा</translation>
 <translation id="3167189358072330585">तुमचे खाते Google Chrome वर काम करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
+<translation id="320747600144551583">Chrome टीप: वर्धित सुरक्षित ब्राउझिंगमुळे तुमचा दिवस चांगला जाईल</translation>
 <translation id="322254490661677575">तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि तो सेव्ह करण्यासाठी, तुमची पासफ्रेझ वापरा.</translation>
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3303503998967553377">iOS वर Chrome ॲक्शन्स वापरा</translation>
@@ -109,6 +115,7 @@
 <translation id="3440830787838130530">Google Password Manager मध्ये तुमच्या कुटुंब गटासोबत पासवर्डची कॉपी सहज आणि सुरक्षितपणे शेअर करा</translation>
 <translation id="3460369101684070455">तुमच्या इतर ॲप्समध्ये तुमचे सेव्ह केलेले पासवर्ड सहजपणे मिळवण्यासाठी, ऑटोफिलसाठी Chrome निवडा</translation>
 <translation id="3472587960215700950">तुम्हाला डिटेक्ट केलेल्या पत्त्यांवर दिशानिर्देश आणि स्थानिक माहिती देण्यासाठी Chrome हे Google Maps वापरते.</translation>
+<translation id="3482807551645716768">तुमच्या iPad च्या होम स्क्रीन वरून Chrome अधिक जलद ॲक्सेस करा.</translation>
 <translation id="3503014945441706099">या Chrome प्रोफाइलसाठीदेखील वर्धित केलेले सुरक्षित ब्राउझिंग मिळवा</translation>
 <translation id="3522659714780527202">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, सिंक सुरू करा</translation>
 <translation id="364480321352456989">तुमचे Chrome कालबाह्य झाले आहे.</translation>
@@ -125,16 +132,19 @@
 <translation id="3988789688219830639">Google Chrome ला तुमच्या फोटो आणि व्हिडिओ ॲक्सेस नाही. iOS सेटिंग्ज &gt; गोपनीयता &gt; फोटो  ॲक्सेस सक्षम करा.</translation>
 <translation id="4064699917955374540">तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि तो सेव्ह करण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा.</translation>
 <translation id="411154422556990518">किमतीचा माग ठेवण्यासंबंधित अपडेट आणि Chrome टिपा मिळवत रहा.</translation>
+<translation id="4167555379306984168">Chrome मध्ये नवीन काय आहे ते पहा</translation>
 <translation id="417201473131094001">Chrome कॅनरी वर सपोर्ट नाही</translation>
 <translation id="424864128008805179">Chrome मधून साइन आउट करायचे?</translation>
 <translation id="4430797724889237570">Gmail, Maps, YouTube आणि इतर अ‍ॅप्समधील लिंक Chrome मध्ये उघडा</translation>
 <translation id="447252321002412580">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्स सुधारण्यात मदत करा</translation>
 <translation id="4523886039239821078">Chrome क्रॅश होण्याचे कारण काही ॲड-ऑन आहेत. कृपया ती अनइंस्टॉल करा:</translation>
+<translation id="4568024439284012497">तुमच्या iPhone च्या होम स्क्रीन वरून Chrome अधिक जलद ॲक्सेस करा.</translation>
 <translation id="4574806550936185355">"तुम्ही Chrome बंद करता, तेव्हा गुप्त टॅब लॉक करा" हे सुरू करा</translation>
 <translation id="4633328489441962921">Chrome ला अपडेट तपासता आले नाहीत</translation>
 <translation id="4636900170638246267">ही साइट आणि Chrome मध्ये साइन इन करा.</translation>
 <translation id="4647910807533196601">माझा नवीनतम टॅब Chrome मध्ये उघडा.</translation>
 <translation id="4693084815234024320">तुम्ही Chrome गुप्त मोडमध्ये आहात</translation>
+<translation id="4708857722625759026">तुमच्या iPad च्या डॉक वरून Chrome अधिक जलद अ‍ॅक्सेस करा.</translation>
 <translation id="4713740144985377441">तुमची फाइल अपलोड करण्यासाठी Chrome वर परत या</translation>
 <translation id="4713907610796204963">तुम्हाला सुरुवात करून देण्यासाठी Chrome मधील उपयुक्त मूलभूत गोष्टी जाणून घ्या</translation>
 <translation id="4724297637870447613">सर्व ठिकाणी Chrome वापरा</translation>
@@ -149,6 +159,8 @@
 <translation id="4903674399067644695">हे कार्ड तुम्हाला Chrome चा पुरेपूर वापर कसा करावा याविषयीच्या सूचना दाखवते.</translation>
 <translation id="49200511069271369">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन करत असलेले खाते आणि Chrome कसे वापरले जाऊ शकते हे व्यवस्थापित करते. तुमचा अ‍ॅडमिनिस्ट्रेटर काही वैशिष्ट्ये सेट करू शकतो किंवा प्रतिबंधित करू शकतो.</translation>
 <translation id="4925322001044117929">बाय डीफॉल्ट iPad वर Chrome वापरा</translation>
+<translation id="4934496192263958600">तुमचा आशय मिळवण्यासाठी Chrome मध्ये साइन इन करा</translation>
+<translation id="496747131578053942">Chrome टीप: Google Lens वापरून तुम्हाला जे दिसते ते शोधा</translation>
 <translation id="498985224078955265">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा.</translation>
 <translation id="5030102366287574140">Chrome तुम्हाला डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते.</translation>
 <translation id="5109169629909011627">Chrome बुकमार्क पहा</translation>
@@ -225,16 +237,19 @@
 <translation id="6684809838922667136">Chrome मध्ये सुधारणा करा</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Chrome {THRESHOLD} मिनिटासाठी वापरले जात नाही, तेव्हा हे होते. तुम्ही साइन इन केले असताना फक्त या डिव्हाइसवर सेव्ह केलेला डेटा हटवला जाईल. यामध्ये इतिहास आणि पासवर्ड यांचा समावेश असू शकतो.}other{Chrome {THRESHOLD} मिनिटांसाठी वापरले जात नाही, तेव्हा हे होते. तुम्ही साइन इन केले असताना फक्त या डिव्हाइसवर सेव्ह केलेला डेटा हटवला जाईल. यामध्ये इतिहास आणि पासवर्ड यांचा समावेश असू शकतो.}}</translation>
 <translation id="6709398533399187136">तुमचा पासवर्ड डेटा भंगामध्ये उघड झाला होता. Google पासवर्ड व्यवस्थापक तो आता बदलण्याची शिफारस करतो.</translation>
+<translation id="6718973358446066955">तुम्ही Chrome सेट करणे जवळजवळ पूर्ण केले आहे!</translation>
 <translation id="6820553595690137150">पासफ्रेझ एन्क्रिप्शनमध्ये पेमेंट पद्धती आणि पत्ते समाविष्ट नसतात.
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा हटवणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="6838525730752203626">बाय डीफॉल्ट Chrome वापरा</translation>
+<translation id="6864705365700484754">तुमच्या iPhone वर Chrome चा पुरेपूर वापर करण्यासाठी इथे टॅप करा.</translation>
 <translation id="686691656039982452">तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />Chrome चा कोणता डेटा सेव्ह केला जातो हे व्यवस्थापित करणे<ph name="END_LINK" /> तुम्ही करू शकता.
 
 तुमच्या Chrome अनुभवामध्ये सुधारणा करण्यासाठी डेटा वापरणाऱ्या आणखी सेटिंग्जकरिता, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> यावर जा.</translation>
 <translation id="6922332667202044570">Chrome मधील ब्राउझिंग डेटा हटवा.</translation>
 <translation id="6924922227983877439">बाय डीफॉल्ट Chrome मध्ये लिंक उघडा</translation>
 <translation id="6975725306479268850">ऑटोफिल साठी Chrome निवडा</translation>
+<translation id="7001031184470316752">Chrome तुमच्या डॉकवर हलवा</translation>
 <translation id="7038674195294813388">iOS मध्ये डीफॉल्ट अ‍ॅप्स सेटिंग्ज उघडा, त्यानंतर "ब्राउझर अ‍ॅप" वर टॅप करा आणि Chrome निवडा.</translation>
 <translation id="7056826488869329999">Chrome मध्ये सुरक्षितता तपासणी उघडते आणि रन करते.</translation>
 <translation id="7061455974939528301">Chrome आयकन प्रेस करून धरून ठेवा आणि "होम स्क्रीन संपादित करा" यावर क्लिक करा</translation>
@@ -305,6 +320,7 @@
 फक्त तुमचा पासफ्रेझ असलेली कोणतीही व्यक्ती तुमचा एन्क्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेझ Google कडे पाठवला किंवा त्याद्वारे स्टोअर केलेला नाही. तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा हटवणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्व हक्क राखीव.</translation>
 <translation id="8371138994040262994">Chrome मध्ये सेटिंग्ज उघडतात.</translation>
+<translation id="8375378038757507658">मेसेज किंवा इतर अ‍ॅप्समधील लिंकवर टॅप करताना कधीही Chrome सहजपणे वापरा.</translation>
 <translation id="8387459386171870978">Chrome वापरणे पुढे सुरू ठेवा</translation>
 <translation id="8392023217086447677">Chrome गुप्त मोड मध्ये उघडली आहे</translation>
 <translation id="840168496893712993">काही ॲड-ऑनमुळे Chrome क्रॅश होऊ शकते. कृपया ते अनइंस्टॉल करून पहा.</translation>

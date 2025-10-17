@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">የግብረመልስ መገናኛን ይዝጉ</translation>
 <translation id="306179102415443347">ወደ Google የይለፍ ቃል አስተዳዳሪ በፍጥነት ለመድረስ የእርስዎን አቋራጭ ይጠቀሙ። አቋራጭዎን ወደ ኮምፒውተርዎ መነሻ ማያ ገጽ ወይም የመተግበሪያ አስጀማሪ መውሰድ ይችላሉ።</translation>
 <translation id="3065168410429928842">የChrome ትር</translation>
+<translation id="3073571714401714450">Gemini በChrome ገንቢን ውስጥ ቀያይር</translation>
 <translation id="3080151273017101988">Google Chrome ሲዘጋ የጀርባ መተግበሪያዎችን ማሂዱን ይቀጥሉ</translation>
 <translation id="308397506772922478">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>
 <translation id="3100998948628680988">የChrome መገለጫዎን ይሰይሙ</translation>
@@ -379,6 +380,7 @@
 <translation id="5368118228313795342">ተጨማሪ ኮድ፦ <ph name="EXTRA_CODE" />።</translation>
 <translation id="5386244825306882791">እንዲሁም Chromeን ሲጀምሩት ወይም ከኦምኒቦክሱ ሆነው ሲፈልጉ የሚታየውን ገፅ ይቆጣጠራል።</translation>
 <translation id="5394833366792865639">አንድ የChrome ትር ያጋሩ</translation>
+<translation id="5402307365844630024">Gemini በChrome ቅድመ-ይሁንታ ውስጥ ቀያይር</translation>
 <translation id="5430073640787465221">የምርጫዎችዎ ፋይል ተበላሽቷል ወይም ልክ አይደለም ነው።
 
 Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translation>
@@ -430,6 +432,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="5941711191222866238">አሳንስ</translation>
 <translation id="5941830788786076944">Google Chromeን መነሻ ማሰሻ አድርግ</translation>
 <translation id="5947104538377036631">የChrome አቋራጭ</translation>
+<translation id="5960071705175224773">ቅንብሮችዎ ባልታወቀ መተግበሪያ ተለውጠዋል</translation>
 <translation id="5968400720580217226">የሰው ሠራሽ አስተውሎት ሁነታ</translation>
 <translation id="5980111191913430208">ካልታወቁ ምንጮች የመጡ ቅጥያዎች፣ መተግበሪያዎች እና ገጽታዎች መሣሪያዎን ሊጎዱ ይችላሉ። Chrome እነሱን ከ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ብቻ መጫንን ይመክራል</translation>
 <translation id="6003112304606738118">በማውረድ ላይ... <ph name="HOURS" /> ሰዓት(ታት) ይቀራል(ሉ)</translation>
@@ -653,6 +656,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8362914115861174987">ወደዚህ መተርጎም</translation>
 <translation id="8366770919198174997">አፈጻጸሙን ይቀንሳል ነገር ግን Chrome ጥቃቶችን ይበልጥ እንዲቋቋም ያደርገዋል</translation>
 <translation id="8370517070665726704">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
+<translation id="8377158135256176353">Gemini በChrome ካናሪ ውስጥ ቀያይር</translation>
 <translation id="8387459386171870978">Chromeን መጠቀምዎን ይቀጥሉ</translation>
 <translation id="8394720698884623075">በChrome ላይ የተከማቹ ድህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል</translation>
 <translation id="8403038600646341038">በኮምፒውተር ማያ ገፅ ውስጥ የChrome ዓርማ።</translation>
@@ -701,12 +705,14 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8914504000324227558">Chromeን ዳግም አስጀምር</translation>
 <translation id="8922193594870374009">አንድ ቁጥር ከ<ph name="ORIGIN" /> ወደ የእርስዎ Android ስልክ ለመላክ በሁለቱም መሣሪያዎች ላይ በመለያ ወደ Chrome ይግቡ።</translation>
 <translation id="8922998289262614701">የዚህን መተግበሪያ ውሂብ ከChrome ላይ ያስወግዱ</translation>
+<translation id="8936233353620149764">Gemini በChrome ውስጥ ቀያይር</translation>
 <translation id="8948460679427074738">ይህ ቅጥያ እንደ ውሂብን እንዴት እንደሚሰበስብ እና እንደሚጠቀም ያሉ የግላዊነት ተግባሮችን አላተመም። Chrome እንዲያስወግዱት ይመክራል።</translation>
 <translation id="8958307504142971576">አሁን Chrome ውስጥ የሚገኙ ተጨማሪ ባህሪያት አሉዎት</translation>
 <translation id="8991530961471831170">Gemini በChrome ውስጥ ክፈት</translation>
 <translation id="8992769679401294069">የእርስዎ ውሂብ በእርስዎ የይለፍ ሐረግ የተመሰጠረ ነው። የChrome ውሂብን በGoogle መለያዎ ውስጥ ለመጠቀም እና ለማስቀመጥ እሱን ያስገቡ።</translation>
 <translation id="8999117580775242387">ኤችቲቲፒኤስ በማይኖርበት ጊዜ Chrome እርስዎን ሳያስጠነቅቅ ደህንነቱ ያልተጠበቀ ግንኙነት ይጠቀማል</translation>
 <translation id="8999208279178790196">{0,plural, =0{የChrome ዝማኔ አለ}=1{የChrome ዝማኔ አለ}one{አንድ የChrome ዝማኔ ለ# ቀኖች ነበር}other{አንድ የChrome ዝማኔ ለ# ቀኖች ነበር}}</translation>
+<translation id="9010418943148193727">ነባሪ የፍለጋ ፕሮግራምዎ ከChrome ውጭ ተለውጧል። እርስዎን ለመጠበቅ Chrome ዳግም አስጀምሮታል።</translation>
 <translation id="9014771989710951291">ብዙ ድርጅቶች Chromeን ያስተዳድራሉ</translation>
 <translation id="9024318700713112071">Chromeን እንደ ነባሪ ያቀናብሩት</translation>
 <translation id="9066987883552592250">Gemini በChrome ካናሪ ውስጥ ዝጋ</translation>

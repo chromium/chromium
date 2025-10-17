@@ -2292,6 +2292,7 @@
 <translation id="4758311279753947758">Додај контакт информације</translation>
 <translation id="4761326898079498987">Више детаља потражите у прегледу</translation>
 <translation id="4761869838909035636">Покрените Chrome безбедносну проверу</translation>
+<translation id="4762097990764616058">Желите да наставите да плаћате помоћу начина плаћања <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Услове и одредбе пружа <ph name="URL" /></translation>
 <translation id="4764680219299728632">Штедњаци, грејне плоче и пећнице</translation>
 <translation id="4764776831041365478">Могуће је да веб-страница на адреси <ph name="URL" /> привремено не функционише или да је трајно премештена на нову веб адресу.</translation>
@@ -2923,6 +2924,7 @@
 <translation id="5817918615728894473">Упари</translation>
 <translation id="5826507051599432481">Опште име (CN)</translation>
 <translation id="5830698870816298009">коришћење и кретање камере</translation>
+<translation id="5831217499016131155">Google новчаник</translation>
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5832976493438355584">Закључано</translation>
 <translation id="5837220895135257862">Ослободите простор у услузи <ph name="CLOUD_PROVIDER" /> пре него што пробате поново</translation>
@@ -3432,6 +3434,7 @@
 <translation id="6649510485211003056">195×270 mm</translation>
 <translation id="6651270836885078973">Овим управља:</translation>
 <translation id="6652101503459149953">Користи Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ће проверити да ли испуњавате услове (то неће утицати на ваш кредитни рејтинг). Ако испуњавате критеријуме, <ph name="BNPL_ISSUER_NAME" /> ће вам понудити потенцијалне пакете за плаћање да бисте довршили куповину.</translation>
 <translation id="6654224358955673568">Формално</translation>
 <translation id="6654244995031366386">Стакло (са текстуром)</translation>
 <translation id="6657585470893396449">Лозинка</translation>
@@ -3595,6 +3598,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Боди арт</translation>
 <translation id="692638818576287323">Комерцијална возила</translation>
+<translation id="6927057753277044239">Када прегледате поруџбину, морате да се пријавите на <ph name="BNPL_ISSUER_NAME" /> налог или да га отворите. Овај налог ће се аутоматски повезати са Google налогом.</translation>
 <translation id="6930607614725241390">Претрага на бочној табли</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Подразумевани претраживач вам омогућава да претражујете веб и омогућава Chrome функције<ph name="END_BOLD" /> попут претраживања из траке за адресу и слика на веб-страницама. Функција можда није доступна ако је претраживач не подржава.</translation>
 <translation id="6934672428414710184">То је име са вашег Google налога</translation>

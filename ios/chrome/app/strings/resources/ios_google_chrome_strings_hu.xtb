@@ -14,6 +14,7 @@
 <translation id="1229222343402087523">Keresés a következőre a Chrome-ban: ${searchPhrase}</translation>
 <translation id="1237769345474105984">A Chrome-ból</translation>
 <translation id="124228879633599436">A Chrome elavult. A biztonság megőrzése érdekében frissítse.</translation>
+<translation id="1258531953614971819">Chrome-tipp: Áthelyezheti a Chrome-ot a főképernyőre</translation>
 <translation id="1333745675627230582">A Chrome-dinó játék elindítása</translation>
 <translation id="1352919863522755794">A Google Jelszókezelő nem tudta ellenőrizni az Ön jelszavait. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="1394995526009609883">A kiválasztott értesítéseket bármikor módosíthatja a Chrome beállításaiban.</translation>
@@ -22,6 +23,7 @@
 <translation id="1493827051843127077">A Chrome-ot alapértelmezett böngészőként beállítva az összes eszközén szinkronizálhatja a lapfüleket, jelszavakat és fizetési adatokat</translation>
 <translation id="1504372625950710826">A Chrome nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="1516692594929310090">Megnyitja a Chrome laprácsát.</translation>
+<translation id="152319127067424683">Gyorsabban hozzáférhet a Chrome-hoz az iPhone Dockjáról.</translation>
 <translation id="1526327845902180576">Amikor be van kapcsolva:
 <ph name="BEGIN_INDENT" /> • Segít, hogy továbbfejleszthessük a Chrome-ot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" /> 
 
@@ -58,6 +60,7 @@ Megjegyzések:
 <translation id="2199719347983604670">A Chrome-szinkronizálás adatai</translation>
 <translation id="2213327331203157297">Ha le szeretné tiltani a Lezárás módot a Chrome-ban, kapcsolja ki iPhone eszközén</translation>
 <translation id="2242467532204595597">Bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
+<translation id="2256384876478573507">Gyorsabban megnyithatja a Chrome-ot, amikor iPhone eszközén szeretne böngészni.</translation>
 <translation id="2311240109311056604">Megnyitja a Chrome dinós játékát.</translation>
 <translation id="2339201583852607431">Jelszavát a rendszer a Google-fiókjába (<ph name="EMAIL" />) menti.</translation>
 <translation id="2342919707875585281">A Chrome megosztja a tartózkodási helyét az Ön által engedélyezett webhelyekkel.</translation>
@@ -66,6 +69,7 @@ Megjegyzések:
 <translation id="2427791862912929107">A Chrome számos olyan funkciót biztosít, amelyek segítik internetes adatainak kezelésében, illetve a weboldalak betöltési gyorsaságának beállításában.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chrome {THRESHOLD} percig nincs használatban. Ide tartozhatnak az előzmények és az automatikus kitöltés adatai is.}other{Erre akkor kerül sor, ha a Chrome {THRESHOLD} percig nincs használatban. Ide tartozhatnak az előzmények és az automatikus kitöltés adatai is.}}</translation>
+<translation id="2531823184391665648">Gyorsabban megnyithatja a Chrome-ot, amikor iPad eszközén szeretne böngészni.</translation>
 <translation id="2561231791489583059">A Chrome-ot alapértelmezett böngészőként beállítva biztosíthatja a veszélyes webhelyekkel szembeni védelmét, és gondoskodhat jelszavai biztonságáról is.</translation>
 <translation id="2574249610672786438">Jelentkezzen be minden eszközén, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
 <translation id="2576431527583832481">A Chrome most még jobb lett! Új verzió áll rendelkezésre.</translation>
@@ -81,6 +85,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="2767464022270041271">Nincsenek mentett jelszavak. A Google Jelszókezelő képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="2788811701191021538">Megnyitja a Fizetési módok beállítási oldalát a Chrome-ban.</translation>
 <translation id="2876628302275096482">További információ arról, <ph name="BEGIN_LINK" />hogyan gondoskodik az Ön adatainak védelméről a Chrome<ph name="END_LINK" />.</translation>
+<translation id="2922914028977213693">Koppintson ide, hogy a legtöbbet hozhassa ki a Chrome-ból iPad eszközén.</translation>
 <translation id="292371311537977079">Chrome-beállítások</translation>
 <translation id="2923827943290349720">Inkognitó lapok zárolása a Chrome bezárásakor</translation>
 <translation id="2940565985148833945">Chrome-tipp: Kereshet a Lens segítségével</translation>
@@ -97,6 +102,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="3140589780564632473">Képi elemek keresése a Chrome-ban</translation>
 <translation id="314782365035065913">Gyorsabb hozzáférés a Chrome-hoz a főképernyő Dockjáról</translation>
 <translation id="3167189358072330585">Fiókja nem működik a Google Chrome-on. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
+<translation id="320747600144551583">Chrome-tipp: A Biztonságos Böngészés fokozott védelemmel funkció sokat segíthet</translation>
 <translation id="322254490661677575">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, adja meg az összetett jelszavát.</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3303503998967553377">Chrome-műveletek használata iOS rendszeren</translation>
@@ -109,6 +115,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="3440830787838130530">A Google Jelszókezelőben egyszerűen és biztonságosan megoszthatja a jelszavak másolatát a családi csoportjával.</translation>
 <translation id="3460369101684070455">Válassza a Chrome automatikus kitöltési funkcióját, hogy egyszerűen hozzáférhessen mentett jelszavaihoz a többi alkalmazásában is.</translation>
 <translation id="3472587960215700950">A Chrome a Google Térkép segítségével útvonalterveket és helyi információkat jeleníthessen meg az észlelt címekkel kapcsolatban.</translation>
+<translation id="3482807551645716768">Gyorsabban hozzáférhet a Chrome-hoz az iPad főképernyőjéről.</translation>
 <translation id="3503014945441706099">A Biztonságos Böngészés fokozott védelemmel funkciót kapja e Chrome-profilhoz is</translation>
 <translation id="3522659714780527202">Kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
 <translation id="364480321352456989">A Chrome elavult.</translation>
@@ -125,16 +132,19 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="3988789688219830639">A Google Chrome nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
 <translation id="4064699917955374540">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát.</translation>
 <translation id="411154422556990518">Kövesse az árfigyeléssel kapcsolatos friss információkat és a Chrome-tippeket.</translation>
+<translation id="4167555379306984168">A Chrome újdonságai</translation>
 <translation id="417201473131094001">A Chrome Canary nem támogatja</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
 <translation id="4430797724889237570">A Gmailből, a Térképből, a YouTube-ról és más alkalmazásokból származó linkek megnyitása a Chrome-ban</translation>
 <translation id="447252321002412580">Hozzájárulás a Chrome funkcióinak és teljesítményének javításához</translation>
 <translation id="4523886039239821078">Bizonyos bővítmények a Chrome összeomlását eredményezik. Távolítsa el a következő(ke)t:</translation>
+<translation id="4568024439284012497">Gyorsabban hozzáférhet a Chrome-hoz az iPhone főképernyőjéről.</translation>
 <translation id="4574806550936185355">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
 <translation id="4633328489441962921">A Chrome nem tud frissítéseket keresni</translation>
 <translation id="4636900170638246267">Jelentkezzen be erre a webhelyre és a Chrome-ba.</translation>
 <translation id="4647910807533196601">A legutóbbi lap megnyitása a Chrome-ban.</translation>
 <translation id="4693084815234024320">A Chrome inkognitó módjában van</translation>
+<translation id="4708857722625759026">Gyorsabban hozzáférhet a Chrome-hoz az iPad Dockjáról.</translation>
 <translation id="4713740144985377441">A fájl feltöltéséhez térjen vissza a Chrome-hoz</translation>
 <translation id="4713907610796204963">Kezdő lépésként ismerkedjen meg a Chrome hasznos alapfunkcióival</translation>
 <translation id="4724297637870447613">A Chrome mindenhol használható</translation>
@@ -149,6 +159,8 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="4903674399067644695">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
 <translation id="49200511069271369">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe bejelentkezik, valamint azt is, hogy miként használhatja a Chrome-ot. A rendszergazda beállíthat, illetve korlátozhat bizonyos funkciókat.</translation>
 <translation id="4925322001044117929">A Chrome használata iPaden alapértelmezés szerint</translation>
+<translation id="4934496192263958600">Jelentkezzen be a Chrome-ba, hogy hozzáférhessen a dolgaihoz</translation>
+<translation id="496747131578053942">Chrome-tipp: A Google Lens segítségével bármire rákereshet, amit csak meglát</translation>
 <translation id="498985224078955265">A lap másik eszközre való elküldéséhez jelentkezzen be a Chrome-ba mindkét eszközön.</translation>
 <translation id="5030102366287574140">A Chrome segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben.</translation>
 <translation id="5109169629909011627">Chrome-könyvjelzők megtekintése</translation>
@@ -225,16 +237,19 @@ Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókj
 <translation id="6684809838922667136">A Chrome fejlesztése</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chrome {THRESHOLD} percig nincs használatban. Törlődni fognak azok az adatok, amelyek csak erre az eszközre lettek mentve, miközben be volt jelentkezve. Ezek közé tartozhatnak az előzmények és a jelszavak is.}other{Erre akkor kerül sor, ha a Chrome {THRESHOLD} percig nincs használatban. Törlődni fognak azok az adatok, amelyek csak erre az eszközre lettek mentve, miközben be volt jelentkezve. Ezek közé tartozhatnak az előzmények és a jelszavak is.}}</translation>
 <translation id="6709398533399187136">Jelszava adatvédelmi incidens során nyilvánosságra került. A Google Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
+<translation id="6718973358446066955">Már majdnem befejezte a Chrome beállítását!</translation>
 <translation id="6820553595690137150">Az összetett jelszavas titkosítás nem tartalmazza a fizetési módokat és a címeket.
 
 A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="6838525730752203626">A Chrome használata alapértelmezettként</translation>
+<translation id="6864705365700484754">Koppintson ide, hogy a legtöbbet hozhassa ki a Chrome-ból iPhone eszközén.</translation>
 <translation id="686691656039982452"><ph name="BEGIN_LINK" />Kezelheti, hogy milyen Chrome-adatokat mentsen<ph name="END_LINK" /> a rendszer az Ön Google-fiókjába.
 
 Az adatokat a Chrome-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
 <translation id="6922332667202044570">A Chrome-ban tárolt böngészési adatok törlése.</translation>
 <translation id="6924922227983877439">A linkek megnyitása a Chrome-ban alapértelmezés szerint</translation>
 <translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>
+<translation id="7001031184470316752">A Chrome áthelyezése a Dockra</translation>
 <translation id="7038674195294813388">Nyissa meg az Alapértelmezett alkalmazások beállításait iOS rendszeren, majd koppintson a „Böngészőalkalmazás” elemre, és válassza ki a Chrome-ot.</translation>
 <translation id="7056826488869329999">Megnyitja és futtatja a biztonsági ellenőrzést a Chrome-ban.</translation>
 <translation id="7061455974939528301">Tartsa nyomva a Chrome ikont, majd kattintson a „Főképernyő szerkesztése” lehetőségre</translation>
@@ -305,6 +320,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
 <translation id="8371138994040262994">Megnyitja a Chrome beállításait.</translation>
+<translation id="8375378038757507658">Használhatja a Chrome-ot, amikor üzenetekben vagy más alkalmazásokban linkekre kattint.</translation>
 <translation id="8387459386171870978">A Chrome használatának folytatása</translation>
 <translation id="8392023217086447677">Megnyitva a Chrome inkognitó módjában</translation>
 <translation id="840168496893712993">Bizonyos bővítmények a Chrome összeomlását eredményezik. Próbálja meg eltávolítani őket.</translation>

@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">Tanca el quadre de diàleg de suggeriments</translation>
 <translation id="306179102415443347">Utilitza la drecera per accedir ràpidament al gestor de contrasenyes de Google. Pots moure la drecera a la pantalla d'inici o al menú d'aplicacions de l'ordinador.</translation>
 <translation id="3065168410429928842">Pestanya de Chrome</translation>
+<translation id="3073571714401714450">Commuta Gemini a Chrome Dev</translation>
 <translation id="3080151273017101988">Continua executant aplicacions de segon pla en tancar Google Chrome</translation>
 <translation id="308397506772922478">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Posa nom al teu perfil de Chrome</translation>
@@ -373,6 +374,7 @@
 <translation id="5368118228313795342">Codi addicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">També controla la pàgina que es mostra quan inicieu Chrome o quan feu una cerca des de l'omnibox.</translation>
 <translation id="5394833366792865639">Comparteix una pestanya de Chrome</translation>
+<translation id="5402307365844630024">Commuta Gemini a Chrome Beta</translation>
 <translation id="5430073640787465221">El fitxer de preferències està malmès o no és vàlid. Google Chrome no pot recuperar la configuració.</translation>
 <translation id="5468572406162360320">Per ajudar a millorar aquestes funcions, Chrome envia a Google les interaccions que hi mantinguis. És possible que revisors humans llegeixin, tractin i anotin aquestes dades.</translation>
 <translation id="5510398294750420479">Baixa Chrome al telèfon per afegir una capa addicional de protecció siguis on siguis</translation>
@@ -422,6 +424,7 @@
 <translation id="5941711191222866238">Minimitza</translation>
 <translation id="5941830788786076944">Estableix Google Chrome com el navegador predeterminat</translation>
 <translation id="5947104538377036631">Drecera de Chrome</translation>
+<translation id="5960071705175224773">Una aplicació desconeguda ha canviat la configuració</translation>
 <translation id="5968400720580217226">Mode IA</translation>
 <translation id="5980111191913430208">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chrome recomana que només n'instal·lis de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">S'està baixant… Queden <ph name="HOURS" /> hores</translation>
@@ -645,6 +648,7 @@
 <translation id="8362914115861174987">Tradueix a</translation>
 <translation id="8366770919198174997">Redueix el rendiment, però fa que Chrome sigui més resistent als atacs</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
+<translation id="8377158135256176353">Commuta Gemini a Chrome Canary</translation>
 <translation id="8387459386171870978">Continua utilitzant Chrome</translation>
 <translation id="8394720698884623075">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome</translation>
 <translation id="8403038600646341038">Logotip de Chrome a l'interior d'una pantalla d'ordinador.</translation>
@@ -693,12 +697,14 @@
 <translation id="8914504000324227558">Torna a iniciar Chrome</translation>
 <translation id="8922193594870374009">Per enviar un número del dispositiu <ph name="ORIGIN" /> al teu telèfon Android, inicia la sessió a Chrome en tots dos dispositius.</translation>
 <translation id="8922998289262614701">Suprimeix les dades d'aquesta aplicació de Chrome</translation>
+<translation id="8936233353620149764">Commuta Gemini a Chrome</translation>
 <translation id="8948460679427074738">Aquesta extensió no ha publicat les seves pràctiques de privadesa, per exemple, la manera com recull i utilitza les dades. Chrome et recomana que la suprimeixis.</translation>
 <translation id="8958307504142971576">Ara tens més funcions disponibles a Chrome</translation>
 <translation id="8991530961471831170">Obre Gemini a Chrome</translation>
 <translation id="8992769679401294069">Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="8999117580775242387">Quan l'HTTPS no estigui disponible, Chrome utilitzarà una connexió no segura sense avisar-te</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>
+<translation id="9010418943148193727">El motor de cerca predeterminat s'ha canviat des de fora de Chrome. Per protegir-te, Chrome l'ha restablert.</translation>
 <translation id="9014771989710951291">Diverses organitzacions gestionen Chrome</translation>
 <translation id="9024318700713112071">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="9066987883552592250">Tanca Gemini a Chrome Canary</translation>

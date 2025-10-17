@@ -286,6 +286,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Visa 0 recensioner}=1{Visa 1 recension}other{Visa alla # recensioner}}</translation>
 <translation id="1458059624921545588">Människor och samhälle</translation>
 <translation id="1458140305240870199">Underkläder</translation>
+<translation id="1458770162980644530">Användarvillkorsskärmen för Köp nu, betala senare. Tangentbordet är dolt.</translation>
 <translation id="1459693405370120464">Väder</translation>
 <translation id="1461041542809785877">Prestanda</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2922,6 +2923,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5817918615728894473">Koppla</translation>
 <translation id="5826507051599432481">Vanligt namn (CN)</translation>
 <translation id="5830698870816298009">använda och röra kameran</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5832976493438355584">Låst</translation>
 <translation id="5837220895135257862">Frigör utrymme i <ph name="CLOUD_PROVIDER" /> innan du försöker igen</translation>
@@ -4213,6 +4215,7 @@ Mer information.
 <translation id="7916162853251942238">Flexo-base</translation>
 <translation id="791698251820376781">Organisationen tillåter inte att du loggar in</translation>
 <translation id="7926503317156566022">Luftfartsindustri</translation>
+<translation id="7930282586031445870">Användarvillkorsskärmen för Köp nu, betala senare har stängts.</translation>
 <translation id="7932035970207573919">Jobbadress, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Vill du uppdatera adressen?</translation>
 <translation id="7932579305932748336">Beläggning</translation>
@@ -4627,6 +4630,7 @@ Mer information:
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Vilken data som används:<ph name="END_BOLD" /> Din aktivitet på en webbplats som du besöker i Chrome på den här enheten.</translation>
 <translation id="8601456038554914806">Vattensportsutrustning</translation>
 <translation id="8601782593888534566">Science fiction och fantasy</translation>
+<translation id="8604103095921958091">Användarvillkorsskärmen för Köp nu, betala senare har öppnats över hela skärmen.</translation>
 <translation id="8606988009912891950">Annonsämnen hjälper webbplatser att visa relevanta annonser samtidigt som din webbhistorik och identitet skyddas. Chrome kan registrera ämnen du är intresserad av baserat på din senaste webbhistorik. Senare kan en webbplats be Chrome om relevanta ämnen för att anpassa vilka annonser som visas.</translation>
 <translation id="8612919051706159390">Onlinegrupper</translation>
 <translation id="8617269623452051934">enhetsanvändning</translation>
@@ -4867,6 +4871,7 @@ Mer information:
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> vill söka efter och ansluta till enheter i det lokala nätverket</translation>
 <translation id="9046864189129893978">Mikrofoner (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Användarvillkorsskärmen för Köp nu, betala senare har öppnats över halva skärmen.</translation>
 <translation id="9047528041803621289">Med standardinställningen kan du söka på webben. Du kan ändra den i inställningarna.</translation>
 <translation id="9048035366624198823">Dessa åtgärder kräver att principen <ph name="POLICY_NAME" /> ställs in på <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 tum</translation>

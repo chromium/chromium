@@ -109,7 +109,6 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid teie Chrome'i kasutuskogem
 <translation id="1419753403124156396">Kas taaskäivitada Chrome?</translation>
 <translation id="1428770807407000502">Kas lülitada sünkroonimine välja?</translation>
 <translation id="1430915738399379752">Printimine</translation>
-<translation id="1433478348197382180">Lugemisrežiim</translation>
 <translation id="1435593198351412143">PDF-id avatakse automaatselt</translation>
 <translation id="1437543266176261764">Käitatakse rakenduses <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Korrastage jälgitavaid tooteid teenusega Bookmarks</translation>
@@ -370,7 +369,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2718352093833049315">Ainult WiFi-ga</translation>
 <translation id="2718846868787000099">Sisu kuvamiseks teie eelistatud keeltes näevad teie külastatavad saidid teie eelistusi</translation>
 <translation id="2723001399770238859">heli</translation>
-<translation id="2734335652257251631">Näita lugemisrežiimis</translation>
 <translation id="2739887572830526131">Saate selle grupi säilitada, et lisada vahelehed hiljem, või selle kustutada, kui seda enam vaja pole.</translation>
 <translation id="2742373789128106053">Teenus <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ei ole praegu saadaval.</translation>
 <translation id="2760805590727089264">KK/AA</translation>
@@ -975,7 +973,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="549660026907543296">Liituge kasutajana <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Hiljutiste toimingute alumine leht</translation>
 <translation id="5526281268548144413">Ei saa sulgeda mitmes aknas</translation>
-<translation id="5532536403031755365">Lisage täiustatud kaitse abil täiendav kaitsekiht veebiohtude eest</translation>
+<translation id="5532536403031755365">Lisage täiustatud kaitse abil täiendav kaitsekiht veebiohtude eest.</translation>
 <translation id="5548606607480005320">Ohutuskontroll</translation>
 <translation id="5554520618550346933">Kui kasutate parooli, hoiatab Chrome teid, kui see on veebis avalikustatud. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
 <translation id="5555525474779371165">Valige oma Google'i ohutu sirvimise kaitse</translation>
@@ -1139,6 +1137,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="6232535412751077445">Kui lubate funktsiooni „Ära jälgi”, kaasatakse see taotlus teie sirvimisliiklusesse. Mõju oleneb sellest, kas veebisait reageerib taotlusele ja kuidas seda tõlgendatakse.
 
 Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teile reklaame, mis ei põhine muudel külastatud veebisaitidel. Paljud veebisaidid koguvad ning kasutavad endiselt teie sirvimisandmeid, näiteks turvalisuse parandamiseks, sisu, reklaamide ja soovituste pakkumiseks ning aruandlusstatistika loomiseks.</translation>
+<translation id="623755660902014047">Lugemisrežiim</translation>
 <translation id="6247557882553405851">Google'i paroolihaldur</translation>
 <translation id="6248988683584659830">Otsige seadetest</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, mitmikvalikuga kinnitatud inkognito vaheleht</translation>
@@ -1397,7 +1396,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7221869452894271364">Laadi see lehekülg uuesti</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 allalaadimine on ootel}other{# allalaadimist on ootel}}</translation>
 <translation id="7230064152164845085">Lülitu inkognito režiimile</translation>
-<translation id="7230836263524391273">Peida lugemisrežiim</translation>
 <translation id="7237724030342645845">Google'i paroolihaldur lõpetas töötamise</translation>
 <translation id="72415438529550637">Parooli soovitus on suletud.</translation>
 <translation id="7248671827512403053">Rakendus</translation>
@@ -1732,7 +1730,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="867914734596684889">Järjehoidjariba kuvamine või peitmine</translation>
 <translation id="8683039184091909753">pilt</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, valitud vaheleht</translation>
-<translation id="8693232767599693749">Kas kuvada lugemisrežiimis?</translation>
 <translation id="8697753151306746444">Jagage vahelehe asemel akent või ekraani</translation>
 <translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>
 <translation id="8712637175834984815">Selge</translation>

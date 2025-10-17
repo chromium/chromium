@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">ປິດກ່ອງໂຕ້ຕອບຄຳຕິຊົມ</translation>
 <translation id="306179102415443347">ໃຊ້ທາງລັດຂອງທ່ານເພື່ອເຂົ້າຫາຕົວຈັດການລະຫັດຜ່ານ Google ຢ່າງວ່ອງໄວ. ທ່ານສາມາດຍ້າຍທາງລັດຂອງທ່ານໄປຫາໜ້າຈໍຫຼັກຂອງຄອມພິວເຕີ ຫຼື ຕົວເປີດແອັບຂອງທ່ານໄດ້.</translation>
 <translation id="3065168410429928842">ແຖບ Chrome</translation>
+<translation id="3073571714401714450">ເປີດ/ປິດ Gemini ໃນ Chrome Dev</translation>
 <translation id="3080151273017101988">ສືບຕໍ່ແລ່ນແອັບພື້ນຫຼັງ ເມື່ອ Google Chrome ປິດ</translation>
 <translation id="308397506772922478">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງຕົນເອງ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">ຕັ້ງຊື່ໂປຣໄຟລ໌ Chrome ຂອງທ່ານ</translation>
@@ -379,6 +380,7 @@
 <translation id="5368118228313795342">ລະຫັດເພີ່ມເຕີມ: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chrome ຫຼືຄົ້ນຫາຈາກ Omnibox.</translation>
 <translation id="5394833366792865639">ແບ່ງປັນແຖບ Chrome</translation>
+<translation id="5402307365844630024">ເປີດ/ປິດ Gemini ໃນ Chrome Beta</translation>
 <translation id="5430073640787465221">ໄຟລ໌ທີ່ມັກຂອງທ່ານຂັດຂ້ອງ ຫຼືໃຊ້ບໍ່ໄດ້.
 
 Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ່າໄດ້.</translation>
@@ -430,6 +432,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5941711191222866238">ຫຍໍ້ລົງ</translation>
 <translation id="5941830788786076944">ເຮັດ Google Chrome ເປັນບຣາວເຊີມາດຕະຖານ</translation>
 <translation id="5947104538377036631">ທາງລັດ Chrome</translation>
+<translation id="5960071705175224773">ແອັບທີ່ບໍ່ຮູ້ຈັກປ່ຽນການຕັ້ງຄ່າຂອງທ່ານ</translation>
 <translation id="5968400720580217226">ໂໝດ AI</translation>
 <translation id="5980111191913430208">ສ່ວນຂະຫຍາຍ, ແອັບ ແລະ ຮູບແບບສີສັນຈາກແຫຼ່ງຂໍ້ມູນທີ່ບໍ່ຮູ້ຈັກອາດເປັນອັນຕະລາຍກັບອຸປະກອນຂອງທ່ານໄດ້. Chrome ແນະນຳໃຫ້ຕິດຕັ້ງພວກມັນຈາກ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ເທົ່ານັ້ນ</translation>
 <translation id="6003112304606738118">ກຳລັງດາວໂຫຼດ... ຍັງເຫຼືອ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
@@ -653,6 +656,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8362914115861174987">ແປພາສາເປັນ</translation>
 <translation id="8366770919198174997">ຫຼຸດປະສິດທິພາບ ແຕ່ເຮັດໃຫ້ Chrome ທົນທານຕໍ່ການໂຈມຕີໄດ້ຫຼາຍຂຶ້ນ</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
+<translation id="8377158135256176353">ເປີດ/ປິດ Gemini ໃນ Chrome Canary</translation>
 <translation id="8387459386171870978">ສືບຕໍ່ນຳໃຊ້ Chrome</translation>
 <translation id="8394720698884623075">ກວດສອບ URL ກັບລາຍການເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ຈັດເກັບໄວ້ໃນ Chrome</translation>
 <translation id="8403038600646341038">ໂລໂກ້ Chrome ໃນໜ້າຈໍຄອມພິວເຕີ.</translation>
@@ -701,12 +705,14 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8914504000324227558">ເປີດໃຊ້ Chrome ຄືນໃໝ່</translation>
 <translation id="8922193594870374009">ເພື່ອສົ່ງເບີຈາກ <ph name="ORIGIN" /> ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="8922998289262614701">ລຶບຂໍ້ມູນຂອງແອັບນີ້ອອກຈາກ Chrome</translation>
+<translation id="8936233353620149764">ເປີດ/ປິດ Gemini ໃນ Chrome</translation>
 <translation id="8948460679427074738">ສ່ວນຂະຫຍາຍນີ້ບໍ່ໄດ້ເຜີຍແຜ່ຂໍ້ປະຕິບັດຄວາມເປັນສ່ວນຕົວ, ເຊັ່ນ: ວິທີທີ່ມັນຮວບຮວມ ແລະ ໃຊ້ຂໍ້ມູນ. Chrome ແນະນຳໃຫ້ທ່ານລຶບມັນອອກ.</translation>
 <translation id="8958307504142971576">ຕອນນີ້ທ່ານມີຄຸນສົມບັດເພີ່ມເຕີມໃນ Chrome</translation>
 <translation id="8991530961471831170">ເປີດ Gemini ໃນ Chrome</translation>
 <translation id="8992769679401294069">ຂໍ້ມູນຂອງທ່ານໄດ້ຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍລະຫັດຜ່ານຂອງທ່ານ. ລະບຸລະຫັດຜ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="8999117580775242387">ເມື່ອບໍ່ສາມາດໃຊ້ HTTPS ໄດ້, Chrome ຈະໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພໂດຍບໍ່ເຕືອນທ່ານ</translation>
 <translation id="8999208279178790196">{0,plural, =0{ມີການອັບເດດ Chrome}=1{ມີການອັບເດດ Chrome}other{ມີການອັບເດດ Chrome ເປັນເວລາ # ມື້ແລ້ວ}}</translation>
+<translation id="9010418943148193727">ມີການປ່ຽນໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານຈາກພາຍນອກ Chrome. ເພື່ອປົກປ້ອງທ່ານ, Chrome ຈຶ່ງຣີເຊັດໂປຣແກຣມດັ່ງກ່າວ.</translation>
 <translation id="9014771989710951291">ຫຼາຍອົງການຈັດການ Chrome</translation>
 <translation id="9024318700713112071">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="9066987883552592250">ປິດ Gemini ໃນ Chrome Canary</translation>

@@ -204,6 +204,7 @@
 <translation id="3296368748942286671">‏המשך הפעלת יישומים ברקע כאשר Chromium סגור</translation>
 <translation id="3313189106987092621">‏Chromium יציג אזהרה לפני טעינת אתר כלשהו באמצעות חיבור לא מאובטח</translation>
 <translation id="3316771292331273802">‏אם סוגרים את כל החלונות של Chromium, מתבצעת יציאה מהחשבון ברוב האתרים, אבל לא מחשבון Google, אם נכנסת אליו ב-Chromium. כדי לאפשר לאתרים לזכור אותך, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">‏מנוע החיפוש שמוגדר כברירת מחדל השתנה מחוץ ל-Chromium. כדי להגן עליך, Chromium איפס את ההגדרה.</translation>
 <translation id="3352986031709923790">‏הפינה הימנית העליונה של אזור החיפוש: ‎<ph name="RIGHT" />%‎ מימין, ‎<ph name="TOP" />%‎ מלמעלה</translation>
 <translation id="3366305173356742781">‏נתוני Chromium בחשבון שלך</translation>
 <translation id="3369405342922656244">חיפוש הדף הזה באמצעות התכונה "חיפוש תמונות"</translation>
@@ -396,6 +397,7 @@
 <translation id="5941711191222866238">מזעור</translation>
 <translation id="5949225980829865667">‏כדי לקבל גישה לסימניה הזו ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס ל-Chromium</translation>
 <translation id="5953657885167112863">‏התאמה אישית של Chromium</translation>
+<translation id="5960071705175224773">ההגדרות שלך שונו על ידי אפליקציה לא ידועה</translation>
 <translation id="5968400720580217226">‏מצב AI</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך דקה.}one{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך # דקות.}two{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך # דקות.}other{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך # דקות.}}</translation>
 <translation id="5987687638152509985">‏יש לעדכן את Chromium כדי להתחיל את הסנכרון</translation>

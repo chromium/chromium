@@ -208,6 +208,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3296368748942286671">Halda áfram að keyra bakgrunnsforrit þegar Chromium er lokað</translation>
 <translation id="3313189106987092621">Chromium varar þig við áður en vefsvæði með ótrygga tengingu er hlaðið</translation>
 <translation id="3316771292331273802">Þegar þú lokar öllum Chromium-gluggum skráistu út af flestum vefsvæðum, að undanskildum Google-reikningnum þínum ef þú ert skráð(ur) inn á Chromium. <ph name="SETTINGS_LINK" /> til að leyfa vefsvæðum að muna eftir þér.</translation>
+<translation id="3322413454779348750">Sjálfgefnu leitarvélinni þinni var breytt utan Chromium. Chromium endurstillti hana til að vernda þig.</translation>
 <translation id="3352986031709923790">efsta horn leitarsvæðis hægra megin: til hægri <ph name="RIGHT" />%, efst <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Chromium-gögn á reikningnum þínum</translation>
 <translation id="3369405342922656244">Leita á þessari síðu með Myndaleit</translation>
@@ -400,6 +401,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="5941711191222866238">Minnka</translation>
 <translation id="5949225980829865667">Skráðu þig inn í Chromium til að fá þetta bókamerki og fleiri í öllum tækjunum þínum</translation>
 <translation id="5953657885167112863">Gerðu Chromium-vafrann að þínum</translation>
+<translation id="5960071705175224773">Óþekkt forrit breytti stillingunum þínum</translation>
 <translation id="5968400720580217226">Gervigreindarstilling</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í 1 mínútu.}one{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútu.}other{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútur.}}</translation>
 <translation id="5987687638152509985">Uppfærðu Chromium til að hefja samstillingu</translation>

@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2379925928934107488">Jos mahdollista, käytä tummaa teemaa sivustoilla, kun se on Chromen käytössä</translation>
 <translation id="2390272837142897736">Lisää zoomausta</translation>
+<translation id="2397689164757137845">Sallittu • Tarkka</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Mt</translation>
 <translation id="2403474027143565107">Tarkka</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta sallittu}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta sallittu}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Ohjeet ja palaute</translation>
 <translation id="2501278716633472235">Takaisin</translation>
 <translation id="2533138527374486328">Kun tämä on päällä, sivustot voivat pyytää lupaa yhdistää paikallisessa verkossa oleviin laitteisiin. Kun tämä on pois päältä, sivustot eivät voi yhdistää paikallisessa verkossa oleviin laitteisiin.</translation>
+<translation id="2536779053640817375">Sallittu tällä kertaa • Tarkka</translation>
 <translation id="2544997614631598250">Teeman väri: tumma</translation>
 <translation id="2546283357679194313">Evästeet ja sivustotiedot</translation>
 <translation id="2570922361219980984">Sijainti on poissa käytöstä myös tällä laitteella. Voit ottaa sen käyttöön <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>

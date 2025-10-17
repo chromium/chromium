@@ -188,6 +188,7 @@
 <translation id="3047590466164881923">Sulge tagasisidedialoog</translation>
 <translation id="306179102415443347">Kasutage oma otseteed, et kiiresti Google'i paroolihalduri juurde pääseda. Saate teisaldada otsetee arvuti avakuvale või rakenduste käivitajale.</translation>
 <translation id="3065168410429928842">Chrome'i vaheleht</translation>
+<translation id="3073571714401714450">Gemini sisse- ja väljalülitamine Chrome'i arendusversioonis</translation>
 <translation id="3080151273017101988">Jätka taustal olevate rakenduste tööd, kui Google Chrome on suletud</translation>
 <translation id="308397506772922478">Kui parooli unustasite või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Andke oma Chrome'i profiilile nimi</translation>
@@ -377,6 +378,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5368118228313795342">Lisakood: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Lisaks juhib Chrome'i käivitamisel kuvatavat lehte või omnikastikese otsingut.</translation>
 <translation id="5394833366792865639">Chrome’i vahelehe jagamine</translation>
+<translation id="5402307365844630024">Gemini sisse- ja väljalülitamine Chrome'i beetaversioonis</translation>
 <translation id="5430073640787465221">Teie eelistuste fail on rikutud või kehtetu. Google Chrome ei saa teie seadeid taastada.</translation>
 <translation id="5468572406162360320">Nende funktsioonide täiustamiseks saadab Chrome teie interaktsioonid funktsioonidega Google'ile. Ülevaatajad võivad neid andmeid lugeda, töödelda ja nende kohta märkmeid teha.</translation>
 <translation id="5510398294750420479">Laadige telefonis alla Chrome, mis kaitseb teid liikvel olles paremini</translation>
@@ -426,6 +428,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5941711191222866238">Minimeeri</translation>
 <translation id="5941830788786076944">Tee Google Chrome vaikebrauseriks</translation>
 <translation id="5947104538377036631">Chrome'i otsetee</translation>
+<translation id="5960071705175224773">Tundmatu rakendus muutis teie seadeid</translation>
 <translation id="5968400720580217226">AI-režiim</translation>
 <translation id="5980111191913430208">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chrome soovitab need installida ainult järgmisest poest: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Allalaadimine … <ph name="HOURS" /> tund(i) on jäänud</translation>
@@ -649,6 +652,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8362914115861174987">Tõlke sihtkeel</translation>
 <translation id="8366770919198174997">Vähendab jõudlust, kuid muudab Chrome'i rünnakutele vastupidavamaks</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
+<translation id="8377158135256176353">Gemini sisse- ja väljalülitamine Chrome Canarys</translation>
 <translation id="8387459386171870978">Jätkan Chrome'i kasutamist.</translation>
 <translation id="8394720698884623075">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel.</translation>
 <translation id="8403038600646341038">Chrome’i logo arvutiekraanil.</translation>
@@ -697,12 +701,14 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8914504000324227558">Käivita Chrome uuesti</translation>
 <translation id="8922193594870374009">Numbri saatmiseks asukohast <ph name="ORIGIN" /> Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>
 <translation id="8922998289262614701">Eemalda selle rakenduse andmed Chrome’ist</translation>
+<translation id="8936233353620149764">Gemini sisse- ja väljalülitamine Chrome'is</translation>
 <translation id="8948460679427074738">See laiendus pole avaldanud privaatsuspõhimõtteid, milles kirjeldataks, kuidas laiendus andmeid kogub ja kasutab. Chrome soovitab selle eemaldada.</translation>
 <translation id="8958307504142971576">Nüüd on teil Chrome'is rohkem funktsioone saadaval.</translation>
 <translation id="8991530961471831170">Avage Gemini Chrome'is</translation>
 <translation id="8992769679401294069">Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool.</translation>
 <translation id="8999117580775242387">Kui HTTPS pole saadaval, kasutab Chrome ebaturvalist ühendust ilma teid hoiatamata</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome'i värskendus on saadaval}=1{Chrome'i värskendus on saadaval}other{Chrome'i värskendus on # päeva saadaval olnud}}</translation>
+<translation id="9010418943148193727">Teie vaikeotsingumootorit muudeti väljaspool Chrome'i. Chrome lähtestas selle teie kaitsmiseks.</translation>
 <translation id="9014771989710951291">Chrome'i haldab mitu organisatsiooni</translation>
 <translation id="9024318700713112071">Määrake Chrome vaikebrauseriks</translation>
 <translation id="9066987883552592250">Sulgege teenuse Gemini Chrome'is Canary versioon</translation>

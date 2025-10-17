@@ -109,7 +109,6 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1419753403124156396">Uruchomić ponownie Chrome?</translation>
 <translation id="1428770807407000502">Wyłączyć synchronizację?</translation>
 <translation id="1430915738399379752">Drukuj</translation>
-<translation id="1433478348197382180">Tryb czytania</translation>
 <translation id="1435593198351412143">Automatycznie otwieraj pliki PDF</translation>
 <translation id="1437543266176261764">Działa w <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Porządkuj obserwowane produkty w Zakładkach</translation>
@@ -370,7 +369,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2718352093833049315">Tylko przez Wi-Fi</translation>
 <translation id="2718846868787000099">Odwiedzane witryny będą miały dostęp do Twoich ustawień, by mogły pokazywać zawartość w wybranym przez Ciebie języku</translation>
 <translation id="2723001399770238859">dźwięk</translation>
-<translation id="2734335652257251631">Pokaż Tryb czytania</translation>
 <translation id="2739887572830526131">Zachowaj tę grupę, aby później dodać karty, lub usuń ją, jeśli nie będzie Ci już potrzebna.</translation>
 <translation id="2742373789128106053">Konto <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nie jest teraz dostępne.</translation>
 <translation id="2760805590727089264">MM/RR</translation>
@@ -1139,6 +1137,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="6232535412751077445">Włączenie opcji „Bez śledzenia” oznacza, że podczas przeglądania będzie wysyłane żądanie. Jego wynik zależy od tego, czy strona na nie odpowie oraz jak zostanie ono zinterpretowane.
 
 Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy bez związku ze stronami odwiedzonymi przez Ciebie wcześniej. Wiele stron będzie nadal gromadzić dane przeglądania i używać ich na przykład do poprawy bezpieczeństwa, pokazywania treści, reklam i rekomendacji oraz do generowania statystyk.</translation>
+<translation id="623755660902014047">Tryb czytania</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
 <translation id="6248988683584659830">Przeszukaj ustawienia</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, jedna z kilku wybranych przypięta karta incognito</translation>
@@ -1397,7 +1396,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7221869452894271364">Odśwież stronę</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 plik oczekuje na pobranie}few{# pliki oczekują na pobranie}many{# plików oczekuje na pobranie}other{# pliku oczekuje na pobranie}}</translation>
 <translation id="7230064152164845085">Przełącz na tryb incognito</translation>
-<translation id="7230836263524391273">Ukryj Tryb czytania</translation>
 <translation id="7237724030342645845">Menedżer haseł Google przestał działać</translation>
 <translation id="72415438529550637">Sugestia dotycząca hasła jest zamknięta.</translation>
 <translation id="7248671827512403053">Aplikacja</translation>
@@ -1732,7 +1730,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="867914734596684889">Pokaż lub ukryj pasek zakładek</translation>
 <translation id="8683039184091909753">obraz</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, wybrana karta</translation>
-<translation id="8693232767599693749">Wyświetlić Tryb czytania?</translation>
 <translation id="8697753151306746444">Zamiast tego udostępnij okno lub ekran</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
 <translation id="8712637175834984815">OK</translation>

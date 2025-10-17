@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 समीक्षा देखें}=1{1 समीक्षा देखें}one{# समीक्षा देखें}other{सभी # समीक्षाएं देखें}}</translation>
 <translation id="1458059624921545588">लोग और समाज</translation>
 <translation id="1458140305240870199">अंतर्वस्त्र</translation>
+<translation id="1458770162980644530">'अभी खरीदें, बाद में पेमेंट करें' सुविधा की सेवा की शर्तों वाली स्क्रीन. कीबोर्ड छिपा हुआ है.</translation>
 <translation id="1459693405370120464">मौसम</translation>
 <translation id="1461041542809785877">परफ़ॉर्मेंस</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2291,6 +2292,7 @@
 <translation id="4758311279753947758">संपर्क जानकारी जोड़ें</translation>
 <translation id="4761326898079498987">ज़्यादा जानकारी के लिए समीक्षा करें</translation>
 <translation id="4761869838909035636">Chrome की सुरक्षा जांच करें</translation>
+<translation id="4762097990764616058">क्या आपको <ph name="BNPL_ISSUER_NAME" /> से पेमेंट करना जारी रखना है?</translation>
 <translation id="4763196677855776703"><ph name="URL" /> के नियम और शर्तें</translation>
 <translation id="4764680219299728632">रेंज, कुकटॉप, और अवन</translation>
 <translation id="4764776831041365478"><ph name="URL" /> पर मौजूद वेबपेज संभवतः अस्थायी रूप से बंद है या उसे स्थायी रूप से किसी नए वेब पते पर ले जाया गया है.</translation>
@@ -2922,6 +2924,7 @@
 <translation id="5817918615728894473">युग्‍मित करें</translation>
 <translation id="5826507051599432481">सामान्य नाम (CN)</translation>
 <translation id="5830698870816298009">हलचल को कैप्चर करने के लिए, कैमरे का इस्तेमाल करें</translation>
+<translation id="5831217499016131155">Google वॉलेट</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5832976493438355584">लॉक किया गया</translation>
 <translation id="5837220895135257862">फिर से कोशिश करने से पहले, <ph name="CLOUD_PROVIDER" /> में स्टोरेज खाली करें</translation>
@@ -3432,6 +3435,7 @@
 <translation id="6649510485211003056">195 x 270 मि॰मी॰</translation>
 <translation id="6651270836885078973">इसे यह मैनेज करता है:</translation>
 <translation id="6652101503459149953">Windows Hello का इस्तेमाल करें</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> जांच करेगा कि आपको यह सुविधा मिल सकती है या नहीं. इसका असर आपके क्रेडिट स्कोर पर नहीं पड़ेगा. ज़रूरी शर्तें पूरी करने पर, <ph name="BNPL_ISSUER_NAME" /> आपको संभावित बिलिंग प्लान के सुझाव देगा, ताकि आप उनमें से कोई प्लान चुनकर खरीदारी कर सकें.</translation>
 <translation id="6654224358955673568">औपचारिक बनाओ</translation>
 <translation id="6654244995031366386">ग्लास (टेक्सचर्ड)</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
@@ -3595,6 +3599,7 @@
 <translation id="6925267999184670015">नॉर्थ अमेरिकन B+</translation>
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
 <translation id="692638818576287323">व्यावसायिक वाहन</translation>
+<translation id="6927057753277044239">ऑर्डर की समीक्षा करने के बाद, आपको अपने <ph name="BNPL_ISSUER_NAME" /> खाते से साइन इन करना होगा या एक नया खाता बनाना होगा. यह खाता, आपके Google खाते से अपने-आप लिंक हो जाएगा.</translation>
 <translation id="6930607614725241390">साइड पैनल में खोजें</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />आपका डिफ़ॉल्ट सर्च इंजन आपको वेब पर खोज करने और Chrome की सुविधाएं इस्तेमाल करने की अनुमति देता है.<ph name="END_BOLD" /> जैसे, पता बार से और वेब पेजों पर मौजूद इमेज की मदद से खोज करना. अगर आपका सर्च इंजन, किसी सुविधा के साथ काम नहीं करता, तो हो सकता है कि वह सुविधा उपलब्ध न हो.</translation>
 <translation id="6934672428414710184">यह नाम आपके Google खाते से है</translation>
@@ -3646,6 +3651,7 @@
 <translation id="6997288673234694149">बेसबॉल और सॉफ़्टबॉल इक्विपमेंट</translation>
 <translation id="6998512609912910179">फ़ॉर्म में तेज़ी से जानकारी भरें</translation>
 <translation id="6999480632062519056">फ़िटनेस से जुड़े निर्देश और पर्सनल ट्रेनिंग</translation>
+<translation id="7002897669829306463">घर का पता, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">दरी और कालीन</translation>
 <translation id="7003322000677139268">वाहनों के पुर्ज़े और ऐक्सेसरी</translation>
 <translation id="7004499039102548441">हाल के टैब</translation>
@@ -4212,6 +4218,8 @@
 <translation id="7916162853251942238">फ़्लेक्सो बेस</translation>
 <translation id="791698251820376781">आपका संगठन आपको साइन इन करने की अनुमति नहीं देता है</translation>
 <translation id="7926503317156566022">एविएशन इंडस्ट्री</translation>
+<translation id="7930282586031445870">'अभी खरीदें, बाद में पेमेंट करें' सुविधा की सेवा की शर्तों वाला पेज खुला हुआ नहीं है.</translation>
+<translation id="7932035970207573919">ऑफ़िस का पता, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">क्या आप पता अपडेट करना चाहते हैं?</translation>
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फ़ोन नंबर डालें</translation>
@@ -4625,6 +4633,7 @@
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />किस डेटा का इस्तेमाल किया जाता है:<ph name="END_BOLD" /> इस डिवाइस पर, Chrome पर विज़िट की गई किसी साइट पर आपकी गतिविधि का डेटा.</translation>
 <translation id="8601456038554914806">वॉटर स्पोर्ट्स इक्विपमेंट</translation>
 <translation id="8601782593888534566">साइंस फ़िक्शन और फ़ैंटसी</translation>
+<translation id="8604103095921958091">'अभी खरीदें, बाद में पेमेंट करें' सुविधा की सेवा की शर्तों वाला पेज, पूरी स्क्रीन पर खुला है.</translation>
 <translation id="8606988009912891950">विज्ञापन के विषयों से, साइटों को आपके ब्राउज़िंग इतिहास और पहचान को सुरक्षित रखने में मदद मिलती है. साथ ही, इसका इस्तेमाल साइटों पर काम के विज्ञापन दिखाने के लिए किया जाता है. Chrome, आपके हाल ही के ब्राउज़िंग इतिहास के आधार पर, आपकी पसंद के विषयों को सेव कर सकता है. Chrome जब आपकी पसंद को सेव कर लेता है, तब किसी दूसरी साइट को विज़िट करने पर वह साइट, Chrome से आपकी पसंद के विषयों की जानकारी मांग सकती है. वह ऐसा आपकी पसंद के हिसाब से विज्ञापन दिखाने के लिए करती है.</translation>
 <translation id="8612919051706159390">ऑनलाइन कम्यूनिटी</translation>
 <translation id="8617269623452051934">आपके डिवाइस का इस्तेमाल</translation>
@@ -4865,6 +4874,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> को अपने लोकल नेटवर्क पर मौजूद किसी भी डिवाइस को खोजने और उससे कनेक्ट करने की अनुमति चाहिए</translation>
 <translation id="9046864189129893978">माइक्रोफ़ोन (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">'अभी खरीदें, बाद में पेमेंट करें' सुविधा की सेवा की शर्तों वाला पेज, आधी स्क्रीन पर खुला है.</translation>
 <translation id="9047528041803621289">डिफ़ॉल्ट सर्च इंजन, वेब पर कुछ भी खोजने में मदद करता है. सेटिंग में जाकर इसे बदला जा सकता है.</translation>
 <translation id="9048035366624198823">इन कार्रवाइयों के लिए, <ph name="POLICY_NAME" /> नीति को <ph name="POLICY_VALUE" /> पर सेट करना ज़रूरी है: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 इंच</translation>

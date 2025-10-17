@@ -206,6 +206,7 @@
 <translation id="3296368748942286671">Nastavi izvršavati ​​pozadinske aplikacije po zatvaranju preglednika Chromium</translation>
 <translation id="3313189106987092621">Chromium će vas upozoriti prije učitavanja bilo koje web-lokacije putem nesigurne veze</translation>
 <translation id="3316771292331273802">Kad zatvorite sve prozore Chromiuma, odjavit ćete se s većine web-lokacija osim Google računa ako ste prijavljeni na Chromium. Da bi vas web-lokacije zapamtile, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Zadana tražilica promijenjena je izvan Chromiuma. Radi vaše zaštite Chromium je poništio tu postavku.</translation>
 <translation id="3352986031709923790">gornji desni kut područja za pretraživanje: desno <ph name="RIGHT" />%, vrh <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Podaci Chromiuma na vašem računu</translation>
 <translation id="3369405342922656244">Pretražite tu stranicu pomoću pretraživanja slika</translation>
@@ -398,6 +399,7 @@
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5949225980829865667">Da biste imali ovu oznaku i druge na svim svojim uređajima, prijavite se u Chromium</translation>
 <translation id="5953657885167112863">Prilagodite Chromium sebi</translation>
+<translation id="5960071705175224773">Vaše su postavke promijenjene pomoću nepoznate aplikacije</translation>
 <translation id="5968400720580217226">AI način</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Kad se Chromium ne koristi jednu minutu, vaša ga organizacija automatski zatvara.}one{Kad se Chromium ne koristi # minutu, vaša ga organizacija automatski zatvara.}few{Kad se Chromium ne koristi # minute, vaša ga organizacija automatski zatvara.}other{Kad se Chromium ne koristi # minuta, vaša ga organizacija automatski zatvara.}}</translation>
 <translation id="5987687638152509985">Ažurirajte Chromium da bi se pokrenula sinkronizacija</translation>

@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Преглед на 0 отзива}=1{Преглед на 1 отзив}other{Преглед на всичките # отзива}}</translation>
 <translation id="1458059624921545588">Хора и общество</translation>
 <translation id="1458140305240870199">Долни дрехи</translation>
+<translation id="1458770162980644530">Екран с Общите условия на „Купете сега, платете по-късно“. Клавиатурата е скрита.</translation>
 <translation id="1459693405370120464">Времето</translation>
 <translation id="1461041542809785877">Ефективност</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2291,6 +2292,7 @@
 <translation id="4758311279753947758">Добавяне на информация за връзка</translation>
 <translation id="4761326898079498987">Преглед на допълнителни подробности</translation>
 <translation id="4761869838909035636">Стартиране на проверка на безопасността в Chrome</translation>
+<translation id="4762097990764616058">Искате ли да продължите плащането чрез <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Общи условия, предоставени от <ph name="URL" /></translation>
 <translation id="4764680219299728632">Кухненски печки, плотове и фурни</translation>
 <translation id="4764776831041365478">До уеб страницата на адрес <ph name="URL" /> може временно да няма достъп или да е преместена за постоянно на нов уеб адрес.</translation>
@@ -2922,6 +2924,7 @@
 <translation id="5817918615728894473">Сдвояване</translation>
 <translation id="5826507051599432481">Общо име (CN)</translation>
 <translation id="5830698870816298009">Използване и местене на камерата</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5832976493438355584">Заключено</translation>
 <translation id="5837220895135257862">Освободете място в(ъв) <ph name="CLOUD_PROVIDER" />, преди да опитате отново</translation>
@@ -3432,6 +3435,7 @@
 <translation id="6649510485211003056">195 x 270 мм</translation>
 <translation id="6651270836885078973">Управлява се от:</translation>
 <translation id="6652101503459149953">Използване на Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ще провери дали отговаряте на условията (това няма да засегне кредитния ви рейтинг). Ако отговаряте на тях, <ph name="BNPL_ISSUER_NAME" /> ще предостави потенциални планове за плащане, за да завършите покупката си.</translation>
 <translation id="6654224358955673568">Официално</translation>
 <translation id="6654244995031366386">Стъкло (текстурирано)</translation>
 <translation id="6657585470893396449">Парола</translation>
@@ -3595,6 +3599,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Бодиарт</translation>
 <translation id="692638818576287323">Търговски превозни средства</translation>
+<translation id="6927057753277044239">След като прегледате поръчката си, трябва да влезете в профила си в(ъв) <ph name="BNPL_ISSUER_NAME" /> или да си създадете такъв. Той автоматично ще бъде свързан с профила ви в Google.</translation>
 <translation id="6930607614725241390">Търсене в страничния панел</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Основната търсеща машина ви дава възможност да търсите в мрежата и да се възползвате от функции на Chrome<ph name="END_BOLD" />, като например търсене от адресната лента и от изображенията в уеб страниците. Някои функции може да не са налице, ако не се поддържат от търсещата ви машина.</translation>
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>
@@ -3646,6 +3651,7 @@
 <translation id="6997288673234694149">Екипировка за бейзбол и софтбол</translation>
 <translation id="6998512609912910179">По-бързо попълване на формуляри</translation>
 <translation id="6999480632062519056">Обучение по фитнес и лични треньори</translation>
+<translation id="7002897669829306463">Домашен адрес: <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Килими и мокети</translation>
 <translation id="7003322000677139268">Части и аксесоари за превозни средства</translation>
 <translation id="7004499039102548441">Скорошни раздели</translation>
@@ -4212,6 +4218,8 @@
 <translation id="7916162853251942238">Флексопечат</translation>
 <translation id="791698251820376781">Организацията ви не разрешава да влизате в профила си</translation>
 <translation id="7926503317156566022">Авиационна промишленост</translation>
+<translation id="7930282586031445870">Екранът с Общите условия на „Купете сега, платете по-късно“ е затворен.</translation>
+<translation id="7932035970207573919">Служебен адрес: <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Да се актуализира ли адресът?</translation>
 <translation id="7932579305932748336">Покритие</translation>
 <translation id="79338296614623784">Въведете валиден телефонен номер</translation>
@@ -4624,6 +4632,7 @@
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Какви данни се използват<ph name="END_BOLD" />: Активността ви в даден сайт, който сте посетили чрез Chrome на това устройство.</translation>
 <translation id="8601456038554914806">Оборудване за водни спортове</translation>
 <translation id="8601782593888534566">Научна фантастика и фентъзи</translation>
+<translation id="8604103095921958091">Екранът с Общите условия на „Купете сега, платете по-късно“ е отворен на пълната височина.</translation>
 <translation id="8606988009912891950">Рекламните теми помагат на сайтовете да ви показват подходящи реклами, като същевременно защитават историята на сърфирането и самоличността ви. Chrome може да отбелязва темите, които ви интересуват, въз основа на скорошната ви история на сърфиране. По-късно посетен от вас сайт може да поиска от Chrome информация за подходящи теми, за да персонализира рекламите, които виждате.</translation>
 <translation id="8612919051706159390">Онлайн общности</translation>
 <translation id="8617269623452051934">използването на устройството ви</translation>
@@ -4864,6 +4873,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> иска да търси и да се свързва с устройства в локалната ви мрежа</translation>
 <translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Екранът с Общите условия на „Купете сега, платете по-късно“ е отворен на половината височина.</translation>
 <translation id="9047528041803621289">Основната ви търсеща машина ви дава възможност да търсите в мрежата. Можете да я промените от настройките.</translation>
 <translation id="9048035366624198823">Тези действия изискват за правилото <ph name="POLICY_NAME" /> да бъде зададено <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 инча</translation>

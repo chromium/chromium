@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">ይህ ማለት Chromium የተንቀሳቃሽ ስልክ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 <translation id="1115463765356382667">ከChromium ላይ ምርጡን ለማግኘት ከታች ያሉትን እነዚህን የተጠቆሙ እርምጃዎች ያጠናቅቁ።</translation>
 <translation id="1185134272377778587">ስለChromium</translation>
+<translation id="1211450393895337634">በእርስዎ iPad ላይ ለማሰስ ዝግጁ ሲሆኑ Chromiumን ይበልጥ በፍጥነት ይክፈቱ።</translation>
 <translation id="1229234641991056119">የእርስዎን Safari የይለፍ ቃላት፣ ዕልባቶች እና ክሬዲት ካርዶች Chromium ውስጥ ይጠቀሙ</translation>
 <translation id="1257458525759135959">ምስሎችን ለማስቀመጥ፣ Chromium ወደ የእርስዎ ፎቶዎች ማከል እንዲችል ለማድረግ ቅንብሮች ላይ መታ ያድርጉ</translation>
 <translation id="1260702988262336471">የChromium ምናሌውን ይክፈቱ</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">ለእርስዎ የተሠራ ብጁ ምግብ። ዜና፣ ስፖርት እና የአየር ሁኔታን ጨምሮ።</translation>
 <translation id="1561849081734670621">የመቆለፊያ ሁነታን ለማሰናከል በChromium ውስጥ በእርስዎ iPhone ላይ ያጥፉት።</translation>
 <translation id="1569258826720962327">በiOS ላይ Chromium እርምጃዎችን ይጠቀሙ</translation>
+<translation id="1573441572176948907">Chromiumን ወደ መትከያዎ ያንቀሳቅሱ</translation>
 <translation id="159029779861043703">Chromium አደጋ ሊያስከትል የሚችል ውሂብዎን በፊት መታወቂያ ደህንነቱን ይጠብቃል።</translation>
 <translation id="1591119736686995611">የChromium ትር ፍርግርግን ይከፍታል።</translation>
 <translation id="16001233025397167">የደህንነት ፍተሻ እርስዎን ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ከተጨማሪ ነገሮች ይጠብቅዎታል። Chromium ለእርስዎ በሚያገኛቸው ማናቸውም የግላዊነት ወይም የደህንነት ችግሮች ላይ ማንቂያዎችን ይቀበሉ።</translation>
@@ -65,6 +67,7 @@
 <translation id="2340423701577464731">የንባብ ዝርዝር ንጥልን ወደ Chromium ያክሉ</translation>
 <translation id="2374627437126809292">Chromium በታወቁ አድራሻዎች ላይ አቅጣጫዎችን እና አካባቢያዊ መረጃ ለእርስዎ ለመስጠት Google ካርታዎችን ይጠቀማል።</translation>
 <translation id="2386292341327187942">በምግብሮች ፈልግ ሳጥን ውስጥ Chromiumን ያስገቡ</translation>
+<translation id="2389827884654658221">ከእርስዎ iPad መነሻ ማያ ገጽ ላይ Chromium ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="2426113998523353159">Chromiumን ለመጠቀም የእርስዎ ድርጅት እርስዎ በመለያ እንዲገቡ ይጠይቃል።</translation>
 <translation id="2450140762465183767">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromiumን አሁን መጠቀም ይችላሉ።</translation>
 <translation id="2459183986985456602">በChromium ውስጥ የእኔ የቅርብ ጊዜ ትርን ክፈት።</translation>
@@ -73,11 +76,15 @@
 <translation id="2485774047568879945">አገናኞችን በቀላሉ ለማጋራት እና ለመክፈት Chromiumን እንደ ነባሪ አሳሽዎ ያቀናብሩ</translation>
 <translation id="2512597191798760956">የChromium አዶውን ተጭነው ይያዙ እና «የመነሻ ማያ ገፅን አርትዕ» ላይ ጠቅ ያድርጉ</translation>
 <translation id="2517624234762908348">የChromium ውሂብዎን ያሳምሩ</translation>
+<translation id="2575968074225731646">ከእርስዎ iPhone መትከያ ላይ Chromiumን ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="2592940277904433508">Chromiumን መጠቀምዎን ይቀጥሉ</translation>
 <translation id="2607609479243848905">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>
+<translation id="2640367368802736659">የChromium ጠቃሚ ምክር፦ በGoogle ሌንስ የሚያዩትን ይፈልጉ</translation>
 <translation id="2650312721222849884">Chromiumን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት ስምረትን ያብሩ</translation>
 <translation id="2684230048001240293">በሁሉም መሣሪያዎችዎ ላይ ትሮችዎን፣ የይለፍ ቃላትዎን እና የክፍያ መረጃዎን ለማስመር Chromiumን እንደ ነባሪ ያዘጋጁ</translation>
+<translation id="2729836253097154631">ነገሮችዎን ለማግኘት ወደ Chromium በመለያ ይግቡ</translation>
 <translation id="2730884209570016437">ሌላ መተግበሪያ ካሜራዎን እየተጠቀመበት ስለሆነ Chromium ካሜራዎን መጠቀም አይችልም</translation>
+<translation id="2742952311155593352">Chromiumን ማዋቀር ሊጨርሱ ነው!</translation>
 <translation id="2798503587425057129">የChromium የንባብ ዝርዝርን ይከፍታል።</translation>
 <translation id="28276745681323897">በGoogle መለያዎ ውስጥ <ph name="BEGIN_LINK" />ምን ዓይነት የChromium ውሂብ እንደሚቀመጥ<ph name="END_LINK" /> ማስተዳደር ይችላሉ።
 
@@ -97,6 +104,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃ ጥቅም ላይ ሳይውል ሲቀር ነው። ይህ ታሪክን እና ራስ-ሙላን ሊያካትት ይችላል።}one{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው። ይህ ታሪክን እና ራስ-ሙላን ሊያካትት ይችላል።}other{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው። ይህ ታሪክን እና ራስ-ሙላን ሊያካትት ይችላል።}}</translation>
 <translation id="3410395242749598859">አንዳንድ የChromium ውሂብዎ <ph name="EMAIL" /> ውስጥ ገና አልተቀመጠም።
 መለያ ከመቀየር በፊት ጥቂት ደቂቃዎች ለመጠበቅ ይሞክሩ። አሁን መለያዎችን ከቀየሩ ይህ ውሂብ ይሰረዛል።</translation>
+<translation id="3420586870838853527">የChromium ጠቃሚ ምክር፦ የተሻሻለ የደህንነት አሰሳ ቀንዎን ይቆጥባል</translation>
 <translation id="3440830787838130530">በGoogle የይለፍ ቃል አስተዳዳሪ ውስጥ በቀላሉ እና ደህንነቱ በተጠበቀ መልኩ የይለፍ ቃል ቅጂ ለቤተሰብ ቡድንዎ ያጋሩ</translation>
 <translation id="3472200483164753384">በChromium Canary ላይ አይደገፍም</translation>
 <translation id="347967311580159871">የChromium ተሞክሮዎን ለማሻሻል ውሂብን ለሚጠቀሙ ተጨማሪ ቅንብሮች ወደ <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" /> ይሂዱ።</translation>
@@ -172,6 +180,7 @@
 <translation id="5131565040785979529">ድርጅትዎ፣ <ph name="DOMAIN" />፣ የገቡበትን መለያ እና Chromium እንዴት ጥቅም ላይ እንደሚውል ያስተዳድራል።</translation>
 <translation id="5134464247000681876">ከGmail፣ Maps፣ YouTube እና ሌሎች መተግበሪያዎች ላይ አገናኞችን Chromium ውስጥ ይክፈቱ</translation>
 <translation id="5203244847421322551">Chromium ውስጥ የይለፍ ቃላትን ያስቀምጡ እና በራስ ይሙሉ</translation>
+<translation id="5218806323985098884">Chromium ውስጥ ምን አዲስ ነገር እንዳለ ይመልከቱ</translation>
 <translation id="5224391634244552924">ምንም የተቀመጡ የይለፍ ቃላት የሉም። እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው Chromium መፈተሽ ይችላል።</translation>
 <translation id="5259423875997548710">በChromium ውስጥ የሚታዩ ነገሮችን ይፈልጉ።</translation>
 <translation id="5284913972719948193">Chromium ላይ የእርስዎን የይለፍ ቃሎች፣ ታሪክ፣ ዕልባቶች እና ክሬዲት ካርዶች ለመጠቀም ውሂብዎን ያምጡ</translation>
@@ -193,6 +202,7 @@
 <translation id="5521125884468363740">Chromiumን ከሚጠቀሙበት የትኛዉም ቦታ ሆነዉ ትሮችዎን ለማየት በመለያ ይግቡ እና ስምረትን ያብሩ</translation>
 <translation id="5534584691915394889">ይህ ከChromium እና Google ሌንስ በእርስዎ Apple ቀን መቁጠሪያ ውስጥ ክስተቶችን ለመፍጠር ሥራ ላይ ይውላል።</translation>
 <translation id="5571094606370987472">የChromium የቅርብ ጊዜ ትሮችን ይከፍታል።</translation>
+<translation id="5596644122344097310">በእርስዎ iPhone ላይ ከChromium ምርጡን ለማግኘት እዚህ መታ ያድርጉ።</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Chromium ቀያይር</translation>
 <translation id="5664395081284292058">በChromium ውስጥ የእኔ የቅርብ ጊዜ ትርን ክፈት</translation>
@@ -234,11 +244,15 @@
 <translation id="6424492062988593837">Chromium አሁን ተሻሽሏል! አዲስ ስሪት አለ።</translation>
 <translation id="6433172051771630690">ከChromium ምርጡን ለማግኘት ጠቃሚ ምክሮች።</translation>
 <translation id="65045991564554105">የChromium ዕልባቶችን ይመልከቱ</translation>
+<translation id="6519797228806907665">ከእርስዎ iPhone መነሻ ማያ ገጽ ላይ Chromiumን ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="6538713818758208754">በChromium ውስጥ የመክፈያ ዘዴዎች ቅንብር ገፅን ይከፍታል።</translation>
 <translation id="6540186279384079894">በChromium ውስጥ አዲስ ትር ይክፈቱ</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium እንዴት የእርስዎን ውሂብ በግል እንደሚያስቀምጥ<ph name="END_LINK" /> የበለጠ ይወቁ</translation>
+<translation id="6564769014061914792">በእርስዎ iPad ላይ ከChromium ምርጡን ለማግኘት እዚህ መታ ያድርጉ።</translation>
+<translation id="6566303693324540692">የChromium ጠቃሚ ምክር፦ Chromiumን ወደ መነሻ ማያ ገጽዎ ያንቀሳቅሱ</translation>
 <translation id="6574750762636192517">በChromium ውስጥ የይለፍ ቃላትን ያስተዳድሩ</translation>
 <translation id="6590232959690355435">የእርስዎን Chromium የታሪክ ገፅ ይከፍታል።</translation>
+<translation id="6649269674808477353">በእርስዎ iPhone ላይ ለማሰስ ዝግጁ ሲሆኑ Chromiumን ይበልጥ በፍጥነት ይክፈቱ።</translation>
 <translation id="6674470628873622334">አዲስ የChromium ማንነት የማያሳውቅ ትር ይከፍታል።</translation>
 <translation id="6680609900732453726">Chromium በሚዘጉበት ጊዜ በመሣሪያ ማረጋገጫ አሰሳዎን በመሣሪያ ማረጋገጫ ግላዊ አድርገው ይቆዩ</translation>
 <translation id="6752854822223394465">የእርስዎ ድርጅት Chromiumን እያዋቀረ ነው...</translation>
@@ -288,6 +302,7 @@
 <translation id="7934404985878918282">የChromium የንባብ ዝርዝርን ይመልከቱ</translation>
 <translation id="7935734571048689933">Chromium ይተዳደራል</translation>
 <translation id="7951793218148208717">በChromium ውስጥ አዲስ ትር ይከፍታል።</translation>
+<translation id="7957726318578167662">በመልዕክቶች ወይም በሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞችን መታ በሚያደርጉበት ማንኛውም ጊዜ Chromiumን በቀላሉ ይጠቀሙ።</translation>
 <translation id="7980860476903281594">Chromium እርስዎ ለሚፈቅዷቸው ጣቢያዎች አካባቢዎን ያጋራል።</translation>
 <translation id="7994322153108931467">አጋዥ የሆኑ የChromium ምክሮችን ለማግኘት፣ በiOS ቅንብሮችዎ ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="7997159823054171568">Chromium እንደ ነባሪ አሳሸ ያቀናብሩ</translation>
@@ -323,6 +338,7 @@
 <translation id="8860548555286245440">የማይታወቁ ዩአርኤልዎችን በማንነት የማያሳውቅ Chromium ይክፈቱ</translation>
 <translation id="8880024619507699923">Chromium ለመጠቀም የእርስዎ ድርጅት እርስዎ በመለያ እንዲገቡ ይጠይቃል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">የChromium ጠንካራ ደህንነትን ያግኙ</translation>
+<translation id="8908791447256515663">ከእርስዎ iPad መትከያ ላይ Chromiumን ይበልጥ በፍጥነት ይድረሱ።</translation>
 <translation id="8925569192291721236">የዋጋ ክትትል ዝማኔዎችን እና የChromium ጠቃሚ ምክሮችን ይከታተሉ።</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃ ጥቅም ላይ ሳይውል ሲቀር ነው}one{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው}other{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር ነው}}</translation>
 <translation id="8963279154877372067">የዋጋ ቅናሽ ማንቂያዎችን ለማግኘት የChromium ማሳወቂያዎችን ይፍቀዱ</translation>

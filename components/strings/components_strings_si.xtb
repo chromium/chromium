@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{සමාලෝචන 0ක් බලන්න}=1{1 සමාලෝචනයක් බලන්න}one{සමාලෝචන #ම බලන්න}other{සමාලෝචන #ම බලන්න}}</translation>
 <translation id="1458059624921545588">පුද්ගලයින් සහ සමාජය</translation>
 <translation id="1458140305240870199">යට ඇඳුම්</translation>
+<translation id="1458770162980644530">දැන් මිල දී ගන්න-පසුව ගෙවන්න සේවා නියම තිරය. යතුරු පුවරුව සැඟවී ඇත.</translation>
 <translation id="1459693405370120464">කාලගුණය</translation>
 <translation id="1461041542809785877">ක්‍රියාකාරීත්වය</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2922,6 +2923,7 @@
 <translation id="5817918615728894473">යුගල කරන්න</translation>
 <translation id="5826507051599432481">පොදු නම (CN)</translation>
 <translation id="5830698870816298009">කැමරා භාවිතය සහ චලනය</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">නොදනී</translation>
 <translation id="5832976493438355584">අගුළු ලා ඇත</translation>
 <translation id="5837220895135257862">නැවත උත්සාහ කිරීමට පෙර <ph name="CLOUD_PROVIDER" /> හි ඉඩ නිදහස් කරන්න</translation>
@@ -3646,6 +3648,7 @@
 <translation id="6997288673234694149">බේස්බෝල් සහ සැහැල්ලු පන්දු උපකරණ</translation>
 <translation id="6998512609912910179">පෝරම වේගයෙන් පුරවන්න</translation>
 <translation id="6999480632062519056">ශරීර සුවතා උපදෙස් සහ පුද්ගලික පුහුණුව</translation>
+<translation id="7002897669829306463">නිවෙස් ලිපිනය, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">ඇතිරිලි සහ බුමුතුරුණු</translation>
 <translation id="7003322000677139268">වාහන කොටස් සහ ආයිත්තම්</translation>
 <translation id="7004499039102548441">මෑතකාලීන ටැබ</translation>
@@ -4211,6 +4214,8 @@
 <translation id="7916162853251942238">ෆ්ලෙක්සෝ පදනම</translation>
 <translation id="791698251820376781">ඔබේ සංවිධානය ඔබට පුරනය වීමට ඉඩ නොදේ</translation>
 <translation id="7926503317156566022">ගුවන් සේවා කර්මාන්තය</translation>
+<translation id="7930282586031445870">දැන් මිල දී ගන්න-පසුව ගෙවන්න සේවා නියම තිරය වසා ඇත.</translation>
+<translation id="7932035970207573919">කාර්යාල ලිපිනය, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">ලිපිනය යාවත්කාලීන කරන්නද?</translation>
 <translation id="7932579305932748336">කබාය</translation>
 <translation id="79338296614623784">වලංගු දුරකථන අංකයක් ඇතුළු කරන්න</translation>
@@ -4623,6 +4628,7 @@
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />භාවිතා කරන දත්ත:<ph name="END_BOLD" /> මෙම උපාංගයෙහි Chrome භාවිතයෙන් ඔබ පිවිසෙන අඩවියක ඔබේ ක්‍රියාකාරකම්.</translation>
 <translation id="8601456038554914806">ජල ක්‍රීඩා උපකරණ</translation>
 <translation id="8601782593888534566">විද්‍යා ප්‍රබන්ධ සහ මනඃකල්පිත</translation>
+<translation id="8604103095921958091">දැන් මිල දී ගන්න-පසුව ගෙවන්න සේවා නියම තිරය සම්පූර්ණ උසින් විවෘත විය.</translation>
 <translation id="8606988009912891950">ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය සහ අනන්‍යතාවය ආරක්ෂා කරන අතරම ඔබට අදාළ දැන්වීම් පෙන්වීමට දැන්වීම් මාතෘකා අඩවිවලට උදවු කරයි. Chrome හට ඔබේ මෑත බ්‍රවුස් කිරීමේ ඉතිහාසය මත පදනම්ව උනන්දුවක් දක්වන මාතෘකා සටහන් කළ හැක. පසුව, ඔබ පිවිසෙන අඩවියකට ඔබ දකින වෙළඳ දැන්වීම් පෞද්ගලීකරණය කිරීමට අදාළ මාතෘකා සඳහා Chrome විමසා සිටිය හැක.</translation>
 <translation id="8612919051706159390">සබැඳි ප්‍රජා</translation>
 <translation id="8617269623452051934">ඔබගේ උපාංග භාවිතය</translation>
@@ -4863,6 +4869,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> ඔබේ දේශීය ජාලයේ ඕනෑම උපාංගයක් සොයා සම්බන්ධ වීමට අවශ්‍යයි</translation>
 <translation id="9046864189129893978">මයික්‍රොෆෝන (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">දැන් මිල දී ගන්න-පසුව ගෙවන්න සේවා නියම තිරය අඩක් උසින් විවෘත විය.</translation>
 <translation id="9047528041803621289">ඔබේ පෙරනිමිය ඔබට වෙබය සෙවීමට ඉඩ දෙයි. ඔබට එය සැකසීම් තුළ වෙනස් කළ හැක.</translation>
 <translation id="9048035366624198823">මෙම ක්‍රියාවන්ට <ph name="POLICY_NAME" /> ප්‍රතිපත්තිය <ph name="POLICY_VALUE" /> වෙත සැකසීම අවශ්‍ය වේ: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">අඟ 24 x 36</translation>

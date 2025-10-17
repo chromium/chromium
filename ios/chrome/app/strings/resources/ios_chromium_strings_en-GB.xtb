@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">This means that Chromium will request the mobile site every time.</translation>
 <translation id="1115463765356382667">Complete these suggested actions below to get the most out of Chrome.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
+<translation id="1211450393895337634">Open Chromium faster when you're ready to browse on your iPad.</translation>
 <translation id="1229234641991056119">Use your Safari passwords, history, bookmarks and credit cards in Chromium</translation>
 <translation id="1257458525759135959">To save images, tap on settings to let Chromium add to your photos</translation>
 <translation id="1260702988262336471">Open the Chromium menu</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">A custom feed made for you. Including news, sports and weather.</translation>
 <translation id="1561849081734670621">To disable Lockdown mode in Chromium, turn it off on your iPhone.</translation>
 <translation id="1569258826720962327">Use Chromium actions on iOS</translation>
+<translation id="1573441572176948907">Move Chromium to your Dock</translation>
 <translation id="159029779861043703">Chromium keeps your sensitive data secure with Face ID.</translation>
 <translation id="1591119736686995611">Opens the Chromium Tab Grid.</translation>
 <translation id="16001233025397167">Safety Check keeps you safe from data breaches, unsafe websites and more. Receive alerts on any privacy or security issues that Chromium detects for you.</translation>
@@ -66,6 +68,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="2340423701577464731">Add reading list item to Chromium</translation>
 <translation id="2374627437126809292">Chromium uses Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="2386292341327187942">In the Search widgets box, enter 'Chromium'</translation>
+<translation id="2389827884654658221">Access Chromium faster from your iPad's Home Screen.</translation>
 <translation id="2426113998523353159">Your organisation requires you to sign in to use Chromium.</translation>
 <translation id="2450140762465183767">You can now use Chromium any time that you tap links in messages, documents and other apps.</translation>
 <translation id="2459183986985456602">Open my latest tab in Chromium.</translation>
@@ -74,11 +77,15 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="2485774047568879945">Set Chromium as your default browser to easily share and open links</translation>
 <translation id="2512597191798760956">Press and hold the Chromium icon and click 'Edit home screen'</translation>
 <translation id="2517624234762908348">Sync your Chromium data</translation>
+<translation id="2575968074225731646">Access Chromium faster from your iPhone's Dock.</translation>
 <translation id="2592940277904433508">Continue using Chromium</translation>
 <translation id="2607609479243848905">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your account<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">Chromium tip: Search what you see with Google Lens</translation>
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
 <translation id="2684230048001240293">Set Chromium as default to sync your tabs, passwords and payment info on all your devices</translation>
+<translation id="2729836253097154631">Sign in to Chromium to get your stuff</translation>
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
+<translation id="2742952311155593352">You're almost finished setting up Chromium!</translation>
 <translation id="2798503587425057129">Opens the Chromium reading list.</translation>
 <translation id="28276745681323897">You can <ph name="BEGIN_LINK" />manage what Chromium data is saved<ph name="END_LINK" /> in your Google Account.
 
@@ -98,6 +105,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. This could include history and autofill.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. This could include history and autofill.}}</translation>
 <translation id="3410395242749598859">Some of your Chromium data hasn't been saved in <ph name="EMAIL" /> yet.
 Try waiting a few minutes before switching accounts. If you switch accounts now, this data will be deleted.</translation>
+<translation id="3420586870838853527">Chromium tip: Enhanced safe browsing will save your day</translation>
 <translation id="3440830787838130530">Easily and securely share a copy of a password with your family group in Google Password Manager</translation>
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
 <translation id="347967311580159871">For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
@@ -173,6 +181,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5131565040785979529">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chromium is used.</translation>
 <translation id="5134464247000681876">Open links from Gmail, Maps, YouTube and other apps in Chromium</translation>
 <translation id="5203244847421322551">Save and autofill passwords in Chromium</translation>
+<translation id="5218806323985098884">Check out what's new in Chromium</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5259423875997548710">Search visuals in Chromium.</translation>
 <translation id="5284913972719948193">Import your data to use your passwords, history, bookmarks and credit cards on Chromium</translation>
@@ -194,6 +203,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5521125884468363740">To see your tabs from wherever you use Chromium, sign in and turn on sync</translation>
 <translation id="5534584691915394889">This will be used to create events in your Apple Calendar from Chromium and Google Lens.</translation>
 <translation id="5571094606370987472">Opens the Chromium Recent Tabs.</translation>
+<translation id="5596644122344097310">Tap here to get the most out of Chromium on your iPhone.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Toggle Chromium</translation>
 <translation id="5664395081284292058">Open my latest tab in Chromium</translation>
@@ -235,11 +245,15 @@ Things to consider:
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6433172051771630690">Tips on getting the most out of Chromium.</translation>
 <translation id="65045991564554105">See Chromium bookmarks</translation>
+<translation id="6519797228806907665">Access Chromium faster from your iPhone's Home Screen.</translation>
 <translation id="6538713818758208754">Opens the payment methods setting page in Chromium.</translation>
 <translation id="6540186279384079894">Open new tab in Chromium</translation>
 <translation id="6563921047760808519">Learn more about <ph name="BEGIN_LINK" />how Chromium keeps your data private<ph name="END_LINK" /></translation>
+<translation id="6564769014061914792">Tap here to get the most out of Chromium on your iPad.</translation>
+<translation id="6566303693324540692">Chromium tip: Move Chromium to your Home Screen</translation>
 <translation id="6574750762636192517">Manage passwords in Chromium</translation>
 <translation id="6590232959690355435">Opens your Chromium History page.</translation>
+<translation id="6649269674808477353">Open Chromium faster when you're ready to browse on your iPhone.</translation>
 <translation id="6674470628873622334">Opens a new Chromium Incognito tab.</translation>
 <translation id="6680609900732453726">Keep your browsing private with device authentication when you close Chromium</translation>
 <translation id="6752854822223394465">Your organisation is setting up Chromium…</translation>
@@ -289,6 +303,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7934404985878918282">See Chromium reading list</translation>
 <translation id="7935734571048689933">Chromium is managed</translation>
 <translation id="7951793218148208717">Opens a new tab in Chromium.</translation>
+<translation id="7957726318578167662">Easily use Chromium whenever you tap links in messages or other apps.</translation>
 <translation id="7980860476903281594">Chromium shares your location with sites that you allow.</translation>
 <translation id="7994322153108931467">To get helpful Chromium tips, turn on notifications in your iOS settings.</translation>
 <translation id="7997159823054171568">Set Chromium as default browser</translation>
@@ -324,6 +339,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8860548555286245440">Open URLs in Chromium in Incognito</translation>
 <translation id="8880024619507699923">Your organisation requires you to sign in to use Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Get Chromium's strongest security</translation>
+<translation id="8908791447256515663">Access Chromium faster from your iPad's Dock.</translation>
 <translation id="8925569192291721236">Keep up with price tracking updates and Chromium tips.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute}other{This happens when Chromium isn't used for {THRESHOLD} minutes}}</translation>
 <translation id="8963279154877372067">Allow Chromium notifications to get price drop alerts</translation>

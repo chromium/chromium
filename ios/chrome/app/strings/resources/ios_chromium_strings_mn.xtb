@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">Энэ нь Chromium тухай бүрд мобайл сайтын хүсэлт тавина гэсэн үг юм.</translation>
 <translation id="1115463765356382667">Chromium-г бүрэн ашиглахын тулд доорх санал болгосон эдгээр үйлдлийг гүйцэтгэнэ үү.</translation>
 <translation id="1185134272377778587">Chromium-ийн тухай</translation>
+<translation id="1211450393895337634">Та iPad дээрээ үзэхэд бэлэн байхдаа Chromium-г илүү хурдан нээгээрэй.</translation>
 <translation id="1229234641991056119">Safari-н нууц үг, түүх, хавчуурга, кредит картаа Chromium-д ашиглаарай</translation>
 <translation id="1257458525759135959">Зургуудыг хадгалахын тулд Тохиргоон дээр товшиж, таны зургуудад нэмэхийг Chromium-д зөвшөөрнө үү</translation>
 <translation id="1260702988262336471">Chromium-н цэсийг нээнэ үү</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">Танд зориулж бүтээсэн захиалгат хангамж. Мэдээ, спорт, цаг агаар багтана.</translation>
 <translation id="1561849081734670621">Chromium-д Түгжих горимыг идэвхгүй болгохын тулд үүнийг iPhone-доо унтраана уу.</translation>
 <translation id="1569258826720962327">iOS дээр Chromium-н үйлдлүүдийг ашиглах</translation>
+<translation id="1573441572176948907">Chromium-г суурилуулагч руугаа зөөх</translation>
 <translation id="159029779861043703">Chromium таны эмзэг өгөгдлийг Царайн ID-р аюулгүй байлгадаг.</translation>
 <translation id="1591119736686995611">Chromium-н табын хүснэгтийг нээнэ.</translation>
 <translation id="16001233025397167">Аюулгүй байдлын шалгалт нь таныг өгөгдлийн зөрчил, аюултай вебсайт болон бусад зүйлээс хамгаална. Chromium-н танд илрүүлж өгсөн нууцлал эсвэл аюулгүй байдлын аливаа асуудлаар сэрэмжлүүлэг хүлээн аваарай.</translation>
@@ -66,6 +68,7 @@
 <translation id="2340423701577464731">Унших жагсаалтын зүйлийг Chromium-д нэмэх</translation>
 <translation id="2374627437126809292">Chromium танд илрүүлсэн хаягуудын чиглэл болон орон нутгийн мэдээллийг өгөхийн тулд Google Газрын зургийг ашиглана.</translation>
 <translation id="2386292341327187942">Хайлтын виджетийн хайрцагт Chromium-г оруулна уу</translation>
+<translation id="2389827884654658221">Өөрийн iPad-н үндсэн нүүрнээсээ Chromium-д илүү хурдан хандаарай.</translation>
 <translation id="2426113998523353159">Танай байгууллага танаас Chromium-г ашиглахын тулд нэвтрэхийг шаардаж байна.</translation>
 <translation id="2450140762465183767">Та одоо Chromium-г хэзээд ч мессеж, документ болон бусад аппын холбоосыг товшин ашиглах боломжтой.</translation>
 <translation id="2459183986985456602">Миний сүүлийн табыг Chromium-д нээнэ үү.</translation>
@@ -74,11 +77,15 @@
 <translation id="2485774047568879945">Холбоосыг хялбархан хуваалцаж, нээхийн тулд Chromium-г өгөгдмөл хөтчөөрөө тохируулна уу</translation>
 <translation id="2512597191798760956">Chromium-н дүрс тэмдгийг удаан дараад, "Үндсэн нүүрийг засах"-ыг товшино уу</translation>
 <translation id="2517624234762908348">Chromium-н өгөгдлөө синк хийх</translation>
+<translation id="2575968074225731646">Өөрийн iPhone-н суурилуулагчаас Chromium-д илүү хурдан хандаарай.</translation>
 <translation id="2592940277904433508">Chromium-г үргэлжлүүлэн ашиглах</translation>
 <translation id="2607609479243848905">Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chromium-н өгөгдлийг устгана уу<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">Chromium-н зөвлөгөө: Google Lens-р харж буй зүйлээ хайгаарай</translation>
 <translation id="2650312721222849884">Та Chromium-г хаанаас ч ашигласан бай табуудаа харахын тулд синк хийхийг асаана уу</translation>
 <translation id="2684230048001240293">Та өөрийн бүх төхөөрөмж дээрх табууд, нууц үгнүүд болон төлбөрийн мэдээллээ синк хийхийн тулд Chromium-г өгөгдмөлөөр тохируулна уу</translation>
+<translation id="2729836253097154631">Зүйлсээ авахын тулд Chromium-д нэвтрээрэй</translation>
 <translation id="2730884209570016437">Таны камерыг өөр апп-д ашиглаж байгаа тул үүнийг Chromium ашиглах боломжгүй</translation>
+<translation id="2742952311155593352">Та Chromium-г тохируулж бараг дууслаа!</translation>
 <translation id="2798503587425057129">Chromium-н Унших жагсаалтыг нээнэ.</translation>
 <translation id="28276745681323897">Та Google Бүртгэлдээ <ph name="BEGIN_LINK" />Chromium-н ямар өгөгдлийг хадгалахыг удирдах<ph name="END_LINK" /> боломжтой.
 
@@ -98,6 +105,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно. Үүнд түүх болон автоматаар бөглөх хэсэг багтаж болно.}other{Chromium-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно. Үүнд түүх болон автоматаар бөглөх хэсэг багтаж болно.}}</translation>
 <translation id="3410395242749598859">Таны Chromium-н зарим өгөгдлийг <ph name="EMAIL" />-д хараахан хадгалаагүй байна.
 Бүртгэл сэлгэхээсээ өмнө хэдэн минут хүлээж үзнэ үү. Хэрэв та одоо бүртгэл сэлгэвэл энэ өгөгдлийг устгана.</translation>
+<translation id="3420586870838853527">Chromium-н зөвлөгөө: Сайжруулсан аюулгүй хөтөч таны өдрийг аварна</translation>
 <translation id="3440830787838130530">Google Нууц үгний менежерт гэр бүлийн бүлгийнхэнтэйгээ нууц үгний хуулбарыг хялбархан, аюулгүй хуваалцаарай</translation>
 <translation id="3472200483164753384">Chromium Канар дээр дэмжихгүй</translation>
 <translation id="347967311580159871">Таны Chromium-н хэрэглээг сайжруулахын тулд өгөгдөл ашигладаг бусад тохиргоог авах бол <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" /> рүү очно уу.</translation>
@@ -173,6 +181,7 @@
 <translation id="5131565040785979529">Танай байгууллага, <ph name="DOMAIN" /> таны нэвтэрсэн бүртгэл болон Chromium-г хэрхэн ашиглахыг удирдана.</translation>
 <translation id="5134464247000681876">Gmail, Газрын зураг, YouTube болон бусад аппын холбоосыг Chromium-д нээнэ үү</translation>
 <translation id="5203244847421322551">Chromium-д нууц үг хадгалж, автоматаар бөглөх</translation>
+<translation id="5218806323985098884">Chromium-д шинэ зүйл юу байгааг сонирхоорой</translation>
 <translation id="5224391634244552924">Хадгалсан ямар ч нууц үг алга. Таныг нууц үгсээ хадгалах үед Chromium тэднийг шалгах боломжтой.</translation>
 <translation id="5259423875997548710">Chromium-с визуал хайгаарай.</translation>
 <translation id="5284913972719948193">Chromium дээр нууц үг, түүх, хавчуурга, кредит картаа ашиглахын тулд өгөгдлөө импортолно уу</translation>
@@ -194,6 +203,7 @@
 <translation id="5521125884468363740">Та Chromium-г хаанаас ч ашигласан табуудаа харахын тулд нэвтрээд, синк хийхийг асаана уу</translation>
 <translation id="5534584691915394889">Үүнийг таны Apple Календарьт Chromium болон Google Lens-с үйл явдал үүсгэхэд ашиглана.</translation>
 <translation id="5571094606370987472">Chromium саяхны табуудыг нээнэ.</translation>
+<translation id="5596644122344097310">iPhone дээрээ Chromium-г бүрэн ашиглахын тулд энд товшоорой.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Chromium-г асаах/унтраах</translation>
 <translation id="5664395081284292058">Миний сүүлийн табыг Chromium-д нээх</translation>
@@ -235,11 +245,15 @@
 <translation id="6424492062988593837">Chromium-ыг сайжрууллаа! Одоо шинэ хувилбарыг ашиглах боломжтой.</translation>
 <translation id="6433172051771630690">Chromium-г бүрэн ашиглах зөвлөгөөнүүд.</translation>
 <translation id="65045991564554105">Chromium-н хавчуургыг харах</translation>
+<translation id="6519797228806907665">Өөрийн iPhone-н үндсэн нүүрнээс Chromium-д илүү хурдан хандаарай.</translation>
 <translation id="6538713818758208754">Төлбөрийн хэрэгслүүдийн тохиргооны хуудсыг Chromium-д нээнэ.</translation>
 <translation id="6540186279384079894">Chromium-д шинэ таб нээх</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium таны өгөгдлийг хэрхэн хувийн байлгадаг<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авах</translation>
+<translation id="6564769014061914792">iPad дээрээ Chromium-г бүрэн ашиглахын тулд энд товшино уу.</translation>
+<translation id="6566303693324540692">Chromium-н зөвлөгөө: Chromium-г үндсэн нүүр лүүгээ зөөгөөрэй</translation>
 <translation id="6574750762636192517">Нууц үгнүүдийг Chromium-д удирдах</translation>
 <translation id="6590232959690355435">Таны Chromium-н түүхийн хуудсыг нээнэ.</translation>
+<translation id="6649269674808477353">Та iPhone дээрээ үзэхэд бэлэн байхдаа Chromium-г илүү хурдан нээгээрэй.</translation>
 <translation id="6674470628873622334">Chromium-н шинэ нууцлалтай табыг нээнэ.</translation>
 <translation id="6680609900732453726">Та Chromium-г хаахдаа төхөөрөмжийн баталгаажуулалтыг ашиглан үзсэн зүйлээ хувийн байлгаарай</translation>
 <translation id="6752854822223394465">Танай байгууллага Chromium-г тохируулж байна...</translation>
@@ -289,6 +303,7 @@
 <translation id="7934404985878918282">Chromium-н Унших жагсаалтыг харах</translation>
 <translation id="7935734571048689933">Chromium-г удирддаг</translation>
 <translation id="7951793218148208717">Chromium-д шинэ таб нээнэ.</translation>
+<translation id="7957726318578167662">Мессеж эсвэл бусад апп дахь холбоосон дээр товших бүрдээ Chromium-г хялбархан ашиглаарай.</translation>
 <translation id="7980860476903281594">Chromium таны байршлыг таны зөвшөөрсөн сайтуудтай хуваалцана.</translation>
 <translation id="7994322153108931467">Chromium-н хэрэгтэй зөвлөгөөнүүдийг авахын тулд iOS тохиргоондоо мэдэгдлүүдийг асаана уу.</translation>
 <translation id="7997159823054171568">Chromium-г өгөгдмөл хөтчөөр тохируулах</translation>
@@ -324,6 +339,7 @@
 <translation id="8860548555286245440">URL-уудыг Chromium-д Нууцлалтай горимд нээх</translation>
 <translation id="8880024619507699923">Танай байгууллага танаас Chromium-г ашиглахын тулд нэвтрэхийг шаарддаг. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Chromium-н хамгийн хүчирхэг хамгаалалтыг аваарай</translation>
+<translation id="8908791447256515663">Өөрийн iPad-н суурилуулагчаас Chromium-д илүү хурдан хандаарай.</translation>
 <translation id="8925569192291721236">Үнэ мөшгөх талаарх шинэ мэдээлэл, Chromium-н зөвлөгөөний талаар мэдээлэлтэй байгаарай.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно}other{Chromium-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно}}</translation>
 <translation id="8963279154877372067">Үнэ буурсан талаарх сэрэмжлүүлэг авахын тулд Chromium-н мэдэгдлийг зөвшөөрнө үү</translation>

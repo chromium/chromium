@@ -109,7 +109,6 @@ Chrome təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən d
 <translation id="1419753403124156396">Chrome yenidən başladılsın?</translation>
 <translation id="1428770807407000502">Sinxronlaşdırma deaktiv edilsin?</translation>
 <translation id="1430915738399379752">Çap edin</translation>
-<translation id="1433478348197382180">Oxu Rejimi</translation>
 <translation id="1435593198351412143">PDF-ləri avtomatik açın</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> tətbiqində işləyir</translation>
 <translation id="1448440926884431741">Əlfəcinlərdə izlədiyiniz məhsulları təşkil edin</translation>
@@ -370,7 +369,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2718352093833049315">Yalnız Wi-Fi üzərindən</translation>
 <translation id="2718846868787000099">Tərcih etdiyiniz dillərdə məzmunu göstərmək üçün ziyarət etdiyiniz saytlar tərcihlərinizi görə bilər</translation>
 <translation id="2723001399770238859">audio</translation>
-<translation id="2734335652257251631">Oxu rejimini göstərin</translation>
 <translation id="2739887572830526131">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya ehtiyacınız yoxdursa, silin.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> əlçatan deyil.</translation>
 <translation id="2760805590727089264">AA/İİ</translation>
@@ -1137,6 +1135,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6212567362666004597">Qrupa tab əlavə edin</translation>
 <translation id="6225572914528673855">Ünvan paneli</translation>
 <translation id="6232535412751077445">İzlənilməyin qadağan edilməsi o deməkdir ki, sorğu brauzer trafikinizə daxil ediləcək. İstənilən effekt saytın sorğuya cavab verməsindən və sorğunun necə anlaşılmasından asılıdır.  Məsələn, bəzi saytlar bu sorğuya ziyarət etdiyiniz saytlarda olmayan reklamları göstərməklə cavab verə bilər. Bir çox saytlar hələ də brauzinq datanızı toplayacaq və istifadə edəcək. Məqsədləri güvənliyin artırılması, kontent, xidmət, reklam, tövsiyə təqdim edilməsi və raport statistikasının yaradılması ola bilər.</translation>
+<translation id="623755660902014047">Oxu rejimi</translation>
 <translation id="6247557882553405851">Google Parol Meneceri</translation>
 <translation id="6248988683584659830">Axtarış ayarları</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, Çoxseçimli sancılmış anonim tab</translation>
@@ -1395,7 +1394,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7221869452894271364">Bu səhifəni yenidən yükləyin</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 endirmə gözlənilir}other{# endirmə gözlənilir}}</translation>
 <translation id="7230064152164845085">Anonim rejimə keçin</translation>
-<translation id="7230836263524391273">Oxu rejimini gizlədin</translation>
 <translation id="7237724030342645845">Google Parol Meneceri dayandı</translation>
 <translation id="72415438529550637">Parol təklifi bağlandı.</translation>
 <translation id="7248671827512403053">Tətbiq</translation>
@@ -1730,7 +1728,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="867914734596684889">Əlfəcin panelini göstərin və ya gizlədin</translation>
 <translation id="8683039184091909753">şəkil</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, seçilmiş tab</translation>
-<translation id="8693232767599693749">Oxu rejiminə baxılsın?</translation>
 <translation id="8697753151306746444">Əvəzində pəncərə və ya ekranı paylaşın</translation>
 <translation id="8699120352855309748">Bu dillərin tərcümə edilməsini təklif etməyin</translation>
 <translation id="8712637175834984815">Anladım</translation>

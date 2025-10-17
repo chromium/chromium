@@ -286,6 +286,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Skoða 0 umsagnir}=1{Skoða 1 umsögn}one{Skoða # umsögn}other{Skoða # umsagnir}}</translation>
 <translation id="1458059624921545588">Fólk og samfélag</translation>
 <translation id="1458140305240870199">Undirfatnaður</translation>
+<translation id="1458770162980644530">Skjár með þjónustuskilmálum „Kauptu núna, borgaðu síðar“. Lyklaborð er falið.</translation>
 <translation id="1459693405370120464">Veður</translation>
 <translation id="1461041542809785877">Afköst</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2922,6 +2923,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5817918615728894473">Para</translation>
 <translation id="5826507051599432481">Almennt heiti (CN)</translation>
 <translation id="5830698870816298009">notkun og hreyfing myndavélar</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Óþekkt</translation>
 <translation id="5832976493438355584">Læst</translation>
 <translation id="5837220895135257862">Losaðu um pláss á <ph name="CLOUD_PROVIDER" /> áður en þú reynir aftur</translation>
@@ -3646,6 +3648,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6997288673234694149">Búnaður fyrir hafnabolta og mjúkbolta</translation>
 <translation id="6998512609912910179">Fylltu eyðublöð út hraðar</translation>
 <translation id="6999480632062519056">Líkamsrækt og einkaþjálfun</translation>
+<translation id="7002897669829306463">Heimilisfang heimilis: <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Mottur og gólfteppi</translation>
 <translation id="7003322000677139268">Varahlutir og aukabúnaður fyrir bíla</translation>
 <translation id="7004499039102548441">Nýlegir flipar</translation>
@@ -4211,6 +4214,8 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">Fyrirtækið þitt leyfir þér ekki að skrá þig inn</translation>
 <translation id="7926503317156566022">Flugiðnaður</translation>
+<translation id="7930282586031445870">Skjár með þjónustuskilmálum „Kauptu núna, borgaðu síðar“ er lokaður.</translation>
+<translation id="7932035970207573919">Heimilisfang vinnustaðar: <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Uppfæra heimilisfang?</translation>
 <translation id="7932579305932748336">Kápa</translation>
 <translation id="79338296614623784">Færðu inn gilt símanúmer</translation>
@@ -4623,6 +4628,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Gögnin sem eru notuð:<ph name="END_BOLD" /> Virkni þín á vefsvæði sem þú opnar með Chrome í þessu tæki.</translation>
 <translation id="8601456038554914806">Vatnsíþróttabúnaður</translation>
 <translation id="8601782593888534566">Vísindaskáldsögur og fantasíur</translation>
+<translation id="8604103095921958091">Skjár með þjónustuskilmálum „Kauptu núna, borgaðu síðar“ opinn til fulls.</translation>
 <translation id="8606988009912891950">Umfjöllunarefni auglýsinga hjálpa vefsvæðum að birta þér viðeigandi auglýsingar en vernda um leið vafraferilinn þinn og auðkennið. Chrome getur skráð áhugasvið í samræmi við nýlegan vafraferil. Seinna getur vefsvæði sem þú opnar óskað eftir upplýsingum um viðeigandi umfjöllunarefni frá Chrome til að sérsníða auglýsingarnar sem birtast þér.</translation>
 <translation id="8612919051706159390">Netsamfélög</translation>
 <translation id="8617269623452051934">tækjanotkun þín</translation>
@@ -4863,6 +4869,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> vill leita að og tengjast hvaða tæki sem er á staðarnetinu þínu</translation>
 <translation id="9046864189129893978">Hljóðnemar (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Skjár með þjónustuskilmálum „Kauptu núna, borgaðu síðar“ opinn til hálfs.</translation>
 <translation id="9047528041803621289">Sjálfgefna stillingin þín leyfir þér að skoða vefinn. Þú getur breytt því í stillingunum.</translation>
 <translation id="9048035366624198823">Þessar aðgerðir krefjast þess að reglan <ph name="POLICY_NAME" /> sé stillt á <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 to.</translation>

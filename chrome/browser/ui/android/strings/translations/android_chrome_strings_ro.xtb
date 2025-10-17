@@ -109,7 +109,6 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1419753403124156396">Repornești Chrome?</translation>
 <translation id="1428770807407000502">Dezactivezi sincronizarea?</translation>
 <translation id="1430915738399379752">Printează</translation>
-<translation id="1433478348197382180">Modul de lectură</translation>
 <translation id="1435593198351412143">Deschide automat fișierele PDF</translation>
 <translation id="1437543266176261764">Rulează în <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizează-ți produsele urmărite în Marcaje Google</translation>
@@ -370,7 +369,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2718352093833049315">Numai prin Wi-Fi</translation>
 <translation id="2718846868787000099">Site-urile pe care le accesezi îți pot vedea preferințele pentru a afișa conținut în limbile tale preferate</translation>
 <translation id="2723001399770238859">audio</translation>
-<translation id="2734335652257251631">Afișează modul de lectură</translation>
 <translation id="2739887572830526131">Păstrează acest grup pentru a adăuga file mai târziu sau șterge-l dacă nu mai ai nevoie de el.</translation>
 <translation id="2742373789128106053">Momentan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nu este disponibil.</translation>
 <translation id="2760805590727089264">LL / AA</translation>
@@ -1139,6 +1137,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="6232535412751077445">Dacă activezi opțiunea „Nu urmări”, o solicitare va fi inclusă împreună cu traficul de navigare. Efectul variază în funcție de răspunsul site-ului la solicitare și în funcție de modul în care este interpretată solicitarea.
 
 De exemplu, unele site-uri pot răspunde la această solicitare afișând anunțuri care nu se bazează pe alte site-uri accesate de tine. Numeroase site-uri vor culege și vor utiliza în continuare datele de navigare. De exemplu, pentru a îmbunătăți securitatea, pentru a oferi conținut, anunțuri și recomandări și pentru a genera statistici de raportare.</translation>
+<translation id="623755660902014047">Modul de lectură</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6248988683584659830">Setări de căutare</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, filă incognito fixată cu selectare multiplă</translation>
@@ -1397,7 +1396,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7221869452894271364">Reîncarcă această pagină</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{O descărcare în așteptare}few{# descărcări în așteptare}other{# de descărcări în așteptare}}</translation>
 <translation id="7230064152164845085">Intră în modul incognito</translation>
-<translation id="7230836263524391273">Ascunde Modul de lectură</translation>
 <translation id="7237724030342645845">Managerul de parole Google nu mai funcționează</translation>
 <translation id="72415438529550637">Sugestia de parolă se închide.</translation>
 <translation id="7248671827512403053">Aplicație</translation>
@@ -1732,7 +1730,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="867914734596684889">Afișează sau ascunde bara de marcaje</translation>
 <translation id="8683039184091909753">imagine</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, filă selectată</translation>
-<translation id="8693232767599693749">Vezi modul de lectură?</translation>
 <translation id="8697753151306746444">Permite accesul la fereastră sau ecran</translation>
 <translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>
 <translation id="8712637175834984815">Am înțeles</translation>

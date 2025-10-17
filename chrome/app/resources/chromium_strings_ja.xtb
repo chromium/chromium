@@ -203,6 +203,7 @@
 <translation id="3296368748942286671">Chromium を閉じた際にバックグラウンド アプリの処理を続行する</translation>
 <translation id="3313189106987092621">Chromium で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
 <translation id="3316771292331273802">Chromium のウィンドウをすべて閉じると、ほとんどのサイトからログアウトします。ただし Chromium にログインしている場合、Google アカウントからはログアウトしません。サイトにあなたの情報を記憶させるには、<ph name="SETTINGS_LINK" />します。</translation>
+<translation id="3322413454779348750">デフォルトの検索エンジンが Chromium の外部から変更されました。ユーザー保護のため、Chromium でリセットしました。</translation>
 <translation id="3352986031709923790">検索範囲の右上隅: 右 <ph name="RIGHT" />%、上 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">アカウントの Chromium データ</translation>
 <translation id="3369405342922656244">画像検索でこのページを検索する</translation>
@@ -393,6 +394,7 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5949225980829865667">すべてのデバイスでこのブックマークなどを使用するには、Chromium にログインしてください</translation>
 <translation id="5953657885167112863">Chromium を自分好みに</translation>
+<translation id="5960071705175224773">不明なアプリによって設定が変更されました</translation>
 <translation id="5968400720580217226">AI モード</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。}}</translation>
 <translation id="5987687638152509985">同期を開始するには、Chromium を更新します</translation>

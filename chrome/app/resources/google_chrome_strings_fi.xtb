@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">Sulje palautteen valintaikkuna</translation>
 <translation id="306179102415443347">Käytä Google Salasanoja nopeasti pikakuvakkeen avulla. Voit siirtää pikakuvakkeen tietokoneen aloitusnäytölle tai sovelluksien käynnistysohjelmaan.</translation>
 <translation id="3065168410429928842">Chrome-välilehti</translation>
+<translation id="3073571714401714450">Gemini in Chrome Dev päälle/pois</translation>
 <translation id="3080151273017101988">Jätä taustaohjelmat käyntiin, kun Google Chrome suljetaan</translation>
 <translation id="308397506772922478">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-data<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Nimeä Chrome-profiilisi</translation>
@@ -373,6 +374,7 @@
 <translation id="5368118228313795342">Lisäkoodi: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Määrittää myös Chromen ja omnibox-hakujen aloitussivun.</translation>
 <translation id="5394833366792865639">Jaa Chrome-välilehti</translation>
+<translation id="5402307365844630024">Gemini in Chrome Beta päälle/pois</translation>
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
 <translation id="5468572406162360320">Chrome lähettää toimintasi Googlelle näiden ominaisuuksien parantamiseksi. Tarkastajat voivat lukea, käsitellä ja tehdä merkintöjä dataan.</translation>
 <translation id="5510398294750420479">Lataa Chrome puhelimelle, niin saat lisäsuojaa ollessasi liikkeellä</translation>
@@ -422,6 +424,7 @@
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5941830788786076944">Tee Google Chromesta oletusselain</translation>
 <translation id="5947104538377036631">Chrome-pikanäppäin</translation>
+<translation id="5960071705175224773">Tuntematon sovellus on muuttanut asetuksiasi</translation>
 <translation id="5968400720580217226">Tekoälytila</translation>
 <translation id="5980111191913430208">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chrome suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
@@ -645,6 +648,7 @@
 <translation id="8362914115861174987">Käännä kielelle</translation>
 <translation id="8366770919198174997">Rajoittaa suorituskykyä, mutta tekee Chromesta suojatumman hyökkäyksiä vastaan</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
+<translation id="8377158135256176353">Gemini in Chrome Canary päälle/pois</translation>
 <translation id="8387459386171870978">Jatka Chromen käyttöä</translation>
 <translation id="8394720698884623075">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen listan avulla</translation>
 <translation id="8403038600646341038">Chrome-logo tietokoneen näytöllä.</translation>
@@ -693,12 +697,14 @@
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
 <translation id="8922193594870374009">Jos haluat lähettää numeron osoitteesta <ph name="ORIGIN" /> Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="8922998289262614701">Poista tämän sovelluksen data Chromesta</translation>
+<translation id="8936233353620149764">Gemini in Chrome päälle/pois</translation>
 <translation id="8948460679427074738">Tästä laajennuksesta ei ole julkaistu tietosuojakäytäntöjä koskien esimerkiksi datan keräämistä ja käyttöä. Chrome suosittelee poistamaan sen.</translation>
 <translation id="8958307504142971576">Chromessa on nyt enemmän ominaisuuksia</translation>
 <translation id="8991530961471831170">Avaa Gemini in Chrome</translation>
 <translation id="8992769679401294069">Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa Chrome-dataa Google-tililläsi.</translation>
 <translation id="8999117580775242387">Kun HTTPS ei ole käytettävissä, Chrome käyttää suojaamatonta yhteyttä ilman erillistä varoitusta</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-päivitys on saatavilla}=1{Chrome-päivitys on saatavilla}other{Chrome-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
+<translation id="9010418943148193727">Oletushakukoneesi on vaihdettu Chromen ulkopuolelta. Chrome nollasi sen suojellakseen sinua.</translation>
 <translation id="9014771989710951291">Useat organisaatiot ylläpitävät Chromea</translation>
 <translation id="9024318700713112071">Valitse Chrome oletusselaimeksi</translation>
 <translation id="9066987883552592250">Sulje Gemini in Chrome Canary</translation>

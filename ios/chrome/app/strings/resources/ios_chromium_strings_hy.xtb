@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">Սա նշանակում է, որ Chromium-ը միշտ կփորձի բացել կայքի բջջային տարբերակը։</translation>
 <translation id="1115463765356382667">Կատարեք այս առաջարկվող գործողությունները՝ Chromium-ի բոլոր հնարավորություններից օգտվելու համար։</translation>
 <translation id="1185134272377778587">Chromium-ի մասին</translation>
+<translation id="1211450393895337634">Դուք կարող եք ավելի արագ բացել Chromium-ը iPad-ում։</translation>
 <translation id="1229234641991056119">Օգտագործեք Safari-ի ձեր գաղտնաբառերը, պատմությունը, էջանիշները և վարկային քարտերը Chromium-ում</translation>
 <translation id="1257458525759135959">Պատկերները պահելու համար հպեք Կարգավորումներին և թույլատրեք Chromium-ին ավելացնել դրանք ձեր լուսանկարներին։</translation>
 <translation id="1260702988262336471">Բացեք Chromium-ի ընտրացանկը</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">Հատուկ ֆիդ՝ ստեղծված ձեզ համար։ Ֆիդը ներառում է լուրեր, սպորտային նորություններ և եղանակի տեսություն։</translation>
 <translation id="1561849081734670621">Chromium-ում արգելափակման ռեժիմն անջատելու համար անջատեք այն ձեր iPhone-ում։</translation>
 <translation id="1569258826720962327">iOS սարքում ընտրեք «Գործողություններ Chromium-ում»</translation>
+<translation id="1573441572176948907">Տեղափոխեք Chromium-ը Dock վահանակ</translation>
 <translation id="159029779861043703">Chromium-ը պաշտպանում է ձեր զգայուն տվյալները Face ID-ի միջոցով։</translation>
 <translation id="1591119736686995611">Բացում է Chromium-ի ներդիրների ցանցը։</translation>
 <translation id="16001233025397167">Անվտանգության ստուգումը պաշտպանում է ձեզ տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից։ Chromium-ը կզգուշացնի գաղտնիության և անվտանգության հետ կապված խնդիրների մասին, որոնք կհայտնաբերի։</translation>
@@ -66,6 +68,7 @@
 <translation id="2340423701577464731">Ավելացնել ընթերցանության ցանկին Chromium-ում</translation>
 <translation id="2374627437126809292">Chromium-ն օգտագործում է Google Քարտեզները՝ ձեզ գտնված հասցեների մասին տեղեկություններ ցուցադրելու և դեպի այդ վայրեր երթուղիներ գծելու համար։</translation>
 <translation id="2386292341327187942">«Որոնման վիջեթներ» դաշտում մուտքագրեք Chromium</translation>
+<translation id="2389827884654658221">Ավելի արագ բացեք Chromium-ը ձեր iPad-ի հիմնական էկրանից։</translation>
 <translation id="2426113998523353159">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է մուտք գործեք հաշիվ, որպեսզի կարողանաք օգտագործել Chromium-ը։</translation>
 <translation id="2450140762465183767">Այժմ հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները կարող եք բացել Chromium-ում։</translation>
 <translation id="2459183986985456602">Բացել իմ վերջին ներդիրը Chromium-ում։</translation>
@@ -74,11 +77,15 @@
 <translation id="2485774047568879945">Դարձրեք Chromium-ը ձեր կանխադրված դիտարկիչը՝ հղումներով հեշտությամբ կիսվելու և դրանք բացելու համար</translation>
 <translation id="2512597191798760956">Սեղմեք Chromium-ի պատկերակը և պահեք, ապա ընտրեք «Փոփոխել հիմնական էկրանը»</translation>
 <translation id="2517624234762908348">Համաժամացնել Chromium-ի տվյալները</translation>
+<translation id="2575968074225731646">Ավելի արագ բացեք Chromium-ը ձեր iPhone-ի Dock վահանակից։</translation>
 <translation id="2592940277904433508">Շարունակել Chromium-ի օգտագործումը</translation>
 <translation id="2607609479243848905">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />ջնջեք Chromium-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
+<translation id="2640367368802736659">Խորհուրդ Chromium-ից․ ձեր տեսածը գտեք Google Տեսապակու օգնությամբ</translation>
 <translation id="2650312721222849884">Chromium-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար միացրեք համաժամացումը։</translation>
 <translation id="2684230048001240293">Դարձրեք Chromium-ը ձեր կանխադրված դիտարկիչը՝ ներդիրները, գաղտնաբառերը և վճարային տվյալները ձեր բոլոր սարքերում համաժամացնելու համար</translation>
+<translation id="2729836253097154631">Մուտք գործեք Chromium՝ ձեր բովանդակությունն օգտագործելու համար</translation>
 <translation id="2730884209570016437">Chromium-ը չի կարող օգտագործել ձեր ֆոտոխցիկը, քանի որ այն օգտագործվում է մեկ այլ հավելվածի կողմից</translation>
+<translation id="2742952311155593352">Դուք գրեթե ավարտել եք Chromium-ի կարգավորումը</translation>
 <translation id="2798503587425057129">Բացում է Chromium-ի ընթերցանության ցանկը։</translation>
 <translation id="28276745681323897">Ձեր Google հաշվում կարող եք <ph name="BEGIN_LINK" />կառավարել, թե Chromium-ի ինչ տվյալներ պահվեն<ph name="END_LINK" />։
 
@@ -98,6 +105,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում։ Դա կարող է ներառել պատմությունը և ինքնալրացված տվյալները։}one{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում։ Դա կարող է ներառել պատմությունը և ինքնալրացված տվյալները։}other{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում։ Դա կարող է ներառել պատմությունը և ինքնալրացված տվյալները։}}</translation>
 <translation id="3410395242749598859">Ձեր Chromium-ի որոշ տվյալներ դեռ չեն պահվել <ph name="EMAIL" /> հաշվում։
 Նախքան հաշիվները փոխելը մի քանի րոպե սպասեք։ Եթե հաշիվները փոխեք հիմա, այս տվյալները կջնջվեն։</translation>
+<translation id="3420586870838853527">Խորհուրդ Chromium-ից․ օգտագործեք բարելավված Ապահով դիտարկումը</translation>
 <translation id="3440830787838130530">Հեշտությամբ և ապահով կերպով կիսվեք գաղտնաբառի պատճենով ձեր ընտանեկան խմբի հետ Google գաղտնաբառերի կառավարչում</translation>
 <translation id="3472200483164753384">Չի աջակցվում Chromium Canary-ում</translation>
 <translation id="347967311580159871">Որպեսզի իմանաք ավելին կարգավորումների մասին, որոնք Chromium-ի բարելավման նպատակով օգտագործում են տվյալներ, անցեք <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" />։</translation>
@@ -173,6 +181,7 @@
 <translation id="5131565040785979529">Ձեր կազմակերպությունը (<ph name="DOMAIN" />) կառավարում է ձեր մտած հաշիվը և այն, թե ինչպես է Chromium-ն օգտագործվում։</translation>
 <translation id="5134464247000681876">Բացեք հղումներ Gmail-ից, Քարտեզներից, YouTube-ից և այլ հավելվածներից Chromium-ում</translation>
 <translation id="5203244847421322551">Պահեք և ավտոմատ լրացրեք գաղտնաբառերը Chromium-ում</translation>
+<translation id="5218806323985098884">Իմացեք, թե ինչ նոր բան կա Chromium-ում</translation>
 <translation id="5224391634244552924">Պահված գաղտնաբառեր չկան։ Chromium-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք։</translation>
 <translation id="5259423875997548710">Պատկերների որոնում Chromium-ում։</translation>
 <translation id="5284913972719948193">Ներմուծեք ձեր գաղտնաբառերը, որոնման պատմությունը, էջանիշները և վարկային քարտի տվյալները Chromium</translation>
@@ -194,6 +203,7 @@
 <translation id="5521125884468363740">Chromium-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար մտեք հաշիվ և միացրեք համաժամացումը։</translation>
 <translation id="5534584691915394889">Սա կօգտագործվի՝ ձեր Apple Calendar-ում Chromium-ից և Google Տեսապակուց միջոցառումներ ստեղծելու համար։</translation>
 <translation id="5571094606370987472">Բացում է Chromium-ի վերջերս բեռնած ներդիրների ցանկը։</translation>
+<translation id="5596644122344097310">Հպեք այստեղ՝ ձեր iPhone-ում Chromium-ի բոլոր հնարավորություններից օգտվելու համար։</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Անցեք Chromium-ին</translation>
 <translation id="5664395081284292058">Բացել իմ վերջին ներդիրը Chromium-ում</translation>
@@ -235,11 +245,15 @@
 <translation id="6424492062988593837">Chromium-ը կատարելագործվել է: Մատչելի է նոր տարբերակ:</translation>
 <translation id="6433172051771630690">Խորհուրդներ, թե ինչպես օգտվել Chromium-ի բոլոր հնարավորություններից։</translation>
 <translation id="65045991564554105">Chromium-ի էջանիշների դիտում</translation>
+<translation id="6519797228806907665">Ավելի արագ բացեք Chromium-ը ձեր iPhone-ի հիմնական էկրանից։</translation>
 <translation id="6538713818758208754">Բացում է վճարման եղանակների կարգավորման էջը Chromium-ում։</translation>
 <translation id="6540186279384079894">Բացել նոր ներդիր Chromium-ում</translation>
 <translation id="6563921047760808519">Իմացեք ավելին, թե <ph name="BEGIN_LINK" />ինչպես է Chromium-ը պահպանում ձեր տվյալների գաղտնիությունը<ph name="END_LINK" /></translation>
+<translation id="6564769014061914792">Հպեք այստեղ՝ ձեր iPad-ում Chromium-ի բոլոր հնարավորություններից օգտվելու համար։</translation>
+<translation id="6566303693324540692">Խորհուրդ Chromium-ից․ ավելացրեք Chromium-ը հիմնական էկրանին</translation>
 <translation id="6574750762636192517">Գաղտնաբառերի կառավարում Chromium-ում</translation>
 <translation id="6590232959690355435">Բացում է Chromium-ի պատմության էջը։</translation>
+<translation id="6649269674808477353">Դուք կարող եք ավելի արագ բացել Chromium-ը iPhone-ում։</translation>
 <translation id="6674470628873622334">Բացում է նոր ինկոգնիտո ներդիր Chromium-ում։</translation>
 <translation id="6680609900732453726">Ձեր դիտարկումը գաղտնի պահեք սարքի իսկորոշման միջոցով, երբ փակեք Chromium-ը</translation>
 <translation id="6752854822223394465">Ձեր կազմակերպությունը կարգավորում է Chromium-ը…</translation>
@@ -289,6 +303,7 @@
 <translation id="7934404985878918282">Դիտել Chromium-ի ընթերցանության ցանկը</translation>
 <translation id="7935734571048689933">Chromium-ը կառավարվում է</translation>
 <translation id="7951793218148208717">Բացում է նոր ներդիր Chromium-ում։</translation>
+<translation id="7957726318578167662">Օգտագործեք Chromium-ը՝ հաղորդագրություններում կամ այլ հավելվածներում առկա հղումները հեշտությամբ բացելու համար։</translation>
 <translation id="7980860476903281594">Chromium-ը կիսվում է ձեր տեղադրության տվյալներով այն կայքերի հետ, որոնց համար տվել եք թույլտվություն։</translation>
 <translation id="7994322153108931467">Chromium-ի վերաբերյալ օգտակար խորհուրդներ ստանալու համար iOS-ի կարգավորումներում միացրեք ծանուցումները։</translation>
 <translation id="7997159823054171568">Դարձնել Chromium-ը կանխադրված դիտարկիչ</translation>
@@ -324,6 +339,7 @@
 <translation id="8860548555286245440">Բացեք URL-ները Chromium-ի ինկոգնիտո ներդիրում</translation>
 <translation id="8880024619507699923">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է մուտք գործեք հաշիվ, որպեսզի կարողանաք օգտագործել Chromium-ը։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Ուժեղացրեք Chromium-ի անվտանգությունը</translation>
+<translation id="8908791447256515663">Ավելի արագ բացեք Chromium-ը ձեր iPad-ի Dock վահանակից։</translation>
 <translation id="8925569192291721236">Ստացեք գների հետագծման թարմացումներ և Chromium-ի վերաբերյալ խորհուրդներ։</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում}one{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում}other{Սա տեղի է ունենում, երբ Chromium-ը {THRESHOLD} րոպե չի օգտագործվում}}</translation>
 <translation id="8963279154877372067">Թույլատրեք Chromium-ին ուղարկել ծանուցումներ, որպեսզի տեղեկանաք գների իջեցման մասին</translation>

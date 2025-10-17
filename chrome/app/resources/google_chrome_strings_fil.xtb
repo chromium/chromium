@@ -190,6 +190,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3047590466164881923">Isara ang dialog ng feedback</translation>
 <translation id="306179102415443347">Gamitin ang iyong shortcut para mabilis na makarating sa Google Password Manager. Puwede mong ilipat ang iyong shortcut sa home screen o app launcher ng computer mo.</translation>
 <translation id="3065168410429928842">Tab ng Chrome</translation>
+<translation id="3073571714401714450">I-toggle ang Gemini sa Chrome Dev</translation>
 <translation id="3080151273017101988">Magpatuloy sa pagpapatakbo ng mga app sa background kapag nakasara ang Google Chrome</translation>
 <translation id="308397506772922478">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Pangalanan ang iyong profile sa Chrome</translation>
@@ -379,6 +380,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="5368118228313795342">Dagdag na code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chrome o naghanap mula sa Omnibox.</translation>
 <translation id="5394833366792865639">Magbahagi ng tab ng Chrome</translation>
+<translation id="5402307365844630024">I-toggle ang Gemini sa Chrome Beta</translation>
 <translation id="5430073640787465221">Sira o di-wasto ang iyong file ng mga kagustuhan.
 
 Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
@@ -430,6 +432,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5941711191222866238">I-minimize</translation>
 <translation id="5941830788786076944">Gawin ang Google Chrome na default browser</translation>
 <translation id="5947104538377036631">Shortcut ng Chrome</translation>
+<translation id="5960071705175224773">Binago ng hindi kilalang app ang iyong mga setting</translation>
 <translation id="5968400720580217226">AI Mode</translation>
 <translation id="5980111191913430208">Puwedeng mapinsala ng mga extension, app, at tema mula sa mga hindi kilalang source ang iyong device. Inirerekomenda ng Chrome na i-install lang ang mga ito mula sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Nagda-download... <ph name="HOURS" /> (na) oras na lang ang natitira</translation>
@@ -653,6 +656,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8362914115861174987">Isalin sa</translation>
 <translation id="8366770919198174997">Pinapahina ang performance pero ginagawang mas matatag ang Chrome laban sa mga attack</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
+<translation id="8377158135256176353">I-toggle ang Gemini sa Chrome Canary</translation>
 <translation id="8387459386171870978">Ipagpatuloy ang paggamit ng Chrome</translation>
 <translation id="8394720698884623075">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome</translation>
 <translation id="8403038600646341038">Logo ng Chrome sa loob ng screen ng computer.</translation>
@@ -701,12 +705,14 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8914504000324227558">Muling ilunsad ang Chrome</translation>
 <translation id="8922193594870374009">Para magpadala ng numero sa iyong Android phone mula sa <ph name="ORIGIN" />, mag-sign in sa Chrome sa parehong device.</translation>
 <translation id="8922998289262614701">Alisin ang data ng app na ito sa Chrome</translation>
+<translation id="8936233353620149764">I-toggle ang Gemini sa Chrome</translation>
 <translation id="8948460679427074738">Hindi nag-publish ang extension na ito ng mga kagawian sa privacy, gaya ng kung paano ito nangongolekta at gumagamit ng data. Inirerekomenda ng Chrome na alisin mo ito.</translation>
 <translation id="8958307504142971576">Mayroon ka na ngayong mas maraming feature na available sa Chrome</translation>
 <translation id="8991530961471831170">Buksan ang Gemini sa Chrome</translation>
 <translation id="8992769679401294069">Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at ma-save ang data sa Chrome sa iyong Google Account.</translation>
 <translation id="8999117580775242387">Kapag hindi available ang HTTPS, gagamit ang Chrome ng hindi secure na koneksyon nang hindi ka binabalaan</translation>
 <translation id="8999208279178790196">{0,plural, =0{May available na update sa Chrome}=1{May available na update sa Chrome}one{# araw nang may available na update sa Chrome}other{# na araw nang may available na update sa Chrome}}</translation>
+<translation id="9010418943148193727">Binago ang iyong default na search engine mula sa labas ng Chrome. Para protektahan ka, ni-reset ito ng Chrome.</translation>
 <translation id="9014771989710951291">Maraming organisasyon ang namamahala sa Chrome</translation>
 <translation id="9024318700713112071">Itakda ang Chrome bilang iyong default</translation>
 <translation id="9066987883552592250">Isara ang Gemini sa Chrome Canary</translation>

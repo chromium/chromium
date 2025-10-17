@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2379925928934107488">Když Chrome používá tmavý motiv, použít ho i pro Chrome (pokud je to možné)</translation>
 <translation id="2390272837142897736">Zvýšit přiblížení</translation>
+<translation id="2397689164757137845">Povoleno • Přesná</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Přesná</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Nápověda a zpětná vazba</translation>
 <translation id="2501278716633472235">Zpět</translation>
 <translation id="2533138527374486328">Pokud je tato možnost zapnutá, mohou weby požádat o připojení k libovolnému zařízení ve vaší místní síti. Pokud je vypnutá, weby se k zařízením ve vaší místní síti připojit nemohou.</translation>
+<translation id="2536779053640817375">Tentokrát povoleno • Přesná</translation>
 <translation id="2544997614631598250">Tmavý motiv</translation>
 <translation id="2546283357679194313">Soubory cookie a data webů</translation>
 <translation id="2570922361219980984">Přístup k poloze je vypnut také v tomto zařízení. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>

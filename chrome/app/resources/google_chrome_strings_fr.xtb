@@ -189,6 +189,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3047590466164881923">Fermer la boîte de dialogue des commentaires</translation>
 <translation id="306179102415443347">Utilisez le raccourci pour accéder rapidement au Gestionnaire de mots de passe de Google. Vous pouvez déplacer ce raccourci vers le Lanceur d'applications ou l'écran d'accueil de votre ordinateur.</translation>
 <translation id="3065168410429928842">Onglet Chrome</translation>
+<translation id="3073571714401714450">Activer/Désactiver Gemini dans Chrome Dev</translation>
 <translation id="3080151273017101988">Poursuivre l'exécution d'applications en arrière-plan après la fermeture de Google Chrome</translation>
 <translation id="308397506772922478">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Nommer votre profil Chrome</translation>
@@ -378,6 +379,7 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 <translation id="5368118228313795342">Code supplémentaire : <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Elle contrôle également la page qui s'affiche au démarrage de Chrome ou lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="5394833366792865639">Partager un onglet Chrome</translation>
+<translation id="5402307365844630024">Activer/Désactiver Gemini dans Chrome Beta</translation>
 <translation id="5430073640787465221">Le fichier des préférences est endommagé ou n'est pas valide. 
 
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
@@ -429,6 +431,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5941830788786076944">Définir Google Chrome comme navigateur par défaut</translation>
 <translation id="5947104538377036631">Raccourci Chrome</translation>
+<translation id="5960071705175224773">Vos paramètres ont été modifiés par une appli inconnue</translation>
 <translation id="5968400720580217226">Mode IA</translation>
 <translation id="5980111191913430208">Les extensions, les applis et les thèmes provenant de sources inconnues peuvent endommager votre appareil. Chrome recommande de les installer uniquement à partir du <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Téléchargement… <ph name="HOURS" /> heure(s) restante(s)</translation>
@@ -652,6 +655,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8362914115861174987">Langue cible</translation>
 <translation id="8366770919198174997">Réduit les performances, mais rend Chrome plus résistant aux attaques</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
+<translation id="8377158135256176353">Activer/Désactiver Gemini dans Chrome Canary</translation>
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>
 <translation id="8394720698884623075">Les URL sont vérifiées d'après une liste de sites dangereux stockée dans Chrome</translation>
 <translation id="8403038600646341038">Logo Chrome sur un écran d'ordinateur.</translation>
@@ -700,12 +704,14 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8922193594870374009">Pour envoyer un numéro depuis <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="8922998289262614701">Supprimer les données de cette appli de Chrome</translation>
+<translation id="8936233353620149764">Activer/Désactiver Gemini dans Chrome</translation>
 <translation id="8948460679427074738">Cette extension n'a pas publié de pratiques en matière de confidentialité, comme la façon dont elle collecte et utilise les données. Chrome vous recommande de la supprimer.</translation>
 <translation id="8958307504142971576">Vous disposez désormais de plus de fonctionnalités dans Chrome</translation>
 <translation id="8991530961471831170">Ouvrir Gemini dans Chrome</translation>
 <translation id="8992769679401294069">Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
 <translation id="8999117580775242387">Lorsque HTTPS n'est pas disponible, Chrome utilise une connexion non sécurisée sans vous avertir</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est disponible}=1{Une mise à jour de Chrome est disponible}one{Une mise à jour de Chrome est disponible depuis # jour}other{Une mise à jour de Chrome est disponible depuis # jours}}</translation>
+<translation id="9010418943148193727">Votre moteur de recherche par défaut a été modifié en dehors de Chrome. Pour vous protéger, Chrome l'a réinitialisé.</translation>
 <translation id="9014771989710951291">Plusieurs organisations gèrent Chrome</translation>
 <translation id="9024318700713112071">Définir Chrome comme navigateur par défaut</translation>
 <translation id="9066987883552592250">Fermer Gemini dans Chrome Canary</translation>

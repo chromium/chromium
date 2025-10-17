@@ -7,6 +7,7 @@
 <translation id="1091252999271033193">Ez azt jelenti, hogy a Chromium mindig a mobilwebhelyet kéri majd.</translation>
 <translation id="1115463765356382667">Hajtsa végre az alábbi javasolt műveleteket, hogy a lehető legtöbbet ki tudja hozni a Chromiumból.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
+<translation id="1211450393895337634">Gyorsabban megnyithatja a Chromiumot, amikor iPad eszközén szeretne böngészni.</translation>
 <translation id="1229234641991056119">Használhatja a Safari jelszavait, előzményeit, könyvjelzőit és bankkártyáit a Chromiumban</translation>
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
 <translation id="1260702988262336471">A Chromium-menü megnyitása</translation>
@@ -28,6 +29,7 @@
 <translation id="1553657876656159572">Önnek készült egyéni feed. Tartalmaz híreket, sportot és időjárást.</translation>
 <translation id="1561849081734670621">Ha le szeretné tiltani a Lezárás módot a Chromiumban, kapcsolja ki iPhone eszközén.</translation>
 <translation id="1569258826720962327">Chromium-műveletek használata iOS rendszeren</translation>
+<translation id="1573441572176948907">A Chromium áthelyezése a Dockra</translation>
 <translation id="159029779861043703">A Chromium biztonságban tartja az Ön bizalmas adatait a Face ID segítségével.</translation>
 <translation id="1591119736686995611">Megnyitja a Chromium laprácsát.</translation>
 <translation id="16001233025397167">A biztonsági ellenőrzés megvédi Önt az adatvédelmi incidensektől, a nem biztonságos webhelyektől és még sok minden mástól. Értesítéseket kaphat a Chromium által észlelt adatvédelmi és biztonsági problémákról.</translation>
@@ -66,6 +68,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="2340423701577464731">Olvasólista-elem felvétele a Chromiumba</translation>
 <translation id="2374627437126809292">A Chromium a Google Térkép segítségével útvonalterveket és helyi információkat jeleníthessen meg az észlelt címekkel kapcsolatban.</translation>
 <translation id="2386292341327187942">Írja be a Modulok keresése mezőbe azt, hogy Chromium.</translation>
+<translation id="2389827884654658221">Gyorsabban hozzáférhet a Chromiumhoz az iPad főképernyőjéről.</translation>
 <translation id="2426113998523353159">Szervezete megköveteli a bejelentkezést a Chromium használatához.</translation>
 <translation id="2450140762465183767">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="2459183986985456602">A legutóbbi lap megnyitása a Chromiumban.</translation>
@@ -74,11 +77,15 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="2485774047568879945">Állítsa be a Chromiumot alapértelmezett böngészőként, hogy könnyedén megoszthassa és megnyithassa a linkeket</translation>
 <translation id="2512597191798760956">Tartsa nyomva a Chromium ikont, majd kattintson a „Főképernyő szerkesztése” lehetőségre.</translation>
 <translation id="2517624234762908348">Chromium-adatok szinkronizálása</translation>
+<translation id="2575968074225731646">Gyorsabban hozzáférhet a Chromiumhoz az iPhone Dockjáról.</translation>
 <translation id="2592940277904433508">A Chromium használatának folytatása</translation>
 <translation id="2607609479243848905">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">Chromium-tipp: A Google Lens segítségével bármire rákereshet, amit csak meglát</translation>
 <translation id="2650312721222849884">Kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chromiumot használja.</translation>
 <translation id="2684230048001240293">A Chromiumot alapértelmezett böngészőként beállítva az összes eszközén szinkronizálhatja a lapfüleket, jelszavakat és fizetési adatokat</translation>
+<translation id="2729836253097154631">Jelentkezzen be a Chromiumba, hogy hozzáférhessen a dolgaihoz</translation>
 <translation id="2730884209570016437">A Chromium nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
+<translation id="2742952311155593352">Már majdnem befejezte a Chromium beállítását!</translation>
 <translation id="2798503587425057129">Megnyitja a Chromium-olvasólistát.</translation>
 <translation id="28276745681323897"><ph name="BEGIN_LINK" />Kezelheti, hogy milyen Chromium-adatokat mentsen<ph name="END_LINK" /> a rendszer az Ön Google-fiókjába.
 
@@ -98,6 +105,7 @@ Az adatokat a Chromium-élmény javítására használó további beállítások
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban. Ide tartozhatnak az előzmények és az automatikus kitöltés adatai is.}other{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban. Ide tartozhatnak az előzmények és az automatikus kitöltés adatai is.}}</translation>
 <translation id="3410395242749598859">Az Ön bizonyos Chromium-adatait még nem mentette a rendszer a(z) <ph name="EMAIL" /> fiókba.
 A fiókváltás előtt várjon néhány percet. Ha most vált fiókot, akkor ezek az adatok törlődnek.</translation>
+<translation id="3420586870838853527">Chromium-tipp: A Biztonságos Böngészés fokozott védelemmel funkció sokat segíthet</translation>
 <translation id="3440830787838130530">A Google Jelszókezelőben egyszerűen és biztonságosan megoszthatja a jelszavak másolatát a családi csoportjával.</translation>
 <translation id="3472200483164753384">A Chromium Canary nem támogatja</translation>
 <translation id="347967311580159871">Az adatokat a Chromium-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
@@ -173,6 +181,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="5131565040785979529">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe be van jelentkezve, és a Chromium használatának módját is.</translation>
 <translation id="5134464247000681876">A Gmail, a Térkép, a YouTube és más alkalmazások linkjeinek megnyitása a Chromiumban</translation>
 <translation id="5203244847421322551">Jelszavak mentése és automatikus kitöltése a Chromiumban</translation>
+<translation id="5218806323985098884">A Chromium újdonságai</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5259423875997548710">Képi elemek keresése a Chromiumban.</translation>
 <translation id="5284913972719948193">Importálja adatait, hogy használhassa jelszavait, előzményeit, könyvjelzőit és bankkártyáit a Chromiumban.</translation>
@@ -194,6 +203,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="5521125884468363740">Jelentkezzen be, és kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chromiumot használja.</translation>
 <translation id="5534584691915394889">Így tud majd Apple Naptár-eseményeket létrehozni a Chromium és a Google Lens használatával.</translation>
 <translation id="5571094606370987472">Megnyitja a Chromium legutóbbi lapjait.</translation>
+<translation id="5596644122344097310">Koppintson ide, hogy a legtöbbet hozhassa ki a Chromiumból iPhone eszközén.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Engedélyezze a Chromiumot</translation>
 <translation id="5664395081284292058">A legutóbbi lap megnyitása a Chromiumban</translation>
@@ -235,11 +245,15 @@ Megjegyzések:
 <translation id="6424492062988593837">A Chromium most még jobb lett! Új verzió áll rendelkezésre.</translation>
 <translation id="6433172051771630690">Tippek arra vonatkozóan, hogy miként hozhatja ki a legtöbbet a Chromiumból.</translation>
 <translation id="65045991564554105">Chromium-könyvjelzők megtekintése.</translation>
+<translation id="6519797228806907665">Gyorsabban hozzáférhet a Chromiumhoz az iPhone főképernyőjéről.</translation>
 <translation id="6538713818758208754">Megnyitja a fizetési módok beállítási oldalát a Chromiumban.</translation>
 <translation id="6540186279384079894">Új lap megnyitása a Chromiumban</translation>
 <translation id="6563921047760808519">További információ arról, <ph name="BEGIN_LINK" />hogyan gondoskodik az Ön adatainak védelméről a Chromium<ph name="END_LINK" />.</translation>
+<translation id="6564769014061914792">Koppintson ide, hogy a legtöbbet hozhassa ki a Chromiumból iPad eszközén.</translation>
+<translation id="6566303693324540692">Chromium-tipp: Áthelyezheti a Chromiumot a főképernyőre</translation>
 <translation id="6574750762636192517">Jelszavak kezelése a Chromiumban</translation>
 <translation id="6590232959690355435">Megnyitja a Chromium-előzmények oldalát.</translation>
+<translation id="6649269674808477353">Gyorsabban megnyithatja a Chromiumot, amikor iPhone eszközén szeretne böngészni.</translation>
 <translation id="6674470628873622334">Új Chromium inkognitó lapot nyit meg.</translation>
 <translation id="6680609900732453726">Az eszközhitelesítéssel megőrizheti böngészése privát jellegét, amikor bezárja a Chromiumot.</translation>
 <translation id="6752854822223394465">A szervezete beállítja a Chromiumot…</translation>
@@ -289,6 +303,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7934404985878918282">A Chromium-olvasólista megtekintése</translation>
 <translation id="7935734571048689933">A Chromium felügyelet alatt áll</translation>
 <translation id="7951793218148208717">Új lapot nyit a Chromiumban.</translation>
+<translation id="7957726318578167662">Használhatja a Chromiumot, amikor üzenetekben vagy más alkalmazásokban linkekre kattint.</translation>
 <translation id="7980860476903281594">A Chromium megosztja a tartózkodási helyét az Ön által engedélyezett webhelyekkel.</translation>
 <translation id="7994322153108931467">Ha hasznos tippeket szeretne kapni a Chromiumra vonatkozóan, kapcsolja be az értesítéseket az iOS beállításai között</translation>
 <translation id="7997159823054171568">A Chromium beállítása alapértelmezett böngészőként</translation>
@@ -324,6 +339,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="8860548555286245440">URL-ek megnyitása a Chromiumban inkognitó módban</translation>
 <translation id="8880024619507699923">Szervezete megköveteli a bejelentkezést a Chromium használatához. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8900052431807804054">A Chromium legerősebb védelmét használhatja</translation>
+<translation id="8908791447256515663">Gyorsabban hozzáférhet a Chromiumhoz az iPad Dockjáról.</translation>
 <translation id="8925569192291721236">Kövesse az árfigyeléssel kapcsolatos friss információkat és a Chromium-tippeket.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban.}other{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban.}}</translation>
 <translation id="8963279154877372067">Annak engedélyezése a Chromium-értesítések számára, hogy értesítést küldjenek az árcsökkenésekről</translation>

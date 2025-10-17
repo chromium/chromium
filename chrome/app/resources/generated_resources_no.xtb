@@ -249,7 +249,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1162479191445552288">Start ved oppstart</translation>
 <translation id="1163931534039071049">&amp;Vis rammekilde</translation>
 <translation id="1164015913575846413">Alt + klikk</translation>
-<translation id="1164286072721995435">Deler den aktive fanen med Gemini hver gang du starter en ny samtale. Du kan når som helst sette delingen av den aktive fanen på pause. Dataene dine brukes ikke til å forbedre generative AI-modeller.</translation>
 <translation id="1164891049599601209">Skrevet inn på et villedende nettsted</translation>
 <translation id="1165039591588034296">Feil</translation>
 <translation id="1166212789817575481">Lukk fanene til høyre</translation>
@@ -538,7 +537,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1353980523955420967">Finner ikke PPD. Sjekk at Chromebooken din er på nettet, og prøv på nytt.</translation>
 <translation id="1354045473509304750">Fortsett å tillate <ph name="HOST" /> å bruke og bevege kameraet ditt</translation>
 <translation id="1354148503392558902">Endrer passordet …</translation>
-<translation id="1354943694624358993">Del alltid den aktive fanen</translation>
 <translation id="1355088139103479645">Vil du slette alle dataene?</translation>
 <translation id="1355088659320425659">Logg og faner</translation>
 <translation id="1356376170199999104">Tillatt – <ph name="PERMISSION_DETAILS" />. Slå på mikrofonen med den fysiske bryteren.</translation>
@@ -2370,7 +2368,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2605668923777146443">Gå til <ph name="LINK_BEGIN" />Innstillinger<ph name="LINK_END" /> for å se alternativene for Better Together.</translation>
 <translation id="2606246518223360146">Knytt sammen dataene</translation>
 <translation id="2606454609872547359">Nei, fortsett uten ChromeVox</translation>
-<translation id="2606568927909309675">Lager automatisk teksting for engelsk lyd og video. Lyden og tekstingen forlater aldri enheten.</translation>
 <translation id="2606890864830643943">Eksporterer diagnostikkdata</translation>
 <translation id="2607101320794533334">Informasjon om enhetens offentlige nøkkel</translation>
 <translation id="2609533306502181883">Undersøk et emne</translation>
@@ -2422,6 +2419,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2636266464805306348">Vindustitler</translation>
 <translation id="2637313651144986786">Søk i faner…</translation>
 <translation id="2637400434494156704">Feil PIN-kode. Du har ett forsøk igjen.</translation>
+<translation id="263796568413910992">Spør <ph name="SEARCH_ENGINE_NAME" />, eller skriv inn en nettadresse</translation>
 <translation id="2638662041295312666">Påloggingsbilde</translation>
 <translation id="2640299212685523844">Bruk GTK</translation>
 <translation id="264083724974021997">Koble til telefonen din – dialogboks</translation>
@@ -5772,7 +5770,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4956593309300508411">Vil du slutte å dele?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Vil du lagre dette i en mappe bare på denne enheten?</translation>
-<translation id="4958916254663453555">Den aktive fanen din deles automatisk når du åpner Gemini i Chrome. Hele innholdet og nettadressen til den aktive fanen sendes til Google.</translation>
 <translation id="4959262764292427323">Passordene er lagret i Google-kontoen din, slik at du kan bruke dem på alle enheter</translation>
 <translation id="4960020053211143927">Støttes ikke av enkelte apper</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5884,7 +5881,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5045367873597907704">Om HID-enheter</translation>
 <translation id="5045550434625856497">Feil passord</translation>
 <translation id="504561833207953641">Åpner i den eksisterende nettleserøkten.</translation>
-<translation id="5047544190872578914">Deler den aktive fanen med Gemini hver gang du starter en ny samtale. Du kan når som helst sette delingen av den aktive fanen på pause.</translation>
 <translation id="504953514574706691">Fanen er ekskludert fra den foreslåtte gruppen</translation>
 <translation id="5050330054928994520">TTT</translation>
 <translation id="5051461727068120271">Last ned ubekreftet fil</translation>
@@ -6402,6 +6398,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5414836363063783498">Bekrefter …</translation>
 <translation id="5415328625985164836">Dette er et betaprogram. Nå kan du bruke Steam for å spille noen spill på Chromebooken.</translation>
 <translation id="5415497281076257439">Setning</translation>
+<translation id="5415871492522952905">Du får loggen din og fanene dine på alle enhetene dine, slik at du kan fortsette med det du holdt på med</translation>
 <translation id="5417293056300086453">Dette nettstedet kan bruke identifikatorer til å spille av beskyttet innhold.</translation>
 <translation id="5417312524372586921">Nettlesertemaer</translation>
 <translation id="541737483547792035">Forstørr skjermen</translation>
@@ -6612,6 +6609,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5555760010546505198">Innstillinger for fargeinvertering, fargekorrigering, lupe og skjerm</translation>
 <translation id="555604722231274592">Slå på <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
+<translation id="555671485580955310">Synkroniser logg og faner</translation>
 <translation id="5558129378926964177">Zoom &amp;inn</translation>
 <translation id="5558594314398017686">OS-standard (når dette er tilgjengelig)</translation>
 <translation id="5559311991468302423">Slett adressen</translation>
@@ -8744,6 +8742,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7055451306017383754">Kunne ikke avvise delingen, fordi et program bruker denne mappen. Mappedelingen blir avvist neste gang Parallels Desktop avsluttes.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}other{# åpne inkognitovinduer}}</translation>
 <translation id="7056526158851679338">&amp;Inspiser enheter</translation>
+<translation id="7057567173736333354">Beskriv bildet</translation>
 <translation id="70577934383983846">Bruk dette passordet på alle enhetene dine</translation>
 <translation id="7058024590501568315">Skjult nettverk</translation>
 <translation id="7059858479264779982">Angi automatisk oppstart</translation>
@@ -9949,6 +9948,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7899720074434636454">Lukk forespørselen om <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">For å sikre at denne enheten kan brukes på en trygg måte, kan organisasjonen din se informasjon om operativsystemet, nettleseren og innstillingene, samt hvilken programvare som er installert på enheten</translation>
 <translation id="7901405293566323524">Telefonstyring</translation>
+<translation id="7901728443188947649">Lag bilder</translation>
 <translation id="7903429136755645827">Klikk for å tilpasse spillkontrollene dine</translation>
 <translation id="7903481341948453971">Bruk skjermlåsen ved utfylling av passord</translation>
 <translation id="7903925330883316394">Verktøy: <ph name="UTILITY_TYPE" /></translation>
@@ -10576,6 +10576,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8310409247509201074"><ph name="NUM" /> faner</translation>
 <translation id="831207808878314375">Definisjon</translation>
 <translation id="8312841338723044391">DIREKTE</translation>
+<translation id="8313308349366087671">Appalternativer</translation>
 <translation id="8314089908545021657">Sammenkoble med en ny telefon</translation>
 <translation id="8314381333424235892">Manglende eller avinstallert utvidelse</translation>
 <translation id="831440797644402910">Kan ikke åpne denne mappen</translation>
@@ -10727,6 +10728,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8413795581997394485">Beskytter mot nettsteder, nedlastinger og utvidelser som anses som farlige. Når du besøker nettsteder, sender Chrome en obfuskert del av nettadressen til Google via en personverntjener som skjuler IP-adressen din. Hvis nettsteder gjør noe mistenkelig, sendes også fullstendige nettadresser og deler av sideinnholdet.</translation>
 <translation id="8413956290606243087">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS?</translation>
 <translation id="8414396119627470038">Logg på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Utforsk hva som helst</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (etui)</translation>
 <translation id="8417065541337558100">Forhåndsvisning av kameraet</translation>
 <translation id="8417548266957501132">Foreldrepassord</translation>
@@ -10735,7 +10737,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8419098111404128271">Søkeresultater for «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="8419144699778179708">Sletter loggen, inkludert loggen i søkefeltet</translation>
 <translation id="8420308167132684745">Endre ordlisteoppføringer</translation>
-<translation id="8421361468937925547">Direkteteksting (kun på engelsk)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">En skuff mangler</translation>
 <translation id="8424250197845498070">Blokkert av Avansert beskyttelse</translation>
@@ -11032,6 +11033,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8637688295594795546">Systemoppdatering er tilgjengelig. Forbereder nedlasting ...</translation>
 <translation id="8638719155236856752">Nettverkstilstand for ChromeOS</translation>
 <translation id="8639635302972078117">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto.</translation>
+<translation id="8639963783467694461">Innstillinger for autofyll</translation>
 <translation id="8640575194957831802">Sist åpnet</translation>
 <translation id="8641946446576357115">Bruk passordene dine på iOS-enhetene dine</translation>
 <translation id="8642577642520207435">Kameratillatelse for <ph name="APP_NAME" /></translation>

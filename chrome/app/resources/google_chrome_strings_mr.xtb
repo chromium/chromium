@@ -188,6 +188,7 @@
 <translation id="3047590466164881923">फीडबॅक डायलॉग बंद करा</translation>
 <translation id="306179102415443347">Google Password Manager वर झटपट जाण्यासाठी तुमचा शॉर्टकट वापरा. तुम्ही तुमचा शॉर्टकट तुमच्या कॉंप्युटरच्या होम स्क्रीनवर किंवा अ‍ॅप लाँचरवर हलवू शकता.</translation>
 <translation id="3065168410429928842">Chrome टॅब</translation>
+<translation id="3073571714401714450">Chrome डेव्हलपर मधील Gemini टॉगल करा</translation>
 <translation id="3080151273017101988">जेव्हा Google Chrome बंद असेल तेव्हा पार्श्वभूमीत ॲप्लिकेशन चालणे सुरू ठेवा</translation>
 <translation id="308397506772922478">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा हटवणे<ph name="END_LINK" /> हे करा</translation>
 <translation id="3100998948628680988">तुमच्या Chrome प्रोफाइलला नाव द्या</translation>
@@ -376,6 +377,7 @@
 <translation id="5368118228313795342">अतिरिक्त कोड: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">तुम्ही Chrome सुरू करता किंवा तुम्ही ओम्निबॉक्समधून शोध घेता तेव्हा कोणते पेज दाखवावे हेदेखील ते नियंत्रित करते.</translation>
 <translation id="5394833366792865639">Chrome टॅब शेअर करा</translation>
+<translation id="5402307365844630024">Chrome बीटा मधील Gemini टॉगल करा</translation>
 <translation id="5430073640787465221">तुमची प्राधान्ये फाइल दूषित किंवा चुकीचे आहेत.
 
 Google Chrome तुमची सेटिंग्ज पुन्हा मिळवू शकत नाही.</translation>
@@ -427,6 +429,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5941711191222866238">कमी करा</translation>
 <translation id="5941830788786076944">Google Chromeला डीफॉल्ट ब्राउझर बनवा</translation>
 <translation id="5947104538377036631">Chrome शॉर्टकट</translation>
+<translation id="5960071705175224773">अज्ञात ॲपने तुमची सेटिंग्ज बदलली आहेत</translation>
 <translation id="5968400720580217226">AI मोड</translation>
 <translation id="5980111191913430208">अज्ञात स्रोतांकडील एक्स्टेंशन, अ‍ॅप्स आणि थीम तुमच्या डिव्हाइसला हानी पोहोचवू शकतात. Chrome फक्त <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मधून ते इंस्टॉल करण्याची शिफारस करते</translation>
 <translation id="6003112304606738118">डाउनलोड करत आहे... <ph name="HOURS" /> तास शिल्लक आहे(आहेत)</translation>
@@ -649,6 +652,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8362914115861174987">यामध्ये भाषांतर करा</translation>
 <translation id="8366770919198174997">परफॉर्मन्स कमी करते, पण त्यामुळे Chrome ची हल्ले रोखण्याची क्षमता वाढते</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्व हक्क राखीव.</translation>
+<translation id="8377158135256176353">Chrome कॅनरी मधील Gemini टॉगल करा</translation>
 <translation id="8387459386171870978">Chrome वापरणे पुढे सुरू ठेवा</translation>
 <translation id="8394720698884623075">Chrome मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीसह URLs तपासते</translation>
 <translation id="8403038600646341038">कॉंप्युटर स्क्रीनवरील Chrome लोगो.</translation>
@@ -697,12 +701,14 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8914504000324227558">Chrome रीलाँच करा</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> वरून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा.</translation>
 <translation id="8922998289262614701">Chrome वरून या ॲपचा डेटा काढून टाका</translation>
+<translation id="8936233353620149764">Chrome मधील Gemini टॉगल करा</translation>
 <translation id="8948460679427074738">या एक्स्टेंशनने गोपनीयता व्यवहार प्रकाशित केलेले नाहीत, जसे की ते डेटा कसे गोळा करते आणि वापरते. तुम्ही ते काढून टाकावे अशी Chrome शिफारस करते.</translation>
 <translation id="8958307504142971576">तुमच्याकडे आता Chrome मध्ये आणखी वैशिष्ट्ये उपलब्ध आहेत</translation>
 <translation id="8991530961471831170">Chrome मधील Gemini उघडा</translation>
 <translation id="8992769679401294069">तुमचा डेटा हा तुमच्या पासफ्रेझसह एन्क्रिप्ट केला गेला आहे. तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तो एंटर करा.</translation>
 <translation id="8999117580775242387">HTTPS उपलब्ध नसल्यास, Chrome तुम्हाला चेतावणी न देता असुरक्षित कनेक्शन वापरेल</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome अपडेट उपलब्ध आहे}=1{Chrome अपडेट उपलब्ध आहे}other{Chrome अपडेट # दिवसांसाठी उपलब्ध आहे}}</translation>
+<translation id="9010418943148193727">तुमचे डीफॉल्ट सर्च इंजीन Chrome च्या बाहेरून बदलले गेले आहे. तुमचे संरक्षण करण्यासाठी, Chrome ने ते रीसेट केले आहे.</translation>
 <translation id="9014771989710951291">एकाहून अधिक संस्था Chrome व्यवस्थापित करतात</translation>
 <translation id="9024318700713112071">Chrome तुमचा डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="9066987883552592250">Chrome कॅनरी मधील Gemini बंद करा</translation>

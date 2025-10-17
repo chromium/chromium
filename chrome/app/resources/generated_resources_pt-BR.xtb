@@ -249,7 +249,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1162479191445552288">Abrir na inicialização</translation>
 <translation id="1163931534039071049">&amp;Exibir código fonte do frame</translation>
 <translation id="1164015913575846413">alt + clique</translation>
-<translation id="1164286072721995435">Compartilha a guia atual com o Gemini sempre que você inicia uma nova conversa. Você pode pausar esse compartilhamento a qualquer momento. Seus dados não são usados para aprimorar os modelos de IA generativa.</translation>
 <translation id="1164891049599601209">Inserida em fraudulento</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1166212789817575481">Fechar guias à direita</translation>
@@ -539,7 +538,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1353980523955420967">Não é possível encontrar o PPD. Verifique se seu Chromebook está on-line e tente novamente.</translation>
 <translation id="1354045473509304750">Continuar permitindo que <ph name="HOST" /> use e mova sua câmera</translation>
 <translation id="1354148503392558902">Mudando senha…</translation>
-<translation id="1354943694624358993">Sempre compartilhar a guia atual</translation>
 <translation id="1355088139103479645">Excluir todos os dados?</translation>
 <translation id="1355088659320425659">Histórico e guias</translation>
 <translation id="1356376170199999104">Concedida (<ph name="PERMISSION_DETAILS" />). Ative o microfone usando o interruptor físico.</translation>
@@ -2377,7 +2375,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2605668923777146443">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para ver suas opções do Better Together.</translation>
 <translation id="2606246518223360146">Vincular dados</translation>
 <translation id="2606454609872547359">Não, continuar sem o ChromeVox</translation>
-<translation id="2606568927909309675">Cria legendas automaticamente para áudios e vídeos em inglês. O áudio e as legendas nunca deixam o dispositivo.</translation>
 <translation id="2606890864830643943">Como exportar dados de diagnóstico</translation>
 <translation id="2607101320794533334">Informações da chave pública do requerente</translation>
 <translation id="2609533306502181883">Pesquise um tema</translation>
@@ -2429,6 +2426,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2636266464805306348">Títulos de janelas</translation>
 <translation id="2637313651144986786">Pesquisar guias…</translation>
 <translation id="2637400434494156704">PIN incorreto. Você tem apenas uma tentativa restante.</translation>
+<translation id="263796568413910992">Pergunte ao <ph name="SEARCH_ENGINE_NAME" /> ou digite um URL</translation>
 <translation id="2638662041295312666">Imagem de login</translation>
 <translation id="2640299212685523844">Usar GTK</translation>
 <translation id="264083724974021997">Conecte-se ao seu smartphone - Caixa de diálogo</translation>
@@ -5782,7 +5780,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4956593309300508411">Parar de compartilhar?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">Salvar em uma pasta apenas neste dispositivo?</translation>
-<translation id="4958916254663453555">A guia atual será compartilhada automaticamente quando você abrir o Gemini no Chrome. O conteúdo e o URL da guia atual são enviados ao Google.</translation>
 <translation id="4959262764292427323">As senhas são salvas na sua Conta do Google para que você possa usá-las em qualquer dispositivo</translation>
 <translation id="4960020053211143927">Indisponível em alguns apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
@@ -5894,7 +5891,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5045367873597907704">Sobre dispositivos HID</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="504561833207953641">Abrindo em uma sessão de navegador existente.</translation>
-<translation id="5047544190872578914">Compartilha a guia atual com o Gemini sempre que você inicia uma nova conversa. Você pode pausar esse compartilhamento a qualquer momento.</translation>
 <translation id="504953514574706691">A guia foi excluída do grupo sugerido</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Baixar arquivo não verificado</translation>
@@ -6414,6 +6410,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5414836363063783498">Verificando...</translation>
 <translation id="5415328625985164836">Este é um programa Beta. Agora você pode usar o Steam para jogar no Chromebook.</translation>
 <translation id="5415497281076257439">Frase</translation>
+<translation id="5415871492522952905">Seu histórico e suas guias vão estar em todos os dispositivos para que você possa continuar o que estava fazendo</translation>
 <translation id="5417293056300086453">Este site pode usar identificadores para abrir conteúdo protegido.</translation>
 <translation id="5417312524372586921">Temas do navegador</translation>
 <translation id="541737483547792035">Ampliação da tela</translation>
@@ -6624,6 +6621,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5555760010546505198">Configurações de inversão de cores, correção de cor, lupa e tela</translation>
 <translation id="555604722231274592">Ativar <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Recarregar</translation>
+<translation id="555671485580955310">Sincronizar histórico e guias</translation>
 <translation id="5558129378926964177">Aumentar z&amp;oom</translation>
 <translation id="5558594314398017686">Padrão do SO (quando disponível)</translation>
 <translation id="5559311991468302423">Excluir endereço</translation>
@@ -8759,6 +8757,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7055451306017383754">Não foi possível cancelar o compartilhamento porque um aplicativo está usando a pasta. O compartilhamento da pasta será cancelado na próxima vez que o Parallels Desktop for encerrado.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Anônima}one{# janela anônima aberta}other{# janelas anônimas abertas}}</translation>
 <translation id="7056526158851679338">&amp;Inspecionar dispositivos</translation>
+<translation id="7057567173736333354">Descreva sua imagem</translation>
 <translation id="70577934383983846">Usar essa senha em todos os seus dispositivos</translation>
 <translation id="7058024590501568315">Rede oculta</translation>
 <translation id="7059858479264779982">Definir para abertura automática</translation>
@@ -9964,6 +9963,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7899720074434636454">Dispensar pedido da extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">Para garantir que o dispositivo seja usado com segurança, sua organização pode acessar informações sobre o sistema operacional, o navegador, as configurações e qual o software instalado no dispositivo.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901728443188947649">Criar imagens</translation>
 <translation id="7903429136755645827">Clique para personalizar os controles do jogo</translation>
 <translation id="7903481341948453971">Usar o bloqueio de tela ao preencher senhas</translation>
 <translation id="7903925330883316394">Utilitário: <ph name="UTILITY_TYPE" /></translation>
@@ -10591,6 +10591,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8310409247509201074"><ph name="NUM" /> guias</translation>
 <translation id="831207808878314375">Definição</translation>
 <translation id="8312841338723044391">AO VIVO</translation>
+<translation id="8313308349366087671">Opções do aplicativo</translation>
 <translation id="8314089908545021657">Parear com novo smartphone</translation>
 <translation id="8314381333424235892">Extensão ausente ou não instalada</translation>
 <translation id="831440797644402910">Não é possível abrir esta pasta</translation>
@@ -10742,6 +10743,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8413795581997394485">Protege contra extensões, sites e downloads perigosos. Quando você acessa um site, o Chrome envia ao Google apenas uma parte ofuscada do URL por um servidor de privacidade que oculta seu endereço IP. Se um site fizer algo suspeito, o URL completo e partes do conteúdo da página também serão enviados.</translation>
 <translation id="8413956290606243087">Você quer ativar o ChromeVox, o leitor de tela integrado do ChromeOS?</translation>
 <translation id="8414396119627470038">Fazer login em <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">Pesquise sobre qualquer assunto</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estojo)</translation>
 <translation id="8417065541337558100">Visualização da sua câmera</translation>
 <translation id="8417548266957501132">Senha do familiar responsável</translation>
@@ -10750,7 +10752,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8419098111404128271">Resultados de pesquisa para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8419144699778179708">Exclui o histórico, inclusive da caixa de pesquisa</translation>
 <translation id="8420308167132684745">Editar entradas do dicionário</translation>
-<translation id="8421361468937925547">Legenda instantânea (somente em inglês)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Bandeja ausente</translation>
 <translation id="8424250197845498070">Bloqueado pelo recurso Proteção Avançada</translation>
@@ -11047,6 +11048,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8637688295594795546">A atualização do sistema está disponível. Preparando para fazer download...</translation>
 <translation id="8638719155236856752">Integridade da rede do ChromeOS</translation>
 <translation id="8639635302972078117">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar a criança e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para a criança, esses dados poderão ser salvos na Conta do Google dela.</translation>
+<translation id="8639963783467694461">Configurações de preenchimento automático</translation>
 <translation id="8640575194957831802">Aberto pela última vez</translation>
 <translation id="8641946446576357115">Usar suas senhas nos dispositivos iOS</translation>
 <translation id="8642577642520207435">Permissão da câmera para <ph name="APP_NAME" /></translation>

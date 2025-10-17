@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">Chcete reštartovať Chrome?</translation>
 <translation id="1428770807407000502">Chcete vypnúť synchronizáciu?</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
-<translation id="1433478348197382180">Režim čítania</translation>
 <translation id="1435593198351412143">Automaticky otvárať súbory PDF</translation>
 <translation id="1437543266176261764">Spustené v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizujte svoje sledované produkty v Záložkách</translation>
@@ -370,7 +369,6 @@
 <translation id="2718352093833049315">Len s Wi‑Fi</translation>
 <translation id="2718846868787000099">Weby, ktoré navštevujete, môžu vidieť vaše predvoľby a zobrazovať tak obsah vo vašich preferovaných jazykoch.</translation>
 <translation id="2723001399770238859">zvuk</translation>
-<translation id="2734335652257251631">Zobraziť režim čítania</translation>
 <translation id="2739887572830526131">Ponechajte si túto skupinu, aby ste mohli neskôr pridať karty, alebo ju odstráňte (ak ju už nepotrebujete).</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nie je momentálne k dispozícii.</translation>
 <translation id="2760805590727089264">MM / RR</translation>
@@ -1139,6 +1137,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6232535412751077445">Ak povolíte možnosť Nesledovať, k odosielaným dátam prehliadania sa pridá žiadosť. Akýkoľvek účinok závisí od toho, či bude web na žiadosť reagovať, a tiež od interpretácie žiadosti.
 
 Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobrazia reklamy, ktoré nie sú založené na ostatných weboch, ktoré ste navštívili. Mnoho webov bude stále zhromažďovať a používať vaše dáta prehliadania, napríklad na zlepšenie zabezpečenia, poskytovanie obsahu, reklám a odporúčaní a na generovanie štatistík prehľadov.</translation>
+<translation id="623755660902014047">Režim čítania</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>
 <translation id="6248988683584659830">Vyhľadajte nastavenia</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, viackrát vybraná pripnutá karta inkognito</translation>
@@ -1397,7 +1396,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7221869452894271364">Obnoviť túto stránku</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Na stiahnutie čaká 1 položka}few{Na stiahnutie čakajú # položky}many{# downloads pending}other{Na stiahnutie čaká # položiek}}</translation>
 <translation id="7230064152164845085">Prepnúť na inkognito</translation>
-<translation id="7230836263524391273">Skryť režim čítania</translation>
 <translation id="7237724030342645845">Správca hesiel Google prestal fungovať</translation>
 <translation id="72415438529550637">Návrh hesla je zavretý</translation>
 <translation id="7248671827512403053">Aplikácia</translation>
@@ -1732,7 +1730,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="867914734596684889">Zobrazenie alebo skrytie panela so záložkami</translation>
 <translation id="8683039184091909753">obrázok</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, vybraná karta</translation>
-<translation id="8693232767599693749">Chcete zobraziť režim čítania?</translation>
 <translation id="8697753151306746444">Zdieľajte okno alebo obrazovku</translation>
 <translation id="8699120352855309748">Neponúkať preklad týchto jazykov</translation>
 <translation id="8712637175834984815">Dobre</translation>

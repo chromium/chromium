@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">Želite znova zagnati Chrome?</translation>
 <translation id="1428770807407000502">Želite izklopiti sinhronizacijo?</translation>
 <translation id="1430915738399379752">Natisni</translation>
-<translation id="1433478348197382180">Način za branje</translation>
 <translation id="1435593198351412143">Samodejno odpiranje datotek PDF</translation>
 <translation id="1437543266176261764">Izvaja se v aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizirajte spremljane izdelke v zaznamkih.</translation>
@@ -370,7 +369,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2718352093833049315">Samo v omrežju Wi-Fi</translation>
 <translation id="2718846868787000099">Če želite prikazati vsebino v prednostnih jezikih, lahko spletna mesta, ki jih obiščete, vidijo vaše nastavitve.</translation>
 <translation id="2723001399770238859">zvok</translation>
-<translation id="2734335652257251631">Prikaži način za branje</translation>
 <translation id="2739887572830526131">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo izbrišite, če je ne potrebujete več.</translation>
 <translation id="2742373789128106053">Ponudnik identitete <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> trenutno ni na voljo.</translation>
 <translation id="2760805590727089264">MM/LL</translation>
@@ -1139,6 +1137,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6232535412751077445">Če omogočite možnost »Ne sledi«, bo zahteva vključena v vaš promet brskanja. Učinek je odvisen od odziva spletnega mesta na zahtevo in od tega, kako si zahtevo razlaga.
 
 Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažejo oglase, ki ne temeljijo na drugih spletnih mestih, ki ste jih obiskali. Veliko spletnih mest bo še vedno zbiralo in uporabljalo vaše podatke o brskanju, na primer za izboljšanje varnosti, zagotavljanje vsebine, oglasov in priporočil ter za pridobivanje statističnih podatkov za poročanje.</translation>
+<translation id="623755660902014047">Način za branje</translation>
 <translation id="6247557882553405851">Googlov upravitelj gesel</translation>
 <translation id="6248988683584659830">Iskanje nastavitev</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, večkrat izbrani pripeti anonimni zavihek</translation>
@@ -1397,7 +1396,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7221869452894271364">Ponovno naložite to stran</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 prenos na čakanju}one{# prenos na čakanju}two{# prenosa na čakanju}few{# prenosi na čakanju}other{# prenosov na čakanju}}</translation>
 <translation id="7230064152164845085">Preklopi na anonimni način</translation>
-<translation id="7230836263524391273">Skrij način za branje</translation>
 <translation id="7237724030342645845">Googlov upravitelj gesel je nehal delovati</translation>
 <translation id="72415438529550637">Predlog gesla je zaprt.</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
@@ -1732,7 +1730,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="867914734596684889">Prikaz ali skrivanje vrstice z zaznamki</translation>
 <translation id="8683039184091909753">slika</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, izbrani zavihek</translation>
-<translation id="8693232767599693749">Si želite ogledati način za branje?</translation>
 <translation id="8697753151306746444">Namesto tega delite okno ali zaslon</translation>
 <translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>
 <translation id="8712637175834984815">Razumem</translation>

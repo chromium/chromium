@@ -286,6 +286,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Shiko 0 komente}=1{Shiko 1 koment}other{Shiko të # komentet}}</translation>
 <translation id="1458059624921545588">Njerëzit dhe shoqëria</translation>
 <translation id="1458140305240870199">Veshje të brendshme</translation>
+<translation id="1458770162980644530">Ekrani i kushteve të shërbimit për metodën "Bli tani, paguaj më vonë". Tastiera është e fshehur.</translation>
 <translation id="1459693405370120464">Moti</translation>
 <translation id="1461041542809785877">Cilësia e funksionimit</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2922,6 +2923,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5817918615728894473">Çifto</translation>
 <translation id="5826507051599432481">Emri i zakonshëm (CN)</translation>
 <translation id="5830698870816298009">Përdorimi dhe lëvizja e kamerës</translation>
+<translation id="5831217499016131155">Portofoli i Google</translation>
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5832976493438355584">I kyçur</translation>
 <translation id="5837220895135257862">Liro hapësirë në "<ph name="CLOUD_PROVIDER" />" para se të provosh përsëri</translation>
@@ -3645,6 +3647,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6997288673234694149">Pajisje për bejsboll dhe softboll</translation>
 <translation id="6998512609912910179">Plotësoji formularët më shpejt</translation>
 <translation id="6999480632062519056">Kurse fitnesi dhe trajnime personale</translation>
+<translation id="7002897669829306463">Adresa e shtëpisë, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Sixhade dhe tapete</translation>
 <translation id="7003322000677139268">Pjesë dhe aksesorë për automjete</translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
@@ -4210,6 +4213,8 @@ Detaje shtesë:
 <translation id="7916162853251942238">Baza fleksografike</translation>
 <translation id="791698251820376781">Organizata jote nuk lejon që të identifikohesh</translation>
 <translation id="7926503317156566022">Industria e aviacionit</translation>
+<translation id="7930282586031445870">Ekrani i kushteve të shërbimit për metodën "Bli tani, paguaj më vonë" u mbyll.</translation>
+<translation id="7932035970207573919">Adresa e punës, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Të përditësohet adresa?</translation>
 <translation id="7932579305932748336">Veshje</translation>
 <translation id="79338296614623784">Fut një numër të vlefshëm telefoni</translation>
@@ -4622,6 +4627,7 @@ Detaje shtesë:
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Çfarë të dhënash përdoren:<ph name="END_BOLD" /> Aktiviteti yt në një sajt që viziton duke përdorur Chrome në këtë pajisje.</translation>
 <translation id="8601456038554914806">Pajisje për sporte ujore</translation>
 <translation id="8601782593888534566">Fantashkenca dhe fantazia</translation>
+<translation id="8604103095921958091">Ekrani i kushteve të shërbimit për metodën "Bli tani, paguaj më vonë" u hap në lartësi të plotë.</translation>
 <translation id="8606988009912891950">Temat e reklamave ndihmojnë sajtet të të shfaqin reklama të përshtatshme teksa mbrojnë historikun e shfletimit dhe identitetin tënd. Chrome mund të shënojë tema interesi bazuar në historikun më të fundit të shfletimit. Më vonë, një sajt që ti viziton mund t'i kërkojë Chrome tema të përshtatshme për të personalizuar reklamat që ti shikon.</translation>
 <translation id="8612919051706159390">Komunitete online</translation>
 <translation id="8617269623452051934">përdorimi i pajisjes sate</translation>
@@ -4862,6 +4868,7 @@ Detaje shtesë:
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> dëshiron të kërkojë dhe të lidhet me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="9046864189129893978">Mikrofonat (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Ekrani i kushteve të shërbimit për metodën "Bli tani, paguaj më vonë" u hap në gjysmë lartësi.</translation>
 <translation id="9047528041803621289">Parazgjedhja jote të lejon të kërkosh në ueb. Mund ta ndryshosh atë te cilësimet.</translation>
 <translation id="9048035366624198823">Këto veprime kërkojnë që politika <ph name="POLICY_NAME" /> të caktohet si "<ph name="POLICY_VALUE" />": <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 inç</translation>

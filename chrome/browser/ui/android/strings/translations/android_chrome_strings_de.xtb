@@ -109,7 +109,6 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="1419753403124156396">Chrome neu starten?</translation>
 <translation id="1428770807407000502">Synchronisierung deaktivieren?</translation>
 <translation id="1430915738399379752">Drucken</translation>
-<translation id="1433478348197382180">Lesemodus</translation>
 <translation id="1435593198351412143">PDFs automatisch öffnen</translation>
 <translation id="1437543266176261764">Wird ausgeführt in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Du kannst deine beobachteten Produkte in den Lesezeichen organisieren</translation>
@@ -370,7 +369,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2718846868787000099">Zum Anzeigen von Inhalten in deinen bevorzugten Sprachen müssen Websites, die du besuchst, deine Einstellungen abrufen können</translation>
 <translation id="2723001399770238859">Audio</translation>
-<translation id="2734335652257251631">Lesemodus anzeigen</translation>
 <translation id="2739887572830526131">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie löschen, wenn du sie nicht mehr benötigst.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ist momentan nicht verfügbar.</translation>
 <translation id="2760805590727089264">MM/JJ</translation>
@@ -1139,6 +1137,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6232535412751077445">Wenn du das Kästchen „Do Not Track“ anklickst, wird mit deinen Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
 
 Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht darauf basiert, welche Websites du zuvor besucht hast. Viele Websites erfassen weiterhin deine Browserdaten und verwenden sie, um beispielsweise die Sicherheit zu verbessern oder Inhalte, Werbeanzeigen und Empfehlungen bereitzustellen und Statistiken für Berichte zu erstellen.</translation>
+<translation id="623755660902014047">Lesemodus</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6248988683584659830">In Einstellungen suchen</translation>
 <translation id="6250847299079540062">„<ph name="TAB_TITLE" />“, mehrfach ausgewählter angepinnter Inkognitotab</translation>
@@ -1397,7 +1396,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7221869452894271364">Diese Seite neu laden</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 Download ausstehend}other{# Downloads ausstehend}}</translation>
 <translation id="7230064152164845085">In den Inkognitomodus wechseln</translation>
-<translation id="7230836263524391273">Lesemodus ausblenden</translation>
 <translation id="7237724030342645845">Der Google Passwortmanager wurde pausiert</translation>
 <translation id="72415438529550637">Passwortvorschlag geschlossen.</translation>
 <translation id="7248671827512403053">App</translation>
@@ -1732,7 +1730,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="867914734596684889">Lesezeichenleiste ein- oder ausblenden</translation>
 <translation id="8683039184091909753">Bild</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ausgewählter Tab</translation>
-<translation id="8693232767599693749">Lesemodus anzeigen?</translation>
 <translation id="8697753151306746444">Stattdessen Fenster oder Bildschirm freigeben</translation>
 <translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
 <translation id="8712637175834984815">Ok</translation>

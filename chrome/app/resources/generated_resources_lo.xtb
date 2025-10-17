@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">ເປີດໃຊ້ຕອນສະຕາດອັບ</translation>
 <translation id="1163931534039071049">ເບິ່ງແຫຼ່ງທີ່ມາຂອບ</translation>
 <translation id="1164015913575846413">alt + ຄລິກ</translation>
-<translation id="1164286072721995435">ແບ່ງປັນແຖບປັດຈຸບັນກັບ Gemini ທຸກເທື່ອທີ່ທ່ານເລີ່ມການສົນທະນາໃໝ່. ທ່ານສາມາດຢຸດການແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໄວ້ຊົ່ວຄາວໄດ້ທຸກເວລາ. ລະບົບບໍ່ໄດ້ໃຊ້ຂໍ້ມູນຂອງທ່ານໃນການປັບປຸງໂມເດວ AI ສ້າງເນື້ອຫາ.</translation>
 <translation id="1164891049599601209">ມີການປ້ອນໃນເວັບໄຊຫຼອກລວງ</translation>
 <translation id="1165039591588034296">ຜິດພາດ</translation>
 <translation id="1166212789817575481">ປິດແຖບໄປທາງຂວາ</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">ບໍ່ສາມາດຊອກເຫັນ PPD. ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າ Chromebook ຂອງທ່ານອອນລາຍຢູ່ ແລະ ລອງອີກຄັ້ງ.</translation>
 <translation id="1354045473509304750">ສືບຕໍ່ອະນຸຍາດໃຫ້ <ph name="HOST" /> ໃຊ້ ແລະ ຍ້າຍກ້ອງຂອງທ່ານ</translation>
 <translation id="1354148503392558902">ກຳລັງປ່ຽນລະຫັດຜ່ານ...</translation>
-<translation id="1354943694624358993">ແບ່ງປັນແຖບປັດຈຸບັນຕະຫຼອດເວລາ</translation>
 <translation id="1355088139103479645">ລຶບຂໍ້ມູນທັງໝົດບໍ?</translation>
 <translation id="1355088659320425659">ປະຫວັດ ແລະ ແຖບ</translation>
 <translation id="1356376170199999104">ອະນຸຍາດ – <ph name="PERMISSION_DETAILS" />. ເປີດໄມໂຄຣໂຟນໂດຍໃຊ້ສະວິດແທ້.</translation>
@@ -2375,7 +2373,6 @@
 <translation id="2605668923777146443">ໄປຫາ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າ<ph name="LINK_END" /> ເພື່ອເບິ່ງຕົວເລືອກຂອງທ່ານສຳລັບ Better Together.</translation>
 <translation id="2606246518223360146">ລິ້ງຂໍ້ມູນ</translation>
 <translation id="2606454609872547359">ບໍ່, ສືບຕໍ່ໂດຍບໍ່ໃຊ້ ChromeVox</translation>
-<translation id="2606568927909309675">ສ້າງຄຳບັນຍາຍໂດຍອັດຕະໂນມັດສຳລັບສຽງ ແລະ ວິດີໂອພາສາອັງກິດ. ສຽງ ແລະ ຄຳບັນຍາຍຈະບໍ່ອອກຈາກອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="2606890864830643943">ກຳລັງສົ່ງອອກຂໍ້ມູນການວິນິໄສ</translation>
 <translation id="2607101320794533334">ຂໍ້ມູນປຸ່ມທົ່ວໄປຂອງຜູ້ໄດ້ຮັບ</translation>
 <translation id="2609533306502181883">ຊອກຫາຫົວຂໍ້ຄືນໃໝ່</translation>
@@ -2427,6 +2424,7 @@
 <translation id="2636266464805306348">ຊື່ໜ້າຈໍ</translation>
 <translation id="2637313651144986786">ຊອກຫາແຖບ...</translation>
 <translation id="2637400434494156704">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານຍັງເຫຼືອຄວາມພະຍາຍາມອີກໜຶ່ງຄັ້ງ.</translation>
+<translation id="263796568413910992">ຖາມ <ph name="SEARCH_ENGINE_NAME" /> ຫຼື ພິມ URL</translation>
 <translation id="2638662041295312666">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2640299212685523844">ໃຊ້ GTK</translation>
 <translation id="264083724974021997">ເຊື່ອມຕໍ່ກັບໂທລະສັບຂອງທ່ານ - ກ່ອງໂຕ້ຕອບ</translation>
@@ -5780,7 +5778,6 @@
 <translation id="4956593309300508411">ຢຸດການແບ່ງປັນບໍ?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">ບັນທຶກໃສ່ໂຟນເດີຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນບໍ?</translation>
-<translation id="4958916254663453555">ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໂດຍອັດຕະໂນມັດເມື່ອທ່ານເປີດ Gemini ໃນ Chrome. ໂດຍລະບົບຈະສົ່ງເນື້ອຫາ ແລະ URL ເຕັມຂອງແຖບປັດຈຸບັນໄປຫາ Google.</translation>
 <translation id="4959262764292427323">ລະຫັດຜ່ານຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ພວກມັນໄດ້ໃນອຸປະກອນຕ່າງໆ</translation>
 <translation id="4960020053211143927">ບາງແອັບບໍ່ຮອງຮັບ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5892,7 +5889,6 @@
 <translation id="5045367873597907704">ກ່ຽວກັບອຸປະກອນ HID</translation>
 <translation id="5045550434625856497">ລະ​ຫັດ​ຜ່ານ​ບໍ່​ຖືກ​ຕ້ອງ​</translation>
 <translation id="504561833207953641">ກຳລັງເປີດໃນເຊດຊັນໂປຣແກຣມທ່ອງເວັບທີ່ມີຢູ່ແລ້ວ.</translation>
-<translation id="5047544190872578914">ແບ່ງປັນແຖບປັດຈຸບັນກັບ Gemini ທຸກເທື່ອທີ່ທ່ານເລີ່ມການສົນທະນາໃໝ່. ທ່ານສາມາດຢຸດການແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໄວ້ຊົ່ວຄາວໄດ້ທຸກເວລາ.</translation>
 <translation id="504953514574706691">ແຖບທີ່ຖືກຍົກເວັ້ນຈາກກຸ່ມທີ່ແນະນຳ</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">ດາວໂຫຼດໄຟລ໌ທີ່ບໍ່ໄດ້ຮັບການຢັ້ງຢືນ</translation>
@@ -6411,6 +6407,7 @@
 <translation id="5414836363063783498">ກໍາລັງຢືນ​ຢັນ...</translation>
 <translation id="5415328625985164836">ນີ້ແມ່ນໂປຣແກຣມເບຕ້າ. ຕອນນີ້ທ່ານສາມາດໃຊ້ Steam ເພື່ອຫຼິ້ນບາງເກມຢູ່ Chromebook ຂອງທ່ານໄດ້ແລ້ວ.</translation>
 <translation id="5415497281076257439">ວະລີ</translation>
+<translation id="5415871492522952905">ທ່ານຈະມີປະຫວັດ ແລະ ແຖບຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ ເພື່ອໃຫ້ທ່ານສາມາດສືບຕໍ່ສິ່ງທີ່ທ່ານເຮັດຢູ່</translation>
 <translation id="5417293056300086453">ເວັບໄຊນີ້ສາມາດໃຊ້ຕົວລະບຸເພື່ອຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງໄດ້.</translation>
 <translation id="5417312524372586921">ສີສັນໜ້າຕາໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="541737483547792035">ຂະຫຍາຍໜ້າຈໍ</translation>
@@ -6621,6 +6618,7 @@
 <translation id="5555760010546505198">ການປີ້ນສີ, ການແກ້ໄຂສີ, ແວ່ນຂະຫຍາຍ ແລະ ການຕັ້ງຄ່າການສະແດງຜົນ</translation>
 <translation id="555604722231274592">ເປີດການນຳໃຊ້ <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
+<translation id="555671485580955310">ຊິ້ງປະຫວັດ ແລະ ແຖບ</translation>
 <translation id="5558129378926964177">ຊູມເຂົ້າ</translation>
 <translation id="5558594314398017686">ຄ່າເລີ່ມຕົ້ນຂອງລະບົບປະຕິບັດການ (ຫາກມີ)</translation>
 <translation id="5559311991468302423">ລຶບທີ່ຢູ່</translation>
@@ -10584,6 +10582,7 @@
 <translation id="8310409247509201074"><ph name="NUM" /> ແຖບ</translation>
 <translation id="831207808878314375">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="8312841338723044391">ສົດ</translation>
+<translation id="8313308349366087671">ຕົວເລືອກແອັບພລິເຄຊັນ</translation>
 <translation id="8314089908545021657">ຈັບຄູ່ກັບໂທລະສັບໃໝ່</translation>
 <translation id="8314381333424235892">ສ່ວນຂະຫຍາຍບໍ່ເຫັນ ຫຼື ບໍ່ໄດ້ຕິດຕັ້ງ</translation>
 <translation id="831440797644402910">ບໍ່ສາມາດເປີດໂຟນເດີນີ້ໄດ້</translation>
@@ -10744,7 +10743,6 @@
 <translation id="8419098111404128271">ຜົນການຊອກຫາສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="8419144699778179708">ລຶບປະຫວັດ, ຮວມທັງສິ່ງທີ່ຢູ່ໃນກ່ອງຊອກຫາ</translation>
 <translation id="8420308167132684745">ແກ້ໄຂລາຍການຂອງພົດຈະນານຸກົມ</translation>
-<translation id="8421361468937925547">ຄຳບັນຍາຍສົດ (ພາສາອັງກິດເທົ່ານັ້ນ)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">ບໍ່ມີຖາດກະດາດ</translation>
 <translation id="8424250197845498070">ບລັອກໄວ້ໂດຍການປົກປ້ອງຂັ້ນສູງ</translation>
@@ -11041,6 +11039,7 @@
 <translation id="8637688295594795546">ມີການອັບເດດລະບົບຢູ່. ກໍາລັງກຽມດາວໂຫຼດ…</translation>
 <translation id="8638719155236856752">ສຸຂະພາບເຄືອຂ່າຍ ChromeOS</translation>
 <translation id="8639635302972078117">ສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການວິເຄາະ. ອຸປະກອນນີ້ກຳລັງສົ່ງຂໍ້ມູນການວິເຄາະ, ຂໍ້ມູນອຸປະກອນ ແລະ ການໃຊ້ແອັບໃຫ້ Google ໂດຍອັດຕະໂນມັດໃນຂະນະນີ້. ຂໍ້ມູນນີ້ຈະບໍ່ຖືກໃຊ້ເພື່ອລະບຸຕົວລູກຂອງທ່ານ ແລະ ຈະຊ່ວຍປັບປຸງຄວາມສະຖຽນຂອງລະບົບ ແລະ ແອັບ ແລະ ການປັບປຸງອື່ນໆ. ບາງຂໍ້ມູນແບບຮວມກັນຍັງຈະຊ່ວຍແອັບ ແລະ ຮຸ້ນສ່ວນຂອງ Google ນຳອີກ ເຊັ່ນ: ຜູ້ພັດທະນາ Android. ຖ້າເປີດການຕັ້ງຄ່າການເຄື່ອນໄຫວເວັບ ແລະ ແອັບເພີ່ມເຕີມສໍາລັບລູກຂອງທ່ານ, ລະບົບອາດຈະບັນທຶກຂໍ້ມູນນີ້ໄວ້ໃນບັນຊີ Google ຂອງເຂົາເຈົ້າ.</translation>
+<translation id="8639963783467694461">ການຕັ້ງຄ່າການຕື່ມອັດຕະໂນມັດ</translation>
 <translation id="8640575194957831802">ເປີດຫຼ້າສຸດ</translation>
 <translation id="8641946446576357115">ໃຊ້ລະຫັດຜ່ານຂອງທ່ານຢູ່ອຸປະກອນ iOS ທ່ານ</translation>
 <translation id="8642577642520207435">ການອະນຸຍາດກ້ອງຖ່າຍຮູບຂອງ <ph name="APP_NAME" /></translation>

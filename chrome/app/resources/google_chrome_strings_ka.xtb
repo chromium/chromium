@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">გამოხმაურების დიალოგური ფანჯრის დახურვა</translation>
 <translation id="306179102415443347">ისარგებლეთ მალსახმობით, Google პაროლების მმართველზე სწრაფად რომ გადახვიდეთ. მალსახმობის გადატანა შეგიძლიათ თქვენი კომპიუტერის მთავარ ეკრანზე ან აპების გამშვებში.</translation>
 <translation id="3065168410429928842">Chrome-ის ჩანართი</translation>
+<translation id="3073571714401714450">Gemini Chrome Dev-შის ჩართვა/გამორთვა</translation>
 <translation id="3080151273017101988">გაგრძელება გაშვებული ფონური პროგრამებით Google Chrome-ის დახურვისას</translation>
 <translation id="308397506772922478">თუ საიდუმლო ფრაზა დაგავიწყდათ ან ამ პარამეტრის შეცვლა გსურთ, <ph name="BEGIN_LINK" />წაშალეთ თქვენს ანგარიშში Chrome მონაცემები<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">დაასათაურეთ თქვენი Chrome პროფილი</translation>
@@ -379,6 +380,7 @@
 <translation id="5368118228313795342">დამატებითი კოდი: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">იგი ასევე აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Chrome-ის გაშვებისას ან Omnibox-დან ძიების დროს.</translation>
 <translation id="5394833366792865639">Chrome-ის ჩანართის გაზიარება</translation>
+<translation id="5402307365844630024">Gemini Chrome Beta-შის ჩართვა/გამორთვა</translation>
 <translation id="5430073640787465221">თქვენი გამორჩეული ფაილი დაზიანებულია ან არასწორია.
 
 Google Chrome ვერ შეძლებს თქვენი პარამეტრების აღდგენას.</translation>
@@ -430,6 +432,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="5941711191222866238">ჩაკეცვა</translation>
 <translation id="5941830788786076944">Google Chrome გახდეს ნაგულისხმევი ბრაუზერი</translation>
 <translation id="5947104538377036631">Chrome-ის მალსახმობი</translation>
+<translation id="5960071705175224773">თქვენი პარამეტრები შეცვალა უცნობმა აპმა</translation>
 <translation id="5968400720580217226">ხელოვნური ინტელექტის რეჟიმი</translation>
 <translation id="5980111191913430208">უცნობი წყაროებიდან მომავალმა გაფართოებებმა, აპებმა და თემებმა შეიძლება დააზიანოს თქვენი მოწყობილობა. Chrome გირჩევთ, ისინი მხოლოდ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-დან დააყენოთ</translation>
 <translation id="6003112304606738118">მიმდინარეობს ჩამოტვირთვა… დარჩენილია <ph name="HOURS" /> საათი</translation>
@@ -653,6 +656,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8362914115861174987">თარგმნა შემდეგ ენაზე:</translation>
 <translation id="8366770919198174997">ამცირებს წარმადობას, თუმცა Chrome შეტევების წინაშე უფრო მდგრადი იქნება</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" />, Google LLC. ყველა უფლება დაცულია.</translation>
+<translation id="8377158135256176353">Gemini Chrome Canary-შის ჩართვა/გამორთვა</translation>
 <translation id="8387459386171870978">Chrome-ის გამოყენების გაგრძელება</translation>
 <translation id="8394720698884623075">შეამოწმებს URL-ების თანხვედრას Chrome-ში შენახულ არაუსაფრთხო საიტების სიასთან</translation>
 <translation id="8403038600646341038">Chrome-ის ლოგო კომპიუტერის ეკრანზე.</translation>
@@ -701,12 +705,14 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8914504000324227558">Chrome-ის ხელახლა გაშვება</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />-დან თქვენს Android ტელეფონზე ნომრის გასაგზავნად შედით Chrome-ში ორივე მოწყობილობაზე.</translation>
 <translation id="8922998289262614701">ამ აპის მონაცემების Chrome-იდან ამოშლა</translation>
+<translation id="8936233353620149764">Gemini Chrome-შის ჩართვა/გამორთვა</translation>
 <translation id="8948460679427074738">ამ გაფართოებას არ გამოუქვეყნებია კონფიდენციალური ინფორმაციის გამოყენების პრაქტიკა, მაგალითად, მონაცემების შეგროვებისა და გამოყენების წესები. Chrome გირჩევთ მის ამოშლას.</translation>
 <translation id="8958307504142971576">ახლა თქვენთვის ხელმისაწვდომია მეტი ფუნქცია Chrome-ში</translation>
 <translation id="8991530961471831170">Gemini Chrome-ში გახსნა</translation>
 <translation id="8992769679401294069">თქვენი მონაცემები დაშიფრულია თქვენი საიდუმლო ფრაზით. შეიყვანეთ ის, თქვენს Google ანგარიშში Chrome-ის მონაცემები რომ გამოიყენოთ და შეინახოთ.</translation>
 <translation id="8999117580775242387">როცა HTTPS მიუწვდომელია, Chrome გამოიყენებს დაუცველ კავშირს თქვენი გაფრთხილების გარეშე</translation>
 <translation id="8999208279178790196">{0,plural, =0{ხელმისაწვდომია Chrome-ის განახლება}=1{ხელმისაწვდომია Chrome-ის განახლება}other{უკვე # დღეა, რაც ხელმისაწვდომია Chrome-ის განახლება}}</translation>
+<translation id="9010418943148193727">თქვენი ნაგულისხმევი საძიებო სისტემა შეიცვალა Chrome-ის გარედან. თქვენი დაცვის მიზნით, Chrome-მა გადააყენა ის.</translation>
 <translation id="9014771989710951291">რამდენიმე ორგანიზაცია მართავს Chrome-ს</translation>
 <translation id="9024318700713112071">Chrome-ის დაყენება ნაგულისხმევად</translation>
 <translation id="9066987883552592250">Gemini Chrome Canary-ში დახურვა</translation>

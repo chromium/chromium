@@ -457,7 +457,6 @@
 <translation id="2721190673959776287">Completa ajuda de mostra al producte per al tauler contextual, la qual hauria d'aparèixer diverses vegades al dia.</translation>
 <translation id="2739887572830526131">Conserva aquest grup per afegir-hi pestanyes més tard o suprimeix-lo si ja no el necessites.</translation>
 <translation id="2747003861858887689">Camp anterior</translation>
-<translation id="2749231692441336879">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755485474385016903">Tothom del grup podrà veure els canvis que es facin</translation>
 <translation id="2755595981383829244">Ara rebràs notificacions de contingut</translation>
 <translation id="2761788987260570878">Fes una foto de la cerca</translation>
@@ -480,6 +479,7 @@
 <translation id="2816489851009559785">Menú → Configuració → Navegador predeterminat</translation>
 <translation id="2818821771744632548">S'ha tancat la sessió del teu compte, <ph name="USER_NAME" />, com a part del restabliment de l'iPhone. Per tornar a iniciar la sessió, toca Continua més avall.</translation>
 <translation id="2819667972867209401">Si aquesta opció està activada, les dades es desen al teu Compte de Google. Si està desactivada, les dades només es desen en aquest dispositiu i se suprimeixen si tanques la sessió.</translation>
+<translation id="2825777862277359739">Inicia la sessió per accedir a les teves contrasenyes, pestanyes, adreces d'interès i altres elements.</translation>
 <translation id="2827760117436553203">Vols mantenir les dades separades?</translation>
 <translation id="2829172210806130158">Fes cerques a la pantalla</translation>
 <translation id="2831109159746537587">Prova d'encerclar o de tocar la imatge per cercar</translation>
@@ -503,7 +503,6 @@
 <translation id="29153882450867370">Amaga l'opció Fes un seguiment del preu</translation>
 <translation id="291754862089661335">Situa el codi QR o el codi de barres dins d'aquest marc</translation>
 <translation id="2918688092312652908">Marca com a no llegit</translation>
-<translation id="2920866371965792875">Per veure actualitzacions d'aquest lloc web, segueix-lo aquí.</translation>
 <translation id="2922210239002704889">Ves a la pàgina d'inici o al teclat</translation>
 <translation id="2924940770243654951">Obre en una pestanya d'incògnit nova</translation>
 <translation id="2931440415625410757">Mostra les instruccions</translation>
@@ -606,6 +605,7 @@
 <translation id="3371831930909698441">El Traductor està disponible. Tens opcions a la part inferior de la pantalla</translation>
 <translation id="3377063233124932127">Ara, les adreces d'interès, les contrasenyes i altres dades desades es troben a la part superior.</translation>
 <translation id="3380352560400387991">Aquest lloc web està provant d'obrir una aplicació. Aquesta acció farà que surtis del mode d'incògnit.</translation>
+<translation id="3385742921291399323">Accedeix a les teves contrasenyes, pestanyes, adreces d'interès i altres elements desats.</translation>
 <translation id="3392923070107623576">Organitza't creant grups de pestanyes</translation>
 <translation id="3404232721752787413">Desa a Google Fotos</translation>
 <translation id="3406506285180498376">Comparteix la pàgina…</translation>
@@ -633,6 +633,7 @@
 <translation id="3504377992102007712">Configuració</translation>
 <translation id="35083190962747987">Obre ${url}</translation>
 <translation id="3511519535430890904">Afegeix protecció de navegació</translation>
+<translation id="3512572904898385012">Ara pots comprar i traduir amb la càmera. Toca per provar-ho.</translation>
 <translation id="3517216995152707259">En suprimir les dades de navegació, no se't tanca la sessió del teu Compte de Google. Per fer-ho, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519792890877853853">Aquesta targeta mostra ressenyes dels productes de les pestanyes obertes</translation>
 <translation id="3519905498307021260">{count,plural, =1{Obre la pestanya}other{Obre {count} pestanyes}}</translation>
@@ -656,6 +657,7 @@
 <translation id="3575426792457739946">Aquesta llista conté tots els perfils carregats.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
+<translation id="3587482841069643663">Tots</translation>
 <translation id="3587885837929752825">La teva organització limita el que pots desar al teu Compte de Google.</translation>
 <translation id="3588820906588687999">Obre la imatge en una pestanya nova</translation>
 <translation id="3595252146048399851">Pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per decidir què vols sincronitzar. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
@@ -951,7 +953,6 @@
 <translation id="4752348350801431746">Desactiva les notificacions de Comprovació de seguretat…</translation>
 <translation id="4759238208242260848">Baixades</translation>
 <translation id="4764612367328936189">La teva organització només et permet iniciar la sessió amb determinats comptes. Els comptes no admesos estan amagats. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
-<translation id="4766112107778026136">Discover i Seguint</translation>
 <translation id="4769198578611055647">T'ajuda a accedir a les claus d'accés desades en qualsevol dispositiu</translation>
 <translation id="4782952780741793211">Codi de confirmació:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1060,6 +1061,7 @@
 <translation id="5145331760738811130">Surt del selector de pestanyes</translation>
 <translation id="5148717509369231739">Importació de Safari</translation>
 <translation id="5152483358138813104">Inicia la sessió més ràpidament en tots els dispositius</translation>
+<translation id="5155502059906700593">Canvia la posició de la barra d'adreces a la part superior o inferior.</translation>
 <translation id="5157638238828697074">S'ha produït un error. No s'ha pogut obrir l'aplicació.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Creat per a iPadOS</translation>
@@ -1135,6 +1137,7 @@
 <translation id="5457082343331641453">Afegeix a la cerca</translation>
 <translation id="5457226814769348910">Obre la versió sense connexió</translation>
 <translation id="5467163657366219870">Desactiva Previsualització de Maps</translation>
+<translation id="5474397204728336997">Contrasenyes de la família, noves personalitzacions i més. Toca per obtenir més informació.</translation>
 <translation id="5475793109165786685">{count,plural, =0{No s'ha importat cap contrasenya}=1{S'ha importat {count} contrasenya}other{S'han importat {count} contrasenyes}}</translation>
 <translation id="5478327362747197944">Crea esdeveniments del calendari directament fent clic en una data d'una pàgina web.</translation>
 <translation id="5482922178977937393">Vols rebre notificacions de notícies, esports i més temes segons els teus interessos?</translation>
@@ -1279,6 +1282,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5971459446352190251">Cerca mitjançant un codi QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{S'ha suprimit 1 adreça d'interès}other{S'han suprimit {count} adreces d'interès}}</translation>
 <translation id="5972844218283131174">Desselecciona-ho tot</translation>
+<translation id="5976160379964388480">Altres</translation>
 <translation id="5977976211062815271">En aquest dispositiu</translation>
 <translation id="5986043348928676121">Següent</translation>
 <translation id="598634819525651074">Àrea</translation>
@@ -1308,6 +1312,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6084848228346514841">Selecciona pestanyes</translation>
 <translation id="6089212833343035912">PIN del gestor de contrasenyes de Google</translation>
 <translation id="6090760257419195752">Advertiments ignorats</translation>
+<translation id="6094325891006032858">Activa Navegació segura millorada</translation>
 <translation id="6096965253650248286">S'han trobat <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Has iniciat la sessió com a <ph name="USER_EMAIL" />. Obre la configuració.</translation>
 <translation id="6100676328067737810">Les teves dades es desaran al teu Compte de Google, <ph name="USER_EMAIL" /></translation>
@@ -1324,6 +1329,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6140600850356225166">Pregunta per obrir els enllaços d'altres aplicacions en mode d'incògnit</translation>
 <translation id="6140948187512243695">Mostra els detalls</translation>
 <translation id="6144589619057374135">Obre ${url} en mode d'incògnit</translation>
+<translation id="6146563240635539929">Vídeos</translation>
 <translation id="6147279996212084542">Explica</translation>
 <translation id="6151006591088192882">Desbloqueja les pestanyes d'incògnit amb <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactiu</translation>
@@ -1343,6 +1349,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
 <translation id="6196207969502475924">Cerca per veu</translation>
 <translation id="6198252989419008588">Canvia el PIN</translation>
+<translation id="6199783146233591178">Obtén protecció en temps real amb Navegació segura millorada</translation>
 <translation id="6210079381482819663">Les pestanyes que no s'utilitzen durant <ph name="THRESHOLD" /> dies o més es mouen aquí. Pots canviar aquesta opció en qualsevol moment a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">No s'ha trobat cap adreça</translation>
 <translation id="6218508144653756827">Tema fúcsia</translation>
@@ -1365,7 +1372,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6271824294945464304">S'està compartint la contrasenya</translation>
 <translation id="628251768213143684">Pots gestionar en qualsevol moment què es desa al teu Compte de Google</translation>
 <translation id="6284652193729350524">Proposa traduir el contingut en <ph name="LANGUAGE" /></translation>
-<translation id="6289501276895392862">Has deixat de seguir <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Per activar la funció Navegació segura, obre la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" /> i toca Navegació segura.</translation>
 <translation id="6295751040240588413">L'àlies de la targeta no és vàlid</translation>
 <translation id="629730747756840877">Compte</translation>
@@ -1394,6 +1400,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="63519665078626091">Per utilitzar Web Inspector, connecta't a Safari a l'ordinador amb un cable i accedeix a l'iPad des del menú Desenvolupament. Pots activar aquest menú a la secció Avançat de la configuració de Safari a l'ordinador.</translation>
 <translation id="6355820183143562453">Amaga la targeta Seguiment de preus</translation>
 <translation id="6355820205320395730">Les contrasenyes poc segures són fàcils d'endevinar. Crea contrasenyes que siguin segures. <ph name="BEGIN_LINK" />Consulta més consells de seguretat<ph name="END_LINK" />.</translation>
+<translation id="6357455205205567365">Inicia la sessió per accedir a totes les teves coses, com ara contrasenyes, adreces d'interès i més.</translation>
 <translation id="6368038301482806847">Tria un motor de cerca de la llista.</translation>
 <translation id="6368102751067608420">Per suprimir totes les dades del gestor de contrasenyes</translation>
 <translation id="6372558618707314581">Ves a la pàgina que vulguis</translation>
@@ -1468,6 +1475,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6625830436658400045">La configuració de sincronització es restaurarà a partir de la darrera còpia de seguretat. Pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per decidir què vols sincronitzar.</translation>
 <translation id="6627583120233659107">Edita la carpeta</translation>
 <translation id="6629759408545977279">De: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="66306952800092318">Afegeix aquesta capa addicional de protecció contra les amenaces en línia.</translation>
 <translation id="6634432609054530164">La teva organització ha desactivat el mode d'incògnit</translation>
 <translation id="6637478299472506933">Ha fallat la baixada</translation>
 <translation id="6638511529934826365">Amplia el text…</translation>
@@ -1495,7 +1503,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6708501134077648845">Opcions de contrasenya</translation>
 <translation id="6709964700841491574">Mode de bloqueig</translation>
 <translation id="6710079714193676716">Gestionat per la teva organització. Pot ser que algunes funcions no estiguin disponibles. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
-<translation id="671310123089116995">Ves al feed</translation>
 <translation id="6713676799463473249">Modificat: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Pestanyes rebudes</translation>
 <translation id="6723740634201835758">Al teu Compte de Google</translation>
@@ -1604,7 +1611,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7161230316646448869">Sincronitza les adreces d'interès, l'historial i altres elements en tots els dispositius</translation>
 <translation id="7173114856073700355">Obre Configuració</translation>
 <translation id="7173721738069475737">{count,plural, =1{S'ha desat l'adreça d'interès}other{S'han desat {count} adreces d'interès}}</translation>
-<translation id="7176183551031110427">Redueix</translation>
+<translation id="7176183551031110427">Redueix el zoom</translation>
 <translation id="7186568385131859684">Controla com s'utilitza l'historial de navegació amb les teves altres dades als serveis de Google</translation>
 <translation id="719133302483559673">Gestiona els teus interessos i les teves preferències.</translation>
 <translation id="7191382490098297347">Imatge del carret</translation>
@@ -1646,7 +1653,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7380220816562673297">De moment, només pots compartir les contrasenyes amb membres de la família. <ph name="BEGIN_LINK" />Crea un grup familiar<ph name="END_LINK" /> amb un màxim de 6 membres i treu més profit dels teus productes i subscripcions a Google.</translation>
 <translation id="7380698179418029202">Selecciona el fitxer <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> d'exportació de Safari</translation>
 <translation id="739101637685146669">Quin URL vols afegir a les adreces d'interès?</translation>
-<translation id="7393747756726387725">Amplia</translation>
+<translation id="7393747756726387725">Amplia el zoom</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 lloc web}other{# llocs web}}</translation>
 <translation id="7398211386814746684">El teu compte està gestionat</translation>
 <translation id="7399802613464275309">Comprovació de seguretat</translation>
@@ -1888,6 +1895,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8221665793629393739">Recordatori per tornar a visitar</translation>
 <translation id="8232956427053453090">Conserva les dades</translation>
 <translation id="8233237502828137700">Tanca la promoció del bàner</translation>
+<translation id="8250920743982581267">Documents</translation>
 <translation id="8258734532103758067">He exportat les meves dades</translation>
 <translation id="8258999165172757081">S'ha afegit</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
@@ -1934,6 +1942,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8395180897620197612">Atura el registre</translation>
 <translation id="8407669440184693619">No s'ha trobat cap contrasenya per a aquest lloc web</translation>
 <translation id="8407831512155324054">Les contrasenyes són segures</translation>
+<translation id="8414030140103493759">Fes una foto o un vídeo</translation>
 <translation id="8414283596511250978">No oblidis mai les teves contrasenyes</translation>
 <translation id="842523302461531262">Estableix com a predeterminat a la configuració…</translation>
 <translation id="8428045167754449968">Ciutat/població</translation>
@@ -1947,6 +1956,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8473863474539038330">Adreces i més</translation>
 <translation id="8474378002946546633">Permet les notificacions</translation>
 <translation id="8477178913400731244">Suprimeix les dades</translation>
+<translation id="847939250509903814">Biblioteca de fotos</translation>
 <translation id="8481184073299279701">Toca el botó Inicia el registre per recollir els registres i errors futurs de la consola de JavaScript de totes les pestanyes. Els registres es recolliran (i s'emmagatzemaran només a la memòria) fins que es tanqui aquesta pàgina o es toqui Atura el registre.</translation>
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
@@ -2110,7 +2120,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="9055291197094969722">Crea grups de pestanyes per organitzar les pestanyes obertes i mantenir la productivitat</translation>
 <translation id="9055580485132823283">Estàs a punt de suprimir {password_count} contrasenyes, {passkey_count} claus d'accés i la llista de llocs web i aplicacions per als quals has triat que no es desi mai la informació d'inici de sessió. No se suprimiran els comptes que hagis creat per a llocs web i aplicacions.</translation>
 <translation id="9057030985451135243">Informació sobre els grups de pestanyes compartits</translation>
-<translation id="9057972802061533987">No es pot seguir. S'ha produït un error.</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9066097352053395362">Amaga l'opció Adreça d'interès</translation>
 <translation id="9070824521421603770">Es tancaran les pestanyes i la teva sessió</translation>
@@ -2123,7 +2132,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="9087339162317338348">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol.</translation>
 <translation id="9090979472668095374">Enuncia les respostes</translation>
 <translation id="9094033019050270033">Actualitza la contrasenya</translation>
-<translation id="9097506547406246598">No es pot deixar de seguir. S'ha produït un error.</translation>
 <translation id="9098541895599151034">Vols suprimir <ph name="NUMBER_OF_ACCOUNTS" /> contrasenyes?</translation>
 <translation id="9099233023029360602">Pregunta cada vegada quin compte s'utilitza</translation>
 <translation id="9099821309562615674">Assegura't que el text que vols traduir es vegi bé i estigui enquadrat.</translation>
@@ -2154,6 +2162,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="9203951165704618409">Mou la barra d'adreces de la part superior a la inferior per gaudir d'una experiència de navegació personalitzada.</translation>
 <translation id="9205189991633470489">Bloqueig d'incògnit</translation>
 <translation id="9206887540681440657">Velocitat</translation>
+<translation id="9219103736887031265">Imatges</translation>
 <translation id="9219154867334666734">Cerca pestanyes…</translation>
 <translation id="9223358826628549784">L'informe d'error s'ha enviat.</translation>
 <translation id="926455622548529175">Canvia i suprimeix</translation>

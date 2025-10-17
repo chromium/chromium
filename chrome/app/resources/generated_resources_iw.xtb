@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">פתיחה בזמן ההפעלה</translation>
 <translation id="1163931534039071049">&amp;הצגת מקור המסגרת</translation>
 <translation id="1164015913575846413">‏Alt + לחיצה</translation>
-<translation id="1164286072721995435">‏שיתוף הכרטיסייה הנוכחית עם Gemini בכל פעם שמתחילים שיחה חדשה. תמיד אפשר להשהות את שיתוף הכרטיסייה הנוכחית. הנתונים שלך לא ישמשו לשיפור מודלים של AI גנרטיבי.</translation>
 <translation id="1164891049599601209">הוזנה באתר מטעה</translation>
 <translation id="1165039591588034296">שגיאה</translation>
 <translation id="1166212789817575481">סגירת הכרטיסיות מימין</translation>
@@ -540,7 +539,6 @@
 <translation id="1353980523955420967">‏אי אפשר למצוא קובץ PPD. יש לוודא כי ה-Chromebook מחובר לרשת ולנסות שוב.</translation>
 <translation id="1354045473509304750">זה בסדר, אפשר להמשיך להרשות ל-<ph name="HOST" /> להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="1354148503392558902">שינוי הסיסמה מתבצע…</translation>
-<translation id="1354943694624358993">תמיד לשתף את הכרטיסייה הנוכחית</translation>
 <translation id="1355088139103479645">למחוק את כל הנתונים?</translation>
 <translation id="1355088659320425659">היסטוריה וכרטיסיות</translation>
 <translation id="1356376170199999104">יש הרשאה – <ph name="PERMISSION_DETAILS" />. צריך להפעיל את המיקרופון באמצעות מתג פיזי.</translation>
@@ -2375,7 +2373,6 @@
 <translation id="2605668923777146443">‏כדי לראות את האפשרויות של Better Together יש לעבור אל <ph name="LINK_BEGIN" />ההגדרות<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">קישור נתונים</translation>
 <translation id="2606454609872547359">‏לא, אמשיך בלי ChromeVox</translation>
-<translation id="2606568927909309675">יצירה אוטומטית של כתוביות לאודיו ולווידאו באנגלית. קטעי האודיו והכתוביות אף פעם לא מועברים מהמכשיר.</translation>
 <translation id="2606890864830643943">מתבצע ייצוא של נתוני אבחון</translation>
 <translation id="2607101320794533334">פרטי מפתח ציבורי של נושא</translation>
 <translation id="2609533306502181883">מה בא לך לבדוק?</translation>
@@ -5782,7 +5779,6 @@
 <translation id="4956593309300508411">להפסיק את השיתוף?</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">לשמור בתיקייה רק במכשיר הזה?</translation>
-<translation id="4958916254663453555">‏הכרטיסייה הנוכחית תשותף באופן אוטומטי כשפותחים את Gemini ב-Chrome. התוכן המלא של הכרטיסייה הנוכחית וכתובת ה-URL שלה נשלחים אל Google.</translation>
 <translation id="4959262764292427323">‏סיסמאות נשמרות בחשבון Google כדי לאפשר לך להשתמש בהן בכל המכשירים</translation>
 <translation id="4960020053211143927">בחלק מהאפליקציות אין תמיכה בשיטה הזו</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5894,7 +5890,6 @@
 <translation id="5045367873597907704">‏מידע על מכשירי ממשק אנושי (HID)</translation>
 <translation id="5045550434625856497">סיסמה שגויה</translation>
 <translation id="504561833207953641">פתיחה בסשן קיים של הדפדפן.</translation>
-<translation id="5047544190872578914">‏שיתוף הכרטיסייה הנוכחית עם Gemini בכל פעם שמתחילים שיחה חדשה. תמיד אפשר להשהות את שיתוף הכרטיסייה הנוכחית.</translation>
 <translation id="504953514574706691">הכרטיסייה הוחרגה מהקבוצה שהוצעה</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">הורדת קובץ לא מאומת</translation>
@@ -6414,6 +6409,7 @@
 <translation id="5414836363063783498">בתהליך אימות…</translation>
 <translation id="5415328625985164836">‏זוהי תוכנית בטא. עכשיו אפשר להשתמש ב-Steam כדי לשחק במשחקים מסוימים ב-Chromebook.</translation>
 <translation id="5415497281076257439">ביטוי</translation>
+<translation id="5415871492522952905">ההיסטוריה והכרטיסיות יופיעו בכל המכשירים שלך, כך שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת.</translation>
 <translation id="5417293056300086453">האתר הזה יכול להשתמש במזהים כדי להפעיל תוכן מוגן.</translation>
 <translation id="5417312524372586921">עיצובי דפדפן</translation>
 <translation id="541737483547792035">הגדלת המסך</translation>
@@ -6624,6 +6620,7 @@
 <translation id="5555760010546505198">היפוך צבעים, תיקון צבע, הגדלת התצוגה והגדרות התצוגה</translation>
 <translation id="555604722231274592">הפעלה של <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
+<translation id="555671485580955310">היסטוריית הסנכרון וכרטיסיות</translation>
 <translation id="5558129378926964177">הת&amp;קרבות</translation>
 <translation id="5558594314398017686">ברירת המחדל של מערכת ההפעלה (כשזמינה)</translation>
 <translation id="5559311991468302423">מחיקת הכתובת</translation>
@@ -8760,6 +8757,7 @@
 <translation id="7055451306017383754">‏לא ניתן לבטל את השיתוף כי אפליקציה משתמשת בתיקייה הזו. שיתוף התיקייה הזו יבוטל בכיבוי הבא של Parallels Desktop.</translation>
 <translation id="7056418393177503237">{0,plural, =1{אנונימי}one{# חלונות אנונימיים פתוחים}two{# חלונות אנונימיים פתוחים}other{# חלונות אנונימיים פתוחים}}</translation>
 <translation id="7056526158851679338">&amp;בדיקת מכשירים</translation>
+<translation id="7057567173736333354">צריך לתאר את התמונה</translation>
 <translation id="70577934383983846">שימוש בסיסמה הזו בכל המכשירים שלך</translation>
 <translation id="7058024590501568315">רשת מוסתרת</translation>
 <translation id="7059858479264779982">הגדרה להפעלה אוטומטית</translation>
@@ -9965,6 +9963,7 @@
 <translation id="7899720074434636454">דחיית הבקשה של <ph name="EXTENSION_NAME" /></translation>
 <translation id="7900950034255258543">כדי לוודא שאפשר להשתמש במכשיר באופן בטוח, האדמין של הארגון יכול לראות מידע על מערכת ההפעלה, הדפדפן וההגדרות, וגם על התוכנה שמותקנת במכשיר</translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
+<translation id="7901728443188947649">יצירת תמונות</translation>
 <translation id="7903429136755645827">ניתן ללחוץ כדי להתאים אישית את פקדי המשחקים</translation>
 <translation id="7903481341948453971">שימוש בנעילת המסך במהלך מילוי סיסמאות</translation>
 <translation id="7903925330883316394">תוכנית שירות: <ph name="UTILITY_TYPE" /></translation>
@@ -10746,6 +10745,7 @@
 <translation id="8413795581997394485">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. כשמבקרים באתר מסוים, Chrome שולח ל-Google קטע קוד מעורפל מכתובת ה-URL דרך שרת פרטיות שמסתיר את כתובת ה-IP. אם האתר פועל באופן שמעורר חשד, נשלחות גם כתובות URL מלאות וקטעי תוכן מדפים.</translation>
 <translation id="8413956290606243087">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS?</translation>
 <translation id="8414396119627470038">כניסה אל <ph name="SITE_ETLD_PLUS_ONE" /> באמצעות <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8415120635186642416">אפשר לחפש מידע על כל דבר</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (נרתיק)</translation>
 <translation id="8417065541337558100">תצוגה מקדימה של המצלמה</translation>
 <translation id="8417548266957501132">סיסמת הורה</translation>
@@ -10754,7 +10754,6 @@
 <translation id="8419098111404128271">תוצאות לחיפוש "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8419144699778179708">ההיסטוריה תימחק, כולל ההיסטוריה בתיבת החיפוש</translation>
 <translation id="8420308167132684745">עריכת ערכים במילון</translation>
-<translation id="8421361468937925547">כתוביות מיידיות (באנגלית בלבד)</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">המגש חסר</translation>
 <translation id="8424250197845498070">נחסם על ידי ההגנה המתקדמת</translation>
@@ -11051,6 +11050,7 @@
 <translation id="8637688295594795546">עדכון מערכת זמין. המערכת מתכוננת להורדה…</translation>
 <translation id="8638719155236856752">‏תקינות הרשת של ChromeOS</translation>
 <translation id="8639635302972078117">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. המכשיר הזה שולח עכשיו אל Google באופן אוטומטי נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות. הנתונים האלה לא ישמשו כדי לזהות את הילד או הילדה שלך, והם יעזרו לנו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google וכן יעזרו לשותפים של Google, כמו מפתחים של Android. אם ההגדרה 'פעילות באפליקציות ובאתרי אינטרנט נוספים' הופעלה עבור הילד או הילדה שלך, ייתכן שהנתונים יישמרו בחשבון Google שלהם.</translation>
+<translation id="8639963783467694461">הגדרות מילוי אוטומטי</translation>
 <translation id="8640575194957831802">נפתחו לאחרונה</translation>
 <translation id="8641946446576357115">‏שימוש בסיסמאות שלך במכשירי iOS</translation>
 <translation id="8642577642520207435">הרשאת גישה למצלמה לאפליקציה <ph name="APP_NAME" /></translation>

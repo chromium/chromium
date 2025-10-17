@@ -94,6 +94,7 @@
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Врати ставку}one{Врати ставке}few{Врати ставке}other{Врати ставке}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Ажурирано је пре <ph name="NUM_DAYS_ONE" /> дан}one{Ажурирано је пре <ph name="NUM_DAYS_MANY" /> дан}few{Ажурирано пре <ph name="NUM_DAYS_MANY" /> дана}other{Ажурирано пре <ph name="NUM_DAYS_MANY" /> дана}}</translation>
+<translation id="4496868141611329150">Премести групу картица налево</translation>
 <translation id="4653140634010630594">{TAB_COUNT,plural, =1{Искључи звук сајта}one{Искључи звук сајтова}few{Искључи звук сајтова}other{Искључи звук сајтова}}</translation>
 <translation id="4686942373615810936">Направљено је малопре</translation>
 <translation id="4783638485675352219">Делите наслове и URL-ове отворених картица са овог уређаја са оперативним системом</translation>
@@ -168,6 +169,7 @@
 <translation id="7369451074646620503">Група картица <ph name="TAB_GROUP_NAME" /> више није доступна</translation>
 <translation id="7452985128687107478">Групе картица се аутоматски чувају и ажурирају на свим уређајима</translation>
 <translation id="747459581954555080">Врати све</translation>
+<translation id="7489558427602531799">Премести групу картица надесно</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ставка}one{<ph name="TABS_COUNT_MANY" /> ставка}few{<ph name="TABS_COUNT_MANY" /> ставке}other{<ph name="TABS_COUNT_MANY" /> ставки}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Вратите <ph name="TABS_COUNT_ONE" /> изабрану ставку}one{Вратите <ph name="TABS_COUNT_MANY" /> изабрану ставку}few{Вратите <ph name="TABS_COUNT_MANY" /> изабране ставке}other{Вратите <ph name="TABS_COUNT_MANY" /> изабраних ставки}}</translation>
 <translation id="753732157349120914">Пребацивач картица</translation>

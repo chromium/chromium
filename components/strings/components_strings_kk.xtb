@@ -2291,6 +2291,7 @@
 <translation id="4758311279753947758">Контакт ақпаратын қосу</translation>
 <translation id="4761326898079498987">Қосымша мәліметтерді қарап шығу</translation>
 <translation id="4761869838909035636">Chrome қауіпсіздік шарасын іске қосу</translation>
+<translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" /> арқылы төлеуді жалғастырасыз ба?</translation>
 <translation id="4763196677855776703"><ph name="URL" /> ұсынған шарттар мен талаптар</translation>
 <translation id="4764680219299728632">Плиталар, пісіру панельдері және пештер</translation>
 <translation id="4764776831041365478"><ph name="URL" /> мекенжайындағы веб-бет уақытша істен шыққан немесе тұрақты түрде басқа мекенжайға көшкен болуы мүмкін.</translation>
@@ -2922,6 +2923,7 @@
 <translation id="5817918615728894473">Жұптау</translation>
 <translation id="5826507051599432481">Ортақ атау (CN)</translation>
 <translation id="5830698870816298009">Камераны пайдалану және жылжыту</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Белгісіз</translation>
 <translation id="5832976493438355584">Құлыпталған</translation>
 <translation id="5837220895135257862">Әрекетті қайталамас бұрын, <ph name="CLOUD_PROVIDER" /> қызметінде орын босатыңыз.</translation>
@@ -3432,6 +3434,7 @@
 <translation id="6649510485211003056">195 x 270 мм</translation>
 <translation id="6651270836885078973">Менеджер:</translation>
 <translation id="6652101503459149953">Windows Hello қолдану</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> қызметі жарамдылық шарттарына сәйкестігіңізді тексереді (бұл тексеріс несие рейтингіңізге әсер етпейді). Жарамдылық шарттарына сай болсаңыз, <ph name="BNPL_ISSUER_NAME" /> қызметі сатып алу транзакцияңызды орындау үшін төлем жоспарларын ұсынады.</translation>
 <translation id="6654224358955673568">Ресмилендіру</translation>
 <translation id="6654244995031366386">Шыны (беріктелген)</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
@@ -3595,6 +3598,7 @@
 <translation id="6925267999184670015">Солтүстік Америка B+</translation>
 <translation id="6926216138694948720">Денені безендіру өнері</translation>
 <translation id="692638818576287323">Коммерциялық көліктер</translation>
+<translation id="6927057753277044239">Тапсырысыңызды тексергеннен кейін, <ph name="BNPL_ISSUER_NAME" /> аккаунтына кіруіңіз немесе жаңасын жасауыңыз керек. Бұл аккаунт Google аккаунтыңызбен автоматты түрде байланыстырылады.</translation>
 <translation id="6930607614725241390">Бүйірлік панельден іздеу</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Әдепкі іздеу жүйесі интернеттен іздеуге мүмкіндік береді және Chrome функцияларының (мысалы, мекенжай жолағынан және веб-беттердегі кескіндерден іздеу) жұмысын қамтамасыз етеді.<ph name="END_BOLD" /> Іздеу жүйесі қолдау көрсетпесе, функция қолжетімді болмауы мүмкін.</translation>
 <translation id="6934672428414710184">Бұл атау Google аккаунтыңызда бар.</translation>
@@ -3646,6 +3650,7 @@
 <translation id="6997288673234694149">Бейсбол және софтбол жабдығы</translation>
 <translation id="6998512609912910179">Үлгілерді жылдам толтырыңыз</translation>
 <translation id="6999480632062519056">Фитнес инструкторлары және жеке жаттығулар</translation>
+<translation id="7002897669829306463">Үй мекенжайы (<ph name="ADDRESS" />)</translation>
 <translation id="7003278537452757231">Төсемелер және кілемдер</translation>
 <translation id="7003322000677139268">Көлік бөлшектері мен аксессуарлары</translation>
 <translation id="7004499039102548441">Соңғы қойындылар</translation>
@@ -4212,6 +4217,7 @@
 <translation id="791698251820376781">Ұйымыңыз кіруге рұқсат бермейді</translation>
 <translation id="7926503317156566022">Авиация саласы</translation>
 <translation id="7930282586031445870">Бөліп төлеудің Қызмет көрсету шарттарының экраны жабылды.</translation>
+<translation id="7932035970207573919">Жұмыс мекенжайы (<ph name="ADDRESS" />)</translation>
 <translation id="793209273132572360">Мекенжайды жаңарту керек пе?</translation>
 <translation id="7932579305932748336">Қаптау</translation>
 <translation id="79338296614623784">Дұрыс телефон нөмірін енгізіңіз</translation>

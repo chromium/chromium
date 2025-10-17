@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">ปิดกล่องโต้ตอบความคิดเห็น</translation>
 <translation id="306179102415443347">ใช้ทางลัดเพื่อไปยังเครื่องมือจัดการรหัสผ่านบน Google อย่างรวดเร็ว คุณสามารถย้ายทางลัดไปยังหน้าจอหลักหรือตัวเปิดแอปของคอมพิวเตอร์ได้</translation>
 <translation id="3065168410429928842">แท็บ Chrome</translation>
+<translation id="3073571714401714450">เปิด/ปิด Gemini ใน Chrome Dev</translation>
 <translation id="3080151273017101988">เรียกใช้แอปพลิเคชันเบื้องหลังต่อไปเมื่อ Google Chrome ถูกปิดลง</translation>
 <translation id="308397506772922478">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">ตั้งชื่อโปรไฟล์ Chrome ของคุณ</translation>
@@ -372,6 +373,7 @@
 <translation id="5368118228313795342">รหัสเพิ่มเติม: <ph name="EXTRA_CODE" /></translation>
 <translation id="5386244825306882791">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chrome หรือทำการค้นหาจากแถบอเนกประสงค์ด้วย</translation>
 <translation id="5394833366792865639">แชร์แท็บ Chrome</translation>
+<translation id="5402307365844630024">เปิด/ปิด Gemini ใน Chrome เบต้า</translation>
 <translation id="5430073640787465221">ไฟล์ค่ากำหนดของคุณขัดข้องหรือไม่ถูกต้อง Google Chrome ไม่สามารถกู้คืนการตั้งค่าของคุณได้</translation>
 <translation id="5468572406162360320">Chrome จะส่งข้อมูลการโต้ตอบของคุณให้กับ Google เพื่อช่วยปรับปรุงฟีเจอร์เหล่านี้ เจ้าหน้าที่ตรวจสอบอาจอ่าน ประมวลผล และใส่คำอธิบายประกอบข้อมูลดังกล่าว</translation>
 <translation id="5510398294750420479">ดาวน์โหลด Chrome บนโทรศัพท์เพื่อเพิ่มการปกป้องอีกชั้นในทุกที่ทุกเวลา</translation>
@@ -421,6 +423,7 @@
 <translation id="5941711191222866238">ย่อเล็กสุด</translation>
 <translation id="5941830788786076944">ทำให้ Google Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="5947104538377036631">ทางลัดของ Chrome</translation>
+<translation id="5960071705175224773">แอปที่ไม่รู้จักเปลี่ยนการตั้งค่าของคุณ</translation>
 <translation id="5968400720580217226">โหมด AI</translation>
 <translation id="5980111191913430208">ส่วนขยาย แอป และธีมจากแหล่งที่มาที่ไม่รู้จักอาจเป็นอันตรายต่ออุปกรณ์ของคุณ ขอแนะนำให้ติดตั้ง Chrome จาก <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />เท่านั้น</translation>
 <translation id="6003112304606738118">กำลังดาวน์โหลด... เหลืออีก <ph name="HOURS" /> ชั่วโมง</translation>
@@ -644,6 +647,7 @@
 <translation id="8362914115861174987">แปลเป็นภาษา</translation>
 <translation id="8366770919198174997">ลดประสิทธิภาพแต่ทำให้ Chrome ต้านทานการโจมตีได้มากขึ้น</translation>
 <translation id="8370517070665726704">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
+<translation id="8377158135256176353">เปิด/ปิด Gemini ใน Chrome Canary</translation>
 <translation id="8387459386171870978">ใช้ Chrome ต่อ</translation>
 <translation id="8394720698884623075">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome</translation>
 <translation id="8403038600646341038">โลโก้ Chrome ในหน้าจอคอมพิวเตอร์</translation>
@@ -692,12 +696,14 @@
 <translation id="8914504000324227558">เปิด Chrome ขึ้นใหม่</translation>
 <translation id="8922193594870374009">หากต้องการส่งหมายเลขจาก <ph name="ORIGIN" /> ไปยังโทรศัพท์ Android ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้งสองเครื่อง</translation>
 <translation id="8922998289262614701">นําข้อมูลแอปนี้ออกจาก Chrome</translation>
+<translation id="8936233353620149764">เปิด/ปิด Gemini ใน Chrome</translation>
 <translation id="8948460679427074738">ส่วนขยายนี้ไม่ได้เผยแพร่หลักปฏิบัติเกี่ยวกับนโยบายความเป็นส่วนตัว เช่น วิธีเก็บรวบรวมและใช้ข้อมูล Chrome ขอแนะนำให้คุณนำออก</translation>
 <translation id="8958307504142971576">ตอนนี้คุณมีฟีเจอร์เพิ่มเติมใน Chrome</translation>
 <translation id="8991530961471831170">เปิด Gemini ใน Chrome</translation>
 <translation id="8992769679401294069">ข้อมูลของคุณมีการเข้ารหัสด้วยรหัสผ่าน ป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="8999117580775242387">เมื่อ HTTPS ไม่พร้อมใช้งาน Chrome จะใช้การเชื่อมต่อที่ไม่ปลอดภัยโดยไม่แจ้งเตือนคุณ</translation>
 <translation id="8999208279178790196">{0,plural, =0{มีอัปเดต Chrome พร้อมให้ใช้งาน}=1{มีอัปเดต Chrome พร้อมให้ใช้งาน}other{อัปเดต Chrome พร้อมให้ใช้งานมาแล้ว # วัน}}</translation>
+<translation id="9010418943148193727">มีการเปลี่ยนเครื่องมือค้นหาเริ่มต้นของคุณจากภายนอก Chrome Chrome จึงรีเซ็ตเครื่องมือดังกล่าวเพื่อปกป้องคุณ</translation>
 <translation id="9014771989710951291">องค์กรหลายแห่งจัดการ Chrome</translation>
 <translation id="9024318700713112071">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="9066987883552592250">ปิด Gemini ใน Chrome Canary</translation>

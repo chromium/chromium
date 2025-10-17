@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2379925928934107488">Applica il tema scuro ai siti quando viene usato in Chrome, se possibile</translation>
 <translation id="2390272837142897736">Aumenta lo zoom</translation>
+<translation id="2397689164757137845">Consentita • Esatta</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Esatta</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Guida e feedback</translation>
 <translation id="2501278716633472235">Indietro</translation>
 <translation id="2533138527374486328">Quando l'opzione è attiva, i siti possono chiedere di connettersi a qualsiasi dispositivo sulla rete locale. Quando l'opzione è disattivata, i siti non possono connettersi ai dispositivi sulla rete locale.</translation>
+<translation id="2536779053640817375">Consentita questa volta • Esatta</translation>
 <translation id="2544997614631598250">Colore tema scuro</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
 <translation id="2570922361219980984">L'accesso alla posizione è disattivato anche per questo dispositivo. Attivalo nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>

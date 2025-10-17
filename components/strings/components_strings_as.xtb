@@ -286,6 +286,7 @@
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{০ টা পৰ্যালোচনা চাওক}=1{১ টা পৰ্যালোচনা চাওক}one{# টা পৰ্যালোচনাৰ আটাইবোৰ চাওক}other{# টা পৰ্যালোচনাৰ আটাইবোৰ চাওক}}</translation>
 <translation id="1458059624921545588">লোক আৰু সমাজ</translation>
 <translation id="1458140305240870199">অন্তর্বাস</translation>
+<translation id="1458770162980644530">এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰকৰ সেৱাৰ চৰ্তাৱলীৰ স্ক্ৰীন। কীব’ৰ্ড লুকুওৱা হৈছে।</translation>
 <translation id="1459693405370120464">বতৰ</translation>
 <translation id="1461041542809785877">কাৰ্যক্ষমতা</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2287,6 +2288,7 @@
 <translation id="4758311279753947758">সম্পর্কৰ তথ্য যোগ কৰক</translation>
 <translation id="4761326898079498987">অধিক সবিশেষৰ বাবে পৰ্যালোচনা কৰক</translation>
 <translation id="4761869838909035636">Chromeৰ সুৰক্ষা পৰীক্ষা চলাওক</translation>
+<translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" />ৰ জৰিয়তে পৰিশোধ কৰাটো অব্যাহত ৰাখিবনে?</translation>
 <translation id="4763196677855776703"><ph name="URL" />এ প্ৰদান কৰা নিয়ম আৰু চৰ্তাৱলী</translation>
 <translation id="4764680219299728632">ৰেঞ্জ, কুকটপ আৰু অভেন</translation>
 <translation id="4764776831041365478"><ph name="URL" />ৰ ৱেবপৃষ্ঠাটো অস্থায়ীভাৱে ব্যৱহাৰযোগ্য হৈ নাথাকিব পাৰে বা ইয়াক কোনো নতুন ৱেব ঠিকনালৈ স্থায়ী ভাৱে নিয়া হ’ব পাৰে।</translation>
@@ -2918,6 +2920,7 @@
 <translation id="5817918615728894473">পেয়াৰ কৰক</translation>
 <translation id="5826507051599432481">কামাণ্ডৰ নাম (CN)</translation>
 <translation id="5830698870816298009">কেমেৰাৰ ব্যৱহাৰ আৰু গতিবিধি</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
 <translation id="5832976493438355584">লক অৱস্থাত আছে</translation>
 <translation id="5837220895135257862">পুনৰ চেষ্টা কৰাৰ আগতে <ph name="CLOUD_PROVIDER" />ত ঠাই খালী কৰক</translation>
@@ -3427,6 +3430,7 @@
 <translation id="6649510485211003056">১৯৫ x ২৭০ মি.মি.</translation>
 <translation id="6651270836885078973">ইয়াৰ দ্বাৰা পৰিচালিত:</translation>
 <translation id="6652101503459149953">Windows Hello ব্যৱহাৰ কৰক</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" />এ আপোনাৰ যোগ্যতা পৰীক্ষা কৰিব (ই আপোনাৰ ক্ৰেডিট স্ক’ৰ প্ৰভাৱিত নকৰে)। আপুনি যদি যোগ্যতাসূচক মান পূৰ কৰে, তেন্তে <ph name="BNPL_ISSUER_NAME" />এ আপোনাৰ ক্ৰয় সম্পূৰ্ণ কৰিবলৈ আপোনাক সম্ভাব্য পৰিশোধৰ আঁচনি(সমূহ) প্ৰদান কৰিব।</translation>
 <translation id="6654224358955673568">গৃহীত ৰূপ দিয়ক</translation>
 <translation id="6654244995031366386">কাচ (বিন্যাসিত)</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
@@ -3590,6 +3594,7 @@
 <translation id="6925267999184670015">উত্তৰ আমেৰিকাৰ B+</translation>
 <translation id="6926216138694948720">বডি আৰ্ট</translation>
 <translation id="692638818576287323">বাণিজ্যিক বাহন</translation>
+<translation id="6927057753277044239">আপোনাৰ অৰ্ডাৰটো পৰ্যালোচনা কৰাৰ পাছত আপুনি <ph name="BNPL_ISSUER_NAME" />ত ছাইন ইন কৰিবই লাগিব বা সেইটোৰ সৈতে এটা একাউণ্ট সৃষ্টি কৰিব লাগিব। এই একাউণ্টটো স্বয়ংক্ৰিয়ভাৱে আপোনাৰ Google একাউণ্টৰ সৈতে লিংক কৰা হ’ব।</translation>
 <translation id="6930607614725241390">ছাইডৰ পেনেলত সন্ধান কৰক</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />আপোনাৰ ডিফ’ল্ট সন্ধানৰ ইঞ্জিনে আপোনাক ৱেব সন্ধান কৰিবলৈ দিয়ে আৰু Chromeৰ সুবিধাসমূহক আগবঢ়ায়<ph name="END_BOLD" /> যেনে, ঠিকনাৰ বাৰৰ পৰা আৰু ৱেব পৃষ্ঠাসমূহত প্ৰতিচ্ছবিৰ পৰা সন্ধান কৰা। আপোনাৰ সন্ধানৰ ইঞ্জিনে কোনো সুবিধা সমৰ্থন নকৰিলে সেইটো উপলব্ধ নহ’ব পাৰে।</translation>
 <translation id="6934672428414710184">এই নামটো আপোনাৰ Google একাউণ্টৰ</translation>
@@ -3641,6 +3646,7 @@
 <translation id="6997288673234694149">বে’ছবল আৰু ছফ্টবলৰ সা-সৰঞ্জাম</translation>
 <translation id="6998512609912910179">ফৰ্ম ক্ষিপ্ৰতাৰে পূৰ কৰক</translation>
 <translation id="6999480632062519056">ফিটনেছ নিৰ্দেশনা আৰু ব্যক্তিগত প্ৰশিক্ষণ</translation>
+<translation id="7002897669829306463">ঘৰৰ ঠিকনা, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">ৰাগ আৰু কাৰ্পেট</translation>
 <translation id="7003322000677139268">বাহনৰ অংশ আৰু আনুষংগিক সামগ্ৰী</translation>
 <translation id="7004499039102548441">শেহতীয়া টেব</translation>
@@ -4206,6 +4212,8 @@
 <translation id="7916162853251942238">ফ্লেক্স’ বে’ছ</translation>
 <translation id="791698251820376781">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক ছাইন ইন কৰাৰ অনুমতি নিদিয়ে</translation>
 <translation id="7926503317156566022">বিমান উদ্যোগ</translation>
+<translation id="7930282586031445870">এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰকৰ সেৱাৰ চৰ্তাৱলীৰ স্ক্ৰীন বন্ধ কৰা হৈছে।</translation>
+<translation id="7932035970207573919">কৰ্মস্থানৰ ঠিকনা, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">ঠিকনা আপডে’ট কৰিবনে?</translation>
 <translation id="7932579305932748336">ক'ট কৰক</translation>
 <translation id="79338296614623784">এটা মান্য ফ’ন নম্বৰ দিয়ক</translation>
@@ -4618,6 +4626,7 @@
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />কি ডেটা ব্যৱহাৰ কৰা হয়:<ph name="END_BOLD" /> আপুনি এই ডিভাইচটোত Chrome ব্যৱহাৰ কৰি চোৱা ছাইটত কৰা আপোনাৰ কাৰ্যকলাপ।</translation>
 <translation id="8601456038554914806">জলক্ৰীড়াৰ সা-সৰঞ্জাম</translation>
 <translation id="8601782593888534566">কল্প-বিজ্ঞান আৰু ফেণ্টাছী</translation>
+<translation id="8604103095921958091">এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰকৰ সেৱাৰ চৰ্তাৱলীৰ স্ক্ৰীন সম্পূৰ্ণ উচ্চতাত খোলা হৈছে।</translation>
 <translation id="8606988009912891950">বিজ্ঞাপনৰ বিষয়বস্তুৱে ছাইটসমূহক আপোনাৰ পৰিচয় আৰু আপোনাৰ এপৰ ব্যৱহাৰৰ বিষয়ে তথ্য সুৰক্ষিত ৰাখি আপোনাক প্ৰাসংগিক বিজ্ঞাপন দেখুওৱাত সহায় কৰে। আপোনাৰ শেহতীয়া ব্ৰাউজিঙৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Chromeএ আগ্ৰহৰ বিষয়বস্তুৰ লক্ষ্য ৰাখিব পাৰে। পাছত, আপুনি চোৱা কোনো ছাইটে আপুনি দেখা বিজ্ঞাপনসমূহ ব্যক্তিগতকৰণ কৰিবলৈ Chromeক প্ৰাসংগিক বিষয়বস্তুবোৰ বিচাৰিব পাৰে।</translation>
 <translation id="8612919051706159390">অনলাইন সম্প্ৰদায়</translation>
 <translation id="8617269623452051934">আপোনাৰ ডিভাইচটোৰ ব্যৱহাৰ</translation>
@@ -4858,6 +4867,7 @@
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" />এ আপোনাৰ স্থানীয় নেটৱৰ্কৰ যিকোনো ডিভাইচ বিচাৰি আৰু তাৰ সৈতে সংযোগ কৰিব বিচাৰে</translation>
 <translation id="9046864189129893978">মাইক্ৰ’ফ’ন (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰকৰ সেৱাৰ চৰ্তাৱলীৰ স্ক্ৰীন অৰ্ধ উচ্চতাত খোলা হৈছে।</translation>
 <translation id="9047528041803621289">আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিনে আপোনাক ৱেবত সন্ধান কৰিবলৈ দিয়ে। আপুনি ছেটিঙত এইটো সলনি কৰিব পাৰে।</translation>
 <translation id="9048035366624198823">এই কাৰ্যসমূহৰ বাবে <ph name="POLICY_NAME" /> নীতি <ph name="POLICY_VALUE" /> হিচাপে ছেট কৰাৰ প্ৰয়োজন: <ph name="ACTION_LIST" />।</translation>
 <translation id="9048662076076074925">২৪ x ৩৬ ইঞ্চি</translation>

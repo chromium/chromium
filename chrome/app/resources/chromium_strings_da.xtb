@@ -206,6 +206,7 @@
 <translation id="3296368748942286671">Fortsæt med at køre baggrundsapps, når Chromium er lukket</translation>
 <translation id="3313189106987092621">Chromium advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="3316771292331273802">Du logges ud af de fleste websites, når du lukker alle Chromium-vinduer, med undtagelse af din Google-konto, hvis du er logget ind i Chromium. <ph name="SETTINGS_LINK" /> for at give websites tilladelse til at huske dig.</translation>
+<translation id="3322413454779348750">Din standardsøgemaskine blev ændret uden for Chromium. Chromium har nulstillet den for at beskytte dig.</translation>
 <translation id="3352986031709923790">øverste højre hjørne af søgeområdet: højre <ph name="RIGHT" /> %, øverste <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Chromium-data på din konto</translation>
 <translation id="3369405342922656244">Søg på denne side med Billedsøgning</translation>
@@ -398,6 +399,7 @@
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5949225980829865667">For at få dette bogmærke og meget mere på alle dine enheder skal du logge ind på Chromium</translation>
 <translation id="5953657885167112863">Sæt dit personlige præg på Chromium</translation>
+<translation id="5960071705175224773">Dine indstillinger blev ændret af en ukendt app</translation>
 <translation id="5968400720580217226">AI-tilstand</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Din organisation lukker automatisk Chromium, når den ikke bruges i 1 minut.}one{Din organisation lukker automatisk Chromium, når den ikke bruges i # minut.}other{Din organisation lukker automatisk Chromium, når den ikke bruges i # minutter.}}</translation>
 <translation id="5987687638152509985">Opdater Chromium for at starte synkronisering</translation>

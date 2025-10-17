@@ -109,7 +109,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1419753403124156396">Vols reiniciar Chrome?</translation>
 <translation id="1428770807407000502">Vols desactivar la sincronització?</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
-<translation id="1433478348197382180">Mode de lectura</translation>
 <translation id="1435593198351412143">Obre els PDF automàticament</translation>
 <translation id="1437543266176261764">S'està executant a <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organitza els productes que segueixes a Adreces d'interès</translation>
@@ -370,7 +369,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2718352093833049315">Només amb Wi-Fi</translation>
 <translation id="2718846868787000099">Els llocs web que visites poden veure les teves preferències per mostrar-te contingut en els teus idiomes preferits</translation>
 <translation id="2723001399770238859">àudio</translation>
-<translation id="2734335652257251631">Mostra el mode de lectura</translation>
 <translation id="2739887572830526131">Conserva aquest grup per afegir-hi pestanyes més tard o suprimeix-lo si ja no el necessites.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> no està disponible en aquests moments.</translation>
 <translation id="2760805590727089264">MM/AA</translation>
@@ -1139,6 +1137,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6232535412751077445">Si actives l'opció No rastregis, s'inclourà una sol·licitud al trànsit de navegació. Que s'apliqui o no dependrà de si algun lloc web respon a la sol·licitud i de com s'interpreta.
 
 Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud mostrant-te anuncis que no estiguin basats en altres llocs web que hagis visitat. Molts llocs web continuaran recopilant i utilitzant les teves dades de navegació (per exemple, per millorar la seguretat, per proporcionar contingut, anuncis i recomanacions i per generar estadístiques).</translation>
+<translation id="623755660902014047">Mode de lectura</translation>
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>
 <translation id="6248988683584659830">Cerca a la configuració</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, pestanya d'incògnit fixada multiseleccionada</translation>
@@ -1397,7 +1396,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7221869452894271364">Torna a carregar aquesta pàgina</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 baixada pendent}other{# baixades pendents}}</translation>
 <translation id="7230064152164845085">Canvia al mode d'incògnit</translation>
-<translation id="7230836263524391273">Amaga el mode de lectura</translation>
 <translation id="7237724030342645845">El gestor de contrasenyes de Google ha deixat de funcionar</translation>
 <translation id="72415438529550637">El suggeriment de contrasenya s'ha tancat.</translation>
 <translation id="7248671827512403053">Aplicació</translation>
@@ -1732,7 +1730,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="867914734596684889">Mostra o amaga la barra d'adreces d'interès</translation>
 <translation id="8683039184091909753">imatge</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestanya seleccionada</translation>
-<translation id="8693232767599693749">Vols veure el mode de lectura?</translation>
 <translation id="8697753151306746444">Comparteix la finestra o la pantalla</translation>
 <translation id="8699120352855309748">No proposis traduir aquests idiomes</translation>
 <translation id="8712637175834984815">Entesos</translation>

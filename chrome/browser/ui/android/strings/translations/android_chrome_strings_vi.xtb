@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">Khởi động lại Chrome?</translation>
 <translation id="1428770807407000502">Tắt tính năng đồng bộ hoá?</translation>
 <translation id="1430915738399379752">In</translation>
-<translation id="1433478348197382180">Chế độ đọc</translation>
 <translation id="1435593198351412143">Tự động mở tệp PDF</translation>
 <translation id="1437543266176261764">Chạy trong <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Sắp xếp các sản phẩm bạn theo dõi trong phần Dấu trang</translation>
@@ -370,7 +369,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2718352093833049315">Chỉ qua Wi-Fi</translation>
 <translation id="2718846868787000099">Để hiển thị nội dung bằng ngôn ngữ bạn ưa dùng, những trang web bạn truy cập có thể thấy tùy chọn của bạn</translation>
 <translation id="2723001399770238859">âm thanh</translation>
-<translation id="2734335652257251631">Hiện Chế độ đọc</translation>
 <translation id="2739887572830526131">Giữ lại nhóm này để thêm thẻ sau hoặc xoá nhóm này nếu bạn không cần nữa.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hiện không sẵn dùng.</translation>
 <translation id="2760805590727089264">MM/YY</translation>
@@ -1139,6 +1137,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6232535412751077445">Bật tính năng “Không theo dõi” nghĩa là một yêu cầu sẽ được đi kèm với lưu lượng duyệt web của bạn. Mọi ảnh hưởng đều phụ thuộc vào việc trang web có phản hồi yêu cầu không và cách thức diễn giải yêu cầu.
 
 Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cách hiển thị cho bạn các quảng cáo không dựa trên các trang web khác mà bạn đã truy cập. Nhiều trang web sẽ vẫn thu thập và sử dụng dữ liệu duyệt web của bạn — ví dụ: để tăng cường bảo mật, cung cấp nội dung, quảng cáo và đề xuất, đồng thời tạo số liệu thống kê báo cáo.</translation>
+<translation id="623755660902014047">Chế độ đọc</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
 <translation id="6248988683584659830">Tìm chế độ cài đặt</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, Thẻ ẩn danh được ghim và chọn cùng với nhiều thẻ khác</translation>
@@ -1397,7 +1396,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7221869452894271364">Tải lại trang này</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
 <translation id="7230064152164845085">Chuyển sang chế độ Ẩn danh</translation>
-<translation id="7230836263524391273">Ẩn Chế độ đọc</translation>
 <translation id="7237724030342645845">Trình quản lý mật khẩu của Google đã ngừng hoạt động</translation>
 <translation id="72415438529550637">Nội dung đề xuất mật khẩu đã đóng.</translation>
 <translation id="7248671827512403053">Ứng dụng</translation>
@@ -1732,7 +1730,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="867914734596684889">Hiển thị hoặc ẩn thanh Dấu trang</translation>
 <translation id="8683039184091909753">hình ảnh</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, thẻ được chọn</translation>
-<translation id="8693232767599693749">Xem Chế độ đọc?</translation>
 <translation id="8697753151306746444">Chia sẻ cửa sổ hoặc màn hình</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
@@ -1834,7 +1831,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9133397713400217035">Khám phá khi không kết nối Internet</translation>
 <translation id="9143389653531441385">Đăng ký bằng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>
-<translation id="9148564897242852377">Chuyển sang chọn thẻ khác</translation>
+<translation id="9148564897242852377">Bật tắt khả năng chọn thẻ</translation>
 <translation id="9157212632995922070">Chọn một tài khoản để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Chỉ chia sẻ nội dung</translation>
 <translation id="9161172953291434881">Bạn có tin tưởng để trang web này sử dụng dữ liệu của mình không?</translation>

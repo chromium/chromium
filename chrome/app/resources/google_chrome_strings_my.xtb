@@ -190,6 +190,7 @@
 <translation id="3047590466164881923">အကြံပြုချက် ဒိုင်ယာလော့ ပိတ်ရန်</translation>
 <translation id="306179102415443347">Google Password Manager ကို အမြန်ဖွင့်ရန် ဖြတ်လမ်းလင့်ခ် သုံးပါ။ ကွန်ပျူတာ ပင်မစာမျက်နှာ (သို့) App Launcher သို့ ဖြတ်လမ်းလင့်ခ်ကို ရွှေ့ထားနိုင်သည်။</translation>
 <translation id="3065168410429928842">Chrome တဘ်</translation>
+<translation id="3073571714401714450">Chrome Dev ရှိ Gemini ကို ဖွင့်/ပိတ်နိုင်သည်</translation>
 <translation id="3080151273017101988">Google Chrome ကို ပိတ်လိုက်ချိန်မှာ နောက်ခံအက်ပ်များကို ဆက်ဖွင့် ထားရန်</translation>
 <translation id="308397506772922478">သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chrome ဒေတာကို ဖျက်ပါ<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">သင်၏ Chrome ပရိုဖိုင်ကို အမည်ပေးပါ</translation>
@@ -379,6 +380,7 @@
 <translation id="5368118228313795342">အပိုကုဒ်- <ph name="EXTRA_CODE" />။</translation>
 <translation id="5386244825306882791">၎င်းသည် သင်က Chrome ကို စတင်စဉ် သို့မဟုတ် Omnibox ထဲမှ ရှာဖွေစဉ် ပြပေးသည့် စာမျက်နှာကိုပါ ထိန်းချုပ်ပါသည်။</translation>
 <translation id="5394833366792865639">Chrome တဘ် မျှဝေခြင်း</translation>
+<translation id="5402307365844630024">Chrome စမ်းသပ်ဆော့ဖ်ဝဲရှိ Gemini ကို ဖွင့်/ပိတ်နိုင်သည်</translation>
 <translation id="5430073640787465221">သင်၏ ဦးစားပေးမှု ဖိုင်မှာ ပျက်စီး သို့မဟုတ် မမှန်ကန်ပါ။
 
 Google Chrome သည် သင်၏ ဆက်တင်များကို ပြန်ပြီး မဖေါ်ထုတ်နိုင်ပါ။</translation>
@@ -430,6 +432,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5941711191222866238">အနည်းဆုံး လုပ်ရန်</translation>
 <translation id="5941830788786076944">Google Chrome ကို ပုံသေ ဘရောင်ဇာ ပြုလုပ်ပါ။</translation>
 <translation id="5947104538377036631">Chrome ဖြတ်လမ်းလင့်ခ်</translation>
+<translation id="5960071705175224773">သင့်ဆက်တင်များကို အမည်မသိအက်ပ်က ပြောင်းထားသည်</translation>
 <translation id="5968400720580217226">AI မုဒ်</translation>
 <translation id="5980111191913430208">မူရင်းမသိရှိသော ရင်းမြစ်များမှ နောက်ဆက်တွဲများ၊ အက်ပ်နှင့် အပြင်အဆင်များသည် သင့်စက်ကို ထိခိုက်စေနိုင်သည်။ ၎င်းတို့ကို <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> မှသာ ထည့်သွင်းရန် Chrome က အကြံပြုပါသည်</translation>
 <translation id="6003112304606738118">ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="HOURS" /> နာရီ ကျန်သည်</translation>
@@ -653,6 +656,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8362914115861174987">ဤဘာသာသို့ ပြန်ဆိုရန်</translation>
 <translation id="8366770919198174997">စွမ်းဆောင်ရည် လျှော့ချထားသော်လည်း တိုက်ခိုက်မှုများ ခုခံနိုင်စွမ်း တိုးလာအောင် Chrome ကို ပြုလုပ်ထားသည်</translation>
 <translation id="8370517070665726704">မူပိုင် <ph name="YEAR" /> Google LLC. မူပိုင်ခွင့်အားလုံး ယူထားသည်။</translation>
+<translation id="8377158135256176353">Chrome Canary ရှိ Gemini ကို ဖွင့်/ပိတ်နိုင်သည်</translation>
 <translation id="8387459386171870978">Chrome ဆက်သုံးရန်</translation>
 <translation id="8394720698884623075">Chrome တွင် သိမ်းထားသော လုံခြုံမှုမရှိသည့် ဝဘ်ဆိုက်များ၏ URL များကို စစ်ဆေးပေးသည်</translation>
 <translation id="8403038600646341038">ကွန်ပျူတာဖန်သားပြင်အတွင်းရှိ Chrome အမှတ်တံဆိပ်။</translation>
@@ -701,12 +705,14 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8914504000324227558">Chromium ကို အသစ်တစ်ဖန် ပြန်စရန်</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> မှ သင်၏ Android ဖုန်းသို့ နံပါတ်တစ်ခုပို့ရန် စက်နှစ်ခုလုံးတွင် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="8922998289262614701">ဤအက်ပ်၏ဒေတာကို Chrome မှ ဖယ်ရှားရန်</translation>
+<translation id="8936233353620149764">Chrome ရှိ Gemini ဖွင့်/ပိတ်ရန်</translation>
 <translation id="8948460679427074738">ဤနောက်ဆက်တွဲသည် ၎င်း၏ ဒေတာစုဆောင်းပုံ၊ အသုံးပြုပုံကဲ့သို့သော ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ လုပ်ဆောင်ချက်များကို မထုတ်ပြန်ပါ။ ၎င်းကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="8958307504142971576">Chrome တွင် နောက်ထပ်တူးလ်များကို ရနိုင်ပါပြီ</translation>
 <translation id="8991530961471831170">Chrome တွင် Gemini ဖွင့်ရန်</translation>
 <translation id="8992769679401294069">ဒေတာကို သင့်စကားဝှက်စာဖြင့် အသွင်ဝှက်ထားသည်။ သင်၏ Google Account ရှိ Chrome ဒေတာ သုံးရန်၊ သိမ်းရန် ၎င်းကိုထည့်ပါ။</translation>
 <translation id="8999117580775242387">HTTPS မရနိုင်သောအခါ Chrome က လုံခြုံမှုမရှိသည့် ချိတ်ဆက်မှုကို သင့်အားသတိမပေးဘဲ အသုံးပြုပါမည်</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome အပ်ဒိတ်တစ်ခု ရနိုင်ပါသည်}=1{Chrome အပ်ဒိတ်တစ်ခု ရနိုင်ပါသည်}other{Chrome အပ်ဒိတ်တစ်ခု ရနိုင်သည်မှာ # ရက်ရှိပါပြီ}}</translation>
+<translation id="9010418943148193727">သင်၏ မူရင်းရှာဖွေရေးအင်ဂျင်ကို Chrome ပြင်ပမှ ပြောင်းထားသည်။ သင့်ကို ကာကွယ်ရန် Chrome က ၎င်းကို ပြင်ဆင်သတ်မှတ်သည်။</translation>
 <translation id="9014771989710951291">အဖွဲ့အစည်းမျိုးစုံက Chrome ကို စီမံသည်</translation>
 <translation id="9024318700713112071">Chrome ကို သင့်မူရင်းအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="9066987883552592250">Chrome Canary တွင် Gemini ပိတ်ပါ</translation>

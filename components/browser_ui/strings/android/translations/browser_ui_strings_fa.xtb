@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2379925928934107488">‏استفاده از زمینه تاریک برای سایت‌ها وقتی Chrome از زمینه تاریک استفاده می‌کند (هرگاه ممکن باشد)</translation>
 <translation id="2390272837142897736">افزایش بزرگ‌نمایی</translation>
+<translation id="2397689164757137845">مجاز است • دقیق</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> مگابایت</translation>
 <translation id="2403474027143565107">دقیق</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">راهنمایی و بازخورد</translation>
 <translation id="2501278716633472235">بازگشت</translation>
 <translation id="2533138527374486328">وقتی روشن باشد، سایت‌ها می‌توانند درخواست دهند به دستگاه‌های موجود در شبکه محلی شما متصل شوند. وقتی خاموش باشد، سایت‌ها نمی‌توانند به دستگاه‌های موجود در شبکه محلی شما متصل شوند.</translation>
+<translation id="2536779053640817375">این بار مجاز است • دقیق</translation>
 <translation id="2544997614631598250">رنگ زمینه تیره</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
 <translation id="2570922361219980984">‏دسترسی به مکان برای این دستگاه نیز خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>

@@ -286,6 +286,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Zobraziť 0 recenzií}=1{Zobraziť 1 recenziu}few{Zobraziť všetky # recenzie}many{View all # reviews}other{Zobraziť všetkých # recenzií}}</translation>
 <translation id="1458059624921545588">Ľudia s spoločnosť</translation>
 <translation id="1458140305240870199">Spodná bielizeň</translation>
+<translation id="1458770162980644530">Obrazovka so zmluvnými podmienkami platby Kúpte hneď, plaťte neskôr. Klávesnica je skrytá.</translation>
 <translation id="1459693405370120464">Počasie</translation>
 <translation id="1461041542809785877">Výkonnosť</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -2918,6 +2919,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5817918615728894473">Párovať</translation>
 <translation id="5826507051599432481">Bežný názov (CN)</translation>
 <translation id="5830698870816298009">používanie a pohyb kamery</translation>
+<translation id="5831217499016131155">Peňaženka Google</translation>
 <translation id="583281660410589416">Neznáme</translation>
 <translation id="5832976493438355584">Uzamknuté</translation>
 <translation id="5837220895135257862">Uvoľnite miesto v úložisku <ph name="CLOUD_PROVIDER" /> a potom to skúste znova</translation>
@@ -3641,6 +3643,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6997288673234694149">Vybavenie na bejzbal a softbal</translation>
 <translation id="6998512609912910179">Vypĺňajte formuláre rýchlejšie</translation>
 <translation id="6999480632062519056">Pokyny na cvičenie a osobný tréning</translation>
+<translation id="7002897669829306463">Adresa domova: <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Koberčeky a koberce</translation>
 <translation id="7003322000677139268">Autosúčiastky a príslušenstvo</translation>
 <translation id="7004499039102548441">Nedávne karty</translation>
@@ -4207,6 +4210,8 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7916162853251942238">Základňa na gumotlač</translation>
 <translation id="791698251820376781">Vaša organizácia vám neumožňuje prihlásiť sa</translation>
 <translation id="7926503317156566022">Letecký priemysel</translation>
+<translation id="7930282586031445870">Obrazovka so zmluvnými podmienkami platby Kúpte hneď, plaťte neskôr je zavretá.</translation>
+<translation id="7932035970207573919">Adresa práce: <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Chcete aktualizovať adresu?</translation>
 <translation id="7932579305932748336">Naniesť povrchovú vrstvu</translation>
 <translation id="79338296614623784">Zadajte platné telefónne číslo</translation>
@@ -4620,6 +4625,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Aké údaje sa používajú:<ph name="END_BOLD" /> Vaša aktivita na webe, ktorý navštívite pomocou Chromu v tomto zariadení.</translation>
 <translation id="8601456038554914806">Vybavenie na vodné športy</translation>
 <translation id="8601782593888534566">Sci-fi a fantasy</translation>
+<translation id="8604103095921958091">Obrazovka so zmluvnými podmienkami platby Kúpte hneď, plaťte neskôr je otvorená na celú výšku.</translation>
 <translation id="8606988009912891950">Témy reklám pomáhajú webom zobrazovať relevantné reklamy a zároveň chrániť vašu históriu prehliadania a totožnosť. Chrome môže zaznamenávať témy záujmu na základe vašej nedávnej histórie prehliadania. Neskôr môže web, ktorý navštívite, požiadať Chrome o relevantné témy na prispôsobenie reklám, ktoré sa vám zobrazujú.</translation>
 <translation id="8612919051706159390">Online komunity</translation>
 <translation id="8617269623452051934">používanie vášho zariadenia</translation>
@@ -4860,6 +4866,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> chce vyhľadať ľubovoľné zariadenie vo vašej miestnej sieti a pripojiť sa k nemu</translation>
 <translation id="9046864189129893978">Mikrofóny (<ph name="MICS_COUNT" />)</translation>
+<translation id="9046865906192819796">Obrazovka so zmluvnými podmienkami platby Kúpte hneď, plaťte neskôr je otvorená na polovičnú výšku.</translation>
 <translation id="9047528041803621289">Pomocou predvoleného vyhľadávača môžete vyhľadávať na internete. Môžete to zmeniť v nastaveniach.</translation>
 <translation id="9048035366624198823">Tieto akcie vyžadujú, aby bolo pravidlo <ph name="POLICY_NAME" /> nastavené na <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 × 36 palcov</translation>

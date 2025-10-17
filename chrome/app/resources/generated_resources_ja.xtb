@@ -249,7 +249,6 @@
 <translation id="1162479191445552288">起動時に開く</translation>
 <translation id="1163931534039071049">フレームのソースを表示(&amp;V)</translation>
 <translation id="1164015913575846413">Alt+クリック</translation>
-<translation id="1164286072721995435">新しい会話を開始するたびに、現在のタブを Gemini と共有します。現在のタブの共有はいつでも一時停止できます。ユーザーのデータが生成 AI モデルの改善に使用されることはありません。</translation>
 <translation id="1164891049599601209">不正なサイトで入力</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1166212789817575481">右側のタブを閉じる</translation>
@@ -538,7 +537,6 @@
 <translation id="1353980523955420967">PPD が見つかりません。Chromebook がオンラインになっていることを確認して、もう一度お試しください。</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> によるカメラの使用と移動を引き続き許可する</translation>
 <translation id="1354148503392558902">パスワードを変更しています...</translation>
-<translation id="1354943694624358993">現在のタブを常に共有する</translation>
 <translation id="1355088139103479645">すべてのデータを削除しますか？</translation>
 <translation id="1355088659320425659">履歴とタブ</translation>
 <translation id="1356376170199999104">許可 – <ph name="PERMISSION_DETAILS" />。マイク本体のスイッチをオンにしてください。</translation>
@@ -1236,6 +1234,7 @@
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
 <translation id="1830550083491357902">ログインしていません</translation>
 <translation id="1831848493690504725">接続されたネットワーク経由で Google に接続できません。別のネットワークを選択するか、ネットワーク設定またはプロキシ設定（プロキシを使用している場合）を確認してください。</translation>
+<translation id="1832414451155700364">履歴とタブを同期するかどうかを選択してください</translation>
 <translation id="1832459821645506983">ON にする</translation>
 <translation id="1832511806131704864">スマートフォンの変更が反映されました</translation>
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
@@ -2357,7 +2356,6 @@
 <translation id="2605668923777146443">Better Together のオプションを確認するには、[<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />] にアクセスしてください。</translation>
 <translation id="2606246518223360146">データをリンク</translation>
 <translation id="2606454609872547359">いいえ（ChromeVox なしで続行する）</translation>
-<translation id="2606568927909309675">英語の音声と動画の字幕を自動生成します。音声と字幕はデバイス上でローカルに処理されます。</translation>
 <translation id="2606890864830643943">診断データをエクスポートしています</translation>
 <translation id="2607101320794533334">サブジェクトの公開鍵情報</translation>
 <translation id="2609533306502181883">トピックを調べる</translation>
@@ -2409,6 +2407,7 @@
 <translation id="2636266464805306348">ウィンドウのタイトル</translation>
 <translation id="2637313651144986786">タブを検索...</translation>
 <translation id="2637400434494156704">PIN が正しくありません。あと 1 回試行できます。</translation>
+<translation id="263796568413910992"><ph name="SEARCH_ENGINE_NAME" /> で調べる、または URL を入力</translation>
 <translation id="2638662041295312666">サインイン画像</translation>
 <translation id="2640299212685523844">GTK を使用</translation>
 <translation id="264083724974021997">電話に接続 - ダイアログ</translation>
@@ -5756,7 +5755,6 @@
 <translation id="4956593309300508411">共有を停止しますか？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">このデバイスのフォルダにのみ保存しますか？</translation>
-<translation id="4958916254663453555">Chrome で Gemini を開くと、現在のタブが自動的に共有されます。現在のタブのコンテンツ全体と URL が Google に送信されます。</translation>
 <translation id="4959262764292427323">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます</translation>
 <translation id="4960020053211143927">一部のアプリではサポート対象外</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5868,7 +5866,6 @@
 <translation id="5045367873597907704">HID デバイスについて</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="504561833207953641">既存のブラウザ セッションで開いています。</translation>
-<translation id="5047544190872578914">新しい会話を開始するたびに、現在のタブを Gemini と共有します。現在のタブの共有はいつでも一時停止できます。</translation>
 <translation id="504953514574706691">候補グループからタブを除外しました</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">未確認のファイルをダウンロード</translation>
@@ -6384,6 +6381,7 @@
 <translation id="5414836363063783498">確認しています…</translation>
 <translation id="5415328625985164836">これはベータ版プログラムです。Chromebook で Steam を使用して、一部のゲームをプレイできるようになりました。</translation>
 <translation id="5415497281076257439">語句</translation>
+<translation id="5415871492522952905">すべてのデバイスで履歴とタブにアクセスできるため、デバイスが替わっても作業を続けられます</translation>
 <translation id="5417293056300086453">このサイトでは、識別子の使用と保護されたコンテンツの再生が許可されています。</translation>
 <translation id="5417312524372586921">ブラウザのテーマ</translation>
 <translation id="541737483547792035">画面の拡大</translation>
@@ -6594,6 +6592,7 @@
 <translation id="5555760010546505198">色反転、色補正、拡大鏡、表示設定</translation>
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> を有効にする</translation>
 <translation id="5556459405103347317">再読み込み</translation>
+<translation id="555671485580955310">履歴とタブを同期する</translation>
 <translation id="5558129378926964177">拡大(&amp;I)</translation>
 <translation id="5558594314398017686">OS のデフォルト（使用可能な場合）</translation>
 <translation id="5559311991468302423">住所を削除</translation>
@@ -8768,6 +8767,7 @@
 <translation id="7088960765736518739">スイッチ アクセス</translation>
 <translation id="7089253021944603172">タブが再びアクティブになりました</translation>
 <translation id="7090714929377281710">アクセス ポイントを自動的にオフにする</translation>
+<translation id="7092452922791061650">このタブを右クリックして、[現在のタブで新しい分割表示] を選択します</translation>
 <translation id="7092504544229909737">Android アプリでは使用できません</translation>
 <translation id="7093220653036489319">クイック アンサー</translation>
 <translation id="7093866338626856921">デバイス <ph name="HOSTNAMES" /> とのデータ交換</translation>
@@ -10557,6 +10557,7 @@
 <translation id="8310409247509201074"><ph name="NUM" /> 個のタブ</translation>
 <translation id="831207808878314375">定義</translation>
 <translation id="8312841338723044391">ライブ</translation>
+<translation id="8313308349366087671">アプリケーション オプション</translation>
 <translation id="8314089908545021657">新しいスマートフォンとペア設定</translation>
 <translation id="8314381333424235892">拡張機能がないか、インストールされていません</translation>
 <translation id="831440797644402910">このフォルダを開けません</translation>
@@ -10717,7 +10718,6 @@
 <translation id="8419098111404128271">「<ph name="SEARCH_TEXT" />」の検索結果</translation>
 <translation id="8419144699778179708">検索ボックスなどの履歴を削除します</translation>
 <translation id="8420308167132684745">辞書のエントリを編集</translation>
-<translation id="8421361468937925547">自動字幕起こし（英語のみ）</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">トレイがありません</translation>
 <translation id="8424250197845498070">高度な保護機能でブロックされました</translation>
@@ -11014,6 +11014,7 @@
 <translation id="8637688295594795546">システムのアップデートが見つかりました。ダウンロードの準備をしています...</translation>
 <translation id="8638719155236856752">ChromeOS ネットワーク健全性</translation>
 <translation id="8639635302972078117">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
+<translation id="8639963783467694461">自動入力の設定</translation>
 <translation id="8640575194957831802">最終使用日</translation>
 <translation id="8641946446576357115">iOS デバイスでパスワードを使用する</translation>
 <translation id="8642577642520207435"><ph name="APP_NAME" /> のカメラへのアクセス権</translation>

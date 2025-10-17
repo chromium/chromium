@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2379925928934107488">Կայքերում հնարավորինս կիրառել մուգ թեման, երբ Chrome-ն օգտագործում է այն</translation>
 <translation id="2390272837142897736">Մեծացնել մասշտաբը</translation>
+<translation id="2397689164757137845">Թույլատրված է • Ճշգրիտ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ՄԲ</translation>
 <translation id="2403474027143565107">Ճշգրիտ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Օգնություն և հետադարձ կապ</translation>
 <translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="2533138527374486328">Երբ գործառույթը միացված է, կայքերը կարող են լոկալ ցանցում սարքերին միանալու հարցում ուղարկել։ Երբ գործառույթն անջատված է, կայքերը չեն կարող միանալ սարքերին լոկալ ցանցում։</translation>
+<translation id="2536779053640817375">Թույլատրված է այս անգամ • Ճշգրիտ</translation>
 <translation id="2544997614631598250">Թեմայի գույն՝ մուգ</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
 <translation id="2570922361219980984">Այս սարքի տեղորոշումը նույնպես անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
