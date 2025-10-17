@@ -31,15 +31,6 @@ class GLDisplayEGL;
 
 namespace gpu {
 class GLContextVirtual;
-
-#if BUILDFLAG(IS_APPLE)
-class GL_EXPORT BackpressureMetalSharedEvent {
- public:
-  virtual ~BackpressureMetalSharedEvent() = default;
-  virtual bool HasCompleted() const = 0;
-};
-#endif  // #if BUILDFLAG(IS_APPLE)
-
 }  // namespace gpu
 
 namespace gl {
@@ -279,18 +270,6 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext> {
 
   virtual GLContextEGL* AsGLContextEGL();
 
-#if BUILDFLAG(IS_APPLE)
-  virtual void AddMetalSharedEventsForBackpressure(
-      std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>> events);
-  // Create a fence for all work submitted to this context so far, and return a
-  // monotonically increasing handle to it. This returned handle never needs to
-  // be freed. This method is used to create backpressure to throttle GL work
-  // on macOS, so that we do not starve CoreAnimation.
-  virtual uint64_t BackpressureFenceCreate();
-  // Perform a client-side wait on a previously-created fence.
-  virtual void BackpressureFenceWait(uint64_t fence);
-#endif
-
 #if BUILDFLAG(IS_MAC)
   // Flush the underlying context to avoid crashes due to driver bugs on macOS.
   // https://crbug.com/863817
@@ -346,13 +325,6 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext> {
 
   GLApi* gl_api() { return gl_api_wrapper_->api(); }
 
-#if BUILDFLAG(IS_APPLE)
-  // Child classes are responsible for calling DestroyBackpressureFences during
-  // their destruction while a context is current.
-  bool HasBackpressureFences() const;
-  void DestroyBackpressureFences();
-#endif
-
   void OnContextWillDestroy();
 
  private:
@@ -392,20 +364,9 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext> {
   // The offscreen surface that has been used to initialize this context.
   scoped_refptr<gl::GLSurface> default_surface_;
 
-#if BUILDFLAG(IS_APPLE)
-  using GLFenceAndMetalSharedEvents = std::pair<
-      std::unique_ptr<GLFence>,
-      std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>>>;
-
-  std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>>
-      next_backpressure_events_;
-  std::map<uint64_t, GLFenceAndMetalSharedEvents> backpressure_fences_;
-  uint64_t next_backpressure_fence_ = 0;
-#endif
-
   // Implementations of this must call OnContextWillDestroy so that observers
   // are notified.
-  bool has_called_on_destory_ = false;
+  bool has_called_on_destroy_ = false;
 
   base::ObserverList<GLContextObserver> observer_list_;
   base::WeakPtrFactory<GLContext> weak_ptr_factory_{this};

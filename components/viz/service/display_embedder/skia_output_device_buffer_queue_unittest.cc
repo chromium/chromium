@@ -228,10 +228,6 @@ class MockPresenter : public gl::Presenter {
     return true;
   }
 
-  bool ScheduleCALayer(const ui::CARendererLayerParams& params) override {
-    return true;
-  }
-
   void SwapComplete() {
     DCHECK(!swap_completion_callbacks_.empty());
     std::move(swap_completion_callbacks_.front())

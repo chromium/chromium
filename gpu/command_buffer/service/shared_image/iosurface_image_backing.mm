@@ -213,40 +213,6 @@ id<MTLDevice> QueryMetalDeviceFromANGLE(gl::GLDisplayEGL* display) {
   return metal_device;
 }
 
-class BackpressureMetalSharedEventImpl final
-    : public BackpressureMetalSharedEvent {
- public:
-  BackpressureMetalSharedEventImpl(
-      base::apple::scoped_nsprotocol<id<MTLSharedEvent>> shared_event,
-      uint64_t signaled_value)
-      : shared_event_(std::move(shared_event)),
-        signaled_value_(signaled_value) {}
-  ~BackpressureMetalSharedEventImpl() override = default;
-
-  BackpressureMetalSharedEventImpl(
-      const BackpressureMetalSharedEventImpl& other) = delete;
-  BackpressureMetalSharedEventImpl(BackpressureMetalSharedEventImpl&& other) =
-      delete;
-  BackpressureMetalSharedEventImpl& operator=(
-      const BackpressureMetalSharedEventImpl& other) = delete;
-
-  bool HasCompleted() const override {
-    if (shared_event_) {
-      return shared_event_.get().signaledValue >= signaled_value_;
-    }
-    return true;
-  }
-
-  id<MTLSharedEvent> shared_event() const { return shared_event_.get(); }
-
-  // This is the value which will be signaled on the associated MTLSharedEvent.
-  uint64_t signaled_value() const { return signaled_value_; }
-
- private:
-  base::apple::scoped_nsprotocol<id<MTLSharedEvent>> shared_event_;
-  uint64_t signaled_value_;
-};
-
 }  // namespace
 
 IOSurfaceImageBacking::DawnBufferCopyRepresentation::
@@ -884,20 +850,6 @@ bool IOSurfaceImageBacking::OverlayRepresentation::BeginReadAccess(
 
   // This will transition the image to be accessed by CoreAnimation.
   iosurface_backing->WaitForCommandsToBeScheduled();
-
-  gl::GLContext* context = gl::GLContext::GetCurrent();
-  if (context) {
-    std::vector<std::unique_ptr<BackpressureMetalSharedEvent>>
-        backpressure_events;
-    for (const auto& [shared_event, signaled_value] :
-         iosurface_backing->exclusive_shared_events_) {
-      backpressure_events.push_back(
-          std::make_unique<BackpressureMetalSharedEventImpl>(shared_event,
-                                                             signaled_value));
-    }
-    context->AddMetalSharedEventsForBackpressure(
-        std::move(backpressure_events));
-  }
 
   return true;
 }

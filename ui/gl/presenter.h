@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
+#include "ui/gfx/mac/mtl_shared_event_fence.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -107,10 +108,14 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data);
 
+#if BUILDFLAG(IS_APPLE)
   // Schedule a CALayer to be shown at next Present(). Semantics is similar to
   // ScheduleOverlayPlane() above. All arguments correspond to their CALayer
   // properties.
-  virtual bool ScheduleCALayer(const ui::CARendererLayerParams& params);
+  virtual bool ScheduleCALayer(
+      const ui::CARendererLayerParams& params,
+      std::vector<gfx::MTLSharedEventFence> backpressure_fences);
+#endif
 
 #if BUILDFLAG(IS_WIN)
   // Schedule a list of DCLayers to be shown at next Present(). Semantics is
