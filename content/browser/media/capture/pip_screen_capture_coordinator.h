@@ -50,13 +50,14 @@ class CONTENT_EXPORT PipScreenCaptureCoordinator
 
   // Called when a document PiP window is shown from the WebContents
   // which this coordinator belongs to.
-  void OnPipShown(WebContents& pip_web_contents);
+  virtual void OnPipShown(WebContents& pip_web_contents);
   // Called when the PiP window is closed.
-  void OnPipClosed();
+  virtual void OnPipClosed();
 
  private:
   explicit PipScreenCaptureCoordinator(WebContents* web_contents);
 
+  friend class MockPipScreenCaptureCoordinator;
   friend class WebContentsUserData<PipScreenCaptureCoordinator>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
