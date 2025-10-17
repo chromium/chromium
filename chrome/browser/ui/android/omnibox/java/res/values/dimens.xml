@@ -9,7 +9,7 @@ found in the LICENSE file.
     <dimen name="toolbar_height_no_shadow">
         @dimen/default_action_bar_height
     </dimen>
-    <dimen name="toolbar_url_focus_height_increase">8dp</dimen>
+    <dimen name="location_bar_background_on_focus_height_increase">8dp</dimen>
     <dimen name="toolbar_identity_disc_size">24dp</dimen>
     <dimen name="toolbar_url_focus_translation_x">10dp</dimen>
     <dimen name="toolbar_button_width">48dp</dimen>
@@ -18,6 +18,7 @@ found in the LICENSE file.
     <dimen name="toolbar_button_margin_vertical">0dp</dimen>
     <dimen name="toolbar_button_margin_horizontal_desktop">4dp</dimen>
     <dimen name="toolbar_button_margin_vertical_desktop">8dp</dimen>
+    <dimen name="toolbar_vertical_padding_when_bottom_focused">8dp</dimen>
 
     <!--
     Desktop toolbar button dimensions should align with the hover background size

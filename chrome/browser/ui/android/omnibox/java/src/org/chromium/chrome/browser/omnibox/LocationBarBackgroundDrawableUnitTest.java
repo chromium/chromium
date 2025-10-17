@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -26,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable.HairlineBehavior;
 
 /** Unit tests for {@link LocationBarBackgroundDrawable}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,12 +35,18 @@ public class LocationBarBackgroundDrawableUnitTest {
     private @Mock Canvas mCanvas;
 
     private LocationBarBackgroundDrawable mDrawable;
+    private final int mMonotoneHairlineColor = 0x331F1F1F;
 
     @Before
     public void setUp() {
         mDrawable =
                 new LocationBarBackgroundDrawable(
-                        mGradientDrawable, 10f, 1f, new int[] {Color.RED, Color.BLUE}, null);
+                        mGradientDrawable,
+                        10f,
+                        1f,
+                        new int[] {Color.RED, Color.BLUE},
+                        null,
+                        mMonotoneHairlineColor);
     }
 
     @Test
@@ -60,8 +65,8 @@ public class LocationBarBackgroundDrawableUnitTest {
 
     @Test
     public void testDraw_withHairline() {
-        mDrawable.setDrawHairline(true);
-        assertTrue(mDrawable.getDrawHairlineForTesting());
+        mDrawable.setHairlineBehavior(HairlineBehavior.RAINBOW);
+        assertEquals(HairlineBehavior.RAINBOW, mDrawable.getHairlineBehaviorForTesting());
 
         mDrawable.draw(mCanvas);
         verify(mGradientDrawable).draw(mCanvas);
@@ -70,13 +75,20 @@ public class LocationBarBackgroundDrawableUnitTest {
 
     @Test
     public void testDraw_withoutHairline() {
-        mDrawable.setDrawHairline(false);
-        assertFalse(mDrawable.getDrawHairlineForTesting());
+        mDrawable.setHairlineBehavior(HairlineBehavior.NONE);
+        assertEquals(HairlineBehavior.NONE, mDrawable.getHairlineBehaviorForTesting());
 
         mDrawable.draw(mCanvas);
         verify(mGradientDrawable).draw(mCanvas);
         verify(mCanvas, never())
                 .drawPath(mDrawable.getPathForTesting(), mDrawable.getPaintForTesting());
+    }
+
+    @Test
+    public void testBlackHairlinetestDraw_monotoneHairline() {
+        mDrawable.setHairlineBehavior(HairlineBehavior.MONOTONE);
+        assertEquals(HairlineBehavior.MONOTONE, mDrawable.getHairlineBehaviorForTesting());
+        verify(mGradientDrawable).setStroke((int) 1f, mMonotoneHairlineColor);
     }
 
     @Test

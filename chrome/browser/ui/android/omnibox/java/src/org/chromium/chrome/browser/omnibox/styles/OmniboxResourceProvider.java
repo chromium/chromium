@@ -545,12 +545,12 @@ public class OmniboxResourceProvider {
     }
 
     /**
-     * Returns the amount of pixels the toolbar should increased its height by when the omnibox is
-     * focused.
+     * Returns the amount of pixels the location bar background should increase in height by when
+     * the omnibox is focused.
      */
-    public static @Px int getToolbarOnFocusHeightIncrease(Context context) {
+    public static @Px int getLocationBarBackgroundOnFocusHeightIncrease(Context context) {
         return context.getResources()
-                .getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
+                .getDimensionPixelSize(R.dimen.location_bar_background_on_focus_height_increase);
     }
 
     /** Returns the amount of pixels for the toolbar's side padding when the omnibox is focused. */
