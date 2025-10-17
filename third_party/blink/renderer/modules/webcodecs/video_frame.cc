@@ -1479,7 +1479,6 @@ scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
 
   const auto dest_rect = gfx::Rect(resource_provider_size);
   auto image = CreateImageFromVideoFrame(local_handle->frame(),
-                                         /*allow_zero_copy_images=*/true,
                                          resource_provider,
                                          /*video_renderer=*/nullptr, dest_rect);
   if (!image) {
@@ -1579,13 +1578,8 @@ ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
   auto* resource_provider =
       provider_cache.CreateProvider(resource_provider_size);
 
-  // We disable zero copy images since the ImageBitmap spec says created bitmaps
-  // are copies. Many other paths can avoid doing this w/o issue, but hardware
-  // decoders may have a limited number of outputs, so not making a copy becomes
-  // an observable issues to clients.
   const auto dest_rect = gfx::Rect(resource_provider_size);
   auto image = CreateImageFromVideoFrame(local_handle->frame(),
-                                         /*allow_zero_copy_images=*/false,
                                          resource_provider,
                                          /*video_renderer=*/nullptr, dest_rect);
   if (!image) {

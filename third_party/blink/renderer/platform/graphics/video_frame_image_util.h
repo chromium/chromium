@@ -50,8 +50,7 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
     const media::VideoFrame* frame);
 
 // Returns a StaticBitmapImage for the given frame. Accelerated images will be
-// preferred if possible. A zero copy mechanism will be preferred if possible
-// unless |allow_zero_copy_images| is false.
+// preferred if possible.
 //
 // |video_renderer| may optionally be provided in cases where the same frame may
 // end up repeatedly converted.
@@ -78,7 +77,6 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
 // Returns nullptr if a StaticBitmapImage can't be created.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    bool allow_zero_copy_images = true,
     CanvasResourceProvider* resource_provider = nullptr,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     const gfx::Rect& dest_rect = gfx::Rect(),

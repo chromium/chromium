@@ -34,30 +34,6 @@ namespace blink {
 
 namespace {
 
-bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
-  // SharedImage optimization: create AcceleratedStaticBitmapImage directly.
-  // Disabled on Android because the hardware decode implementation may neuter
-  // frames, which would violate ImageBitmap requirements.
-  // TODO(sandersd): Handle YUV pixel formats.
-  // TODO(sandersd): Handle high bit depth formats.
-  // TODO(crbug.com/1203713): Figure out why macOS zero copy ends up with y-flip
-  // images in zero copy mode.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
-  return false;
-#else
-  // A VF created from MappableSI will have a mappable shared image but might
-  // not be intended for rendering in the tests.
-  // |frame.IsTexturableForTesting()| here checks whether the tests have
-  // explicitly marked the VF as non texturable or not.
-  return frame.HasSharedImage() && frame.IsTexturableForTesting() &&
-         (frame.format() == media::PIXEL_FORMAT_ARGB ||
-          frame.format() == media::PIXEL_FORMAT_XRGB ||
-          frame.format() == media::PIXEL_FORMAT_ABGR ||
-          frame.format() == media::PIXEL_FORMAT_XBGR ||
-          frame.format() == media::PIXEL_FORMAT_BGRA);
-#endif
-}
-
 bool ShouldCreateAcceleratedImages(
     viz::RasterContextProvider* raster_context_provider) {
   if (!SharedGpuContext::IsGpuCompositingEnabled())
@@ -130,13 +106,11 @@ media::VideoTransformation ImageOrientationToVideoTransformation(
 }
 
 bool WillCreateAcceleratedImagesFromVideoFrame(const media::VideoFrame* frame) {
-  return CanUseZeroCopyImages(*frame) ||
-         ShouldCreateAcceleratedImages(GetRasterContextProvider().get());
+  return ShouldCreateAcceleratedImages(GetRasterContextProvider().get());
 }
 
 scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
-    bool allow_zero_copy_images,
     CanvasResourceProvider* resource_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
     const gfx::Rect& dest_rect,
@@ -147,38 +121,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   DCHECK(frame);
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
-  if (allow_zero_copy_images && !reinterpret_video_as_srgb &&
-      dest_rect.IsEmpty() && transform == media::kNoTransformation &&
-      CanUseZeroCopyImages(*frame)) {
-    // Hold a ref by storing it in the release callback.
-    auto release_callback = blink::BindOnce(
-        [](scoped_refptr<media::VideoFrame> frame,
-           base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-           const gpu::SyncToken& sync_token, bool is_lost) {
-          if (is_lost || !context_provider)
-            return;
-          auto* ri = context_provider->ContextProvider().RasterInterface();
-          media::WaitAndReplaceSyncTokenClient client(ri);
-          frame->UpdateReleaseSyncToken(&client);
-        },
-        frame, SharedGpuContext::ContextProviderWrapper());
-
-    return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-        frame->shared_image(), frame->acquire_sync_token(),
-        frame->shared_image()->alpha_type(),
-        // Pass nullptr for |context_provider_wrapper|, because we don't
-        // know which context the mailbox came from. It is used only to
-        // detect when the mailbox is invalid due to context loss, and is
-        // ignored when |is_cross_thread|.
-        base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
-        // Pass null |context_thread_ref|, again because we don't know
-        // which context the mailbox came from. This should always trigger
-        // |is_cross_thread|.
-        base::PlatformThreadRef(),
-        // The task runner is only used for |release_callback|.
-        ThreadScheduler::Current()->CleanupTaskRunner(),
-        std::move(release_callback));
-  }
 
   gfx::Rect final_dest_rect = dest_rect;
   if (final_dest_rect.IsEmpty()) {

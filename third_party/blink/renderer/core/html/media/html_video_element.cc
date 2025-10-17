@@ -614,8 +614,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
                                      FROM_HERE);
 
   auto image = CreateImageFromVideoFrame(
-      std::move(media_video_frame),
-      /*allow_zero_copy_images=*/true, resource_provider_.get(), video_renderer,
+      std::move(media_video_frame), resource_provider_.get(), video_renderer,
       gfx::Rect(dest_size),
       /*prefer_tagged_orientation=*/true, reinterpret_as_srgb);
   if (image)

@@ -113,9 +113,9 @@ class VideoFrameImageUtilTest : public ::testing::Test {
       media::PaintCanvasVideoRenderer* video_renderer = nullptr,
       const gfx::Rect& dest_rect = gfx::Rect(),
       bool prefer_tagged_orientation = true) {
-    return CreateImageFromVideoFrame(std::move(frame), allow_zero_copy_images,
-                                     resource_provider, video_renderer,
-                                     dest_rect, prefer_tagged_orientation);
+    return CreateImageFromVideoFrame(std::move(frame), resource_provider,
+                                     video_renderer, dest_rect,
+                                     prefer_tagged_orientation);
   }
 
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
@@ -133,62 +133,52 @@ TEST_F(VideoFrameImageUtilTest, VideoTransformationToFromImageOrientation) {
 }
 
 TEST_F(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
-  // I420A isn't a supported zero copy format.
-  {
-    auto alpha_frame = media::VideoFrame::CreateTransparentFrame(kTestSize);
-    EXPECT_FALSE(WillCreateAcceleratedImagesFromVideoFrame(alpha_frame.get()));
-  }
+  for (bool gpu_compositing : {false, true}) {
+    std::optional<ScopedFakeGpuContext> fake_context;
 
-  // Software RGB frames aren't supported.
-  {
-    auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                                     media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                     media::PIXEL_FORMAT_XRGB,
-                                     base::TimeDelta(), test_sii_.get());
-    EXPECT_FALSE(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()));
-  }
+    if (gpu_compositing) {
+      fake_context.emplace(/*disable_imagebitmap=*/false);
+    }
+    // I420A frame.
+    {
+      auto alpha_frame = media::VideoFrame::CreateTransparentFrame(kTestSize);
+      EXPECT_EQ(WillCreateAcceleratedImagesFromVideoFrame(alpha_frame.get()),
+                gpu_compositing);
+    }
 
-  // GpuMemoryBuffer frames aren't supported.
-  {
-    auto cpu_frame = CreateTestFrame(
-        kTestSize, gfx::Rect(kTestSize), kTestSize,
-        media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, media::PIXEL_FORMAT_XRGB,
-        base::TimeDelta(), test_sii_.get());
-    EXPECT_FALSE(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()));
-  }
+    // Software RGB frame.
+    {
+      auto cpu_frame = CreateTestFrame(
+          kTestSize, gfx::Rect(kTestSize), kTestSize,
+          media::VideoFrame::STORAGE_OWNED_MEMORY, media::PIXEL_FORMAT_XRGB,
+          base::TimeDelta(), test_sii_.get());
+      EXPECT_EQ(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()),
+                gpu_compositing);
+    }
 
-  // Single mailbox shared images should be supported on most platforms.
-  {
-    auto shared_image_frame = CreateTestFrame(
-        kTestSize, gfx::Rect(kTestSize), kTestSize,
-        media::VideoFrame::STORAGE_OPAQUE, media::PIXEL_FORMAT_XRGB,
-        base::TimeDelta(), test_sii_.get());
-    EXPECT_TRUE(shared_image_frame->HasSharedImage());
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
-    EXPECT_FALSE(
-        WillCreateAcceleratedImagesFromVideoFrame(shared_image_frame.get()));
-#else
-    EXPECT_TRUE(
-        WillCreateAcceleratedImagesFromVideoFrame(shared_image_frame.get()));
-#endif
+    // GpuMemoryBuffer frame.
+    {
+      auto cpu_frame = CreateTestFrame(
+          kTestSize, gfx::Rect(kTestSize), kTestSize,
+          media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          media::PIXEL_FORMAT_XRGB, base::TimeDelta(), test_sii_.get());
+      EXPECT_EQ(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()),
+                gpu_compositing);
+    }
+
+    // shared images frame.
+    {
+      auto shared_image_frame = CreateTestFrame(
+          kTestSize, gfx::Rect(kTestSize), kTestSize,
+          media::VideoFrame::STORAGE_OPAQUE, media::PIXEL_FORMAT_XRGB,
+          base::TimeDelta(), test_sii_.get());
+      EXPECT_TRUE(shared_image_frame->HasSharedImage());
+      EXPECT_EQ(
+          WillCreateAcceleratedImagesFromVideoFrame(shared_image_frame.get()),
+          gpu_compositing);
+    }
   }
 }
-
-// Some platforms don't support zero copy images.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
-  ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
-  auto shared_image_frame = CreateTestFrame(
-      kTestSize, gfx::Rect(kTestSize), kTestSize,
-      media::VideoFrame::STORAGE_OPAQUE, media::PIXEL_FORMAT_XRGB,
-      base::TimeDelta(), test_sii_.get());
-  EXPECT_TRUE(shared_image_frame->HasSharedImage());
-
-  auto image = DoCreateImageFromVideoFrame(shared_image_frame);
-  ASSERT_TRUE(image->IsTextureBacked());
-  EXPECT_EQ(image->GetSharedImage(), shared_image_frame->shared_image());
-}
-#endif
 
 TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
   base::test::SingleThreadTaskEnvironment task_environment_;

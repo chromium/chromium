@@ -6624,7 +6624,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
   scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
-      std::move(media_video_frame), /*allow_zero_copy_images=*/true,
+      std::move(media_video_frame),
       image_cache.GetCanvasResourceProvider(dest_rect.size(), format,
                                             alpha_type, color_space),
       video_renderer, dest_rect, /*prefer_tagged_orientation=*/false,
