@@ -47,9 +47,9 @@ section-with-wide-gamut-colors{
   "padding": "0px",
   "margin": "0px",
   "background-color-unclamped-rgba": [
-    1.0207748413085938,
-    0.7739334106445312,
-    0.8761367797851562,
+    1.02077317237854,
+    0.7738876938819885,
+    0.8761119842529297,
     1
   ],
   "background-color-css-text": "lab(86 26 -3.8)",

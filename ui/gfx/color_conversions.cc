@@ -43,14 +43,6 @@ skcms_Matrix3x3 getXYDZ65toXYZD50matrix() {
   return adapt_d65_to_d50;
 }
 
-skcms_Matrix3x3 getXYZD65tosRGBLinearMatrix() {
-  const auto xyzd50_to_srgb = skcms::Matrix3x3_invert(SkNamedGamut::kSRGB);
-  const auto xyzd65_to_xyzd50 = getXYDZ65toXYZD50matrix();
-  skcms_Matrix3x3 adapt_XYZD65_to_srgb =
-      skcms_Matrix3x3_concat(&xyzd50_to_srgb, &xyzd65_to_xyzd50);
-  return adapt_XYZD65_to_srgb;
-}
-
 const skcms_Matrix3x3 kXYZD65_to_LMS = {
     {{0.8190224432164319f, 0.3619062562801221f, -0.12887378261216414f},
      {0.0329836671980271f, 0.9292868468965546f, 0.03614466816999844f},
@@ -232,7 +224,13 @@ std::tuple<float, float, float> OklabGamutMap(float l, float a, float b) {
   return std::make_tuple(L, alpha * a, alpha * b);
 }
 
-std::tuple<float, float, float> OklabToXYZD50(float l, float a, float b) {
+std::tuple<float, float, float> OklabToXYZD50(float l,
+                                              float a,
+                                              float b,
+                                              bool gamut_map) {
+  if (gamut_map) {
+    std::tie(l, a, b) = OklabGamutMap(l, a, b);
+  }
   // See definition of Oklab space at.
   // https://bottosson.github.io/posts/oklab/
   const skcms::Vector3 lab_input{{l, a, b}};
@@ -273,18 +271,6 @@ std::tuple<float, float, float> LabToLch(float l, float a, float b) {
                          base::RadToDeg(atan2f(b, a)));
 }
 
-std::tuple<float, float, float> XYZD50ToD65(float x, float y, float z) {
-  skcms::Vector3 c{{x, y, z}};
-  c = skcms::Matrix3x3_apply_inverse(getXYDZ65toXYZD50matrix(), c);
-  return ToTuple(c);
-}
-
-std::tuple<float, float, float> XYZD65ToD50(float x, float y, float z) {
-  skcms::Vector3 c{{x, y, z}};
-  c = skcms::Matrix3x3_apply(getXYDZ65toXYZD50matrix(), c);
-  return ToTuple(c);
-}
-
 std::tuple<float, float, float> SRGBToSRGBLegacy(float r, float g, float b) {
   return std::make_tuple(r * 255.0, g * 255.0, b * 255.0);
 }
@@ -293,22 +279,10 @@ std::tuple<float, float, float> SRGBLegacyToSRGB(float r, float g, float b) {
   return std::make_tuple(r / 255.0, g / 255.0, b / 255.0);
 }
 
-std::tuple<float, float, float> XYZD50TosRGB(float x, float y, float z) {
+std::tuple<float, float, float> XYZD50ToSRGB(float x, float y, float z) {
   skcms::Vector3 c{{x, y, z}};
   c = skcms::Matrix3x3_apply_inverse(SkNamedGamut::kSRGB, c);
   c = skcms::TransferFunction_apply_inverse(SkNamedTransferFn::kSRGB, c);
-  return ToTuple(c);
-}
-
-std::tuple<float, float, float> XYZD65TosRGBLinear(float x, float y, float z) {
-  skcms::Vector3 c{{x, y, z}};
-  c = skcms::Matrix3x3_apply(getXYZD65tosRGBLinearMatrix(), c);
-  return ToTuple(c);
-}
-
-std::tuple<float, float, float> XYZD50TosRGBLinear(float x, float y, float z) {
-  skcms::Vector3 c{{x, y, z}};
-  c = skcms::Matrix3x3_apply_inverse(SkNamedGamut::kSRGB, c);
   return ToTuple(c);
 }
 
@@ -439,61 +413,4 @@ SkColor4f SRGBLinearToSkColor4f(float r, float g, float b, float alpha) {
                    skcms_TransferFunction_eval(&tf_inv, b), alpha};
 }
 
-SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha) {
-  auto [r, g, b] = XYZD50TosRGBLinear(x, y, z);
-  return SRGBLinearToSkColor4f(r, g, b, alpha);
-}
-
-SkColor4f XYZD65ToSkColor4f(float x, float y, float z, float alpha) {
-  auto [r, g, b] = XYZD65TosRGBLinear(x, y, z);
-  return SRGBLinearToSkColor4f(r, g, b, alpha);
-}
-
-SkColor4f LabToSkColor4f(float l, float a, float b, float alpha) {
-  auto [x, y, z] = LabToXYZD50(l, a, b);
-  return XYZD50ToSkColor4f(x, y, z, alpha);
-}
-
-SkColor4f OklabToSkColor4f(float l, float a, float b, float alpha) {
-  auto [x, y, z] = OklabToXYZD50(l, a, b);
-  return XYZD50ToSkColor4f(x, y, z, alpha);
-}
-
-SkColor4f OklabGamutMapToSkColor4f(float l, float a, float b, float alpha) {
-  auto [l_gm, a_gm, b_gm] = OklabGamutMap(l, a, b);
-  auto [x, y, z] = OklabToXYZD50(l_gm, a_gm, b_gm);
-  return XYZD50ToSkColor4f(x, y, z, alpha);
-}
-
-SkColor4f LchToSkColor4f(float l_input, float c, float h, float alpha) {
-  auto [l, a, b] = LchToLab(l_input, c, h);
-  auto [x, y, z] = LabToXYZD50(l, a, b);
-  return XYZD50ToSkColor4f(x, y, z, alpha);
-}
-
-SkColor4f OklchToSkColor4f(float l_input, float c, float h, float alpha) {
-  auto [l, a, b] = LchToLab(l_input, c, h);
-  auto [x, y, z] = OklabToXYZD50(l, a, b);
-  return XYZD50ToSkColor4f(x, y, z, alpha);
-}
-
-SkColor4f OklchGamutMapToSkColor4f(float l_input,
-                                   float c,
-                                   float h,
-                                   float alpha) {
-  auto [l, a, b] = LchToLab(l_input, c, h);
-  auto [l_gm, a_gm, b_gm] = OklabGamutMap(l, a, b);
-  auto [x, y, z] = OklabToXYZD50(l_gm, a_gm, b_gm);
-  return XYZD50ToSkColor4f(x, y, z, alpha);
-}
-
-SkColor4f HSLToSkColor4f(float h, float s, float l, float alpha) {
-  auto [r, g, b] = HSLToSRGB(h, s, l);
-  return SkColor4f{r, g, b, alpha};
-}
-
-SkColor4f HWBToSkColor4f(float h, float w, float b, float alpha) {
-  auto [red, green, blue] = HWBToSRGB(h, w, b);
-  return SkColor4f{red, green, blue, alpha};
-}
 }  // namespace gfx

@@ -22,7 +22,10 @@ COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> XYZD50ToLab(float x, float y, float z);
 
 COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> OklabToXYZD50(float l, float a, float b);
+std::tuple<float, float, float> OklabToXYZD50(float l,
+                                              float a,
+                                              float b,
+                                              bool gamut_map = false);
 
 COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> XYZD50ToOklab(float x, float y, float z);
@@ -34,25 +37,13 @@ COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> LabToLch(float l, float a, float b);
 
 COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD50ToD65(float x, float y, float z);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD65ToD50(float x, float y, float z);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD65TosRGBLinear(float x, float y, float z);
-
-COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> SRGBToSRGBLegacy(float r, float g, float b);
 
 COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> SRGBLegacyToSRGB(float r, float g, float b);
 
 COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD50TosRGB(float x, float y, float z);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD50TosRGBLinear(float x, float y, float z);
+std::tuple<float, float, float> XYZD50ToSRGB(float x, float y, float z);
 
 COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> SRGBToXYZD50(float r, float g, float b);
@@ -65,38 +56,9 @@ std::tuple<float, float, float> SRGBToHSL(float r, float g, float b);
 
 COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> HWBToSRGB(float h, float w, float b);
+
 COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> SRGBToHWB(float r, float g, float b);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f XYZD65ToSkColor4f(float x, float y, float z, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f LabToSkColor4f(float l, float a, float b, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f OklabToSkColor4f(float l, float a, float b, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f OklabGamutMapToSkColor4f(float l, float a, float b, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f LchToSkColor4f(float l, float a, float b, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f OklchToSkColor4f(float l, float a, float h, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f OklchGamutMapToSkColor4f(float l, float a, float h, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f HSLToSkColor4f(float h, float s, float l, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f HWBToSkColor4f(float h, float w, float b, float alpha);
 
 }  // namespace gfx
 
