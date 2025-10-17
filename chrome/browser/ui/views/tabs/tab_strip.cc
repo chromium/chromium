@@ -1835,6 +1835,15 @@ void TabStrip::MaybeStartDrag(
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Block drag operation if the web app is locked for OnTask. This prevents the
+  // window from moving along with the tab when in locked fullsceeen mode. Only
+  // relevant for non-web browser scenarios.
+  if (IsLockedForOnTask()) {
+    return;
+  }
+#endif
+
   // Check that the source is either a valid tab or a tab group header, which
   // are the only valid drag targets.
   CHECK(GetModelIndexOf(source).has_value() ||
