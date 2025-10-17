@@ -580,6 +580,17 @@ void AddressDataManager::SetStrikeDatabase(
       std::make_unique<AddressSuggestionStrikeDatabase>(strike_database);
 }
 
+AutofillOnTypingSuggestionStrikeDatabase*
+AddressDataManager::GetAutofillOnTypingSuggestionStrikeDatabase() {
+  return const_cast<AutofillOnTypingSuggestionStrikeDatabase*>(
+      std::as_const(*this).GetAutofillOnTypingSuggestionStrikeDatabase());
+}
+
+const AutofillOnTypingSuggestionStrikeDatabase*
+AddressDataManager::GetAutofillOnTypingSuggestionStrikeDatabase() const {
+  return autofill_on_typing_suggestion_strike_database_.get();
+}
+
 AutofillProfileMigrationStrikeDatabase*
 AddressDataManager::GetProfileMigrationStrikeDatabase() {
   return const_cast<AutofillProfileMigrationStrikeDatabase*>(

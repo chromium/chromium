@@ -650,6 +650,7 @@ static_library("browser") {
     "single_field_fillers/single_field_fill_router.h",
     "strike_databases/addresses/address_suggestion_strike_database.cc",
     "strike_databases/addresses/address_suggestion_strike_database.h",
+    "strike_databases/addresses/autofill_on_typing_suggestion_strike_database.h",
     "strike_databases/addresses/autofill_profile_migration_strike_database.h",
     "strike_databases/addresses/autofill_profile_save_strike_database.h",
     "strike_databases/addresses/autofill_profile_update_strike_database.h",
@@ -1887,8 +1888,8 @@ if (use_fuzzing_engine_with_lpm) {
       "//third_party/libprotobuf-mutator",
     ]
 
-    if(use_blink) {
-      deps += ["//content/test:test_support"]
+    if (use_blink) {
+      deps += [ "//content/test:test_support" ]
     }
   }
 }

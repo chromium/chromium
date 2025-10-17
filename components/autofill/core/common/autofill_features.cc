@@ -75,6 +75,11 @@ const base::FeatureParam<int> kAutofillOnTypingMinMissingCharactersNumber{
 const base::FeatureParam<std::string> kAutofillOnTypingFieldTypes{
     &kAutofillAddressSuggestionsOnTyping, "field_types", ""};
 
+// Feature flag to controls whether Autofill on typing suggestions will have a
+// strike database.
+BASE_FEATURE(kAutofillAddressSuggestionsOnTypingHasStrikeDatabase,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature flag controlling the display of surveys when a user declines the
 // save prompt of Autofill address and a user does not have any address stored.
 // The goal is to understand the reason and work towards improving acceptance.

@@ -35,6 +35,8 @@ extern const base::FeatureParam<int>
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<std::string> kAutofillOnTypingFieldTypes;
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAddressSuggestionsOnTypingHasStrikeDatabase);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressUserDeclinedSaveSurvey);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressUserPerceptionSurvey);

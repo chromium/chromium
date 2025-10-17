@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/strike_databases/addresses/address_suggestion_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/addresses/autofill_on_typing_suggestion_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/addresses/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/addresses/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/addresses/autofill_profile_update_strike_database.h"
@@ -324,6 +325,14 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   void SetPrefService(PrefService* pref_service);
   void SetStrikeDatabase(strike_database::StrikeDatabaseBase* strike_database);
 
+  // Used to get a pointer to the strike database for Autofill on typing
+  // suggestions. Note, the result can be a nullptr, for example, on incognito
+  // mode.
+  AutofillOnTypingSuggestionStrikeDatabase*
+  GetAutofillOnTypingSuggestionStrikeDatabase();
+  virtual const AutofillOnTypingSuggestionStrikeDatabase*
+  GetAutofillOnTypingSuggestionStrikeDatabase() const;
+
   // Used to get a pointer to the strike database for migrating existing
   // profiles. Note, the result can be a nullptr, for example, on incognito
   // mode.
@@ -438,6 +447,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   // migration-prompt of new profiles.
   std::unique_ptr<AutofillProfileMigrationStrikeDatabase>
       profile_migration_strike_database_;
+
+  // The database that is used to count field type keyed strikes to suppress the
+  // creation of Autofill on typing suggestions.
+  std::unique_ptr<AutofillOnTypingSuggestionStrikeDatabase>
+      autofill_on_typing_suggestion_strike_database_;
 
   // The database that is used to count domain-keyed strikes to suppress the
   // import of new profiles.
