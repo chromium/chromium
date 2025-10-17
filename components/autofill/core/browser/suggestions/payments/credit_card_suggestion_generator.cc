@@ -203,6 +203,9 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
 bool CreditCardSuggestionGenerator::ShouldShowCreditCardSaveAndFill(
     bool is_complete_form,
     const FormFieldData& trigger_field) {
+  if (!save_and_fill_manager()) {
+    return false;
+  }
   // Verify the user has no credit cards saved.
   if (!payments_data_manager()->GetCreditCards().empty()) {
     save_and_fill_manager()->MaybeLogSaveAndFillSuggestionNotShownReason(

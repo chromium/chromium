@@ -929,7 +929,9 @@ bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
                                      const FormFieldData& trigger_field) {
   payments::SaveAndFillManager* save_and_fill_manager =
       client.GetPaymentsAutofillClient()->GetSaveAndFillManager();
-  CHECK(save_and_fill_manager);
+  if (!save_and_fill_manager) {
+    return false;
+  }
   // Verify the user has no credit cards saved.
   if (!client.GetPersonalDataManager()
            .payments_data_manager()
