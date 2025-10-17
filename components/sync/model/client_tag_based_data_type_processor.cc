@@ -547,8 +547,9 @@ void ClientTagBasedDataTypeProcessor::Put(
     MetadataChangeList* metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsAllowingChanges()) << DataTypeToDebugString(type_);
-  // TODO(crbug.com/40668179): add a CHECK that writes are only supported for
-  // data types with incremental updates. See crbug.com/40668179 for details.
+  // Writes are only supported for data types with incremental updates. See
+  // crbug.com/40668179 for details.
+  CHECK(bridge_->SupportsIncrementalUpdates());
   CHECK(data) << DataTypeToDebugString(type_);
   CHECK(!data->is_deleted()) << DataTypeToDebugString(type_);
   CHECK(!data->specifics.has_encrypted()) << DataTypeToDebugString(type_);
@@ -657,8 +658,10 @@ void ClientTagBasedDataTypeProcessor::Delete(
     MetadataChangeList* metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsAllowingChanges());
-  // TODO(crbug.com/40668179): add a CHECK that writes are only supported for
-  // data types with incremental updates. See crbug.com/40668179 for details.
+
+  // Writes are only supported for data types with incremental updates. See
+  // crbug.com/40668179 for details.
+  CHECK(bridge_->SupportsIncrementalUpdates());
 
   if (!entity_tracker_) {
     // Ignore changes before the initial sync is done.
@@ -1806,11 +1809,11 @@ ClientTagBasedDataTypeProcessor::ApplyFullUpdateAsIncrementalUpdate(
     // 3. Local deletion, remote entity deleted. A deletion will be generated in
     //    this case, so it's a normal conflict resulting in a no-op for the
     //    bridge.
-    // 4. Local deletion, remote entity still exists. This case will result in
-    //    restoring the entity during conflict resolution. It's not ideal but
-    //    safer than data loss.
-    //    TODO(crbug.com/40668179): improve handling of local deletions during
-    //    full updates.
+    // 4. Local deletion, remote entity still exists. If the remote entity is
+    //    unchanged (with the same version), it will be ignored. Otherwise, if
+    //    the remote entity is updated, or the server doesn't implement proper
+    //    versioning, the entity will be restored / updated during conflict
+    //    resolution.
     const ClientTagHash client_tag_hash = entity->GetClientTagHash();
     if (updated_client_tag_hashes.contains(client_tag_hash)) {
       // Consider this as a normal incremental update. Note that this update can

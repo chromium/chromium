@@ -2223,6 +2223,43 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldIgnoreRemoteNoOpUpdateWithGcDirectiveOnLocalDeletion) {
+  InitializeToReadyState();
+
+  // Create and acknowledge an item.
+  WriteItemAndAck(kKey1, kValue1);
+  ASSERT_EQ(1U, db()->data_count());
+  ASSERT_EQ(1U, db()->metadata_count());
+
+  // Delete the item locally. This creates a pending commit for deletion.
+  bridge()->DeleteItem(kKey1);
+  ASSERT_EQ(0U, db()->data_count());
+  ASSERT_EQ(1U, db()->metadata_count());
+  ASSERT_TRUE(db()->GetMetadata(kKey1).is_deleted());
+  worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
+
+  // Simulate a remote update for the same item with the same server version and
+  // specifics as the original item. This should be ignored.
+  UpdateResponseDataList updates;
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey1), GeneratePrefSpecifics(kKey1, kValue1),
+      /*version_offset=*/0, /*ekn=*/"k1"));
+
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+  worker()->UpdateFromServer(std::move(updates), garbage_collection_directive);
+
+  worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
+  EXPECT_TRUE(db()->GetMetadata(kKey1).is_deleted());
+
+  // Acknowledge the local deletion.
+  worker()->AckOnePendingCommit();
+  EXPECT_EQ(0U, db()->data_count());
+  EXPECT_EQ(0U, db()->metadata_count());
+  EXPECT_EQ(0U, worker()->GetNumPendingCommits());
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldCallMergeFullSyncDataOnInitialSyncWithGcDirective) {
   ModelReadyToSync();
   OnSyncStarting();
@@ -2244,25 +2281,21 @@ class FullUpdateClientTagBasedDataTypeProcessorTest
   bool SupportsIncrementalUpdates() override { return false; }
 };
 
-// Tests that ClientTagBasedDataTypeProcessor can do garbage collection by
-// version.
-// Garbage collection by version is used by the server to replace all data on
-// the client, and is implemented by calling MergeFullSyncData on the bridge.
+// Tests that ClientTagBasedDataTypeProcessor can do garbage collection.
+// Garbage collection is used by the server to replace all data on the client,
+// and is implemented by calling MergeFullSyncData on the bridge.
 TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
        ShouldApplyGarbageCollectionByVersionFullUpdate) {
   InitializeToReadyState();
   UpdateResponseDataList updates;
   updates.push_back(worker()->GenerateUpdateData(
-      ClientTagHash(), GeneratePrefSpecifics(kKey1, kValue1), 1, "k1"));
+      GetPrefHash(kKey1), GeneratePrefSpecifics(kKey1, kValue1), 1, "k1"));
   updates.push_back(worker()->GenerateUpdateData(
-      ClientTagHash(), GeneratePrefSpecifics(kKey2, kValue2), 2, "k2"));
+      GetPrefHash(kKey2), GeneratePrefSpecifics(kKey2, kValue2), 2, "k2"));
 
-  // Create 2 entries, one is version 3, another is version 1.
   sync_pb::GarbageCollectionDirective garbage_collection_directive;
   garbage_collection_directive.set_version_watermark(1);
   worker()->UpdateFromServer(std::move(updates), garbage_collection_directive);
-  WriteItemAndAck(kKey1, kValue1);
-  WriteItemAndAck(kKey2, kValue2);
 
   // Verify entries are created correctly.
   ASSERT_EQ(2U, ProcessorEntityCount());
@@ -2282,6 +2315,7 @@ TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(0U, db()->metadata_count());
   EXPECT_EQ(0U, worker()->GetNumPendingCommits());
 }
+
 // Tests that full updates for transport-only mode (called "ephemeral storage"
 // for historical reasons) result in reporting setup duration.
 TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
@@ -2446,8 +2480,8 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldUpdateStorageKey) {
   // Local update should affect the same entity. This ensures that storage key
   // to client tag hash mapping was updated on the previous step.
   WritePrefItem(bridge(), storage_key1, kValue2);
-  EXPECT_EQ(1U, ProcessorEntityCount());
-  EXPECT_EQ(1U, db()->metadata_count());
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->metadata_count());
 
   // Second update from server should be handled by ApplyIncrementalSyncChanges.
   // Similarly It should call UpdateStorageKey, not GetStorageKey.
