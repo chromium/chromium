@@ -50,7 +50,8 @@ import java.util.List;
 public class OmniboxPedalsRenderTest {
     // 1: Initial version.
     // 2: Updated refine button assets with vector drawables.
-    private static final int RENDER_TEST_REVISION = 2;
+    // 3: Default to bottom-anchored focused omnibox
+    private static final int RENDER_TEST_REVISION = 3;
 
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
