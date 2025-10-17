@@ -1951,9 +1951,26 @@ void TileManager::CheckIfMoreTilesNeedToBePrepared() {
       global_state_.memory_limit_policy == ALLOW_NOTHING;
 
   // If we have tiles left to raster for activation, and we don't allow
-  // activating without them, then skip activation and return early.
-  if (wait_for_all_required_tiles)
+  // activating without them, then skip activation and return early, unless last
+  // assign failed due to OOM.
+  // Reaching a steady memory state as OOM indicates that relaimable tile memory
+  // from previous frames have all been reclaimed, and we must mark unscheduled
+  // tiles as OOM in order to activate.
+  auto should_skip_wait =
+      base::FeatureList::IsEnabled(features::kTileOOMFreezeMitigation) &&
+      did_oom_on_last_assign_;
+  if (wait_for_all_required_tiles && !should_skip_wait) {
+    if (!all_tiles_that_need_to_be_rasterized_are_scheduled_) {
+      // When task limit is exceeded, and we didn't reclaim task budget since
+      // last `ScheduleTasks()`, `AssignGpuMemoryToTiles()` may not produce
+      // any new `work_to_schedule`, but we're still blocked on unscheduled
+      // tiles. Schedule `more_tiles_need_prepare_check_notifier_` again, so
+      // that we can assign gpu memory for more tiles when task budget gets
+      // reclaimed.
+      more_tiles_need_prepare_check_notifier_.Schedule();
+    }
     return;
+  }
 
   // Mark any required tiles that have not been been assigned memory after
   // reaching a steady memory state as OOM. This ensures that we activate/draw
