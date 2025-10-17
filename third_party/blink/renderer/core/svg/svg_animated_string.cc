@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
+#include "third_party/blink/renderer/core/xlink_names.h"
 
 namespace blink {
 
@@ -32,7 +33,8 @@ void SVGAnimatedString::setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
         // removed, we need to support both ways:
         if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
           // https://github.com/w3c/svgwg/pull/934
-          if (AttributeName() == svg_names::kHrefAttr) {
+          if (AttributeName() == svg_names::kHrefAttr ||
+              AttributeName() == xlink_names::kHrefAttr) {
             string = TrustedTypesCheckForScriptURL(
                 string, ContextElement()->GetExecutionContext(),
                 "SVGScriptElement", "href", exception_state);
