@@ -29,7 +29,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
 #include "base/android/device_info.h"
-#include "build/android_buildflags.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -319,11 +318,6 @@ bool IsVulkanV3EnabledForAdreno(
   return true;
 }
 
-bool SkipVulkanBlocklist() {
-  // Expectation is for all desktop android devices to use vulkan
-  return BUILDFLAG(IS_DESKTOP_ANDROID);
-}
-
 #endif
 }  // namespace
 
@@ -487,8 +481,7 @@ bool CheckVulkanCompatibilities(
   return true;
 #endif
 #else   // BUILDFLAG(IS_ANDROID)
-   if (SkipVulkanBlocklist() ||
-       base::FeatureList::IsEnabled(features::kSkipVulkanBlocklist)) {
+   if (base::FeatureList::IsEnabled(features::kSkipVulkanBlocklist)) {
     return true;
   }
 
