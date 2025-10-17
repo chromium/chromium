@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64url.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -633,7 +634,13 @@ void ComposeboxQueryController::FetchClusterInfo() {
   SetQueryControllerState(QueryControllerState::kAwaitingClusterInfoResponse);
 
   // There should not be any in-flight cluster info access token request.
-  CHECK(!cluster_info_access_token_fetcher_);
+  // TODO(crbug.com/452221931): Replace with a CHECK once the cause is found.
+  if (cluster_info_access_token_fetcher_) {
+    base::debug::DumpWithoutCrashing();
+#if DCHECK_IS_ON()
+    NOTREACHED() << "Cluster info access token fetcher already exists.";
+#endif  // DCHECK_IS_ON()
+  }
   cluster_info_access_token_fetcher_ = CreateOAuthHeadersAndContinue(
       base::BindOnce(&ComposeboxQueryController::SendClusterInfoNetworkRequest,
                      weak_ptr_factory_.GetWeakPtr()));
