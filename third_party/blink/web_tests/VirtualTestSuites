@@ -1757,7 +1757,9 @@
       "external/wpt/webcodecs/video-frame-serialization.any.html",
       "external/wpt/workers/data-url-shared.html",
       "external/wpt/workers/data-url.html",
-      "fast/dom/domstringlist.html"
+      "fast/dom/domstringlist.html",
+      "http/tests/devtools/indexeddb/database-names.js",
+      "http/tests/inspector-protocol/storage/indexed-db-storage-key-request-database-names.js"
     ],
     "args": [
       "--enable-features=IdbSqliteBackingStore"

@@ -73,7 +73,11 @@ StatusOr<bool> BackingStoreImpl::DatabaseExists(std::u16string_view name) {
 
 StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
 BackingStoreImpl::GetDatabaseNamesAndVersions() {
-  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions;
+  // Though the IDB spec does not mandate sorting, the LevelDB backing store has
+  // set a precedent of sorting databases by name. To avoid breaking clients
+  // that may depend on this, use a map to return the results in sorted order.
+  std::map<std::u16string, int64_t> names_and_versions;
+
   std::set<base::FilePath> already_open_file_names;
   for (const auto& [name, db] : open_connections_) {
     already_open_file_names.insert(DatabaseNameToFileName(name));
@@ -84,8 +88,7 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
     if (version == blink::IndexedDBDatabaseMetadata::NO_VERSION) {
       continue;
     }
-    names_and_versions.emplace_back(
-        blink::mojom::IDBNameAndVersion::New(name, version));
+    names_and_versions.emplace(name, version);
   }
 
   if (!in_memory()) {
@@ -96,15 +99,17 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
       std::ignore =
           DatabaseConnection::Open(/*name=*/{}, path, *this)
               .transform([&](std::unique_ptr<DatabaseConnection> connection) {
-                names_and_versions.emplace_back(
-                    blink::mojom::IDBNameAndVersion::New(
-                        connection->metadata().name,
-                        connection->metadata().version));
+                names_and_versions.emplace(connection->metadata().name,
+                                           connection->metadata().version);
               });
     });
   }
 
-  return names_and_versions;
+  std::vector<blink::mojom::IDBNameAndVersionPtr> result;
+  for (const auto& [name, version] : names_and_versions) {
+    result.emplace_back(blink::mojom::IDBNameAndVersion::New(name, version));
+  }
+  return result;
 }
 
 StatusOr<std::unique_ptr<BackingStore::Database>>
