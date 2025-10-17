@@ -55,10 +55,6 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
     return latest_lcp_details_;
   }
 
-  void ResetMetricsLcp() {
-    latest_lcp_details_ = LargestContentfulPaintDetails();
-  }
-
   void Trace(Visitor* visitor) const;
 
  private:
