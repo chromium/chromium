@@ -162,31 +162,24 @@ void VariationsIdsProvider::SetLowEntropySourceValue(
 }
 
 VariationsIdsProvider::ForceIdsResult VariationsIdsProvider::ForceVariationIds(
+    base::PassKey<VariationsFieldTrialCreator> pass_key,
     const std::vector<std::string>& variation_ids,
     const std::string& command_line_variation_ids) {
-  base::AutoLock scoped_lock(lock_);
+  return ForceVariationIdsImpl(variation_ids, command_line_variation_ids);
+}
 
-  force_enabled_ids_set_.clear();
-  ResetLastUpdateTime();
-
-  if (!AddVariationIdsToSet(variation_ids, /*should_dedupe=*/true,
-                            &force_enabled_ids_set_)) {
-    return ForceIdsResult::INVALID_VECTOR_ENTRY;
-  }
-
-  if (!ParseVariationIdsParameter(command_line_variation_ids,
-                                  /*should_dedupe=*/true,
-                                  &force_enabled_ids_set_)) {
-    return ForceIdsResult::INVALID_SWITCH_ENTRY;
-  }
-  return ForceIdsResult::SUCCESS;
+VariationsIdsProvider::ForceIdsResult VariationsIdsProvider::ForceVariationIds(
+    base::PassKey<android_webview::AwBrowserMainParts> pass_key,
+    const std::vector<std::string>& variation_ids,
+    const std::string& command_line_variation_ids) {
+  return ForceVariationIdsImpl(variation_ids, command_line_variation_ids);
 }
 
 VariationsIdsProvider::ForceIdsResult
 VariationsIdsProvider::ForceVariationIdsForTesting(
     const std::vector<std::string>& variation_ids,
     const std::string& command_line_variation_ids) {
-  return ForceVariationIds(variation_ids, command_line_variation_ids);
+  return ForceVariationIdsImpl(variation_ids, command_line_variation_ids);
 }
 
 bool VariationsIdsProvider::ForceDisableVariationIds(
@@ -379,6 +372,28 @@ void VariationsIdsProvider::MaybeUpdateVariationIDsAndHeaders() {
   for (auto* observer : observer_list_) {
     observer->VariationIdsHeaderUpdated();
   }
+}
+
+VariationsIdsProvider::ForceIdsResult
+VariationsIdsProvider::ForceVariationIdsImpl(
+    const std::vector<std::string>& variation_ids,
+    const std::string& command_line_variation_ids) {
+  base::AutoLock scoped_lock(lock_);
+
+  force_enabled_ids_set_.clear();
+  ResetLastUpdateTime();
+
+  if (!AddVariationIdsToSet(variation_ids, /*should_dedupe=*/true,
+                            &force_enabled_ids_set_)) {
+    return ForceIdsResult::INVALID_VECTOR_ENTRY;
+  }
+
+  if (!ParseVariationIdsParameter(command_line_variation_ids,
+                                  /*should_dedupe=*/true,
+                                  &force_enabled_ids_set_)) {
+    return ForceIdsResult::INVALID_SWITCH_ENTRY;
+  }
+  return ForceIdsResult::SUCCESS;
 }
 
 void VariationsIdsProvider::AddActiveVariationIds(base::Time current_time) {

@@ -100,32 +100,32 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Invalid) {
 
   // Invalid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
-            provider.ForceVariationIds({"abcd12", "456"}, ""));
+            provider.ForceVariationIdsForTesting({"abcd12", "456"}, ""));
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Invalid trigger experiment id
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
-            provider.ForceVariationIds({"12", "tabc456"}, ""));
+            provider.ForceVariationIdsForTesting({"12", "tabc456"}, ""));
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Invalid command-line ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY,
-            provider.ForceVariationIds({"12", "50"}, "tabc456"));
+            provider.ForceVariationIdsForTesting({"12", "50"}, "tabc456"));
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Duplicate experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
-            provider.ForceVariationIds({"1", "2", "t1"}, ""));
+            provider.ForceVariationIdsForTesting({"1", "2", "t1"}, ""));
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Duplicate command-line ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY,
-            provider.ForceVariationIds({}, "t10,11,10"));
+            provider.ForceVariationIdsForTesting({}, "t10,11,10"));
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Duplicate experiment and command-line ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY,
-            provider.ForceVariationIds({"20", "t21"}, "21"));
+            provider.ForceVariationIdsForTesting({"20", "t21"}, "21"));
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 }
 
@@ -136,7 +136,7 @@ TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_ValidCommandLine) {
 
   // Valid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
-            provider.ForceVariationIds({"1", "2", "t3", "t4"}, "5,6,t7,t8"));
+            provider.ForceVariationIdsForTesting({"1", "2", "t3", "t4"}, "5,6,t7,t8"));
   EXPECT_TRUE(provider.ForceDisableVariationIds("2,t4,6,t8"));
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
@@ -374,7 +374,7 @@ TEST_F(VariationsIdsProviderTest, GetGoogleAppVariationsString) {
       VariationsIdsProvider::Mode::kUseSignedInState);
   auto& provider = *scoped_provider;
 
-  provider.ForceVariationIds({"100", "200"}, "");
+  provider.ForceVariationIdsForTesting({"100", "200"}, "");
   EXPECT_EQ(" 126 ", provider.GetGoogleAppVariationsString());
 }
 
@@ -399,7 +399,7 @@ TEST_F(VariationsIdsProviderTest, GetVariationsString) {
       VariationsIdsProvider::Mode::kUseSignedInState);
   auto& provider = *scoped_provider;
 
-  provider.ForceVariationIds({"100", "200"}, "");
+  provider.ForceVariationIdsForTesting({"100", "200"}, "");
   EXPECT_EQ(" 100 123 124 200 ", provider.GetVariationsString());
 }
 
@@ -419,7 +419,7 @@ TEST_F(VariationsIdsProviderTest, GetVariationsVector) {
       VariationsIdsProvider::Mode::kUseSignedInState);
   auto& provider = *scoped_provider;
 
-  provider.ForceVariationIds({"100", "200", "t101"}, "");
+  provider.ForceVariationIdsForTesting({"100", "200", "t101"}, "");
 
    // Test Non-Trigger IDS, separately and together.
   EXPECT_EQ((std::vector<VariationID>{100, 121, 200}),
@@ -483,7 +483,7 @@ TEST_F(VariationsIdsProviderTest, GetTimeboxedVariationsVector) {
 
   provider.SetClockFunc(base::BindRepeating(
       &VariationsIdsProviderTest::MyClockFunc, base::Unretained(this)));
-  provider.ForceVariationIds({"100", "200", "t101"}, "");
+  provider.ForceVariationIdsForTesting({"100", "200", "t101"}, "");
 
   // Day 1: The Day 0 and forced variations ids are active.
   // Note that the order of the IDs is deterministic, so we can assert on the
@@ -573,7 +573,7 @@ TEST_F(VariationsIdsProviderTest, GetVariationsVectorForWebPropertiesKeys) {
       VariationsIdsProvider::Mode::kUseSignedInState);
   auto& provider = *scoped_provider;
 
-  provider.ForceVariationIds({"100", "t101"}, "");
+  provider.ForceVariationIdsForTesting({"100", "t101"}, "");
   EXPECT_EQ((std::vector<VariationID>{100, 101, 121, 122, 123, 124, 125}),
             provider.GetVariationsVectorForWebPropertiesKeys());
 }

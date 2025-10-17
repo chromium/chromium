@@ -347,7 +347,9 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
   variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
-      getIdsForWebViewApkType(apk_type), "");
+      base::PassKey<AwBrowserMainParts>(),
+      /*variation_ids=*/getIdsForWebViewApkType(apk_type),
+      /*command_line_variation_ids=*/"");
 
   // Set up experiment for 64-bit WebView.
   //

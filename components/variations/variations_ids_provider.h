@@ -16,11 +16,16 @@
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/synchronization/lock.h"
+#include "base/types/pass_key.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/synthetic_trials.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+
+namespace android_webview {
+class AwBrowserMainParts;
+}  // namespace android_webview
 
 namespace variations {
 namespace internal {
@@ -37,6 +42,7 @@ class ScopedVariationsIdsProvider;
 }  // namespace test
 
 class VariationsClient;
+class VariationsFieldTrialCreator;
 
 // The key for a VariationsIdsProvider's `variations_headers_map_`. A
 // VariationsHeaderKey provides more details about the VariationsIDs included in
@@ -153,19 +159,25 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
     INVALID_SWITCH_ENTRY,  // Invalid entry in `command_line_variation_ids`.
   };
 
-  // TODO: b/315411418 - Restrict access to approved call sites.
   // Sets *additional* variation ids and trigger variation ids to be encoded in
   // the X-Client-Data request header. This is intended for development use to
   // force a server side experiment id. `variation_ids` should be a list of
   // strings of numeric experiment ids. Ids explicitly passed in `variation_ids`
   // and those in the comma-separated `command_line_variation_ids` are added.
+  //
+  // This function is restricted to be used from only two specific locations for
+  // privacy reasons.
   ForceIdsResult ForceVariationIds(
+      base::PassKey<VariationsFieldTrialCreator> pass_key,
+      const std::vector<std::string>& variation_ids,
+      const std::string& command_line_variation_ids);
+  ForceIdsResult ForceVariationIds(
+      base::PassKey<android_webview::AwBrowserMainParts> pass_key,
       const std::vector<std::string>& variation_ids,
       const std::string& command_line_variation_ids);
 
   // Alias for the above function, but for testing. All test uses should be via
-  // this function. Once that is the case, the above function will be restricted
-  // to call sites that are approved to use it.
+  // this function.
   ForceIdsResult ForceVariationIdsForTesting(
       const std::vector<std::string>& variation_ids,
       const std::string& command_line_variation_ids);
@@ -222,6 +234,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // Updates `active_variation_ids_set_` and `variations_headers_map_` if
   // necessary.
   void MaybeUpdateVariationIDsAndHeaders() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Implementation of ForceVariationIds().
+  ForceIdsResult ForceVariationIdsImpl(
+    const std::vector<std::string>& variation_ids,
+    const std::string& command_line_variation_ids);
 
   // Helpers to manage the variation ids in `active_variation_ids_set_`. These
   // are expected to be called from `MaybeUpdateVariationIDsAndHeaders()`.

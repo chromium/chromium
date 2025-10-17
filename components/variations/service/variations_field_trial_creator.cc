@@ -254,6 +254,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   // Force the variation ids selected in chrome://flags and/or specified using
   // the command-line flag.
   auto result = http_header_provider->ForceVariationIds(
+      base::PassKey<VariationsFieldTrialCreator>(),
       variation_ids, command_line_variation_ids);
 
   switch (result) {
