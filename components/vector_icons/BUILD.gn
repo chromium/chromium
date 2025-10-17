@@ -183,6 +183,7 @@ if (current_toolchain == default_toolchain) {
       "pause.icon",
       "pause_chrome_refresh.icon",
       "person_check.icon",
+      "person_text.icon",
       "photo.icon",
       "photo_chrome_refresh.icon",
       "photo_off_chrome_refresh.icon",

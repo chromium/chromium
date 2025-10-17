@@ -77,6 +77,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
@@ -914,11 +915,23 @@ void ProfileMenuView::MaybeBuildBatchUploadButton() {
 
 void ProfileMenuView::BuildAutofillSettingsButton() {
   CHECK(!profile().IsGuestSession());
+
+  int message_id = IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON;
+  const gfx::VectorIcon* icon = &vector_icons::kPasswordManagerIcon;
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoSettingsPage) ||
+      base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoBrandingInSettings)) {
+    message_id = IDS_SETTINGS_YOUR_SAVED_INFO;
+    icon = &vector_icons::kPersonTextIcon;
+  }
+
   AddFeatureButton(
-      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON),
+      l10n_util::GetStringUTF16(message_id),
       base::BindRepeating(&ProfileMenuView::OnAutofillSettingsButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kPasswordManagerIcon);
+      *icon);
 }
 
 void ProfileMenuView::BuildCustomizeProfileButton() {
