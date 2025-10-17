@@ -832,7 +832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.StartupState"
-    enum="NotificationPermissionState" expires_after="2023-12-31">
+    enum="NotificationPermissionState" expires_after="2026-12-31">
   <owner>salg@google.com</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
