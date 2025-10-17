@@ -142,7 +142,7 @@ class OneTimeMessageHandler {
                   const PortId& port_id,
                   const std::string& error_message);
 
-  // See OneTimeMessageCallbackManager::GetPendingCallbackCountForTesting().
+  // See OneTimeMessageCallbackManager::GetPendingCallbackCountForTest().
   int GetPendingCallbackCountForTest(ScriptContext* script_context,
                                      const PortId& port_id);
 
