@@ -430,6 +430,7 @@ component("base") {
     "memory_coordinator/memory_consumer.h",
     "memory_coordinator/memory_consumer_registry.cc",
     "memory_coordinator/memory_consumer_registry.h",
+    "memory_coordinator/memory_consumer_registry_destruction_observer.h",
     "memory_coordinator/traits.h",
     "message_loop/io_watcher.cc",
     "message_loop/io_watcher.h",

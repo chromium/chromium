@@ -51,6 +51,8 @@ void ChildMemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
 ChildMemoryConsumerRegistry::ChildMemoryConsumerRegistry() = default;
 
 ChildMemoryConsumerRegistry::~ChildMemoryConsumerRegistry() {
+  NotifyDestruction();
+
   CHECK(consumer_groups_.empty());
   CHECK(child_memory_consumers_.empty());
   CHECK(consumer_infos_.empty());

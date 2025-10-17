@@ -11,22 +11,25 @@
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/sequence_checker.h"
 
 namespace base {
 
-class MemoryConsumer;
 class SingleThreadTaskRunner;
 
 // Used to register a MemoryConsumer that does not live on the main thread,
 // which means that the consumer will receive its notifications asynchronously.
 class BASE_EXPORT AsyncMemoryConsumerRegistration {
  public:
+  using CheckUnregister = MemoryConsumerRegistration::CheckUnregister;
+
   AsyncMemoryConsumerRegistration(
       std::string_view consumer_id,
       MemoryConsumerTraits traits,
-      MemoryConsumer* consumer);
+      MemoryConsumer* consumer,
+      CheckUnregister check_unregister = CheckUnregister::kEnabled);
   ~AsyncMemoryConsumerRegistration();
 
  private:

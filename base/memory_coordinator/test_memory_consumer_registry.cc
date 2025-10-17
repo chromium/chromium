@@ -16,6 +16,7 @@ TestMemoryConsumerRegistry::TestMemoryConsumerRegistry() {
 }
 
 TestMemoryConsumerRegistry::~TestMemoryConsumerRegistry() {
+  NotifyDestruction();
   MemoryConsumerRegistry::Set(nullptr);
 
   CHECK(memory_consumers_.empty());

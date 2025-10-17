@@ -112,6 +112,8 @@ void BrowserMemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
 BrowserMemoryConsumerRegistry::BrowserMemoryConsumerRegistry() = default;
 
 BrowserMemoryConsumerRegistry::~BrowserMemoryConsumerRegistry() {
+  NotifyDestruction();
+
   // Clear all references to consumers that live in a child process, as it's not
   // worth the hassle to wait until all disconnect notifications are received.
 
