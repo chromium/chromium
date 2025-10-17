@@ -24,11 +24,11 @@ class CollectionStorageObserver : public TabCollectionObserver {
       delete;
 
   // TabCollectionObserver Implementation:
-  void OnChildrenAdded(const Position& position,
+  void OnChildrenAdded(const TabCollection::Position& position,
                        const TabCollectionNodes& handles) override;
   void OnChildrenRemoved(const TabCollectionNodes& handles) override;
-  void OnChildrenMoved(const Position& position,
-                       const TabCollectionNodes& handles) override;
+  void OnChildMoved(const TabCollection::Position& to_position,
+                    const NodeData& node_data) override;
 
  private:
   raw_ptr<TabStateStorageService> service_;

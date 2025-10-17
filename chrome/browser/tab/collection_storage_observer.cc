@@ -15,14 +15,14 @@ CollectionStorageObserver::CollectionStorageObserver(
 CollectionStorageObserver::~CollectionStorageObserver() = default;
 
 void CollectionStorageObserver::OnChildrenAdded(
-    const Position& position,
+    const TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles) {}
 
 void CollectionStorageObserver::OnChildrenRemoved(
     const tabs::TabCollectionNodes& handles) {}
 
-void CollectionStorageObserver::OnChildrenMoved(
-    const Position& position,
-    const tabs::TabCollectionNodes& handles) {}
+void CollectionStorageObserver::OnChildMoved(
+    const TabCollection::Position& to_position,
+    const NodeData& node_data) {}
 
 }  // namespace tabs

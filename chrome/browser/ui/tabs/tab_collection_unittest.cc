@@ -647,7 +647,8 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
             tab_groups::TabGroupVisualData());
     tabs::TabGroupTabCollection* group_one_ptr = group_one.get();
     AddTabsToGroupContainer(group_one_ptr, GetTabStripModel(), 2);
-    tab_strip_collection->AddTabGroup(std::move(group_one), 6);
+    tab_strip_collection->InsertTabCollectionAt(std::move(group_one), 6, false,
+                                                std::nullopt);
 
     // Add one more tab.
     AppendTab(unpinned_collection, std::make_unique<tabs::TabModel>(
@@ -744,15 +745,17 @@ TEST_F(TabStripCollectionTest, GroupOperations) {
   //     tab_strip_collection->AddTabGroup(std::move(group_two), 2), "");
 
   // Add group to unpinned container.
+  tab_strip_collection->InsertTabCollectionAt(std::move(group_two), 5, false,
+                                              std::nullopt);
   EXPECT_EQ(group_two_ptr,
-            tab_strip_collection->AddTabGroup(std::move(group_two), 5));
+            tab_strip_collection->GetTabGroupCollection(group_two_id));
   EXPECT_EQ(group_two_ptr,
             tab_strip_collection->GetTabGroupCollection(group_two_id));
   EXPECT_EQ(1ul,
             tab_strip_collection->unpinned_collection()->GetIndexOfCollection(
                 group_two_ptr));
   EXPECT_EQ(group_two_ptr,
-            tab_strip_collection->RemoveGroup(group_two_ptr).get());
+            tab_strip_collection->RemoveTabCollection(group_two_ptr).get());
   EXPECT_EQ(nullptr, tab_strip_collection->GetTabGroupCollection(group_two_id));
 }
 
@@ -884,7 +887,7 @@ TEST_F(TabStripCollectionTest, RemoveAndInsertSplit) {
   // 0p 3p 4u 5u 6ug 7ug 8u
   std::unique_ptr<tabs::SplitTabCollection> removed_split_collection =
       base::WrapUnique(static_cast<tabs::SplitTabCollection*>(
-          tab_strip_collection->RemoveSplit(split).release()));
+          tab_strip_collection->RemoveTabCollection(split).release()));
 
   EXPECT_EQ(2ul, pinned_collection->TabCountRecursive());
   EXPECT_FALSE(
@@ -903,7 +906,7 @@ TEST_F(TabStripCollectionTest, RemoveAndInsertSplit) {
 
   removed_split_collection =
       base::WrapUnique(static_cast<tabs::SplitTabCollection*>(
-          tab_strip_collection->RemoveSplit(split).release()));
+          tab_strip_collection->RemoveTabCollection(split).release()));
 
   tab_strip_collection->InsertTabCollectionAt(
       std::move(removed_split_collection), 3, false, std::nullopt);
@@ -915,7 +918,7 @@ TEST_F(TabStripCollectionTest, RemoveAndInsertSplit) {
   // 0p 3p 4u 5u 6ug 1gs 2gs 7ug 8u
   removed_split_collection =
       base::WrapUnique(static_cast<tabs::SplitTabCollection*>(
-          tab_strip_collection->RemoveSplit(split).release()));
+          tab_strip_collection->RemoveTabCollection(split).release()));
 
   tab_strip_collection->InsertTabCollectionAt(
       std::move(removed_split_collection), 5, false,

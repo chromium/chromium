@@ -499,7 +499,7 @@ TabStripModel::DetachTabGroupForInsertion(
   std::unique_ptr<tabs::TabCollection> detached_collection =
       DetachTabCollectionImpl(
           contents_data_->GetTabGroupCollection(group_id),
-          base::BindOnce(&tabs::TabStripCollection::RemoveGroup,
+          base::BindOnce(&tabs::TabStripCollection::RemoveTabCollection,
                          base::Unretained(contents_data_.get()),
                          contents_data_->GetTabGroupCollection(group_id)),
           base::BindOnce(&TabStripModel::NotifyTabGroupDetached,
@@ -540,7 +540,7 @@ TabStripModel::DetachSplitTabForInsertion(
   std::unique_ptr<tabs::TabCollection> detached_collection =
       DetachTabCollectionImpl(
           contents_data_->GetSplitTabCollection(split_id),
-          base::BindOnce(&tabs::TabStripCollection::RemoveSplit,
+          base::BindOnce(&tabs::TabStripCollection::RemoveTabCollection,
                          base::Unretained(contents_data_.get()),
                          contents_data_->GetSplitTabCollection(split_id)),
           base::BindOnce(&TabStripModel::NotifySplitTabDetached,

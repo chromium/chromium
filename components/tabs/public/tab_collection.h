@@ -233,11 +233,17 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   using NodeHandle = std::variant<Handle, TabHandle>;
   using NodeHandles = std::vector<NodeHandle>;
 
-  void NotifyOnChildrenAdded(
-      base::PassKey<TabCollection> pass_key,
-      const NodeHandles& handles,
-      const std::pair<tabs::TabCollection*, int>& insertion_details,
-      TabCollection* notification_root);
+  // The parent collection and direct index within the parent collection for a
+  // child node. This uniquely determines the position of a node in the tree.
+  struct Position {
+    TabCollection::Handle parent_handle;
+    size_t index;
+  };
+
+  void NotifyOnChildrenAdded(base::PassKey<TabCollection> pass_key,
+                             const NodeHandles& handles,
+                             const Position& insertion_position,
+                             TabCollection* notification_root);
 
   void NotifyOnChildrenRemoved(base::PassKey<TabCollection> pass_key,
                                const NodeHandles& handles,
