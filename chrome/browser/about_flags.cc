@@ -1394,6 +1394,32 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxContextualSearchOnFocusSuggestionsLimit4), nullptr},
 };
 
+const FeatureEntry::FeatureParam kOmniboxAimEntryPointHintLimitsDaily1[] = {
+    {"HideAimHintText", "false"},
+    {"HideAimHintTextOnNtpOpen", "false"},
+    {"AimHintImpressionLimitDaily", "1"},
+    {"AimHintImpressionLimitTotal", "5"},
+    {"EnableHintImpressionLimits", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimEntryPointHintLimitsDaily3[] = {
+    {"HideAimHintText", "false"},
+    {"HideAimHintTextOnNtpOpen", "false"},
+    {"AimHintImpressionLimitDaily", "3"},
+    {"AimHintImpressionLimitTotal", "10"},
+    {"EnableHintImpressionLimits", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimEntryPointHintLimitsUnlimited[] = {
+    {"HideAimHintText", "false"},
+    {"HideAimHintTextOnNtpOpen", "false"},
+    {"EnableHintImpressionLimits", "false"}};
+
+const FeatureEntry::FeatureVariation kOmniboxAiModeEntryPointVariations[] = {
+    {"Hint Limits Daily 1 Total 5", kOmniboxAimEntryPointHintLimitsDaily1,
+     std::size(kOmniboxAimEntryPointHintLimitsDaily1), nullptr},
+    {"Hint Limits Daily 3 Total 10", kOmniboxAimEntryPointHintLimitsDaily3,
+     std::size(kOmniboxAimEntryPointHintLimitsDaily3), nullptr},
+    {"Hint Limits Unlimited", kOmniboxAimEntryPointHintLimitsUnlimited,
+     std::size(kOmniboxAimEntryPointHintLimitsUnlimited), nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kContextualSuggestionsAblateOthersWhenPresentAblateAll[] = {
         {"AblateSearchOnly", "false"},
@@ -6939,7 +6965,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"ai-mode-omnibox-entry-point",
      flag_descriptions::kAiModeOmniboxEntryPointName,
      flag_descriptions::kAiModeOmniboxEntryPointDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kAiModeOmniboxEntryPoint)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kAiModeOmniboxEntryPoint,
+                                    kOmniboxAiModeEntryPointVariations,
+                                    "OmniboxAiModeEntryPointVariations")},
 
     {"hide-aim-omnibox-entrypoint-on-user-input",
      flag_descriptions::kHideAimOmniboxEntrypointOnUserInputName,
