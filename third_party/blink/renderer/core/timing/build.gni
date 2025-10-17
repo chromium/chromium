@@ -14,6 +14,8 @@ blink_core_sources_timing = [
   "event_counts.h",
   "event_timing.cc",
   "event_timing.h",
+  "global_performance.cc",
+  "global_performance.h",
   "largest_contentful_paint.cc",
   "largest_contentful_paint.h",
   "interaction_contentful_paint.cc",

@@ -34,31 +34,16 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/timing/worker_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class WorkerGlobalScope;
 
-class CORE_EXPORT WorkerGlobalScopePerformance final
-    : public GarbageCollected<WorkerGlobalScopePerformance>,
-      public Supplement<WorkerGlobalScope> {
+class CORE_EXPORT WorkerGlobalScopePerformance final {
  public:
-  static const char kSupplementName[];
-
-  static WorkerGlobalScopePerformance& From(WorkerGlobalScope&);
-
   static WorkerPerformance* performance(WorkerGlobalScope&);
 
   explicit WorkerGlobalScopePerformance(WorkerGlobalScope&);
-
-  void Trace(Visitor*) const override;
-
- private:
-  WorkerPerformance* performance(WorkerGlobalScope*);
-
-  Member<WorkerPerformance> performance_;
 };
 
 }  // namespace blink
