@@ -7,7 +7,12 @@ import {$} from 'chrome://resources/js/util.js';
 
 import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
 import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
-import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
+import {
+    DumpCreator,
+    peerConnectionDataStore,
+    userMediaRequests,
+    addRtcStatsEvent
+} from './dump_creator.js';
 import {PeerConnectionUpdateTable} from './peer_connection_update_table.js';
 import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js';
 import {StatsRatesCalculator} from './stats_rates_calculator.js';
@@ -81,16 +86,15 @@ class PeerConnectionRecord {
   }
 
   /**
-   * @param {!Object} update The object contains keys "time", "type", and
+   * @param {!Object} update The object contains keys "timestamp", "type", and
    *   "value".
    */
   addUpdate(update) {
     const time = new Date(parseFloat(update.time));
     this.record_.updateLog.push({
-      timestamp: parseFloat(update.time),
-      time: time.toLocaleString(), // deprecated, prefer timestamp.
       type: update.type,
       value: update.value,
+      timestamp: update.timestamp,
     });
   }
 }
@@ -112,10 +116,60 @@ function initialize() {
   addWebUiListener('add-media', (data) => {
     userMediaRequests.push(data);
     userMediaTable.addMedia(data)
+    const constraints = {};
+    ['audio', 'video'].forEach(kind => {
+      if (data[kind] !== undefined) {
+        if (data[kind] === '') {
+          constraints[kind] = true;
+        } else {
+          constraints[kind] = data[kind];
+        }
+      }
+    });
+    addRtcStatsEvent(
+      data.request_type,
+      [data.rid, 0].join('-'),
+      constraints,
+      // correlation id.
+      [data.request_type, data.rid, data.pid, data.request_id].join('-'),
+      data.url,
+      data.timestamp
+    );
   });
   addWebUiListener('update-media', (data) => {
     userMediaRequests.push(data);
     userMediaTable.updateMedia(data);
+    if (data.error) {
+      addRtcStatsEvent(
+        data.request_type + 'OnFailure',
+        [data.rid, 0].join('-'),
+        {
+          error: data.error,
+          error_message: data.error_message
+        },
+        // correlation id.
+        [data.request_type, data.rid, data.pid, data.request_id].join('-'),
+        data.timestamp
+      );
+    } else {
+      const tracks = [];
+      if (data.audio_track_info !== 'null') {
+        const track_data = JSON.parse(data.audio_track_info);
+        tracks.push(['audio', track_data.id, track_data.label, data.stream_id]);
+      }
+      if (data.video_track_info !== 'null') {
+        const track_data = JSON.parse(data.video_track_info);
+        tracks.push(['video', track_data.id, track_data.label, data.stream_id]);
+      }
+      addRtcStatsEvent(
+        data.request_type + 'OnSuccess',
+        [data.rid, 0].join('-'),
+        tracks,
+        // correlation id.
+        [data.request_type, data.rid, data.pid, data.request_id].join('-'),
+        data.timestamp
+      );
+    }
   });
   addWebUiListener('remove-media-for-renderer', (data) => {
     for (let i = userMediaRequests.length - 1; i >= 0; --i) {
@@ -162,6 +216,26 @@ function initialize() {
     }
   }
   window.setInterval(requestStats, statsInterval);
+
+  addRtcStatsEvent(
+    'create',
+    null,
+    {
+      hardwareConcurrency: navigator.hardwareConcurrency,
+      userAgentData: navigator.userAgentData,
+      deviceMemory: navigator.deviceMemory,
+      screen: {
+        width: window.screen.availWidth,
+        height: window.screen.availHeight,
+        devicePixelRatio: window.devicePixelRatio,
+      },
+      window: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      },
+    },
+    Date.now()
+  );
 }
 document.addEventListener('DOMContentLoaded', initialize);
 
@@ -211,6 +285,12 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
   peerConnectionUpdateTable.addPeerConnectionUpdate(
       peerConnectionElement, update);
   peerConnectionDataStore[peerConnectionElement.id].addUpdate(update);
+  addRtcStatsEvent(
+    update.type,
+    getPeerConnectionId(update),
+    update.value.length > 0 ? JSON.parse(update.value) : undefined,
+    update.timestamp
+  );
 }
 
 
@@ -235,6 +315,14 @@ function removePeerConnection(data) {
     delete peerConnectionDataStore[element.id];
     tabView.removeTab(element.id);
   }
+  // The rtcstats variant could remove from the array based on
+  // peerconnection id but only logs the peerconnection went away.
+  addRtcStatsEvent(
+    'remove',
+    getPeerConnectionId(data),
+    undefined,
+    Date.now()
+  );
 }
 
 /**
@@ -251,6 +339,26 @@ function addPeerConnection(data) {
   }
   peerConnectionDataStore[id].initialize(
       data.pid, data.url, data.rtcConfiguration, data.constraints);
+
+  if (data.rtcConfiguration) {
+    addRtcStatsEvent(
+      'create',
+      getPeerConnectionId(data),
+      JSON.parse(data.rtcConfiguration),
+      data.url,
+      data.timestamp
+    );
+  }
+  // Nonstandard legacy constraints.
+  if (data.constraints) {
+    addRtcStatsEvent(
+      'constraints',
+      getPeerConnectionId(data),
+      JSON.parse(data.constraints),
+      data.url,
+      data.timestamp
+    );
+  }
 
   // Disable getElementById restriction here, since |id| is not always
   // a valid selector.
@@ -371,6 +479,15 @@ function addStandardStats(data) {
   // Create a map from the stats entries so it behaves like a getStats maplike
   // and then sort it.
   const stats = sortStatsReport(new Map(data.reports));
+  addRtcStatsEvent(
+    'getStats',
+    getPeerConnectionId(data),
+    stats.entries().reduce((o, [k, v]) => {
+      o[k] = v;
+      return o;
+    }, {}),
+    data.timestamp
+  );
 
   // This augments stats with [delta] values.
   statsRatesCalculator.addStatsReport(stats);

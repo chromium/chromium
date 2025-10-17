@@ -170,8 +170,9 @@ class WebRtcInternalsTest : public testing::Test {
 
     VerifyInt(dict, "rid", frame_id.child_id);
     VerifyInt(dict, "pid", pid);
-    // origin is the empty string in tests.
+    // origin/url is the empty string in tests.
     VerifyString(dict, "origin", "");
+    VerifyString(dict, "url", "");
     VerifyInt(dict, "request_id", request_id);
     VerifyString(dict, "request_type", request_type);
     VerifyString(dict, "audio", audio);
@@ -377,10 +378,7 @@ TEST_F(WebRtcInternalsTest, SendUpdatePeerConnectionUpdate) {
   VerifyInt(dict, "lid", kLid);
   VerifyString(dict, "type", update_type);
   VerifyString(dict, "value", update_value);
-
-  const std::string* time = dict.FindString("time");
-  ASSERT_TRUE(time);
-  EXPECT_FALSE(time->empty());
+  EXPECT_TRUE(dict.FindDouble("timestamp"));
 
   webrtc_internals.OnPeerConnectionRemoved(kFrameId, kLid);
   webrtc_internals.RemoveObserver(&observer);
@@ -597,6 +595,7 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   VerifyInt(dict, "pid", kPid);
   VerifyString(dict, "url", kUrl);
   VerifyString(dict, "rtcConfiguration", kRtcConfiguration);
+  EXPECT_TRUE(dict.FindDouble("timestamp"));
 
   const base::Value::List* log_value = dict.FindList("log");
   ASSERT_TRUE(log_value);
@@ -606,10 +605,6 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   const base::Value::Dict& inner_dict = log_value->begin()->GetDict();
   VerifyString(inner_dict, "type", update_type);
   VerifyString(inner_dict, "value", update_value);
-
-  const std::string* time = inner_dict.FindString("time");
-  ASSERT_TRUE(time);
-  EXPECT_FALSE(time->empty());
 
   base::RunLoop().RunUntilIdle();
 }

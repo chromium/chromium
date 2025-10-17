@@ -188,6 +188,7 @@ void WebRTCInternals::OnPeerConnectionAdded(GlobalRenderFrameHostId frame_id,
   dict.Set("url", url);
   dict.Set("isOpen", true);
   dict.Set("connected", false);
+  dict.Set("timestamp", base::Time::Now().InMillisecondsFSinceUnixEpoch());
 
   if (!observers_.empty())
     SendUpdate("add-peer-connection", dict.Clone());
@@ -250,9 +251,7 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
 
   base::Value::Dict log_entry;
 
-  double epoch_time = base::Time::Now().InMillisecondsFSinceUnixEpoch();
-  string time = base::NumberToString(epoch_time);
-  log_entry.Set("time", time);
+  log_entry.Set("timestamp", base::Time::Now().InMillisecondsFSinceUnixEpoch());
   log_entry.Set("type", type);
   log_entry.Set("value", value);
 
@@ -279,6 +278,7 @@ void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
   dict.Set("rid", frame_id.child_id);
   dict.Set("lid", lid);
 
+  dict.Set("timestamp", base::Time::Now().InMillisecondsFSinceUnixEpoch());
   dict.Set("reports", std::move(value));
 
   SendUpdate("add-standard-stats", std::move(dict));
@@ -303,6 +303,7 @@ void WebRTCInternals::OnGetMedia(const std::string& request_type,
   RenderFrameHost* rfh = RenderFrameHost::FromID(frame_id);
   // Frame may be gone (and does not exist in tests).
   std::string origin = rfh ? rfh->GetLastCommittedOrigin().Serialize() : "";
+  std::string url = rfh ? rfh->GetLastCommittedURL().spec() : "";
 
   base::Value::Dict dict;
   dict.Set("rid", frame_id.child_id);
@@ -310,6 +311,7 @@ void WebRTCInternals::OnGetMedia(const std::string& request_type,
   dict.Set("request_id", request_id);
   dict.Set("request_type", request_type);
   dict.Set("origin", origin);
+  dict.Set("url", url);
   dict.Set("timestamp", base::Time::Now().InMillisecondsFSinceUnixEpoch());
   if (audio)
     dict.Set("audio", audio_constraints);

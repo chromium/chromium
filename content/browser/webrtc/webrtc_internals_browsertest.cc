@@ -103,10 +103,15 @@ class PeerConnectionEntry {
 
   string getAllUpdateString() const {
     std::stringstream ss;
-    ss << "{rid:" << rid_ << ", lid:" << lid_ << ", log:[";
+    ss << "{\"rid\": \"" << rid_ << "\", "
+       << "\"lid\": \"" << lid_ << "\", "
+       << "\"log\":[";
     for (size_t i = 0; i < events_.size(); ++i) {
-      ss << "{type:'" << events_[i].type <<
-          "', value:'" << events_[i].value << "'},";
+      ss << "{\"type\": \"" << events_[i].type << "\", "
+         << "\"value\": \"" << events_[i].value << "\"}";
+      if (i != events_.size() - 1) {
+        ss << ", ";
+      }
     }
     ss << "]}";
     return ss.str();
@@ -170,8 +175,12 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
   // Execute the javascript of addPeerConnection.
   void ExecuteAddPeerConnectionJs(const PeerConnectionEntry& pc) {
     std::stringstream ss;
-    ss << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << ", pid:" << 0 << ", "
-       << "url:'u', rtcConfiguration:'s', constraints:'c'}";
+    ss << "{\"rid\": \"" << pc.rid_ << "\", "
+       << "\"lid\": \"" << pc.lid_ << "\", "
+       << "\"pid\": \"0\", "
+       << "\"url\": \"u\", "
+       << "\"rtcConfiguration\": \"{}\","
+       << "\"constraints\": \"{}\"}";
     ASSERT_TRUE(ExecuteJavascript(
         "cr.webUIListenerCallback('add-peer-connection', " + ss.str() + ");"));
   }
@@ -179,7 +188,8 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
   // Execute the javascript of removePeerConnection.
   void ExecuteRemovePeerConnectionJs(const PeerConnectionEntry& pc) {
     std::stringstream ss;
-    ss << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << "}";
+    ss << "{\"rid\": \"" << pc.rid_ << "\", "
+       << "\"lid\": \"" << pc.lid_ << "\"}";
 
     ASSERT_TRUE(ExecuteJavascript(
         "cr.webUIListenerCallback('remove-peer-connection', " + ss.str() +
@@ -406,11 +416,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, UpdateAllPeerConnections) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   PeerConnectionEntry pc_0(1, 0);
-  pc_0.AddEvent("e1", "v1");
-  pc_0.AddEvent("e2", "v2");
+  pc_0.AddEvent("e1", "1");
+  pc_0.AddEvent("e1", "2");
   PeerConnectionEntry pc_1(1, 1);
-  pc_1.AddEvent("e3", "v3");
-  pc_1.AddEvent("e4", "v4");
+  pc_1.AddEvent("e3", "3");
+  pc_1.AddEvent("e4", "4");
   string pc_array = "[" + pc_0.getAllUpdateString() + ", " +
                           pc_1.getAllUpdateString() + "]";
   EXPECT_TRUE(ExecuteJavascript(
