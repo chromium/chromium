@@ -26,6 +26,8 @@ class PinnedTabCollection;
 class TabGroupTabCollection;
 class SplitTabCollection;
 
+using NodeMovePosition = std::tuple<ChildPtr, size_t>;
+
 // TabStripCollection is the storage representation of a tabstrip
 // in a browser. This contains a pinned collection and an unpinned
 // collection which then contain different tabs and group.
@@ -90,7 +92,6 @@ class TabStripCollection : public TabCollection {
   // Returns a list of all tab group IDs, the order of the IDs is not
   // guaranteed.
   std::vector<tab_groups::TabGroupId> GetAllTabGroupIds() const;
-  void MoveTabGroupTo(const tab_groups::TabGroupId& group, int to_index);
 
   // Detached tab group operations.
 
@@ -109,6 +110,12 @@ class TabStripCollection : public TabCollection {
                    split_tabs::SplitTabVisualData visual_data);
   void Unsplit(split_tabs::SplitTabId split_id);
   void ValidateData() const;
+
+  // Helper method to calculate a valid sequence of moves when a bunch of tabs
+  // and collections are being moved to a `destination_index`.
+  std::vector<NodeMovePosition> CalculateIncrementalChildMoves(
+      ChildrenPtrs tab_or_collections,
+      size_t destination_index);
 
   std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
       const tabs::TabCollection::Handle& collection_handle,
@@ -132,6 +139,16 @@ class TabStripCollection : public TabCollection {
   // `detached_group_collections_`.
   std::unique_ptr<tabs::TabGroupTabCollection> PopDetachedGroupCollection(
       const tab_groups::TabGroupId& group_id);
+
+  void CreateGroupCollectionForMove(const ChildPtr& tab_or_collection,
+                                    size_t final_index,
+                                    tab_groups::TabGroupId new_group_id);
+
+  void MoveTabOrCollectionRecursive(
+      ChildPtr tab_or_collection,
+      size_t final_index,
+      std::optional<tab_groups::TabGroupId> new_group_id,
+      bool new_pinned_state);
 
   // Returns the list of tabs and collection to remove for `MoveTabsRecursive`.
   // `retain_collection_types` adds the fully selected collections based on the
@@ -158,6 +175,14 @@ class TabStripCollection : public TabCollection {
                    const TabCollection::Position& position);
   void MoveCollectionImpl(TabCollection* collection_ptr,
                           const TabCollection::Position& position);
+  void MoveTabImpl(TabInterface* tab_ptr,
+                   size_t final_index,
+                   std::optional<tab_groups::TabGroupId> new_group_id,
+                   bool new_pinned_state);
+  void MoveCollectionImpl(TabCollection* collection_ptr,
+                          size_t final_index,
+                          std::optional<tab_groups::TabGroupId> new_group_id,
+                          bool new_pinned_state);
 
   // Helper to compute the parent collection and direct index in the collection
   // to insert a tab or collection based on insertion properties like the
