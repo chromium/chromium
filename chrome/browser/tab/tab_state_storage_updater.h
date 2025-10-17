@@ -8,19 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/tab/storage_update_unit.h"
-#include "chrome/browser/tab/tab_state_storage_database.h"
-#include "chrome/browser/tab/tab_storage_package.h"
-#include "chrome/browser/tab/tab_storage_type.h"
 
 namespace tabs {
 
-using Transaction = TabStateStorageDatabase::Transaction;
+class StorageUpdateUnit;
+class TabStateStorageDatabase;
 
 // Atomically performs a batch of updates in storage.
 class TabStateStorageUpdater {
@@ -31,13 +24,12 @@ class TabStateStorageUpdater {
   ~TabStateStorageUpdater();
 
   void Add(std::unique_ptr<StorageUpdateUnit> unit);
-  bool PerformUpdate();
+  bool Execute();
 
  private:
   raw_ptr<TabStateStorageDatabase> db_;
 
   std::vector<std::unique_ptr<StorageUpdateUnit>> updates_;
-  std::unique_ptr<Transaction> transaction_;
 };
 
 }  // namespace tabs

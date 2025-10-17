@@ -13,6 +13,8 @@
 
 namespace tabs {
 
+using Transaction = TabStateStorageDatabase::Transaction;
+
 TabStateStorageUpdater::TabStateStorageUpdater(TabStateStorageDatabase* db)
     : db_(db) {}
 
@@ -22,7 +24,7 @@ void TabStateStorageUpdater::Add(std::unique_ptr<StorageUpdateUnit> unit) {
   updates_.push_back(std::move(unit));
 }
 
-bool TabStateStorageUpdater::PerformUpdate() {
+bool TabStateStorageUpdater::Execute() {
   std::unique_ptr<Transaction> transaction = db_->CreateTransaction();
   if (!transaction->Begin()) {
     DLOG(ERROR) << "Could not start transaction.";
@@ -30,7 +32,8 @@ bool TabStateStorageUpdater::PerformUpdate() {
   }
 
   for (auto& op : updates_) {
-    if (!op->PerformUpdate(db_, transaction.get())) {
+    if (!op->Execute(db_, transaction.get())) {
+      transaction->Rollback();
       return false;
     }
   }
