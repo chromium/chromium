@@ -569,7 +569,7 @@ void CanvasResourceProviderSharedImage::WillDrawUnaccelerated() {
 
 void CanvasResourceProviderSharedImage::PrepareForWebGPUDummyMailbox() {
   if (resource_) {
-    resource_->WaitSyncToken();
+    resource_->PrepareForWebGPUDummyMailbox();
   }
 }
 

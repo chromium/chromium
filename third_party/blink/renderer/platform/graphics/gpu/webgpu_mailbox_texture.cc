@@ -119,7 +119,6 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       canvas_resource->GetClientSharedImage();
-  canvas_resource->GetSyncToken();
   gpu::SyncToken sync_token = canvas_resource->sync_token();
   gfx::Size size = shared_image->size();
 

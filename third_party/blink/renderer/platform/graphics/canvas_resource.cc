@@ -599,6 +599,13 @@ CanvasResourceProviderSharedImage* CanvasResourceSharedImage::Provider() {
   return provider_.get();
 }
 
+void CanvasResourceSharedImage::PrepareForWebGPUDummyMailbox() {
+  // In the dummy WebGPU mailbox case, we skip write operation to CanvasResource
+  // and therefore did not wait on `acquire_sync_token_`. Instead, the consumer
+  // needs to do it.
+  owning_thread_data().sync_token = acquire_sync_token_;
+}
+
 // ExternalCanvasResource
 //==============================================================================
 scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
