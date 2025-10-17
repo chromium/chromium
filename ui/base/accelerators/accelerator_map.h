@@ -22,7 +22,7 @@
 
 namespace std {
 template <>
-struct std::hash<ui::Accelerator> {
+struct hash<ui::Accelerator> {
   size_t operator()(const ui::Accelerator& a) const { return a.hash(); }
 };
 
