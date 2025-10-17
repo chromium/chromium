@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/values.h"
@@ -54,7 +55,7 @@ class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
   friend class WebUIIOSDataSourceTest;
   friend class WebUIIOSDataSource;
 
-  explicit WebUIIOSDataSourceImpl(const std::string& source_name);
+  explicit WebUIIOSDataSourceImpl(std::string_view source_name);
 
   // Adds the locale to the load time data defaults. May be called repeatedly.
   void EnsureLoadTimeDataDefaultsAdded();

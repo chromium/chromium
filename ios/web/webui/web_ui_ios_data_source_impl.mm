@@ -19,7 +19,7 @@
 namespace web {
 
 // static
-WebUIIOSDataSource* WebUIIOSDataSource::Create(const std::string& source_name) {
+WebUIIOSDataSource* WebUIIOSDataSource::Create(std::string_view source_name) {
   return new WebUIIOSDataSourceImpl(source_name);
 }
 
@@ -61,7 +61,7 @@ class WebUIIOSDataSourceImpl::InternalDataSource : public URLDataSourceIOS {
   raw_ptr<WebUIIOSDataSourceImpl> parent_;
 };
 
-WebUIIOSDataSourceImpl::WebUIIOSDataSourceImpl(const std::string& source_name)
+WebUIIOSDataSourceImpl::WebUIIOSDataSourceImpl(std::string_view source_name)
     : URLDataSourceIOSImpl(source_name, new InternalDataSource(this)),
       source_name_(source_name),
       default_resource_(-1),
