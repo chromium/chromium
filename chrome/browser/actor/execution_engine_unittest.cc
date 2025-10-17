@@ -17,6 +17,8 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
+#include "chrome/browser/actor/tools/fake_tool.h"
+#include "chrome/browser/actor/tools/fake_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -118,74 +120,6 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   }
 
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
-};
-
-// Mock tool that allows test to control the timining of callback.
-class MockTool : public Tool {
- public:
-  MockTool(TaskId task_id,
-           ToolDelegate& tool_delegate,
-           base::OnceClosure on_invoke,
-           base::OnceClosure on_destroy)
-      : Tool(task_id, tool_delegate),
-        on_invoke_(std::move(on_invoke)),
-        on_destroy_(std::move(on_destroy)) {}
-
-  ~MockTool() override {
-    if (on_destroy_) {
-      std::move(on_destroy_).Run();
-    }
-  }
-
-  void Validate(ValidateCallback callback) override {
-    std::move(callback).Run(MakeOkResult());
-  }
-
-  void Invoke(InvokeCallback callback) override {
-    invoke_callback_ = std::move(callback);
-    if (on_invoke_) {
-      std::move(on_invoke_).Run();
-    }
-  }
-
-  std::string DebugString() const override { return "MockTool"; }
-  std::string JournalEvent() const override { return "MockTool"; }
-  std::unique_ptr<ObservationDelayController> GetObservationDelayer(
-      std::optional<ObservationDelayController::PageStabilityConfig>
-          page_stability_config) override {
-    return nullptr;
-  }
-
-  tabs::TabHandle GetTargetTab() const override {
-    return tabs::TabHandle::Null();
-  }
-
- private:
-  base::OnceClosure on_invoke_;
-  base::OnceClosure on_destroy_;
-  InvokeCallback invoke_callback_;
-};
-
-// A mock tool request that creates a MockTool.
-class MockToolRequest : public ToolRequest {
- public:
-  MockToolRequest(base::OnceClosure on_invoke, base::OnceClosure on_destroy)
-      : on_invoke_(std::move(on_invoke)), on_destroy_(std::move(on_destroy)) {}
-
-  CreateToolResult CreateTool(TaskId task_id,
-                              ToolDelegate& tool_delegate) const override {
-    return {std::make_unique<MockTool>(task_id, tool_delegate,
-                                       std::move(on_invoke_),
-                                       std::move(on_destroy_)),
-            MakeOkResult()};
-  }
-
-  void Apply(ToolRequestVisitorFunctor& f) const override {}
-  std::string JournalEvent() const override { return "MockTool"; }
-
- private:
-  mutable base::OnceClosure on_invoke_;
-  mutable base::OnceClosure on_destroy_;
 };
 
 class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
@@ -448,7 +382,7 @@ TEST_F(ExecutionEngineTest, CancelOngoingAction) {
 
   base::test::TestFuture<void> on_invoke_future;
   base::test::TestFuture<void> on_destroy_future;
-  std::unique_ptr<ToolRequest> request = std::make_unique<MockToolRequest>(
+  std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
       on_invoke_future.GetCallback(), on_destroy_future.GetCallback());
 
   ActResultFuture result;

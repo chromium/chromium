@@ -193,6 +193,21 @@ source_set("types") {
   deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
+source_set("impl_test_support") {
+  testonly = true
+  sources = [
+    "tools/fake_tool.cc",
+    "tools/fake_tool.h",
+    "tools/fake_tool_request.cc",
+    "tools/fake_tool_request.h",
+  ]
+
+  deps = [
+    ":actor",
+    ":impl",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -236,6 +251,7 @@ source_set("unit_tests") {
   ]
   if (enable_glic) {
     sources += [ "execution_engine_unittest.cc" ]
+    deps += [ ":impl_test_support" ]
   }
 }
 
