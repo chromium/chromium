@@ -216,6 +216,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/protocol_handler_throttle.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
@@ -497,6 +498,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
@@ -4301,6 +4304,24 @@ bool ChromeContentBrowserClient::CanCreateWindow(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);
   *no_javascript_access = false;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // This block gives the Contextual Tasks feature the opportunity to intercept
+  // tab creation in the event it doesn't go directly through the feature's
+  // navigation throttle. When a new tab/window is created, it is done before
+  // the WebContents is created, so if we only let the navigation throttle
+  // handle it, we would end up with an empty tab or window.
+  contextual_tasks::ContextualTasksUiService* contextual_tasks_ui_service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile);
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+      contextual_tasks_ui_service &&
+      contextual_tasks_ui_service->HandleNavigation(
+          target_url, web_contents->GetLastCommittedURL(), web_contents,
+          /*is_to_new_tab=*/true)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // If the opener is trying to create a background window but doesn't have
   // the appropriate permission, fail the attempt.

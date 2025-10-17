@@ -14,7 +14,8 @@ export function getHtml(this: ContextualTasksAppElement) {
   <div id="toolbar">
     Contextual Tasks UI
   </div>
-  <webview id="threadFrame" src="${this.threadUrl_}"></webview>
+  <!-- TODO(452978117): Switch back to webview tag once it is supported. -->
+  <iframe id="threadFrame" src="${this.threadUrl_}"></iframe>
   <div id="composeboxContainer">
     <ntp-composebox id="composebox">
     </ntp-composebox>

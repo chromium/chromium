@@ -35,6 +35,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
@@ -79,6 +80,7 @@
 #include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/web_app_link_capturing_delegate.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_navigation_throttle.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/page_info/web_view_side_panel_throttle.h"
 #include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
@@ -441,6 +443,11 @@ void CreateAndAddChromeThrottlesForNavigation(
         // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    contextual_tasks::ContextualTasksNavigationThrottle::MaybeCreateAndAdd(
+        registry);
+  }
+
   DevToolsWindow::MaybeCreateAndAddNavigationThrottle(registry);
 
   NewTabPageNavigationThrottle::MaybeCreateAndAdd(registry);

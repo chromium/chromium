@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/grit/branded_strings.h"
@@ -32,7 +33,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   // TODO(447633840): This is a placeholder URL until the real page is ready.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      "child-src 'self' https://google.com;");
+      "child-src 'self' https://*.google.com;");
 
   // Add required resources for the searchbox.
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
@@ -83,7 +84,9 @@ void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler) {
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      std::move(page), std::move(page_handler), web_ui(), this);
+      std::move(page), std::move(page_handler), web_ui(), this,
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          web_ui()->GetWebContents()->GetBrowserContext()));
 }
 
 void ContextualTasksUI::MaybeShowUi() {
