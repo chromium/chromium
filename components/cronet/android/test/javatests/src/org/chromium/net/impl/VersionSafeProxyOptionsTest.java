@@ -85,7 +85,7 @@ public class VersionSafeProxyOptionsTest {
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
-                                        Mockito.mock(Proxy.Callback.class))));
+                                        Mockito.mock(Proxy.HttpConnectCallback.class))));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         org.chromium.net.impl.proto.ProxyOptions proxyOptionsProto =
                 safeProxyOptions.createProxyOptionsProto();
@@ -111,7 +111,7 @@ public class VersionSafeProxyOptionsTest {
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
-                                        Mockito.mock(Proxy.Callback.class))));
+                                        Mockito.mock(Proxy.HttpConnectCallback.class))));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         List<VersionSafeProxyCallback> safeProxyCallbacks =
                 safeProxyOptions.createProxyCallbackList();
@@ -134,7 +134,7 @@ public class VersionSafeProxyOptionsTest {
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
-                                        Mockito.mock(Proxy.Callback.class))));
+                                        Mockito.mock(Proxy.HttpConnectCallback.class))));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         org.chromium.net.impl.proto.ProxyOptions proxyOptionsProto =
                 safeProxyOptions.createProxyOptionsProto();
@@ -160,7 +160,7 @@ public class VersionSafeProxyOptionsTest {
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
-                                        Mockito.mock(Proxy.Callback.class))));
+                                        Mockito.mock(Proxy.HttpConnectCallback.class))));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         List<VersionSafeProxyCallback> safeProxyCallbacks =
                 safeProxyOptions.createProxyCallbackList();
@@ -175,8 +175,9 @@ public class VersionSafeProxyOptionsTest {
     // starting from Nougat/API level 24
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testListWithMultipleProxies() {
-        Proxy.Callback httpsProxyCallback = Mockito.mock(Proxy.Callback.class);
-        Proxy.Callback httpProxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.HttpConnectCallback httpsProxyCallback =
+                Mockito.mock(Proxy.HttpConnectCallback.class);
+        Proxy.HttpConnectCallback httpProxyCallback = Mockito.mock(Proxy.HttpConnectCallback.class);
         ProxyOptions proxyOptions =
                 new ProxyOptions(
                         Arrays.asList(
@@ -217,10 +218,10 @@ public class VersionSafeProxyOptionsTest {
         assertThat(safeProxyCallbacks).hasSize(3);
         // Verify the order by verifying that we're calling the right mock.
         safeProxyCallbacks.get(0).onBeforeTunnelRequest(any());
-        Mockito.verify(httpsProxyCallback, times(1)).onBeforeTunnelRequest(any());
-        Mockito.verify(httpProxyCallback, never()).onBeforeTunnelRequest(any());
+        Mockito.verify(httpsProxyCallback, times(1)).onBeforeRequest(any());
+        Mockito.verify(httpProxyCallback, never()).onBeforeRequest(any());
         assertThat(safeProxyCallbacks.get(2)).isNull();
         safeProxyCallbacks.get(1).onBeforeTunnelRequest(any());
-        Mockito.verify(httpProxyCallback, times(1)).onBeforeTunnelRequest(any());
+        Mockito.verify(httpProxyCallback, times(1)).onBeforeRequest(any());
     }
 }

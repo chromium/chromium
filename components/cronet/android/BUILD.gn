@@ -1428,6 +1428,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/PkpTest.java",
     "test/javatests/src/org/chromium/net/ProxyNoExecutorBackwardCompatibilityTest.java",
     "test/javatests/src/org/chromium/net/ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest.java",
+    "test/javatests/src/org/chromium/net/ProxyPriorToRenameBackwardCompatibilityTest.java",
     "test/javatests/src/org/chromium/net/ProxyTest.java",
     "test/javatests/src/org/chromium/net/QuicTest.java",
     "test/javatests/src/org/chromium/net/RequestFinishedInfoTest.java",

@@ -4,6 +4,8 @@
 
 package org.chromium.net.impl;
 
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
@@ -15,11 +17,10 @@ import org.chromium.net.Proxy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @JNINamespace("cronet")
-final class ProxyCallbackRequestImpl extends Proxy.Callback.Request {
+final class ProxyCallbackRequestImpl extends Proxy.HttpConnectCallback.Request {
     private final long mProxyCallbackRequestAdapter;
     private boolean mIsConsumed;
 
@@ -29,7 +30,7 @@ final class ProxyCallbackRequestImpl extends Proxy.Callback.Request {
     }
 
     @Override
-    public void proceed(@NonNull List<Map.Entry<String, String>> extraHeaders) {
+    public void proceed(@NonNull List<Pair<String, String>> extraHeaders) {
         if (mIsConsumed) {
             throw new IllegalStateException(
                     "This request has already been consumed: either proceed or close has"
@@ -38,9 +39,9 @@ final class ProxyCallbackRequestImpl extends Proxy.Callback.Request {
         Objects.requireNonNull(extraHeaders);
 
         List<String> output = new ArrayList<String>();
-        for (Map.Entry<String, String> header : extraHeaders) {
-            output.add(header.getKey());
-            output.add(header.getValue());
+        for (Pair<String, String> header : extraHeaders) {
+            output.add(header.first);
+            output.add(header.second);
         }
         if (!ProxyCallbackRequestImplJni.get()
                 .proceed(mProxyCallbackRequestAdapter, output.toArray(new String[output.size()]))) {

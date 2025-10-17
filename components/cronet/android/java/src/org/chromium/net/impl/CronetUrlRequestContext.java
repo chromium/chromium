@@ -6,6 +6,7 @@ package org.chromium.net.impl;
 
 import android.os.ConditionVariable;
 import android.os.SystemClock;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -41,7 +42,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
 import java.nio.ByteBuffer;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -689,9 +689,9 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             @NonNull CompletionOnceCallback callback) {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetUrlRequestContext#onTunnelHeadersReceived")) {
-            ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
+            ArrayList<Pair<String, String>> headersList = new ArrayList<>();
             for (int i = 0; i < headers.length; i += 2) {
-                headersList.add(new AbstractMap.SimpleImmutableEntry<>(headers[i], headers[i + 1]));
+                headersList.add(new Pair<>(headers[i], headers[i + 1]));
             }
             VersionSafeProxyCallback proxyCallback = mProxyCallbacks.get(chainId);
             postTaskToExecutor(
