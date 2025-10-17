@@ -463,10 +463,8 @@ bool X509Certificate::VerifyHostname(
 
   // Fully handle all cases where |hostname| contains an IP address.
   if (host_info.IsIPAddress()) {
-    std::string_view ip_addr_string(
-        reinterpret_cast<const char*>(host_info.address),
-        host_info.AddressLength());
-    return base::Contains(cert_san_ip_addrs, ip_addr_string);
+    return base::Contains(cert_san_ip_addrs,
+                          base::as_string_view(host_info.AddressSpan()));
   }
 
   // The host portion of a URL may support a variety of name resolution formats

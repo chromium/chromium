@@ -735,10 +735,8 @@ TEST_F(URLCanonHostTest, Host) {
       EXPECT_EQ(host_case.expected, out_str);
       EXPECT_EQ(host_case.expected_component.begin, host_info.out_host.begin);
       EXPECT_EQ(host_case.expected_component.len, host_info.out_host.len);
-      EXPECT_EQ(
-          host_case.expected_address_hex,
-          base::HexEncode(host_info.address,
-                          static_cast<size_t>(host_info.AddressLength())));
+      EXPECT_EQ(host_case.expected_address_hex,
+                base::HexEncode(host_info.AddressSpan()));
       if (host_case.expected_family == CanonHostInfo::IPV4) {
         EXPECT_EQ(host_case.expected_num_ipv4_components,
                   host_info.num_ipv4_components);
@@ -763,10 +761,8 @@ TEST_F(URLCanonHostTest, Host) {
       EXPECT_EQ(host_case.expected, out_str);
       EXPECT_EQ(host_case.expected_component.begin, host_info.out_host.begin);
       EXPECT_EQ(host_case.expected_component.len, host_info.out_host.len);
-      EXPECT_EQ(
-          host_case.expected_address_hex,
-          base::HexEncode(host_info.address,
-                          static_cast<size_t>(host_info.AddressLength())));
+      EXPECT_EQ(host_case.expected_address_hex,
+                base::HexEncode(host_info.AddressSpan()));
       if (host_case.expected_family == CanonHostInfo::IPV4) {
         EXPECT_EQ(host_case.expected_num_ipv4_components,
                   host_info.num_ipv4_components);
@@ -971,8 +967,7 @@ TEST_F(URLCanonTest, IPv4) {
 
     EXPECT_EQ(test_case.expected_family, host_info.family);
     EXPECT_EQ(test_case.expected_address_hex,
-              base::HexEncode(host_info.address,
-                              static_cast<size_t>(host_info.AddressLength())));
+              base::HexEncode(host_info.AddressSpan()));
     if (host_info.family == CanonHostInfo::IPV4) {
       EXPECT_STREQ(test_case.expected, out_str1.c_str());
       EXPECT_EQ(test_case.expected_component.begin, host_info.out_host.begin);
@@ -992,8 +987,7 @@ TEST_F(URLCanonTest, IPv4) {
 
     EXPECT_EQ(test_case.expected_family, host_info.family);
     EXPECT_EQ(test_case.expected_address_hex,
-              base::HexEncode(host_info.address,
-                              static_cast<size_t>(host_info.AddressLength())));
+              base::HexEncode(host_info.AddressSpan()));
     if (host_info.family == CanonHostInfo::IPV4) {
       EXPECT_STREQ(test_case.expected, out_str2.c_str());
       EXPECT_EQ(test_case.expected_component.begin, host_info.out_host.begin);
@@ -1172,8 +1166,7 @@ TEST_F(URLCanonTest, IPv6) {
 
     EXPECT_EQ(cases[i].expected_family, host_info.family);
     EXPECT_EQ(cases[i].expected_address_hex,
-              base::HexEncode(host_info.address,
-                              static_cast<size_t>(host_info.AddressLength())))
+              base::HexEncode(host_info.AddressSpan()))
         << "iter " << i << " host " << cases[i].input8;
     if (host_info.family == CanonHostInfo::IPV6) {
       EXPECT_STREQ(cases[i].expected, out_str1.c_str());
@@ -1193,8 +1186,7 @@ TEST_F(URLCanonTest, IPv6) {
 
     EXPECT_EQ(cases[i].expected_family, host_info.family);
     EXPECT_EQ(cases[i].expected_address_hex,
-              base::HexEncode(host_info.address,
-                              static_cast<size_t>(host_info.AddressLength())));
+              base::HexEncode(host_info.AddressSpan()));
     if (host_info.family == CanonHostInfo::IPV6) {
       EXPECT_STREQ(cases[i].expected, out_str2.c_str());
       EXPECT_EQ(cases[i].expected_component.begin, host_info.out_host.begin);
@@ -3101,8 +3093,7 @@ void IPAddressCaseMatches(std::string_view out_str,
                           const IPAddressCase& expected) {
   EXPECT_EQ(host_info.family, expected.expected_family);
   EXPECT_STREQ(out_str.data(), expected.expected);
-  EXPECT_EQ(base::HexEncode(host_info.address,
-                            static_cast<size_t>(host_info.AddressLength())),
+  EXPECT_EQ(base::HexEncode(host_info.AddressSpan()),
             expected.expected_address_hex);
   if (expected.expected_family == CanonHostInfo::IPV4) {
     EXPECT_EQ(host_info.num_ipv4_components,

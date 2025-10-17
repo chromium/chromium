@@ -238,8 +238,9 @@ bool ParseHostAndPort(std::string_view input, std::string* host, int* port) {
   // invalid. If it is an IPv6 literal then strip the brackets.
   if (hostname_component.len > 0 && input[hostname_component.begin] == '[') {
     if (input[hostname_component.end() - 1] == ']' &&
-        url::IPv6AddressToNumber(input.data(), hostname_component,
-                                 tmp_ipv6_addr)) {
+        url::IPv6AddressToNumber(
+            hostname_component.as_string_view_on(input.data()),
+            tmp_ipv6_addr)) {
       // Strip the brackets.
       hostname_component.begin++;
       hostname_component.len -= 2;

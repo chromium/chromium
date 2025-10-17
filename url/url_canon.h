@@ -13,11 +13,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <array>
 #include <optional>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/export_template.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
@@ -408,12 +411,18 @@ struct CanonHostInfo {
   // |address| contains the parsed IP Address (if any) in its first
   // AddressLength() bytes, in network order. If IsIPAddress() is false
   // AddressLength() will return zero and the content of |address| is undefined.
-  unsigned char address[16];
+  std::array<uint8_t, 16> address;
 
   // Convenience function to calculate the length of an IP address corresponding
   // to the current IP version in |family|, if any. For use with |address|.
   int AddressLength() const {
     return family == IPV4 ? 4 : (family == IPV6 ? 16 : 0);
+  }
+
+  // Returns a span pointing a valid range of `address`. The size of the
+  // resultant span is 4, 16, or 0.
+  base::span<const uint8_t> AddressSpan() const LIFETIME_BOUND {
+    return base::span(address).first(static_cast<size_t>(AddressLength()));
   }
 };
 

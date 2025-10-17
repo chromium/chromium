@@ -7,16 +7,17 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include <array>
-
 #ifndef URL_URL_CANON_IP_H_
 #define URL_URL_CANON_IP_H_
 
+#include <array>
 #include <cstdint>
 #include <limits>
+#include <string_view>
 #include <type_traits>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
@@ -139,19 +140,19 @@ constexpr CanonHostInfo::Family IPv4ComponentToNumber(
 }
 
 // See declaration of IPv4AddressToNumber for documentation.
-template <typename CHAR, typename UCHAR>
+template <typename CHAR>
 constexpr CanonHostInfo::Family DoIPv4AddressToNumber(
-    const CHAR* spec,
-    Component host,
-    unsigned char address[4],
+    std::basic_string_view<CHAR> host_view,
+    base::span<uint8_t> address,
     int* num_ipv4_components) {
+  DCHECK_GE(address.size(), 4u);
   // Ignore terminal dot, if present.
-  if (host.is_nonempty() && spec[host.end() - 1] == '.') {
-    --host.len;
+  if (!host_view.empty() && host_view.back() == '.') {
+    host_view = host_view.substr(0, host_view.length() - 1);
   }
 
   // Do nothing if empty.
-  if (host.is_empty()) {
+  if (host_view.empty()) {
     return CanonHostInfo::NEUTRAL;
   }
 
@@ -166,19 +167,21 @@ constexpr CanonHostInfo::Family DoIPv4AddressToNumber(
   static_assert(std::numeric_limits<decltype(existing_components)>::max() >=
                 sizeof(component_values) / sizeof(component_values[0]));
 
-  int current_component_end = host.end();
-  int current_position = current_component_end;
+  size_t current_component_end = host_view.length();
+  size_t current_position = current_component_end;
   while (true) {
     // If this is not the first character of a component, go to the next
     // component.
-    if (current_position != host.begin && spec[current_position - 1] != '.') {
+    if (current_position != 0 && host_view[current_position - 1] != '.') {
       --current_position;
       continue;
     }
 
     CanonHostInfo::Family family = IPv4ComponentToNumber(
-        spec,
-        Component(current_position, current_component_end - current_position),
+        host_view.data(),
+        Component(
+            base::checked_cast<int>(current_position),
+            base::checked_cast<int>(current_component_end - current_position)),
         &component_values[existing_components]);
 
     // If `family` is NEUTRAL and this is the last component, return NEUTRAL. If
@@ -195,7 +198,7 @@ constexpr CanonHostInfo::Family DoIPv4AddressToNumber(
     ++existing_components;
 
     // If this is the final component, nothing else to do.
-    if (current_position == host.begin) {
+    if (current_position == 0) {
       break;
     }
 
@@ -207,22 +210,23 @@ constexpr CanonHostInfo::Family DoIPv4AddressToNumber(
     current_component_end = current_position - 1;
     --current_position;
   }
+  CHECK_GT(existing_components, 0);
 
   // Use `component_values` to fill out the 4-component IP address.
 
   // First, process all components but the last, while making sure each fits
   // within an 8-bit field.
-  for (decltype(existing_components) i = existing_components - 1; i > 0; --i) {
+  for (uint8_t i = existing_components - 1; i > 0; --i) {
     if (component_values[i] > std::numeric_limits<uint8_t>::max()) {
       return CanonHostInfo::BROKEN;
     }
     address[existing_components - i - 1] =
-        static_cast<unsigned char>(component_values[i]);
+        static_cast<uint8_t>(component_values[i]);
   }
 
   uint32_t last_value = component_values[0];
-  for (int i = 3; i >= existing_components - 1; i--) {
-    address[i] = static_cast<unsigned char>(last_value);
+  for (size_t i = 4; i >= existing_components; --i) {
+    address[i - 1] = static_cast<uint8_t>(last_value);
     last_value >>= 8;
   }
 
@@ -460,23 +464,28 @@ constexpr uint16_t IPv6HexComponentToNumber(const CHAR* spec,
 
 // Converts an IPv6 address to a 128-bit number (network byte order), returning
 // true on success. False means that the input was not a valid IPv6 address.
+// `address` must have 16 or more elements.
 template <typename CHAR, typename UCHAR>
-constexpr bool DoIPv6AddressToNumber(const CHAR* spec,
-                                     const Component& host,
-                                     unsigned char address[16]) {
+constexpr bool DoIPv6AddressToNumber(std::basic_string_view<CHAR> host_view,
+                                     base::span<uint8_t> address) {
+  DCHECK_GE(address.size(), 16u);
   // Make sure the component is bounded by '[' and ']'.
-  int end = host.end();
-  if (host.is_empty() || spec[host.begin] != '[' || spec[end - 1] != ']') {
+  size_t length = host_view.length();
+  if (host_view.empty() || host_view.front() != '[' ||
+      host_view.back() != ']') {
     return false;
   }
 
   // Exclude the square brackets.
-  Component ipv6_comp(host.begin + 1, host.len - 2);
+  auto trimmed = host_view.substr(1, length - 2);
 
   // Parse the IPv6 address -- identify where all the colon separated hex
   // components are, the "::" contraction, and the embedded IPv4 address.
   IPv6Parsed ipv6_parsed;
-  if (!DoParseIPv6<CHAR, UCHAR>(spec, ipv6_comp, &ipv6_parsed)) {
+  if (!DoParseIPv6<CHAR, UCHAR>(
+          trimmed.data(),
+          Component(0, base::checked_cast<int>(trimmed.length())),
+          &ipv6_parsed)) {
     return false;
   }
 
@@ -488,7 +497,7 @@ constexpr bool DoIPv6AddressToNumber(const CHAR* spec,
     return false;
   }
 
-  int cur_index_in_address = 0;
+  size_t cur_index_in_address = 0;
 
   // Loop through each hex components, and contraction in order.
   for (decltype(ipv6_parsed.num_hex_components) i = 0;
@@ -502,8 +511,8 @@ constexpr bool DoIPv6AddressToNumber(const CHAR* spec,
     // Append the hex component's value.
     if (i != ipv6_parsed.num_hex_components) {
       // Get the 16-bit value for this hex component.
-      uint16_t number =
-          IPv6HexComponentToNumber<CHAR>(spec, ipv6_parsed.hex_components[i]);
+      uint16_t number = IPv6HexComponentToNumber<CHAR>(
+          trimmed.data(), ipv6_parsed.hex_components[i]);
       // Append to |address|, in network byte order.
       address[cur_index_in_address++] = (number & 0xFF00) >> 8;
       address[cur_index_in_address++] = (number & 0x00FF);
@@ -516,15 +525,17 @@ constexpr bool DoIPv6AddressToNumber(const CHAR* spec,
     // Append the 32-bit number to |address|.
     int num_ipv4_components = 0;
     // IPv4AddressToNumber will remove the trailing dot from the component.
-    bool trailing_dot = ipv6_parsed.ipv4_component.is_nonempty() &&
-                        spec[ipv6_parsed.ipv4_component.end() - 1] == '.';
+    bool trailing_dot =
+        ipv6_parsed.ipv4_component.is_nonempty() &&
+        trimmed[static_cast<size_t>(ipv6_parsed.ipv4_component.end() - 1)] ==
+            '.';
     // The URL standard requires the embedded IPv4 address to be concisely
     // composed of 4 parts and disallows terminal dots.
     // See https://url.spec.whatwg.org/#concept-ipv6-parser
     if (CanonHostInfo::IPV4 !=
-        IPv4AddressToNumber(spec, ipv6_parsed.ipv4_component,
-                            &address[cur_index_in_address],
-                            &num_ipv4_components)) {
+        DoIPv4AddressToNumber(
+            ipv6_parsed.ipv4_component.as_string_view_on(trimmed.data()),
+            address.subspan(cur_index_in_address), &num_ipv4_components)) {
       return false;
     }
     if ((num_ipv4_components != 4 || trailing_dot)) {
@@ -538,14 +549,17 @@ constexpr bool DoIPv6AddressToNumber(const CHAR* spec,
 }  // namespace internal
 
 // Writes the given IPv4 address to |output|.
+// `address` must have 4 or more elements.
 COMPONENT_EXPORT(URL)
-void AppendIPv4Address(const unsigned char address[4], CanonOutput* output);
+void AppendIPv4Address(base::span<const uint8_t> address, CanonOutput* output);
 
 // Writes the given IPv6 address to |output|.
+// `address` must have 16 or more elements.
 COMPONENT_EXPORT(URL)
-void AppendIPv6Address(const unsigned char address[16], CanonOutput* output);
+void AppendIPv6Address(base::span<const uint8_t> address, CanonOutput* output);
 
 // Converts an IPv4 address to a 32-bit number (network byte order).
+// `address` must have 4 or more elements.
 //
 // Possible return values:
 //   IPV4    - IPv4 address was successfully parsed.
@@ -557,21 +571,20 @@ void AppendIPv6Address(const unsigned char address[16], CanonOutput* output);
 // On success, |num_ipv4_components| will be populated with the number of
 // components in the IPv4 address.
 COMPONENT_EXPORT(URL)
-constexpr CanonHostInfo::Family IPv4AddressToNumber(const char* spec,
-                                                    const Component& host,
-                                                    unsigned char address[4],
+constexpr CanonHostInfo::Family IPv4AddressToNumber(std::string_view host_view,
+                                                    base::span<uint8_t> address,
                                                     int* num_ipv4_components) {
-  return internal::DoIPv4AddressToNumber<char, unsigned char>(
-      spec, host, address, num_ipv4_components);
+  return internal::DoIPv4AddressToNumber<char>(host_view, address,
+                                               num_ipv4_components);
 }
 
 COMPONENT_EXPORT(URL)
-constexpr CanonHostInfo::Family IPv4AddressToNumber(const char16_t* spec,
-                                                    const Component& host,
-                                                    unsigned char address[4],
-                                                    int* num_ipv4_components) {
-  return internal::DoIPv4AddressToNumber<char16_t, char16_t>(
-      spec, host, address, num_ipv4_components);
+constexpr CanonHostInfo::Family IPv4AddressToNumber(
+    std::u16string_view host_view,
+    base::span<uint8_t> address,
+    int* num_ipv4_components) {
+  return internal::DoIPv4AddressToNumber<char16_t>(host_view, address,
+                                                   num_ipv4_components);
 }
 
 // Converts an IPv6 address to a 128-bit number (network byte order), returning
@@ -579,19 +592,19 @@ constexpr CanonHostInfo::Family IPv4AddressToNumber(const char16_t* spec,
 //
 // NOTE that |host| is expected to be surrounded by square brackets.
 // i.e. "[::1]" rather than "::1".
+//
+// `address` must have 16 or more elements.
 COMPONENT_EXPORT(URL)
-constexpr bool IPv6AddressToNumber(const char* spec,
-                                   const Component& host,
-                                   unsigned char address[16]) {
-  return internal::DoIPv6AddressToNumber<char, unsigned char>(spec, host,
+constexpr bool IPv6AddressToNumber(std::string_view host_view,
+                                   base::span<uint8_t> address) {
+  return internal::DoIPv6AddressToNumber<char, unsigned char>(host_view,
                                                               address);
 }
 
 COMPONENT_EXPORT(URL)
-constexpr bool IPv6AddressToNumber(const char16_t* spec,
-                                   const Component& host,
-                                   unsigned char address[16]) {
-  return internal::DoIPv6AddressToNumber<char16_t, char16_t>(spec, host,
+constexpr bool IPv6AddressToNumber(std::u16string_view host_view,
+                                   base::span<uint8_t> address) {
+  return internal::DoIPv6AddressToNumber<char16_t, char16_t>(host_view,
                                                              address);
 }
 

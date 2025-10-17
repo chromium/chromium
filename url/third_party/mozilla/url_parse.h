@@ -56,7 +56,7 @@ struct Component {
   template <typename CharT>
   std::basic_string_view<CharT> as_string_view_on(const CharT* source) const {
     DCHECK(is_valid());
-    return std::basic_string_view(&source[begin], len);
+    return std::basic_string_view(&source[begin], static_cast<size_t>(len));
   }
 
   // Returns a std::optional<string_view> using `source` as a backend.
