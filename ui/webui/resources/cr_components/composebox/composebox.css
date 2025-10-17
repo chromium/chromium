@@ -195,6 +195,13 @@
   width: 24px;
 }
 
+@media (forced-colors: active) {
+  #aimIcon {
+    background-color: Highlight;
+    border-radius: 4px;
+  }
+}
+
 #inputWrapper {
   position: relative;
   width: 100%;

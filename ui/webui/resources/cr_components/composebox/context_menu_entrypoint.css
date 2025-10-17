@@ -13,6 +13,12 @@
   --cr-focus-outline-color: var(--color-searchbox-results-icon-focused-outline);
 }
 
+@media (forced-colors: active) {
+  #entrypoint {
+    background-color: ButtonText;
+  }
+}
+
 #entrypoint {
   --cr-button-disabled-text-color:
       var(--color-new-tab-page-composebox-context-entrypoint-text-disabled);

@@ -206,6 +206,13 @@ cr-searchbox-icon {
   pointer-events: none;
 }
 
+@media (forced-colors: active) {
+  cr-searchbox-icon {
+    background-color: Highlight;
+    border-radius: 4px;
+  }
+}
+
 :host-context([is-back-arrow-visible]) #icon {
   display: none;
 }
@@ -249,6 +256,16 @@ cr-searchbox-icon {
   right: 16px;
   top: 6px;
   z-index: 100;
+}
+
+@media (forced-colors: active) {
+  .searchbox-icon-button-container {
+    background-color: ButtonText;
+  }
+  .searchbox-icon-button-container:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
 }
 
 :host-context(.focus-outline-visible) .searchbox-icon-button-container:focus-within {
