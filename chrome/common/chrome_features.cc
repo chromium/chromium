@@ -658,7 +658,7 @@ BASE_FEATURE(kGlicDebugWebview, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicScrollTo, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicCaptureRegion, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicCaptureRegion, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether we enforce that documentId (an optional parameter) is set
 // when trying to scroll all documents except PDFs (and fail the request if
