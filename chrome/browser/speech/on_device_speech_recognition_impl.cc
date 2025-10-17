@@ -11,15 +11,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/speech/on_device_speech_recognition_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/pref_names.h"
@@ -37,7 +32,6 @@
 
 namespace {
 const char kOnDeviceLanguagesDownloadedKey[] = "ondevice-languages-downloaded";
-const char kEnglishLanguageCodeKey[] = "en-US";
 
 // Returns a boolean indicating whether the language is enabled.
 bool IsLanguageInstallable(const std::string& language_code,
@@ -128,12 +122,8 @@ void OnDeviceSpeechRecognitionImpl::Install(
     OnDeviceSpeechRecognitionImpl::InstallCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(false);
+}
 #else
-  if (!CanRenderFrameHostUseOnDeviceSpeechRecognition()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
   for (const std::string& language : languages) {
     std::optional<speech::SodaLanguagePackComponentConfig> language_config =
         speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
@@ -147,16 +137,19 @@ void OnDeviceSpeechRecognitionImpl::Install(
     }
   }
 
+  if (!CanRenderFrameHostUseOnDeviceSpeechRecognition()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&OnDeviceSpeechRecognitionImpl::InstallLanguageInternal,
                      weak_ptr_factory_.GetWeakPtr(), languages,
                      std::move(callback)),
       GetDownloadDelay(languages));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void OnDeviceSpeechRecognitionImpl::OnSodaInstalled(
     speech::LanguageCode language_code) {
   ProcessLanguageInstallationUpdate(GetLanguageName(language_code),
@@ -209,52 +202,19 @@ void OnDeviceSpeechRecognitionImpl::InstallLanguageInternal(
     std::move(callback).Run(false);
     return;
   }
+  language_installation_callbacks_[language_names_key].push_back(
+      std::move(callback));
 
-  if (base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) {
-    OptimizationGuideKeyedService* optimization_guide_keyed_service =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(
-                render_frame_host().GetBrowserContext()));
-    if (!optimization_guide_keyed_service) {
-      std::move(callback).Run(false);
-      return;
-    }
+  // `InstallSoda` will only install the SODA binary if it is not already
+  // installed.
+  speech::SodaInstaller::GetInstance()->InstallSoda(
+      g_browser_process->local_state());
 
-    language_installation_callbacks_[language_names_key].push_back(
-        std::move(callback));
-
-    model_broker_client_ =
-        optimization_guide_keyed_service->CreateModelBrokerClient();
-
-    // Call `GetSubscriber()` to trigger the download and installation of
-    // the model.
-    // TODO(crbug.com/446260680): Use
-    // ModelBasedCapabilityKey::kOnDeviceSpeechRecognition.
-    model_broker_client_
-        ->GetSubscriber(
-            static_cast<optimization_guide::mojom::ModelBasedCapabilityKey>(
-                optimization_guide::ModelBasedCapabilityKey::kPromptApi))
-        .WaitForClient(base::BindOnce(
-            &OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
-            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    language_installation_callbacks_[language_names_key].push_back(
-        std::move(callback));
-
-    // `InstallSoda` will only install the SODA binary if it is not already
-    // installed.
-    speech::SodaInstaller::GetInstance()->InstallSoda(
-        g_browser_process->local_state());
-
-    // `InstallLanguage` will only install languages that are not already
-    // installed.
-    for (const std::string& language : language_names_key) {
-      speech::SodaInstaller::GetInstance()->InstallLanguage(
-          language, g_browser_process->local_state());
-    }
-  }
-
+  // `InstallLanguage` will only install languages that are not already
+  // installed.
   for (const std::string& language : language_names_key) {
+    speech::SodaInstaller::GetInstance()->InstallLanguage(
+        language, g_browser_process->local_state());
     SetOnDeviceLanguageDownloaded(language);
   }
 }
@@ -334,8 +294,7 @@ media::mojom::AvailabilityStatus
 OnDeviceSpeechRecognitionImpl::GetMaskedAvailabilityStatus(
     const std::string& language) {
   media::mojom::AvailabilityStatus availability_status =
-      GetOnDeviceSpeechRecognitionAvailabilityStatus(
-          render_frame_host().GetBrowserContext(), language);
+      IsOnDeviceSpeechRecognitionAvailable(language);
   if (availability_status == media::mojom::AvailabilityStatus::kAvailable &&
       !HasOnDeviceLanguageDownloaded(language)) {
     return media::mojom::AvailabilityStatus::kDownloadable;
@@ -414,11 +373,6 @@ base::TimeDelta OnDeviceSpeechRecognitionImpl::GetDownloadDelay(
   }
 
   return base::TimeDelta();
-}
-
-void OnDeviceSpeechRecognitionImpl::OnModelClientAvailable(
-    base::WeakPtr<optimization_guide::ModelClient> client) {
-  ProcessLanguageInstallationUpdate(kEnglishLanguageCodeKey, bool(client));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

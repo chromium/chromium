@@ -64,7 +64,7 @@ class CONTENT_EXPORT SpeechRecognitionEngine {
   virtual void AudioChunksEnded() = 0;
   virtual int GetDesiredAudioChunkDurationMs() const = 0;
 
-  virtual void SetAudioParameters(media::AudioParameters audio_parameters);
+  void SetAudioParameters(media::AudioParameters audio_parameters);
 
   // set_delegate detached from constructor for lazy dependency injection.
   void set_delegate(Delegate* delegate);

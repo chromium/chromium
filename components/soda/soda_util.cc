@@ -68,9 +68,6 @@ bool IsSupportedWin() {
 }  // namespace
 
 bool IsOnDeviceSpeechRecognitionSupported() {
-  // TODO(crbug.com/446260680): Disable on-device speech recognition if the
-  // OnDeviceWebSpeechGeminiNano feature flag is enabled and the device doesn't
-  // support Gemini Nano.
 #if BUILDFLAG(IS_CHROMEOS)
   return IsSupportedChromeOS();
 #elif BUILDFLAG(IS_LINUX)
@@ -82,9 +79,10 @@ bool IsOnDeviceSpeechRecognitionSupported() {
 #endif
 }
 
-media::mojom::AvailabilityStatus GetSodaAvailabilityStatus(
+media::mojom::AvailabilityStatus IsOnDeviceSpeechRecognitionAvailable(
     const std::string& language) {
-  if (!IsOnDeviceSpeechRecognitionSupported()) {
+  if (!base::FeatureList::IsEnabled(media::kOnDeviceWebSpeech) ||
+      !IsOnDeviceSpeechRecognitionSupported()) {
     return media::mojom::AvailabilityStatus::kUnavailable;
   }
 

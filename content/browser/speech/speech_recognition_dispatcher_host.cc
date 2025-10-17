@@ -26,15 +26,10 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/constants.mojom.h"
-#include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/soda/soda_util.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 std::string GetAcceptedLanguages(const std::string& language,
@@ -172,21 +167,6 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
       storage_partition == browser_context->GetDefaultStoragePartition()
           ? true
           : !rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
-  const std::string& language = GetAcceptedLanguages(
-      params->language,
-      GetContentClient()->browser()->GetAcceptLangs(browser_context));
-
-#if !BUILDFLAG(IS_ANDROID)
-  bool on_device_available =
-      GetContentClient()
-          ->browser()
-          ->GetOnDeviceSpeechRecognitionAvailabilityStatus(browser_context,
-                                                           language) ==
-      media::mojom::AvailabilityStatus::kAvailable;
-#else
-  bool on_device_available = false;
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -195,7 +175,8 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
           embedder_render_process_id, embedder_render_frame_id,
           rfh->GetLastCommittedOrigin(),
           storage_partition->GetURLLoaderFactoryForBrowserProcessIOThread(),
-          language, can_render_frame_use_on_device, on_device_available));
+          GetContentClient()->browser()->GetAcceptLangs(browser_context),
+          can_render_frame_use_on_device));
 }
 
 void SpeechRecognitionDispatcherHost::StartSessionOnIO(
@@ -205,9 +186,8 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
     const url::Origin& origin,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_shared_url_loader_factory,
-    const std::string& language,
-    bool can_render_frame_use_on_device,
-    bool on_device_available) {
+    const std::string& accept_language,
+    bool can_render_frame_use_on_device) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   SpeechRecognitionSessionContext context;
@@ -218,7 +198,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
   context.embedder_render_frame_id = embedder_render_frame_id;
 
   SpeechRecognitionSessionConfig config;
-  config.language = language;
+  config.language = GetAcceptedLanguages(params->language, accept_language);
   config.max_hypotheses = params->max_hypotheses;
   config.origin = origin;
   config.initial_context = context;
@@ -228,7 +208,6 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
   config.continuous = params->continuous;
   config.interim_results = params->interim_results;
   config.on_device = params->on_device;
-  config.on_device_available = on_device_available;
   config.allow_cloud_fallback = params->allow_cloud_fallback;
   config.recognition_context = params->recognition_context;
 
@@ -239,8 +218,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
 
   if (SpeechRecognitionManager::GetInstance()->UseOnDeviceSpeechRecognition(
           config) &&
-      params->audio_forwarder.is_valid() &&
-      !base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) {
+      params->audio_forwarder.is_valid()) {
     // Use on-device speech recognition, bypassing the browser process. The
     // speech recognition session will live in the speech recognition service
     // process.

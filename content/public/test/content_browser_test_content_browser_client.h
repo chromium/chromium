@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "content/shell/browser/shell_content_browser_client.h"
-#include "media/mojo/mojom/speech_recognizer.mojom.h"
 
 namespace content {
 
@@ -24,11 +23,6 @@ class ContentBrowserTestContentBrowserClient
 
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
-
-  media::mojom::AvailabilityStatus
-  GetOnDeviceSpeechRecognitionAvailabilityStatus(
-      BrowserContext* context,
-      const std::string& language) override;
 };
 
 }  // namespace content

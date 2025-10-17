@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/optimization_guide/core",
   "+components/speech",
   "+components/soda",
   "+media/mojo/mojom",
