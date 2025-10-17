@@ -1065,6 +1065,51 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(composeboxDropdown.hidden);
   });
 
+  test('notify browser when image is added in create image mode', async () => {
+    loadTimeData.overrideValues({
+      composeboxShowZps: true,
+      composeboxShowTypedSuggest: false,
+      'composeboxFileMaxCount': 1,
+    });
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Enter create image mode.
+    composeboxElement.$.context.dispatchEvent(
+        new CustomEvent('set-create-image-mode', {
+          detail: {inCreateImageMode: true},
+        }));
+    await microtasksFinished();
+    assertEquals(handler.getCallCount('setCreateImageMode'), 1);
+
+    // Upload an image file. `inputsDisabled` should be false.
+    const id = generateZeroId();
+    await uploadFileAndVerify(
+        id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        id, FileUploadStatus.kProcessing, null);
+    await microtasksFinished();
+
+    // TODO(crbug.com/452957831): Create test browser proxy for the composebox
+    // handler so we can assert the parameters this function was called with.
+    assertEquals(handler.getCallCount('setCreateImageMode'), 2);
+
+    // Deleting the image should call setCreateImageMode again but with
+    // imagePresent false.
+    const deletedId = composeboxElement.$.context.$.carousel.files[0]!.uuid;
+    composeboxElement.$.context.$.carousel.dispatchEvent(
+        new CustomEvent('delete-file', {
+          detail: {
+            uuid: deletedId,
+          },
+          bubbles: true,
+          composed: true,
+        }));
+
+    await microtasksFinished();
+    assertEquals(handler.getCallCount('setCreateImageMode'), 3);
+  });
+
   test(
       'dropdown visibility change fires an event when Realbox Next is enabled',
       async () => {
@@ -1413,16 +1458,16 @@ suite('NewTabPageComposeboxTest', () => {
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kUploadSuccessful, null);
+        id, FileUploadStatus.kProcessing, null);
 
     // Matches should not show when image is present.
     assertFalse(await areMatchesShowing());
 
-    // Do not query autocomplete with image present.
+    // Query autocomplete with image present to get verbatim match.
     composeboxElement.$.input.value = 'T';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     await microtasksFinished();
-    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
   });
 
   test('composebox does not show verbatim match', async () => {

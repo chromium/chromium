@@ -204,30 +204,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.searchboxCallbackRouter_.autocompleteResultChanged.addListener(
           this.onAutocompleteResultChanged_.bind(this)),
       this.searchboxCallbackRouter_.onContextualInputStatusChanged.addListener(
-          (token: UnguessableToken, status: FileUploadStatus,
-           errorType: FileUploadErrorType) => {
-            const {file, errorMessage} =
-                this.$.context.updateFileStatus(token, status, errorType);
-            if (errorMessage) {
-              this.$.errorScrim.setErrorMessage(errorMessage);
-            } else if (file) {
-              if (status === FileUploadStatus.kProcessing && this.showZps &&
-                  (this.enableImageContextualSuggestions_ ||
-                   !file.type.includes('image'))) {
-                // Query autocomplete to get contextual suggestions for files.
-                this.queryAutocomplete(/* clearMatches= */ true);
-              }
-              if (file.type.includes('image') &&
-                  !this.enableImageContextualSuggestions_) {
-                this.showDropdown_ = false;
-              }
-              if (status === FileUploadStatus.kUploadSuccessful) {
-                const announcer = getAnnouncerInstance();
-                announcer.announce(
-                    this.i18n('composeboxFileUploadCompleteText'));
-              }
-            }
-          }),
+          this.onContextualInputStatusChanged_.bind(this)),
       this.searchboxCallbackRouter_.onTabStripChanged.addListener(
           this.refreshTabSuggestions_.bind(this)),
     ];
@@ -271,7 +248,8 @@ export class ComposeboxElement extends I18nMixinLit
     let showDropdownUpdated = changedPrivateProperties.has('showDropdown_');
     // When the result initially gets set check if dropdown should show.
     if (changedPrivateProperties.has('input_') ||
-        changedPrivateProperties.has('result_')) {
+        changedPrivateProperties.has('result_') ||
+        changedPrivateProperties.has('contextFilesSize_')) {
       const prevValue = this.showDropdown_;
       this.showDropdown_ = this.computeShowDropdown_();
       showDropdownUpdated ||= this.showDropdown_ !== prevValue;
@@ -361,6 +339,11 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private computeShowDropdown_() {
+    // Don't show dropdown if there's multiple files.
+    if (this.contextFilesSize_ > 1) {
+      return false;
+    }
+
     // Don't show dropdown if there's no results.
     if (!this.result_?.matches.length) {
       return false;
@@ -394,7 +377,16 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.errorScrim.setErrorMessage(e.detail.errorMessage);
   }
 
-  protected deleteContext_(e: CustomEvent<{uuid: UnguessableToken}>) {
+  protected async deleteContext_(e: CustomEvent<{uuid: UnguessableToken}>) {
+    // If we're in create image mode, notify that image is gone.
+    if (this.inCreateImageMode_) {
+      await this.setCreateImageMode_({
+        detail: {
+          inCreateImageMode: true,
+          imagePresent: this.$.context.hasImageFiles(),
+        },
+      } as CustomEvent<{inCreateImageMode: boolean, imagePresent: boolean}>);
+    }
     this.searchboxHandler_.deleteContext(e.detail.uuid);
     this.$.input.focus();
     this.queryAutocomplete(/* clearMatches= */ true);
@@ -524,9 +516,10 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected async setCreateImageMode_(
-      e: CustomEvent<{inCreateImageMode: boolean}>) {
+      e: CustomEvent<{inCreateImageMode: boolean, imagePresent: boolean}>) {
     this.inCreateImageMode_ = e.detail.inCreateImageMode;
-    this.pageHandler_.setCreateImageMode(e.detail.inCreateImageMode);
+    this.pageHandler_.setCreateImageMode(
+        e.detail.inCreateImageMode, e.detail.imagePresent);
     this.queryAutocomplete(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
 
@@ -539,10 +532,6 @@ export class ComposeboxElement extends I18nMixinLit
   protected handleInput_(e: Event) {
     const inputElement = e.target as HTMLInputElement;
     this.input_ = inputElement.value;
-    if (!this.enableImageContextualSuggestions_ &&
-        this.$.context.hasImageFiles()) {
-      return;
-    }
     // `clearMatches` is true if input is empty stop any in progress providers
     // before requerying for on-focus (zero-suggest) inputs. The searchbox
     // doesn't allow zero-suggest requests to be made while the ACController is
@@ -787,6 +776,48 @@ export class ComposeboxElement extends I18nMixinLit
     this.smartComposeInlineHint_ = this.result_.smartComposeInlineHint ?
         this.result_.smartComposeInlineHint :
         '';
+  }
+
+  private async onContextualInputStatusChanged_(
+      token: UnguessableToken, status: FileUploadStatus,
+      errorType: FileUploadErrorType) {
+    const {file, errorMessage} =
+        this.$.context.updateFileStatus(token, status, errorType);
+    if (errorMessage) {
+      this.$.errorScrim.setErrorMessage(errorMessage);
+    } else if (file) {
+      if (status === FileUploadStatus.kProcessing && this.showZps &&
+          !file.type.includes('image')) {
+        // Query autocomplete to get contextual suggestions for files.
+        this.queryAutocomplete(/* clearMatches= */ true);
+      }
+
+      if (status === FileUploadStatus.kProcessing &&
+          file.type.includes('image')) {
+        // If we're in create image mode, update the aim tool mode.
+        if (this.inCreateImageMode_) {
+          await this.setCreateImageMode_(
+              {
+                detail: {
+                  inCreateImageMode: true,
+                  imagePresent: true,
+                },
+              } as
+              CustomEvent<{inCreateImageMode: boolean, imagePresent: boolean}>);
+        } else if (this.enableImageContextualSuggestions_) {
+          // Query autocomplete to get contextual suggestions for files.
+          this.queryAutocomplete(/* clearMatches= */ true);
+        } else {
+          this.showDropdown_ = false;
+          this.clearAutocompleteMatches_();
+        }
+      }
+
+      if (status === FileUploadStatus.kUploadSuccessful) {
+        const announcer = getAnnouncerInstance();
+        announcer.announce(this.i18n('composeboxFileUploadCompleteText'));
+      }
+    }
   }
 
   private adjustInputForSmartCompose() {

@@ -22,7 +22,7 @@ interface PageHandler {
   // Called when the user enables deep search mode.
   SetDeepSearchMode(bool enabled);
   // Called when the user enables create image mode.
-  SetCreateImageMode(bool enabled);
+  SetCreateImageMode(bool enabled, bool image_present);
 
   // Called when the Lens button is clicked in the composebox.
   HandleLensButtonClick();

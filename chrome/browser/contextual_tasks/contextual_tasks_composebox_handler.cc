@@ -105,7 +105,8 @@ void ContextualTasksComposeboxHandler::SetDeepSearchMode(bool enabled) {
   // in Lens.
 }
 
-void ContextualTasksComposeboxHandler::SetCreateImageMode(bool enabled) {
+void ContextualTasksComposeboxHandler::SetCreateImageMode(bool enabled,
+                                                          bool image_present) {
   // Ignore, intentionally unimplemented for Lens. Create image not implemented
   // in Lens.
 }
