@@ -33,12 +33,6 @@ BASE_FEATURE(kAutofillAcrossIframesIosThrottling,
 BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, whitespace is discarded during normalization of a house
-// number field.
-// TODO(crbug.com/447111009): Remove when launched.
-BASE_FEATURE(kAutofillAddressDiscardWhitespaceInHouseNumber,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature flag to control displaying of Autofill suggestions on
 // unclassified fields based on prefix matching. These suggestions are displayed
 // after the user typed a certain number of characters that match some data
