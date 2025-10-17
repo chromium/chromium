@@ -670,8 +670,8 @@ export default [
       '@typescript-eslint/explicit-module-boundary-types': 'error',
 
       '@typescript-eslint/no-invalid-this': 'error',
-      // TODO(crbug.com/451650623): Turning off to unblock rolling to TS 5.9.
-      // Authors of this folder should properly fix violation and re-enable.
+      // TODO(b/451650623): Disabling because it throws new errors with
+      // TypeScript v5.9.3.
       //'@typescript-eslint/no-non-null-assertion': 'error',
 
       // TODO(pihsun): This rule is deprecated, remove this after considering if
@@ -805,7 +805,9 @@ export default [
       // go/tsstyle#optimization-compatibility-for-property-access
       '@typescript-eslint/dot-notation': 'error',
 
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      // TODO(b/451650623): Disabling because it throws new errors with
+      // TypeScript v5.9.3.
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
       '@typescript-eslint/prefer-optional-chain': 'error',
 
       // go/tsstyle#use-readonly

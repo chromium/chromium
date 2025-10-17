@@ -802,8 +802,10 @@ export default [
       // go/tsstyle#optimization-compatibility-for-property-access
       '@typescript-eslint/dot-notation': 'error',
 
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      '@typescript-eslint/prefer-optional-chain': 'error',
+      // TODO(b/451650623): Disabling because it throws new errors with
+      // TypeScript v5.9.3.
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'off',
 
       // go/tsstyle#use-readonly
       '@typescript-eslint/prefer-readonly': 'error',
