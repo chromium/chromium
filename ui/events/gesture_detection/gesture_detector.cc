@@ -85,7 +85,7 @@ class GestureDetector::TimeoutGestureHandler {
     }
 
     bool compensate_timeouts = false;
-    if (base::FeatureList::IsEnabled(ui::kCompensateGestureDetectorTimeouts)) {
+    if (base::FeatureList::IsEnabled(kCompensateGestureDetectorTimeouts)) {
       bool has_only_positive_compensated_delays = true;
       for (TimeoutEvent event : timeouts_to_start_) {
         if ((timeout_delays_[event] - event_processing_delay).is_negative()) {
@@ -93,7 +93,9 @@ class GestureDetector::TimeoutGestureHandler {
           break;
         }
       }
-      compensate_timeouts = has_only_positive_compensated_delays;
+      compensate_timeouts =
+          has_only_positive_compensated_delays ||
+          kCompensateGestureTimeoutsForLongDelayedSequences.Get();
     }
 
     for (TimeoutEvent event : timeouts_to_start_) {

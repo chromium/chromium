@@ -11,6 +11,12 @@ namespace ui {
 BASE_FEATURE(kCompensateGestureDetectorTimeouts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool>
+    kCompensateGestureTimeoutsForLongDelayedSequences{
+        &kCompensateGestureDetectorTimeouts,
+        /*name=*/"compensate_gesture_timeouts_for_long_delayed_sequences",
+        /*default_value=*/false};
+
 BASE_FEATURE(kLegacyKeyRepeatSynthesis, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace ui
