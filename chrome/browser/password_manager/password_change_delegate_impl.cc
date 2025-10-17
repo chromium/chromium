@@ -368,9 +368,9 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
     return;
   }
 
-  // Maximum number of retries reached. Show an error dialog.
+  // Maximum number of retries reached, stop checking. Let the user decide
+  // whether to cancel the flow or proceed once they are fully logged in.
   login_state_checker_.reset();
-  UpdateState(State::kChangePasswordFormNotFound);
 }
 
 void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {

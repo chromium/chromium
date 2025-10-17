@@ -1581,13 +1581,14 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetected);
-  // Verify that password change fails if the user is not logged in.
+  // Verify that password change doesn't fails if the user is not logged in
+  // after reaching attempts limit.
   for (auto i = 1; i < LoginStateChecker::kMaxLoginChecks; i++) {
     delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
   }
   EXPECT_FALSE(delegate_impl->login_checker());
   EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+            PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
@@ -1618,16 +1619,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_FALSE(delegate_impl->login_checker());
   EXPECT_FALSE(delegate_impl->executor());
   EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kChangePasswordFormNotFound);
-  // When a user is not logged in, we still open a new tab with the
-  // change password URL, so there should be two tabs after.
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
-  delegate->OpenPasswordChangeTab();
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
-  auto* change_password_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  ASSERT_EQ(change_password_contents->GetVisibleURL(),
-            GURL(kChangePasswordURL));
+            PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
