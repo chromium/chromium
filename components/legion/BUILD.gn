@@ -12,6 +12,8 @@ source_set("legion") {
     "features.cc",
     "features.h",
     "legion_common.h",
+    "noise.cc",
+    "noise.h",
     "oak_session.h",
     "secure_channel.h",
     "secure_channel_impl.cc",
@@ -24,10 +26,12 @@ source_set("legion") {
   ]
   deps = [
     "//base",
+    "//crypto",
     "//mojo/public/cpp/system",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/boringssl",
     "//third_party/oak:oak_proto",
     "//third_party/oak:oak_proto_extras",
   ]

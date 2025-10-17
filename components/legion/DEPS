@@ -1,6 +1,10 @@
 include_rules = [
-  "+net",
+  "+base",
+  "+crypto",
   "+mojo/public/cpp",
+  "+net",
+  "+services/network/public/cpp",
   "+services/network/public/mojom",
+  "+third_party/boringssl",
   "+third_party/oak/chromium/proto",
 ]
