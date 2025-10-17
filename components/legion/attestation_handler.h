@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "components/legion/legion_common.h"
+#include "third_party/oak/chromium/proto/session/session.pb.h"
 
 namespace legion {
 
@@ -18,12 +18,14 @@ class AttestationHandler {
 
   // Generates the initial attestation request message to send to the service.
   // Returns std::nullopt on failure.
-  virtual std::optional<Request> GetAttestationRequest() = 0;
+  virtual std::optional<oak::session::v1::AttestRequest>
+  GetAttestationRequest() = 0;
 
   // Verifies the attestation evidence received from the server
   // in response to the attestation request.
   // Returns true if the attestation is valid, false otherwise.
-  virtual bool VerifyAttestationResponse(const Response& evidence) = 0;
+  virtual bool VerifyAttestationResponse(
+      const oak::session::v1::AttestResponse& evidence) = 0;
 };
 
 }  // namespace legion

@@ -19,6 +19,7 @@
 #include "components/legion/oak_session.h"
 #include "components/legion/secure_channel.h"
 #include "components/legion/transport.h"
+#include "third_party/oak/chromium/proto/session/session.pb.h"
 
 namespace legion {
 
@@ -62,14 +63,16 @@ class SecureChannelImpl : public SecureChannel {
   void StartSessionEstablishment();
   void ProcessNextRequest();
 
+  // Helpers to send and receive data that is converted to proto messages.
+  void Send(const oak::session::v1::SessionRequest& request);
+  void OnResponseReceived(
+      base::expected<Response, Transport::TransportError> response);
+
   // Callbacks for the asynchronous session establishment steps and for sending
   // encrypted requests.
-  void OnAttestationResponse(
-      base::expected<Response, Transport::TransportError> response);
-  void OnHandshakeResponse(
-      base::expected<Response, Transport::TransportError> response);
-  void OnEncryptedResponse(
-      base::expected<Response, Transport::TransportError> response);
+  void OnAttestationResponse(const oak::session::v1::AttestResponse& response);
+  void OnHandshakeResponse(const oak::session::v1::HandshakeResponse& response);
+  void OnEncryptedResponse(const oak::session::v1::EncryptedMessage& response);
 
   std::unique_ptr<Transport> transport_;
   std::unique_ptr<OakSession> oak_session_;
