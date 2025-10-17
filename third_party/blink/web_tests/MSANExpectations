@@ -167,3 +167,9 @@ crbug.com/415293999 [ Linux ] external/wpt/storage-access-api/requestStorageAcce
 
 # Gardener 2025-08-26
 crbug.com/441382126 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Timeout Failure ]
+
+# Gardener 2025-10-17
+crbug.com/415946389 [ Linux ] external/wpt/wasm/core/f32.wast.js.html [ Crash Pass ]
+crbug.com/415388655 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Crash Pass ]
+crbug.com/451364297 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_cmp.wast.js.html [ Crash Pass ]
+crbug.com/416340205 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?16-20 [ Crash Pass ]
