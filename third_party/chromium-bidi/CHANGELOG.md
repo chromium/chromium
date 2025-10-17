@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.5.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.4.0...chromium-bidi-v10.5.0) (2025-10-17)
+
+
+### Features
+
+* get request body size from Content-Length ([#3851](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3851)) ([69c0c0f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/69c0c0febec022d60e5c5f6d46b10acf4e2ccb8c))
+
 ## [10.4.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.3.1...chromium-bidi-v10.4.0) (2025-10-15)
 
 
