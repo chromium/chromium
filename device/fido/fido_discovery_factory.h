@@ -153,7 +153,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #if BUILDFLAG(IS_MAC)
   std::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;
   base::apple::WeakNSWindow nswindow_;
-  bool allow_no_nswindow_for_testing_;
+  bool allow_no_nswindow_for_testing_ = false;
 #endif  // BUILDFLAG(IS_MAC)
   NetworkContextFactory network_context_factory_;
   std::optional<std::vector<CableDiscoveryData>> cable_data_;
