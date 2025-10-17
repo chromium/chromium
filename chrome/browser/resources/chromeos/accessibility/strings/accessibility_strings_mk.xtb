@@ -567,7 +567,7 @@
 <translation id="4517854969512651305">Зголемете ја вредноста</translation>
 <translation id="4537277403911487429">Следна слична ставка</translation>
 <translation id="4547556996012970016">Заглавие на следно ниво 5</translation>
-<translation id="4562381607973973258">Заглавие</translation>
+<translation id="4562381607973973258">Заглавје</translation>
 <translation id="4597532268155981612">образец</translation>
 <translation id="4601047876198186470">.input {$$COUNT :number} .match $$COUNT 1{{less than}} *{{{$$COUNT} less than signs}}</translation>
 <translation id="4601367666219428522">таб. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
@@ -952,7 +952,7 @@
 <translation id="7218782500591078391">Златеста</translation>
 <translation id="7226216518520804442">lst</translation>
 <translation id="7229749224609077523">Изберете брајова табела со 6 точки:</translation>
-<translation id="72393384879519786">Заглавие</translation>
+<translation id="72393384879519786">Заглавје</translation>
 <translation id="7240858705033280249">Скокни до деталите</translation>
 <translation id="7241683698754534149">Отвори долг опис во нова картичка</translation>
 <translation id="7244947685630430863">Нема претходна графика</translation>

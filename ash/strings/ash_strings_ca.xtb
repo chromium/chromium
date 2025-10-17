@@ -86,7 +86,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1247519845643687288">Aplicacions recents</translation>
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Quin temps fa?</translation>
-<translation id="1256734167083229794">Has premut la tecla de drecera de la lupa de pantalla completa. Utilitza <ph name="ZOOM_IN_ACCELERATOR" /> per ampliar la imatge i <ph name="ZOOM_OUT_ACCELERATOR" /> per reduir-la. Fes servir Ctrl+Alt+fletxes per moure't per la visualització ampliada.</translation>
+<translation id="1256734167083229794">Has premut la tecla de drecera de la lupa de pantalla completa. Utilitza <ph name="ZOOM_IN_ACCELERATOR" /> per ampliar el zoom i <ph name="ZOOM_OUT_ACCELERATOR" /> per reduir-lo. Fes servir Ctrl+Alt+fletxes per moure't per la visualització ampliada.</translation>
 <translation id="1269405891096105529">Aquest perifèric no s'admet en mode de convidat</translation>
 <translation id="1270290102613614947">Teclat en pantalla desactivat</translation>
 <translation id="1272079795634619415">Atura</translation>
@@ -558,7 +558,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2869095047958348710">El <ph name="DAY_OF_WEEK" /> passat</translation>
 <translation id="2872353916818027657">Canvia el monitor principal</translation>
 <translation id="2872961005593481000">Apaga</translation>
-<translation id="2876338922445400217">Amplia la pantalla</translation>
+<translation id="2876338922445400217">Amplia el zoom a la pantalla</translation>
 <translation id="2876760662374103627">El control amb gestos facials està actiu</translation>
 <translation id="2878884018241093801">No hi ha cap element recent</translation>
 <translation id="2880541185262491188">S'ha intentat introduir el PIN massa vegades. Espera <ph name="TIME_LEFT" /> i torna-ho a provar.</translation>
@@ -1798,7 +1798,7 @@ Instal·lació nova</translation>
 <translation id="6786750046913594791">Tanca la carpeta</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6792262051831399889">No disponible</translation>
-<translation id="679368458793552943">Amplia quan la lupa estigui activada</translation>
+<translation id="679368458793552943">Amplia el zoom quan la lupa estigui activada</translation>
 <translation id="6794287755901682422">Aquest element té: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6797745268063125932">Mantén activada</translation>
 <translation id="6801878137098616817">Editat fa poc</translation>
@@ -1883,7 +1883,7 @@ Instal·lació nova</translation>
 <translation id="7084678090004350185">Commuta el punt d'accés Wi‐Fi. Està activat i hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="7086931198345821656">Aquesta actualització requereix executar la funció Powerwash al dispositiu <ph name="DEVICE_TYPE" />. Se'n suprimiran totes les dades. Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Accés amb interruptors</translation>
-<translation id="709015856939120012">Amplia la pàgina</translation>
+<translation id="709015856939120012">Amplia el zoom a la pàgina</translation>
 <translation id="7098389117866926363">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="7100906357717321275">Mostra els fitxers amagats a l'aplicació Fitxers</translation>
 <translation id="7108254681523785542">Selecciona un element per enganxar-lo. Pots veure el porta-retalls prement <ph name="SHORTCUT_KEY_NAME" />+v.</translation>

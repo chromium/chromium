@@ -1595,7 +1595,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7161230316646448869">Sincronitza les adreces d'interès, l'historial i altres elements en tots els dispositius</translation>
 <translation id="7173114856073700355">Obre Configuració</translation>
 <translation id="7173721738069475737">{count,plural, =1{S'ha desat l'adreça d'interès}other{S'han desat {count} adreces d'interès}}</translation>
-<translation id="7176183551031110427">Redueix</translation>
+<translation id="7176183551031110427">Redueix el zoom</translation>
 <translation id="7186568385131859684">Controla com s'utilitza l'historial de navegació amb les teves altres dades als serveis de Google</translation>
 <translation id="719133302483559673">Gestiona els teus interessos i les teves preferències.</translation>
 <translation id="7203496777391039568">Mantenim la privadesa i la seguretat de les dades de la teva organització</translation>
@@ -1634,7 +1634,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7380220816562673297">De moment, només pots compartir les contrasenyes amb membres de la família. <ph name="BEGIN_LINK" />Crea un grup familiar<ph name="END_LINK" /> amb un màxim de 6 membres i treu més profit dels teus productes i subscripcions a Google.</translation>
 <translation id="7380698179418029202">Selecciona el fitxer <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> d'exportació de Safari</translation>
 <translation id="739101637685146669">Quin URL vols afegir a les adreces d'interès?</translation>
-<translation id="7393747756726387725">Amplia</translation>
+<translation id="7393747756726387725">Amplia el zoom</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 lloc web}other{# llocs web}}</translation>
 <translation id="7398211386814746684">El teu compte està gestionat</translation>
 <translation id="7399802613464275309">Comprovació de seguretat</translation>
