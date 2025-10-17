@@ -2358,6 +2358,8 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
   FontDescription document_font_description = builder.GetFontDescription();
   document_font_description.SetLocale(
       LayoutLocale::Get(GetDocument().ContentLanguage()));
+  document_font_description.SetIsForcedColorsMode(
+      GetDocument().InForcedColorsMode());
 
   builder.SetFontDescription(document_font_description);
   builder.SetUserModify(GetDocument().InDesignMode() ? EUserModify::kReadWrite

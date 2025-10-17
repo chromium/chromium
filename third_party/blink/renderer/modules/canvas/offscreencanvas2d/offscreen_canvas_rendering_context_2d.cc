@@ -487,6 +487,12 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
     FontDescription desc = FontStyleResolver::ComputeFont(
         *style, host->GetFontSelector()->BaseFontSelector());
     desc.SetLocale(locale);
+    if (LocalDOMWindow* window =
+            DynamicTo<LocalDOMWindow>(host->GetTopExecutionContext())) {
+      if (Document* document = window->document()) {
+        desc.SetIsForcedColorsMode(document->InForcedColorsMode());
+      }
+    }
     font_cache.AddFont(new_font, desc);
     GetState().SetFont(desc, host->GetFontSelector());
   }

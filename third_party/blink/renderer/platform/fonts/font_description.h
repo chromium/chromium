@@ -56,7 +56,9 @@
 
 namespace blink {
 
-typedef struct { uint32_t parts[2]; } FieldsAsUnsignedType;
+struct FieldsAsUnsignedType {
+  uint32_t parts[3] = {0, 0, 0};
+};
 
 class PLATFORM_EXPORT FontDescription {
   USING_FAST_MALLOC(FontDescription);
@@ -348,9 +350,7 @@ class PLATFORM_EXPORT FontDescription {
   FontVariantPosition VariantPosition() const {
     return static_cast<FontVariantPosition>(fields_.variant_position_);
   }
-  FontVariantEmoji VariantEmoji() const {
-    return static_cast<FontVariantEmoji>(fields_.variant_emoji_);
-  }
+  FontVariantEmoji VariantEmoji() const;
 
   float EffectiveFontSize()
       const;  // Returns either the computedSize or the computedPixelSize
@@ -447,6 +447,9 @@ class PLATFORM_EXPORT FontDescription {
   void SetVariantEmoji(FontVariantEmoji variant_emoji) {
     fields_.variant_emoji_ = variant_emoji;
   }
+  void SetIsForcedColorsMode(bool is_forced_colors_mode) {
+    fields_.is_forced_colors_mode_ = is_forced_colors_mode;
+  }
   void SetWordSpacing(const Length& s) { word_spacing_ = s; }
   void SetLetterSpacing(const Length& s) {
     letter_spacing_ = s;
@@ -469,6 +472,8 @@ class PLATFORM_EXPORT FontDescription {
   bool SubpixelAscentDescent() const {
     return fields_.subpixel_ascent_descent_;
   }
+
+  bool IsForcedColorsMode() const { return fields_.is_forced_colors_mode_; }
 
   HashCategory GetHashCategory() const {
     return static_cast<HashCategory>(fields_.hash_category_);
@@ -493,6 +498,7 @@ class PLATFORM_EXPORT FontDescription {
   unsigned AuxiliaryBitmapFields() const {
     return fields_as_unsigned_.parts[1];
   }
+  unsigned ExtendedBitmapFields() const { return fields_as_unsigned_.parts[2]; }
 
   SkFontStyle SkiaFontStyle() const;
 
@@ -588,6 +594,7 @@ class PLATFORM_EXPORT FontDescription {
     unsigned text_spacing_trim_ : kTextSpacingTrimBitCount;
 
     unsigned hash_category_ : 2;  // HashCategory
+    unsigned is_forced_colors_mode_ : 1;
   };
 
   static_assert(sizeof(BitFields) == sizeof(FieldsAsUnsignedType),

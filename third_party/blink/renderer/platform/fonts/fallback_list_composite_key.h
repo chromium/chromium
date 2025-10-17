@@ -30,7 +30,8 @@ struct FallbackListCompositeKey {
         letter_spacing_(font_description.LetterSpacing()),
         word_spacing_(font_description.WordSpacing()),
         bitmap_fields_(font_description.BitmapFields()),
-        auxiliary_bitmap_fields_(font_description.AuxiliaryBitmapFields()) {
+        auxiliary_bitmap_fields_(font_description.AuxiliaryBitmapFields()),
+        extended_bitmap_fields_(font_description.ExtendedBitmapFields()) {
     const FontFamily* current_family = &font_description.Family();
     while (current_family) {
       if (!current_family->FamilyName().empty()) {
@@ -50,14 +51,16 @@ struct FallbackListCompositeKey {
         letter_spacing_(0),
         word_spacing_(0),
         bitmap_fields_(0),
-        auxiliary_bitmap_fields_(0) {}
+        auxiliary_bitmap_fields_(0),
+        extended_bitmap_fields_(0) {}
   FallbackListCompositeKey(HashTableDeletedValueType)
       : hash_(kDeletedValueHash),
         computed_size_(0),
         letter_spacing_(0),
         word_spacing_(0),
         bitmap_fields_(0),
-        auxiliary_bitmap_fields_(0) {}
+        auxiliary_bitmap_fields_(0),
+        extended_bitmap_fields_(0) {}
 
   void Add(unsigned key) {
     font_cache_keys_.push_back(key);
@@ -73,6 +76,7 @@ struct FallbackListCompositeKey {
            word_spacing_ == other.word_spacing_ &&
            bitmap_fields_ == other.bitmap_fields_ &&
            auxiliary_bitmap_fields_ == other.auxiliary_bitmap_fields_ &&
+           extended_bitmap_fields_ == other.extended_bitmap_fields_ &&
            font_cache_keys_ == other.font_cache_keys_;
   }
 
@@ -88,6 +92,7 @@ struct FallbackListCompositeKey {
   float word_spacing_;
   unsigned bitmap_fields_;
   unsigned auxiliary_bitmap_fields_;
+  unsigned extended_bitmap_fields_;
 };
 
 struct FallbackListCompositeKeyTraits

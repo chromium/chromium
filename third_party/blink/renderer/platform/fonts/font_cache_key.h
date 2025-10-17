@@ -66,7 +66,8 @@ struct FontCacheKey {
       scoped_refptr<const FontVariationSettings> variation_settings,
       scoped_refptr<const FontPalette> palette,
       scoped_refptr<const FontVariantAlternates> font_variant_alternates,
-      bool is_unique_match)
+      bool is_unique_match,
+      bool is_forced_colors_mode)
       : creation_params_(creation_params),
         font_size_(base::saturated_cast<unsigned>(
             font_size * kFontSizePrecisionMultiplier)),
@@ -76,7 +77,8 @@ struct FontCacheKey {
         variation_settings_(std::move(variation_settings)),
         palette_(palette),
         font_variant_alternates_(font_variant_alternates),
-        is_unique_match_(is_unique_match) {}
+        is_unique_match_(is_unique_match),
+        is_forced_colors_mode_(is_forced_colors_mode) {}
 
   FontCacheKey(HashTableDeletedValueType)
       : font_size_(std::numeric_limits<unsigned>::max()),
@@ -102,7 +104,8 @@ struct FontCacheKey {
             (variation_settings_ ? variation_settings_->GetHash() : 0),
         palette_ ? palette_->GetHash() : 0,
         font_variant_alternates_ ? font_variant_alternates_->GetHash() : 0,
-        is_unique_match_};
+        is_unique_match_,
+        is_forced_colors_mode_};
     return StringHasher::HashMemory(base::as_byte_span(hash_codes));
   }
 
@@ -124,7 +127,8 @@ struct FontCacheKey {
            variation_settings_equal && palette_equal &&
            base::ValuesEquivalent(font_variant_alternates_,
                                   other.font_variant_alternates_) &&
-           is_unique_match_ == other.is_unique_match_;
+           is_unique_match_ == other.is_unique_match_ &&
+           is_forced_colors_mode_ == other.is_forced_colors_mode_;
   }
 
   static constexpr unsigned PrecisionMultiplier() {
@@ -154,6 +158,7 @@ struct FontCacheKey {
   scoped_refptr<const FontPalette> palette_;
   scoped_refptr<const FontVariantAlternates> font_variant_alternates_;
   bool is_unique_match_ = false;
+  bool is_forced_colors_mode_ = false;
 };
 
 template <>

@@ -684,6 +684,7 @@ void FontBuilder::CreateInitialFont(ComputedStyleBuilder& builder) {
   DCHECK(document_);
   FontDescription font_description = FontDescription();
   font_description.SetLocale(builder.GetFontDescription().Locale());
+  font_description.SetIsForcedColorsMode(builder.InForcedColorsMode());
 
   SetFamilyDescription(font_description,
                        FontBuilder::InitialFamilyDescription());
