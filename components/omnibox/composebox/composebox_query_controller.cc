@@ -43,8 +43,10 @@
 #include "third_party/lens_server_proto/lens_overlay_payload.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -61,6 +63,7 @@ using endpoint_fetcher::HttpMethod;
 constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
+constexpr char kVisualSearchInteractionQueryParameterKey[] = "vsint";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
@@ -251,6 +254,16 @@ GURL ComposeboxQueryController::CreateSearchUrl(
     std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info) {
   num_files_in_request_ = 0;
   if (!active_files_.empty() && cluster_info_.has_value()) {
+    // Get the encoded visual search interaction log data.
+    std::optional<std::string> encoded_visual_search_interaction_log_data =
+        GetEncodedVisualSearchInteractionLogData(
+            search_url_request_info->query_text);
+    if (encoded_visual_search_interaction_log_data.has_value()) {
+      search_url_request_info->additional_params.insert(
+          {kVisualSearchInteractionQueryParameterKey,
+           encoded_visual_search_interaction_log_data.value()});
+    }
+
     if (enable_multi_context_input_flow_) {
       std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
           std::make_unique<lens::LensOverlayContextualInputs>();
@@ -1040,4 +1053,73 @@ ComposeboxQueryController::FileInfo* ComposeboxQueryController::GetFileInfo(
     return nullptr;
   }
   return it->second.get();
+}
+
+std::optional<std::string>
+ComposeboxQueryController::GetEncodedVisualSearchInteractionLogData(
+    const std::optional<std::string>& query_text) {
+  if (active_files_.empty()) {
+    return std::nullopt;
+  }
+  const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
+  if (!IsValidFileUploadStatusForMultimodalRequest(last_file->upload_status_)) {
+    return std::nullopt;
+  }
+
+  // Set the interaction data based on the last file request type.
+  lens::LensOverlayVisualSearchInteractionData interaction_data;
+  interaction_data.mutable_log_data()->mutable_filter_data()->set_filter_type(
+      lens::AUTO_FILTER);
+  interaction_data.mutable_log_data()
+      ->mutable_user_selection_data()
+      ->set_selection_type(lens::MULTIMODAL_SEARCH);
+  interaction_data.mutable_log_data()->set_client_platform(
+      lens::CLIENT_PLATFORM_LENS_OVERLAY);
+
+  if (query_text.has_value()) {
+    interaction_data.mutable_text_select()->set_selected_texts(
+        query_text.value());
+  }
+
+  switch (last_file->mime_type_) {
+    case lens::MimeType::kPdf:
+      interaction_data.set_interaction_type(
+          lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
+      break;
+    case lens::MimeType::kAnnotatedPageContent:
+      interaction_data.set_interaction_type(
+          lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY);
+      break;
+    case lens::MimeType::kImage:
+      interaction_data.set_interaction_type(
+          lens::LensOverlayInteractionRequestMetadata::REGION);
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  // Since there is only one query, it is always the parent query.
+  interaction_data.mutable_log_data()->set_is_parent_query(true);
+
+  // Set the zoomed crop if there is an image associated with the request.
+  auto media_type = last_file->request_id_->media_type();
+  if (media_type == lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ||
+      media_type == lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE ||
+      media_type == lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE) {
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_center_x(0.5f);
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_center_y(0.5f);
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_width(1);
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_height(1);
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_coordinate_type(
+        ::lens::CoordinateType::NORMALIZED);
+    interaction_data.mutable_zoomed_crop()->set_zoom(1);
+  }
+
+  std::string serialized_proto;
+  CHECK(interaction_data.SerializeToString(&serialized_proto));
+  std::string encoded_proto;
+  base::Base64UrlEncode(serialized_proto,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_proto);
+  return encoded_proto;
 }
