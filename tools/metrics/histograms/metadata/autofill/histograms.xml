@@ -3203,7 +3203,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.EditedDistanceAutofilledFieldAtSubmission.AddressOnTyping"
-    units="units" expires_after="2025-10-26">
+    units="units" expires_after="2026-08-26">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3215,7 +3215,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.EditedPercentageAutofilledFieldAtSubmission.AddressOnTyping"
-    units="%" expires_after="2025-10-26">
+    units="%" expires_after="2026-08-26">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
