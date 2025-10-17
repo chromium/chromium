@@ -836,6 +836,11 @@ BASE_FEATURE(kAutofillThirdPartyModeContentProvider,
 // settings.
 BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, updates the "Autofill and passwords" (or "Passwords and
+// autofill") labels and icons to "Your saved info".
+BASE_FEATURE(kYourSavedInfoBrandingInSettings,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace test {
 
 // If enabled, forces the deduplication pipeline to run on every startup,

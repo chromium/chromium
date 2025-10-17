@@ -406,6 +406,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               autofill::features::kYourSavedInfoSettingsPage));
 
+  html_source->AddBoolean(
+      "enableYourSavedInfoBranding",
+      base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoBrandingInSettings));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 
