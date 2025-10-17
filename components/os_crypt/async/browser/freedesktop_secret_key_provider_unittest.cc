@@ -4,28 +4,37 @@
 
 #include "components/os_crypt/async/browser/freedesktop_secret_key_provider.h"
 
+#include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/utils/name_has_owner.h"
+#include "components/dbus/utils/read_value.h"
+#include "components/dbus/utils/signature.h"
+#include "components/dbus/utils/variant.h"
+#include "components/dbus/utils/write_value.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
+#include "dbus/object_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace os_crypt_async {
 
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Return;
-
-namespace os_crypt_async {
 
 namespace {
 
@@ -46,16 +55,35 @@ constexpr int32_t kKWalletHandle = 42;
 
 constexpr char kFakeSecret[] = "c3VwZXJfc2VjcmV0X2tleQ==";
 
-template <typename T>
-class MatchArgs {
+using ArgVariant = std::variant<dbus::ObjectPath,
+                                std::string,
+                                std::vector<dbus::ObjectPath>,
+                                dbus_utils::Variant,
+                                std::map<std::string, std::string>,
+                                std::map<std::string, dbus_utils::Variant>,
+                                std::tuple<dbus::ObjectPath,
+                                           std::vector<uint8_t>,
+                                           std::vector<uint8_t>,
+                                           std::string>,
+                                int64_t,
+                                int32_t,
+                                bool>;
+using ArgsVector = std::vector<ArgVariant>;
+
+// Matcher for method call arguments. Use MatchArgs() to create one.
+class ArgsMatcher {
  public:
   using is_gtest_matcher = void;
 
-  explicit MatchArgs(T&& args) : args_(std::forward<T>(args)) {}
+  explicit ArgsMatcher(ArgsVector args) : args_(std::move(args)) {}
 
-  bool MatchAndExplain(const DbusVariant& match, std::ostream*) const {
-    const T* match_args = match.GetAs<T>();
-    return match_args && *match_args == args_;
+  ArgsMatcher(ArgsMatcher&&) = default;
+  ArgsMatcher& operator=(ArgsMatcher&&) = default;
+
+  ~ArgsMatcher() = default;
+
+  bool MatchAndExplain(const ArgsVector& match, std::ostream*) const {
+    return match == args_;
   }
 
   void DescribeTo(std::ostream* os) const { *os << "DbusTypes match"; }
@@ -65,24 +93,48 @@ class MatchArgs {
   }
 
  private:
-  T args_;
+  ArgsVector args_;
 };
 
-template <typename T>
-auto RespondWith(T&& args) {
-  return [args = std::move(args)](
-             const std::string&, const std::string&, DbusVariant,
-             dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+template <typename... Args>
+void WriteImpl(dbus::MessageWriter* writer, Args&&... args) {
+  (dbus_utils::WriteValue(*writer, std::forward<Args>(args)), ...);
+}
+
+template <typename... Args>
+void Write(dbus::MessageWriter* writer, Args&&... args) {
+  WriteImpl(writer, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+void PackImpl(ArgsVector& variants, Args&&... args) {
+  (variants.push_back(std::forward<Args>(args)), ...);
+}
+
+// Create a GTest matcher for method call arguments.
+template <typename... Ts>
+ArgsMatcher MatchArgs(Ts&&... ts) {
+  ArgsVector args;
+  PackImpl(args, std::forward<Ts>(ts)...);
+  return ArgsMatcher(std::move(args));
+}
+
+// Create a response callback that responds with the given arguments.
+template <typename... Args>
+auto RespondWith(Args&&... args) {
+  return [... args = std::forward<Args>(args)](
+             const std::string&, const std::string&, const ArgsVector&,
+             dbus::ObjectProxy::ResponseOrErrorCallback* callback) mutable {
     auto response = dbus::Response::CreateEmpty();
     dbus::MessageWriter writer(response.get());
-    args.Write(&writer);
+    Write(&writer, std::move(args)...);
     std::move(*callback).Run(response.get(), nullptr);
   };
 }
 
 auto RespondWithTrue(const std::string&,
                      const std::string&,
-                     DbusVariant,
+                     const ArgsVector&,
                      dbus::ObjectProxy::ResponseCallback* callback) {
   auto response = dbus::Response::CreateEmpty();
   dbus::MessageWriter writer(response.get());
@@ -90,49 +142,78 @@ auto RespondWithTrue(const std::string&,
   std::move(*callback).Run(response.get());
 }
 
+template <typename T>
+bool TryReadValue(dbus::MessageReader& reader,
+                  const std::string& signature,
+                  ArgsVector& args) {
+  if (signature != dbus_utils::GetDBusTypeSignature<T>()) {
+    return false;
+  }
+  auto value = dbus_utils::ReadValue<T>(reader);
+  if (!value.has_value()) {
+    return false;
+  }
+  args.push_back(std::move(*value));
+  return true;
+}
+
+template <typename... Ts>
+ArgsVector ReadDbusMessageImpl(dbus::MessageReader& reader,
+                               std::variant<Ts...>*) {
+  ArgsVector args;
+  while (reader.HasMoreData()) {
+    std::string signature = reader.GetDataSignature();
+    if (!(TryReadValue<Ts>(reader, signature, args) || ...)) {
+      break;
+    }
+  }
+  return args;
+}
+
+ArgsVector ReadDbusMessage(dbus::MessageReader& reader) {
+  ArgVariant* arg = nullptr;
+  return ReadDbusMessageImpl(reader, arg);
+}
+
+// Used to mock ObjectProxy calls with typed arguments and responses.
 class MockObjectProxyWithTypedCalls : public dbus::MockObjectProxy {
  public:
   MockObjectProxyWithTypedCalls(dbus::Bus* bus,
                                 const std::string& service_name,
                                 const dbus::ObjectPath& object_path)
-      : dbus::MockObjectProxy(bus, service_name, object_path) {
-    // Forward to Call().
-    EXPECT_CALL(*this, CallMethodWithErrorResponse(_, _, _))
-        .Times(AtLeast(0))
-        .WillRepeatedly(
-            [this](dbus::MethodCall* method_call, int timeout_ms,
-                   dbus::ObjectProxy::ResponseOrErrorCallback callback) {
-              dbus::MessageReader reader(method_call);
-              auto args = ReadDbusMessage(&reader);
-              Call(method_call->GetInterface(), method_call->GetMember(),
-                   std::move(args), &callback);
-            });
+      : dbus::MockObjectProxy(bus, service_name, object_path) {}
 
-    // Forward to CallWithoutError().
-    EXPECT_CALL(*this, CallMethod(_, _, _))
-        .Times(AtLeast(0))
-        .WillRepeatedly([this](dbus::MethodCall* method_call, int timeout_ms,
-                               dbus::ObjectProxy::ResponseCallback callback) {
-          dbus::MessageReader reader(method_call);
-          auto args = ReadDbusMessage(&reader);
-          CallWithoutError(method_call->GetInterface(),
-                           method_call->GetMember(), std::move(args),
-                           &callback);
-        });
+  void CallMethod(dbus::MethodCall* method_call,
+                  int timeout_ms,
+                  ResponseCallback callback) override {
+    dbus::MessageReader reader(method_call);
+    auto args = ReadDbusMessage(reader);
+    CallWithoutError(method_call->GetInterface(), method_call->GetMember(),
+                     std::move(args), &callback);
   }
 
-  MOCK_METHOD4(Call,
-               void(const std::string& interface,
-                    const std::string& method_name,
-                    DbusVariant args,
-                    dbus::ObjectProxy::ResponseOrErrorCallback* callback));
+  void CallMethodWithErrorResponse(dbus::MethodCall* method_call,
+                                   int timeout_ms,
+                                   ResponseOrErrorCallback callback) override {
+    dbus::MessageReader reader(method_call);
+    auto args = ReadDbusMessage(reader);
+    Call(method_call->GetInterface(), method_call->GetMember(), std::move(args),
+         &callback);
+  }
 
-  // Needed for NameHasOwner calls.
-  MOCK_METHOD4(CallWithoutError,
-               void(const std::string& interface,
-                    const std::string& method_name,
-                    DbusVariant args,
-                    dbus::ObjectProxy::ResponseCallback* callback));
+  MOCK_METHOD(void,
+              Call,
+              (const std::string& interface,
+               const std::string& method_name,
+               const ArgsVector& args,
+               dbus::ObjectProxy::ResponseOrErrorCallback* callback));
+
+  MOCK_METHOD(void,
+              CallWithoutError,
+              (const std::string& interface,
+               const std::string& method_name,
+               const ArgsVector& args,
+               dbus::ObjectProxy::ResponseCallback* callback));
 
  protected:
   ~MockObjectProxyWithTypedCalls() override = default;
@@ -184,91 +265,79 @@ TEST(FreedesktopSecretKeyProviderTest, BasicHappyPath) {
   // NameHasOwner for Secret Service
   EXPECT_CALL(
       *mock_dbus_proxy,
-      CallWithoutError(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                       MatchArgs(DbusString(
-                           FreedesktopSecretKeyProvider::kSecretServiceName)),
-                       _))
+      CallWithoutError(
+          DBUS_INTERFACE_DBUS, "NameHasOwner",
+          MatchArgs(FreedesktopSecretKeyProvider::kSecretServiceName), _))
       .WillOnce(RespondWithTrue);
 
   // ReadAlias("default")
-  EXPECT_CALL(
-      *mock_service_proxy,
-      Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
-           FreedesktopSecretKeyProvider::kMethodReadAlias,
-           MatchArgs(DbusString(FreedesktopSecretKeyProvider::kDefaultAlias)),
-           _))
-      .WillOnce(RespondWith(DbusObjectPath(dbus::ObjectPath(kCollectionPath))));
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   FreedesktopSecretKeyProvider::kMethodReadAlias,
+                   MatchArgs(FreedesktopSecretKeyProvider::kDefaultAlias), _))
+      .WillOnce(RespondWith(dbus::ObjectPath(kCollectionPath)));
 
   // Get(Label)
   EXPECT_CALL(
       *mock_collection_proxy,
       Call(FreedesktopSecretKeyProvider::kPropertiesInterface,
            FreedesktopSecretKeyProvider::kMethodGet,
-           MatchArgs(MakeDbusParameters(
-               DbusString(
-                   FreedesktopSecretKeyProvider::kSecretCollectionInterface),
-               DbusString(FreedesktopSecretKeyProvider::kLabelProperty))),
+           MatchArgs(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
+                     FreedesktopSecretKeyProvider::kLabelProperty),
            _))
-      .WillOnce(RespondWith(MakeDbusVariant(
-          DbusString(FreedesktopSecretKeyProvider::kDefaultCollectionLabel))));
+      .WillOnce(RespondWith(dbus_utils::Variant::Wrap<"s">(
+          FreedesktopSecretKeyProvider::kDefaultCollectionLabel)));
 
   // Unlock(default_collection)
   EXPECT_CALL(*mock_service_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
                    FreedesktopSecretKeyProvider::kMethodUnlock,
-                   MatchArgs(MakeDbusArray(
-                       DbusObjectPath(dbus::ObjectPath(kCollectionPath)))),
+                   MatchArgs(std::vector<dbus::ObjectPath>{
+                       dbus::ObjectPath(kCollectionPath)}),
                    _))
-      .WillOnce(RespondWith(MakeDbusParameters(
-          MakeDbusArray(DbusObjectPath(dbus::ObjectPath(kCollectionPath))),
-          DbusObjectPath(dbus::ObjectPath("/")))));
+      .WillOnce(RespondWith(
+          std::vector<dbus::ObjectPath>{dbus::ObjectPath(kCollectionPath)},
+          dbus::ObjectPath("/")));
 
   // OpenSession
-  EXPECT_CALL(
-      *mock_service_proxy,
-      Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
-           FreedesktopSecretKeyProvider::kMethodOpenSession,
-           MatchArgs(MakeDbusParameters(
-               DbusString(FreedesktopSecretKeyProvider::kAlgorithmPlain),
-               MakeDbusVariant(
-                   DbusString(FreedesktopSecretKeyProvider::kInputPlain)))),
-           _))
-      .WillOnce(RespondWith(
-          MakeDbusParameters(MakeDbusVariant(DbusString("")),
-                             DbusObjectPath(dbus::ObjectPath(kSessionPath)))));
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   FreedesktopSecretKeyProvider::kMethodOpenSession,
+                   MatchArgs(FreedesktopSecretKeyProvider::kAlgorithmPlain,
+                             dbus_utils::Variant::Wrap<"s">(
+                                 FreedesktopSecretKeyProvider::kInputPlain)),
+                   _))
+      .WillOnce(RespondWith(dbus_utils::Variant::Wrap<"s">(""),
+                            dbus::ObjectPath(kSessionPath)));
 
   // SearchItems
-  EXPECT_CALL(
-      *mock_collection_proxy,
-      Call(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
-           FreedesktopSecretKeyProvider::kMethodSearchItems,
-           MatchArgs(MakeDbusArray(MakeDbusDictEntry(
-               DbusString(
-                   FreedesktopSecretKeyProvider::kApplicationAttributeKey),
-               DbusString(FreedesktopSecretKeyProvider::kAppName)))),
-           _))
+  std::map<std::string, std::string> attributes;
+  attributes[FreedesktopSecretKeyProvider::kApplicationAttributeKey] =
+      FreedesktopSecretKeyProvider::kAppName;
+  EXPECT_CALL(*mock_collection_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
+                   FreedesktopSecretKeyProvider::kMethodSearchItems,
+                   MatchArgs(std::move(attributes)), _))
       .WillOnce(RespondWith(
-          MakeDbusArray(DbusObjectPath(dbus::ObjectPath(kItemPath)))));
+          std::vector<dbus::ObjectPath>{dbus::ObjectPath(kItemPath)}));
 
   // GetSecret
-  EXPECT_CALL(
-      *mock_item_proxy,
-      Call(FreedesktopSecretKeyProvider::kSecretItemInterface,
-           FreedesktopSecretKeyProvider::kMethodGetSecret,
-           MatchArgs(DbusObjectPath(dbus::ObjectPath(kSessionPath))), _))
-      .WillOnce(RespondWith(MakeDbusStruct(
-          DbusObjectPath(dbus::ObjectPath(kSessionPath)),
-          DbusByteArray(base::MakeRefCounted<base::RefCountedString>("")),
-          DbusByteArray(
-              base::MakeRefCounted<base::RefCountedString>(kFakeSecret)),
-          DbusString(FreedesktopSecretKeyProvider::kMimePlain))));
+  auto fake_secret_span = base::as_byte_span(kFakeSecret);
+  EXPECT_CALL(*mock_item_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretItemInterface,
+                   FreedesktopSecretKeyProvider::kMethodGetSecret,
+                   MatchArgs(dbus::ObjectPath(kSessionPath)), _))
+      .WillOnce(RespondWith(std::make_tuple(
+          dbus::ObjectPath(kSessionPath), std::vector<uint8_t>(),
+          std::vector<uint8_t>(fake_secret_span.begin(),
+                               fake_secret_span.end()),
+          std::string(FreedesktopSecretKeyProvider::kMimePlain))));
 
   // Close
   EXPECT_CALL(*mock_session_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretSessionInterface,
-                   FreedesktopSecretKeyProvider::kMethodClose,
-                   MatchArgs(DbusVoid()), _))
-      .WillOnce(RespondWith(DbusVoid()));
+                   FreedesktopSecretKeyProvider::kMethodClose, MatchArgs(), _))
+      .WillOnce(RespondWith());
 
   FreedesktopSecretKeyProvider provider("gnome-libsecret", kProductName,
                                         mock_bus);
@@ -355,33 +424,29 @@ TEST(FreedesktopSecretKeyProviderTest,
   // NameHasOwner for Secret Service
   EXPECT_CALL(
       *mock_dbus_proxy,
-      CallWithoutError(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                       MatchArgs(DbusString(
-                           FreedesktopSecretKeyProvider::kSecretServiceName)),
-                       _))
+      CallWithoutError(
+          DBUS_INTERFACE_DBUS, "NameHasOwner",
+          MatchArgs(FreedesktopSecretKeyProvider::kSecretServiceName), _))
       .WillOnce(RespondWithTrue);
 
   // ReadAlias("default") returns no default collection
-  EXPECT_CALL(
-      *mock_service_proxy,
-      Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
-           FreedesktopSecretKeyProvider::kMethodReadAlias,
-           MatchArgs(DbusString(FreedesktopSecretKeyProvider::kDefaultAlias)),
-           _))
-      .WillOnce(RespondWith(DbusObjectPath(dbus::ObjectPath("/"))));
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   FreedesktopSecretKeyProvider::kMethodReadAlias,
+                   MatchArgs(FreedesktopSecretKeyProvider::kDefaultAlias), _))
+      .WillOnce(RespondWith(dbus::ObjectPath("/")));
 
   // CreateCollection returns a prompt
   EXPECT_CALL(*mock_service_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
                    "CreateCollection", _, _))
-      .WillOnce(RespondWith(MakeDbusParameters(
-          DbusObjectPath(dbus::ObjectPath("/")),
-          DbusObjectPath(dbus::ObjectPath(kCollectionPromptPath)))));
+      .WillOnce(RespondWith(dbus::ObjectPath("/"),
+                            dbus::ObjectPath(kCollectionPromptPath)));
 
   EXPECT_CALL(*mock_collection_prompt_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretPromptInterface,
                    FreedesktopSecretKeyProvider::kMethodPrompt, _, _))
-      .WillOnce(RespondWith(DbusVoid()));
+      .WillOnce(RespondWith());
 
   EXPECT_CALL(*mock_collection_prompt_proxy, ConnectToSignal(_, _, _, _))
       .WillOnce([](const std::string& interface_name,
@@ -396,10 +461,9 @@ TEST(FreedesktopSecretKeyProviderTest,
         dbus::MessageWriter writer(&signal);
         // Prompt completed: dismissed = false, return the newly created
         // collection path
-        DbusParameters<DbusBoolean, DbusVariant> args(
-            DbusBoolean(false),
-            MakeDbusVariant(DbusObjectPath(dbus::ObjectPath(kCollectionPath))));
-        args.Write(&writer);
+        dbus_utils::WriteValue(writer, false);
+        dbus_utils::WriteValue(writer, dbus_utils::Variant::Wrap<"o">(
+                                           dbus::ObjectPath(kCollectionPath)));
         signal_callback.Run(&signal);
       });
 
@@ -407,17 +471,16 @@ TEST(FreedesktopSecretKeyProviderTest,
   EXPECT_CALL(*mock_service_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
                    FreedesktopSecretKeyProvider::kMethodUnlock,
-                   MatchArgs(MakeDbusArray(
-                       DbusObjectPath(dbus::ObjectPath(kCollectionPath)))),
+                   MatchArgs(std::vector<dbus::ObjectPath>{
+                       dbus::ObjectPath(kCollectionPath)}),
                    _))
-      .WillOnce(RespondWith(MakeDbusParameters(
-          DbusArray<DbusObjectPath>(),
-          DbusObjectPath(dbus::ObjectPath(kUnlockPromptPath)))));
+      .WillOnce(RespondWith(std::vector<dbus::ObjectPath>(),
+                            dbus::ObjectPath(kUnlockPromptPath)));
 
   EXPECT_CALL(*mock_unlock_prompt_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretPromptInterface,
                    FreedesktopSecretKeyProvider::kMethodPrompt, _, _))
-      .WillOnce(RespondWith(DbusVoid()));
+      .WillOnce(RespondWith());
 
   EXPECT_CALL(*mock_unlock_prompt_proxy, ConnectToSignal(_, _, _, _))
       .WillOnce([](const std::string& interface_name,
@@ -428,10 +491,11 @@ TEST(FreedesktopSecretKeyProviderTest,
 
         auto signal = dbus::Signal(interface_name, signal_name);
         dbus::MessageWriter writer(&signal);
-        DbusParameters<DbusBoolean, DbusVariant> args(
-            DbusBoolean(false), MakeDbusVariant(MakeDbusArray(DbusObjectPath(
-                                    dbus::ObjectPath(kCollectionPath)))));
-        args.Write(&writer);
+        dbus_utils::WriteValue(writer, false);
+        dbus_utils::WriteValue(
+            writer,
+            dbus_utils::Variant::Wrap<"ao">(std::vector<dbus::ObjectPath>{
+                dbus::ObjectPath(kCollectionPath)}));
         signal_callback.Run(&signal);
       });
 
@@ -439,28 +503,26 @@ TEST(FreedesktopSecretKeyProviderTest,
   EXPECT_CALL(*mock_service_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
                    FreedesktopSecretKeyProvider::kMethodOpenSession, _, _))
-      .WillOnce(RespondWith(
-          MakeDbusParameters(MakeDbusVariant(DbusString("")),
-                             DbusObjectPath(dbus::ObjectPath(kSessionPath)))));
+      .WillOnce(RespondWith(dbus_utils::Variant::Wrap<"s">(""),
+                            dbus::ObjectPath(kSessionPath)));
 
   // SearchItems returns empty
   EXPECT_CALL(*mock_collection_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
                    FreedesktopSecretKeyProvider::kMethodSearchItems, _, _))
-      .WillOnce(RespondWith(DbusArray<DbusObjectPath>()));
+      .WillOnce(RespondWith(std::vector<dbus::ObjectPath>()));
 
   // CreateItem
   EXPECT_CALL(*mock_collection_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
                    "CreateItem", _, _))
-      .WillOnce(RespondWith(MakeDbusParameters(
-          DbusObjectPath(dbus::ObjectPath("/")),
-          DbusObjectPath(dbus::ObjectPath(kItemPromptPath)))));
+      .WillOnce(RespondWith(dbus::ObjectPath("/"),
+                            dbus::ObjectPath(kItemPromptPath)));
 
   EXPECT_CALL(*mock_item_prompt_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretPromptInterface,
                    FreedesktopSecretKeyProvider::kMethodPrompt, _, _))
-      .WillOnce(RespondWith(DbusVoid()));
+      .WillOnce(RespondWith());
 
   EXPECT_CALL(*mock_item_prompt_proxy, ConnectToSignal(_, _, _, _))
       .WillOnce([&](const std::string& interface_name,
@@ -472,19 +534,17 @@ TEST(FreedesktopSecretKeyProviderTest,
         auto signal = dbus::Signal(interface_name, signal_name);
         dbus::MessageWriter writer(&signal);
         // Return a valid item path now
-        DbusParameters<DbusBoolean, DbusVariant> args(
-            DbusBoolean(false),
-            MakeDbusVariant(DbusObjectPath(dbus::ObjectPath(kItemPath))));
-        args.Write(&writer);
+        dbus_utils::WriteValue(writer, false);
+        dbus_utils::WriteValue(writer, dbus_utils::Variant::Wrap<"o">(
+                                           dbus::ObjectPath(kItemPath)));
         signal_callback.Run(&signal);
       });
 
   // CloseSession
   EXPECT_CALL(*mock_session_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretSessionInterface,
-                   FreedesktopSecretKeyProvider::kMethodClose,
-                   MatchArgs(DbusVoid()), _))
-      .WillOnce(RespondWith(DbusVoid()));
+                   FreedesktopSecretKeyProvider::kMethodClose, MatchArgs(), _))
+      .WillOnce(RespondWith());
 
   FreedesktopSecretKeyProvider provider("gnome-libsecret", kProductName,
                                         mock_bus);
@@ -522,80 +582,70 @@ TEST(FreedesktopSecretKeyProviderTest, KWallet) {
       .WillRepeatedly(Return(mock_kwallet5_proxy.get()));
   EXPECT_CALL(
       *mock_dbus_proxy,
-      CallWithoutError(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                       MatchArgs(DbusString(
-                           FreedesktopSecretKeyProvider::kKWalletD5Service)),
-                       _))
+      CallWithoutError(
+          DBUS_INTERFACE_DBUS, "NameHasOwner",
+          MatchArgs(FreedesktopSecretKeyProvider::kKWalletD5Service), _))
       .WillOnce(RespondWithTrue);
 
   // isEnabled -> true
   EXPECT_CALL(*mock_kwallet5_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodIsEnabled,
-                   MatchArgs(DbusVoid()), _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
+                   MatchArgs(), _))
+      .WillOnce(RespondWith(true));
 
   // networkWallet
   EXPECT_CALL(*mock_kwallet5_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodNetworkWallet,
-                   MatchArgs(DbusVoid()), _))
-      .WillOnce(RespondWith(DbusString(kNetworkWallet)));
+                   MatchArgs(), _))
+      .WillOnce(RespondWith(std::string(kNetworkWallet)));
 
   // open -> non-negative handle
   EXPECT_CALL(*mock_kwallet5_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodOpen,
-                   MatchArgs(MakeDbusParameters(DbusString(kNetworkWallet),
-                                                DbusInt64(0),
-                                                DbusString(kProductName))),
-                   _))
-      .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
+                   MatchArgs(kNetworkWallet, int64_t(0), kProductName), _))
+      .WillOnce(RespondWith(kKWalletHandle));
 
   // hasFolder -> true
   EXPECT_CALL(*mock_kwallet5_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodHasFolder,
-                   MatchArgs(MakeDbusParameters(
-                       DbusInt32(kKWalletHandle),
-                       DbusString(FreedesktopSecretKeyProvider::kKWalletFolder),
-                       DbusString(kProductName))),
+                   MatchArgs(kKWalletHandle,
+                             FreedesktopSecretKeyProvider::kKWalletFolder,
+                             kProductName),
                    _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
+      .WillOnce(RespondWith(true));
 
   // hasEntry -> true
-  EXPECT_CALL(*mock_kwallet5_proxy,
-              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
-                   FreedesktopSecretKeyProvider::kKWalletMethodHasEntry,
-                   MatchArgs(MakeDbusParameters(
-                       DbusInt32(kKWalletHandle),
-                       DbusString(FreedesktopSecretKeyProvider::kKWalletFolder),
-                       DbusString(FreedesktopSecretKeyProvider::kKeyName),
-                       DbusString(kProductName))),
-                   _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
+  EXPECT_CALL(
+      *mock_kwallet5_proxy,
+      Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+           FreedesktopSecretKeyProvider::kKWalletMethodHasEntry,
+           MatchArgs(kKWalletHandle,
+                     FreedesktopSecretKeyProvider::kKWalletFolder,
+                     FreedesktopSecretKeyProvider::kKeyName, kProductName),
+           _))
+      .WillOnce(RespondWith(true));
 
   // readPassword -> return a secret
-  EXPECT_CALL(*mock_kwallet5_proxy,
-              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
-                   FreedesktopSecretKeyProvider::kKWalletMethodReadPassword,
-                   MatchArgs(MakeDbusParameters(
-                       DbusInt32(kKWalletHandle),
-                       DbusString(FreedesktopSecretKeyProvider::kKWalletFolder),
-                       DbusString(FreedesktopSecretKeyProvider::kKeyName),
-                       DbusString(kProductName))),
-                   _))
-      .WillOnce(RespondWith(DbusString(kFakeSecret)));
+  EXPECT_CALL(
+      *mock_kwallet5_proxy,
+      Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+           FreedesktopSecretKeyProvider::kKWalletMethodReadPassword,
+           MatchArgs(kKWalletHandle,
+                     FreedesktopSecretKeyProvider::kKWalletFolder,
+                     FreedesktopSecretKeyProvider::kKeyName, kProductName),
+           _))
+      .WillOnce(RespondWith(std::string(kFakeSecret)));
 
   // close
   EXPECT_CALL(*mock_kwallet5_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodClose,
-                   MatchArgs(MakeDbusParameters(DbusInt32(kKWalletHandle),
-                                                DbusBoolean(false),
-                                                DbusString(kProductName))),
-                   _))
-      .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
+                   MatchArgs(kKWalletHandle, false, kProductName), _))
+      .WillOnce(RespondWith(kKWalletHandle));
 
   FreedesktopSecretKeyProvider provider("kwallet5", kProductName, mock_bus);
   std::string tag;
@@ -632,74 +682,65 @@ TEST(FreedesktopSecretKeyProviderTest, KWalletCreateFolderAndPassword) {
       .WillRepeatedly(Return(mock_kwallet6_proxy.get()));
   EXPECT_CALL(
       *mock_dbus_proxy,
-      CallWithoutError(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                       MatchArgs(DbusString(
-                           FreedesktopSecretKeyProvider::kKWalletD6Service)),
-                       _))
+      CallWithoutError(
+          DBUS_INTERFACE_DBUS, "NameHasOwner",
+          MatchArgs(FreedesktopSecretKeyProvider::kKWalletD6Service), _))
       .WillOnce(RespondWithTrue);
 
   // isEnabled -> true
   EXPECT_CALL(*mock_kwallet6_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodIsEnabled,
-                   MatchArgs(DbusVoid()), _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
+                   MatchArgs(), _))
+      .WillOnce(RespondWith(true));
 
   // networkWallet
   EXPECT_CALL(*mock_kwallet6_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodNetworkWallet,
-                   MatchArgs(DbusVoid()), _))
-      .WillOnce(RespondWith(DbusString(kNetworkWallet)));
+                   MatchArgs(), _))
+      .WillOnce(RespondWith(std::string(kNetworkWallet)));
 
   // open -> non-negative handle
   EXPECT_CALL(*mock_kwallet6_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodOpen,
-                   MatchArgs(MakeDbusParameters(DbusString(kNetworkWallet),
-                                                DbusInt64(0),
-                                                DbusString(kProductName))),
-                   _))
-      .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
+                   MatchArgs(kNetworkWallet, int64_t(0), kProductName), _))
+      .WillOnce(RespondWith(kKWalletHandle));
 
   // hasFolder -> false
   EXPECT_CALL(*mock_kwallet6_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodHasFolder,
-                   MatchArgs(MakeDbusParameters(
-                       DbusInt32(kKWalletHandle),
-                       DbusString(FreedesktopSecretKeyProvider::kKWalletFolder),
-                       DbusString(kProductName))),
+                   MatchArgs(kKWalletHandle,
+                             FreedesktopSecretKeyProvider::kKWalletFolder,
+                             kProductName),
                    _))
-      .WillOnce(RespondWith(DbusBoolean(false)));
+      .WillOnce(RespondWith(false));
 
   // createFolder
   EXPECT_CALL(*mock_kwallet6_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodCreateFolder,
-                   MatchArgs(MakeDbusParameters(
-                       DbusInt32(kKWalletHandle),
-                       DbusString(FreedesktopSecretKeyProvider::kKWalletFolder),
-                       DbusString(kProductName))),
+                   MatchArgs(kKWalletHandle,
+                             FreedesktopSecretKeyProvider::kKWalletFolder,
+                             kProductName),
                    _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
+      .WillOnce(RespondWith(true));
 
   // writePassword
   EXPECT_CALL(
       *mock_kwallet6_proxy,
       Call(FreedesktopSecretKeyProvider::kKWalletInterface,
            FreedesktopSecretKeyProvider::kKWalletMethodWritePassword, _, _))
-      .WillOnce(RespondWith(DbusInt32(0)));
+      .WillOnce(RespondWith(0));
 
   // close
   EXPECT_CALL(*mock_kwallet6_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
                    FreedesktopSecretKeyProvider::kKWalletMethodClose,
-                   MatchArgs(MakeDbusParameters(DbusInt32(kKWalletHandle),
-                                                DbusBoolean(false),
-                                                DbusString(kProductName))),
-                   _))
-      .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
+                   MatchArgs(kKWalletHandle, false, kProductName), _))
+      .WillOnce(RespondWith(kKWalletHandle));
 
   FreedesktopSecretKeyProvider provider("kwallet6", kProductName, mock_bus);
   std::string tag;

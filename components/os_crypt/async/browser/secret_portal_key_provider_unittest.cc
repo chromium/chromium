@@ -4,12 +4,19 @@
 
 #include "components/os_crypt/async/browser/secret_portal_key_provider.h"
 
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/utils/name_has_owner.h"
+#include "components/dbus/utils/variant.h"
+#include "components/dbus/utils/write_value.h"
 #include "components/prefs/testing_pref_service.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -98,9 +105,10 @@ class SecretPortalKeyProviderTest : public testing::Test {
                     dbus::MessageWriter writer(&signal);
                     constexpr uint32_t kResponseSuccess = 0;
                     writer.AppendUint32(kResponseSuccess);
-                    DbusDictionary dict;
-                    dict.Put("token", MakeDbusVariant(DbusString(kPrefToken)));
-                    dict.Write(&writer);
+                    std::map<std::string, dbus_utils::Variant> dict;
+                    dict.emplace("token",
+                                 dbus_utils::Variant::Wrap<"s">(kPrefToken));
+                    dbus_utils::WriteValue(writer, dict);
                     signal_callback.Run(&signal);
                   });
           return mock_response_proxy_.get();
