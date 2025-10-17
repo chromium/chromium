@@ -386,6 +386,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)moveShareSheet {
+  [self addChildViewController:self.shareSheet];
   [self.view addSubview:self.shareSheet.view];
   [self.shareSheet didMoveToParentViewController:self];
 }

@@ -44,7 +44,7 @@ constexpr CGFloat kContentMargin = 16.;
     [subView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [subView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
-  [self didMoveToParentViewController:self.tableViewController];
+  [self.tableViewController didMoveToParentViewController:self];
 }
 
 - (void)viewDidLayoutSubviews {
