@@ -1011,6 +1011,11 @@ TEST_F(CompositorFrameReportingControllerTest, BlinkBreakdown) {
 }
 
 TEST_F(CompositorFrameReportingControllerTest, VizBreakdown) {
+  // Test is mutually-exclusive with ValidateTreesInVizBreakdown,
+  // so it does not apply to TreesInViz mode.
+  if (base::FeatureList::IsEnabled(features::kTreesInViz)) {
+    return;
+  }
   base::HistogramTester histogram_tester;
 
   SimulateSubmitCompositorFrame({});
