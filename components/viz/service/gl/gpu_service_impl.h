@@ -60,7 +60,6 @@
 namespace gpu {
 class DawnContextProvider;
 class GpuWatchdogThread;
-class ImageDecodeAcceleratorWorker;
 class Scheduler;
 class SharedContextState;
 class SharedImageManager;
@@ -536,11 +535,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       gr_context_options_provider_ = nullptr;
 
   base::AtomicFlag is_exiting_;
-
-  // Used for performing hardware decode acceleration of images. This is shared
-  // by all the GPU channels.
-  std::unique_ptr<gpu::ImageDecodeAcceleratorWorker>
-      image_decode_accelerator_worker_;
 
   base::TimeTicks start_time_;
 

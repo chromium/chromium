@@ -85,10 +85,6 @@
 #include "ui/gl/init/gl_factory.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(USE_VAAPI)
-#include "media/gpu/vaapi/vaapi_image_decode_accelerator_worker.h"
-#endif  // BUILDFLAG(USE_VAAPI)
-
 #if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/gl/throw_uncaught_exception.h"
 #include "media/base/android/media_codec_util.h"
@@ -272,11 +268,6 @@ GpuServiceImpl::GpuServiceImpl(
 #endif  // BUILDFLAG(SKIA_USE_METAL)
   }
 
-#if BUILDFLAG(USE_VAAPI_IMAGE_CODECS)
-  image_decode_accelerator_worker_ =
-      media::VaapiImageDecodeAcceleratorWorker::Create();
-#endif  // BUILDFLAG(USE_VAAPI_IMAGE_CODECS)
-
 #if BUILDFLAG(IS_WIN)
   if (media::SupportMediaFoundationClearPlayback()) {
     // Initialize the OverlayStateService using the GPUServiceImpl task
@@ -342,7 +333,6 @@ GpuServiceImpl::~GpuServiceImpl() {
   // The image decode accelerator worker must outlive the GPU channel manager so
   // that it doesn't get any decode requests during/after destruction.
   DCHECK(!gpu_channel_manager_);
-  image_decode_accelerator_worker_.reset();
 
   // Signal this event before destroying the child process. That way all
   // background threads can cleanup. For example, in the renderer the
@@ -358,11 +348,6 @@ void GpuServiceImpl::UpdateGPUInfo() {
 
   gpu_info_.jpeg_decode_accelerator_supported =
       IsAcceleratedJpegDecodeSupported();
-
-  if (image_decode_accelerator_worker_) {
-    gpu_info_.image_decode_accelerator_supported_profiles =
-        image_decode_accelerator_worker_->GetSupportedProfiles();
-  }
 
   // Record initialization only after collecting the GPU info because that can
   // take a significant amount of time.
@@ -498,7 +483,7 @@ void GpuServiceImpl::InitializeWithHostInternal(
       gpu_preferences_, this, watchdog_thread_.get(), main_runner_, io_runner_,
       scheduler_, sync_point_manager, shared_image_manager, gpu_feature_info_,
       &use_shader_cache_shm_count_, std::move(default_offscreen_surface),
-      image_decode_accelerator_worker_.get(), vulkan_context_provider(),
+      /*image_decode_accelerator_worker=*/nullptr, vulkan_context_provider(),
       metal_context_provider(), dawn_context_provider(),
       dawn_caching_interface_factory(), gr_context_options_provider_);
 
