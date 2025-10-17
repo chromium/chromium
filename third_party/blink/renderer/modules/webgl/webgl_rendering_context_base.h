@@ -1976,7 +1976,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource(
       SourceDrawingBuffer source_buffer);
 
-  CanvasResourceProviderSharedImage* GetOrCreateCanvasResourceProvider();
+  CanvasResourceProviderSharedImage* GetSharedImageResourceProvider();
 
   // Attempts to paint the most recent rendering results into a
   // CanvasResourceProvider. Returns the CanvasResourceProvider if the paint

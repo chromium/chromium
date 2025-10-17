@@ -1906,7 +1906,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   }
 
   CanvasResourceProviderSharedImage* resource_provider =
-      GetOrCreateCanvasResourceProvider();
+      GetSharedImageResourceProvider();
   if (!resource_provider) {
     // As a last resort, try to create and return an unaccelerated snapshot.
     // Match the SBI configuration to that produced when using GPU compositing:
@@ -1972,7 +1972,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 }
 
 CanvasResourceProviderSharedImage*
-WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
+WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   // If `cached_snapshot_` is non-null, it means that
   // PaintRenderingResultsToSnapshot() was unable to populate
   // `resource_provider_`. We will try to create `resource_provider_` again
@@ -2058,7 +2058,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   }
 
   CanvasResourceProviderSharedImage* resource_provider =
-      GetOrCreateCanvasResourceProvider();
+      GetSharedImageResourceProvider();
   if (!resource_provider)
     return nullptr;
 
