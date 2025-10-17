@@ -520,7 +520,6 @@ static_library("browser") {
     "first_party_sets/first_party_sets_policy_service.cc",
     "first_party_sets/first_party_sets_policy_service_factory.cc",
     "first_party_sets/first_party_sets_policy_service_factory.h",
-    "flag_descriptions.cc",
     "font_family_cache.cc",
     "font_family_cache.h",
     "gcm/gcm_product_util.cc",
