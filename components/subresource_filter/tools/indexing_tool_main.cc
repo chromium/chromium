@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iostream>
+
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -25,7 +27,7 @@ const char kSwitchVersionOutput[] = "version_output";
 const char kSwitchContentVersion[] = "content_version";
 
 void PrintHelp() {
-  UNSAFE_TODO(printf("%s\n\n", kHelpMsg));
+  std::cout << kHelpMsg << "\n\n";
 }
 
 int main(int argc, char* argv[]) {
