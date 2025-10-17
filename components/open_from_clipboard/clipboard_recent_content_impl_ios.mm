@@ -9,10 +9,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
-#include "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
+#import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 
 ContentType const ContentTypeURL = @"ContentTypeURL";
 ContentType const ContentTypeText = @"ContentTypeString";

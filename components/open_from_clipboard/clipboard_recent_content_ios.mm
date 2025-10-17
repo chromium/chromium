@@ -11,20 +11,19 @@
 
 #import <CommonCrypto/CommonDigest.h>
 #import <UIKit/UIKit.h>
-#include <stddef.h>
-#include <stdint.h>
+#import <stddef.h>
+#import <stdint.h>
 
-#include "base/metrics/user_metrics.h"
-#include "base/notimplemented.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
+#import "base/metrics/user_metrics.h"
+#import "base/notimplemented.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
 #import "base/task/sequenced_task_runner.h"
-#include "base/task/sequenced_task_runner.h"
 #import "components/open_from_clipboard/clipboard_recent_content_impl_ios.h"
 #import "net/base/apple/url_conversions.h"
-#include "url/gurl.h"
-#include "url/url_constants.h"
+#import "url/gurl.h"
+#import "url/url_constants.h"
 
 namespace {
 
