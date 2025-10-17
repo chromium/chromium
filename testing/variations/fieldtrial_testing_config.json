@@ -15109,21 +15109,6 @@
             ]
         }
     ],
-    "LiveCaptionChromeOS2": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2024_04_15",
-                    "enable_features": [
-                        "CrosExpandSodaLanguages"
-                    ]
-                }
-            ]
-        }
-    ],
     "LiveCaptionExperimentalLanguages": [
         {
             "platforms": [

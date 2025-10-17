@@ -31,7 +31,7 @@ namespace speech {
 namespace {
 
 constexpr char kSodaDlcName[] = "libsoda";
-constexpr char kSodaEnglishUsDlcName[] = "libsoda-model-en-us";
+
 constexpr float kInitialSodaRetryTimeSeconds = 1.0;
 constexpr float kMaxSodaRetryTimeSeconds = 32.0;
 
@@ -74,11 +74,6 @@ base::flat_map<std::string, SodaInstallerImplChromeOS::LanguageInfo>
 SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
   base::flat_map<std::string, LanguageInfo> available_languages;
   // Defaults checked in.
-  if (!base::FeatureList::IsEnabled(kCrosExpandSodaLanguages)) {
-    available_languages.insert(
-        {kUsEnglishLocale, {kSodaEnglishUsDlcName, LanguageCode::kEnUs}});
-    return available_languages;
-  }
   available_languages.insert(
       {kUsEnglishLocale, {"libsoda-model-en-us-df24d2", LanguageCode::kEnUs}});
   available_languages.insert(
@@ -200,37 +195,6 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
                                     LanguageCode::kSvSe};
   }
 
-  // Add in from feature flags. the value is of the format:
-  // "en-AU:libsoda-modelname,fr-CA:,de-CH:libsoda-pizzaface,"
-  // Note that fr-CA is removed explicitly in example.
-  std::vector<std::string> langs =
-      base::SplitString(base::GetFieldTrialParamValueByFeature(
-                            kCrosExpandSodaLanguages, "available_languages"),
-                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const auto& unparsed_pair : langs) {
-    std::vector<std::string> lang_model_pair = base::SplitString(
-        unparsed_pair, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (lang_model_pair.size() != 2) {
-      // skip, but log.
-      LOG(DFATAL) << "Unable to parse a language pair, in wrong format. "
-                     "value received and ignored is "
-                  << unparsed_pair;
-      continue;
-    }
-    if (lang_model_pair[1].rfind("libsoda", 0) == std::string::npos &&
-        !lang_model_pair[1].empty()) {
-      LOG(ERROR) << "Incorrect prefix for " << lang_model_pair[0]
-                 << " given, is: " << lang_model_pair[1] << " and ignoring.";
-      continue;
-    }
-    const auto& lang_it = available_languages.find(lang_model_pair[0]);
-    if (lang_it == available_languages.end()) {
-      LOG(ERROR) << "Unable to find language " << lang_model_pair[0]
-                 << ", ignoring.";
-      continue;
-    }
-    lang_it->second.dlc_name = lang_model_pair[1];
-  }
 
   // Remove empty.
   base::EraseIf(available_languages,

@@ -183,7 +183,7 @@ TEST_F(SodaInstallerImplChromeOSTest, ConchAddOns) {
 TEST_F(SodaInstallerImplChromeOSTest, ConchInLiveCaptionFullList) {
   base::test::ScopedFeatureList scoped_feature_list_internal;
   scoped_feature_list_internal.InitWithFeatures(
-      {::speech::kCrosSodaConchLanguages, ::speech::kCrosExpandSodaLanguages,
+      {::speech::kCrosSodaConchLanguages,
        ::speech::kFeatureManagementCrosSodaConchLanguages},
       {});
   soda_installer_impl_.reset();
@@ -204,25 +204,6 @@ TEST_F(SodaInstallerImplChromeOSTest, ConchInLiveCaptionFullList) {
   }
   EXPECT_THAT(enabled_and_available_languages,
               ::testing::IsSupersetOf({"da-DK", "nb-NO", "nl-NL", "sv-SE"}));
-}
-
-TEST_F(SodaInstallerImplChromeOSTest, MultipleLangsAvailableInExperiment) {
-  base::test::ScopedFeatureList scoped_feature_list_internal;
-  std::map<std::string, std::string> params;
-  params.insert({"available_languages",
-                 "it-IT:libsoda-chickenface,ja-JP:libsoda-moo,de-IT:"
-                 "incorrectprefix,wr-on:libsoda-wrong-language,de-DE:"});
-  scoped_feature_list_internal.InitAndEnableFeatureWithParameters(
-      ::speech::kCrosExpandSodaLanguages, params);
-  // explicit delete first to make the single instance enforcement happy.
-  soda_installer_impl_.reset();
-  soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
-  std::vector<std::string> actual_langs =
-      GetInstance()->GetAvailableLanguages();
-  EXPECT_THAT(actual_langs,
-              ::testing::IsSupersetOf({"ja-JP", "it-IT", "en-US"}));
-  EXPECT_TRUE(std::find(actual_langs.begin(), actual_langs.end(), "de-DE") ==
-              actual_langs.end());
 }
 
 TEST_F(SodaInstallerImplChromeOSTest, IsAnyLanguagePackInstalled) {
