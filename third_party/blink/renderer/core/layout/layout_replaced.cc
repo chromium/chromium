@@ -413,8 +413,11 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
   if (block_direction_position < top)
     return PositionBeforeThis();  // coordinates are above
 
-  if (block_direction_position >= bottom)
-    return PositionBeforeThis();  // coordinates are below
+  if (block_direction_position >= bottom) {
+    return RuntimeEnabledFeatures::ReplacedElementCursorPositioningFixEnabled()
+               ? PositionAfterThis()
+               : PositionBeforeThis();  // coordinates are below
+  }
 
   if (GetNode()) {
     const bool is_at_left_side =
