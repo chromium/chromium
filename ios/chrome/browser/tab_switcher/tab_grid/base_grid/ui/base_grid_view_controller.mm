@@ -441,9 +441,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   GridItemIdentifier* gridItem =
       [self.diffableDataSource itemIdentifierForIndexPath:selectedIndexPath];
 
+  UICollectionViewCell* collectionViewCell =
+      [self.collectionView cellForItemAtIndexPath:selectedIndexPath];
+
   return [self.collectionView.indexPathsForVisibleItems
              containsObject:selectedIndexPath] &&
-         gridItem.type == GridItemType::kTab;
+         gridItem.type == GridItemType::kTab && collectionViewCell;
 }
 
 - (void)setContentInsets:(UIEdgeInsets)contentInsets {
