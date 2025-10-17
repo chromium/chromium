@@ -82,17 +82,12 @@ source_set("pthreadpool_standalone") {
     "src/src/fastpath.c",
     "src/src/memory.c",
     "src/src/portable-api.c",
+    "src/src/pthreads.c",
     "src/src/threadpool-atomics.h",
     "src/src/threadpool-common.h",
     "src/src/threadpool-object.h",
     "src/src/threadpool-utils.h",
   ]
-
-  if (is_win) {
-    sources += [ "src/src/windows.c" ]
-  } else {
-    sources += [ "src/src/pthreads.c" ]
-  }
 
   if (!(is_android && use_order_profiling)) {
     assert_no_deps = [ "//base" ]

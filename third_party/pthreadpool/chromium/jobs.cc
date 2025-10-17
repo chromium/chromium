@@ -218,6 +218,24 @@ struct pthreadpool* pthreadpool_create(size_t threads_count) {
   return threadpool;
 }
 
+// The following *executor* functions are all no-ops since the Jobs API manages
+// its own threads.
+void pthreadpool_release_executor_threads(struct pthreadpool* threadpool) {
+  return;
+}
+
+bool pthreadpool_update_executor(pthreadpool_t threadpool,
+                                 struct pthreadpool_executor* executor,
+                                 void* executor_context) {
+  return false;
+}
+
+struct pthreadpool* pthreadpool_create_v2(struct pthreadpool_executor* executor,
+                                    void* executor_context,
+                                    size_t max_num_threads) {
+  return pthreadpool_create(max_num_threads);
+}
+
 // The `threadpool` struct is accessed by this method without holding a lock.
 // The caller should ensure accessing a `threadpool` struct from the same
 // sequence that inherently provides thread-safety.
