@@ -511,9 +511,6 @@ crbug.com/436522727 [ amd-0x7340 debug graphite-enabled no-clang-coverage sonoma
 
 ## Apple M2 ##
 
-## Mac Intel ##
-# Canvas missing colored squares - synchronization issue.
-crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
 
 # WebGL: INVALID_ENUM: getShaderParameter
 crbug.com/444250724 [ angle-metal debug graphite-enabled intel-0x3e9b no-clang-coverage sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -675,10 +672,6 @@ crbug.com/1448573 [ android angle-disabled no-passthrough qualcomm renderer-skia
 crbug.com/332743717 conformance/uniforms/uniform-location.html [ Failure ]
 
 
-#################################################################
-# Temporary suppressions for introduction of drawingBufferStorage
-#################################################################
-crbug.com/1230619 conformance/offscreencanvas/methods-worker.html [ Failure ]
 
 
 #######################################################################
