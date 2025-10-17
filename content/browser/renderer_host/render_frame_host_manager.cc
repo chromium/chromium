@@ -5760,7 +5760,7 @@ void RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent() {
   RenderWidgetHostView* view = GetRenderWidgetHostView();
   if (view &&
       static_cast<RenderWidgetHostImpl*>(view->GetRenderWidgetHost())
-              ->is_hidden() != frame_tree_node_->frame_tree().IsHidden()) {
+              ->IsHidden() != frame_tree_node_->frame_tree().IsHidden()) {
     if (frame_tree_node_->frame_tree().IsHidden()) {
       view->Hide();
     } else {

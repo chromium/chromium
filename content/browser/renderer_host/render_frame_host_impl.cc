@@ -3762,8 +3762,8 @@ PageVisibilityState RenderFrameHostImpl::GetVisibilityState() {
     return PageVisibilityState::kHidden;
   }
 
-  return GetRenderWidgetHost()->is_hidden() ? PageVisibilityState::kHidden
-                                            : PageVisibilityState::kVisible;
+  return GetRenderWidgetHost()->IsHidden() ? PageVisibilityState::kHidden
+                                           : PageVisibilityState::kVisible;
 }
 
 void RenderFrameHostImpl::OnAssociatedInterfaceRequest(

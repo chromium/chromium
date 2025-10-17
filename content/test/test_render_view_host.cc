@@ -127,8 +127,9 @@ void TestRenderWidgetHostView::ShowWithVisibility(
 }
 
 void TestRenderWidgetHostView::Hide() {
-  if (!host()->is_hidden())
+  if (!host()->IsHidden()) {
     host()->WasHidden();
+  }
   is_showing_ = false;
 }
 
@@ -144,8 +145,9 @@ void TestRenderWidgetHostView::WasUnOccluded() {
 }
 
 void TestRenderWidgetHostView::WasOccluded() {
-  if (!host()->is_hidden())
+  if (!host()->IsHidden()) {
     host()->WasHidden();
+  }
   is_occluded_ = true;
 }
 
@@ -300,7 +302,7 @@ void TestRenderWidgetHostView::NotifyHostAndDelegateOnWasShown(
       ADD_FAILURE();
       break;
   }
-  if (host()->is_hidden()) {
+  if (host()->IsHidden()) {
     // Do not pass on `visible_time_request` because there is no compositing to
     // measure.
     host()->WasShown({});
@@ -314,7 +316,7 @@ void TestRenderWidgetHostView::
   // Should only be called if the view was already shown.
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(jonross): Update the constructor to determine showing state
-  // `is_showing_ = !host()->is_hidden()` this will match production code. Also
+  // `is_showing_ = !host()->IsHidden()` this will match production code. Also
   // update various tests not prepared for this to also match production.
   //
   // In tests TestRenderViewHostFactory::CreateRenderViewHost creates all hosts

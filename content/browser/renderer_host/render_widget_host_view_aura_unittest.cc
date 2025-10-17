@@ -1467,37 +1467,37 @@ TEST_F(RenderWidgetHostViewAuraTest, FinishCompositionByMouse) {
 TEST_F(RenderWidgetHostViewAuraTest, WasOccluded) {
   InitViewForFrame(nullptr);
   view_->Show();
-  EXPECT_FALSE(widget_host_->is_hidden());
+  EXPECT_FALSE(widget_host_->IsHidden());
 
   // Verifies WasOccluded sets RenderWidgetHostImpl as hidden and WasUnOccluded
   // resets the state.
   view_->WasOccluded();
-  EXPECT_TRUE(widget_host_->is_hidden());
+  EXPECT_TRUE(widget_host_->IsHidden());
   view_->WasUnOccluded();
-  EXPECT_FALSE(widget_host_->is_hidden());
+  EXPECT_FALSE(widget_host_->IsHidden());
 
   // Verifies WasOccluded sets RenderWidgetHostImpl as hidden and Show resets
   // the state.
   view_->WasOccluded();
-  EXPECT_TRUE(widget_host_->is_hidden());
+  EXPECT_TRUE(widget_host_->IsHidden());
   view_->Show();
-  EXPECT_FALSE(widget_host_->is_hidden());
+  EXPECT_FALSE(widget_host_->IsHidden());
 
   // WasOccluded and WasUnOccluded are not in pairs. The last one dictates
   // the final state.
   for (int i = 0; i < 2; ++i) {
     view_->WasOccluded();
-    EXPECT_TRUE(widget_host_->is_hidden());
+    EXPECT_TRUE(widget_host_->IsHidden());
   }
   view_->WasUnOccluded();
-  EXPECT_FALSE(widget_host_->is_hidden());
+  EXPECT_FALSE(widget_host_->IsHidden());
 
   for (int i = 0; i < 4; ++i) {
     view_->WasUnOccluded();
-    EXPECT_FALSE(widget_host_->is_hidden());
+    EXPECT_FALSE(widget_host_->IsHidden());
   }
   view_->WasOccluded();
-  EXPECT_TRUE(widget_host_->is_hidden());
+  EXPECT_TRUE(widget_host_->IsHidden());
 }
 
 // Checks that touch-event state is maintained correctly.
@@ -2930,7 +2930,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       child_allocator.GetCurrentLocalSurfaceId();
 
   view_->WasOccluded();
-  EXPECT_TRUE(widget_host_->is_hidden());
+  EXPECT_TRUE(widget_host_->IsHidden());
 
   {
     cc::RenderFrameMetadata metadata;
@@ -5486,12 +5486,12 @@ TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
   // Simulate a tooltip.
   std::u16string tooltip_text(u"The tooltip!");
   view_->UpdateTooltipUnderCursor(tooltip_text);
-  EXPECT_FALSE(widget_host_->is_hidden());
+  EXPECT_FALSE(widget_host_->IsHidden());
   EXPECT_EQ(tooltip_text, view_->tooltip_);
 
   // Simulate occlusion, which should clear the tooltip.
   view_->WasOccluded();
-  EXPECT_TRUE(widget_host_->is_hidden());
+  EXPECT_TRUE(widget_host_->IsHidden());
   EXPECT_EQ(std::u16string(), view_->tooltip_);
 }
 

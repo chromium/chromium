@@ -24,7 +24,7 @@ ui::Layer* DelegatedFrameHostClientAura::DelegatedFrameHostGetLayer() const {
 }
 
 bool DelegatedFrameHostClientAura::DelegatedFrameHostIsVisible() const {
-  return !render_widget_host_view_->host()->is_hidden();
+  return !render_widget_host_view_->host()->IsHidden();
 }
 
 SkColor DelegatedFrameHostClientAura::DelegatedFrameHostGetGutterColor() const {

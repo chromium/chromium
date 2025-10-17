@@ -645,7 +645,7 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
     gfx::NativeView parent_native_view,
     cc::slim::Layer* parent_layer)
     : RenderWidgetHostViewBase(widget_host),
-      is_showing_(!widget_host->is_hidden()),
+      is_showing_(!widget_host->IsHidden()),
       is_window_visible_(true),
       is_window_activity_started_(true),
       ime_adapter_android_(nullptr),
@@ -2352,8 +2352,9 @@ void RenderWidgetHostViewAndroid::HideInternal() {
     StopObservingRootWindow();
   }
 
-  if (!host() || host()->is_hidden())
+  if (!host() || host()->IsHidden()) {
     return;
+  }
 
   if (overscroll_controller_)
     overscroll_controller_->Disable();

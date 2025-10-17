@@ -2238,9 +2238,9 @@ TEST_F(RenderWidgetHostTest, RendererExitedResetsIsHidden) {
   host_->SetView(new TestView(host_.get()));
   host_->WasShown({} /* record_tab_switch_time_request */);
 
-  ASSERT_FALSE(host_->is_hidden());
+  ASSERT_FALSE(host_->IsHidden());
   host_->RendererExited();
-  ASSERT_TRUE(host_->is_hidden());
+  ASSERT_TRUE(host_->IsHidden());
 
   // Make sure the input router is in a fresh state.
   ASSERT_FALSE(host_->input_router()->HasPendingEvents());

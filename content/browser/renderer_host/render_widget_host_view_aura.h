@@ -853,7 +853,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool double_tap_to_zoom_enabled_ = false;
 
   // Current visibility state. Initialized based on
-  // RenderWidgetHostImpl::is_hidden().
+  // RenderWidgetHostImpl::IsHidden().
   Visibility visibility_;
 
   // Represents a feature of the physical display whose offset and mask_length

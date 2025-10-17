@@ -2074,9 +2074,8 @@ NavigationRequest::NavigationRequest(
 #if BUILDFLAG(IS_ANDROID)
   RenderWidgetHostImpl* host = RenderWidgetHostImpl::From(
       frame_tree_node_->current_frame_host()->GetRenderWidgetHost());
-  if (NeedsUrlLoader() && IsInPrimaryMainFrame() && host &&
-      !host->is_hidden() && host->GetView() &&
-      host->GetView()->GetNativeView() &&
+  if (NeedsUrlLoader() && IsInPrimaryMainFrame() && host && !host->IsHidden() &&
+      host->GetView() && host->GetView()->GetNativeView() &&
       host->GetView()->GetNativeView()->GetWindowAndroid()) {
     // If the compositor changes, we will just let the lock timeout instead of
     // trying to deal with it explicitly.

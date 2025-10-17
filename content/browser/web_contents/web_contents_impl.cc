@@ -720,7 +720,7 @@ void RecordRendererUnresponsiveMetrics(
       "Renderer.Unresponsive.PageVisible.RenderProcessHostPriority",
       rph_priority);
 
-  bool widget_visible = !render_widget_host->is_hidden();
+  bool widget_visible = !render_widget_host->IsHidden();
   base::UmaHistogramBoolean(
       "Renderer.Unresponsive.PageVisible.WidgetVisibility", widget_visible);
 

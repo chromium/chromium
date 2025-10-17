@@ -226,7 +226,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
   browser_compositor_ = std::make_unique<BrowserCompositorMac>(
-      this, this, host()->is_hidden(), frame_sink_id);
+      this, this, host()->IsHidden(), frame_sink_id);
   DCHECK(![GetInProcessNSView() window]);
 
   host()->SetView(this);
@@ -494,7 +494,7 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
 
 void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
     blink::mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state) {
-  DCHECK(host_->is_hidden());
+  DCHECK(host_->IsHidden());
 
   // SetRenderWidgetHostIsHidden may cause a state transition that switches to
   // a new instance of DelegatedFrameHost and calls WasShown, which causes
@@ -525,7 +525,7 @@ void RenderWidgetHostViewMac::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
         blink::mojom::RecordContentToVisibleTimeRequestPtr
             visible_time_request) {
-  DCHECK(!host_->is_hidden());
+  DCHECK(!host_->IsHidden());
   DCHECK(visible_time_request);
 
   // No state transition here so don't use
@@ -544,15 +544,16 @@ void RenderWidgetHostViewMac::
 
 void RenderWidgetHostViewMac::
     CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
-  DCHECK(!host_->is_hidden());
+  DCHECK(!host_->IsHidden());
   host()->CancelSuccessfulPresentationTimeRequest();
   browser_compositor_->GetDelegatedFrameHost()
       ->CancelSuccessfulPresentationTimeRequest();
 }
 
 void RenderWidgetHostViewMac::WasOccluded() {
-  if (host()->is_hidden())
+  if (host()->IsHidden()) {
     return;
+  }
 
   host()->WasHidden();
   browser_compositor_->SetRenderWidgetHostIsHidden(true);

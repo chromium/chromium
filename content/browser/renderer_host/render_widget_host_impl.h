@@ -495,10 +495,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       RenderWidgetHost::InputEventObserver* observer) override;
 #endif
 
-  // Returns true if the RenderWidget is hidden.
-  // TODO(mustaq@chromium.org): Use `IsHidden()` instead!
-  bool is_hidden() const { return is_hidden_; }
-
   // Called to notify the RenderWidget that its associated native window
   // got/lost focused.
   void GotFocus();

@@ -276,8 +276,8 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
       device_scale_factor_(0.0f),
       event_handler_(new RenderWidgetHostViewEventHandler(host(), this, this)),
       frame_sink_id_(host()->GetFrameSinkId()),
-      visibility_(host()->is_hidden() ? Visibility::HIDDEN
-                                      : Visibility::VISIBLE) {
+      visibility_(host()->IsHidden() ? Visibility::HIDDEN
+                                     : Visibility::VISIBLE) {
   // CreateDelegatedFrameHostClient() and CreateAuraWindow() assume that the
   // FrameSinkId is valid. RenderWidgetHostImpl::GetFrameSinkId() always returns
   // a valid FrameSinkId.
@@ -578,7 +578,7 @@ void RenderWidgetHostViewAura::ShowImpl(PageVisibilityState page_visibility) {
   // OnShowWithPageVisibility will not call NotifyHostAndDelegateOnWasShown,
   // which updates `visibility_`, unless the host is hidden. Make sure no update
   // is needed.
-  CHECK(host_->is_hidden() || visibility_ == Visibility::VISIBLE);
+  CHECK(host_->IsHidden() || visibility_ == Visibility::VISIBLE);
   OnShowWithPageVisibility(page_visibility);
 }
 
@@ -589,14 +589,14 @@ void RenderWidgetHostViewAura::EnsurePlatformVisibility(
   auto* wth = window()->GetHost();
   if (wth && !wth->window()->GetLocalSurfaceId().is_valid() &&
       base::FeatureList::IsEnabled(kRenderWidgetHostHiddenCheck)) {
-    CHECK(host()->is_hidden());
+    CHECK(host()->IsHidden());
   }
 }
 
 void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
     blink::mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state) {
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
-  CHECK(host_->is_hidden());
+  CHECK(host_->IsHidden());
   CHECK_NE(visibility_, Visibility::VISIBLE);
 
   visibility_ = Visibility::VISIBLE;
@@ -642,7 +642,7 @@ void RenderWidgetHostViewAura::HideImpl() {
   CHECK(visibility_ == Visibility::HIDDEN ||
         visibility_ == Visibility::OCCLUDED);
 
-  if (!host()->is_hidden()) {
+  if (!host()->IsHidden()) {
     host()->WasHidden();
     aura::WindowTreeHost* host = window_->GetHost();
       aura::Window* parent = window_->parent();
@@ -686,7 +686,7 @@ void RenderWidgetHostViewAura::
         blink::mojom::RecordContentToVisibleTimeRequestPtr
             visible_time_request) {
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
-  CHECK(!host_->is_hidden());
+  CHECK(!host_->IsHidden());
   CHECK_EQ(visibility_, Visibility::VISIBLE);
   CHECK(visible_time_request);
 
@@ -709,7 +709,7 @@ void RenderWidgetHostViewAura::
 void RenderWidgetHostViewAura::
     CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
-  CHECK(!host_->is_hidden());
+  CHECK(!host_->IsHidden());
   CHECK_EQ(visibility_, Visibility::VISIBLE);
 
   host()->CancelSuccessfulPresentationTimeRequest();
@@ -2753,7 +2753,7 @@ void RenderWidgetHostViewAura::OnDidUpdateVisualPropertiesComplete(
         host(), metadata.top_controls_shown_ratio);
   }
 
-  if (host()->is_hidden()) {
+  if (host()->IsHidden()) {
     // When an embedded child responds, we want to accept its changes to the
     // viz::LocalSurfaceId. However we do not want to embed surfaces while
     // hidden. Nor do we want to embed invalid ids when we are evicted. Becoming
@@ -2880,10 +2880,11 @@ void RenderWidgetHostViewAura::SetTooltipsEnabled(bool enable) {
 
 void RenderWidgetHostViewAura::NotifyRendererOfCursorVisibilityState(
     bool is_visible) {
-  if (host()->is_hidden() ||
+  if (host()->IsHidden() ||
       (cursor_visibility_state_in_renderer_ == VISIBLE && is_visible) ||
-      (cursor_visibility_state_in_renderer_ == NOT_VISIBLE && !is_visible))
+      (cursor_visibility_state_in_renderer_ == NOT_VISIBLE && !is_visible)) {
     return;
+  }
 
   cursor_visibility_state_in_renderer_ = is_visible ? VISIBLE : NOT_VISIBLE;
   host()->OnCursorVisibilityStateChanged(is_visible);
@@ -2959,8 +2960,9 @@ void RenderWidgetHostViewAura::UpdateLegacyWin() {
     // the associated RenderWidget is also visible before the
     // LegacyRenderWidgetHostHWND instace is created. Ensure that it is shown
     // here.
-    if (!host()->is_hidden())
+    if (!host()->IsHidden()) {
       legacy_render_widget_host_HWND_->Show();
+    }
   }
 }
 #endif

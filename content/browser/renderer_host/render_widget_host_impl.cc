@@ -2396,7 +2396,7 @@ void RenderWidgetHostImpl::OnMouseEventAck(
   // by the renderer. eg. Back/Forward mouse buttons.
   if (delegate_ &&
       ack_result != blink::mojom::InputEventResultState::kConsumed &&
-      !is_hidden()) {
+      !IsHidden()) {
     delegate_->HandleMouseEvent(mouse_event.event);
   }
 }
@@ -2501,7 +2501,7 @@ void RenderWidgetHostImpl::RendererIsUnresponsive(
   is_unresponsive_ = true;
 
   base::UmaHistogramEnumeration("Renderer.Unresponsive.Reason", reason);
-  if (is_hidden()) {
+  if (IsHidden()) {
     base::UmaHistogramEnumeration("Renderer.Unresponsive.Reason.NotVisible",
                                   reason);
   } else {
@@ -2569,7 +2569,7 @@ void RenderWidgetHostImpl::OnKeyboardEventAck(
   // We only send unprocessed key event upwards if we are not hidden,
   // because the user has moved away from us and no longer expect any effect
   // of this key event.
-  if (delegate_ && !processed && !is_hidden() &&
+  if (delegate_ && !processed && !IsHidden() &&
       !event.event.skip_if_unhandled) {
     delegate_->HandleKeyboardEvent(event.event);
   }
@@ -3424,7 +3424,7 @@ void RenderWidgetHostImpl::OnWheelEventAck(
     const input::MouseWheelEventWithLatencyInfo& wheel_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
-  if (!is_hidden() && view_) {
+  if (!IsHidden() && view_) {
     if (ack_result != blink::mojom::InputEventResultState::kConsumed &&
         delegate_ && delegate_->HandleWheelEvent(wheel_event.event)) {
       ack_result = blink::mojom::InputEventResultState::kConsumed;

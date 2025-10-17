@@ -1734,7 +1734,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MAYBE_CSSVisibilityChanged) {
 
   // Initially all the RenderWidgetHosts should be visible.
   for (size_t index = 0; index < child_widget_hosts.size(); ++index) {
-    EXPECT_FALSE(child_widget_hosts[index]->is_hidden())
+    EXPECT_FALSE(child_widget_hosts[index]->IsHidden())
         << "The RWH at distance " << index + 1U
         << " from root RWH should not be hidden.";
   }

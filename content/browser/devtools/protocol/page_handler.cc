@@ -1424,7 +1424,7 @@ Response PageHandler::StartScreencast(std::optional<std::string> format,
   frame_counter_ = 0;
   frames_in_flight_ = 0;
   capture_every_nth_frame_ = every_nth_frame.value_or(1);
-  bool visible = !widget_host->is_hidden();
+  bool visible = !widget_host->IsHidden();
   NotifyScreencastVisibility(visible);
 
   gfx::Size surface_size = gfx::Size();

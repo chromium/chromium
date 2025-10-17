@@ -887,7 +887,7 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
   const bool web_contents_is_visible =
       page_visibility == PageVisibilityState::kVisible;
 
-  if (host_->is_hidden()) {
+  if (host_->IsHidden()) {
     // If the WebContents is becoming visible, ask the compositor to report the
     // visibility time for metrics. Otherwise the widget is being rendered even
     // though the WebContents is hidden or occluded, for example due to being
