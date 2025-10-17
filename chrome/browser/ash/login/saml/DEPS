@@ -15,6 +15,7 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/attestation",
+  "+chrome/browser/ash/certificate_provider",
   "+chrome/browser/ash/floating_sso",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/net",
@@ -26,7 +27,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/browser_process_platform_part.h",
-  "+chrome/browser/certificate_provider",
   "+chrome/browser/content_settings",
   "+chrome/browser/enterprise/connectors/device_trust/common",
   "+chrome/browser/net",

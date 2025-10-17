@@ -5373,6 +5373,8 @@ static_library("browser") {
       "//chrome/browser/ash/camera",
       "//chrome/browser/ash/camera_mic",
       "//chrome/browser/ash/cert_provisioning",
+      "//chrome/browser/ash/certificate_provider",
+      "//chrome/browser/ash/certificate_provider:impl",
       "//chrome/browser/ash/child_accounts",
       "//chrome/browser/ash/child_accounts/on_device_controls",
       "//chrome/browser/ash/child_accounts/parent_access_code",
@@ -5530,8 +5532,6 @@ static_library("browser") {
       "//chrome/browser/ash/usb",
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper_handlers",
-      "//chrome/browser/certificate_provider",
-      "//chrome/browser/certificate_provider:impl",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/cros_apps",
@@ -6173,7 +6173,7 @@ static_library("browser") {
       # TODO(crbug.com/353332589): Remove this circular dependency when:
       # - c/b/profiles/profile_manager.h"
       # gets componentized.
-      "//chrome/browser/certificate_provider:impl",
+      "//chrome/browser/ash/certificate_provider:impl",
     ]
 
     if (is_chrome_branded) {

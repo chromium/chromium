@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
+#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
 
 #include <string>
 #include <utility>
