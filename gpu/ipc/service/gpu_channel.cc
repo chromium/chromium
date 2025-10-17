@@ -57,7 +57,6 @@
 #include "gpu/ipc/service/gles2_command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
-#include "gpu/ipc/service/image_decode_accelerator_stub.h"
 #include "gpu/ipc/service/raster_command_buffer_stub.h"
 #include "gpu/ipc/service/webgpu_command_buffer_stub.h"
 #include "ipc/constants.mojom.h"
@@ -250,7 +249,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   raw_ptr<Scheduler> scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
-  scoped_refptr<ImageDecodeAcceleratorStub> image_decode_accelerator_stub_;
   const gfx::GpuExtraInfo gpu_extra_info_;
   gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
   bool supported_gmb_configurations_inited_ = false;
@@ -273,12 +271,6 @@ GpuChannelMessageFilter::GpuChannelMessageFilter(
       channel_token_(channel_token),
       scheduler_(scheduler),
       main_task_runner_(std::move(main_task_runner)),
-      image_decode_accelerator_stub_(
-          base::MakeRefCounted<ImageDecodeAcceleratorStub>(
-              /*image_decode_accelerator_worker=*/nullptr,
-              gpu_channel,
-              static_cast<int32_t>(
-                  GpuChannelReservedRoutes::kImageDecodeAccelerator))),
       gpu_extra_info_(gpu_extra_info) {
   // GpuChannel and CommandBufferStub implementations assume that it is not
   // possible to simultaneously execute tasks on these two task runners.
@@ -302,8 +294,6 @@ void GpuChannelMessageFilter::Destroy() {
   base::AutoLock auto_lock(gpu_channel_lock_);
   if (!gpu_channel_)
     return;
-
-  image_decode_accelerator_stub_->Shutdown();
 
   gpu_channel_ = nullptr;
   scheduler_ = nullptr;
