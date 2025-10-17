@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -67,6 +68,49 @@
 namespace autofill {
 
 namespace {
+
+// This method returns the set of field types that can be used to build Autofill
+// on typing suggestions. If `kAutofillOnTypingFieldTypes` is not set (empty
+// string), it returns a default set of field types. Otherwise, it uses the
+// param providing, returning an empty set if it cannot be parsed.
+FieldTypeSet GetAutofillOnTypingPossibleTypes() {
+  // Return default list if the param is empty.
+  if (features::kAutofillOnTypingFieldTypes.Get().empty()) {
+    return {NAME_FULL,
+            NAME_LAST,
+            NAME_LAST_SECOND,
+            COMPANY_NAME,
+            ADDRESS_HOME_LINE1,
+            ADDRESS_HOME_LINE2,
+            ADDRESS_HOME_LINE3,
+            ADDRESS_HOME_STREET_ADDRESS,
+            ADDRESS_HOME_CITY,
+            ADDRESS_HOME_STATE,
+            ADDRESS_HOME_COUNTRY,
+            ADDRESS_HOME_STREET_NAME,
+            EMAIL_ADDRESS,
+            EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+            PHONE_HOME_CITY_AND_NUMBER,
+            PHONE_HOME_WHOLE_NUMBER,
+            ADDRESS_HOME_ZIP};
+  }
+  std::vector<std::string> parts =
+      base::SplitString(features::kAutofillOnTypingFieldTypes.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  FieldTypeSet types;
+  for (const std::string& part : parts) {
+    int current_value;
+    if (!base::StringToInt(part, &current_value)) {
+      return {};
+    }
+    FieldType type = ToSafeFieldType(current_value, NO_SERVER_DATA);
+    if (!IsAddressType(type)) {
+      return {};
+    }
+    types.insert(type);
+  }
+  return types;
+}
 
 // Helper struct used to store the profile and the main text to be displayed in
 // the suggestion bubble. It holds an autofill profile and the corresponding
@@ -666,42 +710,28 @@ std::vector<AddressOnTypingSuggestionData> GetAddressOnTypingSuggestionData(
 
   // The minimum number of characters a user needs to type to maybe see a
   // suggestion.
-  static constexpr size_t kMinNumberCharactersToMatch = 3;
+  size_t min_number_of_characters_to_match =
+      features::kAutofillOnTypingMinNumberCharactersToMatch.Get();
+  // Sanity check, this value should be at least 3.
+  if (min_number_of_characters_to_match < 3) {
+    return {};
+  }
+
   // This defines the maximum number of characters typed until suggestions are
   // no longer displayed.
-  static constexpr size_t kMaxNumberCharactersToMatch = 10;
+  size_t max_number_of_characters_to_match =
+      features::kAutofillOnTypingMaxNumberCharactersToMatch.Get();
+
   // Defines the required number of characters that need to be missing between
   // the typed data and the profile data. This makes sure the value
   // offered by the feature is higher, by for example not displaying a
   // suggestion to fill "Tomas" when the user typed "Tom", since at this point
   // users are more likely to simply finish typing.
-  static constexpr size_t kMinMissingCharactersNumber = 5;
+  size_t min_missing_characters_number =
+      features::kAutofillOnTypingMinMissingCharactersNumber.Get();
+
   // Field types we are interested in showing suggestions for.
-  // TODO(crbug.com/381994105): Add a finch parameter to easily experiment with
-  // adding and removing field types.
-  static constexpr FieldTypeSet kTypes = {NAME_FULL,
-                                          NAME_LAST,
-                                          NAME_LAST_SECOND,
-                                          COMPANY_NAME,
-                                          ADDRESS_HOME_LINE1,
-                                          ADDRESS_HOME_LINE2,
-                                          ADDRESS_HOME_LINE3,
-                                          ADDRESS_HOME_STREET_ADDRESS,
-                                          ADDRESS_HOME_CITY,
-                                          ADDRESS_HOME_STATE,
-                                          ADDRESS_HOME_COUNTRY,
-                                          ADDRESS_HOME_STREET_NAME,
-                                          EMAIL_ADDRESS,
-                                          EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
-                                          PHONE_HOME_CITY_AND_NUMBER,
-                                          PHONE_HOME_WHOLE_NUMBER,
-                                          ADDRESS_HOME_ZIP};
-  // Some field types require only `kMinNumberCharactersToMatch - 1` matching
-  // characters for a suggestion to be shown. The assumption is that these field
-  // types do not need the same matching prefix length to produce less false
-  // positives.
-  static constexpr FieldTypeSet kTypesWithLessRequiredMatchingCharacters = {
-      ADDRESS_HOME_ZIP};
+  const FieldTypeSet field_types = GetAutofillOnTypingPossibleTypes();
 
   std::set<std::u16string> suggestions_text;
   std::vector<AddressOnTypingSuggestionData> suggestion_data;
@@ -715,22 +745,18 @@ std::vector<AddressOnTypingSuggestionData> GetAddressOnTypingSuggestionData(
     }
     profiles_used_count++;
 
-    for (FieldType type : kTypes) {
-      const size_t effective_num_characters_to_match =
-          kTypesWithLessRequiredMatchingCharacters.contains(type)
-              ? kMinNumberCharactersToMatch - 1
-              : kMinNumberCharactersToMatch;
-
+    for (FieldType type : field_types) {
       const std::u16string normalized_field_contents =
           NormalizeForComparisonForType(field_contents, type);
       if (normalized_field_contents.size() <
-          effective_num_characters_to_match) {
+          min_number_of_characters_to_match) {
         // Sometimes normalizing the string makes it shorter because of trimming
         // spaces.
         continue;
       }
 
-      if (normalized_field_contents.size() > kMaxNumberCharactersToMatch) {
+      if (normalized_field_contents.size() >
+          max_number_of_characters_to_match) {
         continue;
       }
 
@@ -738,7 +764,6 @@ std::vector<AddressOnTypingSuggestionData> GetAddressOnTypingSuggestionData(
           profile->GetInfo(type, address_data_manager.app_locale());
       const std::u16string profile_data =
           NormalizeForComparisonForType(suggestion_text, type);
-
       if (profile_data.empty()) {
         continue;
       }
@@ -749,7 +774,7 @@ std::vector<AddressOnTypingSuggestionData> GetAddressOnTypingSuggestionData(
       }
 
       if (profile_data.size() - normalized_field_contents.size() <
-          kMinMissingCharactersNumber) {
+          min_missing_characters_number) {
         continue;
       }
 

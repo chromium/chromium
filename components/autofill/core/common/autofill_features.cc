@@ -47,6 +47,34 @@ BASE_FEATURE(kAutofillAddressDiscardWhitespaceInHouseNumber,
 BASE_FEATURE(kAutofillAddressSuggestionsOnTyping,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This parameter enables updating the minimum number of characters a user needs
+// to type to maybe see an Autofill on typing suggestion.
+const base::FeatureParam<int> kAutofillOnTypingMinNumberCharactersToMatch{
+    &kAutofillAddressSuggestionsOnTyping, "min_number_characters_to_match", 3};
+
+// This parameter enables updating the maximum number of characters typed until
+// Autofill on typing suggestions are no longer displayed.
+const base::FeatureParam<int> kAutofillOnTypingMaxNumberCharactersToMatch{
+    &kAutofillAddressSuggestionsOnTyping, "max_number_characeters_to_match",
+    10};
+
+// This parameter enables updating the required number of characters that need
+// to be missing between the typed data and the profile data. This makes sure
+// the value offered by the feature is higher, by for example not displaying a
+// suggestion to fill "Tomas" when the user typed "Tom", since at this point
+// users are more likely to simply finish typing.
+const base::FeatureParam<int> kAutofillOnTypingMinMissingCharactersNumber{
+    &kAutofillAddressSuggestionsOnTyping, "min_missing_characters_number", 5};
+
+// This parameter enables updating the field types offered in Autofill on typing
+// suggestions. Field types are defined as enums, so this parameter should be a
+// string of integers separated by comma, such as "34,22,44,11". If the string
+// cannot be parsed or some value is out of bound of the field types enum, the
+// param is ignored. When this param is an empty string (default value), a
+// default list of field types is used.
+const base::FeatureParam<std::string> kAutofillOnTypingFieldTypes{
+    &kAutofillAddressSuggestionsOnTyping, "field_types", ""};
+
 // Feature flag controlling the display of surveys when a user declines the
 // save prompt of Autofill address and a user does not have any address stored.
 // The goal is to understand the reason and work towards improving acceptance.

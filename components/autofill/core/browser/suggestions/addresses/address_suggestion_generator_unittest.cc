@@ -182,7 +182,7 @@ TEST_F(AddressSuggestionGeneratorTest,
 
   profile_1.SetRawInfo(NAME_FULL, u"Jef dean");
   profile_2.SetRawInfo(NAME_FULL, u"Larry page");
-  profile_2.SetRawInfo(ADDRESS_HOME_ZIP, u"4398125");
+  profile_2.SetRawInfo(ADDRESS_HOME_ZIP, u"4398125123");
   profile_3.SetRawInfo(NAME_FULL, u"Sundar pichai");
 
   address_data().AddProfile(profile_1);
@@ -224,18 +224,78 @@ TEST_F(AddressSuggestionGeneratorTest,
   // has more than 3 characters.
   EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Jef").size(),
             0u);
-  // Expects that for data that require less prefix matching characters (like
-  // `ADDRESS_HOME_ZIP`) only two matching characters are enough to create
-  // suggestions.
+  // Test that suggestions are created for different field types as well.
   EXPECT_THAT(
-      GetSuggestionsOnTypingForProfile(address_data(), u"43"),
-      ElementsAre(
-          EqualsSuggestion(SuggestionType::kAddressEntryOnTyping, u"4398125"),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kManageAddress)));
-  // However 1 matching digit is not enough to return a suggestion.
-  EXPECT_THAT(GetSuggestionsOnTypingForProfile(address_data(), u"4").size(),
-              0u);
+      GetSuggestionsOnTypingForProfile(address_data(), u"439"),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                   u"4398125123"),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
+}
+
+// Tests Autofill on typing feature flag feature params (not all but the more
+// sensitive ones).
+TEST_F(
+    AddressSuggestionGeneratorTest,
+    GetSuggestionsOnTypingForProfile_OverrideParams_ReturnMatchingSuggestions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAutofillAddressSuggestionsOnTyping,
+                             {{"min_number_characters_to_match", "4"},
+                              {"field_types", "7,10"}}}},
+      /*disabled_features=*/{});
+  AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
+
+  profile_1.SetRawInfo(NAME_FULL, u"Sundar pichai");
+  profile_1.SetRawInfo(ADDRESS_HOME_ZIP, u"4398125123");
+
+  address_data().AddProfile(profile_1);
+
+  ASSERT_EQ(address_data().GetProfilesToSuggest().size(), 1u);
+
+  // Expects that no suggestion is returned if the field content matches
+  // `NAME_FULL` prefix but the field content has less than 4 characters.
+  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"S").size(), 0u);
+  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Su").size(), 0u);
+  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Sun").size(),
+            0u);
+
+  // Expects that a suggestion is returned if the field content has 4 characters
+  // and matches the `NAME_FULL` prefix.
+  EXPECT_THAT(
+      GetSuggestionsOnTypingForProfile(address_data(), u"Sund"),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                   u"Sundar pichai"),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
+  // The available field types to build Autofill on type suggestions (from the
+  // feature param) was overridden and does not contain ZIP_CODE.
+  EXPECT_TRUE(
+      GetSuggestionsOnTypingForProfile(address_data(), u"4398").empty());
+}
+
+// Tests that overring the possible Autofill on typing types via feature params
+// with a string that cannot be parsed, leads to no suggestion being shown (and
+// no crash).
+TEST_F(
+    AddressSuggestionGeneratorTest,
+    GetSuggestionsOnTypingForProfile_OverrideParams_UnparseableFieldTypesParam_DoNotReturnSuggestions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAutofillAddressSuggestionsOnTyping,
+                             {{"field_types", "7/"}}}},
+      /*disabled_features=*/{});
+  AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
+
+  profile_1.SetRawInfo(NAME_FULL, u"Sundar pichai");
+
+  address_data().AddProfile(profile_1);
+
+  ASSERT_EQ(address_data().GetProfilesToSuggest().size(), 1u);
+
+  // Expects that a suggestion is returned if the field content has 4 characters
+  // and matches the `NAME_FULL` prefix.
+  EXPECT_TRUE(GetSuggestionsOnTypingForProfile(address_data(), u"Sun").empty());
 }
 
 // Tests that special characters will be used while prefix matching the user's
