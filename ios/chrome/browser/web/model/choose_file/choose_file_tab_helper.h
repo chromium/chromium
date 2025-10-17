@@ -16,7 +16,8 @@ class ChooseFileController;
 @class WKFrameInfo;
 
 class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
-                            public web::WebStateObserver {
+                            public web::WebStateObserver,
+                            public ChooseFileController::Delegate {
  public:
   ~ChooseFileTabHelper() override;
 
@@ -82,6 +83,12 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
                            web::NavigationContext* navigation_context) override;
   void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
+
+  // ChooseFileController::Delegate implementation.
+  void DidSubmitSelection(ChooseFileController* controller,
+                          NSArray<NSURL*>* file_urls,
+                          NSString* display_string,
+                          UIImage* icon_image) override;
 
  private:
   explicit ChooseFileTabHelper(web::WebState* web_state);

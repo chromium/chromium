@@ -146,4 +146,44 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                                           : grey_nil()];
 }
 
+// Tests that the file upload panel can be dismissed and shown again.
+- (void)testDismissAndReshowPanel {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+  GURL url = self.testServer->base_url();
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"File input"];
+
+  // Tap the file input to show the panel.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement([ElementSelector
+                        selectorWithElementID:kFileInputElementID])];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)];
+
+  // Tap somewhere else to dismiss the panel.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)];
+
+  // Tap the file input again to show the panel.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement([ElementSelector
+                        selectorWithElementID:kFileInputElementID])];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                          IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL)];
+
+  // Check that the metric was recorded twice.
+  NSError* error = [MetricsAppInterface
+      expectTotalCount:2
+          forHistogram:@"IOS.FileUploadPanel.ContextMenuVariant"];
+  chrome_test_util::GREYAssertErrorNil(error);
+}
+
 @end

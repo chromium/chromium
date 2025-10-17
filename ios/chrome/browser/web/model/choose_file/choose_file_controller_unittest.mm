@@ -16,6 +16,18 @@
 
 namespace {
 
+// Mock implementation of ChooseFileController::Delegate.
+class MockChooseFileControllerDelegate : public ChooseFileController::Delegate {
+ public:
+  MOCK_METHOD(void,
+              DidSubmitSelection,
+              (ChooseFileController * controller,
+               NSArray<NSURL*>* file_urls,
+               NSString* display_string,
+               UIImage* icon_image),
+              (override));
+};
+
 // Mock implementation of ChooseFileController::Observer.
 class MockChooseFileControllerObserver : public ChooseFileController::Observer {
  public:
@@ -97,6 +109,21 @@ TEST_F(ChooseFileControllerTest, GetChooseFileEvent) {
   EXPECT_EQ(event_->accept_mime_types, event.accept_mime_types);
   EXPECT_EQ(event_->web_state.get(), event.web_state.get());
   EXPECT_EQ(event_->time, event.time);
+}
+
+// Tests that `SubmitSelection()` calls the delegate.
+TEST_F(ChooseFileControllerTest, DelegateDidSubmitSelection) {
+  MockChooseFileControllerDelegate delegate;
+  controller_->SetDelegate(&delegate);
+
+  NSURL* file_url = [NSURL fileURLWithPath:@"/path/to/file"];
+  NSArray<NSURL*>* file_urls = @[ file_url ];
+  NSString* display_string = @"display_string";
+  UIImage* icon_image = [[UIImage alloc] init];
+
+  EXPECT_CALL(delegate, DidSubmitSelection(controller_.get(), file_urls,
+                                           display_string, icon_image));
+  controller_->SubmitSelection(file_urls, display_string, icon_image);
 }
 
 // Tests that destroying the controller calls the observer.

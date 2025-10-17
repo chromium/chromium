@@ -30,6 +30,7 @@ void ChooseFileTabHelper::StartChoosingFiles(
     std::unique_ptr<ChooseFileController> controller) {
   CHECK(controller);
   controller_ = std::move(controller);
+  controller_->SetDelegate(this);
 }
 
 ChooseFileController* ChooseFileTabHelper::GetChooseFileController() {
@@ -63,7 +64,6 @@ void ChooseFileTabHelper::StopChoosingFiles(NSArray<NSURL*>* file_urls,
       isSubsetOfSet:[NSSet setWithArray:[file_urls_ready_for_selection_
                                             allKeys]]]);
   controller_->SubmitSelection(file_urls, display_string, icon_image);
-  controller_.reset();
 }
 
 void ChooseFileTabHelper::SetFileUploadPanelHandler(
@@ -184,6 +184,16 @@ void ChooseFileTabHelper::CheckFileUrlReadyForSelection(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(base::PathExists, base::apple::NSURLToFilePath(file_url)),
       std::move(completion));
+}
+
+#pragma mark - ChooseFileController::Delegate
+
+void ChooseFileTabHelper::DidSubmitSelection(ChooseFileController* controller,
+                                             NSArray<NSURL*>* file_urls,
+                                             NSString* display_string,
+                                             UIImage* icon_image) {
+  CHECK_EQ(controller, controller_.get());
+  controller_.reset();
 }
 
 #pragma mark - web::WebStateObserver

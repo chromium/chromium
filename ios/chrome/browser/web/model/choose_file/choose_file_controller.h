@@ -20,6 +20,14 @@
 // the selection is submitted or canceled.
 class ChooseFileController {
  public:
+  // Delegate interface for `ChooseFileController`.
+  struct Delegate {
+    // Called when `controller` submitted a file selection.
+    virtual void DidSubmitSelection(ChooseFileController* controller,
+                                    NSArray<NSURL*>* file_urls,
+                                    NSString* display_string,
+                                    UIImage* icon_image) = 0;
+  };
   // Observer interface for `ChooseFileController`.
   struct Observer : public base::CheckedObserver {
     // Called when the `controller` is being destroyed.
@@ -34,6 +42,9 @@ class ChooseFileController {
 
   ChooseFileController& operator=(const ChooseFileController&) = delete;
   ChooseFileController& operator=(ChooseFileController&&) = delete;
+
+  // Sets `delegate` as delegate.
+  void SetDelegate(Delegate* delegate);
 
   // Add/Remove `observer` to/from the list of observers.
   void AddObserver(Observer* observer);
@@ -80,6 +91,8 @@ class ChooseFileController {
   ChooseFileEvent choose_file_event_;
   // A closure to abort the flow.
   base::OnceClosure abort_handler_ = base::DoNothing();
+  // Delegate of this controller.
+  raw_ptr<Delegate> delegate_ = nullptr;
   // Observers list.
   base::ObserverList<Observer, true> observers_;
 };
