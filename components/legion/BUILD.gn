@@ -9,6 +9,8 @@ source_set("legion") {
     "attestation_handler.h",
     "client.cc",
     "client.h",
+    "crypter.cc",
+    "crypter.h",
     "features.cc",
     "features.h",
     "legion_common.h",
@@ -28,6 +30,7 @@ source_set("legion") {
     "//base",
     "//crypto",
     "//mojo/public/cpp/system",
+    "//crypto",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -41,6 +44,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "client_unittest.cc",
+    "crypter_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "session_deserializer_unittest.cc",
   ]
