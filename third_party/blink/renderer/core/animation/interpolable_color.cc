@@ -317,7 +317,6 @@ void InterpolableColor::Interpolate(const InterpolableValue& to,
   InterpolableColor& result_color = To<InterpolableColor>(result);
 
   DCHECK_EQ(to_color.color_space_, color_space_);
-  DCHECK_EQ(result_color.color_space_, color_space_);
 
   result_color.param0_ =
       InterpolableNumber::Interpolate(param0_, to_color.param0_, progress);
@@ -336,6 +335,7 @@ void InterpolableColor::Interpolate(const InterpolableValue& to,
       webkit_link_, to_color.webkit_link_, progress);
   result_color.quirk_inherit_ = InterpolableNumber::Interpolate(
       quirk_inherit_, to_color.quirk_inherit_, progress);
+  result_color.color_space_ = color_space_;
 }
 
 void InterpolableColor::Composite(const BaseInterpolableColor& value,

@@ -141,8 +141,14 @@ void InterpolableNumber::Interpolate(const InterpolableValue& to,
 
 void InterpolableList::AssertCanInterpolateWith(
     const InterpolableValue& other) const {
+#if DCHECK_IS_ON()
   DCHECK(other.IsList());
   DCHECK_EQ(To<InterpolableList>(other).length(), length());
+  const auto& other_list = To<InterpolableList>(other);
+  for (wtf_size_t i = 0; i < length(); i++) {
+    values_[i]->AssertCanInterpolateWith(*other_list.values_[i]);
+  }
+#endif
 }
 
 void InterpolableList::Interpolate(const InterpolableValue& to,
