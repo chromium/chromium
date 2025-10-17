@@ -10568,6 +10568,7 @@ from previous Chrome versions.
   <int value="-1322997246" label="TabStripGroupIndicatorsAndroid:disabled"/>
   <int value="-1322882747" label="disable-datasaver-prompt"/>
   <int value="-1322830330" label="ContextualSearchNewSettings:enabled"/>
+  <int value="-1322426993" label="ProfileSignalsReportingEnabled:disabled"/>
   <int value="-1321935621" label="WebAppsCrosapi:enabled"/>
   <int value="-1321792202" label="PolicyLogsPageAndroid:disabled"/>
   <int value="-1321640296"
@@ -15176,6 +15177,7 @@ from previous Chrome versions.
   <int value="325489620" label="WebAppEnableManifestId:disabled"/>
   <int value="325657262" label="TextBasedAudioDescription:enabled"/>
   <int value="325907076" label="SanitizerAPI:enabled"/>
+  <int value="326017931" label="ProfileSignalsReportingEnabled:enabled"/>
   <int value="326414607" label="WallpaperFastRefresh:enabled"/>
   <int value="327045548" label="SafeSearchUrlReporting:enabled"/>
   <int value="328355983" label="DisableSystemBlur:enabled"/>

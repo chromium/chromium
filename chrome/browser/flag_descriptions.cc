@@ -3466,6 +3466,11 @@ const char kPrivacySandboxInternalsName[] = "Privacy Sandbox Internals Page";
 const char kPrivacySandboxInternalsDescription[] =
     "Enables the chrome://privacy-sandbox-internals debugging page.";
 
+const char kProfileSignalsReportingEnabledName[] =
+    "Profile Signals Reporting Enabled";
+const char kProfileSignalsReportingEnabledDescription[] =
+    "Enables the profile signals reporting flow for Chrome Enterprise.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kPropagateDeviceContentFiltersToSupervisedUserName[] =
     "Propagate device content filters to supervised user";
