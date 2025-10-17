@@ -30,6 +30,11 @@ void PrivacyBudgetBrowserTestBaseWithTestRecorder::SetUpOnMainThread() {
   ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 }
 
+void PrivacyBudgetBrowserTestBaseWithTestRecorder::TearDownOnMainThread() {
+  ukm_recorder_.reset();
+  PlatformBrowserTest::TearDownOnMainThread();
+}
+
 base::flat_set<uint64_t>
 PrivacyBudgetBrowserTestBaseWithTestRecorder::GetReportedSurfaceKeys(
     std::vector<uint64_t> expected_keys) {

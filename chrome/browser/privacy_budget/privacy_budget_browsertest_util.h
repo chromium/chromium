@@ -30,7 +30,10 @@ class PrivacyBudgetBrowserTestBaseWithTestRecorder
  public:
   PrivacyBudgetBrowserTestBaseWithTestRecorder();
   ~PrivacyBudgetBrowserTestBaseWithTestRecorder() override;
+
+  // PlatformBrowserTest:
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
   // Returns the reported surface keys which are among the expected keys.
   base::flat_set<uint64_t> GetReportedSurfaceKeys(
