@@ -74,28 +74,6 @@ class ScopedFakeGpuContext {
       accelerated_compositing_scope_;
 };
 
-// TODO(crbug.com/1186864): Remove |expect_broken_tagging| when fixed.
-void TestOrientation(scoped_refptr<media::VideoFrame> frame,
-                     bool expect_broken_tagging = false) {
-  constexpr auto kTestTransform =
-      media::VideoTransformation(media::VIDEO_ROTATION_90, /*mirrored=*/true);
-  constexpr auto kTestOrientation = ImageOrientationEnum::kOriginLeftTop;
-
-  frame->metadata().transformation = kTestTransform;
-  auto image =
-      CreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
-                                /*prefer_tagged_orientation=*/true);
-  if (expect_broken_tagging) {
-    EXPECT_EQ(image->Orientation(), ImageOrientationEnum::kDefault);
-  } else {
-    EXPECT_EQ(image->Orientation(), kTestOrientation);
-  }
-
-  image = CreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
-                                    /*prefer_tagged_orientation=*/false);
-  EXPECT_EQ(image->Orientation(), ImageOrientationEnum::kDefault);
-}
-
 }  // namespace
 
 class VideoFrameImageUtilTest : public ::testing::Test {
@@ -103,6 +81,41 @@ class VideoFrameImageUtilTest : public ::testing::Test {
   void SetUp() override {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+  }
+
+  // TODO(crbug.com/1186864): Remove |expect_broken_tagging| when fixed.
+  void TestOrientation(scoped_refptr<media::VideoFrame> frame,
+                       bool expect_broken_tagging = false) {
+    constexpr auto kTestTransform =
+        media::VideoTransformation(media::VIDEO_ROTATION_90, /*mirrored=*/true);
+    constexpr auto kTestOrientation = ImageOrientationEnum::kOriginLeftTop;
+
+    frame->metadata().transformation = kTestTransform;
+    auto image =
+        DoCreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
+                                    /*prefer_tagged_orientation=*/true);
+    if (expect_broken_tagging) {
+      EXPECT_EQ(image->Orientation(), ImageOrientationEnum::kDefault);
+    } else {
+      EXPECT_EQ(image->Orientation(), kTestOrientation);
+    }
+
+    image =
+        DoCreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
+                                    /*prefer_tagged_orientation=*/false);
+    EXPECT_EQ(image->Orientation(), ImageOrientationEnum::kDefault);
+  }
+
+  scoped_refptr<StaticBitmapImage> DoCreateImageFromVideoFrame(
+      scoped_refptr<media::VideoFrame> frame,
+      bool allow_zero_copy_images = true,
+      CanvasResourceProvider* resource_provider = nullptr,
+      media::PaintCanvasVideoRenderer* video_renderer = nullptr,
+      const gfx::Rect& dest_rect = gfx::Rect(),
+      bool prefer_tagged_orientation = true) {
+    return CreateImageFromVideoFrame(std::move(frame), allow_zero_copy_images,
+                                     resource_provider, video_renderer,
+                                     dest_rect, prefer_tagged_orientation);
   }
 
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
@@ -171,7 +184,7 @@ TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
       base::TimeDelta(), test_sii_.get());
   EXPECT_TRUE(shared_image_frame->HasSharedImage());
 
-  auto image = CreateImageFromVideoFrame(shared_image_frame);
+  auto image = DoCreateImageFromVideoFrame(shared_image_frame);
   ASSERT_TRUE(image->IsTextureBacked());
   EXPECT_EQ(image->GetSharedImage(), shared_image_frame->shared_image());
 }
@@ -183,7 +196,7 @@ TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
                                    test_sii_.get());
-  auto image = CreateImageFromVideoFrame(cpu_frame);
+  auto image = DoCreateImageFromVideoFrame(cpu_frame);
   EXPECT_FALSE(image->IsTextureBacked());
 
   TestOrientation(cpu_frame);
@@ -196,7 +209,7 @@ TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameGpuMemoryBufferFrame) {
                                    media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
                                    media::PIXEL_FORMAT_NV12, base::TimeDelta(),
                                    test_sii_.get());
-  auto image = CreateImageFromVideoFrame(cpu_frame);
+  auto image = DoCreateImageFromVideoFrame(cpu_frame);
   ASSERT_FALSE(image->IsTextureBacked());
   task_environment_.RunUntilIdle();
 }
@@ -207,7 +220,7 @@ TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameTextureFrame) {
                                    media::VideoFrame::STORAGE_OPAQUE,
                                    media::PIXEL_FORMAT_NV12, base::TimeDelta(),
                                    test_sii_.get());
-  auto image = CreateImageFromVideoFrame(cpu_frame);
+  auto image = DoCreateImageFromVideoFrame(cpu_frame);
 
   // An unaccelerated image can't be created from a texture based VideoFrame
   // without a viz::RasterContextProvider.
@@ -222,7 +235,7 @@ TEST_F(VideoFrameImageUtilTest,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
                                    test_sii_.get());
-  auto image = CreateImageFromVideoFrame(cpu_frame);
+  auto image = DoCreateImageFromVideoFrame(cpu_frame);
   ASSERT_TRUE(image->IsTextureBacked());
 }
 
@@ -233,7 +246,7 @@ TEST_F(VideoFrameImageUtilTest,
                                    media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
                                    media::PIXEL_FORMAT_NV12, base::TimeDelta(),
                                    test_sii_.get());
-  auto image = CreateImageFromVideoFrame(gmb_frame);
+  auto image = DoCreateImageFromVideoFrame(gmb_frame);
   ASSERT_TRUE(image->IsTextureBacked());
   TestOrientation(gmb_frame, /*expect_broken_tagging=*/true);
 }
@@ -244,8 +257,8 @@ TEST_F(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
   auto texture_frame = media::CreateSharedImageRGBAFrame(
       fake_context.raster_context_provider(), kTestSize, gfx::Rect(kTestSize),
       base::DoNothing());
-  auto image = CreateImageFromVideoFrame(texture_frame,
-                                         /*allow_zero_copy_images=*/false);
+  auto image = DoCreateImageFromVideoFrame(texture_frame,
+                                           /*allow_zero_copy_images=*/false);
   ASSERT_TRUE(image->IsTextureBacked());
   TestOrientation(texture_frame, /*expect_broken_tagging=*/true);
 }
@@ -265,14 +278,14 @@ TEST_F(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
   ASSERT_TRUE(provider);
   EXPECT_TRUE(provider->IsAccelerated());
 
-  auto image = CreateImageFromVideoFrame(texture_frame,
-                                         /*allow_zero_copy_images=*/false,
-                                         provider.get());
+  auto image = DoCreateImageFromVideoFrame(texture_frame,
+                                           /*allow_zero_copy_images=*/false,
+                                           provider.get());
   EXPECT_TRUE(image->IsTextureBacked());
 
-  image = CreateImageFromVideoFrame(texture_frame,
-                                    /*allow_zero_copy_images=*/false,
-                                    provider.get());
+  image = DoCreateImageFromVideoFrame(texture_frame,
+                                      /*allow_zero_copy_images=*/false,
+                                      provider.get());
   EXPECT_TRUE(image->IsTextureBacked());
 
   ASSERT_FALSE(provider->Recorder().HasRecordedDrawOps());
@@ -341,8 +354,8 @@ TEST_F(VideoFrameImageUtilTest, DestRectWithoutCanvasResourceProvider) {
                                    test_sii_.get());
 
   // A CanvasResourceProvider must be provided with a custom destination rect.
-  auto image = CreateImageFromVideoFrame(cpu_frame, true, nullptr, nullptr,
-                                         gfx::Rect(0, 0, 10, 10));
+  auto image = DoCreateImageFromVideoFrame(cpu_frame, true, nullptr, nullptr,
+                                           gfx::Rect(0, 0, 10, 10));
   ASSERT_FALSE(image);
   task_environment_.RunUntilIdle();
 }
@@ -359,8 +372,8 @@ TEST_F(VideoFrameImageUtilTest, CanvasResourceProviderTooSmallForDestRect) {
   ASSERT_TRUE(provider);
   EXPECT_FALSE(provider->IsAccelerated());
 
-  auto image = CreateImageFromVideoFrame(cpu_frame, true, provider.get(),
-                                         nullptr, gfx::Rect(kTestSize));
+  auto image = DoCreateImageFromVideoFrame(cpu_frame, true, provider.get(),
+                                           nullptr, gfx::Rect(kTestSize));
   ASSERT_FALSE(image);
   task_environment_.RunUntilIdle();
 }
@@ -378,8 +391,8 @@ TEST_F(VideoFrameImageUtilTest, CanvasResourceProviderDestRect) {
   ASSERT_TRUE(provider);
   EXPECT_FALSE(provider->IsAccelerated());
 
-  auto image = CreateImageFromVideoFrame(cpu_frame, true, provider.get(),
-                                         nullptr, gfx::Rect(16, 16, 64, 64));
+  auto image = DoCreateImageFromVideoFrame(cpu_frame, true, provider.get(),
+                                           nullptr, gfx::Rect(16, 16, 64, 64));
   ASSERT_TRUE(image);
   task_environment_.RunUntilIdle();
 }
