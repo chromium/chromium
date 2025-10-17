@@ -23,8 +23,17 @@ struct StructTraits<skia::mojom::SkPathDataView, ::SkPath> {
 
   static bool Read(skia::mojom::SkPathDataView data, ::SkPath* path) {
     std::vector<uint8_t> buffer;
-    return data.ReadData(&buffer) &&
-           path->readFromMemory(buffer.data(), buffer.size());
+    if (!data.ReadData(&buffer)) {
+      return false;
+    }
+
+    size_t bytes_deserialized = 0;
+    if (auto deserialized_path = SkPath::ReadFromMemory(
+            buffer.data(), buffer.size(), &bytes_deserialized)) {
+      *path = *deserialized_path;
+    }
+
+    return !!bytes_deserialized;
   }
 };
 

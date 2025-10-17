@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 
 namespace blink {
 
@@ -37,17 +38,18 @@ PaintRecord RecordMarker(Color blink_color) {
 
   // Adjust the phase such that f' == 0 is "pixel"-centered
   // (for optimal rasterization at native rez).
-  SkPath path;
-  path.moveTo(kMarkerWidth * -3 / 8, kMarkerHeight * 3 / 4);
-  path.cubicTo(kMarkerWidth * -1 / 8, kMarkerHeight * 3 / 4,
-               kMarkerWidth * -1 / 8, kMarkerHeight * 1 / 4,
-               kMarkerWidth * 1 / 8, kMarkerHeight * 1 / 4);
-  path.cubicTo(kMarkerWidth * 3 / 8, kMarkerHeight * 1 / 4,
-               kMarkerWidth * 3 / 8, kMarkerHeight * 3 / 4,
-               kMarkerWidth * 5 / 8, kMarkerHeight * 3 / 4);
-  path.cubicTo(kMarkerWidth * 7 / 8, kMarkerHeight * 3 / 4,
-               kMarkerWidth * 7 / 8, kMarkerHeight * 1 / 4,
-               kMarkerWidth * 9 / 8, kMarkerHeight * 1 / 4);
+  const SkPath path = SkPathBuilder()
+                          .moveTo(kMarkerWidth * -3 / 8, kMarkerHeight * 3 / 4)
+                          .cubicTo(kMarkerWidth * -1 / 8, kMarkerHeight * 3 / 4,
+                                   kMarkerWidth * -1 / 8, kMarkerHeight * 1 / 4,
+                                   kMarkerWidth * 1 / 8, kMarkerHeight * 1 / 4)
+                          .cubicTo(kMarkerWidth * 3 / 8, kMarkerHeight * 1 / 4,
+                                   kMarkerWidth * 3 / 8, kMarkerHeight * 3 / 4,
+                                   kMarkerWidth * 5 / 8, kMarkerHeight * 3 / 4)
+                          .cubicTo(kMarkerWidth * 7 / 8, kMarkerHeight * 3 / 4,
+                                   kMarkerWidth * 7 / 8, kMarkerHeight * 1 / 4,
+                                   kMarkerWidth * 9 / 8, kMarkerHeight * 1 / 4)
+                          .detach();
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);

@@ -20,8 +20,7 @@ void ClipList::ClipPath(const SkPath& path,
                         const SkMatrix& ctm) {
   ClipOp new_clip;
   new_clip.anti_aliasing_mode_ = anti_aliasing_mode;
-  new_clip.path_ = path;
-  new_clip.path_.transform(ctm);
+  new_clip.path_ = path.makeTransform(ctm);
   clip_list_.push_back(new_clip);
 }
 

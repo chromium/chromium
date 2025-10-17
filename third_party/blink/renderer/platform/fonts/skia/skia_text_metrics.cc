@@ -102,9 +102,8 @@ void SkFontGetGlyphExtentsForHarfBuzz(const SkFont& font,
 #if BUILDFLAG(IS_APPLE)
   // TODO(drott): Remove this once we have better metrics bounds
   // on Mac, https://bugs.chromium.org/p/skia/issues/detail?id=5328
-  SkPath path;
-  if (font.getPath(glyph, &path)) {
-    sk_bounds = path.getBounds();
+  if (const auto path = font.getPath(glyph)) {
+    sk_bounds = path->getBounds();
   } else {
     sk_bounds = font.getBounds(glyph, nullptr);
   }
@@ -129,9 +128,8 @@ void SkFontGetBoundsForGlyph(const SkFont& font, Glyph glyph, SkRect* bounds) {
 #if BUILDFLAG(IS_APPLE)
   // TODO(drott): Remove this once we have better metrics bounds
   // on Mac, https://bugs.chromium.org/p/skia/issues/detail?id=5328
-  SkPath path;
-  if (font.getPath(glyph, &path)) {
-    *bounds = path.getBounds();
+  if (const auto path = font.getPath(glyph)) {
+    *bounds = path->getBounds();
   } else {
     // Fonts like Apple Color Emoji have no paths, fall back to bounds here.
     *bounds = font.getBounds(glyph, nullptr);

@@ -1922,10 +1922,11 @@ static void StrokeRectOnCanvas(const gfx::RectF& rect,
   DCHECK_EQ(flags->getStyle(), cc::PaintFlags::kStroke_Style);
   if ((rect.width() > 0) != (rect.height() > 0)) {
     // When stroking, we must skip the zero-dimension segments
-    SkPath path;
-    path.moveTo(rect.x(), rect.y());
-    path.lineTo(rect.right(), rect.bottom());
-    path.close();
+    const SkPath path = SkPathBuilder()
+                            .moveTo(rect.x(), rect.y())
+                            .lineTo(rect.right(), rect.bottom())
+                            .close()
+                            .detach();
     canvas->drawPath(path, *flags);
     return;
   }
