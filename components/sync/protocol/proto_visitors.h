@@ -2156,6 +2156,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::ContextualTask& proto) {
   VISIT(title);
   VISIT(thread_id);
+  VISIT_ENUM(thread_type);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::UrlResource& proto) {

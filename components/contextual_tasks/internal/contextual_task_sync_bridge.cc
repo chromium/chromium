@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "components/contextual_tasks/internal/conversions.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -56,10 +57,8 @@ std::optional<ContextualTask> BuildTaskFromEntities(
       const auto& task_proto = specifics.contextual_task();
       task.SetTitle(task_proto.title());
       if (task_proto.has_thread_id()) {
-        // TODO(crbug.com/445840627): Add thread type to
-        // ContextualTaskSpecifics.
-        task.AddThread(
-            Thread(ThreadType::kAiMode, task_proto.thread_id(), "", ""));
+        task.AddThread(Thread(ToThreadType(task_proto.thread_type()),
+                              task_proto.thread_id(), "", ""));
       }
       has_contextual_task_specifics = true;
     } else if (specifics.has_url_resource()) {

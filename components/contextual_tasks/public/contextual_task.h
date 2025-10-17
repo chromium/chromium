@@ -15,6 +15,7 @@
 namespace contextual_tasks {
 
 enum class ThreadType {
+  kUnknown,
   kAiMode,
 };
 
