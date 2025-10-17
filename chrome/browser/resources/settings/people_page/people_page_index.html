@@ -28,13 +28,16 @@
 
    <template is="dom-if" if="[[replaceSyncPromosWithSignInPromos_]]"
       restamp>
-     <settings-account-page slot="view" id="account"
+    <!-- TODO(crbug.com/452589374): Remove the no-search attributes once a
+     proper solution for making these pages unavailable asynchronously is
+     implemented. -->
+     <settings-account-page slot="view" id="account" no-search
          data-parent-view-id="parent" prefs="{{prefs}}"
          route-path$="[[routes_.ACCOUNT.path]]">
      </settings-account-page>
 
      <settings-google-services-page slot="view" id="googleServices"
-         data-parent-view-id="parent" prefs="{{prefs}}"
+         no-search data-parent-view-id="parent" prefs="{{prefs}}"
          route-path$="[[routes_.GOOGLE_SERVICES.path]]">
      </settings-google-services-page>
    </template>
