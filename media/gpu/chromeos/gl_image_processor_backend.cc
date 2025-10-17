@@ -101,16 +101,9 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     return nullptr;
   }
 
-  auto buffer_format =
-      VideoPixelFormatToGfxBufferFormat(frame->layout().format());
-  if (!buffer_format) {
-    LOG(ERROR) << "Unexpected video frame format";
-    return nullptr;
-  }
-
   if (!should_split_planes) {
     auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-        frame->coded_size(), *buffer_format,
+        frame->coded_size(), viz::MultiPlaneFormat::kNV12,
         std::move(gpu_memory_buffer_handle).native_pixmap_handle());
     DCHECK(native_pixmap->AreDmaBufFdsValid());
 
@@ -138,8 +131,8 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
       plane ? gfx::Size(uv_width.ValueOrDie(), uv_height.ValueOrDie())
             : frame->coded_size();
 
-  const gfx::BufferFormat plane_format =
-      plane ? gfx::BufferFormat::RG_88 : gfx::BufferFormat::R_8;
+  const auto plane_format =
+      plane ? viz::SinglePlaneFormat::kRG_88 : viz::SinglePlaneFormat::kR_8;
 
   auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
       plane_size, plane_format,
@@ -148,7 +141,8 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
 
   // Import the NativePixmap into GL.
   return GetCurrentGLOzone().ImportNativePixmap(
-      std::move(native_pixmap), plane_format,
+      std::move(native_pixmap),
+      viz::SinglePlaneSharedImageFormatToBufferFormat(plane_format),
       plane ? gfx::BufferPlane::UV : gfx::BufferPlane::Y, plane_size,
       gfx::ColorSpace(), target, texture_id);
 }
