@@ -586,8 +586,11 @@ void NewTabPageHandler::SetMostVisitedSettings(ntp_tiles::TileType type,
 
   ntp_tiles::TileType old_type = GetTileType();
   if (old_type != type) {
-    profile_->GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsType,
-                                     static_cast<int>(type));
+    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpCustomLinksVisible,
+                                     type == ntp_tiles::TileType::kCustomLinks);
+    profile_->GetPrefs()->SetBoolean(
+        ntp_prefs::kNtpEnterpriseShortcutsVisible,
+        type == ntp_tiles::TileType::kEnterpriseShortcuts);
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE,
                      base::TimeDelta() /* unused */);
   }
@@ -1263,8 +1266,15 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
 }
 
 ntp_tiles::TileType NewTabPageHandler::GetTileType() const {
-  return static_cast<ntp_tiles::TileType>(
-      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
+  // TODO(crbug.com/444707872): Update logic to account for multi-select
+  // support for shortcuts.
+  if (profile_->GetPrefs()->GetBoolean(
+          ntp_prefs::kNtpEnterpriseShortcutsVisible)) {
+    return ntp_tiles::TileType::kEnterpriseShortcuts;
+  }
+  return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible)
+             ? ntp_tiles::TileType::kCustomLinks
+             : ntp_tiles::TileType::kTopSites;
 }
 
 bool NewTabPageHandler::IsShortcutsVisible() const {

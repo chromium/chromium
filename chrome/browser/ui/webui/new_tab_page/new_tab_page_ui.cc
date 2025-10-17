@@ -757,7 +757,11 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      ntp_prefs::kNtpShortcutsType,
+      ntp_prefs::kNtpCustomLinksVisible,
+      base::BindRepeating(&NewTabPageUI::OnShortcutsTypePrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      ntp_prefs::kNtpEnterpriseShortcutsVisible,
       base::BindRepeating(&NewTabPageUI::OnShortcutsTypePrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
@@ -801,9 +805,9 @@ bool NewTabPageUI::IsNewTabPageOrigin(const GURL& url) {
 // static
 void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kPrevNavigationTimePrefName, base::Time());
-  registry->RegisterIntegerPref(
-      ntp_prefs::kNtpShortcutsType,
-      static_cast<int>(ntp_tiles::TileType::kCustomLinks));
+  registry->RegisterBooleanPref(ntp_prefs::kNtpCustomLinksVisible, true);
+  registry->RegisterBooleanPref(ntp_prefs::kNtpEnterpriseShortcutsVisible,
+                                false);
   registry->RegisterBooleanPref(ntp_prefs::kNtpShortcutsVisible, true);
   registry->RegisterBooleanPref(prefs::kNtpPromoVisible, true);
 }
@@ -811,8 +815,8 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 // static
 void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   ntp_tiles::MostVisitedSites::ResetProfilePrefs(prefs);
-  prefs->SetInteger(ntp_prefs::kNtpShortcutsType,
-                    static_cast<int>(ntp_tiles::TileType::kCustomLinks));
+  prefs->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, true);
+  prefs->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible, false);
   prefs->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
 }
 
@@ -834,6 +838,36 @@ void NewTabPageUI::MigrateDeprecatedUseMostVisitedTilesPref(
               : static_cast<int>(ntp_tiles::TileType::kCustomLinks));
     }
     prefs->ClearPref(ntp_prefs::kNtpUseMostVisitedTiles);
+  }
+}
+
+// static
+void NewTabPageUI::MigrateDeprecatedShortcutsTypePref(PrefService* prefs) {
+  // Skip migration if the new preferences are already set.
+  if (prefs->HasPrefPath(ntp_prefs::kNtpCustomLinksVisible) ||
+      prefs->HasPrefPath(ntp_prefs::kNtpEnterpriseShortcutsVisible)) {
+    return;
+  }
+  const base::Value* user_value =
+      prefs->GetUserPrefValue(ntp_prefs::kNtpShortcutsType);
+  if (user_value) {
+    if (user_value->is_int()) {
+      switch (static_cast<ntp_tiles::TileType>(user_value->GetInt())) {
+        case ntp_tiles::TileType::kTopSites:
+          prefs->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, false);
+          prefs->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible, false);
+          break;
+        case ntp_tiles::TileType::kCustomLinks:
+          prefs->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, true);
+          prefs->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible, false);
+          break;
+        case ntp_tiles::TileType::kEnterpriseShortcuts:
+          prefs->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, false);
+          prefs->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible, true);
+          break;
+      }
+    }
+    prefs->ClearPref(ntp_prefs::kNtpShortcutsType);
   }
 }
 
@@ -1192,21 +1226,18 @@ void NewTabPageUI::DidStartNavigation(
 
 bool NewTabPageUI::IsCustomLinksEnabled() const {
   // If the enterprise shortcuts feature is disabled, but the preference is set
-  // to enterprise shortcuts, treat MostVisitedSites as if enterpise shortcuts
-  // is disabled and custom links is enabled. This may occur if the user is
-  // moved in and out of the experiment.
-  const ntp_tiles::TileType type = static_cast<ntp_tiles::TileType>(
-      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
-  return type == ntp_tiles::TileType::kCustomLinks ||
-         (type == ntp_tiles::TileType::kEnterpriseShortcuts &&
+  // to enterprise shortcuts visible, treat MostVisitedSites as if enterpise
+  // shortcuts is disabled and custom links is enabled. This may occur if the
+  // user is moved in and out of the experiment.
+  return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible) ||
+         (profile_->GetPrefs()->GetBoolean(
+              ntp_prefs::kNtpEnterpriseShortcutsVisible) &&
           !base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts));
 }
 
 bool NewTabPageUI::IsEnterpriseShortcutsEnabled() const {
-  // See comment in `IsCustomLinksEnabled()`.
-  const ntp_tiles::TileType type = static_cast<ntp_tiles::TileType>(
-      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
-  return type == ntp_tiles::TileType::kEnterpriseShortcuts &&
+  return profile_->GetPrefs()->GetBoolean(
+             ntp_prefs::kNtpEnterpriseShortcutsVisible) &&
          base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
 }
 

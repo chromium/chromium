@@ -88,3 +88,77 @@ TEST_F(
   EXPECT_EQ(nullptr,
             prefs->GetUserPrefValue(ntp_prefs::kNtpUseMostVisitedTiles));
 }
+
+TEST_F(NewTabPageUITest, MigrateDeprecatedShortcutsTypePref_TopSites) {
+  PrefService* prefs = profile().GetPrefs();
+  prefs->SetInteger(ntp_prefs::kNtpShortcutsType,
+                    static_cast<int>(ntp_tiles::TileType::kTopSites));
+
+  NewTabPageUI::MigrateDeprecatedShortcutsTypePref(prefs);
+
+  EXPECT_FALSE(prefs->GetBoolean(ntp_prefs::kNtpCustomLinksVisible));
+  EXPECT_FALSE(prefs->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible));
+  // Check that the old pref has been cleared.
+  EXPECT_EQ(nullptr, prefs->GetUserPrefValue(ntp_prefs::kNtpShortcutsType));
+}
+
+TEST_F(NewTabPageUITest, MigrateDeprecatedShortcutsTypePref_CustomLinks) {
+  PrefService* prefs = profile().GetPrefs();
+  prefs->SetInteger(ntp_prefs::kNtpShortcutsType,
+                    static_cast<int>(ntp_tiles::TileType::kCustomLinks));
+
+  NewTabPageUI::MigrateDeprecatedShortcutsTypePref(prefs);
+
+  EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpCustomLinksVisible));
+  EXPECT_FALSE(prefs->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible));
+  // Check that the old pref has been cleared.
+  EXPECT_EQ(nullptr, prefs->GetUserPrefValue(ntp_prefs::kNtpShortcutsType));
+}
+
+TEST_F(NewTabPageUITest, MigrateDeprecatedShortcutsTypePref_Enterprise) {
+  PrefService* prefs = profile().GetPrefs();
+  prefs->SetInteger(
+      ntp_prefs::kNtpShortcutsType,
+      static_cast<int>(ntp_tiles::TileType::kEnterpriseShortcuts));
+
+  NewTabPageUI::MigrateDeprecatedShortcutsTypePref(prefs);
+
+  EXPECT_FALSE(prefs->GetBoolean(ntp_prefs::kNtpCustomLinksVisible));
+  EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible));
+  // Check that the old pref has been cleared.
+  EXPECT_EQ(nullptr, prefs->GetUserPrefValue(ntp_prefs::kNtpShortcutsType));
+}
+
+TEST_F(NewTabPageUITest, MigrateDeprecatedShortcutsTypePref_NotSet) {
+  PrefService* prefs = profile().GetPrefs();
+  // Ensure the deprecated pref has its default value but not a user-set value.
+  ASSERT_EQ(nullptr, prefs->GetUserPrefValue(ntp_prefs::kNtpShortcutsType));
+
+  // The function should not crash and should not modify the new pref.
+  NewTabPageUI::MigrateDeprecatedShortcutsTypePref(prefs);
+
+  // Check that the new prefs are not set by the migration.
+  EXPECT_EQ(nullptr,
+            prefs->GetUserPrefValue(ntp_prefs::kNtpCustomLinksVisible));
+  EXPECT_EQ(nullptr,
+            prefs->GetUserPrefValue(ntp_prefs::kNtpEnterpriseShortcutsVisible));
+}
+
+TEST_F(NewTabPageUITest,
+       MigrateDeprecatedShortcutsTypePref_NotSet_NewPrefsSet) {
+  PrefService* prefs = profile().GetPrefs();
+  // Ensure the deprecated pref has its default value but not a user-set value.
+  ASSERT_EQ(nullptr, prefs->GetUserPrefValue(ntp_prefs::kNtpShortcutsType));
+
+  // Set the value of the new prefs.
+  prefs->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, true);
+  prefs->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible, false);
+
+  // The function should not crash and should not modify the new pref.
+  NewTabPageUI::MigrateDeprecatedShortcutsTypePref(prefs);
+
+  // Check that the new pref is set properly and the old pref is not set.
+  ASSERT_EQ(nullptr, prefs->GetUserPrefValue(ntp_prefs::kNtpShortcutsType));
+  EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpCustomLinksVisible));
+  EXPECT_FALSE(prefs->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible));
+}

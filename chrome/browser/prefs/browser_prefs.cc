@@ -137,6 +137,7 @@
 #include "components/ntp_tiles/enterprise/enterprise_shortcuts_manager_impl.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -1714,6 +1715,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 10/2025.
   registry->RegisterBooleanPref(kSessionRestorePrefChanged, false);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 10/2025.
+  registry->RegisterIntegerPref(ntp_prefs::kNtpShortcutsType, 0);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -3099,6 +3105,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kLensOverlayEduActionChipShownCount);
 
   SigninPrefs(*profile_prefs).MigrateObsoleteSigninPrefs();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 10/2025
+  NewTabPageUI::MigrateDeprecatedShortcutsTypePref(profile_prefs);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

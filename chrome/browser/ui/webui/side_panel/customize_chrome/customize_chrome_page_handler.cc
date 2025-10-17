@@ -140,7 +140,12 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      ntp_prefs::kNtpShortcutsType,
+      ntp_prefs::kNtpCustomLinksVisible,
+      base::BindRepeating(
+          &CustomizeChromePageHandler::UpdateMostVisitedSettings,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      ntp_prefs::kNtpEnterpriseShortcutsVisible,
       base::BindRepeating(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
           base::Unretained(this)));
@@ -461,8 +466,11 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
     ntp_tiles::TileType type,
     bool visible) {
   if (GetTileType() != type) {
-    profile_->GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsType,
-                                     static_cast<int>(type));
+    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpCustomLinksVisible,
+                                     type == ntp_tiles::TileType::kCustomLinks);
+    profile_->GetPrefs()->SetBoolean(
+        ntp_prefs::kNtpEnterpriseShortcutsVisible,
+        type == ntp_tiles::TileType::kEnterpriseShortcuts);
     LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
   }
 
@@ -484,9 +492,9 @@ void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
     // If enterprise shortcuts is no longer visible (due to policy being unset),
     // fallback shortcuts type to custom links.
     if (GetTileType() == ntp_tiles::TileType::kEnterpriseShortcuts) {
-      profile_->GetPrefs()->SetInteger(
-          ntp_prefs::kNtpShortcutsType,
-          static_cast<int>(ntp_tiles::TileType::kCustomLinks));
+      profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, true);
+      profile_->GetPrefs()->SetBoolean(
+          ntp_prefs::kNtpEnterpriseShortcutsVisible, false);
     }
     disabled_shortcuts.push_back(ntp_tiles::TileType::kEnterpriseShortcuts);
   }
@@ -659,8 +667,13 @@ void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
 }
 
 ntp_tiles::TileType CustomizeChromePageHandler::GetTileType() const {
-  return static_cast<ntp_tiles::TileType>(
-      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
+  if (profile_->GetPrefs()->GetBoolean(
+          ntp_prefs::kNtpEnterpriseShortcutsVisible)) {
+    return ntp_tiles::TileType::kEnterpriseShortcuts;
+  }
+  return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible)
+             ? ntp_tiles::TileType::kCustomLinks
+             : ntp_tiles::TileType::kTopSites;
 }
 
 bool CustomizeChromePageHandler::IsShortcutsVisible() const {

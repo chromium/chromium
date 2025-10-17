@@ -133,6 +133,7 @@ class NewTabPageUI
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void ResetProfilePrefs(PrefService* prefs);
   static void MigrateDeprecatedUseMostVisitedTilesPref(PrefService* prefs);
+  static void MigrateDeprecatedShortcutsTypePref(PrefService* prefs);
   static bool IsManagedProfile(Profile* profile);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo

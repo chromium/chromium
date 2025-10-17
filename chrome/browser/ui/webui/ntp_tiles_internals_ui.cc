@@ -93,7 +93,7 @@ ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
   auto most_visited_sites = ChromeMostVisitedSitesFactory::NewForProfile(
       Profile::FromWebUI(web_ui()));
 #if BUILDFLAG(IS_ANDROID)
-  // Custom links on Android: ntp_prefs::kNtpShortcutsType is
+  // Custom links on Android: ntp_prefs::kNtpCustomLinksVisible is
   // unavailable. Use feature list instead.
   most_visited_sites->EnableTileTypes(
       ntp_tiles::MostVisitedSites::EnableTileTypesOptions().with_custom_links(
@@ -101,10 +101,6 @@ ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
               chrome::android::kMostVisitedTilesCustomization)));
 #else
   // Custom links on Desktop.
-  // TODO(crbug.com/438304256): Add `enable_enterprise_shortcuts` as a parameter
-  // to support enterprise shortcuts.
-  const ntp_tiles::TileType type = static_cast<ntp_tiles::TileType>(
-      GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
   const bool enterprise_shortcuts_feature_enabled =
       base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
 
@@ -113,11 +109,11 @@ ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
   // is disabled and custom links is enabled. This may occur if the user is
   // moved in and out of the experiment.
   const bool custom_links_enabled =
-      type == ntp_tiles::TileType::kCustomLinks ||
-      (type == ntp_tiles::TileType::kEnterpriseShortcuts &&
+      GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible) ||
+      (GetPrefs()->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible) &&
        !enterprise_shortcuts_feature_enabled);
   const bool enterprise_shortcuts_enabled =
-      type == ntp_tiles::TileType::kEnterpriseShortcuts &&
+      GetPrefs()->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible) &&
       enterprise_shortcuts_feature_enabled;
 
   most_visited_sites->EnableTileTypes(

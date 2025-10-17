@@ -380,18 +380,20 @@ TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
   bool visible;
   std::vector<ntp_tiles::TileType> disabled_shortcuts;
   EXPECT_CALL(mock_page_, SetMostVisitedSettings)
-      .Times(4)
+      .Times(5)
       .WillRepeatedly(DoAll(SaveArg<0>(&type), SaveArg<1>(&visible),
                             SaveArg<2>(&disabled_shortcuts)));
 
-  profile().GetPrefs()->SetInteger(
-      ntp_prefs::kNtpShortcutsType,
-      static_cast<int>(ntp_tiles::TileType::kCustomLinks));
+  profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, true);
+  profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
+                                   false);
   profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
 
   histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction", 0);
-  EXPECT_EQ(static_cast<int>(ntp_tiles::TileType::kCustomLinks),
-            profile().GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
+  EXPECT_TRUE(
+      profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible));
+  EXPECT_FALSE(profile().GetPrefs()->GetBoolean(
+      ntp_prefs::kNtpEnterpriseShortcutsVisible));
   EXPECT_FALSE(
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 
@@ -400,8 +402,10 @@ TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
       /*visible=*/true);
   mock_page_.FlushForTesting();
 
-  EXPECT_EQ(static_cast<int>(ntp_tiles::TileType::kTopSites),
-            profile().GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
+  EXPECT_FALSE(
+      profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible));
+  EXPECT_FALSE(profile().GetPrefs()->GetBoolean(
+      ntp_prefs::kNtpEnterpriseShortcutsVisible));
   EXPECT_TRUE(
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
   histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction", 2);
@@ -426,9 +430,9 @@ TEST_F(CustomizeChromePageHandlerTest,
   profile().GetPrefs()->SetList(
       ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
       std::move(enterprise_shortcuts));
-  profile().GetPrefs()->SetInteger(
-      ntp_prefs::kNtpShortcutsType,
-      static_cast<int>(ntp_tiles::TileType::kEnterpriseShortcuts));
+  profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, false);
+  profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
+                                   true);
   mock_page_.FlushForTesting();
 
   // The enterprise shortcuts option should be disabled. The type should remain
