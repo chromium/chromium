@@ -27,6 +27,9 @@ void WebUIPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   CHECK(timing.paint_timing->first_contentful_paint.has_value());
   PAGE_LOAD_HISTOGRAM(kWebUINavigationToFCPHistogramName,
                       timing.paint_timing->first_contentful_paint.value());
+  PAGE_LOAD_HISTOGRAM(base::StrCat({kWebUINavigationToFCPHistogramName, ".",
+                                    GetDelegate().GetUrl().host()}),
+                      timing.paint_timing->first_contentful_paint.value());
 }
 
 void WebUIPageLoadMetricsObserver::OnComplete(
@@ -83,5 +86,9 @@ bool WebUIPageLoadMetricsObserver::RecordSessionEndHistograms() {
 
   PAGE_LOAD_HISTOGRAM(kWebUINavigationToLCPHistogramName,
                       main_frame_largest_contentful_paint.Time().value());
+  PAGE_LOAD_HISTOGRAM(base::StrCat({kWebUINavigationToLCPHistogramName, ".",
+                                    GetDelegate().GetUrl().host()}),
+                      main_frame_largest_contentful_paint.Time().value());
+
   return true;
 }
