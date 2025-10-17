@@ -296,3 +296,39 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
             false);
   EXPECT_EQ(web_app_container->IsActionPinned(kActionPrint), false);
 }
+
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
+                       PinnedButtonPinningAndUnpinning) {
+  PinnedToolbarActionsModel* const actions_model =
+      PinnedToolbarActionsModel::Get(browser()->profile());
+
+  actions::ActionItem* action_item =
+      actions::ActionManager::Get().FindAction(kActionShowTranslate);
+
+  // Verify button is visible when pinned.
+  action_item->SetProperty(
+      actions::kActionItemPinnableKey,
+      static_cast<int>(actions::ActionPinnableState::kPinnable));
+  actions_model->UpdatePinnedState(kActionShowTranslate, true);
+  views::test::WaitForAnimatingLayoutManager(container());
+  auto* button_before = container()->GetButtonFor(kActionShowTranslate);
+  EXPECT_EQ(button_before->GetVisible(), true);
+
+  // Verify button is no longer visible after setting to not pinnable.
+  action_item->SetProperty(
+      actions::kActionItemPinnableKey,
+      static_cast<int>(actions::ActionPinnableState::kNotPinnable));
+  views::test::WaitForAnimatingLayoutManager(container());
+  auto* button_during = container()->GetButtonFor(kActionShowTranslate);
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_EQ(button_during->GetVisible(), false);
+
+  // Verify button is longer visible after setting back to pinnable.
+  action_item->SetProperty(
+      actions::kActionItemPinnableKey,
+      static_cast<int>(actions::ActionPinnableState::kPinnable));
+  views::test::WaitForAnimatingLayoutManager(container());
+  auto* button_after = container()->GetButtonFor(kActionShowTranslate);
+  views::test::WaitForAnimatingLayoutManager(container());
+  EXPECT_EQ(button_after->GetVisible(), true);
+}

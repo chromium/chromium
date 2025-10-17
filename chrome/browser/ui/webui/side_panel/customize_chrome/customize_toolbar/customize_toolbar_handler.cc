@@ -252,6 +252,17 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
                       base::Unretained(this))));
         }
 
+        switch (static_cast<actions::ActionPinnableState>(
+            action_item->GetProperty(actions::kActionItemPinnableKey))) {
+          case actions::ActionPinnableState::kNotPinnable:
+            return;
+          case actions::ActionPinnableState::kPinnable:
+          case actions::ActionPinnableState::kEnterpriseControlled:
+            break;
+          default:
+            NOTREACHED();
+        }
+
         // If the icon is a vector icon, recolor it to match the spec.
         // Non-vector icons cannot be recolored, but there aren't any of those
         // currently anyways.
