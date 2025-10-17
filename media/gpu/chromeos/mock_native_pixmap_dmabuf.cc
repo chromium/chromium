@@ -40,12 +40,10 @@ scoped_refptr<const gfx::NativePixmapDmaBuf> CreateMockNativePixmapDmaBuf(
     return nullptr;
   }
 
-  // This converts |layout|'s VideoPixelFormat to a gfx::BufferFormat, which is
-  // needed by the NativePixmapDmaBuf constructor.
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
-  if (!buffer_format) {
+  auto si_format = VideoPixelFormatToSharedImageFormat(pixel_format);
+  if (!si_format) {
     LOG(ERROR) << "Unable to convert pixel format " << pixel_format
-               << " to BufferFormat";
+               << " to SharedImageFormat";
     return nullptr;
   }
 
@@ -66,8 +64,8 @@ scoped_refptr<const gfx::NativePixmapDmaBuf> CreateMockNativePixmapDmaBuf(
   }
   handle.modifier = modifier;
 
-  return base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-      coded_size, *buffer_format, std::move(handle));
+  return base::MakeRefCounted<gfx::NativePixmapDmaBuf>(coded_size, *si_format,
+                                                       std::move(handle));
 }
 
 }  // namespace media
