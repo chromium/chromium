@@ -243,22 +243,39 @@ code when you find it, or at least not make such usage any more widespread.
 
 ## Non-owning pointers in class fields
 
-Use `const raw_ref<T>` or `raw_ptr<T>` for class and struct fields in place of a
-raw C++ reference `T&` or pointer `T*` whenever possible, except in paths that include
-`/renderer/` or `blink/public/web/`.  These are non-owning smart pointers that
-have improved memory-safety over `T*` and `T&`, and can prevent
-exploitation of a significant percentage of Use-after-Free bugs.
+*** note
+In summary:
 
-Prefer `const raw_ref<T>` whenever the held pointer will never be null, and it's
-ok to drop the `const` if the internal reference can be reassigned to point to a
-different `T`. Use `raw_ptr<T>` in order to express that the pointer _can_ be
-null. Only `raw_ptr<T>` can be default-constructed, since `raw_ref<T>` disallows
-nullness.
+```
+struct DoThis {
+  const raw_ref<T> never_null;
+  // can be rebound
+  raw_ref<T> also_never_null;
+
+  raw_ptr<const T> nullable;
+  raw_ptr<T> also_nullable;
+};
+```
+***
+
+Class and struct fields that are not
+[garbage-collected](../../third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md)
+should be written `const raw_ref<T>` or `raw_ptr<T>` rather than `T&` or `T*`
+whenever possible. These are non-owning smart pointers that have improved
+memory-safety over `T*` and `T&`, and can prevent exploitation of a significant
+percentage of Use-after-Free bugs.
+
+  * Prefer `const raw_ref<T>` whenever the held pointer will never be null.
+  * It's ok to drop the `const` if the internal reference can be reassigned
+    to point to a different `T`.
+  * Use `raw_ptr<T>` in order to express that the pointer _can_ be null.
+  * Only `raw_ptr<T>` can be default-constructed, since `raw_ref<T>` disallows
+    nullness.
 
 Using `raw_ref<T>` or `raw_ptr<T>` may not be possible in rare cases for
 [performance reasons](../../base/memory/raw_ptr.md#Performance). Additionally,
 `raw_ptr<T>` doesn’t support some C++ scenarios (e.g. `constexpr`, ObjC
-pointers).  Tooling will help to encourage use of these types in the future. See
+pointers). See
 [raw_ptr.md](../../base/memory/raw_ptr.md#When-to-use-raw_ptr_T) for how to add
 exclusions.
 
