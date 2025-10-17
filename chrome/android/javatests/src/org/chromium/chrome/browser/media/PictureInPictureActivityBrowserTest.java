@@ -33,6 +33,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -114,6 +115,24 @@ public class PictureInPictureActivityBrowserTest {
 
     private PictureInPictureActivity enterPip(WebContents webContents) {
         DOMUtils.clickNodeWithJavaScript(webContents, PIP_BUTTON_ID);
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        // Check that the element in PiP is our video element.
+                        return JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        webContents,
+                                        "document.pictureInPictureElement && "
+                                                + "document.pictureInPictureElement.id == '"
+                                                + VIDEO_ID
+                                                + "'")
+                                .equals("true");
+                    } catch (TimeoutException e) {
+                        return false;
+                    }
+                },
+                "Video element did not enter Picture-in-Picture mode.");
+
         return getPictureInPictureActivity();
     }
 
@@ -135,7 +154,9 @@ public class PictureInPictureActivityBrowserTest {
     }
 
     private void closePip(PictureInPictureActivity activity) {
-        ThreadUtils.runOnUiThreadBlocking(() -> activity.close());
+        // Use finish() to simulate a user/system close. This triggers the correct
+        // lifecycle (onPictureInPictureModeChanged).
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.finish());
 
         CriteriaHelper.pollUiThread(
                 () -> activity == null || activity.isDestroyed(),
