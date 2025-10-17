@@ -195,6 +195,14 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
 // and the lower side is blue in the page. A snapshot is taken 2 times with the
 // same position before and after scrolling down.
 - (void)testSnapshotWithScrollDown {
+  // TODO(crbug.com/452906291): Re-enable the test.
+#if TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    if (@available(iOS 26.1, *)) {
+      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1 on iPad simulator.");
+    }
+  }
+#endif
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
