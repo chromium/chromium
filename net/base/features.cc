@@ -641,7 +641,12 @@ constexpr base::FeatureParam<DiskCacheBackend>::Option
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 };
 const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
-    &kDiskCacheBackendExperiment, "backend", DiskCacheBackend::kDefault,
+    &kDiskCacheBackendExperiment, "backend",
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+    DiskCacheBackend::kSql,
+#else   // ENABLE_DISK_CACHE_SQL_BACKEND
+    DiskCacheBackend::kDefault,
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
     &kDiskCacheBackendOptions};
 
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
