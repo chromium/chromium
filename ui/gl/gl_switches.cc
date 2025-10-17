@@ -288,6 +288,10 @@ BASE_FEATURE(kVulkanFromANGLE,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Enable skipping the Vulkan blocklist.
+BASE_FEATURE(kSkipVulkanBlocklist,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDefaultANGLEVulkan() {
   // Force on if DefaultANGLEVulkan feature is enabled from command line.
   base::FeatureList* feature_list = base::FeatureList::GetInstance();

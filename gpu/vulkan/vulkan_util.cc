@@ -487,7 +487,8 @@ bool CheckVulkanCompatibilities(
   return true;
 #endif
 #else   // BUILDFLAG(IS_ANDROID)
-   if (SkipVulkanBlocklist()) {
+   if (SkipVulkanBlocklist() ||
+       base::FeatureList::IsEnabled(features::kSkipVulkanBlocklist)) {
     return true;
   }
 
