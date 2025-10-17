@@ -53,6 +53,8 @@ constexpr int kLabelRightMargin = 8;
 constexpr int kCloseButtonMargin = 6;
 constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
 constexpr ui::ColorId kTextOnHighlight = ui::kColorSysOnPrimary;
+constexpr ui::ColorId kTextDisabledOnHighlight = kTextOnHighlight;
+constexpr ui::ColorId kTextDisabled = ui::kColorLabelForegroundDisabled;
 constexpr ui::ColorId kDefaultTextColorV2 = ui::kColorSysOnSurface;
 
 constexpr int kIconSize = 16;
@@ -468,12 +470,15 @@ void GlicButton::UpdateTextAndBackgroundColors() {
 
     if (highlight_visible) {
       SetForegroundFrameActiveColorId(kTextOnHighlight);
+      SetTextColor(STATE_DISABLED, kTextDisabledOnHighlight);
     } else {
       SetForegroundFrameActiveColorId(kDefaultTextColorV2);
+      SetTextColor(STATE_DISABLED, kTextDisabled);
     }
   } else {
     SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
     SetForegroundFrameActiveColorId(kDefaultTextColorV2);
+    SetTextColor(STATE_DISABLED, kTextDisabled);
   }
 
   UpdateColors();
