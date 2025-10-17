@@ -618,6 +618,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                          composebox_config.is_pdf_upload_enabled();
   source->AddBoolean("composeboxShowPdfUpload", show_pdf_upload);
 
+  source->AddBoolean("composeboxShowSubmit", ntp_composebox::kShowSubmit.Get());
+
   // User education browser promos.
   int browser_promo_limit = 0;
   int browser_completed_promo_limit = 0;

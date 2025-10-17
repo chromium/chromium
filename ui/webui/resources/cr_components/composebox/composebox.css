@@ -384,7 +384,8 @@
   right: unset;
 }
 
-#submitContainer {
+:host(:not([show-submit_])) #submitContainer,
+:host([show-submit_]:not([submit-enabled_])) #submitContainer{
   display: none;
 }
 
@@ -393,8 +394,8 @@
   --cr-icon-button-icon-size: 16px;
   background-color: var(--color-new-tab-page-composebox-submit-button);
   bottom: var(--input-bottom-spacing);
-  cursor: default;
-  opacity: 30%;
+  cursor: default; /* For Lens side panel. */
+  opacity: 30%; /* For Lens side panel. */
   transition: var(--submit-enabled-transition);
 }
 
@@ -404,9 +405,10 @@
   outline-offset: 2px;
 }
 
-:host([submit-enabled_]) #submitIcon {
+:host([show-submit_][submit-enabled_]) #submitIcon {
   cursor: pointer;
-  opacity: 100%;
+  display: block;
+  opacity: 100%; /* For Lens side panel. */
 }
 
 /* Controls the opacity of the icons when the composebox is expanded/collapsed. */

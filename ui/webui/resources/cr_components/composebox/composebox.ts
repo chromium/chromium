@@ -93,6 +93,10 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      showSubmit_: {
+        reflect: true,
+        type: Boolean,
+      },
       enableImageContextualSuggestions_: {
         reflect: true,
         type: Boolean,
@@ -151,6 +155,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor input_: string = '';
   protected accessor showDropdown_: boolean =
       loadTimeData.getBoolean('composeboxShowZps');
+  protected accessor showSubmit_: boolean =
+      loadTimeData.getBoolean('composeboxShowSubmit');
   protected accessor enableImageContextualSuggestions_: boolean =
       loadTimeData.getBoolean('composeboxShowImageSuggest');
   // When enabled, the file input buttons will not be rendered.

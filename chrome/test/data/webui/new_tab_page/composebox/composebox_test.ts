@@ -209,6 +209,7 @@ suite('NewTabPageComposeboxTest', () => {
   }
 
   test('clear functionality', async () => {
+    loadTimeData.overrideValues({composeboxShowSubmit: true});
     createComposeboxElement();
     searchboxHandler.setResultFor(
         ADD_FILE_CONTEXT_FN,
@@ -260,7 +261,8 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('uploading/deleting pdf file queries zps', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowSubmit: true});
     createComposeboxElement();
     await microtasksFinished();
 
