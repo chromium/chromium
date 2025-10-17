@@ -6,6 +6,7 @@ package org.chromium.base;
 
 import android.util.ArrayMap;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.AlwaysInline;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -59,6 +60,18 @@ public final class ServiceLoaderUtil {
             }
         }
 
+        // In debug builds, this loads the implementation class at runtime using reflection which
+        // causes a disk read. In release builds, all of this code is optimized away at build time.
+        if (BuildConfig.IS_PROGUARD_ENABLED) {
+            return loadClass(clazz);
+        }
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            return loadClass(clazz);
+        }
+    }
+
+    @AlwaysInline
+    private static <T> @Nullable T loadClass(Class<T> clazz) {
         var it = ServiceLoader.load(clazz, clazz.getClassLoader()).iterator();
         if (it.hasNext()) {
             T ret = it.next();

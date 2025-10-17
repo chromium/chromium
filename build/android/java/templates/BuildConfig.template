@@ -114,6 +114,13 @@ public class BuildConfig {
     public static boolean IS_DESKTOP_ANDROID;
 #endif
 
+    // Use to check if proguard is enabled for the current build.
+#if defined(_IS_PROGUARD_ENABLED)
+    public static boolean IS_PROGUARD_ENABLED = true;
+#else
+    public static boolean IS_PROGUARD_ENABLED = false;
+#endif
+
     // Controls whether or not native-only renderers are available. Note that this check isn't
     // sufficient to determine whether they are enabled, but just whether they have been included
     // in the build.

@@ -1998,6 +1998,9 @@ if (!is_robolectric && enable_java_templates) {
           "_APK_ASSETS_SUFFIX=${invoker.apk_assets_suffix}",
         ]
       }
+      if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
+        defines += [ "_IS_PROGUARD_ENABLED" ]
+      }
 
       _test_only = defined(testonly) && testonly
       if (_test_only) {
@@ -2740,6 +2743,7 @@ if (!is_robolectric && enable_java_templates) {
                                [
                                  "disable_strict_mode_context",
                                  "isolated_splits_enabled",
+                                 "proguard_enabled",
                                ])
         assertions_implicitly_enabled = _assertions_implicitly_enabled
         is_incremental_install = _incremental_apk

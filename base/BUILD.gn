@@ -5168,6 +5168,7 @@ if (is_android) {
   android_library("service_loader_java") {
     deps = [
       ":resetters_java",
+      ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     sources = [ "android/java/src/org/chromium/base/ServiceLoaderUtil.java" ]
