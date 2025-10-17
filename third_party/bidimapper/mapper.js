@@ -5546,6 +5546,7 @@
     class ContextConfig {
         acceptInsecureCerts;
         devicePixelRatio;
+        disableNetworkDurableMessages;
         downloadBehavior;
         emulatedNetworkConditions;
         extraHeaders;
@@ -8612,15 +8613,29 @@
             }
             return cookies;
         }
+        #getBodySizeFromHeaders(headers) {
+            if (headers === undefined) {
+                return undefined;
+            }
+            if (headers['Content-Length'] !== undefined) {
+                const bodySize = Number.parseInt(headers['Content-Length']);
+                if (Number.isInteger(bodySize)) {
+                    return bodySize;
+                }
+                this.#logger?.(LogType.debugError, "Unexpected non-integer 'Content-Length' header");
+            }
+            return undefined;
+        }
         get bodySize() {
-            let bodySize = 0;
             if (typeof this.#requestOverrides?.bodySize === 'number') {
-                bodySize = this.#requestOverrides.bodySize;
+                return this.#requestOverrides.bodySize;
             }
-            else {
-                bodySize = bidiBodySizeFromCdpPostDataEntries(this.#request.info?.request.postDataEntries ?? []);
+            if (this.#request.info?.request.postDataEntries !== undefined) {
+                return bidiBodySizeFromCdpPostDataEntries(this.#request.info?.request.postDataEntries);
             }
-            return bodySize;
+            return (this.#getBodySizeFromHeaders(this.#request.info?.request.headers) ??
+                this.#getBodySizeFromHeaders(this.#request.extraInfo?.headers) ??
+                0);
         }
         get #context() {
             const result = this.#response.paused?.frameId ??
@@ -9406,8 +9421,7 @@
             };
         }
         collectIfNeeded(request, dataType) {
-            this.#collectorsStorage.collectIfNeeded(request, dataType, request.cdpTarget.topLevelId, this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
-                .userContext);
+            this.#collectorsStorage.collectIfNeeded(request, dataType, request.cdpTarget.topLevelId, request.cdpTarget.userContext);
         }
         getInterceptionStages(browsingContextId) {
             const stages = {
@@ -9528,7 +9542,7 @@
 
     class CdpTarget {
         #id;
-        #userContext;
+        userContext;
         #cdpClient;
         #browserCdpClient;
         #parentCdpClient;
@@ -9564,7 +9578,7 @@
             return cdpTarget;
         }
         constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, logger) {
-            this.#userContext = userContext;
+            this.userContext = userContext;
             this.#id = targetId;
             this.#cdpClient = cdpClient;
             this.#browserCdpClient = browserCdpClient;
@@ -9602,6 +9616,7 @@
             return this.#windowId ?? 0;
         }
         async #unblock() {
+            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.userContext);
             const results = await Promise.allSettled([
                 this.#cdpClient.sendCommand('Page.enable', {
                     enableFileChooserOpenedEvent: true,
@@ -9623,7 +9638,7 @@
                 }),
                 this.#cdpClient
                     .sendCommand('Network.enable', {
-                    enableDurableMessages: true,
+                    enableDurableMessages: config.disableNetworkDurableMessages !== true,
                     maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
                 })
                     .then(() => this.toggleNetworkIfNeeded()),
@@ -9633,7 +9648,7 @@
                     flatten: true,
                 }),
                 this.#updateWindowId(),
-                this.#setUserContextConfig(),
+                this.#setUserContextConfig(config),
                 this.#initAndEvaluatePreloadScripts(),
                 this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                 this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
@@ -9662,7 +9677,7 @@
             }
             if (maybeContext === undefined && frame.parentId !== undefined) {
                 const parentBrowsingContext = this.#browsingContextStorage.getContext(frame.parentId);
-                BrowsingContextImpl.create(frame.id, frame.parentId, this.#userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.contextConfigStorage, frame.url, undefined, this.#logger);
+                BrowsingContextImpl.create(frame.id, frame.parentId, this.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.contextConfigStorage, frame.url, undefined, this.#logger);
             }
             frameTree.childFrames?.map((frameTree) => this.#restoreFrameTreeState(frameTree));
         }
@@ -9907,9 +9922,8 @@
                 throw err;
             }
         }
-        async #setUserContextConfig() {
+        async #setUserContextConfig(config) {
             const promises = [];
-            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.#userContext);
             promises.push(this.#cdpClient
                 .sendCommand('Page.setPrerenderingAllowed', {
                 isAllowed: !config.prerenderingDisabled,
@@ -9961,7 +9975,7 @@
             return this.#eventManager.subscriptionManager.isSubscribedTo(moduleOrEvent, this.topLevelId);
         }
         #ignoreFileDialog() {
-            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.#userContext);
+            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.userContext);
             return ((config.userPromptHandler?.file ??
                 config.userPromptHandler?.default ??
                 "ignore" ) ===
@@ -11198,6 +11212,7 @@
                     acceptInsecureCerts: options.acceptInsecureCerts ?? false,
                     userPromptHandler: options.unhandledPromptBehavior,
                     prerenderingDisabled: options?.['goog:prerenderingDisabled'] ?? false,
+                    disableNetworkDurableMessages: options?.['goog:disableNetworkDurableMessages'],
                 });
                 new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, contextConfigStorage, this.#bluetoothProcessor, this.#speculationProcessor, this.#preloadScriptStorage, defaultUserContextId, logger);
                 await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
