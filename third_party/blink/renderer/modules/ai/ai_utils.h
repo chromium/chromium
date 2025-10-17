@@ -145,6 +145,7 @@ class RunOnDestruction {
 template <typename T>
 base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver,
                                       AbortSignal* signal = nullptr) {
+  CHECK(resolver);
   RunOnDestruction run_on_destruction(BindOnce(
       [](ScriptPromiseResolver<T>* resolver, AbortSignal* signal) {
         if (signal && signal->aborted()) {
