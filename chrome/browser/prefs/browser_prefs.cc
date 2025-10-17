@@ -557,114 +557,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 07/2024
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-inline constexpr char kFirstRunStudyGroup[] = "browser.first_run_study_group";
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-// Deprecated 07/2024
-constexpr char kNtpRecipesDismissedTasks[] = "NewTabPage.DismissedRecipeTasks";
-constexpr char kNtpModulesFirstShownTime[] = "NewTabPage.ModulesFirstShownTime";
-constexpr char kNtpModulesFreVisible[] = "NewTabPage.ModulesFreVisible";
-constexpr char kNtpModulesShownCount[] = "NewTabPage.ModulesShownCount";
-constexpr char kNtpPhotosLastDismissedTimePrefName[] =
-    "NewTabPage.Photos.LastDimissedTime";
-constexpr char kNtpPhotosOptInAcknowledgedPrefName[] =
-    "NewTabPage.Photos.OptInAcknowledged";
-constexpr char kNtpPhotosLastMemoryOpenTimePrefName[] =
-    "NewTabPage.Photos.LastMemoryOpenTime";
-constexpr char kNtpPhotosSoftOptOutCountPrefName[] =
-    "NewTabPage.Photos.SoftOptOutCount";
-constexpr char kNtpPhotosLastSoftOptedOutTimePrefName[] =
-    "NewTabPage.Photos.LastSoftOptedoutTime";
-// Deprecated 08/2024
-constexpr char kDismissedTabsPrefName[] =
-    "NewTabPage.TabResumption.DismissedTabs";
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 07/2024.
-constexpr char kAppDeduplicationServiceLastGetTimestamp[] =
-    "apps.app_deduplication_service.last_get_data_from_server_timestamp";
-// Deprecated 07/2024.
-constexpr char kShowTunaScreenEnabled[] = "ash.tuna_screen_oobe_enabled";
-// Deprecated 08/2024.
-inline constexpr char kStandaloneWindowMigrationNudgeShown[] =
-    "standalone_window_migration_nudge_shown";
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-// All of these were deprecated 08/24.
-constexpr char kObsoleteUnenrolledFromGoogleMobileServicesAfterApiErrorCode[] =
-    "unenrolled_from_google_mobile_services_after_api_error_code";
-constexpr char kObsoleteRequiresMigrationAfterSyncStatusChange[] =
-    "requires_migration_after_sync_status_change";
-constexpr char
-    kObsoleteUnenrolledFromGoogleMobileServicesWithErrorListVersion[] =
-        "unenrolled_from_google_mobile_services_with_error_list_version";
-constexpr char kObsoleteTimesReenrolledToGoogleMobileServices[] =
-    "times_reenrolled_to_google_mobile_services";
-constexpr char kObsoleteTimesAttemptedToReenrollToGoogleMobileServices[] =
-    "times_attempted_to_reenroll_to_google_mobile_services";
-constexpr char kObsoleteUserReceivedGMSCoreError[] =
-    "user_received_gmscore_error";
-#endif
-
-// Deprecated 08/2024.
-constexpr char kSafeBrowsingEsbOptInWithFriendlierSettings[] =
-    "safebrowsing.esb_opt_in_with_friendlier_settings";
-
-// Deprecated 08/2024.
-#if BUILDFLAG(IS_CHROMEOS)
-constexpr char kDeviceDMTokenV1[] = "device_dm_token";
-constexpr char kDeviceDMTokenV2[] = "device_dm_token_v2";
-#endif
-
-// Deprecated 08/2024
-#if BUILDFLAG(IS_ANDROID)
-constexpr char kBackoffEntryKey[] = "query_tiles.backoff_entry_key";
-constexpr char kFirstScheduleTimeKey[] = "query_tiles.first_schedule_time_key";
-#endif
-
-// Deprecated 09/2024.
-constexpr char kContentSettingsWindowLastTabIndex[] =
-    "content_settings_window.last_tab_index";
-constexpr char kSyncPasswordHash[] = "profile.sync_password_hash";
-constexpr char kSyncPasswordLengthAndHashSalt[] =
-    "profile.sync_password_length_and_hash_salt";
-
-// Deprecated 09/2024
-#if BUILDFLAG(IS_CHROMEOS)
-constexpr char kDemoModeResourcesRemoved[] = "demo_mode_resources_removed";
-constexpr char kAccumulatedUsagePref[] =
-    "demo_mode_resources_remover.accumulated_device_usage_s";
-#endif
-
-// Deprecated 09/2024
-#if !BUILDFLAG(IS_ANDROID)
-constexpr char kPasswordGenerationNudgePasswordDismissCount[] =
-    "password_generation_nudge_password_dismiss_count";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-// Deprecated 09/2024
-#if !BUILDFLAG(IS_ANDROID)
-const char kTranslateKitRootDir[] =
-    "on_device_translation.translate_kit_root_dir";
-#endif
-
-// Deprecated 09/2024
-#if BUILDFLAG(IS_ANDROID)
-constexpr char kPrivacySandboxActivityTypeRecord[] =
-    "privacy_sandbox.activity_type.record";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Deprecated 09/2024.
-#if !BUILDFLAG(IS_ANDROID)
-const char kTabResumeDismissedTabsPrefName[] =
-    "NewTabPage.MostRelevantTabResumption.DismissedTabs";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // Deprecated 10/2024.
 constexpr char kLiveCaptionBubblePinned[] =
     "accessibility.captions.live_caption_bubble_pinned";
@@ -1183,18 +1075,7 @@ constexpr char kSessionRestorePrefChanged[] = "session.restore_pref_changed";
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Deprecated 07/2024.
-  registry->RegisterStringPref(kFirstRunStudyGroup, std::string());
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 08/2024.
-  registry->RegisterStringPref(kDeviceDMTokenV1, std::string());
-  registry->RegisterStringPref(kDeviceDMTokenV2, std::string());
-  registry->RegisterBooleanPref(kDemoModeResourcesRemoved, false);
-  registry->RegisterIntegerPref(kAccumulatedUsagePref, 0);
-
   // Deprecated 10/2024.
   registry->RegisterIntegerPref(kMigrationStep, 0);
   registry->RegisterDictionaryPref(kMoveMigrationResumeStepPref);
@@ -1313,95 +1194,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-  // Deprecated 05/28.
-  registry->RegisterTimePref(kPrivacySandboxFakeNoticePromptShownTimeSync,
-                             base::Time());
-  registry->RegisterTimePref(kPrivacySandboxFakeNoticePromptShownTime,
-                             base::Time());
-  registry->RegisterTimePref(kPrivacySandboxFakeNoticeFirstSignInTime,
-                             base::Time());
-  registry->RegisterTimePref(kPrivacySandboxFakeNoticeFirstSignOutTime,
-                             base::Time());
-
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Deprecated 07/2024
-  registry->RegisterListPref(kNtpRecipesDismissedTasks);
-  registry->RegisterBooleanPref(kNtpModulesFreVisible, true);
-  registry->RegisterIntegerPref(kNtpModulesShownCount, 0);
-  registry->RegisterTimePref(kNtpModulesFirstShownTime, base::Time());
-  registry->RegisterTimePref(kNtpPhotosLastDismissedTimePrefName, base::Time());
-  registry->RegisterBooleanPref(kNtpPhotosOptInAcknowledgedPrefName, false);
-  registry->RegisterTimePref(kNtpPhotosLastMemoryOpenTimePrefName,
-                             base::Time());
-  registry->RegisterTimePref(kNtpPhotosLastSoftOptedOutTimePrefName,
-                             base::Time());
-  registry->RegisterIntegerPref(kNtpPhotosSoftOptOutCountPrefName, 0);
-  // Deprecated 08/2024
-  registry->RegisterListPref(kDismissedTabsPrefName);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 07/2024.
-  registry->RegisterTimePref(kAppDeduplicationServiceLastGetTimestamp,
-                             base::Time());
-  registry->RegisterBooleanPref(kShowTunaScreenEnabled, true);
-
-  // Deprecated 08/2024
-  registry->RegisterBooleanPref(kStandaloneWindowMigrationNudgeShown, false);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
-  // All of these were deprecated 08/2024.
-  registry->RegisterIntegerPref(
-      kObsoleteUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
-  registry->RegisterBooleanPref(kObsoleteRequiresMigrationAfterSyncStatusChange,
-                                false);
-  registry->RegisterIntegerPref(
-      kObsoleteUnenrolledFromGoogleMobileServicesWithErrorListVersion, 0);
-  registry->RegisterIntegerPref(kObsoleteTimesReenrolledToGoogleMobileServices,
-                                0);
-  registry->RegisterIntegerPref(
-      kObsoleteTimesAttemptedToReenrollToGoogleMobileServices, 0);
-  registry->RegisterBooleanPref(kObsoleteUserReceivedGMSCoreError, false);
-#endif
-  // Deprecated 08/2024.
-  registry->RegisterBooleanPref(kSafeBrowsingEsbOptInWithFriendlierSettings,
-                                false);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Deprecated 08/2024
-  registry->RegisterListPref(kBackoffEntryKey);
-  registry->RegisterTimePref(kFirstScheduleTimeKey, base::Time());
-#endif
-
-  // Deprecated 09/2024.
-  registry->RegisterIntegerPref(kContentSettingsWindowLastTabIndex, 0);
-  registry->RegisterStringPref(kSyncPasswordHash, std::string());
-  registry->RegisterStringPref(kSyncPasswordLengthAndHashSalt, std::string());
-
-// Deprecated 09/2024.
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterIntegerPref(kPasswordGenerationNudgePasswordDismissCount,
-                                0);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-// Deprecated 09/2024.
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterFilePathPref(kTranslateKitRootDir, base::FilePath());
-#endif
-
-// Deprecated 09/2024
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterListPref(kPrivacySandboxActivityTypeRecord);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Deprecated 09/2024
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterListPref(kTabResumeDismissedTabsPrefName,
-                             base::Value::List());
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Deprecated 10/2024.
   registry->RegisterIntegerPref(kModelExecutionMainToggleSettingState, 0);
@@ -1585,6 +1378,16 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 04/2025.
   registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
+
+  // Deprecated 05/2025.
+  registry->RegisterTimePref(kPrivacySandboxFakeNoticePromptShownTimeSync,
+                             base::Time());
+  registry->RegisterTimePref(kPrivacySandboxFakeNoticePromptShownTime,
+                             base::Time());
+  registry->RegisterTimePref(kPrivacySandboxFakeNoticeFirstSignInTime,
+                             base::Time());
+  registry->RegisterTimePref(kPrivacySandboxFakeNoticeFirstSignOutTime,
+                             base::Time());
 
   // Deprecated 05/2025.
 #if BUILDFLAG(IS_ANDROID)
@@ -2549,18 +2352,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Added 07/2024.
-  local_state->ClearPref(kFirstRunStudyGroup);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
-  // Added 08/2024.
-  local_state->ClearPref(kDeviceDMTokenV1);
-  local_state->ClearPref(kDeviceDMTokenV2);
-  local_state->ClearPref(kDemoModeResourcesRemoved);
-  local_state->ClearPref(kAccumulatedUsagePref);
-
   // Added 10/2024.
   local_state->ClearPref(kMigrationStep);
   local_state->ClearPref(kMoveMigrationResumeStepPref);
@@ -2732,83 +2524,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs);
 #endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 07/2024.
-  profile_prefs->ClearPref(kNtpRecipesDismissedTasks);
-  profile_prefs->ClearPref(kNtpModulesFirstShownTime);
-  profile_prefs->ClearPref(kNtpModulesFreVisible);
-  profile_prefs->ClearPref(kNtpModulesShownCount);
-  profile_prefs->ClearPref(kNtpPhotosLastDismissedTimePrefName);
-  profile_prefs->ClearPref(kNtpPhotosOptInAcknowledgedPrefName);
-  profile_prefs->ClearPref(kNtpPhotosLastMemoryOpenTimePrefName);
-  profile_prefs->ClearPref(kNtpPhotosLastSoftOptedOutTimePrefName);
-  profile_prefs->ClearPref(kNtpPhotosSoftOptOutCountPrefName);
-  // Added 08/2024
-  profile_prefs->ClearPref(kDismissedTabsPrefName);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Added 07/2024.
-  profile_prefs->ClearPref(kAppDeduplicationServiceLastGetTimestamp);
-  profile_prefs->ClearPref(kShowTunaScreenEnabled);
-
-  // Added 08/2024.
-  profile_prefs->ClearPref(kStandaloneWindowMigrationNudgeShown);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  // All of these were added 08/2024.
-  profile_prefs->ClearPref(
-      kObsoleteUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
-  profile_prefs->ClearPref(kObsoleteRequiresMigrationAfterSyncStatusChange);
-  profile_prefs->ClearPref(
-      kObsoleteUnenrolledFromGoogleMobileServicesWithErrorListVersion);
-  profile_prefs->ClearPref(kObsoleteTimesReenrolledToGoogleMobileServices);
-  profile_prefs->ClearPref(
-      kObsoleteTimesAttemptedToReenrollToGoogleMobileServices);
-  profile_prefs->ClearPref(kObsoleteUserReceivedGMSCoreError);
-#endif
-  // Added 08/2024.
-  profile_prefs->ClearPref(kSafeBrowsingEsbOptInWithFriendlierSettings);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 08/2024, but DO NOT REMOVE after the usual year.
-  // TODO(crbug.com/356148174): Remove once kMoveThemePrefsToSpecifics has been
-  // enabled for an year.
-  MigrateSyncingThemePrefsToNonSyncingIfNeeded(profile_prefs);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Added 08/2024.
-#if BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(kBackoffEntryKey);
-  profile_prefs->ClearPref(kFirstScheduleTimeKey);
-#endif
-
-  // Added 09/2024.
-  profile_prefs->ClearPref(kContentSettingsWindowLastTabIndex);
-  profile_prefs->ClearPref(kSyncPasswordHash);
-  profile_prefs->ClearPref(kSyncPasswordLengthAndHashSalt);
-
-// Added 09/2024
-#if !BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(kPasswordGenerationNudgePasswordDismissCount);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-// Added 09/2024.
-#if !BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(kTranslateKitRootDir);
-#endif
-
-// Added 09/2024
-#if BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(kPrivacySandboxActivityTypeRecord);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Added 09/2024
-#if !BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(kTabResumeDismissedTabsPrefName);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Added 10/2024.
   profile_prefs->ClearPref(kModelExecutionMainToggleSettingState);
