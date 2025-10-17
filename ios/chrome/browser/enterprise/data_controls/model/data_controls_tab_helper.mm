@@ -7,8 +7,12 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/rule.h"
+#import "components/policy/core/common/policy_types.h"
+#import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/enterprise/common/util.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -39,7 +43,6 @@ void DataControlsTabHelper::ShouldAllowCopy(
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   const GURL& source_url = web_state_->GetLastCommittedURL();
-
   CopyPolicyVerdicts verdicts =
       IsCopyAllowedByPolicy(source_url, metadata, profile);
 
@@ -47,12 +50,13 @@ void DataControlsTabHelper::ShouldAllowCopy(
     case Rule::Level::kWarn:
       ShowWarningDialog(
           DataControlsDialog::Type::kClipboardCopyWarn,
+          GetManagementDomain(profile),
           base::BindOnce(&DataControlsTabHelper::FinishCopy,
                          weak_factory_.GetWeakPtr(), source_url,
                          std::move(verdicts), std::move(callback)));
       break;
     case Rule::Level::kBlock:
-      ShowRestrictSnackbar();
+      ShowRestrictSnackbar(GetManagementDomain(profile));
       [[fallthrough]];
     case Rule::Level::kReport:
     case Rule::Level::kAllow:
@@ -85,18 +89,21 @@ void DataControlsTabHelper::ShouldAllowPaste(
   PastePolicyVerdict policy_verdict =
       IsPasteAllowedByPolicy(source.source_url, destination_url, metadata,
                              source.source_profile, profile);
+  std::string domain = policy_verdict.dialog_triggered_by_source
+                           ? GetManagementDomain(source.source_profile)
+                           : GetManagementDomain(profile);
 
   switch (policy_verdict.verdict.level()) {
     case Rule::Level::kWarn:
       ShowWarningDialog(
-          DataControlsDialog::Type::kClipboardPasteWarn,
+          DataControlsDialog::Type::kClipboardPasteWarn, domain,
           base::BindOnce(&DataControlsTabHelper::FinishPaste,
                          weak_factory_.GetWeakPtr(), destination_url,
                          std::move(policy_verdict.verdict),
                          std::move(callback)));
       break;
     case Rule::Level::kBlock:
-      ShowRestrictSnackbar();
+      ShowRestrictSnackbar(domain);
       [[fallthrough]];
     case Rule::Level::kReport:
     case Rule::Level::kAllow:
@@ -183,10 +190,12 @@ void DataControlsTabHelper::FinishPaste(const GURL& destination_url,
 
 void DataControlsTabHelper::ShowWarningDialog(
     DataControlsDialog::Type dialog_type,
+    std::string_view org_domain,
     base::OnceCallback<void(bool)> on_bypassed_callback) {
   if (commands_handler_) {
     [commands_handler_
         showDataControlsWarningDialog:dialog_type
+                   organizationDomain:org_domain
                              callback:std::move(on_bypassed_callback)];
   } else {
     if (on_bypassed_callback) {
@@ -195,13 +204,26 @@ void DataControlsTabHelper::ShowWarningDialog(
   }
 }
 
-void DataControlsTabHelper::ShowRestrictSnackbar() {
-  [snackbar_handler_
-      showSnackbarWithMessage:l10n_util::GetNSString(
-                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
-                   buttonText:nil
-                messageAction:nil
-             completionAction:nil];
+void DataControlsTabHelper::ShowRestrictSnackbar(std::string_view org_domain) {
+  NSString* message =
+      org_domain.empty()
+          ? l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
+          : l10n_util::GetNSStringF(IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
+                                    base::UTF8ToUTF16(org_domain));
+  [snackbar_handler_ showSnackbarWithMessage:message
+                                  buttonText:nil
+                               messageAction:nil
+                            completionAction:nil];
+}
+
+std::string DataControlsTabHelper::GetManagementDomain(ProfileIOS* profile) {
+  if (!profile) {
+    return std::string();
+  }
+
+  policy::PolicyScope scope = static_cast<policy::PolicyScope>(
+      profile->GetPrefs()->GetInteger(kDataControlsRulesScopePref));
+  return enterprise::GetManagementDomain(scope, profile);
 }
 
 }  // namespace data_controls

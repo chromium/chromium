@@ -19,6 +19,8 @@
 
 namespace {
 
+inline constexpr std::string_view kOrganizationDomain = "google.com";
+
 // Helper to find a UIAlertAction by title.
 UIAlertAction* GetActionWithTitle(UIAlertController* alert_controller,
                                   NSString* title) {
@@ -66,6 +68,7 @@ TEST_F(DataControlsDialogCoordinatorTest, Initialization) {
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
                                      kClipboardCopyWarn
+              organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   EXPECT_TRUE(coordinator);
   [coordinator stop];
@@ -80,6 +83,7 @@ TEST_F(DataControlsDialogCoordinatorTest, StartPresentsAlert) {
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
                                      kClipboardCopyWarn
+              organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -98,6 +102,7 @@ TEST_F(DataControlsDialogCoordinatorTest, AlertContents) {
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
                                      kClipboardCopyWarn
+              organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -107,7 +112,8 @@ TEST_F(DataControlsDialogCoordinatorTest, AlertContents) {
   UIAlertController* alert = static_cast<UIAlertController*>(
       base_view_controller_.presentedViewController);
   data_controls::WarningDialog dialog = data_controls::GetWarningDialog(
-      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
+      kOrganizationDomain);
   EXPECT_NSEQ(alert.title, dialog.title);
   EXPECT_NSEQ(alert.message, dialog.label);
   EXPECT_EQ(alert.actions.count, 2u);
@@ -135,6 +141,7 @@ TEST_F(DataControlsDialogCoordinatorTest, CancelButton) {
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
                                      kClipboardCopyWarn
+              organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -144,7 +151,8 @@ TEST_F(DataControlsDialogCoordinatorTest, CancelButton) {
   UIAlertController* alert = static_cast<UIAlertController*>(
       base_view_controller_.presentedViewController);
   data_controls::WarningDialog dialog = data_controls::GetWarningDialog(
-      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
+      kOrganizationDomain);
   UIAlertAction* cancel_action =
       GetActionWithTitle(alert, dialog.cancel_button_id);
 
@@ -162,6 +170,7 @@ TEST_F(DataControlsDialogCoordinatorTest, OkButton) {
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
                                      kClipboardCopyWarn
+              organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -171,7 +180,8 @@ TEST_F(DataControlsDialogCoordinatorTest, OkButton) {
   UIAlertController* alert = static_cast<UIAlertController*>(
       base_view_controller_.presentedViewController);
   data_controls::WarningDialog dialog = data_controls::GetWarningDialog(
-      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
+      kOrganizationDomain);
   UIAlertAction* ok_action = GetActionWithTitle(alert, dialog.ok_button_id);
 
   void (^handler)(UIAlertAction*) = [ok_action valueForKey:@"handler"];
@@ -189,6 +199,7 @@ TEST_F(DataControlsDialogCoordinatorTest, Stop) {
                          browser:browser_.get()
                       dialogType:data_controls::DataControlsDialog::Type::
                                      kClipboardCopyWarn
+              organizationDomain:kOrganizationDomain
                         callback:future.GetCallback()];
   [coordinator start];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(

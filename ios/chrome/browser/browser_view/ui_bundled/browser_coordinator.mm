@@ -4748,11 +4748,18 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showDataControlsWarningDialog:
             (data_controls::DataControlsDialog::Type)dialogType
+                   organizationDomain:(std::string_view)organizationDomain
                              callback:(base::OnceCallback<void(bool)>)callback {
+  // If a dialog is already shown, dismiss it before showing a new one.
+  if (_dataControlsDialogCoordinator) {
+    [_dataControlsDialogCoordinator stop];
+  }
+
   _dataControlsDialogCoordinator = [[DataControlsDialogCoordinator alloc]
-      initWithBaseViewController:self.viewController
+      initWithBaseViewController:self.browserContainerCoordinator.viewController
                          browser:self.browser
                       dialogType:dialogType
+              organizationDomain:organizationDomain
                         callback:std::move(callback)];
   [_dataControlsDialogCoordinator start];
 }

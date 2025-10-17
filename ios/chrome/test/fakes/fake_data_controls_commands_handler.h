@@ -14,6 +14,7 @@
 }
 @property(readonly, nonatomic)
     data_controls::DataControlsDialog::Type dialogType;
+@property(readonly, nonatomic) std::string organizationDomain;
 @end
 
 #endif  // IOS_CHROME_TEST_FAKES_FAKE_DATA_CONTROLS_COMMANDS_HANDLER_H_

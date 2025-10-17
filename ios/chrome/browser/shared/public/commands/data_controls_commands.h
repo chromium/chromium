@@ -17,6 +17,7 @@
 // may violate their organization's policy.
 - (void)showDataControlsWarningDialog:
             (data_controls::DataControlsDialog::Type)dialogType
+                   organizationDomain:(std::string_view)organizationDomain
                              callback:(base::OnceCallback<void(bool)>)callback;
 
 @end

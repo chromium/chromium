@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string_view>
+
 #import "components/enterprise/data_controls/core/browser/data_controls_dialog.h"
 
 namespace data_controls {
@@ -20,7 +22,8 @@ struct WarningDialog {
   NSString* cancel_button_id;
 };
 
-WarningDialog GetWarningDialog(DataControlsDialog::Type type);
+WarningDialog GetWarningDialog(DataControlsDialog::Type type,
+                               std::string_view organization_domain);
 
 }  // namespace data_controls
 

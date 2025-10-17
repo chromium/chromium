@@ -6,11 +6,14 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
@@ -18,6 +21,8 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/fakes/fake_data_controls_commands_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/components/enterprise/data_controls/features.h"
@@ -40,6 +45,7 @@ const char kBlockedUrl[] = "https://block.com";
 const char kAllowedUrl[] = "https://allow.com";
 const char kWarnUrl[] = "https://warn.com";
 const char kOtherUrl[] = "https://other.com";
+inline constexpr std::u16string_view kOrganizationDomain = u"google.com";
 }  // namespace
 
 // Unit tests for DataControlsTabHelper.
@@ -47,8 +53,12 @@ class DataControlsTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    profile_ =
-        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_);
     feature_list_.InitAndEnableFeature(kEnableClipboardDataControlsIOS);
@@ -93,7 +103,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "BLOCK"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   void SetCopyAllowRule() {
@@ -104,7 +115,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "ALLOW"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   void SetCopyWarnRule() {
@@ -115,7 +127,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "WARN"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   void SetPasteBlockRule() {
@@ -126,7 +139,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "BLOCK"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   void SetPasteAllowRule() {
@@ -137,7 +151,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "ALLOW"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   void SetPasteBlockForSourceRule() {
@@ -161,7 +176,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "BLOCK"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   void SetPasteWarnRule() {
@@ -172,7 +188,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "WARN"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   void SetPasteBlockFromIncognitoRule() {
@@ -194,7 +211,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "BLOCK"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   void SetPasteBlockFromOtherProfileRule() {
@@ -216,7 +234,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "BLOCK"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   void SetPasteBlockFromOSClipboardRule() {
@@ -238,7 +257,8 @@ class DataControlsTabHelperTest : public PlatformTest {
                         "restrictions": [
                           {"class": "CLIPBOARD", "level": "BLOCK"}
                         ]
-                      })"});
+                      })"},
+                    /*machine_scope=*/false);
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -280,6 +300,33 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked) {
   [(OCMockObject*)snackbar_handler verify];
 }
 
+// Tests that copy is blocked when a "BLOCK" rule matches the page URL and
+// the snackbar message is correct when the organization domain is not empty.
+TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked_WithDomain) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile_),
+      "user@" + base::UTF16ToUTF8(kOrganizationDomain),
+      signin::ConsentLevel::kSignin);
+  SetCopyBlockRule();
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([snackbar_handler
+      showSnackbarWithMessage:l10n_util::GetNSStringF(
+                                  IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
+                                  std::u16string(kOrganizationDomain))
+                   buttonText:nil
+                messageAction:nil
+             completionAction:OCMOCK_ANY]);
+  tab_helper()->SetSnackbarHandler(snackbar_handler);
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_FALSE(allowed);
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+  [(OCMockObject*)snackbar_handler verify];
+}
+
 // Tests that copy is allowed when an "ALLOW" rule matches the page URL.
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Allowed) {
   SetCopyAllowRule();
@@ -307,7 +354,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_NotBypassed) {
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
   EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardCopyWarn);
-  WarningDialog dialog = GetWarningDialog(handler.dialogType);
+  WarningDialog dialog =
+      GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title
       isEqualToString:l10n_util::GetNSString(
                           IDS_DATA_CONTROLS_CLIPBOARD_COPY_WARN_TITLE)]);
@@ -338,12 +386,52 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_Bypassed) {
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
   EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardCopyWarn);
-  WarningDialog dialog = GetWarningDialog(handler.dialogType);
+  WarningDialog dialog =
+      GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title
       isEqualToString:l10n_util::GetNSString(
                           IDS_DATA_CONTROLS_CLIPBOARD_COPY_WARN_TITLE)]);
   EXPECT_TRUE([dialog.label
       isEqualToString:l10n_util::GetNSString(IDS_DATA_CONTROLS_WARNED_LABEL)]);
+  EXPECT_TRUE([dialog.ok_button_id
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)]);
+  EXPECT_TRUE([dialog.cancel_button_id
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON)]);
+  std::move(handler->_callback).Run(true);
+  run_loop.Run();
+}
+
+// Tests that copy is allowed when a "WARN" rule matches the page URL, the
+// user bypasses the warning, and the warning dialog is correct when the
+// organization domain is not empty.
+TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_Bypassed_WithDomain) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile_),
+      "user@" + base::UTF16ToUTF8(kOrganizationDomain),
+      signin::ConsentLevel::kSignin);
+  SetCopyWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
+  tab_helper()->SetDataControlsCommandsHandler(handler);
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_TRUE(allowed);
+    run_loop.Quit();
+  }));
+  EXPECT_TRUE(
+      base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
+  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardCopyWarn);
+  WarningDialog dialog =
+      GetWarningDialog(handler.dialogType, handler.organizationDomain);
+  EXPECT_TRUE([dialog.title
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_CLIPBOARD_COPY_WARN_TITLE)]);
+  EXPECT_TRUE([dialog.label
+      isEqualToString:l10n_util::GetNSStringF(
+                          IDS_DATA_CONTROLS_WARNED_LABEL_WITH_DOMAIN,
+                          std::u16string(kOrganizationDomain))]);
   EXPECT_TRUE([dialog.ok_button_id
       isEqualToString:l10n_util::GetNSString(
                           IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)]);
@@ -426,6 +514,33 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Allowed) {
   run_loop.Run();
 }
 
+// Tests that paste is blocked when a "BLOCK" rule matches the page URL and
+// the snackbar message is correct when the organization domain is not empty.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked_WithDomain) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile_),
+      "user@" + base::UTF16ToUTF8(kOrganizationDomain),
+      signin::ConsentLevel::kSignin);
+  SetPasteBlockRule();
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([snackbar_handler
+      showSnackbarWithMessage:l10n_util::GetNSStringF(
+                                  IDS_DATA_CONTROLS_BLOCKED_LABEL_WITH_DOMAIN,
+                                  std::u16string(kOrganizationDomain))
+                   buttonText:nil
+                messageAction:nil
+             completionAction:OCMOCK_ANY]);
+  tab_helper()->SetSnackbarHandler(snackbar_handler);
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_FALSE(allowed);
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+  [(OCMockObject*)snackbar_handler verify];
+}
+
 // Tests that paste is blocked when a "WARN" rule matches the page URL and the
 // user does not bypass the warning.
 TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_NotBypassed) {
@@ -441,7 +556,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_NotBypassed) {
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
   EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardPasteWarn);
-  WarningDialog dialog = GetWarningDialog(handler.dialogType);
+  WarningDialog dialog =
+      GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title
       isEqualToString:l10n_util::GetNSString(
                           IDS_DATA_CONTROLS_CLIPBOARD_PASTE_WARN_TITLE)]);
@@ -472,12 +588,52 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_Bypassed) {
   EXPECT_TRUE(
       base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
   EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardPasteWarn);
-  WarningDialog dialog = GetWarningDialog(handler.dialogType);
+  WarningDialog dialog =
+      GetWarningDialog(handler.dialogType, handler.organizationDomain);
   EXPECT_TRUE([dialog.title
       isEqualToString:l10n_util::GetNSString(
                           IDS_DATA_CONTROLS_CLIPBOARD_PASTE_WARN_TITLE)]);
   EXPECT_TRUE([dialog.label
       isEqualToString:l10n_util::GetNSString(IDS_DATA_CONTROLS_WARNED_LABEL)]);
+  EXPECT_TRUE([dialog.ok_button_id
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON)]);
+  EXPECT_TRUE([dialog.cancel_button_id
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON)]);
+  std::move(handler->_callback).Run(true);
+  run_loop.Run();
+}
+
+// Tests that paste is allowed when a "WARN" rule matches the page URL, the
+// user bypasses the warning, and the warning dialog is correct when the
+// organization domain is not empty.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_Bypassed_WithDomain) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile_),
+      "user@" + base::UTF16ToUTF8(kOrganizationDomain),
+      signin::ConsentLevel::kSignin);
+  SetPasteWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+  auto* handler = [[FakeDataControlsCommandsHandler alloc] init];
+  tab_helper()->SetDataControlsCommandsHandler(handler);
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_TRUE(allowed);
+    run_loop.Quit();
+  }));
+  EXPECT_TRUE(
+      base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
+  EXPECT_EQ(handler.dialogType, DataControlsDialog::Type::kClipboardPasteWarn);
+  WarningDialog dialog =
+      GetWarningDialog(handler.dialogType, handler.organizationDomain);
+  EXPECT_TRUE([dialog.title
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_CLIPBOARD_PASTE_WARN_TITLE)]);
+  EXPECT_TRUE([dialog.label
+      isEqualToString:l10n_util::GetNSStringF(
+                          IDS_DATA_CONTROLS_WARNED_LABEL_WITH_DOMAIN,
+                          std::u16string(kOrganizationDomain))]);
   EXPECT_TRUE([dialog.ok_button_id
       isEqualToString:l10n_util::GetNSString(
                           IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON)]);

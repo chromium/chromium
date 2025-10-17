@@ -22,6 +22,7 @@
                        browser:(Browser*)browser
                     dialogType:
                         (data_controls::DataControlsDialog::Type)dialogType
+            organizationDomain:(std::string_view)organizationDomain
                       callback:(base::OnceCallback<void(bool)>)callback;
 
 @end

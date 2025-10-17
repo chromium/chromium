@@ -74,9 +74,14 @@ class DataControlsTabHelper
   // Displays a warning dialog associated with a user's action (e.g., copy,
   // paste, share).
   void ShowWarningDialog(DataControlsDialog::Type dialog_type,
+                         std::string_view org_domain,
                          base::OnceCallback<void(bool)> on_bypassed_callback);
 
-  void ShowRestrictSnackbar();
+  // Shows a snackbar to inform the user that an action was blocked by policy.
+  void ShowRestrictSnackbar(std::string_view org_domain);
+
+  // Returns the management domain for the given `profile`.
+  std::string GetManagementDomain(ProfileIOS* profile);
 
   // Unowned pointer to the WebState owning `this`. `web_state_` will always
   // outlive `this`.
