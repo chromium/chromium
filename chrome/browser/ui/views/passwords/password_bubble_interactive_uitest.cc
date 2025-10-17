@@ -559,14 +559,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, AutoSignin) {
             PasswordsModelDelegateFromWebContents(web_contents)->GetState());
 }
 
-// TODO(crbug.com/432429605): Failing on Linux. Investigate.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_AutoSigninNoFocus DISABLED_AutoSigninNoFocus
-#else
-#define MAYBE_AutoSigninNoFocus AutoSigninNoFocus
-#endif
-IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
-                       MAYBE_AutoSigninNoFocus) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   test_form()->url = GURL("https://example.com");
   test_form()->display_name = u"Peter";
   test_form()->username_value = u"pet12@gmail.com";
@@ -583,8 +576,8 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
   SetupAutoSignin(std::move(local_credentials));
   EXPECT_TRUE(IsBubbleShowing());
 
-  // Bring the first window back.
-  browser()->window()->Activate();
+  focused_window->window()->Close();
+  ui_test_utils::WaitForBrowserToClose(focused_window);
 
   // Wait until the auto-signin bubble has disappeared, which should happen
   // after its timeout.
