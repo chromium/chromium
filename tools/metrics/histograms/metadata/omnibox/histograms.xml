@@ -393,6 +393,25 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="RequestSource" variants="AimEligibilityRequestSource"/>
 </histogram>
 
+<histogram
+    name="Omnibox.AimEligibility.EligibilityResponseChange.is_deep_search_eligible"
+    units="index" expires_after="2026-08-05">
+  <owner>ananyaseelam@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. The requests are triggered on profile
+    startup and when the primary account changes.
+
+    This metric is logged only when the server response changes compared to the
+    previous value (e.g., the value of the &quot;is_deep_search_eligible&quot;
+    field differs from the last logged response). If the response fails (e.g.
+    server is down or response is poorly formatted), this metric will not be
+    logged.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.AimEligibility.EligibilityResponseChange.is_eligible"
     enum="Boolean" expires_after="2026-08-05">
   <owner>mahmadi@chromium.org</owner>
