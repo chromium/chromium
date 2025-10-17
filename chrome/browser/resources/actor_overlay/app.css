@@ -18,6 +18,48 @@
   cursor: not-allowed;
 }
 
+
+@keyframes pulse-opacity {
+  0% {
+    opacity: 0.6;
+    animation-timing-function: cubic-bezier(0.33, 0.00, 0.67, 1.00);
+  }
+
+  33.33% {
+    opacity: 0;
+    animation-timing-function: linear;
+  }
+
+  66.66% {
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.33, 0.00, 0.67, 1.00);
+  }
+
+  100% {
+    opacity: 0.6;
+  }
+}
+
+#border-stroke {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border: 3px solid #3186FF;
+  z-index: 15;
+  pointer-events: none;
+}
+
+#border-glow {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  box-shadow:
+    inset 0 0 35px 12px #3186FF;
+  animation: pulse-opacity 6000ms infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
 #magicCursor {
   opacity: 0;
   position: fixed;

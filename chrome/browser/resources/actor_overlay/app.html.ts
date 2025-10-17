@@ -9,6 +9,10 @@ import type {ActorOverlayAppElement} from './app.js';
 export function getHtml(this: ActorOverlayAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+<div ?hidden="${!this.borderGlowVisible_}">
+  <div id="border-stroke"></div>
+  <div id="border-glow"></div>
+</div>
 <div id="magicCursor"></div>
 <!--_html_template_end_-->`;
   // clang-format on

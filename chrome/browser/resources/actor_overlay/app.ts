@@ -31,12 +31,22 @@ export class ActorOverlayAppElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      borderGlowVisible_: {type: Boolean},
+    };
+  }
+
+  protected accessor borderGlowVisible_: boolean = false;
+
   private eventTracker_: EventTracker = new EventTracker();
   private setScrimBackgroundListenerId_: number | null = null;
   private setBorderGlowVisibilityListenerId_: number | null = null;
   private shouldShowCursor_: boolean =
       loadTimeData.getBoolean('isMagicCursorEnabled');
   private isCursorInitialized_: boolean = false;
+  private isStandaloneBorderGlowEnabled_: boolean =
+      loadTimeData.getBoolean('isStandaloneBorderGlowEnabled');
 
   override connectedCallback() {
     super.connectedCallback();
@@ -48,12 +58,18 @@ export class ActorOverlayAppElement extends CrLitElement {
       proxy.handler.onHoverStatusChanged(false);
     });
     this.addEventListener('wheel', this.onWheelEvent_);
+
+    // Background scrim
     this.setScrimBackgroundListenerId_ =
       proxy.callbackRouter.setScrimBackground.addListener(
         this.setScrimBackground.bind(this));
+
+    // Border Glow
     this.setBorderGlowVisibilityListenerId_ =
       proxy.callbackRouter.setBorderGlowVisibility.addListener(
         this.setBorderGlowVisibility.bind(this));
+    proxy.handler.getCurrentBorderGlowVisibility().then(
+        ({isVisible}) => this.setBorderGlowVisibility(isVisible));
   }
 
   override disconnectedCallback() {
@@ -80,8 +96,8 @@ export class ActorOverlayAppElement extends CrLitElement {
                 this.classList.remove('background-visible');
   }
 
-  private setBorderGlowVisibility(_: boolean) {
-    // TODO(crbug.com/447114657) show the border glow component.
+  private setBorderGlowVisibility(isVisible: boolean) {
+    this.borderGlowVisible_ = this.isStandaloneBorderGlowEnabled_ && isVisible;
   }
 
   // TODO(crbug.com/422539773): Make function private once it's called via the

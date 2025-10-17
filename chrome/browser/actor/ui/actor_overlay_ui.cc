@@ -32,6 +32,8 @@ ActorOverlayUI::ActorOverlayUI(content::WebUI* web_ui)
                               IDR_ACTOR_OVERLAY_ACTOR_OVERLAY_HTML);
   source->AddBoolean("isMagicCursorEnabled",
                      features::kGlicActorUiOverlayMagicCursor.Get());
+  source->AddBoolean("isStandaloneBorderGlowEnabled",
+                     features::kGlicActorUiStandaloneBorderGlow.Get());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ActorOverlayUI)

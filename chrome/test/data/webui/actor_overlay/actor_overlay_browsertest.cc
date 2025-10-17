@@ -31,4 +31,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayMochaTest, MagicCursor) {
           "runMochaSuite('MagicCursor')");
 }
 
+IN_PROC_BROWSER_TEST_F(ActorOverlayMochaTest, BorderGlow) {
+  RunTest("actor_overlay/actor_overlay_test.js", "runMochaSuite('BorderGlow')");
+}
+
 }  // namespace

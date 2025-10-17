@@ -84,6 +84,86 @@ suite('Scrim', function() {
   });
 });
 
+suite('BorderGlow', function() {
+  let page: ActorOverlayAppElement;
+  let testHandler: TestActorOverlayPageHandler;
+  let testRemote: ActorOverlayPageRemote;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isMagicCursorEnabled: false,
+      isStandaloneBorderGlowEnabled: true,
+    });
+    const testBrowserProxy = new TestActorOverlayBrowserProxy();
+    ActorOverlayBrowserProxy.setInstance(testBrowserProxy);
+    testHandler = testBrowserProxy.handler;
+    testRemote = testBrowserProxy.remote;
+  });
+
+  setup(async function() {
+    testHandler.reset();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('actor-overlay-app');
+    document.body.appendChild(page);
+    await microtasksFinished();
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  test('InitialState', function() {
+    const borderGlow =
+        page.shadowRoot!.querySelector<HTMLElement>('#border-glow');
+    assertTrue(!!borderGlow);
+    assertTrue(borderGlow.parentElement!.hidden);
+  });
+
+  test('SetBorderGlowVisibility', async function() {
+    const borderGlow =
+        page.shadowRoot!.querySelector<HTMLElement>('#border-glow');
+    assertTrue(!!borderGlow);
+
+    testRemote.setBorderGlowVisibility(true);
+    await microtasksFinished();
+    assertFalse(borderGlow.parentElement!.hidden);
+
+    testRemote.setBorderGlowVisibility(false);
+    await microtasksFinished();
+    assertTrue(borderGlow.parentElement!.hidden);
+  });
+
+  test('InitialStateIsTrueWhenHandlerReturnsTrue', async function() {
+    testHandler.setBorderGlowVisibilityForTesting(true);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const pageWithGlow = document.createElement('actor-overlay-app');
+    document.body.appendChild(pageWithGlow);
+    await microtasksFinished();
+
+    const borderGlow =
+        pageWithGlow.shadowRoot!.querySelector<HTMLElement>('#border-glow');
+    assertTrue(!!borderGlow);
+    assertFalse(borderGlow.parentElement!.hidden);
+  });
+
+  test('DoesNotShowBorderGlowWhenFeatureIsDisabled', async function() {
+    loadTimeData.overrideValues({isStandaloneBorderGlowEnabled: false});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const pageWithoutGlow = document.createElement('actor-overlay-app');
+    document.body.appendChild(pageWithoutGlow);
+    await microtasksFinished();
+
+    const borderGlow =
+        pageWithoutGlow.shadowRoot!.querySelector<HTMLElement>('#border-glow');
+    assertTrue(!!borderGlow);
+    assertTrue(borderGlow.parentElement!.hidden);
+
+    testRemote.setBorderGlowVisibility(true);
+    await microtasksFinished();
+    assertTrue(borderGlow.parentElement!.hidden);
+  });
+});
+
 suite('MagicCursor', function() {
   let page: ActorOverlayAppElement;
 
