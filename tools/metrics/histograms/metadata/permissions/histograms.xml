@@ -582,10 +582,16 @@ chromium-metrics-reviews@google.com.
   <owner>ravjit@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    This histogram is logged whenever the Android systen level permission prompt
-    for {SystemPermissionType} is shown. Records whether the system level
-    permission was granted or denied. Permissions.Prompt.Shown is the baseline
-    metric for this histogram. Android only.
+    This histogram is logged whenever the Android system level permission prompt
+    for {SystemPermissionType} is shown after a site requesting Chrome level
+    permissions. Records whether the system level permission was granted or
+    denied. Permissions.Prompt.Shown is the baseline metric for this histogram.
+    Android only.
+
+    Beware that this histogram is only logged if the Android system level
+    permission prompt is shown in the context of a site requesting a permission.
+    In the case e.g. of notifications, Chrome also triggers an Android level
+    permission prompt at startup, and in that case this histogram is not logged.
   </summary>
   <token key="SystemPermissionType">
     <variant name="Camera"/>
