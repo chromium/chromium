@@ -75,6 +75,12 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
     // ERR_SSL_PROTOCOL_ERROR can happen when trying to talk SSL to a non-SSL
     // server (like a captive portal).
     case ERR_SSL_PROTOCOL_ERROR:
+    // ERR_PROXY_DELEGATE_CANCELED_CONNECT_{REQUEST, RESPONSE} are used by
+    // ProxyDelegates that rely on a separate entity to decide whether to cancel
+    // tunnels being established. In these scenarios the expectation is to
+    // always fall onto the next ProxyChain in the list.
+    case ERR_PROXY_DELEGATE_CANCELED_CONNECT_REQUEST:
+    case ERR_PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE:
       return true;
     // A failure while establishing a tunnel through the proxy can fail for
     // reasons related to the request itself (for instance, failing to resolve

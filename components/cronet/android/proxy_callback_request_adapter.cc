@@ -60,17 +60,11 @@ bool ProxyCallbackRequestAdapter::Proceed(
 }
 
 void ProxyCallbackRequestAdapter::Cancel(JNIEnv* env) {
-  // TODO(https://crbug.com/422428959): Decide whether we want to propagate
-  // org.chromium.net.Proxy.Callback canceling a tunnel establishment request as
-  // something else (net::ERR_TUNNEL_CONNECTION_FAILED?
-  // net::ERR_BLOCKED_BY_CLIENT? net::ERR_PROXY_TUNNEL_REQUEST_FAILED?). This is
-  // currently not possible, as net::ProxyFallback::CanFalloverToNextProxy does
-  // not try the next proxy for a lot of these errors, unless the chain is for
-  // IP Protection. For the time being, we return another error for which the
-  // next proxy is in the list is always attempted.
   network_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_),
-                                base::unexpected(net::ERR_CONNECTION_CLOSED)));
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback_),
+          base::unexpected(net::ERR_PROXY_DELEGATE_CANCELED_CONNECT_REQUEST)));
   delete this;
 }
 

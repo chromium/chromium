@@ -464,6 +464,15 @@ NET_ERROR(ECH_FALLBACK_CERTIFICATE_INVALID, -184)
 // proxy to be marked as bad.
 NET_ERROR(PROXY_UNABLE_TO_CONNECT_TO_DESTINATION, -186)
 
+// Some implementations of ProxyDelegate query a separate entity to know whether
+// it should cancel tunnel prior to:
+// - The HTTP CONNECT requests being sent out
+// - The HTTP CONNECT response being parsed by //net
+// An example is CronetProxyDelegate: Cronet allows developers to decide whether
+// the tunnel being established should be canceled.
+NET_ERROR(PROXY_DELEGATE_CANCELED_CONNECT_REQUEST, -187)
+NET_ERROR(PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE, -188)
+
 // Certificate error codes
 //
 // The values of certificate error codes must be consecutive.
@@ -1089,6 +1098,6 @@ NET_ERROR(BLOB_REFERENCED_FILE_UNAVAILABLE, -906)
 // in the top of this file.
 
 // LINT.ThenChange(
-//      //tools/metrics/histogram/enums.xml:HTTPResponseAndNetErrorCodes,
-//      //tools/metrics/histogram/enums.xml:NetErrorCodes,
+//      //tools/metrics/histograms/enums.xml:HTTPResponseAndNetErrorCodes,
+//      //tools/metrics/histograms/enums.xml:NetErrorCodes,
 // )

@@ -710,25 +710,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                                                 statusCode);
                             } finally {
                                 // In case onTunnelHeadersReceived returned false, or threw, report
-                                // it as a failure to //net
-                                // (see Proxy.Callback.onTunnelHeadersReceived documentation).
-                                //
-                                // TODO(https://crbug.com/422428959): Decide whether we want to
-                                // propagate org.chromium.net.Proxy.Callback canceling a tunnel
-                                // establishment request as something else
-                                // (NetError.ERR_TUNNEL_CONNECTION_FAILED?
-                                // NetError.ERR_BLOCKED_BY_CLIENT?
-                                // NetError.ERR_PROXY_TUNNEL_REQUEST_FAILED?). This is currently
-                                // not
-                                // possible, as net::ProxyFallback::CanFalloverToNextProxy does
-                                // not
-                                // try the next proxy for a lot of these errors, unless the
-                                // chain is
-                                // for IP Protection. For the time being, we return another
-                                // error
-                                // for which the next proxy is in the list is always attempted.
+                                // it as a failure to //net (see
+                                // Proxy.Callback.onTunnelHeadersReceived documentation).
                                 callback.run(
-                                        success ? NetError.OK : NetError.ERR_CONNECTION_CLOSED);
+                                        success
+                                                ? NetError.OK
+                                                : NetError
+                                                        .ERR_PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE);
                             }
                         }
                     },

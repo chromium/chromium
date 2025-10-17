@@ -831,8 +831,9 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
             assertThat(callback.mError).isNotNull();
             assertThat(callback.mError).isInstanceOf(NetworkException.class);
             NetworkException networkException = (NetworkException) callback.mError;
-            assertThat(networkException.getErrorCode())
-                    .isEqualTo(NetworkException.ERROR_CONNECTION_CLOSED);
+            assertThat(networkException.getErrorCode()).isEqualTo(NetworkException.ERROR_OTHER);
+            assertThat(networkException.getCronetInternalErrorCode())
+                    .isEqualTo(NetError.ERR_PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE);
         }
     }
 
