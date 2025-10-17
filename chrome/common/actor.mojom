@@ -227,6 +227,9 @@ enum ActionResultCode {
   // testing.
   kTargetNodeInteractionPointObscured = 32,
 
+  // The tool took too long to execute.
+  kToolTimeout = 33,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

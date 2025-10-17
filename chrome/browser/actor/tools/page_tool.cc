@@ -18,6 +18,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
@@ -295,6 +296,10 @@ void PageTool::Invoke(InvokeCallback callback) {
                      base::Unretained(this)),
       base::BindOnce(&PageTool::OnRenderFrameGone, base::Unretained(this)));
 
+  timeout_timer_.Start(
+      FROM_HERE, features::kGlicActorPageToolTimeout.Get(),
+      base::BindOnce(&PageTool::OnTimeout, weak_ptr_factory_.GetWeakPtr()));
+
   chrome_render_frame_->InvokeTool(
       std::move(invocation),
       base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this)));
@@ -363,11 +368,16 @@ void PageTool::OnRenderFrameGone() {
   FinishInvoke(MakeResult(mojom::ActionResultCode::kFrameWentAway));
 }
 
+void PageTool::OnTimeout() {
+  FinishInvoke(MakeResult(mojom::ActionResultCode::kToolTimeout));
+}
+
 void PageTool::FinishInvoke(mojom::ActionResultPtr result) {
   if (!invoke_callback_) {
     return;
   }
 
+  timeout_timer_.Stop();
   frame_change_observer_.reset();
 
   std::move(invoke_callback_).Run(std::move(result));

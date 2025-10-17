@@ -9,6 +9,7 @@
 
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -62,6 +63,8 @@ class PageTool : public Tool {
 
   void FinishInvoke(mojom::ActionResultPtr result);
 
+  void OnTimeout();
+
   content::RenderFrameHost* GetFrame() const;
 
   InvokeCallback invoke_callback_;
@@ -80,6 +83,8 @@ class PageTool : public Tool {
   // Set during TimeOfUseValidation. Contains the hit test result against
   // observed page content.
   mojom::ObservedToolTargetPtr observed_target_;
+
+  base::OneShotTimer timeout_timer_;
 
   base::WeakPtrFactory<PageTool> weak_ptr_factory_{this};
 };
