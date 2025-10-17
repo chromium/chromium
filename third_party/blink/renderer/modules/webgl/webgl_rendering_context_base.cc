@@ -1982,51 +1982,61 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
     return nullptr;
   }
 
-  auto* provider = resource_provider_.get();
-  if (!provider && !did_fail_to_create_resource_provider_) {
-    if (Host()->IsValidImageSize()) {
-      const SkAlphaType alpha_type = GetAlphaType();
-      const viz::SharedImageFormat format = GetSharedImageFormat();
-      const gfx::ColorSpace color_space = GetColorSpace();
-      // Do not initialize the CRP using Skia. The CRP can have bottom left
-      // origin in which case Skia Graphite won't be able to render into it, and
-      // WebGL is responsible for clearing the CRP when it renders anyway and we
-      // have clear rect tracking in the shared image system to enforce this.
-      constexpr auto kShouldInitialize =
-          CanvasResourceProvider::ShouldInitialize::kNo;
-      if (SharedGpuContext::IsGpuCompositingEnabled()) {
-        gpu::SharedImageUsageSet shared_image_usage_flags =
-            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-
-        if (SharedGpuContext::MaySupportImageChromium() &&
-            RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
-          shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-        }
-        resource_provider_ = CanvasResourceProvider::CreateSharedImageProvider(
-            Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
-            SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-            shared_image_usage_flags, Host());
-      } else {
-        resource_provider_ = CanvasResourceProvider::
-            CreateSharedImageProviderForSoftwareCompositor(
-                Host()->Size(), format, alpha_type, color_space,
-                kShouldInitialize,
-                SharedGpuContext::SharedImageInterfaceProvider(), Host());
-      }
-      Host()->UpdateMemoryUsage();
-      provider = resource_provider_.get();
-    }
-    if (!provider) {
-      did_fail_to_create_resource_provider_ = true;
-    } else if (provider->IsValid()) {
-      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                                provider->IsAccelerated());
-      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                    provider->GetType());
-    }
+  if (resource_provider_) {
+    return resource_provider_.get();
   }
 
-  return provider;
+  if (did_fail_to_create_resource_provider_) {
+    return nullptr;
+  }
+
+  if (!Host()->IsValidImageSize()) {
+    did_fail_to_create_resource_provider_ = true;
+    return nullptr;
+  }
+
+  const SkAlphaType alpha_type = GetAlphaType();
+  const viz::SharedImageFormat format = GetSharedImageFormat();
+  const gfx::ColorSpace color_space = GetColorSpace();
+  // Do not initialize the CRP using Skia. The CRP can have bottom left
+  // origin in which case Skia Graphite won't be able to render into it, and
+  // WebGL is responsible for clearing the CRP when it renders anyway and we
+  // have clear rect tracking in the shared image system to enforce this.
+  constexpr auto kShouldInitialize =
+      CanvasResourceProvider::ShouldInitialize::kNo;
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+    if (SharedGpuContext::MaySupportImageChromium() &&
+        RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
+      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
+    resource_provider_ = CanvasResourceProvider::CreateSharedImageProvider(
+        Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+        shared_image_usage_flags, Host());
+  } else {
+    resource_provider_ =
+        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+            Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+            SharedGpuContext::SharedImageInterfaceProvider(), Host());
+  }
+  Host()->UpdateMemoryUsage();
+
+  if (!resource_provider_) {
+    did_fail_to_create_resource_provider_ = true;
+    return nullptr;
+  }
+
+  if (resource_provider_->IsValid()) {
+    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                              resource_provider_->IsAccelerated());
+    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                  resource_provider_->GetType());
+  }
+
+  return resource_provider_.get();
 }
 
 CanvasResourceProvider*
