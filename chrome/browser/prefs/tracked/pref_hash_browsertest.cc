@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
@@ -45,6 +46,7 @@
 #include "components/prefs/segregated_pref_store.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
@@ -1252,18 +1254,13 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
   }
 
   void VerifyReactionToPrefAttack() override {
-    DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(),
-        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-            profile()),
-        CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
-            profile())),
-        DefaultSearchManager::ObserverCallback());
-    DefaultSearchManager::Source dse_source =
-        static_cast<DefaultSearchManager::Source>(-1);
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile());
 
-    const TemplateURLData* current_dse =
-        default_search_manager.GetDefaultSearchEngine(&dse_source);
+    DefaultSearchManager::Source dse_source =
+        template_url_service->default_search_provider_source();
+    const TemplateURL* current_dse =
+        template_url_service->GetDefaultSearchProvider();
 
     if (protection_level_ < PROTECTION_ENABLED_DSE) {
 // This doesn't work on OS_CHROMEOS because we fail to attack Preferences.
@@ -1274,6 +1271,8 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
       EXPECT_EQ(current_dse->short_name(), u"badname");
       EXPECT_EQ(current_dse->url(),
                 "http://bad_default_engine/search?q=dirty_user_query");
+      histograms_.ExpectUniqueSample(
+          DefaultSearchManager::kDefaultSearchEngineMirroredMetric, false, 1);
 #endif
     } else {
       // Attack fails.
@@ -1283,14 +1282,6 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
       EXPECT_NE(current_dse->url(),
                 "http://bad_default_engine/search?q=dirty_user_query");
     }
-// This doesn't work on OS_CHROMEOS because we fail to attack Preferences.
-#if !BUILDFLAG(IS_CHROMEOS)
-    // This test creates 2 DefaultSearchManagers, because the browser creates
-    // one, and this function creates a second one, so 2 samples are emitted,
-    // both attacked by the PRE_ test.
-    histograms_.ExpectUniqueSample(
-        DefaultSearchManager::kDefaultSearchEngineMirroredMetric, false, 2);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 };
 
