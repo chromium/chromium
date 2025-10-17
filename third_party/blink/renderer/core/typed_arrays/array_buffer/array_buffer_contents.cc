@@ -111,24 +111,17 @@ ArrayBufferContents::ArrayBufferContents(
     void* data = nullptr;
 
     if (base::FeatureList::IsEnabled(kGCOnArrayBufferAllocationFailure)) {
-      data = [&]() {
-        for (int i = 0; i < 2; ++i) {
-          void* data = AllocateMemoryOrNull(length, policy);
-          if (data != nullptr) {
-            return data;
-          }
-          if (v8::Isolate::TryGetCurrent() != nullptr) {
-            v8::Isolate::GetCurrent()->MemoryPressureNotification(
-                v8::MemoryPressureLevel::kCritical);
-          }
-        }
-        if (allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
-          return AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
-                                                                    policy);
-        } else {
-          return AllocateMemoryOrNull(length, policy);
-        }
-      }();
+      data = AllocateMemoryOrNull(length, policy);
+      if (!data && v8::Isolate::TryGetCurrent() != nullptr) {
+        v8::Isolate::GetCurrent()->RetryCustomAllocate([&]() {
+          return (data = AllocateMemoryOrNull(length, policy)) != nullptr;
+        });
+      }
+      if (!data &&
+          allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
+        data =
+            AllocateMemory<partition_alloc::AllocFlags::kNone>(length, policy);
+      }
     } else {
       data = (allocation_failure_behavior == AllocationFailureBehavior::kCrash)
                  ? AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
