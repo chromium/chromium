@@ -5365,8 +5365,8 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4724450788351008910">Ha canviat l'afiliació</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4725762702191453794">La funció Cerca de pestanyes s'ha fixat a la barra d'eines</translation>
-<translation id="4726710355753484204">Fes servir Ctrl+Alt+augmenta la brillantor per ampliar.
-Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
+<translation id="4726710355753484204">Fes servir Ctrl+Alt+augmenta la brillantor per ampliar el zoom.
+Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4726710629007580002">S'han produït advertiments en provar d'instal·lar aquesta extensió:</translation>
 <translation id="4727847987444062305">Sessió de convidat gestionada</translation>
 <translation id="4728558894243024398">Plataforma</translation>
@@ -10808,7 +10808,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8569673829373920831">Més informació sobre <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">No s'ha trobat cap destinació</translation>
 <translation id="8571213806525832805">4 darreres setmanes</translation>
-<translation id="8571323456914890254">Obre amb la visualització dividida</translation>
+<translation id="8571323456914890254">Obre en vista dividida</translation>
 <translation id="8571687764447439720">Afegeix un tiquet de Kerberos</translation>
 <translation id="8572052284359771939">Envia a Navegació segura de Google els URL dels llocs web que visites i una petita mostra del contingut de les pàgines, les baixades, l'activitat de les extensions i informació del sistema per comprovar si són perjudicials.</translation>
 <translation id="8573111744706778015">Escriu "uo7" per obtenir "ươ"</translation>

@@ -813,7 +813,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2321291402658100099">Gestisci le informazioni</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 finestra}other{# finestre}}</translation>
 <translation id="232390861414237658">Compila automaticamente i dati di questa carta per gli acquisti effettuati in Chrome quando la salvi per l'uso con Google Pay</translation>
-<translation id="2328651992442742497">Consentita (opzione predefinita)</translation>
+<translation id="2328651992442742497">Autorizzazione concessa (predefinito)</translation>
 <translation id="2328955282645810595">Edilizia e utensili elettrici</translation>
 <translation id="2330137317877982892">Scadenza della carta <ph name="CREDIT_CARD" />: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2334327033751265975">I gruppi di schede condivisi sono di nuovo disponibili</translation>
@@ -927,7 +927,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2505063700931618106">Dati della carta salvati</translation>
 <translation id="2505268675989099013">Proteggi account</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (si applicano termini)</translation>
-<translation id="2512101340618156538">Non consentiti (predefinito)</translation>
+<translation id="2512101340618156538">Autorizzazione negata (predefinito)</translation>
 <translation id="2512413427717747692">Imposta Chrome come pulsante del browser predefinito, premi Invio per impostare Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="2514548229949738417">Casa e giardino</translation>
 <translation id="2515629240566999685">Controllare il segnale nella tua area</translation>

@@ -275,7 +275,7 @@
 <translation id="2341410551640223969">Не можеше да се инсталира <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Вкупен сообраќај искористен од Chrome, вклучувајќи сметки, обележувачи и зачувани поставки</translation>
 <translation id="2349954856814571872">Икона за копче за лента со обележувачи</translation>
-<translation id="235789365079050412">Политика за приватност на Google</translation>
+<translation id="235789365079050412">„Политика за приватност“ на Google</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2362083820973145409">Најавени сте како: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ги отвора поставките.</translation>
 <translation id="2363734411417672757">Вчитани се повеќе страници однапред. Страниците може да се вчитуваат однапред преку серверите на Google кога тоа го бараат други сајтови или апликации.</translation>
@@ -580,7 +580,7 @@
 <translation id="376561056759077985">Некои податоци сѐ уште не се зачувани</translation>
 <translation id="3771033907050503522">Инкогнито картички</translation>
 <translation id="3771290962915251154">Поставкава е оневозможена бидејќи се вклучени родителските контроли</translation>
-<translation id="3771694256347217732">Услови за користење на Google</translation>
+<translation id="3771694256347217732">„Услови за користење“ на Google</translation>
 <translation id="3775705724665058594">Испратете до вашите уреди</translation>
 <translation id="3777796259512476958">Ќе ве одјави од повеќето сајтови</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 картичка}one{# картичка}other{# картички}}</translation>

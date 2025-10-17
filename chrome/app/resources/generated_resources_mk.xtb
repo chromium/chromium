@@ -2486,7 +2486,7 @@
 <translation id="2683638487103917598">Папката е подредена</translation>
 <translation id="2684004000387153598">За да продолжите, кликнете „Во ред“, а потоа кликнете „Додај лице“ за да создадете нов профил за адресата на е-пошта.</translation>
 <translation id="2685193395980129388">Дозволено: <ph name="PERMISSION_DETAILS" /></translation>
-<translation id="2687407218262674387">Услови за користење на Google</translation>
+<translation id="2687407218262674387">„Услови за користење“ на Google</translation>
 <translation id="2688196195245426394">Грешка при регистрирање на уредот на серверот: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">Не треба да ја помните лозинкава. Ќе се зачува во Google Password Manager за <ph name="ACCOUNT" /></translation>
 <translation id="2690024944919328218">Покажи ги опциите за јазик</translation>
@@ -8326,7 +8326,7 @@
 <translation id="6828182567531805778">Внесете ја лозинката за да ги синхронизирате податоците</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Не успеа поставувањето автоматски ажурирања за сите корисници (грешка при извршување preflight: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="682971198310367122">Политика за приватност на Google</translation>
+<translation id="682971198310367122">„Политика за приватност“ на Google</translation>
 <translation id="6830787477693252535">Го гледате вашиот календар за да ви помогне полесно да стигнете до вашиот следен настан во „Календар на Google“.
         <ph name="BREAK" />
         <ph name="BREAK" />
