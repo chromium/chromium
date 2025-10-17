@@ -137,6 +137,7 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   // transferred to VizCompositor. See
   // (https://developer.android.com/reference/android/view/MotionEvent#getDownTime())
   base::TimeTicks cached_transferred_sequence_down_time_ms_;
+  base::TimeTicks cached_transferred_sequence_event_time_us_;
 
   int num_events_in_dropped_sequence_ = 0;
 

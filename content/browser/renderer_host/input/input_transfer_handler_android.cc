@@ -113,9 +113,6 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     return false;
   }
 
-  const bool active_touch_sequence_on_viz =
-      cached_transferred_sequence_down_time_ms_ > last_seen_touch_end_ts_;
-
   // GetRawDownTime is in milliseconds precision, convert delta to milliseconds
   // precision as well for accurate comparison.
   const int64_t delta =
@@ -127,7 +124,7 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     if (!input::features::kTransferSequencesWithAbnormalDownTime.Get()) {
       EmitTransferResultHistogramAndTraceEvent(
           TransferInputToVizResult::kDownTimeAfterEventTime);
-      if (active_touch_sequence_on_viz) {
+      if (IsTouchSequencePotentiallyActiveOnViz()) {
         OnStartDroppingSequence(
             event,
             InputOnVizSequenceDroppedReason::kActiveSeqOnVizAbnormalDownTime);
@@ -174,7 +171,7 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     return true;
   }
 
-  if (!active_touch_sequence_on_viz) {
+  if (!IsTouchSequencePotentiallyActiveOnViz()) {
     return false;
   }
 
@@ -230,7 +227,7 @@ void InputTransferHandlerAndroid::RequestInputBack(
 
 bool InputTransferHandlerAndroid::IsTouchSequencePotentiallyActiveOnViz()
     const {
-  return cached_transferred_sequence_down_time_ms_ > last_seen_touch_end_ts_;
+  return cached_transferred_sequence_event_time_us_ > last_seen_touch_end_ts_;
 }
 
 void InputTransferHandlerAndroid::OnTouchEnd(base::TimeTicks event_time) {
@@ -307,6 +304,10 @@ void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
     num_events_in_dropped_sequence_ = 0;
   }
   if (event.GetAction() == ui::MotionEvent::Action::DOWN) {
+    // The touch sequence transferred by system probably corresponds to this
+    // down. Resend state and updated transferred sequence timestamps.
+    cached_transferred_sequence_down_time_ms_ = event.GetRawDownTime();
+    cached_transferred_sequence_event_time_us_ = event.GetEventTime();
     client_->SendStateOnTouchTransfer(event,
                                       last_sent_browser_would_have_handled_);
   }
@@ -332,6 +333,7 @@ void InputTransferHandlerAndroid::OnTouchTransferredSuccessfully(
   CHECK_EQ(handler_state_, HandlerState::kIdle);
   handler_state_ = HandlerState::kConsumeEventsUntilCancel;
   cached_transferred_sequence_down_time_ms_ = event.GetRawDownTime();
+  cached_transferred_sequence_event_time_us_ = event.GetEventTime();
   last_sent_browser_would_have_handled_ = browser_would_have_handled;
   client_->SendStateOnTouchTransfer(event, browser_would_have_handled);
   // Corresponding to the `ACTION_DOWN` event which initiated the touch

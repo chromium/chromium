@@ -604,6 +604,39 @@ TEST_P(DownTimeAfterEventTimeTest, TransferWhileActiveTouchSequenceOnViz) {
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
 }
 
+TEST_P(DownTimeAfterEventTimeTest, TouchEndEventTimeIsLessThanDownTime) {
+  base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(60);
+  // Down time is later than the event time of input event.
+  base::TimeTicks down_time = event_time + base::Milliseconds(8);
+
+  auto down_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
+
+  const bool expected_transfer = GetParam() == "true";
+  if (expected_transfer) {
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
+        .WillOnce(Return(kSuccessfullyTransferred));
+  } else {
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).Times(0);
+  }
+
+  EXPECT_EQ(transfer_handler_->OnTouchEvent(*down_event), expected_transfer);
+
+  if (!expected_transfer) {
+    return;
+  }
+
+  auto cancel_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::CANCEL, event_time, down_time, finger_pointer_);
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event));
+
+  EXPECT_TRUE(transfer_handler_->IsTouchSequencePotentiallyActiveOnViz());
+
+  // Touch end received with event time less than the down time of sequence.
+  transfer_handler_->OnTouchEnd(down_time - base::Milliseconds(4));
+  EXPECT_FALSE(transfer_handler_->IsTouchSequencePotentiallyActiveOnViz());
+}
+
 INSTANTIATE_TEST_SUITE_P(DownTimeAfterEventTimeTest,
                          DownTimeAfterEventTimeTest,
                          ::testing::Values("false", "true"));
