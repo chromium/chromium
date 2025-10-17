@@ -4446,6 +4446,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/new_tab_footer:impl",
       "//chrome/browser/ui/webui/privacy_sandbox",
       "//chrome/browser/ui/webui/privacy_sandbox/related_website_sets:mojo_bindings",
+      "//chrome/browser/ui/webui/reload_button",
+      "//chrome/browser/ui/webui/reload_button:mojo_bindings",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/settings:impl",

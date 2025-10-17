@@ -54,6 +54,8 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets.mojom.h"
+#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
+#include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
@@ -603,6 +605,11 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
         .Add<metrics_reporter::mojom::PageMetricsHost>()
         .Add<tabs_api::mojom::TabStripService>()
         .Add<tracked_element::mojom::TrackedElementHandler>();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWebUIReloadButton)) {
+    registry.ForWebUI<ReloadButtonUI>()
+        .Add<reload_button::mojom::PageHandlerFactory>();
   }
 }
 

@@ -4,23 +4,41 @@
 
 assert(!is_android)
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "reload_button.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
 source_set("reload_button") {
-  sources = [ "reload_button_ui.h" ]
+  sources = [
+    "reload_button_page_handler.h",
+    "reload_button_ui.h",
+  ]
   public_deps = [
     "//chrome/browser/ui/webui/top_chrome",
-    "//chrome/common",
+    "//chrome/common:constants",
     "//content/public/browser",
   ]
+  deps = [ ":mojo_bindings" ]
 }
 
 source_set("impl") {
-  sources = [ "reload_button_ui.cc" ]
+  sources = [
+    "reload_button_page_handler.cc",
+    "reload_button_ui.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":reload_button",
     "//chrome/browser/resources/reload_button:resources_grit",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
+    "//content/public/browser",
     "//ui/webui",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

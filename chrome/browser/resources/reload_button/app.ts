@@ -10,6 +10,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 
 export class ReloadButtonAppElement extends CrLitElement {
   static get is() {
@@ -38,9 +39,13 @@ export class ReloadButtonAppElement extends CrLitElement {
 
   // TODO(crbug.com/444358999): implement the reload logic
   protected onReloadOrStopClick_(_: Event) {
-    this.reloadOrStopIcon_ = this.reloadOrStopIcon_ === 'icon-refresh' ?
-        'icon-clear' :
-        'icon-refresh';
+    if (this.reloadOrStopIcon_ === 'icon-refresh') {
+      this.reloadOrStopIcon_ = 'icon-clear';
+      BrowserProxyImpl.getInstance().handler.reload();
+    } else {
+      this.reloadOrStopIcon_ = 'icon-refresh';
+      BrowserProxyImpl.getInstance().handler.stopReload();
+    }
   }
 }
 

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,9 +27,29 @@ ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
                               IDR_RELOAD_BUTTON_RELOAD_BUTTON_HTML);
 }
 
+WEB_UI_CONTROLLER_TYPE_IMPL(ReloadButtonUI)
+
 ReloadButtonUI::~ReloadButtonUI() = default;
+
+ReloadButtonUIConfig::ReloadButtonUIConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUIReloadButtonHost) {}
 
 bool ReloadButtonUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return features::IsWebUIReloadButtonEnabled();
+}
+
+void ReloadButtonUI::BindInterface(
+    mojo::PendingReceiver<reload_button::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ReloadButtonUI::CreatePageHandler(
+    mojo::PendingRemote<reload_button::mojom::Page> page,
+    mojo::PendingReceiver<reload_button::mojom::PageHandler> receiver) {
+  CHECK(page);
+  page_handler_ = std::make_unique<ReloadButtonPageHandler>(std::move(receiver),
+                                                            std::move(page));
 }

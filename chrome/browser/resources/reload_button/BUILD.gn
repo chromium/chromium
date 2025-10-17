@@ -17,6 +17,7 @@ build_webui("build") {
   ts_files = [
     "app.ts",
     "app.html.ts",
+    "browser_proxy.ts",
   ]
   css_files = [ "app.css" ]
 
@@ -26,5 +27,11 @@ build_webui("build") {
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
+
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/reload_button:mojo_bindings_ts__generator" ]
+
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/reload_button/reload_button.mojom-webui.ts" ]
 }
