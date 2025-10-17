@@ -435,6 +435,8 @@ bool HasTabSearchToolbarButton();
 BASE_DECLARE_FEATURE(kNewTabAddsToActiveGroup);
 
 bool IsNewTabAddsToActiveGroupEnabled();
+
+bool IsWebUIReloadButtonEnabled();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Controls whether to show a toast for Chrome non milestone update.

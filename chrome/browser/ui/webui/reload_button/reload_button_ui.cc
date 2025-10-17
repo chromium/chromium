@@ -5,21 +5,28 @@
 #include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
 
 #include "base/feature_list.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/reload_button_resources.h"
+#include "chrome/grit/reload_button_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
-// TODO(crbug.com/444358999): implement the reload button
 ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui) {}
+    : TopChromeWebUIController(web_ui) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUIReloadButtonHost);
+
+  webui::SetupWebUIDataSource(source, kReloadButtonResources,
+                              IDR_RELOAD_BUTTON_RELOAD_BUTTON_HTML);
+}
 
 ReloadButtonUI::~ReloadButtonUI() = default;
 
 bool ReloadButtonUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUIReloadButton);
+  return features::IsWebUIReloadButtonEnabled();
 }

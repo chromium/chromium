@@ -17,6 +17,8 @@ source_set("impl") {
   sources = [ "reload_button_ui.cc" ]
   deps = [
     ":reload_button",
+    "//chrome/browser/resources/reload_button:resources_grit",
+    "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//ui/webui",
   ]

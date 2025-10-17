@@ -5502,6 +5502,7 @@ source_set("ui_features") {
     "//extensions/buildflags",
   ]
   deps = [
+    "//chrome/common:chrome_features",
     "//components/search",
     "//components/webui/flags",
     "//ui/base:features",

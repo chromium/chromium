@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
 #include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
@@ -86,6 +87,7 @@
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -347,9 +349,6 @@ void ToolbarView::Init() {
       BackForwardButton::Direction::kForward,
       base::BindRepeating(callback, browser_, IDC_FORWARD), browser_);
 
-  std::unique_ptr<ReloadButton> reload = std::make_unique<ReloadButton>(
-      browser_->GetProfile(), browser_->command_controller());
-
   PrefService* const prefs = browser_->profile()->GetPrefs();
   std::unique_ptr<HomeButton> home = std::make_unique<HomeButton>(
       browser_, base::BindRepeating(callback, browser_, IDC_HOME));
@@ -376,7 +375,15 @@ void ToolbarView::Init() {
   // Always add children in order from left to right, for accessibility.
   back_ = container_view_->AddChildView(std::move(back));
   forward_ = container_view_->AddChildView(std::move(forward));
-  reload_ = container_view_->AddChildView(std::move(reload));
+  if (features::IsWebUIReloadButtonEnabled()) {
+    auto reload_webview =
+        std::make_unique<ReloadButtonWebView>(browser_->profile());
+    reload_webview_ = container_view_->AddChildView(std::move(reload_webview));
+  } else {
+    std::unique_ptr<ReloadButton> reload = std::make_unique<ReloadButton>(
+        browser_->GetProfile(), browser_->command_controller());
+    reload_ = container_view_->AddChildView(std::move(reload));
+  }
   home_ = container_view_->AddChildView(std::move(home));
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     std::unique_ptr<SplitTabsToolbarButton> split =
