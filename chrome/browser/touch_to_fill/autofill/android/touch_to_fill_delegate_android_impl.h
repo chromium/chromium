@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 
+#include <optional>
 #include <variant>
 #include <vector>
 
@@ -133,6 +134,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   void ShowPaymentMethodSettings() override;
   void CreditCardSuggestionSelected(std::string unique_id,
                                     bool is_virtual) override;
+  void BnplSuggestionSelected(std::optional<int64_t> extracted_amount) override;
   void IbanSuggestionSelected(
       std::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
   void LoyaltyCardSuggestionSelected(const LoyaltyCard& loyalty_card) override;

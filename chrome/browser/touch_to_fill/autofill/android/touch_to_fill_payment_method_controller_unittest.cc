@@ -134,6 +134,10 @@ class MockTouchToFillDelegateAndroidImpl
               CreditCardSuggestionSelected,
               (std::string unique_id, bool is_virtual),
               (override));
+  MOCK_METHOD(void,
+              BnplSuggestionSelected,
+              (std::optional<int64_t> extracted_amount),
+              (override));
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
   MOCK_METHOD(void,
               SetCancelCallback,
@@ -507,6 +511,18 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   OnAfterAskForValuesToFill();
   payment_method_controller().ShowBnplIssuerTos(bnpl_issuer_tos_detail);
   OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest, BnplSuggestionSelected) {
+  std::optional<int64_t> extracted_amount = 12345;
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  OnAfterAskForValuesToFill();
+
+  EXPECT_CALL(ttf_delegate(), BnplSuggestionSelected(extracted_amount));
+  payment_method_controller().BnplSuggestionSelected(/*JNIEnv*=*/nullptr,
+                                                     extracted_amount);
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest, ShowErrorScreenOnNewView) {

@@ -498,26 +498,38 @@ class TouchToFillPaymentMethodMediator {
     void updateBnplPaymentMethod(
             @Nullable Long extractedAmount, boolean isAmountSupportedByAnyIssuer) {
         assert mSuggestions != null;
+        // `bnplSuggestion` contains the raw data for the BNPL suggestion.
+        // It is decoupled from its presentation in the UI.
+        AutofillSuggestion bnplSuggestion = null;
+        for (int i = 0; i < mSuggestions.size(); ++i) {
+            if (mSuggestions.get(i).getSuggestionType() == SuggestionType.BNPL_ENTRY) {
+                bnplSuggestion = mSuggestions.get(i);
+                break;
+            }
+        }
+        // `bnplModel` holds the properties needed to render the BNPL chip on the bottom sheet.
+        // It acts as a bridge between the data and the view.
+        PropertyModel bnplModel = null;
+        ModelList sheetItems = mModel.get(SHEET_ITEMS);
+        for (int i = 0; i < sheetItems.size(); ++i) {
+            if (sheetItems.get(i).type == ItemType.BNPL) {
+                bnplModel = sheetItems.get(i).model;
+                break;
+            }
+        }
+
+        if (bnplSuggestion == null || bnplModel == null) return;
+
         if (isAmountSupportedByAnyIssuer) {
-            for (int i = 0; i < mSuggestions.size(); ++i) {
-                AutofillSuggestion suggestion = mSuggestions.get(i);
-                if (suggestion.getSuggestionType() == SuggestionType.BNPL_ENTRY) {
-                    suggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
-                }
-            }
+            bnplSuggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
+            bnplModel.set(IS_ENABLED, true);
+            bnplModel.set(SECONDARY_TEXT, bnplSuggestion.getSublabel());
         } else {
-            ModelList sheetItems = mModel.get(SHEET_ITEMS);
-            for (int i = 0; i < sheetItems.size(); ++i) {
-                if (sheetItems.get(i).type == ItemType.BNPL) {
-                    PropertyModel bnplModel = sheetItems.get(i).model;
-                    bnplModel.set(IS_ENABLED, false);
-                    bnplModel.set(
-                            SECONDARY_TEXT,
-                            getString(
-                                    R.string
-                                            .autofill_bnpl_suggestion_label_for_unavailable_purchase));
-                }
-            }
+            bnplSuggestion.getPaymentsPayload().setExtractedAmount(null);
+            bnplModel.set(IS_ENABLED, false);
+            bnplModel.set(
+                    SECONDARY_TEXT,
+                    getString(R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase));
         }
     }
 
@@ -799,8 +811,9 @@ class TouchToFillPaymentMethodMediator {
         }
     }
 
-    private void onAcceptedBnplSuggestion() {
-        // TODO(crbug.com/430575808): Handle user clicking the BNPL chip.
+    private void onAcceptedBnplSuggestion(AutofillSuggestion suggestion) {
+        if (!mInputProtector.shouldInputBeProcessed()) return;
+        mDelegate.bnplSuggestionSelected(suggestion.getPaymentsPayload().getExtractedAmount());
     }
 
     private void onAcceptedBnplIssuer() {
@@ -887,7 +900,7 @@ class TouchToFillPaymentMethodMediator {
                         .with(BNPL_ICON_ID, suggestion.getIconId())
                         .with(PRIMARY_TEXT, suggestion.getLabel())
                         .with(SECONDARY_TEXT, suggestion.getSublabel())
-                        .with(ON_BNPL_CLICK_ACTION, () -> this.onAcceptedBnplSuggestion())
+                        .with(ON_BNPL_CLICK_ACTION, () -> this.onAcceptedBnplSuggestion(suggestion))
                         .with(BNPL_ITEM_COLLECTION_INFO, itemCollectionInfo)
                         .with(IS_ENABLED, !suggestion.applyDeactivatedStyle());
         return bnplSuggestionModelBuilder.build();

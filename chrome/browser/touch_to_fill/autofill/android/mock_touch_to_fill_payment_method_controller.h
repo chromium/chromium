@@ -95,6 +95,10 @@ class MockTouchToFillPaymentMethodController
               (JNIEnv*, const std::string&, bool),
               (override));
   MOCK_METHOD(void,
+              BnplSuggestionSelected,
+              (JNIEnv*, std::optional<int64_t>),
+              (override));
+  MOCK_METHOD(void,
               LocalIbanSuggestionSelected,
               (JNIEnv*, const std::string&),
               (override));

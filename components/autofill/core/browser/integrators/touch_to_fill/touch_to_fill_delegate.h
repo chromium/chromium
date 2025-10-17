@@ -51,6 +51,9 @@ class TouchToFillDelegate {
   virtual void ShowPaymentMethodSettings() = 0;
   virtual void CreditCardSuggestionSelected(std::string unique_id,
                                             bool is_virtual) = 0;
+  // Called when a BNPL suggestion was selected.
+  virtual void BnplSuggestionSelected(
+      std::optional<int64_t> extracted_amount) = 0;
   // Called when an IBAN suggestion was selected.
   // An Iban::Guid is passed in case of a locally stored IBAN and an
   // Iban::InstrumentId for server IBANs.

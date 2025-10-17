@@ -97,6 +97,8 @@ class TouchToFillPaymentMethodControllerImpl
   void CreditCardSuggestionSelected(JNIEnv* env,
                                     const std::string& unique_id,
                                     bool is_virtual) override;
+  void BnplSuggestionSelected(JNIEnv* env,
+                              std::optional<int64_t> extracted_amount) override;
   void LocalIbanSuggestionSelected(JNIEnv* env,
                                    const std::string& guid) override;
   void ServerIbanSuggestionSelected(JNIEnv* env, long instrument_id) override;

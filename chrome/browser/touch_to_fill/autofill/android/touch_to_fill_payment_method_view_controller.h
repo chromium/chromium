@@ -29,6 +29,9 @@ class TouchToFillPaymentMethodViewController {
   virtual void CreditCardSuggestionSelected(JNIEnv* env,
                                             const std::string& unique_id,
                                             bool is_virtual) = 0;
+  virtual void BnplSuggestionSelected(
+      JNIEnv* env,
+      std::optional<int64_t> extracted_amount) = 0;
   virtual void LocalIbanSuggestionSelected(JNIEnv* env,
                                            const std::string& guid) = 0;
   virtual void ServerIbanSuggestionSelected(JNIEnv* env,

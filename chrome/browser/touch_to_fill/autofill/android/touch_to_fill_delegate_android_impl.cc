@@ -4,6 +4,7 @@
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 
+#include <optional>
 #include <variant>
 
 #include "base/check_deref.h"
@@ -370,6 +371,19 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
   manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill, query_form_,
                               query_field_.global_id(), &card_to_fill,
                               AutofillTriggerSource::kTouchToFillCreditCard);
+}
+
+void TouchToFillDelegateAndroidImpl::BnplSuggestionSelected(
+    std::optional<int64_t> extracted_amount) {
+  payments::BnplManager* bnpl_manager = manager_->GetPaymentsBnplManager();
+  CHECK(bnpl_manager);
+  std::optional<uint64_t> final_extracted_amount;
+  if (extracted_amount.has_value()) {
+    final_extracted_amount = static_cast<uint64_t>(extracted_amount.value());
+  }
+  // TODO(crbug.com/430575808): Add callback when VCN fetching flow is ready.
+  bnpl_manager->OnDidAcceptBnplSuggestion(final_extracted_amount,
+                                          /*on_bnpl_vcn_fetched_callback=*/{});
 }
 
 void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(

@@ -296,6 +296,14 @@ void TouchToFillPaymentMethodControllerImpl::CreditCardSuggestionSelected(
   }
 }
 
+void TouchToFillPaymentMethodControllerImpl::BnplSuggestionSelected(
+    JNIEnv* env,
+    std::optional<int64_t> extracted_amount) {
+  if (delegate_) {
+    delegate_->BnplSuggestionSelected(extracted_amount);
+  }
+}
+
 void TouchToFillPaymentMethodControllerImpl::LocalIbanSuggestionSelected(
     JNIEnv* env,
     const std::string& guid) {

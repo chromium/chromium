@@ -114,6 +114,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.StringRes;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -495,6 +496,11 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .setInputProtectorForTesting(new InputProtector(mClock));
     }
 
+    @After
+    public void tearDown() {
+        BNPL_SUGGESTION.getPaymentsPayload().setExtractedAmount(null);
+    }
+
     @Test
     public void testAddsTheBottomSheetHelperToObserveTheSheetForCreditCard() {
         mCoordinator.showPaymentMethods(
@@ -763,6 +769,26 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(DEACTIVATED_BNPL_SUGGESTION.getIconId()));
         assertNotNull(bnplSuggestionModel.get().get(ON_BNPL_CLICK_ACTION));
         assertFalse(bnplSuggestionModel.get().get(IS_ENABLED));
+    }
+
+    @Test
+    public void testCallsDelegateWhenBnplSuggestionIsSelected() throws TimeoutException {
+        Long extractedAmount = 100L;
+        BNPL_SUGGESTION.getPaymentsPayload().setExtractedAmount(extractedAmount);
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, BNPL).size(), is(1));
+        Optional<PropertyModel> bnplSuggestionModel =
+                getBnplSuggestionModel(itemList, BNPL_SUGGESTION);
+        assertTrue(bnplSuggestionModel.isPresent());
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+
+        bnplSuggestionModel.get().get(ON_BNPL_CLICK_ACTION).run();
+
+        verify(mDelegateMock).bnplSuggestionSelected(extractedAmount);
     }
 
     @Test

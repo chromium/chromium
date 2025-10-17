@@ -52,6 +52,16 @@ interface TouchToFillPaymentMethodComponent {
         void creditCardSuggestionSelected(String uniqueId, boolean isVirtual);
 
         /**
+         * Called when the user selects the BNPL suggestion. If the extractedAmount is available, we
+         * show the issuer selection screen. Otherwise, the progress screen is displayed until
+         * amount extraction is complete.
+         *
+         * @param extractedAmount The amount associated with the BNPL suggestion, extracted from the
+         *     page.
+         */
+        void bnplSuggestionSelected(@Nullable Long extractedAmount);
+
+        /**
          * Called when the user selects a local IBAN.
          *
          * @param guid The selected local IBAN.

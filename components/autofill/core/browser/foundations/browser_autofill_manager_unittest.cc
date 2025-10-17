@@ -875,6 +875,10 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               (std::string unique_id, bool is_virtual),
               (override));
   MOCK_METHOD(void,
+              BnplSuggestionSelected,
+              (std::optional<int64_t> extracted_amount),
+              (override));
+  MOCK_METHOD(void,
               IbanSuggestionSelected,
               ((std::variant<Iban::Guid, Iban::InstrumentId>)),
               (override));

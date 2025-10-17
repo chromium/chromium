@@ -120,6 +120,15 @@ class TouchToFillPaymentMethodControllerBridge
     }
 
     @Override
+    public void bnplSuggestionSelected(@Nullable Long extractedAmount) {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .bnplSuggestionSelected(
+                            mNativeTouchToFillPaymentMethodViewController, extractedAmount);
+        }
+    }
+
+    @Override
     public void openPassesManagementUi() {
         if (mContext.get() != null) {
             AutofillFallbackSurfaceLauncher.openGoogleWalletPassesPage(mContext.get());
@@ -147,6 +156,10 @@ class TouchToFillPaymentMethodControllerBridge
                 long nativeTouchToFillPaymentMethodViewController,
                 @JniType("std::string") String uniqueId,
                 boolean isVirtual);
+
+        void bnplSuggestionSelected(
+                long nativeTouchToFillPaymentMethodViewController,
+                @JniType("std::optional<int64_t>") @Nullable Long extractedAmount);
 
         void localIbanSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController,

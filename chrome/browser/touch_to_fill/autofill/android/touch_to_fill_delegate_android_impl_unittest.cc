@@ -4,6 +4,8 @@
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -336,6 +338,25 @@ class TouchToFillDelegateAndroidImplUnitTest
   raw_ptr<TouchToFillDelegateAndroidImpl> touch_to_fill_delegate_;
   base::HistogramTester histogram_tester_;
 };
+
+TEST_F(TouchToFillDelegateAndroidImplUnitTest,
+       BnplSuggestionSelected_WithValidAmount) {
+  std::optional<int64_t> extracted_amount = 12345;
+  std::optional<uint64_t> final_checkout_amount = 12345;
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnDidAcceptBnplSuggestion(final_checkout_amount, _));
+
+  touch_to_fill_delegate_->BnplSuggestionSelected(extracted_amount);
+}
+
+TEST_F(TouchToFillDelegateAndroidImplUnitTest,
+       BnplSuggestionSelected_WithNullAmount) {
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnDidAcceptBnplSuggestion(testing::Eq(std::nullopt), _));
+
+  touch_to_fill_delegate_->BnplSuggestionSelected(
+      /*extracted_amount=*/std::nullopt);
+}
 
 // Params of TouchToFillDelegateAndroidImplPaymentMethodUnitTest:
 // -- FillingProduct: Indicates the Autofill data type to test. Supported data
