@@ -116,6 +116,18 @@ GetAutofillAiBubbleClosedReasonFromWidget(const views::Widget* widget) {
   }
 }
 
+ui::ImageModel GetIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleWalletIcon,
+                                        ui::kColorIcon, kWalletIconSize);
+
+#else
+  // This is a placeholder icon on non-branded builds.
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeIcon,
+                                        ui::kColorIcon, kWalletIconSize);
+#endif
+}
+
 }  // namespace
 
 SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
@@ -129,8 +141,9 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
       views::BoxLayout::Orientation::kVertical));
   set_margins(GetBubbleInnerMargins());
   SetAccessibleTitle(controller_->GetDialogTitle());
-  SetTitle(controller_->GetDialogTitle());
-  SetShowIcon(controller_->IsWalletableEntity());
+  if (!controller_->IsWalletableEntity()) {
+    SetTitle(controller_->GetDialogTitle());
+  }
   auto* main_content_wrapper =
       AddChildView(views::Builder<views::BoxLayoutView>()
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -197,18 +210,6 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
 
 SaveOrUpdateAutofillAiDataBubbleView::~SaveOrUpdateAutofillAiDataBubbleView() =
     default;
-
-ui::ImageModel SaveOrUpdateAutofillAiDataBubbleView::GetWindowIcon() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleWalletIcon,
-                                        ui::kColorIcon, kWalletIconSize);
-
-#else
-  // This is a placeholder icon on non-branded builds.
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeIcon,
-                                        ui::kColorIcon, kWalletIconSize);
-#endif
-}
 
 std::unique_ptr<views::View>
 SaveOrUpdateAutofillAiDataBubbleView::GetAttributeValueView(
@@ -392,6 +393,26 @@ void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
     image_view->GetViewAccessibility().SetIsInvisible(true);
 
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+  }
+  if (controller_->IsWalletableEntity()) {
+    auto title_view =
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetCrossAxisAlignment(
+                views::BoxLayout::CrossAxisAlignment::kCenter)
+            .Build();
+
+    auto* label = title_view->AddChildView(
+        views::Builder<views::Label>()
+            .SetText(controller_->GetDialogTitle())
+            .SetTextStyle(views::style::STYLE_HEADLINE_4)
+            .SetAccessibleRole(ax::mojom::Role::kTitleBar)
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .Build());
+
+    title_view->AddChildView(std::make_unique<views::ImageView>(GetIcon()));
+    title_view->SetFlexForView(label, 1);
+    GetBubbleFrameView()->SetTitleView(std::move(title_view));
   }
 }
 

@@ -41,8 +41,6 @@ class SaveOrUpdateAutofillAiDataBubbleView : public AutofillLocationBarBubble {
   void AddedToWidget() override;
   void WindowClosing() override;
 
-  ui::ImageModel GetWindowIcon() override;
-
  private:
   // Creates a row displayed in the dialog. This row contains information
   // about the entity to be saved or updated.
