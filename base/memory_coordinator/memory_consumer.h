@@ -105,18 +105,17 @@ class BASE_EXPORT MemoryConsumer {
 
 // Similar to ScopedObservation, registers a MemoryConsumer with the global
 // MemoryConsumerRegistry.
-class BASE_EXPORT ScopedMemoryConsumerRegistration {
+class BASE_EXPORT MemoryConsumerRegistration {
  public:
-  ScopedMemoryConsumerRegistration(std::string_view consumer_id,
-                                   MemoryConsumerTraits traits,
-                                   MemoryConsumer* consumer);
+  MemoryConsumerRegistration(std::string_view consumer_id,
+                             MemoryConsumerTraits traits,
+                             MemoryConsumer* consumer);
 
-  ScopedMemoryConsumerRegistration(const ScopedMemoryConsumerRegistration&) =
+  MemoryConsumerRegistration(const MemoryConsumerRegistration&) = delete;
+  MemoryConsumerRegistration& operator=(const MemoryConsumerRegistration&) =
       delete;
-  ScopedMemoryConsumerRegistration& operator=(
-      const ScopedMemoryConsumerRegistration&) = delete;
 
-  ~ScopedMemoryConsumerRegistration();
+  ~MemoryConsumerRegistration();
 
  private:
   std::string consumer_id_;

@@ -28,7 +28,7 @@ class RegisteredMockMemoryConsumer : public MockMemoryConsumer {
   ~RegisteredMockMemoryConsumer() override;
 
  private:
-  ScopedMemoryConsumerRegistration registration_;
+  MemoryConsumerRegistration registration_;
 };
 
 }  // namespace base

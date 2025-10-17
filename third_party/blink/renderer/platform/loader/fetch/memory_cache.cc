@@ -205,11 +205,11 @@ MemoryCache* MemoryCache::Get() {
 
 MemoryCache::MemoryCache(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : scoped_memory_consumer_registration_(
+    : memory_consumer_registration_(
           (base::SingleThreadTaskRunner::GetMainThreadDefault()
                ->RunsTasksInCurrentSequence() &&
            base::MemoryConsumerRegistry::Exists())
-              ? std::make_unique<base::ScopedMemoryConsumerRegistration>(
+              ? std::make_unique<base::MemoryConsumerRegistration>(
                     "MemoryCache",
                     kMemoryCacheTraits,
                     this)

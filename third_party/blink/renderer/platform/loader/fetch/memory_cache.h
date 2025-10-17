@@ -211,8 +211,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   double CalculateResourceValue(const Resource* resource) const;
 
-  std::unique_ptr<base::ScopedMemoryConsumerRegistration>
-      scoped_memory_consumer_registration_;
+  std::unique_ptr<base::MemoryConsumerRegistration>
+      memory_consumer_registration_;
 
   // The number of bytes currently consumed by resources in the cache.
   size_t size_ = 0;

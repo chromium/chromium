@@ -28,9 +28,9 @@ void MemoryConsumer::UpdateMemoryLimit(int percentage) {
   OnUpdateMemoryLimit();
 }
 
-// ScopedMemoryConsumerRegistration ---------------------------------
+// MemoryConsumerRegistration ---------------------------------------
 
-ScopedMemoryConsumerRegistration::ScopedMemoryConsumerRegistration(
+MemoryConsumerRegistration::MemoryConsumerRegistration(
     std::string_view consumer_id,
     MemoryConsumerTraits traits,
     MemoryConsumer* consumer)
@@ -39,7 +39,7 @@ ScopedMemoryConsumerRegistration::ScopedMemoryConsumerRegistration(
                                                   consumer_);
 }
 
-ScopedMemoryConsumerRegistration::~ScopedMemoryConsumerRegistration() {
+MemoryConsumerRegistration::~MemoryConsumerRegistration() {
   MemoryConsumerRegistry::Get().RemoveMemoryConsumer(consumer_id_, consumer_);
 }
 

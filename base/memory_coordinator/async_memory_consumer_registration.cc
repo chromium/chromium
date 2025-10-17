@@ -58,7 +58,7 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
       GUARDED_BY_CONTEXT(thread_checker_);
 
   // The registration with the MemoryConsumerRegistry.
-  std::optional<ScopedMemoryConsumerRegistration> registration_
+  std::optional<MemoryConsumerRegistration> registration_
       GUARDED_BY_CONTEXT(thread_checker_);
 
   THREAD_CHECKER(thread_checker_);

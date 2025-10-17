@@ -10,12 +10,11 @@
 
 namespace base {
 
-TEST(MemoryConsumerTest, ScopedMemoryConsumerRegistration) {
+TEST(MemoryConsumerTest, MemoryConsumerRegistration) {
   TestMemoryConsumerRegistry test_registry;
 
   MockMemoryConsumer consumer;
-  ScopedMemoryConsumerRegistration scoped_registration("consumer", {},
-                                                       &consumer);
+  MemoryConsumerRegistration registration("consumer", {}, &consumer);
 
   EXPECT_CALL(consumer, OnReleaseMemory());
   test_registry.NotifyReleaseMemory();
@@ -25,8 +24,7 @@ TEST(MemoryConsumerTest, UpdateMemoryLimit) {
   TestMemoryConsumerRegistry test_registry;
 
   MockMemoryConsumer consumer;
-  ScopedMemoryConsumerRegistration scoped_registration("consumer", {},
-                                                       &consumer);
+  MemoryConsumerRegistration registration("consumer", {}, &consumer);
 
   // Initial limit value of 100.
   EXPECT_EQ(consumer.memory_limit(), 100);
