@@ -43,8 +43,8 @@ constexpr auto kAutofillPredictionSettingsDisable =
 std::string GetTestSuffix(
     ::testing::TestParamInfo<AutofillAiAction> param_info) {
   switch (param_info.param) {
-    case AutofillAiAction::kAddEntityInstanceInSettings:
-      return "kAddEntityInstanceInSettings";
+    case AutofillAiAction::kAddLocalEntityInstanceInSettings:
+      return "kAddLocalEntityInstanceInSettings";
     case AutofillAiAction::kCrowdsourcingVote:
       return "kCrowdsourcingVote";
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
@@ -472,7 +472,7 @@ TEST_P(AutofillAiMayPerformActionTest, AppLocaleWithDataSaved) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     AutofillAiMayPerformActionTest,
-    Values(AutofillAiAction::kAddEntityInstanceInSettings,
+    Values(AutofillAiAction::kAddLocalEntityInstanceInSettings,
            AutofillAiAction::kCrowdsourcingVote,
            AutofillAiAction::kEditAndDeleteEntityInstanceInSettings,
            AutofillAiAction::kFilling,
