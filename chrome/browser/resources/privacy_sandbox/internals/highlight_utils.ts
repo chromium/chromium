@@ -62,7 +62,7 @@ export function highlight(element: HTMLElement, query: string) {
     }
 
     nodesToProcess.forEach(node => {
-      const text = node.textContent!;
+      const text = node.textContent;
       const ranges: Range[] = [];
       let match;
       searchRegex.lastIndex = 0;

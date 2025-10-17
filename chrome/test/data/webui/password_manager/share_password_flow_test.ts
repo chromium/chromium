@@ -27,7 +27,7 @@ function startPasswordShare(passwordName: string = SITE):
 
 function assertVisibleTextContent(element: HTMLElement, expectedText: string) {
   assertTrue(isVisible(element));
-  assertEquals(expectedText, element?.textContent!.trim());
+  assertEquals(expectedText, element?.textContent.trim());
 }
 
 suite('SharePasswordFlowTest', function() {

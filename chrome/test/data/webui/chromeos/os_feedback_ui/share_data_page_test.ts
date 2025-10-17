@@ -53,7 +53,7 @@ suite('shareDataPageTestSuite', () => {
 
   function getElementContent(selector: string): string {
     const element = page.shadowRoot!.querySelector(selector);
-    return element!.textContent!.trim();
+    return element!.textContent.trim();
   }
 
   function verifyRecordPreSubmitActionCallCount(
@@ -238,12 +238,12 @@ suite('shareDataPageTestSuite', () => {
     assertEquals(2, emailDropdown.options.length);
 
     const firstOption = emailDropdown.options.item(0) as HTMLOptionElement;
-    assertEquals('test.user2@test.com', firstOption.textContent!.trim());
+    assertEquals('test.user2@test.com', firstOption.textContent.trim());
     assertEquals('test.user2@test.com', firstOption.value.trim());
 
     const secondOption = emailDropdown.options.item(1);
     assertEquals(
-        'Don\'t include email address', secondOption!.textContent!.trim());
+        'Don\'t include email address', secondOption!.textContent.trim());
     assertEquals('', secondOption!.value.trim());
 
     // The user email section should be visible.

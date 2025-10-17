@@ -143,7 +143,7 @@ suite('LanguagesPageMetricsBrowser', function() {
       const menuItems =
           actionMenu.querySelectorAll<HTMLElement>('.dropdown-item');
       const menuItem = Array.from(menuItems).find(
-          item => item.textContent!.trim() === i18nString);
+          item => item.textContent.trim() === i18nString);
       assertTrue(!!menuItem, 'Menu item "' + i18nKey + '" not found');
       return menuItem;
     }

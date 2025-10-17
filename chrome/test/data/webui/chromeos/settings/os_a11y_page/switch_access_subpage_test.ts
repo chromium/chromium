@@ -91,7 +91,7 @@ suite('<settings-switch-access-subpage>', () => {
     assertTrue(!!linkRow);
     const subLabel = linkRow.shadowRoot!.querySelector('#subLabel');
     assertTrue(!!subLabel);
-    return subLabel.textContent!.trim();
+    return subLabel.textContent.trim();
   }
 
   test('Switch assignment key display', () => {
@@ -200,7 +200,7 @@ suite('<settings-switch-access-subpage>', () => {
     assertTrue(!!pane);
     const error = pane.shadowRoot!.querySelector('#error');
     assertTrue(!!error);
-    const errorText = error.textContent!.trim();
+    const errorText = error.textContent.trim();
     assertEquals('Keys don’t match. Press any key to exit.', errorText);
   });
 

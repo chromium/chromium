@@ -123,7 +123,7 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
         assertEquals(
             'Add or locate buttons on your pen',
             page.shadowRoot!.querySelector<HTMLElement>(
-                                '.help-title')!.textContent!.trim());
+                                '.help-title')!.textContent.trim());
         // Go to the second pen subpage with metadata.
         const url = new URLSearchParams({
           'graphicsTabletId': encodeURIComponent(fakeGraphicsTablets[1]!.id),
@@ -137,6 +137,6 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
         assertEquals(
             'Locate buttons on your pen',
             page.shadowRoot!.querySelector<HTMLElement>(
-                                '.help-title')!.textContent!.trim());
+                                '.help-title')!.textContent.trim());
       });
 });

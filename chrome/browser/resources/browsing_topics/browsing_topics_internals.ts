@@ -129,7 +129,7 @@ async function asyncGetBrowsingTopicsConfiguration() {
       .forEach(id => {
         const div = document.querySelector<HTMLElement>(`#${id}`);
         assert(div);
-        div.textContent! += getEnabledStatusText(
+        div.textContent += getEnabledStatusText(
             config[fieldNameFromId(id) as keyof typeof config] as boolean);
       });
 
@@ -145,7 +145,7 @@ async function asyncGetBrowsingTopicsConfiguration() {
       .forEach(id => {
         const div = document.querySelector<HTMLElement>(`#${id}`);
         assert(div);
-        div.textContent! +=
+        div.textContent +=
             (config[fieldNameFromId(id) as keyof typeof config] as number);
       });
 
@@ -154,7 +154,7 @@ async function asyncGetBrowsingTopicsConfiguration() {
       id => {
         const div = document.querySelector<HTMLElement>(`#${id}`);
         assert(div);
-        div.textContent! += formatTimeDuration(
+        div.textContent += formatTimeDuration(
             (config[fieldNameFromId(id) as keyof typeof config] as TimeDelta)
                 .microseconds);
       });

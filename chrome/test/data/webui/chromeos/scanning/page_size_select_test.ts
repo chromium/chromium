@@ -62,9 +62,9 @@ suite('pageSizeSelectTest', function() {
 
     assertEquals(2, select.length);
     assertEquals(
-        getPageSizeString(firstPageSize), getOption(0).textContent!.trim());
+        getPageSizeString(firstPageSize), getOption(0).textContent.trim());
     assertEquals(
-        getPageSizeString(secondPageSize), getOption(1).textContent!.trim());
+        getPageSizeString(secondPageSize), getOption(1).textContent.trim());
     assertEquals(firstPageSize.toString(), select.value);
 
     // Selecting a different option should update the selected value.

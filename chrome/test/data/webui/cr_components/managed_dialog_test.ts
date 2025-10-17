@@ -48,8 +48,8 @@ suite('ManagedDialogTest', function() {
     const dialog = createManagedDialog(title, body);
     assertNotEquals('none', getComputedStyle(dialog).display);
     assertTrue(dialog.$.dialog.open);
-    assertTrue(dialog.shadowRoot.textContent!.includes(title));
-    assertTrue(dialog.shadowRoot.textContent!.includes(body));
+    assertTrue(dialog.shadowRoot.textContent.includes(title));
+    assertTrue(dialog.shadowRoot.textContent.includes(body));
 
     // Click OK button to dismiss dialog
     dialog.shadowRoot.querySelector<HTMLElement>('.action-button')!.click();

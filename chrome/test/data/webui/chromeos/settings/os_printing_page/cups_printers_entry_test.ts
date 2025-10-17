@@ -71,7 +71,7 @@ suite('<settings-cups-printers-entry>', () => {
     const entryText =
         printerEntryTestElement.shadowRoot!.querySelector('.entry-text');
     assertTrue(!!entryText);
-    assertEquals(expectedPrinterName, entryText.textContent!.trim());
+    assertEquals(expectedPrinterName, entryText.textContent.trim());
   });
 
   test('savedPrinterShowsThreeDotMenu', () => {
@@ -161,7 +161,7 @@ suite('<settings-cups-printers-entry>', () => {
         'os-settings:printer-status-illo-orange', printerStatusIcon.icon);
     assertEquals(
         loadTimeData.getString('printerStatusOutOfPaper'),
-        printerSubtext.textContent!.trim());
+        printerSubtext.textContent.trim());
 
     // Set to a good status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id1');
@@ -174,7 +174,7 @@ suite('<settings-cups-printers-entry>', () => {
     assertEquals('os-settings:printer-status-illo-red', printerStatusIcon.icon);
     assertEquals(
         loadTimeData.getString('printerStatusPrinterUnreachable'),
-        printerSubtext.textContent!.trim());
+        printerSubtext.textContent.trim());
 
     // Set to unknown status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id4');
@@ -277,6 +277,6 @@ suite('<settings-cups-printers-entry>', () => {
         loadTimeData.getString('savePrinter'),
         printerEntryTestElement.shadowRoot!
             .querySelector<HTMLElement>(
-                '#setupPrinterButton')!.textContent!.trim());
+                '#setupPrinterButton')!.textContent.trim());
   });
 });

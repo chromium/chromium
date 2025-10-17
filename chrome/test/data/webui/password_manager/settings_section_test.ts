@@ -41,7 +41,7 @@ function assertBlockedSiteList(
   for (let index = 0; index < blockedSiteList.length; ++index) {
     const node = nodes[index]!;
     const blockedSite = blockedSiteList[index]!;
-    assertEquals(blockedSite.urls.shown, node.textContent!.trim());
+    assertEquals(blockedSite.urls.shown, node.textContent.trim());
   }
 }
 
@@ -575,19 +575,19 @@ suite('SettingsSectionTest', function() {
         assertEquals(
             sites[0]!.url.humanReadableUrl,
             siteElements[0]!.querySelector<HTMLElement>(
-                                '.label')!.textContent!.trim());
+                                '.label')!.textContent.trim());
         assertEquals(
             sites[0]!.username,
             siteElements[0]!.querySelector<HTMLElement>(
-                                '.site-username')!.textContent!.trim());
+                                '.site-username')!.textContent.trim());
         assertEquals(
             sites[1]!.url.humanReadableUrl,
             siteElements[1]!.querySelector<HTMLElement>(
-                                '.label')!.textContent!.trim());
+                                '.label')!.textContent.trim());
         assertEquals(
             sites[1]!.username,
             siteElements[1]!.querySelector<HTMLElement>(
-                                '.site-username')!.textContent!.trim());
+                                '.site-username')!.textContent.trim());
       });
 
   test('actor login permissions remove dialog', async function() {
@@ -876,7 +876,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(section.$.toast.open);
     assertEquals(
         loadTimeData.getString('passwordManagerPinChanged'),
-        section.$.toast.textContent!.trim());
+        section.$.toast.textContent.trim());
   });
 
   test('Disconnect Cloud Authenticator', async function() {
@@ -913,7 +913,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(section.$.toast.open);
     assertEquals(
         loadTimeData.getString('disconnectCloudAuthenticatorToastMessage'),
-        section.$.toast.textContent!.trim());
+        section.$.toast.textContent.trim());
   });
 
   test('shows full-data-reset row', async function() {

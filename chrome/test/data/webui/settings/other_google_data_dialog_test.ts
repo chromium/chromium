@@ -211,13 +211,13 @@ suite('OtherGoogleDataDialog', function() {
     assertTrue(!!title);
     assertEquals(
         loadTimeData.getString('otherGoogleDataTitle'),
-        title.textContent!.trim());
+        title.textContent.trim());
 
     // Case 2: DSE is not Google.
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ false);
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('otherDataTitle'), title.textContent!.trim());
+        loadTimeData.getString('otherDataTitle'), title.textContent.trim());
   });
 
   test('GeminiAppsActivityLinkClick', async function() {

@@ -238,10 +238,10 @@ suite('SiteDetails', function() {
     assertEquals(
         '',
         testElement.shadowRoot!.querySelector(
-                                   '#storedData')!.textContent!.trim());
+                                   '#storedData')!.textContent.trim());
     assertFalse(testElement.$.noStorage.hidden);
     assertTrue(testElement.$.storage.hidden);
-    assertTrue(testElement.$.usage.textContent!.includes('No usage data'));
+    assertTrue(testElement.$.usage.textContent.includes('No usage data'));
 
     // If there is, check the correct amount of usage is specified.
     const usage = '1 KB';
@@ -249,7 +249,7 @@ suite('SiteDetails', function() {
         'usage-total-changed', 'https://foo.com:443', usage, '10 cookies');
     assertTrue(testElement.$.noStorage.hidden);
     assertFalse(testElement.$.storage.hidden);
-    assertTrue(testElement.$.usage.textContent!.includes(usage));
+    assertTrue(testElement.$.usage.textContent.includes(usage));
   });
 
   test('storage gets trashed properly', async function() {
@@ -271,7 +271,7 @@ suite('SiteDetails', function() {
     assertEquals(
         '1 KB',
         testElement.shadowRoot!.querySelector(
-                                   '#storedData')!.textContent!.trim());
+                                   '#storedData')!.textContent.trim());
     assertTrue(testElement.$.noStorage.hidden);
     assertFalse(testElement.$.storage.hidden);
 
@@ -301,7 +301,7 @@ suite('SiteDetails', function() {
     assertEquals(
         '10 cookies',
         testElement.shadowRoot!.querySelector(
-                                   '#numCookies')!.textContent!.trim());
+                                   '#numCookies')!.textContent.trim());
     assertTrue(testElement.$.noStorage.hidden);
     assertFalse(testElement.$.storage.hidden);
 
@@ -524,7 +524,7 @@ suite('SiteDetails', function() {
         webUIListenerCallback(
             'usage-total-changed', hostRequested, '1 KB', '10 cookies', '');
         assertTrue(testElement.$.rwsMembership.hidden);
-        assertEquals('', testElement.$.rwsMembership.textContent!.trim());
+        assertEquals('', testElement.$.rwsMembership.textContent.trim());
       });
 
   test(
@@ -546,7 +546,7 @@ suite('SiteDetails', function() {
         assertFalse(testElement.$.rwsMembership.hidden);
         assertEquals(
             'Allowed for 1 foo.com site',
-            testElement.$.rwsMembership.textContent!.trim());
+            testElement.$.rwsMembership.textContent.trim());
         flush();
         // Assert related website set policy is null.
         const rwsPolicy =
@@ -573,7 +573,7 @@ suite('SiteDetails', function() {
         assertFalse(testElement.$.rwsMembership.hidden);
         assertEquals(
             'Allowed for 1 foo.com site',
-            testElement.$.rwsMembership.textContent!.trim());
+            testElement.$.rwsMembership.textContent.trim());
         flush();
         // Assert related website set policy is shown.
         const rwsPolicy =

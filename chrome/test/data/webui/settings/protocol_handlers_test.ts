@@ -196,9 +196,9 @@ suite('ProtocolHandlers', function() {
 
     // Check that item hosts are rendered correctly.
     const hosts = testElement.shadowRoot!.querySelectorAll('.protocol-host');
-    assertEquals('www.google.com', hosts[0]!.textContent!.trim());
-    assertEquals('www.google1.com', hosts[1]!.textContent!.trim());
-    assertEquals('www.google2.com', hosts[2]!.textContent!.trim());
+    assertEquals('www.google.com', hosts[0]!.textContent.trim());
+    assertEquals('www.google1.com', hosts[1]!.textContent.trim());
+    assertEquals('www.google2.com', hosts[2]!.textContent.trim());
 
     // Check that item default subtexts are rendered correctly.
     const defText = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
@@ -221,7 +221,7 @@ suite('ProtocolHandlers', function() {
 
     // Check that item hosts are rendered correctly.
     const hosts = testElement.shadowRoot!.querySelectorAll('.protocol-host');
-    assertEquals('www.google.com', hosts[0]!.textContent!.trim());
+    assertEquals('www.google.com', hosts[0]!.textContent.trim());
 
     // Check that item default subtexts are rendered correctly.
     const defText = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
@@ -325,9 +325,9 @@ suite('ProtocolHandlers', function() {
     const appNames =
         testElement.shadowRoot!.querySelectorAll('.protocol-app-name');
     assertEquals(3, appNames.length);
-    assertEquals('testName', appNames[0]!.textContent!.trim());
-    assertEquals('testName1', appNames[1]!.textContent!.trim());
-    assertEquals('www.google2.com', appNames[2]!.textContent!.trim());
+    assertEquals('testName', appNames[0]!.textContent.trim());
+    assertEquals('testName1', appNames[1]!.textContent.trim());
+    assertEquals('www.google2.com', appNames[2]!.textContent.trim());
   });
 
   test('remove web app allowed protocols', async () => {
@@ -359,9 +359,9 @@ suite('ProtocolHandlers', function() {
     const appNames =
         testElement.shadowRoot!.querySelectorAll('.protocol-app-name');
     assertEquals(3, appNames.length);
-    assertEquals('testName1', appNames[0]!.textContent!.trim());
-    assertEquals('testName', appNames[1]!.textContent!.trim());
-    assertEquals('testName3', appNames[2]!.textContent!.trim());
+    assertEquals('testName1', appNames[0]!.textContent.trim());
+    assertEquals('testName', appNames[1]!.textContent.trim());
+    assertEquals('testName3', appNames[2]!.textContent.trim());
   });
 
   test('remove web app disallowed protocols', async () => {
@@ -398,14 +398,14 @@ suite('ProtocolHandlers', function() {
     assertEquals(6, appNames.length);
 
     // Allowed list.
-    assertEquals('testName', appNames[0]!.textContent!.trim());
-    assertEquals('testName1', appNames[1]!.textContent!.trim());
-    assertEquals('www.google2.com', appNames[2]!.textContent!.trim());
+    assertEquals('testName', appNames[0]!.textContent.trim());
+    assertEquals('testName1', appNames[1]!.textContent.trim());
+    assertEquals('www.google2.com', appNames[2]!.textContent.trim());
 
     // Disallowed list.
-    assertEquals('testName1', appNames[3]!.textContent!.trim());
-    assertEquals('testName', appNames[4]!.textContent!.trim());
-    assertEquals('testName3', appNames[5]!.textContent!.trim());
+    assertEquals('testName1', appNames[3]!.textContent.trim());
+    assertEquals('testName', appNames[4]!.textContent.trim());
+    assertEquals('testName3', appNames[5]!.textContent.trim());
   });
 
   test('remove web app allowed then disallowed protocols', async () => {

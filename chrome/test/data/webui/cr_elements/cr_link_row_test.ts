@@ -66,18 +66,18 @@ suite('cr-link-row', function() {
     const defaultString = 'Opens in new tab';
     const customString = 'Opens in new window';
 
-    assertEquals('', buttonAriaDescription.textContent!.trim());
+    assertEquals('', buttonAriaDescription.textContent.trim());
 
     linkRow.external = true;
     await microtasksFinished();
-    assertEquals(defaultString, buttonAriaDescription.textContent!.trim());
+    assertEquals(defaultString, buttonAriaDescription.textContent.trim());
 
     linkRow.buttonAriaDescription = customString;
     await microtasksFinished();
-    assertEquals(customString, buttonAriaDescription.textContent!.trim());
+    assertEquals(customString, buttonAriaDescription.textContent.trim());
 
     linkRow.buttonAriaDescription = '';
     await microtasksFinished();
-    assertEquals('', buttonAriaDescription.textContent!.trim());
+    assertEquals('', buttonAriaDescription.textContent.trim());
   });
 });

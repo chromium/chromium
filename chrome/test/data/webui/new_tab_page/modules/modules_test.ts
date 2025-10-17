@@ -342,7 +342,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
               assertStyle(moduleWrappers[0]!, 'display', 'none');
               assertTrue(modulesElement.$.undoToast.open);
               assertEquals(
-                  'Foo', modulesElement.$.undoToastMessage.textContent!.trim());
+                  'Foo', modulesElement.$.undoToastMessage.textContent.trim());
               assertEquals(
                   1, metrics.count('NewTabPage.Modules.Disabled', moduleId));
               assertEquals(

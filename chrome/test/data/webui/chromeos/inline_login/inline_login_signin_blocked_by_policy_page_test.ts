@@ -67,7 +67,7 @@ suite('InlineLoginSigninBlockedByPolicyPageTest', () => {
                          .querySelector<HTMLElement>('.secondary');
     assertTrue(!!textBody);
     assertEquals(
-        textBody.textContent!,
+        textBody.textContent,
         'john.doe@example.com is managed by example.com. You can\'t add ' +
             'this email as an additional account.\n    To use ' +
             'john.doe@example.com, first sign out of your Chromebook. ' +
@@ -87,12 +87,12 @@ suite('InlineLoginSigninBlockedByPolicyPageTest', () => {
                        .querySelector<HTMLElement>('.secondary');
     assertTrue(!!textBody);
     assertTrue(
-        textBody.textContent!.includes('john.doe@example.com'),
+        textBody.textContent.includes('john.doe@example.com'),
         'Invalid user email');
     assertTrue(
-        textBody.textContent!.includes('example.com'), 'Invalid hosted domain');
+        textBody.textContent.includes('example.com'), 'Invalid hosted domain');
     assertTrue(
-        textBody.textContent!.includes('Chromebook'), 'Invalid device type');
+        textBody.textContent.includes('Chromebook'), 'Invalid device type');
     webUIListenerCallback('show-signin-error-page', {
       email: 'coyote@acme.com',
       hostedDomain: 'acme.com',
@@ -103,12 +103,11 @@ suite('InlineLoginSigninBlockedByPolicyPageTest', () => {
                    .querySelector<HTMLElement>('.secondary');
     assertTrue(!!textBody);
     assertTrue(
-        textBody.textContent!.includes('coyote@acme.com'),
-        'Invalid user email');
+        textBody.textContent.includes('coyote@acme.com'), 'Invalid user email');
     assertTrue(
-        textBody.textContent!.includes('acme.com'), 'Invalid hosted domain');
+        textBody.textContent.includes('acme.com'), 'Invalid hosted domain');
     assertTrue(
-        textBody.textContent!.includes('Chromebox'), 'Invalid device type');
+        textBody.textContent.includes('Chromebox'), 'Invalid device type');
   });
 
   test('OkButton', async () => {

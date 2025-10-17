@@ -177,13 +177,13 @@ suite('FeedbackFlowTestSuite', () => {
     const title =
         strictQuery('.page-title', activePage.shadowRoot, HTMLElement);
     assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent!.trim());
+    assertEquals('Send feedback', title.textContent.trim());
 
     // Verify the continue button is in the page.
     const buttonContinue =
         strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonContinue);
-    assertEquals('Continue', buttonContinue.textContent!.trim());
+    assertEquals('Continue', buttonContinue.textContent.trim());
   });
 
 
@@ -200,19 +200,19 @@ suite('FeedbackFlowTestSuite', () => {
     const title =
         strictQuery('.page-title', activePage.shadowRoot, HTMLElement);
     assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent!.trim());
+    assertEquals('Send feedback', title.textContent.trim());
 
     // Verify the back button is in the page.
     const buttonBack =
         strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonBack);
-    assertEquals('Back', buttonBack.textContent!.trim());
+    assertEquals('Back', buttonBack.textContent.trim());
 
     // Verify the send button is in the page.
     const buttonSend =
         strictQuery('#buttonSend', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonSend);
-    assertEquals('Send', buttonSend.textContent!.trim());
+    assertEquals('Send', buttonSend.textContent.trim());
   });
 
 
@@ -230,19 +230,19 @@ suite('FeedbackFlowTestSuite', () => {
     const title =
         strictQuery('.page-title', activePage.shadowRoot, HTMLElement);
     assertTrue(!!title);
-    assertEquals('Thanks for your feedback', title.textContent!.trim());
+    assertEquals('Thanks for your feedback', title.textContent.trim());
 
     // Verify the done button is in the page.
     const buttonDone =
         strictQuery('#buttonDone', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonDone);
-    assertEquals('Done', buttonDone.textContent!.trim());
+    assertEquals('Done', buttonDone.textContent.trim());
 
     // Verify the startNewReport button is in the page.
     const buttonNewReport = strictQuery(
         '#buttonNewReport', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonNewReport);
-    assertEquals('Send new report', buttonNewReport.textContent!.trim());
+    assertEquals('Send new report', buttonNewReport.textContent.trim());
   });
 
   // Test the navigation from search page to share data page.

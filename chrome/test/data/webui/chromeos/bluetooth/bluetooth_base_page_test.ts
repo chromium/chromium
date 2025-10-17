@@ -53,7 +53,7 @@ suite('CrComponentsBluetoothBasePageTest', function() {
     assertTrue(!!title);
     assertEquals(
         bluetoothBasePage.i18n('bluetoothPairNewDevice'),
-        title!.textContent!.trim());
+        title!.textContent.trim());
 
     const getProgress = () =>
         bluetoothBasePage.shadowRoot!.querySelector('paper-progress');

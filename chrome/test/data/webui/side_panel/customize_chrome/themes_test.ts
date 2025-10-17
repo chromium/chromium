@@ -101,7 +101,7 @@ suite('ThemesTest', () => {
     await setCollection('test1', numImages);
 
     let header = themesElement.$.heading;
-    assertEquals('test1', header.textContent!.trim());
+    assertEquals('test1', header.textContent.trim());
     let themes = themesElement.shadowRoot.querySelectorAll('.theme');
     assertEquals(themes.length, numImages);
     assertEquals(
@@ -118,7 +118,7 @@ suite('ThemesTest', () => {
     await setCollection('test2', numImages);
 
     header = themesElement.$.heading;
-    assertEquals('test2', header.textContent!.trim());
+    assertEquals('test2', header.textContent.trim());
     themes = themesElement.shadowRoot.querySelectorAll('.theme');
     assertEquals(themes.length, numImages);
     assertEquals(

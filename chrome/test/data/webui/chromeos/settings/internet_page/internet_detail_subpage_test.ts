@@ -342,7 +342,7 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(networkStateText.hasAttribute('warning'));
       assertEquals(
           internetDetailPage.i18n('networkListItemSignIn'),
-          networkStateText.textContent!.trim());
+          networkStateText.textContent.trim());
       const signinButton = getButton('signinButton');
       assertTrue(!!signinButton);
       assertFalse(signinButton.hidden);
@@ -368,7 +368,7 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(networkStateText.hasAttribute('warning'));
       assertEquals(
           internetDetailPage.i18n('networkListItemSignIn'),
-          networkStateText.textContent!.trim());
+          networkStateText.textContent.trim());
       const signinButton = getButton('signinButton');
       assertTrue(!!signinButton);
       assertFalse(signinButton.hidden);
@@ -394,7 +394,7 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(networkStateText.hasAttribute('warning'));
       assertEquals(
           internetDetailPage.i18n('networkListItemConnectedNoConnectivity'),
-          networkStateText.textContent!.trim());
+          networkStateText.textContent.trim());
       const signinButton = getButton('signinButton');
       assertTrue(!!signinButton);
       assertTrue(signinButton.hidden);
@@ -1028,7 +1028,7 @@ suite('<settings-internet-detail-subpage>', () => {
           internetDetailPage.shadowRoot!.querySelectorAll<HTMLButtonElement>(
               'cr-expand-button.settings-box');
       expandButtons.forEach((button: HTMLButtonElement) => {
-        assertNotEquals('Advanced', button.textContent!.trim());
+        assertNotEquals('Advanced', button.textContent.trim());
       });
     });
   });
@@ -1104,7 +1104,7 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(networkStateText.hasAttribute('warning'));
       assertEquals(
           internetDetailPage.i18n('networkMobileProviderLocked'),
-          networkStateText.textContent!.trim());
+          networkStateText.textContent.trim());
     });
 
     test(
@@ -1853,7 +1853,7 @@ suite('<settings-internet-detail-subpage>', () => {
             null;
         if (isApnRevampEnabled) {
           assertTrue(!!getApn());
-          assertEquals(apnName, getApn()!.textContent!.trim());
+          assertEquals(apnName, getApn()!.textContent.trim());
 
           const name = 'name';
           cellularNetwork.typeProperties.cellular!.connectedApn.name = name;
@@ -1861,7 +1861,7 @@ suite('<settings-internet-detail-subpage>', () => {
           internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
           await flushTasks();
           assertTrue(!!getApn());
-          assertEquals(name, getApn()!.textContent!.trim());
+          assertEquals(name, getApn()!.textContent.trim());
           assertFalse(getCrLink()!.hasAttribute('warning'));
 
           // Adding a restricted connectivity state should cause the sublabel to

@@ -49,7 +49,7 @@ suite('extension controlled indicator', function() {
 
     const label = indicator.shadowRoot!.querySelector('span');
     assertTrue(!!label);
-    assertTrue(label.textContent!.includes(indicator.extensionName));
+    assertTrue(label.textContent.includes(indicator.extensionName));
   });
 
   test('tapping manage button invokes browser proxy', async function() {

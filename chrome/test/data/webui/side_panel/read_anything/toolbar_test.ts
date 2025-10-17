@@ -166,17 +166,17 @@ suite('Toolbar', () => {
 
     test('defaults to 1x', () => {
       assertStringContains(rateButton.ariaLabel!, '1x');
-      assertStringContains(rateButton.textContent!, '1x');
+      assertStringContains(rateButton.textContent, '1x');
     });
 
     test('rate change updates rate button', async () => {
       await changeRate(2);
       assertStringContains(rateButton.ariaLabel!, '2x');
-      assertStringContains(rateButton.textContent!, '2x');
+      assertStringContains(rateButton.textContent, '2x');
 
       await changeRate(0.5);
       assertStringContains(rateButton.ariaLabel!, '0.5');
-      assertStringContains(rateButton.textContent!, '0.5');
+      assertStringContains(rateButton.textContent, '0.5');
     });
   });
 

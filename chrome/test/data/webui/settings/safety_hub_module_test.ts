@@ -80,7 +80,7 @@ suite('SafetyHubModule', function() {
     function assertTextContent(query: string, text: string) {
       const element = testElement.shadowRoot!.querySelector(query);
       assertTrue(!!element);
-      assertEquals(text, element.textContent!.trim());
+      assertEquals(text, element.textContent.trim());
     }
 
     assertTextContent('#header', headerText);
@@ -125,10 +125,10 @@ suite('SafetyHubModule', function() {
       assertEquals(
           mockData[i]!.origin,
           entries[i]!.querySelector(
-                         '.site-representation')!.textContent!.trim());
+                         '.site-representation')!.textContent.trim());
       assertEquals(
           mockData[i]!.detail,
-          entries[i]!.querySelector('.cr-secondary-text')!.textContent!.trim());
+          entries[i]!.querySelector('.cr-secondary-text')!.textContent.trim());
     }
 
     // Check a link in secondary text has an aria description.
@@ -185,6 +185,6 @@ suite('SafetyHubModule', function() {
     assertTrue(!!tooltip);
     await waitUntilVisible(tooltip);
     assertTrue(isVisible(tooltip));
-    assertEquals(text, tooltip.textContent!.trim());
+    assertEquals(text, tooltip.textContent.trim());
   });
 });

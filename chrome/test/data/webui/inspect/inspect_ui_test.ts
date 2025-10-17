@@ -45,7 +45,7 @@ suite('InspectUITest', function() {
       elements: Element[], content: string, childSelector: string) {
     return elements.find(element => {
       const child = element.querySelector(childSelector);
-      return !!child && child.textContent!.indexOf(content) >= 0;
+      return !!child && child.textContent.indexOf(content) >= 0;
     });
   }
 

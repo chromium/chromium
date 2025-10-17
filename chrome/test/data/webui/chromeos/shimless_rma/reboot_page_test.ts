@@ -62,16 +62,16 @@ suite('rebootPageTest', function() {
     const instructions =
         strictQuery('#instructions', component.shadowRoot, HTMLElement);
     assertEquals(
-        loadTimeData.getString('rebootPageTitle'), title.textContent!.trim());
+        loadTimeData.getString('rebootPageTitle'), title.textContent.trim());
     assertEquals(
         loadTimeData.getStringF('rebootPageMessage', delayDuration),
-        instructions.textContent!.trim());
+        instructions.textContent.trim());
 
     component.errorCode = RmadErrorCode.kExpectShutdown;
     assertEquals(
-        loadTimeData.getString('shutdownPageTitle'), title.textContent!.trim());
+        loadTimeData.getString('shutdownPageTitle'), title.textContent.trim());
     assertEquals(
         loadTimeData.getStringF('shutdownPageMessage', delayDuration),
-        instructions.textContent!.trim());
+        instructions.textContent.trim());
   });
 });

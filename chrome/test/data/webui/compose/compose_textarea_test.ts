@@ -41,7 +41,7 @@ suite('ComposeTextarea', () => {
     textarea.value = 'Here is my value.';
     assertEquals('Here is my value.', textarea.$.input.value);
     assertEquals(
-        'Here is my value.', textarea.$.readonlyText.textContent!.trim());
+        'Here is my value.', textarea.$.readonlyText.textContent.trim());
   });
 
   test('NotifiesChangesToValue', async () => {

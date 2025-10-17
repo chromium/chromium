@@ -171,7 +171,7 @@ suite('SiteEntry', function() {
     const args = await browserProxy.whenCalled('getNumCookiesString');
     assertEquals(3, args);
     assertFalse(cookiesLabel.hidden);
-    assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
+    assertEquals('· 3 cookies', cookiesLabel.textContent.trim());
   });
 
   test('cookies show for ungrouped entries', async function() {
@@ -192,7 +192,7 @@ suite('SiteEntry', function() {
     const args = await browserProxy.whenCalled('getNumCookiesString');
     assertEquals(3, args);
     assertFalse(cookiesLabel.hidden);
-    assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
+    assertEquals('· 3 cookies', cookiesLabel.textContent.trim());
   });
 
   test('data usage shown correctly for grouped entries', async function() {
@@ -213,7 +213,7 @@ suite('SiteEntry', function() {
         `${sumBytes} B`,
         testElement.shadowRoot!
             .querySelector<HTMLElement>(
-                '#displayName .data-unit')!.textContent!.trim());
+                '#displayName .data-unit')!.textContent.trim());
   });
 
   test('data usage shown correctly for ungrouped entries', async function() {
@@ -229,7 +229,7 @@ suite('SiteEntry', function() {
         `${numBytes} B`,
         testElement.shadowRoot!
             .querySelector<HTMLElement>(
-                '#displayName .data-unit')!.textContent!.trim());
+                '#displayName .data-unit')!.textContent.trim());
   });
 
   test(
@@ -252,7 +252,7 @@ suite('SiteEntry', function() {
             `${sumBytes} B`,
             testElement.shadowRoot!
                 .querySelector<HTMLElement>(
-                    '#displayName .data-unit')!.textContent!.trim());
+                    '#displayName .data-unit')!.textContent.trim());
       });
 
   test('favicon with www.etld+1 chosen for site group', function() {
@@ -626,13 +626,13 @@ suite('SiteEntry', function() {
     // Check if the extension name shown correctly.
     assertEquals(
         testElement.$.collapseParent.querySelector('.url-directionality')!
-            .textContent!.trim(),
+            .textContent.trim(),
         'Test Extension');
 
     // Check if the extension id is shown correctly.
     assertFalse(testElement.$.extensionIdDescription.hidden);
     assertEquals(
-        testElement.$.extensionIdDescription.textContent!.trim(),
+        testElement.$.extensionIdDescription.textContent.trim(),
         '· ID: mhabknllooicelmdboebjilbohdbihln');
   });
 });

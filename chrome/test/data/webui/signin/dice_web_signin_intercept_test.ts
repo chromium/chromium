@@ -71,9 +71,9 @@ suite('DiceWebSigninInterceptTest', function() {
     const contentsElement = app.shadowRoot.querySelector('#contents')!;
     assertEquals(expectedBodyText, contentsElement.textContent);
     const confirmButton = app.$.acceptButton;
-    assertEquals(expectedConfirmLabel, confirmButton.textContent!.trim());
+    assertEquals(expectedConfirmLabel, confirmButton.textContent.trim());
     const cancelButton = app.$.cancelButton;
-    assertEquals(expectedCancelLabel, cancelButton.textContent!.trim());
+    assertEquals(expectedCancelLabel, cancelButton.textContent.trim());
   }
 
   function checkImageUrl(elementId: string, expectedUrl: string) {
@@ -201,7 +201,7 @@ suite('DiceWebSigninInterceptTest', function() {
         app.shadowRoot.querySelector('#managedDisclaimer')!;
     assertTrue(isVisible(managedDisclaimerElement));
     assertEquals(
-        'managed_disclaimer', managedDisclaimerElement.textContent!.trim());
+        'managed_disclaimer', managedDisclaimerElement.textContent.trim());
   });
 });
 
@@ -307,6 +307,6 @@ suite('DiceWebSigninInterceptTestV2', function() {
         app.shadowRoot.querySelector('#managedDisclaimer')!;
     assertTrue(isVisible(managedDisclaimerElement));
     assertEquals(
-        'managed_disclaimer', managedDisclaimerElement.textContent!.trim());
+        'managed_disclaimer', managedDisclaimerElement.textContent.trim());
   });
 });

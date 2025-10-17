@@ -185,7 +185,7 @@ suite('onboardingLandingPageTest', function() {
     assertEquals(
         failedComponent,
         strictQuery('#dialogBody', component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
   });
 
   // Hides Exit button when canExit is false.

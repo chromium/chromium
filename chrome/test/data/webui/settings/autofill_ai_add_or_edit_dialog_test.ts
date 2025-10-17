@@ -173,7 +173,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         const dialogTitle =
             dialog.shadowRoot!.querySelector<HTMLElement>('div[slot="title"]');
         assertTrue(
-            dialogTitle!.textContent!.includes(
+            dialogTitle!.textContent.includes(
                 params.add ? 'Add vehicle' : 'Edit vehicle'));
 
         // Edit first field.
@@ -409,10 +409,10 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         assertTrue(!!countrySelect);
         if (params.add) {
           assertEquals('', countrySelect.value);
-          assertTrue(countrySelect.textContent!.includes('Select'));
+          assertTrue(countrySelect.textContent.includes('Select'));
         } else {
           assertEquals(oldCountryCode, countrySelect.value);
-          assertTrue(countrySelect.textContent!.includes('Germany'));
+          assertTrue(countrySelect.textContent.includes('Germany'));
         }
 
         if (params.changeCountry) {
@@ -503,16 +503,16 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
           assertEquals('', monthSelect.value);
           assertEquals('', daySelect.value);
           assertEquals('', yearSelect.value);
-          assertTrue(monthSelect.textContent!.includes('MM'));
-          assertTrue(daySelect.textContent!.includes('DD'));
-          assertTrue(yearSelect.textContent!.includes('YYYY'));
+          assertTrue(monthSelect.textContent.includes('MM'));
+          assertTrue(daySelect.textContent.includes('DD'));
+          assertTrue(yearSelect.textContent.includes('YYYY'));
         } else {
           assertEquals(oldDate.month, monthSelect.value);
           assertEquals(oldDate.day, daySelect.value);
           assertEquals(oldDate.year, yearSelect.value);
-          assertTrue(monthSelect.textContent!.includes('Mar'));
-          assertTrue(daySelect.textContent!.includes(oldDate.day));
-          assertTrue(yearSelect.textContent!.includes(oldDate.year));
+          assertTrue(monthSelect.textContent.includes('Mar'));
+          assertTrue(daySelect.textContent.includes(oldDate.day));
+          assertTrue(yearSelect.textContent.includes(oldDate.year));
         }
 
         if (params.changeDate) {
@@ -839,13 +839,13 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         const firstOptionInTheMonthSelectorIndex =
             Array.from(allSelectorOptions)
                 .findIndex(
-                    option => option.textContent!.includes(
+                    option => option.textContent.includes(
                         params.monthsAbbreviations[0]!));
         assertNotEquals(firstOptionInTheMonthSelectorIndex, -1);
 
         for (let i = 0, j = firstOptionInTheMonthSelectorIndex;
              i < params.monthsAbbreviations.length; i++, j++) {
-          assertTrue(allSelectorOptions.item(j).textContent!.includes(
+          assertTrue(allSelectorOptions.item(j).textContent.includes(
               params.monthsAbbreviations[i]!));
         }
       }));

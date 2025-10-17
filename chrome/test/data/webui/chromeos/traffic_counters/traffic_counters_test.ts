@@ -105,12 +105,12 @@ suite('TrafficCountersTest', function() {
 
   function getLabelFor(id: string): string {
     return getServiceDiv(id)!.querySelector('.network-attribute-label')!
-        .textContent!.trim();
+        .textContent.trim();
   }
 
   function getValueFor(id: string) {
     return getServiceDiv(id)!.querySelector('.network-attribute-value')!
-        .textContent!.trim();
+        .textContent.trim();
   }
 
   function trafficCountersAreEqual(expectedTrafficCounters: Object[]): boolean {

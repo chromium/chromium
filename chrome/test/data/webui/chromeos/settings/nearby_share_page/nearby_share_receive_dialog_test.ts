@@ -109,7 +109,7 @@ suite('<nearby-share-receive-dialog>', () => {
       const connectionToken =
           confirmPage.shadowRoot!.querySelector('#connectionToken');
       assertTrue(!!connectionToken);
-      assertStringContains(connectionToken.textContent!, '1234');
+      assertStringContains(connectionToken.textContent, '1234');
       assertTrue(isChildVisible(confirmPage, 'nearby-preview'));
 
       const page =
@@ -146,7 +146,7 @@ suite('<nearby-share-receive-dialog>', () => {
       const connectionToken =
           confirmPage.shadowRoot!.querySelector('#connectionToken');
       assertTrue(!!connectionToken);
-      assertStringContains(connectionToken.textContent!, '1234');
+      assertStringContains(connectionToken.textContent, '1234');
       assertTrue(isChildVisible(confirmPage, 'nearby-preview'));
 
       const page =
@@ -204,7 +204,7 @@ suite('<nearby-share-receive-dialog>', () => {
 
       const errorTitle =
           highVisibilityPage.shadowRoot!.querySelector('#errorTitle');
-      assertTrue(!!errorTitle && errorTitle.textContent!.length > 0);
+      assertTrue(!!errorTitle && errorTitle.textContent.length > 0);
     });
   });
 

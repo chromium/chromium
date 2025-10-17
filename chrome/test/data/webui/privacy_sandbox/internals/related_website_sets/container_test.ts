@@ -31,7 +31,7 @@ suite('ContainerTest', () => {
 
   test('check expand collapse', async () => {
     assertEquals(
-        'Expand All', container.$.expandCollapseButton.textContent!.trim());
+        'Expand All', container.$.expandCollapseButton.textContent.trim());
     const renderedItems =
         container.shadowRoot.querySelectorAll('related-website-sets-list-item');
     renderedItems.forEach(item => assertFalse(item.$.expandedContent.opened));
@@ -40,14 +40,14 @@ suite('ContainerTest', () => {
 
     // Verify that all items were opened when button clicked
     assertEquals(
-        'Collapse All', container.$.expandCollapseButton.textContent!.trim());
+        'Collapse All', container.$.expandCollapseButton.textContent.trim());
     renderedItems.forEach(item => assertTrue(item.$.expandedContent.opened));
     container.$.expandCollapseButton.click();
     await microtasksFinished();
 
     // Verify that all items close when button clicked again
     assertEquals(
-        'Expand All', container.$.expandCollapseButton.textContent!.trim());
+        'Expand All', container.$.expandCollapseButton.textContent.trim());
     renderedItems.forEach(item => assertFalse(item.$.expandedContent.opened));
   });
 

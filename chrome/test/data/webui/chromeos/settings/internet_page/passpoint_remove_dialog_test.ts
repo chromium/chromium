@@ -42,7 +42,7 @@ suite('<passpoint-remove-dialog>', () => {
     assertEquals(
         loadTimeData.getString(
             'networkSectionPasspointGoToSubscriptionButtonLabel'),
-        button.textContent!.trim());
+        button.textContent.trim());
   });
 
   test('Cancel the dialog', async () => {

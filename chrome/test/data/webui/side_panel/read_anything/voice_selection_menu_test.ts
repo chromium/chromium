@@ -97,7 +97,7 @@ suite('VoiceSelectionMenu', () => {
       const dropdownItems: HTMLButtonElement = getDropdownItemForVoice(voice1);
       assertTrue(isPositionedOnPage(dropdownItems));
       assertEquals(
-          getDropdownItemForVoice(voice1).textContent!.trim(), voice1.name);
+          getDropdownItemForVoice(voice1).textContent.trim(), voice1.name);
     });
 
     test('it shows language menu after button click', async () => {
@@ -122,9 +122,9 @@ suite('VoiceSelectionMenu', () => {
       await openVoiceMenu();
 
       assertEquals(
-          voice1.name, getDropdownItemForVoice(voice1).textContent!.trim());
+          voice1.name, getDropdownItemForVoice(voice1).textContent.trim());
       assertEquals(
-          voice2.name, getDropdownItemForVoice(voice2).textContent!.trim());
+          voice2.name, getDropdownItemForVoice(voice2).textContent.trim());
       assertTrue(isPositionedOnPage(getDropdownItemForVoice(voice1)));
       assertTrue(isPositionedOnPage(getDropdownItemForVoice(voice2)));
     });
@@ -160,12 +160,12 @@ suite('VoiceSelectionMenu', () => {
     const englishVoice2 = englishVoice1.nextElementSibling!;
     const portugueseVoice1 = groupTitles.item(1).nextElementSibling!;
     const portugueseVoice2 = portugueseVoice1.nextElementSibling!;
-    assertEquals(googleVoice1.name, englishVoice1.textContent!.trim());
+    assertEquals(googleVoice1.name, englishVoice1.textContent.trim());
     assertEquals(
-        'System text-to-speech voice', englishVoice2.textContent!.trim());
-    assertEquals(googleVoice2.name, portugueseVoice1.textContent!.trim());
+        'System text-to-speech voice', englishVoice2.textContent.trim());
+    assertEquals(googleVoice2.name, portugueseVoice1.textContent.trim());
     assertEquals(
-        'System text-to-speech voice', portugueseVoice2.textContent!.trim());
+        'System text-to-speech voice', portugueseVoice2.textContent.trim());
   });
   // </if>
 
@@ -216,10 +216,10 @@ suite('VoiceSelectionMenu', () => {
       const secondVoice = firstVoice.nextElementSibling!;
       const thirdVoice = secondVoice.nextElementSibling!;
       const italianVoice = groupTitles.item(1).nextElementSibling!;
-      assertEquals(voice1.name, firstVoice.textContent!.trim());
-      assertEquals(previewVoice.name, secondVoice.textContent!.trim());
-      assertEquals(selectedVoice.name, thirdVoice.textContent!.trim());
-      assertEquals(voice2.name, italianVoice.textContent!.trim());
+      assertEquals(voice1.name, firstVoice.textContent.trim());
+      assertEquals(previewVoice.name, secondVoice.textContent.trim());
+      assertEquals(selectedVoice.name, thirdVoice.textContent.trim());
+      assertEquals(voice2.name, italianVoice.textContent.trim());
     });
 
     test('it only shows enabled languages', async () => {
@@ -232,7 +232,7 @@ suite('VoiceSelectionMenu', () => {
       assertEquals(1, groupTitles.length);
 
       const italianVoice = groupTitles.item(0).nextElementSibling!;
-      assertEquals(voice2.name, italianVoice.textContent!.trim());
+      assertEquals(voice2.name, italianVoice.textContent.trim());
     });
 
     suite('with Natural voices also available', () => {
@@ -259,16 +259,16 @@ suite('VoiceSelectionMenu', () => {
         assertEquals(4, usEnglishDropdownItems.length);
         assertEquals(
             'Google US English 1 (Natural)',
-            usEnglishDropdownItems.item(0).textContent!.trim());
+            usEnglishDropdownItems.item(0).textContent.trim());
         assertEquals(
             'Google US English 2 (Natural)',
-            usEnglishDropdownItems.item(1).textContent!.trim());
+            usEnglishDropdownItems.item(1).textContent.trim());
         assertEquals(
             previewVoice.name,
-            usEnglishDropdownItems.item(2).textContent!.trim());
+            usEnglishDropdownItems.item(2).textContent.trim());
         assertEquals(
             selectedVoice.name,
-            usEnglishDropdownItems.item(3).textContent!.trim());
+            usEnglishDropdownItems.item(3).textContent.trim());
       });
     });
 
@@ -283,8 +283,8 @@ suite('VoiceSelectionMenu', () => {
               .querySelectorAll<HTMLElement>('.lang-group-title');
 
       assertEquals(
-          'English (United States)', groupTitles.item(0).textContent!.trim());
-      assertEquals('it-it', groupTitles.item(1).textContent!.trim());
+          'English (United States)', groupTitles.item(0).textContent.trim());
+      assertEquals('it-it', groupTitles.item(1).textContent.trim());
     });
 
     test('languages are grouped when voices have same names', async () => {
@@ -301,12 +301,12 @@ suite('VoiceSelectionMenu', () => {
       const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
 
       assertEquals(2, groupTitles.length);
-      assertEquals('en-us', groupTitles.item(0).textContent!.trim());
-      assertEquals('en-uk', groupTitles.item(1).textContent!.trim());
+      assertEquals('en-us', groupTitles.item(0).textContent.trim());
+      assertEquals('en-uk', groupTitles.item(1).textContent.trim());
       assertEquals(3, voiceNames.length);
-      assertEquals('Google English', voiceNames.item(0).textContent!.trim());
-      assertEquals('Google English', voiceNames.item(1).textContent!.trim());
-      assertEquals('Google English', voiceNames.item(2).textContent!.trim());
+      assertEquals('Google English', voiceNames.item(0).textContent.trim());
+      assertEquals('Google English', voiceNames.item(1).textContent.trim());
+      assertEquals('Google English', voiceNames.item(2).textContent.trim());
     });
 
     test('preview button click emits play preview event', async () => {
@@ -533,7 +533,7 @@ suite('VoiceSelectionMenu', () => {
         assertEquals(1, msgs.length);
         assertEquals(0, getErrorMessages().length);
         assertStringContains(
-            msgs[0]!.textContent!.trim(), 'Downloading Français voices');
+            msgs[0]!.textContent.trim(), 'Downloading Français voices');
       });
 
       test('hides downloading message when done', async () => {
@@ -554,7 +554,7 @@ suite('VoiceSelectionMenu', () => {
         const msgs = getErrorMessages();
         assertEquals(0, getDownloadMessages().length);
         assertEquals(1, msgs.length);
-        assertStringContains(msgs[0]!.textContent!, 'Connect to the internet');
+        assertStringContains(msgs[0]!.textContent, 'Connect to the internet');
       });
 
       test('shows downloading messages on open', async () => {
@@ -603,13 +603,11 @@ suite('VoiceSelectionMenu', () => {
         const msgs = getDownloadMessages();
         assertEquals(4, msgs.length);
         assertStringContains(
-            msgs[0]!.textContent!,
-            'Downloading English (United States) voices');
+            msgs[0]!.textContent, 'Downloading English (United States) voices');
+        assertStringContains(msgs[1]!.textContent, 'Downloading 日本語 voices');
         assertStringContains(
-            msgs[1]!.textContent!, 'Downloading 日本語 voices');
-        assertStringContains(
-            msgs[2]!.textContent!, 'Downloading Español (España) voices');
-        assertStringContains(msgs[3]!.textContent!, 'Downloading हिन्दी voices');
+            msgs[2]!.textContent, 'Downloading Español (España) voices');
+        assertStringContains(msgs[3]!.textContent, 'Downloading हिन्दी voices');
       });
 
       test('hides downloading messages when done', async () => {
@@ -640,14 +638,13 @@ suite('VoiceSelectionMenu', () => {
         assertEquals(0, getDownloadMessages().length);
         assertEquals(4, msgs.length);
         assertStringContains(
-            msgs[0]!.textContent!,
+            msgs[0]!.textContent,
             'There are no English (United States) voices');
         assertStringContains(
-            msgs[1]!.textContent!, 'There are no 日本語 voices');
+            msgs[1]!.textContent, 'There are no 日本語 voices');
         assertStringContains(
-            msgs[2]!.textContent!, 'There are no Español (España) voices');
-        assertStringContains(
-            msgs[3]!.textContent!, 'There are no हिन्दी voices');
+            msgs[2]!.textContent, 'There are no Español (España) voices');
+        assertStringContains(msgs[3]!.textContent, 'There are no हिन्दी voices');
       });
 
       test('shows only downloading messages on open', async () => {

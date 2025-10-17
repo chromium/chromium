@@ -80,7 +80,7 @@ suite('SearchEngineEntryTest', function() {
   test('Initialization', function() {
     assertEquals(
         searchEngine.displayName,
-        entry.shadowRoot!.querySelector('#name-column')!.textContent!.trim());
+        entry.shadowRoot!.querySelector('#name-column')!.textContent.trim());
     assertEquals(
         searchEngine.keyword,
         entry.shadowRoot!.querySelector('#shortcut-column')!.textContent);
@@ -422,7 +422,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
           assertEquals(
               searchEngine.displayName,
               entry.shadowRoot!.querySelector(
-                                   '#name-column')!.textContent!.trim());
+                                   '#name-column')!.textContent.trim());
           assertEquals(
               searchEngine.keyword,
               entry.shadowRoot!.querySelector('#shortcut-column')!.textContent);

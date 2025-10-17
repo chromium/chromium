@@ -118,7 +118,7 @@ suite('searchResultRowTest', function() {
     assertEquals(2, keys1.length);
     assertEquals(
         'ctrl',
-        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
         'show windows',
         keys1[1]!.shadowRoot!.querySelector('#keyIcon')!.getAttribute(

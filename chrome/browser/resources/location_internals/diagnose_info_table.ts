@@ -83,7 +83,7 @@ export class DiagnoseInfoTableElement extends CustomElement {
   outputTable(): Record<string, any> {
     const table: Record<string, any> = {};
     const name = this.tableTitle_.textContent;
-    table[name!] = this.lastTableEntries_;
+    table[name] = this.lastTableEntries_;
     return table;
   }
 }

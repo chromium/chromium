@@ -58,13 +58,13 @@ suite('SecurityKeysSetPINDialog', function() {
   });
 
   function assertComplete() {
-    assertEquals(dialog.$.closeButton.textContent!.trim(), 'OK');
+    assertEquals(dialog.$.closeButton.textContent.trim(), 'OK');
     assertEquals(dialog.$.closeButton.className, 'action-button');
     assertEquals(dialog.$.pinSubmit.hidden, true);
   }
 
   function assertNotComplete() {
-    assertEquals(dialog.$.closeButton.textContent!.trim(), 'Cancel');
+    assertEquals(dialog.$.closeButton.textContent.trim(), 'Cancel');
     assertEquals(dialog.$.closeButton.className, 'cancel-button');
     assertEquals(dialog.$.pinSubmit.hidden, false);
   }
@@ -92,7 +92,7 @@ suite('SecurityKeysSetPINDialog', function() {
       assertShown(allDivs, dialog, (testCase[1] as string));
       if (testCase[1] === 'error') {
         // Unhandled error codes display the numeric code.
-        assertTrue(dialog.$.error.textContent!.trim().includes(
+        assertTrue(dialog.$.error.textContent.trim().includes(
             testCase[0]!.toString()));
       }
     });
@@ -217,7 +217,7 @@ suite('SecurityKeysSetPINDialog', function() {
       assertShown(allDivs, dialog, (testCase[1] as string));
       if (testCase[1] === 'error') {
         // Unhandled error codes display the numeric code.
-        assertTrue(dialog.$.error.textContent!.trim().includes(
+        assertTrue(dialog.$.error.textContent.trim().includes(
             testCase[0]!.toString()));
       }
     });

@@ -146,7 +146,7 @@ suite('<settings-input-method-options-page>', () => {
     assertEquals(7, options.length);
     const autoCorrection = options[0]!.querySelector('.start');
     assertTrue(!!autoCorrection);
-    assertEquals('Auto-correction', autoCorrection.textContent!.trim());
+    assertEquals('Auto-correction', autoCorrection.textContent.trim());
     const autoCorrectToggleButton = options[0]!.querySelector('cr-toggle');
     assertTrue(!!autoCorrectToggleButton);
     assertEquals(false, autoCorrectToggleButton.checked);
@@ -160,7 +160,7 @@ suite('<settings-input-method-options-page>', () => {
 
     const soundOnKeypress = options[1]!.querySelector('.start');
     assertTrue(!!soundOnKeypress);
-    assertEquals('Sound on keypress', soundOnKeypress.textContent!.trim());
+    assertEquals('Sound on keypress', soundOnKeypress.textContent.trim());
     const soundToggleButton = options[1]!.querySelector('cr-toggle');
     assertTrue(!!soundToggleButton);
     assertEquals(false, soundToggleButton.checked);

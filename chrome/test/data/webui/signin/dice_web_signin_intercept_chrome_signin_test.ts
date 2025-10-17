@@ -79,10 +79,10 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     const acceptButton = app.shadowRoot.querySelector('#accept-button')!;
     assertEquals(
         app.i18n('chromeSigninAcceptText', PARAMETERS.givenName),
-        acceptButton.textContent!.trim());
+        acceptButton.textContent.trim());
     const cancelButton = app.shadowRoot.querySelector('#cancel-button')!;
     assertEquals(
-        app.i18n('chromeSigninDeclineText'), cancelButton.textContent!.trim());
+        app.i18n('chromeSigninDeclineText'), cancelButton.textContent.trim());
 
     const avatarSelector = '#accountIconContainer>img';
     checkImageUrl(avatarSelector, PARAMETERS.pictureUrl);

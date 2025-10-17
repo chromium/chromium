@@ -343,7 +343,7 @@ suite('acceleratorEditViewTest', function() {
         '#container',
         editViewElement!.shadowRoot!.querySelector('#status')!.shadowRoot,
         HTMLDivElement);
-    assertEquals(expectedHintMessage, statusMessageElement.textContent!.trim());
+    assertEquals(expectedHintMessage, statusMessageElement.textContent.trim());
   });
 
   test('ClickCancelButton', async () => {

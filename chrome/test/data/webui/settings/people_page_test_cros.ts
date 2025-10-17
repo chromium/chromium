@@ -99,7 +99,7 @@ suite('Chrome OS', function() {
     assertEquals(
         'Primary Account',
         peoplePage.shadowRoot!.querySelector(
-                                  '#profile-name')!.textContent!.trim());
+                                  '#profile-name')!.textContent.trim());
   });
 
   test('profile row is actionable', () => {

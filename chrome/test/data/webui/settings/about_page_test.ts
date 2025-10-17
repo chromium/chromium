@@ -115,13 +115,13 @@ suite('AllBuilds', function() {
     fireStatusChanged(UpdateStatus.UPDATING, {progress: 0});
     await assertSpinnerVisible(true);
     assertEquals('', icon.getAttribute('icon'));
-    assertFalse(statusMessageEl.textContent!.includes('%'));
+    assertFalse(statusMessageEl.textContent.includes('%'));
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.UPDATING, {progress: 1});
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
-    assertTrue(statusMessageEl.textContent!.includes('%'));
+    assertTrue(statusMessageEl.textContent.includes('%'));
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
@@ -133,17 +133,17 @@ suite('AllBuilds', function() {
     fireStatusChanged(UpdateStatus.DISABLED_BY_ADMIN);
     await assertSpinnerVisible(false);
     assertEquals('cr20:domain', icon.icon);
-    assertEquals(0, statusMessageEl.textContent!.trim().length);
+    assertEquals(0, statusMessageEl.textContent.trim().length);
 
     fireStatusChanged(UpdateStatus.FAILED);
     await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
-    assertEquals(0, statusMessageEl.textContent!.trim().length);
+    assertEquals(0, statusMessageEl.textContent.trim().length);
 
     fireStatusChanged(UpdateStatus.DISABLED);
     await assertSpinnerVisible(false);
     assertEquals('', icon.getAttribute('icon'));
-    assertEquals(0, statusMessageEl.textContent!.trim().length);
+    assertEquals(0, statusMessageEl.textContent.trim().length);
   });
 
   test('ErrorMessageWithHtml', function() {

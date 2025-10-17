@@ -70,11 +70,11 @@ suite('LinkContainerTest', function() {
     assertLinkState(link, false);
 
     // <if expr="is_macosx">
-    assertEquals('Print using system dialog… (⌥⌘P)', link.textContent!.trim());
+    assertEquals('Print using system dialog… (⌥⌘P)', link.textContent.trim());
     // </if>
     // <if expr="not is_macosx">
     assertEquals(
-        'Print using system dialog… (Ctrl+Shift+P)', link.textContent!.trim());
+        'Print using system dialog… (Ctrl+Shift+P)', link.textContent.trim());
     // </if>
   });
 

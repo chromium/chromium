@@ -54,7 +54,7 @@ suite('HeaderTest', function() {
     {
       const {messageName, itemCount} =
           await pluralString.whenCalled('getPluralString');
-      assertEquals('1 sheet of paper', summary.textContent!.trim());
+      assertEquals('1 sheet of paper', summary.textContent.trim());
       assertEquals('printPreviewSheetSummaryLabel', messageName);
       assertEquals(1, itemCount);
     }
@@ -93,19 +93,19 @@ suite('HeaderTest', function() {
   test('HeaderChangesForState', async function() {
     const summary = header.shadowRoot!.querySelector('.summary')!;
     await pluralString.whenCalled('getPluralString');
-    assertEquals('1 sheet of paper', summary.textContent!.trim());
+    assertEquals('1 sheet of paper', summary.textContent.trim());
 
     header.state = State.NOT_READY;
-    assertEquals('', summary.textContent!.trim());
+    assertEquals('', summary.textContent.trim());
 
     header.state = State.PRINTING;
     assertEquals(
-        loadTimeData.getString('printing'), summary.textContent!.trim());
+        loadTimeData.getString('printing'), summary.textContent.trim());
     setPdfDestination();
-    assertEquals(loadTimeData.getString('saving'), summary.textContent!.trim());
+    assertEquals(loadTimeData.getString('saving'), summary.textContent.trim());
 
     header.state = State.ERROR;
-    assertEquals('', summary.textContent!.trim());
+    assertEquals('', summary.textContent.trim());
   });
 
   // Tests that enterprise badge shows up if any setting is managed.

@@ -54,8 +54,8 @@ suite('DescriptionCitationTest', () => {
     await flushTasks();
 
     assertTrue(!!citationElement.$.citation);
-    assertEquals('4', citationElement.$.citation.textContent!?.trim());
-    assertTrue(citationElement.$.tooltip.textContent!?.includes('example.com'));
+    assertEquals('4', citationElement.$.citation.textContent?.trim());
+    assertTrue(citationElement.$.tooltip.textContent?.includes('example.com'));
 
     assertTrue(!!citationElement.shadowRoot.querySelector('.faviconContainer'));
     assertTrue(!!citationElement.shadowRoot.querySelector('.previewText'));
@@ -82,8 +82,8 @@ suite('DescriptionCitationTest', () => {
     await flushTasks();
 
     assertTrue(!!citationElement.$.citation);
-    assertEquals('4', citationElement.$.citation.textContent!?.trim());
-    assertTrue(citationElement.$.tooltip.textContent!?.includes('example.com'));
+    assertEquals('4', citationElement.$.citation.textContent?.trim());
+    assertTrue(citationElement.$.tooltip.textContent?.includes('example.com'));
 
     assertFalse(
         !!citationElement.shadowRoot.querySelector('.faviconContainer'));
@@ -110,12 +110,12 @@ suite('DescriptionCitationTest', () => {
     await flushTasks();
 
     assertTrue(!!citationElement.$.citation);
-    assertEquals('1', citationElement.$.citation.textContent!?.trim());
+    assertEquals('1', citationElement.$.citation.textContent?.trim());
 
     // Ensure the citation only contains TLD+1.
-    assertTrue(citationElement.$.tooltip.textContent!?.includes('example.com'));
+    assertTrue(citationElement.$.tooltip.textContent?.includes('example.com'));
     assertFalse(
-        citationElement.$.tooltip.textContent!?.includes('www.example.com'));
+        citationElement.$.tooltip.textContent?.includes('www.example.com'));
   });
 
   test('click opens tab', async () => {

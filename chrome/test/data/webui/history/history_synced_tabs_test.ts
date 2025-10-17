@@ -29,8 +29,7 @@ function assertNoSyncedTabsMessageShown(
     manager: HistorySyncedDeviceManagerElement, stringID: string) {
   assertFalse(manager.$['no-synced-tabs'].hidden);
   const message = loadTimeData.getString(stringID);
-  assertNotEquals(
-      -1, manager.$['no-synced-tabs'].textContent!.indexOf(message));
+  assertNotEquals(-1, manager.$['no-synced-tabs'].textContent.indexOf(message));
 }
 
 suite('<history-synced-device-manager>', function() {
@@ -76,7 +75,7 @@ suite('<history-synced-device-manager>', function() {
     assertEquals(
         'http://www.google.com',
         card.shadowRoot.querySelectorAll<HTMLElement>(
-                           '.website-title')[0]!.textContent!.trim());
+                           '.website-title')[0]!.textContent.trim());
     assertEquals(2, card.tabs.length);
   });
 
@@ -132,7 +131,7 @@ suite('<history-synced-device-manager>', function() {
     assertEquals(
         'http://crbug.com/new',
         cards[0]!.shadowRoot.querySelectorAll<HTMLElement>(
-                                '.website-title')[1]!.textContent!.trim());
+                                '.website-title')[1]!.textContent.trim());
   });
 
   test('two cards, multiple windows, search', async () => {
@@ -174,7 +173,7 @@ suite('<history-synced-device-manager>', function() {
     assertEquals(
         'http://www.google.com',
         cards[0]!.shadowRoot.querySelectorAll<HTMLElement>(
-                                '.website-title')[0]!.textContent!.trim());
+                                '.website-title')[0]!.textContent.trim());
 
     element.searchTerm = 'Sans';
     await microtasksFinished();
@@ -500,11 +499,11 @@ suite('<history-sync-optin>', function() {
     assertEquals(
         'Test User',
         element.shadowRoot.querySelector<HTMLElement>(
-                              '#account-name')!.textContent!.trim());
+                              '#account-name')!.textContent.trim());
     assertEquals(
         'test@google.com',
         element.shadowRoot.querySelector<HTMLElement>(
-                              '#account-email')!.textContent!.trim());
+                              '#account-email')!.textContent.trim());
     assertEquals(
         'http://example.com/image.png',
         element.shadowRoot.querySelector<HTMLImageElement>(
@@ -527,11 +526,11 @@ suite('<history-sync-optin>', function() {
     assertEquals(
         newAccountInfo.name,
         element.shadowRoot.querySelector<HTMLElement>(
-                              '#account-name')!.textContent!.trim());
+                              '#account-name')!.textContent.trim());
     assertEquals(
         newAccountInfo.email,
         element.shadowRoot.querySelector<HTMLElement>(
-                              '#account-email')!.textContent!.trim());
+                              '#account-email')!.textContent.trim());
     assertEquals(
         newAccountInfo.accountImageSrc.url,
         element.shadowRoot.querySelector<HTMLImageElement>(

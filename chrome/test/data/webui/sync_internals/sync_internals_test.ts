@@ -383,7 +383,7 @@ suite('SyncInternals', function() {
     getRequiredElement('dump-to-text').click();
 
     // Verify our event is among the results.
-    const eventDumpText = getRequiredElement('data-dump').textContent!;
+    const eventDumpText = getRequiredElement('data-dump').textContent;
 
     assertGE(eventDumpText.indexOf('onProtocolEvent'), 0);
     assertGE(eventDumpText.indexOf('someData'), 0);

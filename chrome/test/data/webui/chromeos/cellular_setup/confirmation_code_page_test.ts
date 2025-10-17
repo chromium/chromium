@@ -46,7 +46,7 @@ suite('CrComponentsConfirmationCodePageTest', function() {
         confirmationCodePage.shadowRoot!.getElementById('details');
     assertTrue(!!detailsElement);
     assertEquals(
-        '', detailsElement.textContent!.trim(),
+        '', detailsElement.textContent.trim(),
         'no profile name is shown without profileProperties');
 
     confirmationCodePage.profileProperties = {
@@ -60,7 +60,7 @@ suite('CrComponentsConfirmationCodePageTest', function() {
     };
 
     assertEquals(
-        'test profile name', detailsElement.textContent!.trim(),
+        'test profile name', detailsElement.textContent.trim(),
         'correct profile name is shown');
   });
 });

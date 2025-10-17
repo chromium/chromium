@@ -72,11 +72,11 @@ suite('CheckupDetailsSectionTest', function() {
             } else {
               assertEquals(
                   loadTimeData.getString(`${type}PasswordsTitle`),
-                  section.$.subtitle.textContent!.trim());
+                  section.$.subtitle.textContent.trim());
             }
             assertEquals(
                 loadTimeData.getString(`${type}PasswordsDescription`),
-                section.$.description.textContent!.trim());
+                section.$.description.textContent.trim());
           }));
 
   test('Compromised issues shown correctly', async function() {
@@ -146,16 +146,16 @@ suite('CheckupDetailsSectionTest', function() {
       assertTrue(!!listItemElement);
       assertEquals(
           passwordManager.data.groups[0]?.name,
-          listItemElement.$.shownUrl.textContent!.trim());
+          listItemElement.$.shownUrl.textContent.trim());
       assertEquals(
           expectedCredential.username,
-          listItemElement.$.username.textContent!.trim());
+          listItemElement.$.username.textContent.trim());
       const compromiseType =
           listItemElement.shadowRoot!.querySelector('#compromiseType');
 
       assertTrue(!!compromiseType);
       assertTrue(isVisible(compromiseType));
-      assertEquals(expectedType[index]!, compromiseType.textContent!.trim());
+      assertEquals(expectedType[index]!, compromiseType.textContent.trim());
 
       const elapsedTime =
           listItemElement.shadowRoot!.querySelector('#elapsedTime');
@@ -163,7 +163,7 @@ suite('CheckupDetailsSectionTest', function() {
       assertTrue(isVisible(elapsedTime));
       assertEquals(
           expectedCredential.compromisedInfo?.elapsedTimeSinceCompromise,
-          elapsedTime.textContent!.trim());
+          elapsedTime.textContent.trim());
     }
   });
 
@@ -202,8 +202,8 @@ suite('CheckupDetailsSectionTest', function() {
     assertTrue(!!weakItem);
     assertEquals(
         passwordManager.data.groups[0]!.name,
-        weakItem.$.shownUrl.textContent!.trim());
-    assertEquals('viking', weakItem.$.username.textContent!.trim());
+        weakItem.$.shownUrl.textContent.trim());
+    assertEquals('viking', weakItem.$.username.textContent.trim());
 
     assertFalse(!!weakItem.shadowRoot!.querySelector('#compromiseType'));
     assertFalse(!!weakItem.shadowRoot!.querySelector('#elapsedTime'));
@@ -314,10 +314,10 @@ suite('CheckupDetailsSectionTest', function() {
       assertTrue(!!listItemElement);
       assertEquals(
           expectedCredential.affiliatedDomains[0]!.name,
-          listItemElement.$.shownUrl.textContent!.trim());
+          listItemElement.$.shownUrl.textContent.trim());
       assertEquals(
           expectedCredential.username,
-          listItemElement.$.username.textContent!.trim());
+          listItemElement.$.username.textContent.trim());
       const leakType = listItemElement.shadowRoot!.querySelector('#leakType');
       assertFalse(!!leakType);
 

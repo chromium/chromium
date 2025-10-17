@@ -48,7 +48,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     const title = section.shadowRoot!.querySelector('#title');
     assertTrue(!!title);
-    assertEquals(group.name, title.textContent!.trim());
+    assertEquals(group.name, title.textContent.trim());
   });
 
   test('Navigating directly', async function() {
@@ -82,7 +82,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     const title = section.$.title;
     assertTrue(!!title);
-    assertEquals('test.com', title.textContent!.trim());
+    assertEquals('test.com', title.textContent.trim());
   });
 
   test('Navigating directly fails when group is not found', async function() {
@@ -394,7 +394,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     const title = section.$.title;
-    assertEquals('test.com', title.textContent!.trim());
+    assertEquals('test.com', title.textContent.trim());
 
     const entries =
         section.shadowRoot!.querySelectorAll<PasswordDetailsCardElement>(

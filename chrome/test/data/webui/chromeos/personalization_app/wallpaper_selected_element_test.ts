@@ -267,7 +267,7 @@ suite('WallpaperSelectedElementTest', function() {
         wallpaperSelectedElement.shadowRoot!.getElementById('imageTitle');
     assertEquals(
         wallpaperSelectedElement.i18n('unknownImageAttribution'),
-        title!.textContent!.trim());
+        title!.textContent.trim());
   });
 
   test('updates image when store is updated', async () => {

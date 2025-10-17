@@ -41,7 +41,7 @@ suite('CredentialNoteTest', function() {
 
     assertEquals(
         loadTimeData.getString('emptyNote'),
-        element.$.noteValue.textContent!.trim());
+        element.$.noteValue.textContent.trim());
     assertTrue(element.$.showMore.hidden);
   });
 
@@ -49,7 +49,7 @@ suite('CredentialNoteTest', function() {
     const note = 'Remember the milk';
     const element = await createNoteElement(note);
 
-    assertEquals(note, element.$.noteValue.textContent!.trim());
+    assertEquals(note, element.$.noteValue.textContent.trim());
     assertTrue(element.$.showMore.hidden);
   });
 
@@ -63,7 +63,7 @@ suite('CredentialNoteTest', function() {
 
     const element = await createNoteElement(note);
 
-    assertEquals(note, element.$.noteValue.textContent!.trim());
+    assertEquals(note, element.$.noteValue.textContent.trim());
     assertTrue(element.$.noteValue.hasAttribute('limit-note'));
     assertFalse(element.$.showMore.hidden);
 
@@ -83,7 +83,7 @@ suite('CredentialNoteTest', function() {
 
     const element = await createNoteElement(note, true);
 
-    assertEquals(note, element.$.noteValue.textContent!.trim());
+    assertEquals(note, element.$.noteValue.textContent.trim());
     assertFalse(element.$.noteValue.hasAttribute('limit-note'));
     assertTrue(element.$.showMore.hidden);
   });

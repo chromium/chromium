@@ -75,12 +75,12 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
 
   function getOnOffText(): string {
     return privacyHubCameraSubpage.shadowRoot!.querySelector('#onOffText')!
-        .textContent!.trim();
+        .textContent.trim();
   }
 
   function getOnOffSubtext(): string {
     return privacyHubCameraSubpage.shadowRoot!.querySelector('#onOffSubtext')!
-        .textContent!.trim();
+        .textContent.trim();
   }
 
   function isCameraListSectionVisible(): boolean {
@@ -192,7 +192,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     assertTrue(!!getNoCameraTextElement());
     assertEquals(
         privacyHubCameraSubpage.i18n('noCameraConnectedText'),
-        getNoCameraTextElement()!.textContent!.trim());
+        getNoCameraTextElement()!.textContent.trim());
   });
 
   test('Change force-disable-camera-switch', async () => {
@@ -312,7 +312,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     assertEquals(
         privacyHubCameraSubpage.i18n('privacyHubAppsSectionTitle'),
         privacyHubCameraSubpage.shadowRoot!.querySelector('#appsSectionTitle')!
-            .textContent!.trim());
+            .textContent.trim());
     assertTrue(!!getAppList());
     assertNull(getNoAppHasAccessTextSection());
   });
@@ -329,7 +329,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     assertTrue(!!getNoAppHasAccessTextSection());
     assertEquals(
         privacyHubCameraSubpage.i18n('noAppCanUseCameraText'),
-        getNoAppHasAccessTextSection()!.textContent!.trim());
+        getNoAppHasAccessTextSection()!.textContent.trim());
   });
 
   function initializeObserver(): Promise<void> {
@@ -399,7 +399,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     assertEquals(
         privacyHubCameraSubpage.i18n('websitesSectionTitle'),
         privacyHubCameraSubpage.shadowRoot!
-            .querySelector('#websitesSectionTitle')!.textContent!.trim());
+            .querySelector('#websitesSectionTitle')!.textContent.trim());
 
     assertEquals(
         privacyHubCameraSubpage.i18n('manageCameraPermissionsInChromeText'),
@@ -413,7 +413,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
 
     assertEquals(
         privacyHubCameraSubpage.i18n('noWebsiteCanUseCameraText'),
-        getNoWebsiteHasAccessTextRow()!.textContent!.trim());
+        getNoWebsiteHasAccessTextRow()!.textContent.trim());
   });
 
   test('Websites section when camera allowed', () => {
@@ -467,7 +467,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     assertEquals(
         privacyHubCameraSubpage.i18n('privacyHubSystemServicesSectionTitle'),
         privacyHubCameraSubpage.shadowRoot!
-            .querySelector('#systemServicesSectionTitle')!.textContent!.trim());
+            .querySelector('#systemServicesSectionTitle')!.textContent.trim());
 
     await flushTasks();
     const systemServices =

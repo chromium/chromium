@@ -75,7 +75,7 @@ suite('acceleratorRowTest', function() {
     assertEquals(
         description,
         rowElement.shadowRoot!.querySelector(
-                                  '#descriptionText')!.textContent!.trim());
+                                  '#descriptionText')!.textContent.trim());
 
     const keys1: NodeListOf<ShortcutInputKeyElement> =
         acceleratorElements[0]!.shadowRoot!.querySelectorAll(
@@ -84,12 +84,12 @@ suite('acceleratorRowTest', function() {
     assertEquals(3, keys1.length);
     assertEquals(
         'ctrl',
-        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
         'shift',
-        keys1[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys1[1]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
-        'g', keys1[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'g', keys1[2]!.shadowRoot!.querySelector('#key')!.textContent.trim());
 
     const keys2 = acceleratorElements[1]!.shadowRoot!.querySelectorAll(
         'shortcut-input-key');
@@ -97,9 +97,9 @@ suite('acceleratorRowTest', function() {
     assertEquals(2, keys2.length);
     assertEquals(
         'ctrl',
-        keys2[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys2[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
-        'c', keys2[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'c', keys2[1]!.shadowRoot!.querySelector('#key')!.textContent.trim());
   });
 
   test('ShowDialogOnClickWhenCustomizationEnabled', async () => {
@@ -226,7 +226,7 @@ suite('acceleratorRowTest', function() {
     assertEquals(
         description,
         rowElement.shadowRoot!.querySelector(
-                                  '#descriptionText')!.textContent!.trim());
+                                  '#descriptionText')!.textContent.trim());
 
     // Because rowElement.layoutStyle is kDefault, we don't expect any
     // 'text-accelerator' elements to be shown, even though the property

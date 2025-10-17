@@ -314,7 +314,7 @@ suite('ChooserExceptionList', function() {
     const emptyListMessage = testElement.shadowRoot!.querySelector<HTMLElement>(
         '#emptyListMessage')!;
     assertFalse(emptyListMessage.hidden);
-    assertEquals('No USB devices found', emptyListMessage.textContent!.trim());
+    assertEquals('No USB devices found', emptyListMessage.textContent.trim());
   });
 
   test('resetChooserExceptionForSite API used', async function() {

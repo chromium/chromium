@@ -119,7 +119,7 @@ suite('NetworkDiagnosticsTest', () => {
           container!.querySelectorAll<HTMLElement>('.routine-container');
       assertGT(routineContainers.length, 0);
       for (const routine of routineContainers) {
-        const msg = routine.querySelector('#result-msg')!.textContent!.trim();
+        const msg = routine.querySelector('#result-msg')!.textContent.trim();
         const parts = msg.split(': ');
 
         switch (verdict) {

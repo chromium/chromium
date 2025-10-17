@@ -83,7 +83,7 @@ suite('PaymentsSectionCardDialogs', function() {
     const oldCreditCardDialog = createCreditCardDialog(oldCreditCard);
 
     function getTitle(dialog: SettingsCreditCardEditDialogElement): string {
-      return dialog.shadowRoot!.querySelector('[slot=title]')!.textContent!;
+      return dialog.shadowRoot!.querySelector('[slot=title]')!.textContent;
     }
 
     const oldTitle = getTitle(oldCreditCardDialog);
@@ -117,10 +117,10 @@ suite('PaymentsSectionCardDialogs', function() {
                   '#year');
           const yearOptions = yearInput!.options;
 
-          assertEquals('2015', yearOptions[0]!.textContent!.trim());
+          assertEquals('2015', yearOptions[0]!.textContent.trim());
           assertEquals(
               maxYear.toString(),
-              yearOptions[yearOptions.length - 1]!.textContent!.trim());
+              yearOptions[yearOptions.length - 1]!.textContent.trim());
           assertEquals(creditCard.expirationYear, yearInput!.value);
         });
   });
@@ -143,11 +143,10 @@ suite('PaymentsSectionCardDialogs', function() {
           const yearOptions = yearInput!.options;
 
           assertEquals(
-              now.getFullYear().toString(),
-              yearOptions[0]!.textContent!.trim());
+              now.getFullYear().toString(), yearOptions[0]!.textContent.trim());
           assertEquals(
               farFutureYear.toString(),
-              yearOptions[yearOptions.length - 1]!.textContent!.trim());
+              yearOptions[yearOptions.length - 1]!.textContent.trim());
           assertEquals(creditCard.expirationYear, yearInput!.value);
         });
   });
@@ -171,11 +170,10 @@ suite('PaymentsSectionCardDialogs', function() {
           const yearOptions = yearInput!.options;
 
           assertEquals(
-              now.getFullYear().toString(),
-              yearOptions[0]!.textContent!.trim());
+              now.getFullYear().toString(), yearOptions[0]!.textContent.trim());
           assertEquals(
               maxYear.toString(),
-              yearOptions[yearOptions.length - 1]!.textContent!.trim());
+              yearOptions[yearOptions.length - 1]!.textContent.trim());
           assertEquals(creditCard.expirationYear, yearInput!.value);
         });
   });
@@ -606,7 +604,7 @@ suite('PaymentsSectionCardDialogs', function() {
 
     const cvcInputTitle =
         cvcInput.shadowRoot!.querySelector<HTMLElement>(
-                                '#label')!.textContent!.trim();
+                                '#label')!.textContent.trim();
     assertTrue(!!cvcInputTitle);
     assertEquals(
         loadTimeData.getString('creditCardCvcInputTitle'), cvcInputTitle);

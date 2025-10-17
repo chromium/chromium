@@ -96,7 +96,7 @@ suite('DefaultBrowserPageTest', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#makeDefaultLabel');
     assertTrue(!!makeDefault);
     assertEquals(
-        makeDefault.textContent!.trim(),
+        makeDefault.textContent.trim(),
         loadTimeData.getString('defaultBrowserMakeDefault'));
   });
 
@@ -121,7 +121,7 @@ suite('DefaultBrowserPageTest', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#makeDefaultLabel');
     assertTrue(!!makeDefault);
     assertEquals(
-        makeDefault.textContent!.trim(),
+        makeDefault.textContent.trim(),
         loadTimeData.getString('defaultBrowserMakeDefaultAndPin'));
     assertFalse(
         !!page.shadowRoot!.querySelector<HTMLElement>('#isUnknownError'));

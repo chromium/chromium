@@ -448,12 +448,11 @@ suite('HistorySyncFragment', function() {
   test('stringUpdatesOnSyncStateChange', async function() {
     function getCardHeader() {
       return fragment.shadowRoot!
-          .querySelector(
-              '.settings-fragment-header-label')!.textContent!.trim();
+          .querySelector('.settings-fragment-header-label')!.textContent.trim();
     }
     function getFeatureDescription1() {
       return fragment.shadowRoot!.querySelector('.icon-bulleted-list li')!
-          .querySelector('.secondary')!.textContent!.trim();
+          .querySelector('.secondary')!.textContent.trim();
     }
 
     // The user is syncing.

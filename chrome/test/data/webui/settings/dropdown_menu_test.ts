@@ -55,7 +55,7 @@ suite('SettingsDropdownMenu', function() {
 
     // Initially selected item.
     assertEquals(
-        'Option 100', selectElement.selectedOptions[0]!.textContent!.trim());
+        'Option 100', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('200');
@@ -84,7 +84,7 @@ suite('SettingsDropdownMenu', function() {
     await waitUntilDropdownUpdated();
 
     // Initially selected item.
-    assertEquals('CCC', selectElement.selectedOptions[0]!.textContent!.trim());
+    assertEquals('CCC', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('a');
@@ -95,8 +95,8 @@ suite('SettingsDropdownMenu', function() {
     const newMenuOptions = dropdown.menuOptions.slice().reverse();
     dropdown.menuOptions = newMenuOptions;
     await waitUntilDropdownUpdated();
-    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent!.trim());
-    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent!.trim());
+    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent.trim());
+    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent.trim());
   });
 
   test('with noSetPref', async function() {
@@ -115,7 +115,7 @@ suite('SettingsDropdownMenu', function() {
 
     // Initially selected item.
     assertEquals(
-        'Option 100', selectElement.selectedOptions[0]!.textContent!.trim());
+        'Option 100', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Updating the pref selects an item also with noSetPref.
     dropdown.set('pref.value', 200);
@@ -243,7 +243,7 @@ suite('SettingsDropdownMenu', function() {
     await waitUntilDropdownUpdated();
     // Initially selected item.
     assertEquals(
-        'Option 2', selectElement.selectedOptions[0]!.textContent!.trim());
+        'Option 2', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Setup does not call the settings-control-change event.
     assertEquals(0, settingsControlChangeCount);

@@ -772,7 +772,7 @@ suite('SiteList', function() {
     const menuItems = menu.querySelectorAll('button:not([hidden])');
     assertEquals(items.length, menuItems.length);
     for (let i = 0; i < items.length; i++) {
-      assertEquals(items[i], menuItems[i]!.textContent!.trim());
+      assertEquals(items[i], menuItems[i]!.textContent.trim());
     }
   }
 
@@ -1276,7 +1276,7 @@ suite('SiteList', function() {
     // Validate that IWA displays app name and not origin.
     assertEquals(
         firstItem.shadowRoot!.querySelector<HTMLElement>(
-                                 '.url-directionality')!.textContent!.trim(),
+                                 '.url-directionality')!.textContent.trim(),
         prefsIsolatedWebApp!.exceptions.notifications[0]!.displayName);
 
     // Validate that non-IWAs can be edited.
@@ -1289,7 +1289,7 @@ suite('SiteList', function() {
     assertEquals(
         secondItem.shadowRoot!
             .querySelector<HTMLElement>(
-                '.url-directionality')!.textContent!.trim(),
+                '.url-directionality')!.textContent.trim(),
         prefsIsolatedWebApp!.exceptions.notifications[1]!.displayName);
   });
 

@@ -50,8 +50,8 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
     const userInfo =
         indicator.shadowRoot!.querySelector<HTMLElement>('#userInfo')!;
     assertTrue(!!userInfo);
-    const title = userInfo.children[0]!.textContent!;
-    const subtitle = userInfo.children[1]!.textContent!;
+    const title = userInfo.children[0]!.textContent;
+    const subtitle = userInfo.children[1]!.textContent;
     assertEquals(title.trim(), name);
     assertEquals(subtitle.trim(), email);
   }

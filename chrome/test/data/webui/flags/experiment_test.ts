@@ -416,7 +416,7 @@ suite('ExperimentTest', function() {
         if (i === expectedHitIndex) {
           const mark = cloneNode.querySelector('mark');
           assertTrue(!!mark);
-          assertEquals(searchTerm, mark.textContent!.toLowerCase());
+          assertEquals(searchTerm, mark.textContent.toLowerCase());
         } else {
           assertFalse(!!cloneNode.querySelector('mark'));
         }

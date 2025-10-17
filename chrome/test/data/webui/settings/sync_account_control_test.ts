@@ -125,10 +125,10 @@ suite('SyncAccountControl', function() {
     // Avatar row shows the right account.
     assertTrue(isChildVisible(testElement, '#promo-header'));
     assertTrue(isChildVisible(testElement, '#avatar-row'));
-    assertTrue(userInfo.textContent!.includes('fooName'));
-    assertTrue(userInfo.textContent!.includes('foo@foo.com'));
-    assertFalse(userInfo.textContent!.includes('barName'));
-    assertFalse(userInfo.textContent!.includes('bar@bar.com'));
+    assertTrue(userInfo.textContent.includes('fooName'));
+    assertTrue(userInfo.textContent.includes('foo@foo.com'));
+    assertFalse(userInfo.textContent.includes('barName'));
+    assertFalse(userInfo.textContent.includes('bar@bar.com'));
 
     // Menu contains the right items.
     assertTrue(!!testElement.shadowRoot!.querySelector('#menu'));
@@ -138,8 +138,8 @@ suite('SyncAccountControl', function() {
     const items =
         testElement.shadowRoot!.querySelectorAll<HTMLElement>('.dropdown-item');
     assertEquals(3, items.length);
-    assertTrue(items[0]!.textContent!.includes('foo@foo.com'));
-    assertTrue(items[1]!.textContent!.includes('bar@bar.com'));
+    assertTrue(items[0]!.textContent.includes('foo@foo.com'));
+    assertTrue(items[1]!.textContent.includes('bar@bar.com'));
     assertEquals(items[2]!.id, 'sign-in-item');
 
     // "sync to" button is showing the correct name and syncs with the
@@ -170,10 +170,10 @@ suite('SyncAccountControl', function() {
     // email.
     items[1]!.click();
     flush();
-    assertFalse(userInfo.textContent!.includes('fooName'));
-    assertFalse(userInfo.textContent!.includes('foo@foo.com'));
-    assertTrue(userInfo.textContent!.includes('barName'));
-    assertTrue(userInfo.textContent!.includes('bar@bar.com'));
+    assertFalse(userInfo.textContent.includes('fooName'));
+    assertFalse(userInfo.textContent.includes('foo@foo.com'));
+    assertTrue(userInfo.textContent.includes('barName'));
+    assertTrue(userInfo.textContent.includes('bar@bar.com'));
     assertTrue(isVisible(syncButton));
 
     browserProxy.resetResolver('startSyncingWithEmail');
@@ -282,10 +282,10 @@ suite('SyncAccountControl', function() {
 
     const userInfo =
         testElement.shadowRoot!.querySelector<HTMLElement>('#user-info')!;
-    assertTrue(userInfo.textContent!.includes('barName'));
-    assertTrue(userInfo.textContent!.includes('bar@bar.com'));
-    assertFalse(userInfo.textContent!.includes('fooName'));
-    assertFalse(userInfo.textContent!.includes('foo@foo.com'));
+    assertTrue(userInfo.textContent.includes('barName'));
+    assertTrue(userInfo.textContent.includes('bar@bar.com'));
+    assertFalse(userInfo.textContent.includes('fooName'));
+    assertFalse(userInfo.textContent.includes('foo@foo.com'));
 
     assertFalse(isChildVisible(testElement, '#sync-button'));
     assertTrue(isChildVisible(testElement, '#turn-off'));
@@ -322,7 +322,7 @@ suite('SyncAccountControl', function() {
             '[icon="settings:sync-problem"]'));
         const displayedText =
             userInfo.querySelector<HTMLElement>(
-                        'div:not([hidden])')!.textContent!;
+                        'div:not([hidden])')!.textContent;
         assertTrue(displayedText.includes('fooName'));
         assertTrue(isChildVisible(testElement, '#sync-error-button'));
         assertTrue(isChildVisible(testElement, '#turn-off'));
@@ -369,7 +369,7 @@ suite('SyncAccountControl', function() {
         const userInfo = testElement.shadowRoot!.querySelector('#user-info')!;
         const displayedText =
             userInfo.querySelector<HTMLElement>(
-                        'div:not([hidden])')!.textContent!;
+                        'div:not([hidden])')!.textContent;
 
         assertTrue(
             testElement.shadowRoot!
@@ -401,8 +401,8 @@ suite('SyncAccountControl', function() {
     const setupButtons =
         testElement.shadowRoot!.querySelector('#setup-buttons');
 
-    assertTrue(userInfo.textContent!.includes('barName'));
-    assertTrue(userInfo.textContent!.includes('Setup in progress...'));
+    assertTrue(userInfo.textContent.includes('barName'));
+    assertTrue(userInfo.textContent.includes('Setup in progress...'));
     assertTrue(isVisible(setupButtons));
   });
 
@@ -424,7 +424,7 @@ suite('SyncAccountControl', function() {
     const setupButtons =
         testElement.shadowRoot!.querySelector('#setup-buttons');
 
-    assertTrue(userInfo.textContent!.includes('Sign in again'));
+    assertTrue(userInfo.textContent.includes('Sign in again'));
     assertTrue(isVisible(setupButtons));
 
     // Other buttons are not shown, https://crbug.com/405980868
@@ -589,7 +589,7 @@ suite('SyncAccountControl', function() {
     assertTrue(isChildVisible(testElement, '#avatar-row'));
     const userInfo =
         testElement.shadowRoot!.querySelector<HTMLElement>('#user-info')!;
-    const secondaryContentSignedIn = userInfo.children[1]!.textContent!;
+    const secondaryContentSignedIn = userInfo.children[1]!.textContent;
     assertNotEquals(secondaryContentSignedIn.trim(), signedInAccount.email);
     assertFalse(isChildVisible(testElement, '#signin-paused-buttons'));
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
@@ -602,7 +602,7 @@ suite('SyncAccountControl', function() {
     };
 
     assertTrue(isChildVisible(testElement, '#avatar-row'));
-    const secondaryContentSigninPaused = userInfo.children[1]!.textContent!;
+    const secondaryContentSigninPaused = userInfo.children[1]!.textContent;
     assertNotEquals(secondaryContentSignedIn, secondaryContentSigninPaused);
     assertEquals(secondaryContentSigninPaused.trim(), signedInAccount.email);
     assertTrue(isChildVisible(testElement, '#signin-paused-buttons'));

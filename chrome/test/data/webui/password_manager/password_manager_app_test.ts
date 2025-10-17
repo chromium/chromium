@@ -239,7 +239,7 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent!.trim()
+                              '#toast-message')!.textContent.trim()
                    .includes(testEmail));
   });
 
@@ -288,7 +288,7 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent!.trim()
+                              '#toast-message')!.textContent.trim()
                    .includes(VALUE_COPIED_TOAST_LABEL));
   });
 
@@ -323,7 +323,7 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent!.trim()
+                              '#toast-message')!.textContent.trim()
                    .includes(testEmail));
   });
 
@@ -358,7 +358,7 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent!.trim()
+                              '#toast-message')!.textContent.trim()
                    .includes(testEmail));
   });
 

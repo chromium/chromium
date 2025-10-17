@@ -46,7 +46,7 @@ suite('fileAttachmentTestSuite', () => {
 
   function getElementContent(selector: string): string {
     const element = getElement(selector);
-    return element!.textContent!.trim();
+    return element!.textContent.trim();
   }
 
   function verifyRecordPreSubmitActionCallCount(

@@ -1430,7 +1430,7 @@ suite('EnterpriseShortcuts', () => {
     assertEquals(
         'Edit shortcut',
         mostVisited.$.dialog.querySelector(
-                                '[slot="title"]')!.textContent!.trim());
+                                '[slot="title"]')!.textContent.trim());
     const policySubtitleContainer =
         mostVisited.$.dialog.querySelector<HTMLElement>(
             '#policySubtitleContainer');
@@ -1467,7 +1467,7 @@ suite('EnterpriseShortcuts', () => {
     assertEquals(
         'Shortcut',
         mostVisited.$.dialog.querySelector(
-                                '[slot="title"]')!.textContent!.trim());
+                                '[slot="title"]')!.textContent.trim());
     const policySubtitleContainer =
         mostVisited.$.dialog.querySelector<HTMLElement>(
             '#policySubtitleContainer');
@@ -1515,7 +1515,7 @@ suite('EnterpriseShortcuts', () => {
     let viewOrEditButton =
         $$<HTMLButtonElement>(mostVisited, '#actionMenuViewOrEdit');
     assertFalse(viewOrEditButton.disabled);
-    assertEquals('Edit shortcut', viewOrEditButton.textContent!.trim());
+    assertEquals('Edit shortcut', viewOrEditButton.textContent.trim());
     assertFalse(
         $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
     mostVisited.$.actionMenu.close();
@@ -1529,7 +1529,7 @@ suite('EnterpriseShortcuts', () => {
     viewOrEditButton =
         $$<HTMLButtonElement>(mostVisited, '#actionMenuViewOrEdit');
     assertFalse(viewOrEditButton.disabled);
-    assertEquals('Edit shortcut', viewOrEditButton.textContent!.trim());
+    assertEquals('Edit shortcut', viewOrEditButton.textContent.trim());
     assertTrue(
         $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
     mostVisited.$.actionMenu.close();
@@ -1543,7 +1543,7 @@ suite('EnterpriseShortcuts', () => {
     viewOrEditButton =
         $$<HTMLButtonElement>(mostVisited, '#actionMenuViewOrEdit');
     assertFalse(viewOrEditButton.disabled);
-    assertEquals('Details', viewOrEditButton.textContent!.trim());
+    assertEquals('Details', viewOrEditButton.textContent.trim());
     assertFalse(
         $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
     mostVisited.$.actionMenu.close();
@@ -1557,7 +1557,7 @@ suite('EnterpriseShortcuts', () => {
     viewOrEditButton =
         $$<HTMLButtonElement>(mostVisited, '#actionMenuViewOrEdit');
     assertFalse(viewOrEditButton.disabled);
-    assertEquals('Details', viewOrEditButton.textContent!.trim());
+    assertEquals('Details', viewOrEditButton.textContent.trim());
     assertTrue(
         $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
   });

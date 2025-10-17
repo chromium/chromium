@@ -97,14 +97,14 @@ suite('<additonal-accounts-settings-card>', () => {
         assertEquals(
             loadTimeData.getString('accountManagerReauthenticationLabel'),
             additionalAccountSettingsCard.shadowRoot!
-                .querySelectorAll('.reauth-button')[0]!.textContent!.trim());
+                .querySelectorAll('.reauth-button')[0]!.textContent.trim());
       });
 
   test('unmigrated account label is shown for the unmigrated account', () => {
     assertEquals(
         loadTimeData.getString('accountManagerMigrationLabel'),
         additionalAccountSettingsCard.shadowRoot!
-            .querySelectorAll('.reauth-button')[1]!.textContent!.trim());
+            .querySelectorAll('.reauth-button')[1]!.textContent.trim());
   });
 
   test('remove account', async () => {

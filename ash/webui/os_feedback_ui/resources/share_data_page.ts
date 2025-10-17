@@ -340,7 +340,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
             .checked) {
       report.feedbackContext.pageUrl = {
         url: strictQuery('#pageUrlText', this.shadowRoot, HTMLElement)
-                 .textContent!.trim(),
+                 .textContent.trim(),
       };
     }
 

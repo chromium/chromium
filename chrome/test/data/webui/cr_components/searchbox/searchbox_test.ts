@@ -92,9 +92,9 @@ function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
       (match.swapContentsAndDescription ? match.contents : match.description) ?
       loadTimeData.getString('searchboxSeparator') :
       '';
-  const contents = matchEl.$['contents'].textContent!;
-  const separator = matchEl.$['separator'].textContent!;
-  const description = matchEl.$['description'].textContent!;
+  const contents = matchEl.$['contents'].textContent;
+  const separator = matchEl.$['separator'].textContent;
+  const description = matchEl.$['description'].textContent;
   const text = contents + separator + description;
   assertEquals(
       match.swapContentsAndDescription ?

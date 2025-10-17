@@ -90,7 +90,7 @@ suite('StorageAccessSiteListEntry', function() {
     // Validate that the StorageAccess origin is displayed on the top level row.
     assertEquals(
         origin,
-        displayName.querySelector('.site-representation')!.textContent!.trim());
+        displayName.querySelector('.site-representation')!.textContent.trim());
   });
 
   test('origin site description', async function() {
@@ -105,8 +105,7 @@ suite('StorageAccessSiteListEntry', function() {
 
     // Validate the row description when closed.
     assertEquals(
-        storageAccessException.closeDescription,
-        secondLine.textContent!.trim());
+        storageAccessException.closeDescription, secondLine.textContent.trim());
 
     const expandButton =
         testElement.shadowRoot.querySelector<CrExpandButtonElement>(
@@ -117,7 +116,7 @@ suite('StorageAccessSiteListEntry', function() {
 
     // Validate the row description when opened.
     assertEquals(
-        storageAccessException.openDescription, secondLine.textContent!.trim());
+        storageAccessException.openDescription, secondLine.textContent.trim());
   });
 
   test('nested site rows', async function() {

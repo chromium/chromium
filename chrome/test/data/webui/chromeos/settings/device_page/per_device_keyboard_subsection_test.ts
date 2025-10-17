@@ -208,7 +208,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     assert(remapKeysRow);
     assertEquals(
         'Customize keyboard keys',
-        remapKeysRow.shadowRoot!.querySelector('#label')!.textContent!.trim());
+        remapKeysRow.shadowRoot!.querySelector('#label')!.textContent.trim());
 
     const remapKeysSubLabel =
         remapKeysRow.shadowRoot!.querySelector('#subLabel');
@@ -217,7 +217,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         2,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('2 customized keys', remapKeysSubLabel.textContent!.trim());
+    assertEquals('2 customized keys', remapKeysSubLabel.textContent.trim());
 
     subsection.set('keyboard', fakeKeyboards[2]);
     await flushTasks();
@@ -225,7 +225,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         1,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('1 customized key', remapKeysSubLabel.textContent!.trim());
+    assertEquals('1 customized key', remapKeysSubLabel.textContent.trim());
 
     subsection.set('keyboard', fakeKeyboards[1]);
     await flushTasks();
@@ -233,14 +233,14 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         0,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('No keys customized', remapKeysSubLabel.textContent!.trim());
+    assertEquals('No keys customized', remapKeysSubLabel.textContent.trim());
     loadTimeData.overrideValues({
       enableAltClickAndSixPackCustomization: true,
     });
     subsection.set('keyboard', fakeKeyboards[3]);
     await flushTasks();
     // Expect 3 remapped six pack key shortcuts and 2 remapped modifier keys.
-    assertEquals('5 customized keys', remapKeysSubLabel.textContent!.trim());
+    assertEquals('5 customized keys', remapKeysSubLabel.textContent.trim());
   });
 
   /**

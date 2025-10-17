@@ -101,7 +101,7 @@ suite('<keyboard-shortcut-banner>', () => {
         'Press Ctrl+Shift+Space to switch to the next input method',
         secondDesc!.textContent);
     const dismissButton = banner.shadowRoot!.querySelector('cr-button');
-    assertEquals('Dismiss', dismissButton!.textContent!.trim());
+    assertEquals('Dismiss', dismissButton!.textContent.trim());
   });
 
   test('displays the correct <kbd> elements', () => {

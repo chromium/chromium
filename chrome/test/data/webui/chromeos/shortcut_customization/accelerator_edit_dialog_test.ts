@@ -89,7 +89,7 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(3, acceleratorElements.length);
     assertEquals(
         description,
-        dialog.querySelector('#shortcutDescription')!.textContent!.trim());
+        dialog.querySelector('#shortcutDescription')!.textContent.trim());
 
     // Accelerator is sorted, the order is updated to be [c], [ctrl+c],
     // [ctrl+shift+g]
@@ -100,7 +100,7 @@ suite('acceleratorEditDialogTest', function() {
     // [c]
     assertEquals(1, keys1.length);
     assertEquals(
-        'c', keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'c', keys1[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
 
     const accelView2 =
         acceleratorElements[1]!.shadowRoot!.querySelector('accelerator-view');
@@ -110,9 +110,9 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(2, keys2.length);
     assertEquals(
         'ctrl',
-        keys2[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys2[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
-        'c', keys2[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'c', keys2[1]!.shadowRoot!.querySelector('#key')!.textContent.trim());
 
     const accelView3 =
         acceleratorElements[2]!.shadowRoot!.querySelector('accelerator-view');
@@ -122,12 +122,12 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(3, keys3.length);
     assertEquals(
         'ctrl',
-        keys3[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys3[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
         'shift',
-        keys3[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys3[1]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
-        'g', keys3[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'g', keys3[2]!.shadowRoot!.querySelector('#key')!.textContent.trim());
 
     // Clicking on "Done" button will close the dialog.
     const button = dialog.querySelector<CrButtonElement>('#doneButton');
@@ -191,7 +191,7 @@ suite('acceleratorEditDialogTest', function() {
         acceleratorElements[0]!.shadowRoot!.querySelector(
                                                '#status')!.shadowRoot,
         HTMLDivElement);
-    assertEquals(expectedHintMessage, statusMessageElement.textContent!.trim());
+    assertEquals(expectedHintMessage, statusMessageElement.textContent.trim());
 
     // Re-query the stamped element.
     pendingAccelerator = dialog.querySelector('#pendingAccelerator');
@@ -329,8 +329,7 @@ suite('acceleratorEditDialogTest', function() {
         updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
                                                       '#status')!.shadowRoot,
         HTMLDivElement);
-    assertEquals(
-        expectedErrorMessage, statusMessageElement.textContent!.trim());
+    assertEquals(expectedErrorMessage, statusMessageElement.textContent.trim());
   });
 
   test('RestoreDefaultButtonIgnoreConflict', async () => {
@@ -583,8 +582,7 @@ suite('acceleratorEditDialogTest', function() {
         updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
                                                       '#status')!.shadowRoot,
         HTMLDivElement);
-    assertEquals(
-        expectedErrorMessage, statusMessageElement.textContent!.trim());
+    assertEquals(expectedErrorMessage, statusMessageElement.textContent.trim());
   });
 
   test('FilterDisabledAccelerators', async () => {
@@ -793,8 +791,7 @@ suite('acceleratorEditDialogTest', function() {
     // Expect "No shortcut assigned" message is shown when there's no enabled
     // accelerators in the dialog.
     assertTrue(!!noShortcutAssigned);
-    assertEquals(
-        'No shortcut assigned', noShortcutAssigned.textContent!.trim());
+    assertEquals('No shortcut assigned', noShortcutAssigned.textContent.trim());
 
     // Click add button, ViewState change to ADD.
     const addButton =

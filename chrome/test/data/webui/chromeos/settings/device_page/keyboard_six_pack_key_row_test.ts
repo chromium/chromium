@@ -64,7 +64,7 @@ suite('<keyboard-six-pack-key-row>', () => {
       assertEquals(
           label,
           sixPackKeyRow.shadowRoot!.querySelector(
-                                       '#keyLabel')!.textContent!.trim());
+                                       '#keyLabel')!.textContent.trim());
     }
     assertTrue(!!sixPackKeyRow.shadowRoot!.querySelector('#sixPackKeyRow'));
   });

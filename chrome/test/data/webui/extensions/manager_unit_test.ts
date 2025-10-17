@@ -151,7 +151,7 @@ suite('ExtensionManagerUnitTest', function() {
     const content =
         detailsView.shadowRoot.querySelector('.section .section-content');
     assertTrue(!!content);
-    assertEquals(description, content.textContent!.trim());
+    assertEquals(description, content.textContent.trim());
   });
 
   test(
@@ -195,7 +195,7 @@ suite('ExtensionManagerUnitTest', function() {
         const content =
             detailsView.shadowRoot.querySelector('.section .section-content');
         assertTrue(!!content);
-        assertEquals(newDescription, content.textContent!.trim());
+        assertEquals(newDescription, content.textContent.trim());
       });
 
   test('ProfileSettings', async () => {

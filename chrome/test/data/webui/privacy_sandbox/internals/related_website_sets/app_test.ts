@@ -54,7 +54,7 @@ suite('AppTest', () => {
     const drawerItems = drawerSidebar!.$.selector.children;
     assertEquals(menuItems.length, drawerItems.length);
     for (const [i, menuItem] of menuItems.entries()) {
-      assertEquals(menuItem.name, drawerItems[i]!.textContent!.trim());
+      assertEquals(menuItem.name, drawerItems[i]!.textContent.trim());
     }
     app.$.drawer.close();
     await microtasksFinished();

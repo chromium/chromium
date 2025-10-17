@@ -234,7 +234,7 @@ suite('ComboboxTest', () => {
     assertTrue(optionA1.hasAttribute('selected'));
     assertEquals('true', optionA1.ariaSelected);
     assertFalse(isVisible(combobox.$.dropdown));
-    assertTrue(combobox.$.input.textContent!.includes('I am option 1'));
+    assertTrue(combobox.$.input.textContent.includes('I am option 1'));
 
     // Open the dropdown back and arrow key to next option and select it.
     await open();
@@ -246,7 +246,7 @@ suite('ComboboxTest', () => {
     assertEquals('true', optionA2.ariaSelected);
     assertFalse(optionA1.hasAttribute('selected'));
     assertEquals('false', optionA1.ariaSelected);
-    assertTrue(combobox.$.input.textContent!.includes('I am option 2'));
+    assertTrue(combobox.$.input.textContent.includes('I am option 2'));
     assertFalse(isVisible(combobox.$.dropdown));
 
     // Pressing Enter or clicking on an unselectable item should not select it.

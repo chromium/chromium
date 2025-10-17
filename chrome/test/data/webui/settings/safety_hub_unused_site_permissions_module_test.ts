@@ -111,7 +111,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         index = 0;
       }
       const expectedText = testElement.i18n(stringId, mockData[index]!.origin);
-      const actualText = undoToast.querySelector('div')!.textContent!.trim();
+      const actualText = undoToast.querySelector('div')!.textContent.trim();
       assertEquals(expectedText, actualText);
     }
   }
@@ -240,57 +240,52 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertEquals(
         mockData[0]!.origin,
         getSiteList()[0]!.querySelector(
-                             '.site-representation')!.textContent!.trim());
+                             '.site-representation')!.textContent.trim());
     assertTrue(!!getSiteList()[0]!.querySelector(
-                                      '.cr-secondary-text')!.textContent!.trim()
+                                      '.cr-secondary-text')!.textContent.trim()
                      .match(
                          'You haven\'t visited recently. ' +
                          'Chrome|Chromium removed location'));
 
     assertEquals(
         mockData[1]!.origin,
-        siteList[1]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[1]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[1]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[1]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed location, microphone'));
 
     assertEquals(
         mockData[2]!.origin,
-        siteList[2]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[2]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[2]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[2]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed location, microphone, camera'));
 
     assertEquals(
         mockData[3]!.origin,
-        siteList[3]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[3]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[3]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[3]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed location, microphone, and 2 more'));
 
     assertEquals(
         mockData[4]!.origin,
-        siteList[4]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[4]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[4]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[4]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match('Dangerous site. Chrome|Chromium removed notifications.'));
 
     assertEquals(
         mockData[5]!.origin,
-        siteList[5]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[5]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[5]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[5]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed notifications'));

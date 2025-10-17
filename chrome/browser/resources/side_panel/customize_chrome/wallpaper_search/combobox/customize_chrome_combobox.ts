@@ -186,7 +186,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
   protected getInputLabel_(): string {
     if (this.selectedElement_ && this.selectedElement_.value &&
         this.selectedElement_.value === this.value) {
-      return this.selectedElement_.textContent!;
+      return this.selectedElement_.textContent;
     }
 
     return this.label;

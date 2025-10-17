@@ -57,7 +57,7 @@ suite('PasskeyDetailsCardTest', function() {
         card.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(domains.length, 1);
     assertEquals(
-        passkey.affiliatedDomains[0]!.name, domains[0]!.textContent!.trim());
+        passkey.affiliatedDomains[0]!.name, domains[0]!.textContent.trim());
     assertEquals(passkey.affiliatedDomains[0]!.url, domains[0]!.href);
   });
 
@@ -91,7 +91,7 @@ suite('PasskeyDetailsCardTest', function() {
         card.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(domains.length, 1);
     assertEquals(
-        passkey.affiliatedDomains[0]!.name, domains[0]!.textContent!.trim());
+        passkey.affiliatedDomains[0]!.name, domains[0]!.textContent.trim());
     assertEquals(passkey.affiliatedDomains[0]!.url, domains[0]!.href);
   });
 

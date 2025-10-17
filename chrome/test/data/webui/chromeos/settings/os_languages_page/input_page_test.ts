@@ -439,7 +439,7 @@ suite('<os-settings-input-page>', () => {
       for (let i = 0; i < allItems.length; i++) {
         const checkbox = allItems[i] as CrCheckboxElement;
         assertTrue(!!checkbox);
-        assertStringContains(allItems[i]!.textContent!, expectedItems[i]!.name);
+        assertStringContains(allItems[i]!.textContent, expectedItems[i]!.name);
         assertEquals(
             expectedItems[i]!.checkboxDisabled, checkbox.disabled,
             `expect ${expectedItems[i]!.name}'s checkbox disabled state to be ${
@@ -518,13 +518,13 @@ suite('<os-settings-input-page>', () => {
       searchInput.setValue('vietnamese');
       flush();
       assertEquals(1, getItems().length);
-      assertStringContains(getItems()[0]!.textContent!, 'Vietnamese');
+      assertStringContains(getItems()[0]!.textContent, 'Vietnamese');
 
       // Search input methods' language
       searchInput.setValue('Turkmen');
       flush();
       assertEquals(1, getItems().length);
-      assertStringContains(getItems()[0]!.textContent!, 'Swahili keyboard');
+      assertStringContains(getItems()[0]!.textContent, 'Swahili keyboard');
     });
 
     test('has escape key behavior working correctly', () => {
@@ -821,8 +821,8 @@ suite('<os-settings-input-page>', () => {
       spellCheckList = spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, spellCheckList.length);
       assertStringContains(
-          spellCheckList[0]!.textContent!, 'English (United States)');
-      assertStringContains(spellCheckList[1]!.textContent!, 'Add languages');
+          spellCheckList[0]!.textContent, 'English (United States)');
+      assertStringContains(spellCheckList[1]!.textContent, 'Add languages');
     });
 
     test('can remove enabled language from spell check list', () => {
@@ -856,9 +856,9 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should have en-US, nb and "add languages".
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
       assertStringContains(
-          newSpellCheckList[1]!.textContent!, 'Norwegian Bokmål');
+          newSpellCheckList[1]!.textContent, 'Norwegian Bokmål');
 
       // Remove nb.
       const icon = newSpellCheckList[1]!.querySelector('cr-icon-button');
@@ -871,7 +871,7 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should have en-US and "add languages".
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
 
       assertDeepEquals(
           ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
@@ -891,7 +891,7 @@ suite('<os-settings-input-page>', () => {
       const forceEnabledEnUSLanguageRow = newSpellCheckList[0];
       assertTrue(!!forceEnabledEnUSLanguageRow);
       assertStringContains(
-          forceEnabledEnUSLanguageRow.textContent!, 'English (United States)');
+          forceEnabledEnUSLanguageRow.textContent, 'English (United States)');
       assertTrue(!!forceEnabledEnUSLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
       // Polymer sometimes hides the old enabled element by using a
@@ -915,11 +915,11 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should have en-US, sw and "add languages".
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
 
       const forceEnabledSwLanguageRow = newSpellCheckList[1];
       assertTrue(!!forceEnabledSwLanguageRow);
-      assertStringContains(forceEnabledSwLanguageRow.textContent!, 'Swahili');
+      assertStringContains(forceEnabledSwLanguageRow.textContent, 'Swahili');
       assertTrue(!!forceEnabledSwLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
       const managedButton =
@@ -940,12 +940,12 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should have en-US, nb and "add languages".
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
 
       const forceEnabledNbLanguageRow = newSpellCheckList[1];
       assertTrue(!!forceEnabledNbLanguageRow);
       assertStringContains(
-          forceEnabledNbLanguageRow.textContent!, 'Norwegian Bokmål');
+          forceEnabledNbLanguageRow.textContent, 'Norwegian Bokmål');
       assertTrue(!!forceEnabledNbLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
       const managedButton =
@@ -976,7 +976,7 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
     });
 
     test('does not show force-off non-enabled spell check language', () => {
@@ -989,7 +989,7 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
     });
 
     test('toggle off disables buttons', () => {
@@ -1024,12 +1024,12 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(4 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (Canada)');
+          newSpellCheckList[0]!.textContent, 'English (Canada)');
       assertStringContains(
-          newSpellCheckList[1]!.textContent!, 'English (United States)');
+          newSpellCheckList[1]!.textContent, 'English (United States)');
       assertStringContains(
-          newSpellCheckList[2]!.textContent!, 'Norwegian Bokmål');
-      assertStringContains(newSpellCheckList[3]!.textContent!, 'Swahili');
+          newSpellCheckList[2]!.textContent, 'Norwegian Bokmål');
+      assertStringContains(newSpellCheckList[3]!.textContent, 'Swahili');
     });
 
     test('removing all languages, then adding enabled language works', () => {
@@ -1067,7 +1067,7 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should now have en-US.
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
       // Spell check should still be enabled.
       assertTrue(spellCheckToggle.checked);
     });
@@ -1083,7 +1083,7 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
 
       // Add a spell check language not in Accept-Language.
       languageHelper.toggleSpellCheck('nb', true);
@@ -1094,9 +1094,9 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
       assertStringContains(
-          newSpellCheckList[1]!.textContent!, 'Norwegian Bokmål');
+          newSpellCheckList[1]!.textContent, 'Norwegian Bokmål');
 
       // Add an arbitrary language to Accept-Language.
       languageHelper.enableLanguage('tk');
@@ -1107,9 +1107,9 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
       assertStringContains(
-          newSpellCheckList[1]!.textContent!, 'Norwegian Bokmål');
+          newSpellCheckList[1]!.textContent, 'Norwegian Bokmål');
     });
 
     // TODO(crbug.com/1201540): Add test to ensure that it is impossible to
@@ -1288,16 +1288,16 @@ suite('<os-settings-input-page>', () => {
       // language.
       const suggestedItems = suggestedList.querySelectorAll('cr-checkbox');
       assertEquals(1, suggestedItems.length);
-      assertStringContains(suggestedItems[0]!.textContent!, 'Swahili');
+      assertStringContains(suggestedItems[0]!.textContent, 'Swahili');
 
       // There are four languages with spell check enabled in
       // fake_language_settings_private.js: en-US, en-CA, sw, nb.
       // en-US shouldn't be displayed as it is already enabled.
       const allItems = getAllLanguagesCheckboxes();
       assertEquals(3, allItems.length);
-      assertStringContains(allItems[0]!.textContent!, 'English (Canada)');
-      assertStringContains(allItems[1]!.textContent!, 'Swahili');
-      assertStringContains(allItems[2]!.textContent!, 'Norwegian Bokmål');
+      assertStringContains(allItems[0]!.textContent, 'English (Canada)');
+      assertStringContains(allItems[1]!.textContent, 'Swahili');
+      assertStringContains(allItems[2]!.textContent, 'Norwegian Bokmål');
 
       // By default, all checkboxes should not be disabled, and should not be
       // checked.
@@ -1401,8 +1401,8 @@ suite('<os-settings-input-page>', () => {
       const suggestedListItems = suggestedList.querySelectorAll('.list-item');
       assertEquals(2, suggestedListItems.length);
       assertStringContains(
-          suggestedListItems[0]!.textContent!, 'English (United States)');
-      assertStringContains(suggestedListItems[1]!.textContent!, 'Swahili');
+          suggestedListItems[0]!.textContent, 'English (United States)');
+      assertStringContains(suggestedListItems[1]!.textContent, 'Swahili');
 
       // en-US should also appear in the all languages list now.
       assertEquals(4, allLangsList.querySelectorAll('.list-item').length);
@@ -1419,7 +1419,7 @@ suite('<os-settings-input-page>', () => {
       flush();
       assertEquals(1, getAllLanguagesCheckboxes().length);
       assertStringContains(
-          getAllLanguagesCheckboxes()[0]!.textContent!, 'Norwegian Bokmål');
+          getAllLanguagesCheckboxes()[0]!.textContent, 'Norwegian Bokmål');
 
       // Issue query that matches the |nativeDisplayedName|.
       searchInput.setValue('norsk');

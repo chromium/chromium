@@ -57,7 +57,7 @@ function assertVisibleTextContent(
   const element = parent.querySelector<HTMLElement>(selector);
   assertTrue(!!element);
   assertTrue(isVisible(element));
-  assertEquals(expectedText, element?.textContent!.trim());
+  assertEquals(expectedText, element?.textContent.trim());
 }
 
 async function closeDialogHelper(

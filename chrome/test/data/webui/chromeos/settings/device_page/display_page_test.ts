@@ -844,7 +844,7 @@ suite('<settings-display>', () => {
           await new Promise(
               resolve => setTimeout(resolve, announcementTimeout));
           assertStringContains(
-              messagesDiv.textContent!, 'Window moved downwards');
+              messagesDiv.textContent, 'Window moved downwards');
 
           display.dispatchEvent(
               new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
@@ -854,7 +854,7 @@ suite('<settings-display>', () => {
           await new Promise(
               resolve => setTimeout(resolve, announcementTimeout));
           assertStringContains(
-              messagesDiv.textContent!, 'Window moved downwards');
+              messagesDiv.textContent, 'Window moved downwards');
 
           display.dispatchEvent(
               new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}));
@@ -863,7 +863,7 @@ suite('<settings-display>', () => {
           assertEquals(offset, layout.offset);
           await new Promise(
               resolve => setTimeout(resolve, announcementTimeout));
-          assertStringContains(messagesDiv.textContent!, 'Window moved upwards');
+          assertStringContains(messagesDiv.textContent, 'Window moved upwards');
         });
   });
 

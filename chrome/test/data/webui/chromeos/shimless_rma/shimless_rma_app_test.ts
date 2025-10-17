@@ -274,7 +274,7 @@ suite('shimlessRMAAppTest', function() {
         strictQuery('#nextButtonLabel', component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('nextButtonLabel'),
-        nextButtonLabel.textContent!.trim());
+        nextButtonLabel.textContent.trim());
 
     // Trigger the next button to update its label.
     component.dispatchEvent(new CustomEvent(
@@ -283,7 +283,7 @@ suite('shimlessRMAAppTest', function() {
         ));
     assertEquals(
         loadTimeData.getString('skipButtonLabel'),
-        nextButtonLabel.textContent!.trim());
+        nextButtonLabel.textContent.trim());
   });
 
   // Verify the correct button spinners are showing based on the current state.
@@ -621,7 +621,7 @@ suite('shimlessRMAAppTest', function() {
     assertEquals(
         loadTimeData.getStringF('rmaLogsSaveSuccessText', savePath),
         strictQuery(logSavedStatusSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     // Close the logs dialog.
     await clickButton(logSaveDoneButtonSelector);
@@ -670,7 +670,7 @@ suite('shimlessRMAAppTest', function() {
     assertEquals(
         loadTimeData.getString('rmaLogsSaveFailText'),
         strictQuery(logSavedStatusSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     // Click the retry button and verify that it retries saving the logs.
     await clickButton(logRetryButtonSelector);
@@ -714,7 +714,7 @@ suite('shimlessRMAAppTest', function() {
     assertEquals(
         loadTimeData.getString('rmaLogsSaveUsbNotFound'),
         strictQuery(logSavedStatusSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
   });
 
   // Verify the correct message is shown for USB connected or disconnected.

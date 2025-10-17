@@ -61,7 +61,7 @@ suite('ListItemTest', () => {
     await microtasksFinished();
 
     const boldedText = item.shadowRoot.querySelector('b');
-    assertEquals('primary', boldedText!.textContent!.trim());
+    assertEquals('primary', boldedText!.textContent.trim());
   });
 
   test('check bold with member site', async () => {
@@ -69,7 +69,7 @@ suite('ListItemTest', () => {
     await microtasksFinished();
 
     const boldedText = item.shadowRoot.querySelector('b');
-    assertEquals('associated1', boldedText!.textContent!.trim());
+    assertEquals('associated1', boldedText!.textContent.trim());
   });
 
   test('check issuer text on search', async () => {

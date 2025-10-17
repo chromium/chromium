@@ -46,7 +46,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     assertTrue(!!visibleOptions);
 
     for (const option of visibleOptions) {
-      if (option.textContent!.trim() === getTimePeriodString(timePeriod)) {
+      if (option.textContent.trim() === getTimePeriodString(timePeriod)) {
         return option;
       }
     }
@@ -64,7 +64,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     assertTrue(!!menuItems);
 
     for (const item of menuItems) {
-      if (item.textContent!.trim() === getTimePeriodString(timePeriod)) {
+      if (item.textContent.trim() === getTimePeriodString(timePeriod)) {
         return item;
       }
     }
@@ -153,7 +153,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     const selectedTimePeriodChip = getSelectedChip();
     assertTrue(!!selectedTimePeriodChip);
     assertEquals(
-        selectedTimePeriodChip.textContent!.trim(),
+        selectedTimePeriodChip.textContent.trim(),
         getTimePeriodString(TimePeriod.ALL_TIME));
 
     verifyChipsExistForTimePeriods([
@@ -179,7 +179,7 @@ suite('DeleteBrowsingDataTimePicker', function() {
     const selectedChip = getSelectedChip();
     assertTrue(!!selectedChip);
     assertEquals(
-        selectedChip.textContent!.trim(),
+        selectedChip.textContent.trim(),
         getTimePeriodString(TimePeriod.FOUR_WEEKS));
 
     verifyChipsExistForTimePeriods([

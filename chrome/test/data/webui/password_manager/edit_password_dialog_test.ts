@@ -51,7 +51,7 @@ suite('EditPasswordDialogTest', function() {
       const listItemElement = listItemElements[i];
 
       assertTrue(!!listItemElement);
-      assertEquals(expectedDomain.name, listItemElement.textContent!.trim());
+      assertEquals(expectedDomain.name, listItemElement.textContent.trim());
       assertEquals(expectedDomain.url, listItemElement.href);
     });
   });

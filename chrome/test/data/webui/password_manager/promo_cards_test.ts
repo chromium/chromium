@@ -57,10 +57,10 @@ suite('PasswordsSectionTest', function() {
     assertTrue(!!promoCardElement);
     assertEquals(
         promoCardsProxy.promo.title,
-        promoCardElement.$.title.textContent!.trim());
+        promoCardElement.$.title.textContent.trim());
     assertEquals(
         promoCardsProxy.promo.description,
-        promoCardElement.$.description.textContent!.trim());
+        promoCardElement.$.description.textContent.trim());
     assertFalse(isVisible(promoCardElement.$.actionButton));
     const shownImage = promoCardElement.shadowRoot!.querySelector('img');
     assertTrue(!!shownImage);

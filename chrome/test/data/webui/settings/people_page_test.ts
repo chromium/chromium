@@ -77,7 +77,7 @@ suite('ProfileInfoTests', function() {
     assertEquals(
         profileInfoBrowserProxy.fakeProfileInfo.name,
         peoplePage.shadowRoot!.querySelector<HTMLElement>(
-                                  '#profile-name')!.textContent!.trim());
+                                  '#profile-name')!.textContent.trim());
     const bg =
         peoplePage.shadowRoot!.querySelector<HTMLElement>(
                                   '#profile-icon')!.style.backgroundImage;
@@ -92,7 +92,7 @@ suite('ProfileInfoTests', function() {
     assertEquals(
         'pushedName',
         peoplePage.shadowRoot!.querySelector<HTMLElement>(
-                                  '#profile-name')!.textContent!.trim());
+                                  '#profile-name')!.textContent.trim());
     const newBg =
         peoplePage.shadowRoot!.querySelector<HTMLElement>(
                                   '#profile-icon')!.style.backgroundImage;
@@ -331,19 +331,19 @@ suite('SyncStatusTests', function() {
     assertEquals(
         loadTimeData.getStringF(
             'deleteProfileWarningWithoutCounts', 'fakeUsername'),
-        warningMessage.textContent!.trim());
+        warningMessage.textContent.trim());
 
     webUIListenerCallback('profile-stats-count-ready', 1);
     assertEquals(
         loadTimeData.getStringF(
             'deleteProfileWarningWithCountsSingular', 'fakeUsername'),
-        warningMessage.textContent!.trim());
+        warningMessage.textContent.trim());
 
     webUIListenerCallback('profile-stats-count-ready', 2);
     assertEquals(
         loadTimeData.getStringF(
             'deleteProfileWarningWithCountsPlural', 2, 'fakeUsername'),
-        warningMessage.textContent!.trim());
+        warningMessage.textContent.trim());
 
     // Close the disconnect dialog.
     signoutDialog.$.disconnectConfirm.click();
@@ -596,10 +596,10 @@ suite('PeoplePageAccountSettings', function() {
 
     const accountName =
         peoplePage.shadowRoot!.querySelector(
-                                  '#account-name')!.textContent!.trim();
+                                  '#account-name')!.textContent.trim();
     const accountEmail =
         peoplePage.shadowRoot!.querySelector(
-                                  '#account-subtitle')!.textContent!.trim();
+                                  '#account-subtitle')!.textContent.trim();
 
     assertEquals(expectedAccount.fullName, accountName);
     assertEquals(expectedAccount.email, accountEmail);
@@ -617,7 +617,7 @@ suite('PeoplePageAccountSettings', function() {
     // First, it shows the user's email.
     const accountSubtitle =
         peoplePage.shadowRoot!.querySelector('#account-subtitle')!;
-    assertEquals(testEmail, accountSubtitle.textContent!.trim());
+    assertEquals(testEmail, accountSubtitle.textContent.trim());
 
     // When the passphrase needs to be entered, a message is displayed instead.
     simulateSyncStatus({
@@ -628,7 +628,7 @@ suite('PeoplePageAccountSettings', function() {
     assertEquals(
         loadTimeData.substituteString(
             peoplePage.syncStatus!.statusText!, testEmail),
-        accountSubtitle.textContent!.trim());
+        accountSubtitle.textContent.trim());
   });
 });
 // </if>

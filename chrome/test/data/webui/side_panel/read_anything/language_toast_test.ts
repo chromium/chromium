@@ -13,8 +13,7 @@ suite('LanguageToast', () => {
   let toast: LanguageToastElement;
 
   function getTitle(): string {
-    return toast.$.toast.querySelector<HTMLElement>('#toastTitle')!.textContent!
-        ;
+    return toast.$.toast.querySelector<HTMLElement>('#toastTitle')!.textContent;
   }
 
   setup(() => {

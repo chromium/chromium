@@ -606,7 +606,7 @@ suite('<os-settings-languages-page-v2>', () => {
       searchInput.setValue('greek');
       flush();
       assertEquals(1, getListItems().length);
-      assertStringContains(getListItems()[0]!.textContent!, 'Greek');
+      assertStringContains(getListItems()[0]!.textContent, 'Greek');
 
       // Issue query that matches the |nativeDisplayedName|.
       searchInput.setValue('Ελληνικά');
@@ -648,7 +648,7 @@ suite('<os-settings-languages-page-v2>', () => {
 
       const items = getListItems();
       const nativeDisplayNames =
-          items.map(item => getNativeDisplayName(item.textContent!.trim()));
+          items.map(item => getNativeDisplayName(item.textContent.trim()));
 
       const sortedNativeDisplayNames =
           [...nativeDisplayNames].sort((a, b) => a.localeCompare(b, 'en'));

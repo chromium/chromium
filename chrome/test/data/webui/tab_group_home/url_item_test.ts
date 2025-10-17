@@ -30,7 +30,7 @@ suite('UrlItemElementTest', () => {
 
   test('renders item data correctly', () => {
     const titleElement = urlItemElement.$.title;
-    assertEquals(sampleItem.title, titleElement.textContent!.trim());
+    assertEquals(sampleItem.title, titleElement.textContent.trim());
 
     const faviconElement = urlItemElement.$.favicon;
     assertEquals(

@@ -114,7 +114,7 @@ suite('BatchUploadViewTest', function() {
     assertEquals(
         TEST_DATA.dialogSubtitle,
         batchUploadApp.shadowRoot.querySelector<CrButtonElement>(
-                                     '#subtitle')!.textContent!.trim());
+                                     '#subtitle')!.textContent.trim());
 
     // Account info.
     assertTrue(isChildVisible(batchUploadApp, '#account-info-row'));
@@ -124,7 +124,7 @@ suite('BatchUploadViewTest', function() {
         TEST_DATA.accountInfo.email,
         batchUploadApp.shadowRoot
             .querySelector<CrButtonElement>(
-                '#account-info-row')!.textContent!.trim());
+                '#account-info-row')!.textContent.trim());
   });
 
   test('ClickSave', async function() {

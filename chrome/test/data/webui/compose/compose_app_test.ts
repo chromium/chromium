@@ -140,12 +140,12 @@ suite('ComposeApp', () => {
     const appWithTextSelected =
         await initializeNewAppWithTextSelectedState(true);
     assertStringContains(
-        appWithTextSelected.$.acceptButton.textContent!, 'Replace');
+        appWithTextSelected.$.acceptButton.textContent, 'Replace');
 
     const appWithNoTextSelected =
         await initializeNewAppWithTextSelectedState(false);
     assertStringContains(
-        appWithNoTextSelected.$.acceptButton.textContent!, 'Insert');
+        appWithNoTextSelected.$.acceptButton.textContent, 'Insert');
   });
 
   test('FirstRunAndMsbbStateDetermineViewState', async () => {
@@ -436,7 +436,7 @@ suite('ComposeApp', () => {
     await mockResponse('', ComposeStatus.kFiltered, false, true);
 
     assertTrue(isVisible(app.$.errorFooter));
-    assertStringContains(app.$.errorFooter.textContent!, errorMessage);
+    assertStringContains(app.$.errorFooter.textContent, errorMessage);
     assertTrue(isVisible(app.$.errorGoBackButton));
 
     app.$.errorGoBackButton.click();
@@ -461,7 +461,7 @@ suite('ComposeApp', () => {
       await mockResponse('', status);
 
       assertTrue(isVisible(app.$.errorFooter));
-      assertStringContains(app.$.errorFooter.textContent!, errorMessage);
+      assertStringContains(app.$.errorFooter.textContent, errorMessage);
     }
 
     await testError(ComposeStatus.kFiltered, 'errorFiltered');

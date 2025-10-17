@@ -354,8 +354,8 @@ suite('NodeStore', () => {
             'And no ones gonna save you from the beast about to strike' +
             'You know its thriller, thriller night' +
             'Youre fighting for your life inside a killer, thriller tonight');
-        const text1WordCount = getWordCount(text1.textContent!);
-        const text2WordCount = getWordCount(text2.textContent!);
+        const text1WordCount = getWordCount(text1.textContent);
+        const text2WordCount = getWordCount(text2.textContent);
         const timeToReadText1 = text1WordCount / ESTIMATED_WORDS_PER_MS;
         const timeToReadText2 = text2WordCount / ESTIMATED_WORDS_PER_MS;
         // Ensure this test is testing delays above the minimum.

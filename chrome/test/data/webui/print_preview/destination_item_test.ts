@@ -35,7 +35,7 @@ suite('DestinationItemTest', function() {
     assertEquals(printerName, name.textContent);
     assertEquals('1', window.getComputedStyle(name).opacity);
     assertEquals(
-        '', item.shadowRoot.querySelector('.search-hint')!.textContent!.trim());
+        '', item.shadowRoot.querySelector('.search-hint')!.textContent.trim());
     assertFalse(item.shadowRoot
                     .querySelector<HTMLElement>(
                         '.extension-controlled-indicator')!.hidden);
@@ -57,7 +57,7 @@ suite('DestinationItemTest', function() {
 
     // No hints.
     assertEquals(
-        '', item.shadowRoot.querySelector('.search-hint')!.textContent!.trim());
+        '', item.shadowRoot.querySelector('.search-hint')!.textContent.trim());
   });
 
   // Test that the destination is displayed correctly when the search query
@@ -81,8 +81,8 @@ suite('DestinationItemTest', function() {
 
     // Search hint should be have the description and be highlighted.
     const hint = item.shadowRoot.querySelector('.search-hint')!;
-    assertTrue(hint.textContent!.includes(params.description));
-    assertFalse(hint.textContent!.includes(params.location));
+    assertTrue(hint.textContent.includes(params.description));
+    assertFalse(hint.textContent.includes(params.location));
     const searchHits = hint.querySelectorAll('.search-highlight-hit');
     assertEquals(1, searchHits.length);
     assertEquals('ABC', searchHits[0]!.textContent);

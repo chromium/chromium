@@ -26,7 +26,7 @@ suite('PaymentsSectionCardRows', function() {
   }
 
   function cleanUpWhitespace(sublabelElement: HTMLElement) {
-    return sublabelElement.textContent!.trim()
+    return sublabelElement.textContent.trim()
         .replace(/\s+/g, ' ')
         .replace(/\n/g, '');
   }
@@ -55,13 +55,12 @@ suite('PaymentsSectionCardRows', function() {
         rowShadowRoot.querySelector<HTMLElement>('#expirationLabel')));
     assertEquals(
         creditCard.metadata!.summaryLabel,
-        rowShadowRoot.querySelector<HTMLElement>(
-                         '#label')!.textContent!.trim());
+        rowShadowRoot.querySelector<HTMLElement>('#label')!.textContent.trim());
     assertEquals(
         '· ' + parseInt(creditCard.expirationMonth!, 10) + '/' +
             creditCard.expirationYear!.substring(2),
         rowShadowRoot.querySelector<HTMLElement>(
-                         '#expirationLabel')!.textContent!.trim());
+                         '#expirationLabel')!.textContent.trim());
   });
 
   test('verifyCreditCardRowButtonIsDropdownWhenLocal', async function() {
@@ -400,7 +399,7 @@ suite('PaymentsSectionCardRows', function() {
         assertEquals(
             creditCard.metadata!.summaryLabel,
             getCardRowShadowRoot(section.$.paymentsList)
-                .querySelector<HTMLElement>('#label')!.textContent!.trim());
+                .querySelector<HTMLElement>('#label')!.textContent.trim());
         assertTrue(
             isVisible(getCardRowShadowRoot(section.$.paymentsList)
                           .querySelector<HTMLElement>('#expirationLabel')));
@@ -411,7 +410,7 @@ suite('PaymentsSectionCardRows', function() {
                 creditCard.expirationYear.substring(2),
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
-                    '#expirationLabel')!.textContent!.trim());
+                    '#expirationLabel')!.textContent.trim());
       });
 
   test('verifyCreditCardSummarySublabelWhenSublabelIsValid', async function() {
@@ -456,13 +455,13 @@ suite('PaymentsSectionCardRows', function() {
         assertEquals(
             creditCard.metadata!.summaryLabel,
             getCardRowShadowRoot(section.$.paymentsList)
-                .querySelector<HTMLElement>('#label')!.textContent!.trim());
+                .querySelector<HTMLElement>('#label')!.textContent.trim());
         assertEquals(
             '· ' + parseInt(creditCard.expirationMonth!, 10) + '/' +
                 creditCard.expirationYear!.substring(2),
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
-                    '#expirationLabel')!.textContent!.trim());
+                    '#expirationLabel')!.textContent.trim());
       });
 
   test(
@@ -486,7 +485,7 @@ suite('PaymentsSectionCardRows', function() {
             'Virtual card turned on',
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
-                    '#summarySublabel')!.textContent!.trim());
+                    '#summarySublabel')!.textContent.trim());
       });
 
   // Test to verify the correct sublabel is displayed for virtual card when its
@@ -516,7 +515,7 @@ suite('PaymentsSectionCardRows', function() {
             loadTimeData.getString('cvcTagForCreditCardListEntry'),
         getCardRowShadowRoot(section.$.paymentsList)
             .querySelector<HTMLElement>(
-                '#summarySublabel')!.textContent!.trim());
+                '#summarySublabel')!.textContent.trim());
   });
 
   const benefitsStatus: BenefitsTestCase[] = [
@@ -773,7 +772,7 @@ suite('PaymentsSectionCardRows', function() {
               serverCreditCard.expirationYear!.substring(2),
           paymentsList[0]!.shadowRoot!
               .querySelector<HTMLElement>(
-                  '#expirationLabel')!.textContent!.trim());
+                  '#expirationLabel')!.textContent.trim());
 
       let benefitExpectedSublabel =
           loadTimeData.getString('cvcTagForCreditCardListEntry');
@@ -906,14 +905,14 @@ suite('PaymentsSectionCardRows', function() {
           assertEquals(
               serverCreditCard.metadata!.summaryLabel,
               paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
-                                              '#label')!.textContent!.trim());
+                                              '#label')!.textContent.trim());
           assertTrue(isVisible(
               paymentsList[1]!.shadowRoot!.querySelector<HTMLElement>(
                   '#label')));
           assertEquals(
               localCreditCard.metadata!.summaryLabel,
               paymentsList[1]!.shadowRoot!.querySelector<HTMLElement>(
-                                              '#label')!.textContent!.trim());
+                                              '#label')!.textContent.trim());
           if (cvcOnServerCard) {
             assertTrue(isVisible(
                 paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
@@ -922,7 +921,7 @@ suite('PaymentsSectionCardRows', function() {
                 serverCardExpectedSublabel,
                 paymentsList[0]!.shadowRoot!
                     .querySelector<HTMLElement>(
-                        '#expirationLabel')!.textContent!.trim());
+                        '#expirationLabel')!.textContent.trim());
             assertTrue(isVisible(
                 paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
                     '#summarySublabel')));
@@ -934,7 +933,7 @@ suite('PaymentsSectionCardRows', function() {
                 localCardExpectedSublabel,
                 paymentsList[1]!.shadowRoot!
                     .querySelector<HTMLElement>(
-                        '#expirationLabel')!.textContent!.trim());
+                        '#expirationLabel')!.textContent.trim());
             assertTrue(isVisible(
                 paymentsList[1]!.shadowRoot!.querySelector<HTMLElement>(
                     '#summarySublabel')));
@@ -956,12 +955,12 @@ suite('PaymentsSectionCardRows', function() {
               serverExpectedSublabel,
               paymentsList[0]!.shadowRoot!
                   .querySelector<HTMLElement>(
-                      '#summarySublabel')!.textContent!.trim());
+                      '#summarySublabel')!.textContent.trim());
           assertEquals(
               localExpectedSublabel,
               paymentsList[1]!.shadowRoot!
                   .querySelector<HTMLElement>(
-                      '#summarySublabel')!.textContent!.trim());
+                      '#summarySublabel')!.textContent.trim());
         });
   });
 
@@ -978,7 +977,7 @@ suite('PaymentsSectionCardRows', function() {
     assertEquals(
         creditCard.metadata!.summaryLabel,
         rowShadowRoot.querySelector<HTMLElement>(
-                         '#summaryLabel')!.textContent!.trim());
+                         '#summaryLabel')!.textContent.trim());
   });
 
   test(
@@ -1007,7 +1006,7 @@ suite('PaymentsSectionCardRows', function() {
                 creditCard.expirationYear.substring(2),
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
-                    '#summarySublabel')!.textContent!.trim());
+                    '#summarySublabel')!.textContent.trim());
       });
 
   test(
@@ -1038,7 +1037,7 @@ suite('PaymentsSectionCardRows', function() {
                 creditCard.expirationYear.substring(2),
             getCardRowShadowRoot(section.$.paymentsList)
                 .querySelector<HTMLElement>(
-                    '#summarySublabel')!.textContent!.trim());
+                    '#summarySublabel')!.textContent.trim());
       });
 
   // Test to verify the CVC tag is visible when CVC is present on a
@@ -1092,12 +1091,12 @@ suite('PaymentsSectionCardRows', function() {
               serverCardExpectedSublabel,
               paymentsList[0]!.shadowRoot!
                   .querySelector<HTMLElement>(
-                      '#summarySublabel')!.textContent!.trim());
+                      '#summarySublabel')!.textContent.trim());
           assertEquals(
               localCardExpectedSublabel,
               paymentsList[1]!.shadowRoot!
                   .querySelector<HTMLElement>(
-                      '#summarySublabel')!.textContent!.trim());
+                      '#summarySublabel')!.textContent.trim());
         });
   });
 

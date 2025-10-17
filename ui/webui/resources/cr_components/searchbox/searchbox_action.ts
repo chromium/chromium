@@ -59,8 +59,7 @@ export class SearchboxActionElement extends CrLitElement {
   accessor actionIndex: number = -1;
 
   override firstUpdated() {
-    this.addEventListener(
-        'click', (event) => this.onActionClick_(event as PointerEvent));
+    this.addEventListener('click', (event) => this.onActionClick_(event));
     this.addEventListener('keydown', (event) => this.onActionKeyDown_(event));
     this.addEventListener(
         'mousedown', (event) => this.onActionMouseDown_(event));

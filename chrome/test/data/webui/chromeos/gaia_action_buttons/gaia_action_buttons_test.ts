@@ -22,7 +22,7 @@ class TestAuthenticator extends NativeEventTarget {
 
 function assertVisibleButtonWithLabel(button: HTMLElement, label: string) {
   assertFalse(button.hidden);
-  assertEquals(label, button.textContent!.trim());
+  assertEquals(label, button.textContent.trim());
 }
 
 suite('GaiaActionButtonsTest', () => {

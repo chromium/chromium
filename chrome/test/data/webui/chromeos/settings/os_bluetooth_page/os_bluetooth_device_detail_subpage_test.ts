@@ -548,10 +548,10 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(!!getBluetoothConnectDisconnectBtn());
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
-        getBluetoothStateText().textContent!.trim());
+        getBluetoothStateText().textContent.trim());
     assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     assertEquals(
-        deviceNickname, getBluetoothDeviceNameLabel().textContent!.trim());
+        deviceNickname, getBluetoothDeviceNameLabel().textContent.trim());
     assertTrue(!!getBluetoothDeviceBatteryInfo());
     assertNull(getNonAudioOutputDeviceMessage());
 
@@ -569,7 +569,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertNull(getBluetoothConnectDisconnectBtn());
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailDisconnected'),
-        getBluetoothStateText().textContent!.trim());
+        getBluetoothStateText().textContent.trim());
     assertFalse(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     assertNull(getBluetoothDeviceBatteryInfo());
     assertEquals(
@@ -580,7 +580,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertEquals(
         bluetoothDeviceDetailPage.i18n(
             'bluetoothDeviceDetailHIDMessageDisconnected'),
-        getNonAudioOutputDeviceMessage()!.textContent!.trim());
+        getNonAudioOutputDeviceMessage()!.textContent.trim());
 
     // Simulate connected state and not audio capable.
     device1.deviceProperties.connectionState = DeviceConnectionState.kConnected;
@@ -591,7 +591,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertEquals(
         bluetoothDeviceDetailPage.i18n(
             'bluetoothDeviceDetailHIDMessageConnected'),
-        getNonAudioOutputDeviceMessage()!.textContent!.trim());
+        getNonAudioOutputDeviceMessage()!.textContent.trim());
 
     device1.deviceProperties.audioCapability =
         AudioOutputCapability.kCapableOfAudioOutput;
@@ -608,7 +608,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(!!getBluetoothConnectDisconnectBtn());
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
-        getBluetoothStateText().textContent!.trim());
+        getBluetoothStateText().textContent.trim());
   });
 
   test(
@@ -672,12 +672,12 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(!!getBluetoothConnectDisconnectBtn());
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothConnecting'),
-        getBluetoothStateText().textContent!.trim());
+        getBluetoothStateText().textContent.trim());
     assertNull(getConnectionFailedText());
     assertTrue(getBluetoothConnectDisconnectBtn()!.disabled);
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothConnect'),
-        getBluetoothConnectDisconnectBtn()!.textContent!.trim());
+        getBluetoothConnectDisconnectBtn()!.textContent.trim());
   });
 
   test('Connect/Disconnect/forget states and error message', async () => {
@@ -708,10 +708,10 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
               isConnectDisconnectBtnDisabled,
               getBluetoothConnectDisconnectBtn()!.disabled);
           assertEquals(
-              bluetoothStateText, getBluetoothStateText().textContent!.trim());
+              bluetoothStateText, getBluetoothStateText().textContent.trim());
           assertEquals(
               connectDisconnectBtnText,
-              getBluetoothConnectDisconnectBtn()!.textContent!.trim());
+              getBluetoothConnectDisconnectBtn()!.textContent.trim());
         };
 
     const id = '12345/6789&';

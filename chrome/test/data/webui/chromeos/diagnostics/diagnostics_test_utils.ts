@@ -158,7 +158,7 @@ export function assertDataPointHasExpectedHeaderAndValue(
  */
 export function assertElementContainsText(element: Element|null, text: string) {
   assert(element);
-  assertTextContains(element.textContent as string, text);
+  assertTextContains(element.textContent, text);
 }
 
 /**
@@ -176,7 +176,7 @@ export function assertTextContains(text: string, subStr: string) {
 export function assertElementDoesNotContainText(
     element: Element, text: string) {
   assert(element);
-  assertTextDoesNotContain(element.textContent as string, text);
+  assertTextDoesNotContain(element.textContent, text);
 }
 
 /**

@@ -118,7 +118,7 @@ suite('DeleteBrowsingDataDialog', function() {
     assertTrue(!!visibleTimePeriodChips);
 
     for (const chip of visibleTimePeriodChips) {
-      if (chip.textContent!.trim() === getTimePeriodString(timePeriod)) {
+      if (chip.textContent.trim() === getTimePeriodString(timePeriod)) {
         chip.click();
         return;
       }
@@ -133,7 +133,7 @@ suite('DeleteBrowsingDataDialog', function() {
     assertTrue(!!menuItems);
 
     for (const item of menuItems) {
-      if (item.textContent!.trim() === getTimePeriodString(timePeriod)) {
+      if (item.textContent.trim() === getTimePeriodString(timePeriod)) {
         item.click();
         return;
       }

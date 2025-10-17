@@ -56,7 +56,7 @@ suite('DestinationDropdownCrosTest', function() {
   }
 
   function getHighlightedElementText(): string {
-    return getHighlightedElement()!.textContent!.trim();
+    return getHighlightedElement()!.textContent.trim();
   }
 
   function createDestination(
@@ -85,9 +85,9 @@ suite('DestinationDropdownCrosTest', function() {
 
         const itemList = getList();
         assertEquals(7, itemList.length);
-        assertEquals('One', itemList[0]!.textContent!.trim());
-        assertEquals('Two', itemList[1]!.textContent!.trim());
-        assertEquals('Three', itemList[2]!.textContent!.trim());
+        assertEquals('One', itemList[0]!.textContent.trim());
+        assertEquals('Two', itemList[1]!.textContent.trim());
+        assertEquals('Three', itemList[2]!.textContent.trim());
       });
 
   test('ClickCloses', function() {

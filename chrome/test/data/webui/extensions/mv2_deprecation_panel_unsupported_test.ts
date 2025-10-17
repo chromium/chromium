@@ -64,7 +64,7 @@ suite('ExtensionsMV2DeprecationPanel_UnsupportedStage', function() {
     let infoA =
         extensionRows[0]!.querySelector<HTMLElement>('.panel-extension-info');
     assertTrue(!!infoA);
-    assertEquals('Extension A', infoA.textContent!.trim());
+    assertEquals('Extension A', infoA.textContent.trim());
 
     // Add a new extension to the panel.
     panelElement.extensions = [
@@ -83,11 +83,11 @@ suite('ExtensionsMV2DeprecationPanel_UnsupportedStage', function() {
     infoA =
         extensionRows[0]!.querySelector<HTMLElement>('.panel-extension-info');
     assertTrue(!!infoA);
-    assertEquals('Extension A', infoA.textContent!.trim());
+    assertEquals('Extension A', infoA.textContent.trim());
     const infoB =
         extensionRows[1]!.querySelector<HTMLElement>('.panel-extension-info');
     assertTrue(!!infoB);
-    assertEquals('Extension B', infoB.textContent!.trim());
+    assertEquals('Extension B', infoB.textContent.trim());
   });
 
   test(

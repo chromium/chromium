@@ -122,7 +122,7 @@ suite('PasswordDetailsCardTest', function() {
       const listItemElement = listItemElements[i];
 
       assertTrue(!!listItemElement);
-      assertEquals(expectedDomain.name, listItemElement.textContent!.trim());
+      assertEquals(expectedDomain.name, listItemElement.textContent.trim());
       assertEquals(expectedDomain.url, listItemElement.href);
     });
   });
@@ -304,7 +304,7 @@ suite('PasswordDetailsCardTest', function() {
     const card = await createCardElement(password);
 
     assertEquals(
-        card.$.domainLabel.textContent!.trim(),
+        card.$.domainLabel.textContent.trim(),
         loadTimeData.getString('sitesLabel'));
   });
 
@@ -322,7 +322,7 @@ suite('PasswordDetailsCardTest', function() {
     const card = await createCardElement(password);
 
     assertEquals(
-        card.$.domainLabel.textContent!.trim(),
+        card.$.domainLabel.textContent.trim(),
         loadTimeData.getString('appsLabel'));
   });
 
@@ -345,7 +345,7 @@ suite('PasswordDetailsCardTest', function() {
     const card = await createCardElement(password);
 
     assertEquals(
-        card.$.domainLabel.textContent!.trim(),
+        card.$.domainLabel.textContent.trim(),
         loadTimeData.getString('sitesAndAppsLabel'));
   });
 
@@ -358,7 +358,7 @@ suite('PasswordDetailsCardTest', function() {
     const card = await createCardElement();
 
     assertTrue(isVisible(card.$.shareButton));
-    assertEquals(card.$.shareButton.textContent!.trim(), card.i18n('share'));
+    assertEquals(card.$.shareButton.textContent.trim(), card.i18n('share'));
 
     assertFalse(!!card.shadowRoot!.querySelector('share-password-flow'));
 
@@ -383,7 +383,7 @@ suite('PasswordDetailsCardTest', function() {
     assertFalse(card.$.shareButton.hidden);
     assertTrue(isVisible(card.$.shareButton));
     assertFalse(card.$.shareButton.disabled);
-    assertEquals(card.$.shareButton.textContent!.trim(), card.i18n('share'));
+    assertEquals(card.$.shareButton.textContent.trim(), card.i18n('share'));
   });
 
   test('sharing disabled by policy', async function() {

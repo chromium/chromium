@@ -143,7 +143,7 @@ suite('FieldTrialsTest', function() {
           Array.from(trialDiv.querySelectorAll<HTMLElement>('.experiment-row'))
               .map(experimentRow => ({
                      title: experimentRow.querySelector('.experiment-name')!
-                                .textContent!.trim(),
+                                .textContent.trim(),
                      enrolled: experimentRow.dataset['enrolled'] === '1',
                      overridden: experimentRow
                                      .querySelector<HTMLInputElement>(
@@ -151,7 +151,7 @@ suite('FieldTrialsTest', function() {
                    }));
       if (groups.length) {
         displayedTrials.push({
-          title: trialDiv.querySelector('.trial-header')!.textContent!.trim(),
+          title: trialDiv.querySelector('.trial-header')!.textContent.trim(),
           groups,
         });
       }

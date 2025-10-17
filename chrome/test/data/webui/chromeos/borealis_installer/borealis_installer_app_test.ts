@@ -85,7 +85,7 @@ suite('<borealis-installer-app>', () => {
 
   test('install', async () => {
     assertEquals(
-        shadowRoot().querySelector('#installLaunch')!.textContent!.trim(),
+        shadowRoot().querySelector('#installLaunch')!.textContent.trim(),
         'Install');
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
@@ -96,7 +96,7 @@ suite('<borealis-installer-app>', () => {
     await flushTasks();
     assertEquals(shadowRoot().querySelector('paper-progress')!.value, 57);
     assertEquals(
-        shadowRoot().querySelector('#progress-message')!.textContent!.trim(),
+        shadowRoot().querySelector('#progress-message')!.textContent.trim(),
         '57% completed | 3 seconds left');
     fakeBrowserProxy.page.onInstallFinished(InstallResult.kSuccess);
     await flushTasks();
@@ -104,7 +104,7 @@ suite('<borealis-installer-app>', () => {
     assertEquals(
         getDeepActiveElement(), shadowRoot().querySelector('#installLaunch'));
     assertEquals(
-        shadowRoot().querySelector('#installLaunch')!.textContent!.trim(),
+        shadowRoot().querySelector('#installLaunch')!.textContent.trim(),
         'Open Steam');
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('launch'), 0);

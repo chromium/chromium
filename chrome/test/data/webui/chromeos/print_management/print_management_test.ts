@@ -867,7 +867,7 @@ suite('PrintManagementTest', () => {
     assertTrue(page!.i18nExists('managePrintersButtonLabel'));
     assertEquals(
         page!.i18n('managePrintersButtonLabel'),
-        managePrintersButton.textContent!.trim());
+        managePrintersButton.textContent.trim());
   });
 
   // Verifies clicking 'manage printers' button triggers invokes

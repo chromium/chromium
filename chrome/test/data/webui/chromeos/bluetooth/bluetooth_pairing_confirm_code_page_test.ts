@@ -40,7 +40,7 @@ suite('CrComponentsBluetoothPairingConfirmCodePageTest', function() {
 
         deviceConfirmCodePage.code = code;
         await flushTasks();
-        assertEquals(code, codeInput!.textContent!.trim());
+        assertEquals(code, codeInput!.textContent.trim());
 
         basePage!.dispatchEvent(new CustomEvent('pair'));
         await confirmCodePromise;

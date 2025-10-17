@@ -116,12 +116,12 @@ suite('CollapsibleAutofillSettingsCard', function() {
     assertTrue(!!mainLabel);
     assertEquals(
         loadTimeData.getString('yourSavedInfoAutofillSettingsLabel'),
-        mainLabel.textContent!.trim());
+        mainLabel.textContent.trim());
     const subLabel = headerText.querySelector('.cr-secondary-text');
     assertTrue(!!subLabel);
     assertEquals(
         loadTimeData.getString('yourSavedInfoAutofillSettingsDescription'),
-        subLabel.textContent!.trim());
+        subLabel.textContent.trim());
   });
 
 

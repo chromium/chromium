@@ -46,10 +46,10 @@ suite('multiPageScanTest', function() {
     await flushTasks();
     const scanButton =
         strictQuery('#scanButton', multiPageScan.shadowRoot, CrButtonElement);
-    assertEquals('Scan page 2', scanButton.textContent!.trim());
+    assertEquals('Scan page 2', scanButton.textContent.trim());
     multiPageScan.pageNumber = 2;
     await flushTasks();
-    assertEquals('Scan page 3', scanButton.textContent!.trim());
+    assertEquals('Scan page 3', scanButton.textContent.trim());
   });
 
   // Verify clicking the Scan button fires the 'scan-next-page' event.

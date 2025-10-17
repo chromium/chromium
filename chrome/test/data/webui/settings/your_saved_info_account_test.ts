@@ -92,7 +92,7 @@ suite('YourSavedInfoAccount', function() {
         avatarRow.querySelector<HTMLElement>('#user-info > .text-elide')!;
     assertTrue(!!accountName);
     assertTrue(isChildVisible(syncControl, '#user-info'));
-    assertEquals('test name', accountName.textContent!.trim());
+    assertEquals('test name', accountName.textContent.trim());
   });
 
   test('displaysAccountLinkRow', async function() {
@@ -130,7 +130,7 @@ suite('YourSavedInfoAccount', function() {
 
     const accountName =
         accountCardElement.shadowRoot!.querySelector(
-                                          '#account-name')!.textContent!.trim();
+                                          '#account-name')!.textContent.trim();
     assertEquals('test name', accountName);
 
     // Clicking the account row navigates to the account settings page.
@@ -168,7 +168,7 @@ suite('YourSavedInfoAccount', function() {
     assertEquals(
         profileInfoBrowserProxy.fakeProfileInfo.name,
         accountCardElement.shadowRoot!
-            .querySelector<HTMLElement>('#profile-name')!.textContent!.trim());
+            .querySelector<HTMLElement>('#profile-name')!.textContent.trim());
 
     // Update profile info and check again.
     webUIListenerCallback(
@@ -179,7 +179,7 @@ suite('YourSavedInfoAccount', function() {
     assertEquals(
         'pushedName',
         accountCardElement.shadowRoot!
-            .querySelector<HTMLElement>('#profile-name')!.textContent!.trim());
+            .querySelector<HTMLElement>('#profile-name')!.textContent.trim());
     assertTrue(isChildVisible(accountCardElement, '#profile-name'));
   });
   // </if>

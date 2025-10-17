@@ -78,8 +78,7 @@ suite('<app-management-app-language-item>', () => {
             appLanguageItem.shadowRoot!.querySelector('cr-link-row')!
                 .shadowRoot!.querySelector('#labelWrapper > #subLabel');
         assertTrue(!!selectedLocaleLabel);
-        assertTrue(
-            selectedLocaleLabel.textContent!.includes('Device language'));
+        assertTrue(selectedLocaleLabel.textContent.includes('Device language'));
       });
 
   test('Selected locale exists, show display name', async () => {
@@ -107,7 +106,7 @@ suite('<app-management-app-language-item>', () => {
         appLanguageItem.shadowRoot!.querySelector('cr-link-row')!.shadowRoot!
             .querySelector('#labelWrapper > #subLabel');
     assertTrue(!!selectedLocaleLabel);
-    assertTrue(selectedLocaleLabel.textContent!.includes(displayName));
+    assertTrue(selectedLocaleLabel.textContent.includes(displayName));
   });
 
   test('Clicks link, show app language selection dialog', async () => {

@@ -680,7 +680,7 @@ function isPositionedOnPage(element: HTMLElement) {
 
 function assertLanguageLineWithTextAndSwitch(
     expectedText: string, element: HTMLElement) {
-  assertEquals(expectedText, element.textContent!.trim());
+  assertEquals(expectedText, element.textContent.trim());
   assertEquals(2, element.children.length);
   assertEquals('CR-TOGGLE', element.children[1]!.tagName);
 }

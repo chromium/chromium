@@ -82,7 +82,7 @@ suite('CheckupSectionTest', function() {
     assertFalse(section.$.refreshButton.disabled);
     assertTrue(isVisible(section.$.checkupStatusSubLabel));
     assertEquals(
-        elapsedTime, section.$.checkupStatusSubLabel.textContent!.trim());
+        elapsedTime, section.$.checkupStatusSubLabel.textContent.trim());
     assertFalse(isVisible(section.$.retryButton));
     assertFalse(isVisible(section.$.spinner));
   });
@@ -102,7 +102,7 @@ suite('CheckupSectionTest', function() {
     assertTrue(isVisible(section.$.checkupStatusSubLabel));
     assertEquals(
         section.i18n('checkupProgress', 4, 10),
-        section.$.checkupStatusSubLabel.textContent!.trim());
+        section.$.checkupStatusSubLabel.textContent.trim());
     assertFalse(isVisible(section.$.retryButton));
     assertTrue(isVisible(section.$.spinner));
   });
@@ -122,7 +122,7 @@ suite('CheckupSectionTest', function() {
     assertEquals(
         section.i18n(
             'checkupErrorNoPasswords', section.i18n('localPasswordManager')),
-        section.$.checkupStatusSubLabel.textContent!.trim());
+        section.$.checkupStatusSubLabel.textContent.trim());
     assertFalse(isVisible(section.$.retryButton));
     assertFalse(isVisible(section.$.spinner));
   });
@@ -144,7 +144,7 @@ suite('CheckupSectionTest', function() {
                  assertTrue(isVisible(section.$.checkupStatusSubLabel));
                  assertEquals(
                      passwordManager.data.checkStatus.elapsedTimeSinceLastCheck,
-                     section.$.checkupStatusSubLabel.textContent!.trim());
+                     section.$.checkupStatusSubLabel.textContent.trim());
                  assertTrue(isVisible(section.$.retryButton));
                  assertFalse(isVisible(section.$.spinner));
                  assertEquals(
@@ -242,7 +242,7 @@ suite('CheckupSectionTest', function() {
     // getPluralString() for 'checkedPasswords' is called 2 times with 0 and 10.
     assertArrayEquals([0, 10], pluralString.getArgs('checkedPasswords'));
     assertEquals(
-        'checkedPasswords', section.$.checkupStatusLabel.textContent!.trim());
+        'checkedPasswords', section.$.checkupStatusLabel.textContent.trim());
   });
 
   [CheckupSubpage.COMPROMISED, CheckupSubpage.REUSED, CheckupSubpage.WEAK]

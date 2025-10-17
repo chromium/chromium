@@ -662,7 +662,7 @@ suite('reimagingDeviceInformationPageTest', function() {
         loadTimeData.getString('confirmDeviceInfoDeviceNotCompliant'),
         strictQuery(
             complianceStatusStringSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     await setFeatureLevelAndReinitialize(FeatureLevel.kRmadFeatureLevel1);
     complianceWarning = strictQuery(
@@ -678,6 +678,6 @@ suite('reimagingDeviceInformationPageTest', function() {
         loadTimeData.getString('confirmDeviceInfoDeviceCompliant'),
         strictQuery(
             complianceStatusStringSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
   });
 });

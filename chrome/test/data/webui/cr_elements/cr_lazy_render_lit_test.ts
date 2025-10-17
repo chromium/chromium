@@ -78,11 +78,11 @@ suite('cr-lazy-render', function() {
     const checkbox = parent.shadowRoot.querySelector('cr-checkbox');
     assertTrue(!!checkbox);
     assertFalse(checkbox.checked);
-    assertNotEquals(-1, inner.textContent!.indexOf('Wings'));
+    assertNotEquals(-1, inner.textContent.indexOf('Wings'));
 
     parent.name = 'DC';
     await microtasksFinished();
-    assertNotEquals(-1, inner.textContent!.indexOf('DC'));
+    assertNotEquals(-1, inner.textContent.indexOf('DC'));
   });
 
   test('events work', async function() {

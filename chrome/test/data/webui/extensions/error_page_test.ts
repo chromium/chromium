@@ -102,8 +102,7 @@ suite('ExtensionErrorPageTest', function() {
     let error = errorElements[0]!;
     assertEquals(
         'message',
-        error.querySelector<HTMLElement>(
-                 '.error-message')!.textContent!.trim());
+        error.querySelector<HTMLElement>('.error-message')!.textContent.trim());
     assertTrue(error.querySelector('cr-icon')!.icon === 'cr:error');
 
     const manifestError = Object.assign(
@@ -125,8 +124,7 @@ suite('ExtensionErrorPageTest', function() {
     error = errorElements[0]!;
     assertEquals(
         'invalid key',
-        error.querySelector<HTMLElement>(
-                 '.error-message')!.textContent!.trim());
+        error.querySelector<HTMLElement>('.error-message')!.textContent.trim());
     assertTrue(error.querySelector('cr-icon')!.icon === 'cr:warning');
 
     mockDelegate.testClickingCalls(
@@ -219,11 +217,11 @@ suite('ExtensionErrorPageTest', function() {
     assertEquals(
         'Unknown',
         crCollapses[0]!.querySelector<HTMLElement>(
-                           '.context-url')!.textContent!.trim());
+                           '.context-url')!.textContent.trim());
     assertEquals(
         nextRuntimeError.contextUrl,
         crCollapses[1]!.querySelector<HTMLElement>(
-                           '.context-url')!.textContent!.trim());
+                           '.context-url')!.textContent.trim());
   });
 
   // Tests that the element can still be shown with an invalid URL. Regression
@@ -260,14 +258,14 @@ suite('ExtensionErrorPageTest', function() {
     assertEquals(
         'message',
         errorElements[0]!.querySelector<HTMLElement>(
-                             '.error-message')!.textContent!.trim());
+                             '.error-message')!.textContent.trim());
     assertEquals('cr:error', errorElements[0]!.querySelector('cr-icon')!.icon);
     assertEquals(1, crCollapses.length);
     assertTrue(crCollapses[0]!.opened);
     assertEquals(
         'Unknown',
         crCollapses[0]!.querySelector<HTMLElement>(
-                           '.context-url')!.textContent!.trim());
+                           '.context-url')!.textContent.trim());
     const error = errorPage.getSelectedError();
     assertTrue(!!error);
     assertEquals(1, error.id);

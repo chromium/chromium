@@ -653,7 +653,7 @@ suite('SiteDetailsPermission', function() {
     const firstDeviceDisplayName =
         deviceEntries[0]!.shadowRoot!.querySelector('.url-directionality');
     assertTrue(!!firstDeviceDisplayName);
-    assertEquals('Reader 1', firstDeviceDisplayName.textContent!.trim());
+    assertEquals('Reader 1', firstDeviceDisplayName.textContent.trim());
     assertFalse(!!deviceEntries[0]!.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
     assertFalse(deviceEntries[0]!.$.resetSite.hidden);
@@ -662,7 +662,7 @@ suite('SiteDetailsPermission', function() {
     const secondDeviceDisplayName =
         deviceEntries[1]!.shadowRoot!.querySelector('.url-directionality');
     assertTrue(!!secondDeviceDisplayName);
-    assertEquals('All readers', secondDeviceDisplayName.textContent!.trim());
+    assertEquals('All readers', secondDeviceDisplayName.textContent.trim());
     assertTrue(!!deviceEntries[1]!.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
     assertTrue(deviceEntries[1]!.$.resetSite.hidden);
@@ -722,7 +722,7 @@ suite('SiteDetailsPermission', function() {
     const firstDeviceDisplayName =
         deviceEntries[0]!.shadowRoot!.querySelector('.url-directionality');
     assertTrue(!!firstDeviceDisplayName);
-    assertEquals(firstDeviceDisplayName.textContent!.trim(), 'Gadget');
+    assertEquals(firstDeviceDisplayName.textContent.trim(), 'Gadget');
     assertFalse(!!deviceEntries[0]!.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
     assertFalse(deviceEntries[0]!.$.resetSite.hidden);
@@ -731,7 +731,7 @@ suite('SiteDetailsPermission', function() {
     const secondDeviceDisplayName =
         deviceEntries[1]!.shadowRoot!.querySelector('.url-directionality');
     assertTrue(!!secondDeviceDisplayName);
-    assertEquals(secondDeviceDisplayName.textContent!.trim(), 'Gizmo');
+    assertEquals(secondDeviceDisplayName.textContent.trim(), 'Gizmo');
     assertTrue(!!deviceEntries[1]!.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
     assertTrue(deviceEntries[1]!.$.resetSite.hidden);
@@ -827,7 +827,7 @@ suite('SiteDetailsPermission', function() {
         const deviceDisplayName =
             deviceEntries[0].shadowRoot!.querySelector('.url-directionality');
         assertTrue(!!deviceDisplayName);
-        assertEquals(deviceDisplayName.textContent!.trim(), 'Gadget');
+        assertEquals(deviceDisplayName.textContent.trim(), 'Gadget');
         assertFalse(!!deviceEntries[0].shadowRoot!.querySelector(
             'cr-policy-pref-indicator'));
         assertFalse(deviceEntries[0].$.resetSite.hidden);

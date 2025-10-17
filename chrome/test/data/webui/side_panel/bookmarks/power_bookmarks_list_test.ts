@@ -842,7 +842,7 @@ suite('General', () => {
       const menuItems =
           contextMenu.shadowRoot!.querySelectorAll('.dropdown-item');
       assertEquals(
-          menuItems[3]!.textContent!.includes(
+          menuItems[3]!.textContent.includes(
               loadTimeData.getString('menuEdit')),
           true);
       const editItem = contextMenu.shadowRoot!.querySelectorAll<HTMLElement>(
@@ -877,7 +877,7 @@ suite('General', () => {
       const menuItems =
           contextMenu.shadowRoot!.querySelectorAll('.dropdown-item');
       assertEquals(
-          menuItems[4]!.textContent!.includes(
+          menuItems[4]!.textContent.includes(
               loadTimeData.getString('tooltipMove')),
           true);
       const moveItem = contextMenu.shadowRoot!.querySelectorAll<HTMLElement>(

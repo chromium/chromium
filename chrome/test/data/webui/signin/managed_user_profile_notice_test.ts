@@ -96,7 +96,7 @@ suite('ManagedUserProfileNoticeTest', function() {
         isChildVisible(app, '#value-prop'),
         'Value proposition State: #value-prop');
     assertEquals(
-        'cancel_value_prop', cancelButton.textContent!.trim(),
+        'cancel_value_prop', cancelButton.textContent.trim(),
         'Value proposition State: Cancel label');
 
     webUIListenerCallback('on-state-changed', State.DISCLOSURE);
@@ -105,7 +105,7 @@ suite('ManagedUserProfileNoticeTest', function() {
         isChildVisible(app, '#cancel-button'),
         'Disclosure State: #cancel-button');
     assertEquals(
-        'back', cancelButton.textContent!.trim(),
+        'back', cancelButton.textContent.trim(),
         'Disclosure State: Cancel label');
 
     // Brings us back to disclosure.
@@ -118,7 +118,7 @@ suite('ManagedUserProfileNoticeTest', function() {
         isChildVisible(app, '#cancel-button'),
         'Disclosure State: #cancel-button');
     assertEquals(
-        'cancel_value_prop', cancelButton.textContent!.trim(),
+        'cancel_value_prop', cancelButton.textContent.trim(),
         'Disclosure State: Cancel label');
   });
 
@@ -158,7 +158,7 @@ suite('ManagedUserProfileNoticeTest', function() {
         isChildVisible(app, '#cancel-button'),
         'Value proposition State: #cancel-button');
     assertEquals(
-        'continue_as', proceedButton.textContent!.trim(),
+        'continue_as', proceedButton.textContent.trim(),
         'Value proposition State: Proceed label');
 
     webUIListenerCallback('on-state-changed', State.DISCLOSURE);
@@ -182,7 +182,7 @@ suite('ManagedUserProfileNoticeTest', function() {
         isChildVisible(app, '#cancel-button'),
         'Disclosure State: #cancel-button');
     assertEquals(
-        app.i18n('continueLabel'), proceedButton.textContent!.trim(),
+        app.i18n('continueLabel'), proceedButton.textContent.trim(),
         'Disclosure State: Proceed label');
 
     webUIListenerCallback('on-state-changed', State.USER_DATA_HANDLING);
@@ -212,7 +212,7 @@ suite('ManagedUserProfileNoticeTest', function() {
         isChildVisible(app, '#cancel-button'),
         'User Data Handling State: #cancel-button');
     assertEquals(
-        app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+        app.i18n('confirmLabel'), proceedButton.textContent.trim(),
         'User Data Handling State: Proceed label');
 
     webUIListenerCallback('on-state-changed', State.PROCESSING);
@@ -252,7 +252,7 @@ suite('ManagedUserProfileNoticeTest', function() {
     assertFalse(
         isChildVisible(app, '#cancel-button'), 'Error State: #cancel-button');
     assertEquals(
-        app.i18n('closeLabel'), proceedButton.textContent!.trim(),
+        app.i18n('closeLabel'), proceedButton.textContent.trim(),
         'Error State: Proceed label');
 
     webUIListenerCallback('on-state-changed', State.TIMEOUT);
@@ -275,7 +275,7 @@ suite('ManagedUserProfileNoticeTest', function() {
     assertTrue(
         isChildVisible(app, '#cancel-button'), 'Timeout State: #cancel-button');
     assertEquals(
-        app.i18n('retryLabel'), proceedButton.textContent!.trim(),
+        app.i18n('retryLabel'), proceedButton.textContent.trim(),
         'Timeout State: Proceed label');
 
     webUIListenerCallback('on-state-changed', State.SUCCESS);
@@ -298,7 +298,7 @@ suite('ManagedUserProfileNoticeTest', function() {
     assertFalse(
         isChildVisible(app, '#cancel-button'), 'Success State: #cancel-button');
     assertEquals(
-        app.i18n('continueLabel'), proceedButton.textContent!.trim(),
+        app.i18n('continueLabel'), proceedButton.textContent.trim(),
         'Success State: Proceed label');
   });
 
@@ -316,16 +316,16 @@ suite('ManagedUserProfileNoticeTest', function() {
       assertTrue(isChildVisible(targetElement, '.title'));
       const titleElement =
           targetElement.shadowRoot!.querySelector<HTMLElement>('.title')!;
-      assertEquals(expectedTitle, titleElement.textContent!.trim());
+      assertEquals(expectedTitle, titleElement.textContent.trim());
       assertTrue(isChildVisible(targetElement, '.subtitle'));
       const subtitleElement =
           targetElement.shadowRoot!.querySelector<HTMLElement>('.subtitle')!;
-      assertEquals(expectedSubtitle, subtitleElement.textContent!.trim());
+      assertEquals(expectedSubtitle, subtitleElement.textContent.trim());
 
       assertTrue(isChildVisible(app, '#proceed-button'));
       const proceedButton =
           app.shadowRoot.querySelector<HTMLElement>('#proceed-button')!;
-      assertEquals(expectedProceedLabel, proceedButton.textContent!.trim());
+      assertEquals(expectedProceedLabel, proceedButton.textContent.trim());
     }
 
     // Initial values.
@@ -371,23 +371,23 @@ suite('ManagedUserProfileNoticeTest', function() {
       assertTrue(isChildVisible(target, '.title'));
       const titleElement =
           target.shadowRoot!.querySelector<HTMLElement>('.title')!;
-      assertEquals(expectedTitle, titleElement.textContent!.trim());
+      assertEquals(expectedTitle, titleElement.textContent.trim());
       assertTrue(isChildVisible(target, '.subtitle'));
       const subtitleElement =
           target.shadowRoot!.querySelector<HTMLElement>('.subtitle')!;
-      assertEquals(expectedSubtitle, subtitleElement.textContent!.trim());
+      assertEquals(expectedSubtitle, subtitleElement.textContent.trim());
       assertTrue(isChildVisible(target, '.email'));
       const emailElement =
           target.shadowRoot!.querySelector<HTMLElement>('.email')!;
-      assertEquals(expectedEmail, emailElement.textContent!.trim());
+      assertEquals(expectedEmail, emailElement.textContent.trim());
       assertTrue(isChildVisible(target, '.account-name'));
       const accountNameElement =
           target.shadowRoot!.querySelector<HTMLElement>('.account-name')!;
-      assertEquals(expectedAccountName, accountNameElement.textContent!.trim());
+      assertEquals(expectedAccountName, accountNameElement.textContent.trim());
       assertTrue(isChildVisible(app, '#proceed-button'));
       const proceedButton =
           app.shadowRoot.querySelector<HTMLElement>('#proceed-button')!;
-      assertEquals(expectedProceedLabel, proceedButton.textContent!.trim());
+      assertEquals(expectedProceedLabel, proceedButton.textContent.trim());
     }
 
     // Initial values.

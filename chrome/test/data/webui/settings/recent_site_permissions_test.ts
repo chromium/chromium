@@ -150,11 +150,11 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
     assertEquals(
         host1,
         siteEntries[0]!.querySelector(
-                           '.url-directionality')!.textContent!.trim());
+                           '.url-directionality')!.textContent.trim());
     assertEquals(
         host2,
         siteEntries[1]!.querySelector(
-                           '.url-directionality')!.textContent!.trim());
+                           '.url-directionality')!.textContent.trim());
 
     const incognitoIcons =
         testElement.shadowRoot!.querySelectorAll<HTMLElement>(
@@ -191,9 +191,9 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
 
     assertEquals(
         expectedPermissionString1,
-        siteEntries[0]!.querySelector('.second-line')!.textContent!.trim());
+        siteEntries[0]!.querySelector('.second-line')!.textContent.trim());
     assertEquals(
         expectedPermissionString3,
-        siteEntries[1]!.querySelector('.second-line')!.textContent!.trim());
+        siteEntries[1]!.querySelector('.second-line')!.textContent.trim());
   });
 });

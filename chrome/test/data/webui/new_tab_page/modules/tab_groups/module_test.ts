@@ -243,7 +243,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     assertEquals(3, iconCells.length);
     assertEquals(1, overflowCells.length);
 
-    const overflowText = overflowCells[0]!.textContent!.trim();
+    const overflowText = overflowCells[0]!.textContent.trim();
     assertEquals('+5', overflowText);
   });
 
@@ -276,7 +276,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     assertEquals(3, iconCells.length);
     assertEquals(1, overflowCells.length);
 
-    const overflowText = overflowCells[0]!.textContent!.trim();
+    const overflowText = overflowCells[0]!.textContent.trim();
     assertEquals('99+', overflowText);
   });
 
@@ -308,7 +308,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     assertTrue(!!dialog);
 
     // Validate dialog text.
-    const text = dialog.textContent!.replace(/\s+/g, ' ').trim();
+    const text = dialog.textContent.replace(/\s+/g, ' ').trim();
     assertTrue(text.includes(
         'You’re seeing your recently used tab groups to help you easily pick up where you left off.'));
     assertTrue(text.includes(
@@ -525,11 +525,11 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       assertEquals(
           'Stay organized with tab groups',
           zeroStateContainer.querySelector(
-                                '#zeroTabGroupsTitle')!.textContent!.trim());
+                                '#zeroTabGroupsTitle')!.textContent.trim());
       assertEquals(
           'You can group tabs to keep related pages together and saved across your devices',
           zeroStateContainer.querySelector(
-                                '#zeroTabGroupsText')!.textContent!.trim());
+                                '#zeroTabGroupsText')!.textContent.trim());
     });
 
     test('create new tab group from the zero state card', async () => {

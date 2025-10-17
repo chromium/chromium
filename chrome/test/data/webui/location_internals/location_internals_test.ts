@@ -124,7 +124,7 @@ function checkTableContents(
   if (footerPrefix === undefined) {
     assert(footerElement.textContent === '');
   } else {
-    assert(footerElement.textContent!.startsWith(footerPrefix));
+    assert(footerElement.textContent.startsWith(footerPrefix));
   }
 }
 
@@ -226,7 +226,7 @@ suite('LocationInternalsUITest', function() {
   test('RefreshStatus', async function() {
     // Check that the initial status indicates the API is not initialized.
     const refreshStatus = getRequiredElement<HTMLElement>(REFRESH_STATUS_ID);
-    assert(refreshStatus.textContent!.includes(REFRESH_STATUS_UNINITIALIZED));
+    assert(refreshStatus.textContent.includes(REFRESH_STATUS_UNINITIALIZED));
 
     // Simulate an update and check that the status message indicates success.
     await simulateDiagnosticsUpdate({
@@ -236,7 +236,7 @@ suite('LocationInternalsUITest', function() {
       positionCacheDiagnostics: null,
       wifiPollingPolicyDiagnostics: null,
     });
-    assert(refreshStatus.textContent!.includes(REFRESH_STATUS_SUCCESS));
+    assert(refreshStatus.textContent.includes(REFRESH_STATUS_SUCCESS));
   });
 
   test('NetworkLocationDiagnosticsHidden', async function() {

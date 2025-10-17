@@ -396,8 +396,8 @@ suite('ItemTest', function() {
     function assertDescriptionText(expected: string) {
       assertEquals(
           expected,
-          item.shadowRoot.querySelector('.description:not([hidden])')!
-              .textContent!.trim());
+          item.shadowRoot.querySelector(
+                             '.description:not([hidden])')!.textContent.trim());
     }
 
     // Suspicious archive
@@ -543,7 +543,7 @@ suite('ItemTest', function() {
     assertEquals(
         loadTimeData.getString('controlLocalPasswordScan'),
         item.shadowRoot.querySelector<HTMLElement>(
-                           '#deepScan')!.textContent!.trim());
+                           '#deepScan')!.textContent.trim());
   });
 
   test('open anyway dropdown button shown on failed deep scan', async () => {

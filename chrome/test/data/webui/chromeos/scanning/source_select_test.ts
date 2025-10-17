@@ -60,10 +60,10 @@ suite('sourceSelectTest', function() {
     assertEquals(2, select.length);
     assertEquals(
         getSourceTypeString(firstSource.type),
-        select.options[0]!.textContent!.trim());
+        select.options[0]!.textContent.trim());
     assertEquals(
         getSourceTypeString(secondSource.type),
-        select.options[1]!.textContent!.trim());
+        select.options[1]!.textContent.trim());
     assertEquals(secondSource.name, select.value);
   });
 

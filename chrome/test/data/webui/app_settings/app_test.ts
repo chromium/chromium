@@ -395,7 +395,7 @@ suite('AppSettingsAppTest', () => {
 
     assertEquals(
         appSettingsApp.shadowRoot.querySelector(
-                                     '.header-text')!.textContent!.trim(),
+                                     '.header-text')!.textContent.trim(),
         'Permissions (abc.com)');
   });
 
@@ -503,20 +503,20 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!appVersionItem);
     const appVersion = appVersionItem.querySelector('.app-detail');
     assertTrue(!!appVersion);
-    assertEquals('0.1.2', appVersion.children[1]!.textContent!.trim());
+    assertEquals('0.1.2', appVersion.children[1]!.textContent.trim());
 
     const appSizeItem = appSettingsApp.shadowRoot.querySelector('#appSize');
     assertTrue(!!appSizeItem);
     const appSize = appSizeItem.querySelector('.app-detail');
     assertTrue(!!appSize);
-    assertEquals('378 KB', appSize.children[1]!.textContent!.trim());
+    assertEquals('378 KB', appSize.children[1]!.textContent.trim());
 
     const appDataSizeItem =
         appSettingsApp.shadowRoot.querySelector('#dataSize');
     assertTrue(!!appDataSizeItem);
     const dataSize = appDataSizeItem.querySelector('.app-detail');
     assertTrue(!!dataSize);
-    assertEquals('0 B', dataSize.children[1]!.textContent!.trim());
+    assertEquals('0 B', dataSize.children[1]!.textContent.trim());
   });
 
   test('IwaFieldsHiddenForPwa', async () => {

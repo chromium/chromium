@@ -494,19 +494,19 @@ suite('<settings-device-page>', () => {
       const inputSectionHeader =
           audioPage.shadowRoot!.querySelector('#audioInputTitle');
       assertTrue(!!inputSectionHeader);
-      assertEquals('Input', inputSectionHeader.textContent!.trim());
+      assertEquals('Input', inputSectionHeader.textContent.trim());
       const inputDeviceSubsectionHeader =
           audioPage.shadowRoot!.querySelector('#audioInputDeviceLabel');
       assertTrue(!!inputDeviceSubsectionHeader);
       assertEquals(
-          'Microphone', inputDeviceSubsectionHeader.textContent!.trim());
+          'Microphone', inputDeviceSubsectionHeader.textContent.trim());
       const inputDeviceSubsectionDropdown =
           audioPage.shadowRoot!.querySelector('#audioInputDeviceDropdown');
       assertTrue(isVisible(inputDeviceSubsectionDropdown));
       const inputGainSubsectionHeader =
           audioPage.shadowRoot!.querySelector('#audioInputGainLabel');
       assertTrue(!!inputGainSubsectionHeader, 'audioInputGainLabel');
-      assertEquals('Volume', inputGainSubsectionHeader.textContent!.trim());
+      assertEquals('Volume', inputGainSubsectionHeader.textContent.trim());
       const inputVolumeButton =
           audioPage.shadowRoot!.querySelector('#audioInputGainMuteButton');
       assertTrue(isVisible(inputVolumeButton), 'audioInputGainMuteButton');
@@ -1250,10 +1250,10 @@ suite('<settings-device-page>', () => {
       // Default state should be unmuted so show the toggle mute tooltip.
       assertEquals(
           loadTimeData.getString('audioToggleToMuteTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioToggleToMuteTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
 
       // Test muted by user case.
       crosAudioConfig.setAudioSystemProperties(
@@ -1261,10 +1261,10 @@ suite('<settings-device-page>', () => {
       await flushTasks();
       assertEquals(
           loadTimeData.getString('audioToggleToUnmuteTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioToggleToUnmuteTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
 
       // Test muted by policy case.
       crosAudioConfig.setAudioSystemProperties(
@@ -1272,10 +1272,10 @@ suite('<settings-device-page>', () => {
       await flushTasks();
       assertEquals(
           loadTimeData.getString('audioMutedByPolicyTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioMutedByPolicyTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
 
       // Test muted externally case.
       crosAudioConfig.setAudioSystemProperties(
@@ -1283,10 +1283,10 @@ suite('<settings-device-page>', () => {
       await flushTasks();
       assertEquals(
           loadTimeData.getString('audioMutedExternallyTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioMutedExternallyTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
     });
 
     test(

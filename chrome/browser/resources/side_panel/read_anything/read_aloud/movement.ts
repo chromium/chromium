@@ -181,7 +181,7 @@ export abstract class Highlight {
     // First pull out any text within this node before the highlighted
     // section. Since it's already been highlighted, we fade it out.
     const highlightPrefix =
-        currentNode.textContent!.substring(0, highlightStart);
+        currentNode.textContent.substring(0, highlightStart);
     if (highlightPrefix.length > 0) {
       const previousHighlight = document.createElement('span');
       previousHighlight.classList.add(previousReadHighlightClass);
@@ -204,7 +204,7 @@ export abstract class Highlight {
       readingHighlight.classList.add(currentReadHighlightClass);
     }
     const textNode = document.createTextNode(
-        currentNode.textContent!.substring(highlightStart, highlightEnd));
+        currentNode.textContent.substring(highlightStart, highlightEnd));
     readingHighlight.appendChild(textNode);
     this.nodeStore_.setAncestor(textNode, parentOfHighlight, highlightStart);
     parentOfHighlight.appendChild(readingHighlight);
@@ -212,7 +212,7 @@ export abstract class Highlight {
 
     // Finally, append the rest of the text for this node that has yet to be
     // highlighted.
-    const highlightSuffix = currentNode.textContent!.substring(highlightEnd);
+    const highlightSuffix = currentNode.textContent.substring(highlightEnd);
     if (highlightSuffix.length > 0) {
       const suffixNode = document.createTextNode(highlightSuffix);
       this.nodeStore_.setAncestor(suffixNode, parentOfHighlight, highlightEnd);

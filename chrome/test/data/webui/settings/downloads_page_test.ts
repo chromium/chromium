@@ -118,7 +118,7 @@ suite('DownloadsHandler', function() {
     const pathElement =
         downloadsPage.shadowRoot!.querySelector('#defaultDownloadPath');
     assertTrue(!!pathElement);
-    return pathElement.textContent!.trim();
+    return pathElement.textContent.trim();
   }
 
   test('rewrite default download paths', async function() {

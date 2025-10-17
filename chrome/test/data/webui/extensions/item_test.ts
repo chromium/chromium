@@ -612,10 +612,10 @@ suite('ExtensionItemTest', function() {
     data.name = name;
     item.data = data;
     await microtasksFinished();
-    assertEquals(name, item.$.name.textContent!.trim());
+    assertEquals(name, item.$.name.textContent.trim());
     // "Related to $1" is IDS_MD_EXTENSIONS_EXTENSION_A11Y_ASSOCIATION.
     assertEquals(
-        `Related to ${name}`, item.$.a11yAssociation.textContent!.trim());
+        `Related to ${name}`, item.$.a11yAssociation.textContent.trim());
   });
 
   test('RepairButton', async () => {
@@ -686,7 +686,7 @@ suite('ExtensionItemTest', function() {
         'service worker,',
         item.shadowRoot
             .querySelector<HTMLElement>(
-                '#inspect-views a:first-of-type')!.textContent!.trim());
+                '#inspect-views a:first-of-type')!.textContent.trim());
   });
 
   // Test that the correct tooltip text is shown when the enable toggle is
@@ -703,7 +703,7 @@ suite('ExtensionItemTest', function() {
     testVisible(item, '#enable-toggle-tooltip', true);
     assertEquals(
         loadTimeData.getString('enableToggleTooltipEnabled'),
-        crTooltip.textContent!.trim());
+        crTooltip.textContent.trim());
     assertEquals(TooltipPosition.LEFT, crTooltip.getAttribute('position'));
 
     let data = createExtensionInfo(item.data);
@@ -715,7 +715,7 @@ suite('ExtensionItemTest', function() {
     await microtasksFinished();
     assertEquals(
         loadTimeData.getString('enableToggleTooltipEnabledWithSiteAccess'),
-        crTooltip.textContent!.trim());
+        crTooltip.textContent.trim());
 
     data = createExtensionInfo(item.data);
     data.state = chrome.developerPrivate.ExtensionState.DISABLED;
@@ -723,7 +723,7 @@ suite('ExtensionItemTest', function() {
     await microtasksFinished();
     assertEquals(
         loadTimeData.getString('enableToggleTooltipDisabled'),
-        crTooltip.textContent!.trim());
+        crTooltip.textContent.trim());
   });
 
   test('EnableExtensionToggleTooltipPositions', () => {

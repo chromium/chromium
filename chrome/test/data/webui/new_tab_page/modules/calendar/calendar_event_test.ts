@@ -66,7 +66,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
 
       // Assert.
       assertFalse(isVisible(element.$.timeStatus));
-      assertEquals('', element.$.timeStatus.textContent!.trim());
+      assertEquals('', element.$.timeStatus.textContent.trim());
     });
 
     test('time status displays correctly', async () => {

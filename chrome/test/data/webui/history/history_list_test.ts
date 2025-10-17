@@ -290,7 +290,7 @@ suite('HistoryListTest', function() {
     assertTrue(item.isCardStart);
     const heading =
         item.shadowRoot.querySelector<HTMLElement>(
-                           '#date-accessed')!.textContent!;
+                           '#date-accessed')!.textContent;
     const title = item.$.link;
 
     // Check that the card title displays the search term somewhere.
@@ -306,7 +306,7 @@ suite('HistoryListTest', function() {
     await finishSetup([]);
     await microtasksFinished();
     assertFalse(element.$.noResults.hidden);
-    assertNotEquals('', element.$.noResults.textContent!.trim());
+    assertNotEquals('', element.$.noResults.textContent.trim());
     assertTrue(element.$.infiniteList.hidden);
 
     testService.handler.setResultFor('queryHistory', Promise.resolve({

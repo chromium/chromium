@@ -30,7 +30,7 @@ suite('actionToolbarTest', function() {
     const pageNumbers =
         strictQuery('#pageNumbers', actionToolbar.shadowRoot, HTMLElement);
     assertTrue(!!pageNumbers);
-    return pageNumbers.textContent!.trim();
+    return pageNumbers.textContent.trim();
   }
 
   // Verify the page count text updates when the number of scanned images

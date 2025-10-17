@@ -142,13 +142,13 @@ suite('ShoppingInsightsAppTest', () => {
     const panelTitle =
         shoppingInsightsApp.shadowRoot!.querySelector('.panel-title');
     assertTrue(!!panelTitle);
-    assertEquals('Product Cluster Foo', panelTitle.textContent!.trim());
+    assertEquals('Product Cluster Foo', panelTitle.textContent.trim());
 
     const range = shoppingInsightsApp.shadowRoot!.querySelector('#priceRange');
     assertTrue(!!range);
     assertEquals(
         loadTimeData.getStringF('rangeMultipleOptions', '$100', '$200'),
-        range.textContent!.trim());
+        range.textContent.trim());
 
     const titleSection =
         shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
@@ -167,7 +167,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(isVisible(historyTitle));
     assertEquals(
         loadTimeData.getString('historyTitleMultipleOptions'),
-        historyTitle.textContent!.trim());
+        historyTitle.textContent.trim());
 
     const attributesRow =
         historySection.querySelector('catalog-attributes-row');
@@ -176,12 +176,12 @@ suite('ShoppingInsightsAppTest', () => {
 
     const attributes = attributesRow.shadowRoot!.querySelector('.attributes');
     assertTrue(!!attributes);
-    assertEquals('Unlocked, 4GB', attributes.textContent!.trim());
+    assertEquals('Unlocked, 4GB', attributes.textContent.trim());
 
     const buyOption = attributesRow.shadowRoot!.querySelector('.link');
     assertTrue(!!buyOption);
     assertEquals(
-        loadTimeData.getString('buyOptions'), buyOption.textContent!.trim());
+        loadTimeData.getString('buyOptions'), buyOption.textContent.trim());
 
     const button = attributesRow.shadowRoot!.querySelector('cr-icon');
     assertTrue(!!button);
@@ -202,13 +202,13 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(!!comment);
     assertEquals(
         loadTimeData.getString('historyDescription'),
-        comment.textContent!.trim());
+        comment.textContent.trim());
 
     const feedbackButton =
         commentRow.shadowRoot!.querySelector<HTMLElement>('.link');
     assertTrue(!!feedbackButton);
     assertEquals(
-        loadTimeData.getString('feedback'), feedbackButton.textContent!.trim());
+        loadTimeData.getString('feedback'), feedbackButton.textContent.trim());
     feedbackButton.click();
     assertEquals(1, priceInsightsProxy.getCallCount('showFeedback'));
     assertEquals(
@@ -231,13 +231,13 @@ suite('ShoppingInsightsAppTest', () => {
     const panelTitle =
         shoppingInsightsApp.shadowRoot!.querySelector('.panel-title');
     assertTrue(!!panelTitle);
-    assertEquals('Product Cluster Foo', panelTitle.textContent!.trim());
+    assertEquals('Product Cluster Foo', panelTitle.textContent.trim());
 
     const range = shoppingInsightsApp.shadowRoot!.querySelector('#priceRange');
     assertTrue(!!range);
     assertEquals(
         loadTimeData.getStringF('rangeSingleOptionOnePrice', '$100'),
-        range.textContent!.trim());
+        range.textContent.trim());
 
     const titleSection =
         shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
@@ -263,7 +263,7 @@ suite('ShoppingInsightsAppTest', () => {
     const panelTitle =
         shoppingInsightsApp.shadowRoot!.querySelector('.panel-title');
     assertTrue(!!panelTitle);
-    assertEquals('Product Cluster Foo', panelTitle.textContent!.trim());
+    assertEquals('Product Cluster Foo', panelTitle.textContent.trim());
 
     assertFalse(isVisible(
         shoppingInsightsApp.shadowRoot!.querySelector('#priceRange')));
@@ -281,7 +281,7 @@ suite('ShoppingInsightsAppTest', () => {
         attributesRow.shadowRoot!.querySelector<HTMLElement>('.link');
     assertTrue(!!buyOption);
     assertEquals(
-        loadTimeData.getString('buyOptions'), buyOption.textContent!.trim());
+        loadTimeData.getString('buyOptions'), buyOption.textContent.trim());
     buyOption.click();
     const url = await shoppingServiceApi.whenCalled('openUrlInNewTab');
     assertEquals('https://foo.com/jackpot', url.url);
@@ -303,7 +303,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(!!historyTitle);
     assertEquals(
         loadTimeData.getString('historyTitleSingleOption'),
-        historyTitle.textContent!.trim());
+        historyTitle.textContent.trim());
     assertFalse(
         isVisible(historySection.querySelector('catalog-attributes-row')));
 

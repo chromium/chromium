@@ -73,8 +73,8 @@ suite('scannerSelectTest', function() {
 
     assertFalse(select.disabled);
     assertEquals(2, select.length);
-    assertEquals(firstScannerName, getOption(0).textContent!.trim());
-    assertEquals(secondScannerName, getOption(1).textContent!.trim());
+    assertEquals(firstScannerName, getOption(0).textContent.trim());
+    assertEquals(secondScannerName, getOption(1).textContent.trim());
     assertEquals(firstScannerId, select.value);
   });
 

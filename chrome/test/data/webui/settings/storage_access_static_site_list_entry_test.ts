@@ -87,7 +87,7 @@ suite('StorageAccessStaticSiteListEntry', function() {
     assertEquals(
         storageAccessException.displayName,
         testElement.$.displayName.querySelector('.site-representation')!
-            .textContent!.trim());
+            .textContent.trim());
   });
 
   test('origin site description', async function() {
@@ -98,7 +98,7 @@ suite('StorageAccessStaticSiteListEntry', function() {
 
     // Validate the row description.
     assertEquals(
-        storageAccessException.description, secondLine.textContent!.trim());
+        storageAccessException.description, secondLine.textContent.trim());
   });
 
   test('site incognito', async function() {

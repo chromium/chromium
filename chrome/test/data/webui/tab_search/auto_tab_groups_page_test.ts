@@ -404,7 +404,7 @@ suite('AutoTabGroupsPageTest', () => {
 
     const header = autoTabGroupsPage.shadowRoot.querySelector('#header');
     assertTrue(!!header);
-    assertEquals(errorString, header.textContent!.trim());
+    assertEquals(errorString, header.textContent.trim());
   });
 
   test('Active tab present in organization does not show error', async () => {
@@ -438,6 +438,6 @@ suite('AutoTabGroupsPageTest', () => {
 
     const header = autoTabGroupsPage.shadowRoot.querySelector('#header');
     assertTrue(!!header);
-    assertEquals(successString, header.textContent!.trim());
+    assertEquals(successString, header.textContent.trim());
   });
 });

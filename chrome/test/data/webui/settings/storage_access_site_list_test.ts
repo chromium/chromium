@@ -97,7 +97,7 @@ suite('StorageAccessSiteList', function() {
     const headerRow =
         testElement.shadowRoot.querySelector('.cr-row .cr-secondary-text');
     assertTrue(!!headerRow);
-    assertEquals(categoryHeader, headerRow.textContent!.trim());
+    assertEquals(categoryHeader, headerRow.textContent.trim());
   });
 
   test('storage access site list entries', async function() {
@@ -137,7 +137,7 @@ suite('StorageAccessSiteList', function() {
 
     assertTrue(!!noSitesAddedElement);
     assertTrue(isVisible(noSitesAddedElement));
-    assertEquals(noSitesAddedString, noSitesAddedElement.textContent!.trim());
+    assertEquals(noSitesAddedString, noSitesAddedElement.textContent.trim());
   });
 
   test('storage access site list entries with empty filter', async function() {
@@ -228,6 +228,6 @@ suite('StorageAccessSiteList', function() {
         assertTrue(!!noSearchResultsElement);
         assertTrue(isVisible(noSearchResultsElement));
         assertEquals(
-            noSearchResults, noSearchResultsElement.textContent!.trim());
+            noSearchResults, noSearchResultsElement.textContent.trim());
       });
 });

@@ -51,7 +51,7 @@ suite('percentBarChartTestSuite', function() {
       assertEquals(max, paperProgress.max);
       const chartName = strictQuery(
           '#chartName', percentBarChartElement.shadowRoot, HTMLLabelElement);
-      assertEquals(header, chartName.textContent!.trim());
+      assertEquals(header, chartName.textContent.trim());
     });
   });
 

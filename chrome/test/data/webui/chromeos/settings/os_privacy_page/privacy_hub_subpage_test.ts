@@ -297,7 +297,7 @@ suite('<settings-privacy-hub-subpage> AllBuilds app permissions', () => {
     assertFalse(getMicrophoneTooltip().hidden);
     assertEquals(
         privacyHubSubpage.i18n('privacyHubNoMicrophoneConnectedTooltipText'),
-        getMicrophoneTooltip().textContent!.trim());
+        getMicrophoneTooltip().textContent.trim());
 
     // Add a microphone.
     mediaDevices.addDevice('audioinput', 'Fake Microphone');
@@ -320,7 +320,7 @@ suite('<settings-privacy-hub-subpage> AllBuilds app permissions', () => {
     // Ensure that the tooltip has the intended content.
     assertEquals(
         privacyHubSubpage.i18n('microphoneHwToggleTooltip'),
-        getMicrophoneTooltip().textContent!.trim());
+        getMicrophoneTooltip().textContent.trim());
 
     mediaDevices.popDevice();
   });
@@ -338,7 +338,7 @@ suite('<settings-privacy-hub-subpage> AllBuilds app permissions', () => {
     assertFalse(getCameraTooltip().hidden);
     assertEquals(
         privacyHubSubpage.i18n('privacyHubNoCameraConnectedTooltipText'),
-        getCameraTooltip().textContent!.trim());
+        getCameraTooltip().textContent.trim());
 
     // Add a camera.
     mediaDevices.addDevice('videoinput', 'Fake Camera');

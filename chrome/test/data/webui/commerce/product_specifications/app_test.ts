@@ -1746,7 +1746,7 @@ suite('AppTest', () => {
     // Remove the link part before verifying the string to avoid verifying the
     // spaces due to the templated string.
     const disclaimerText =
-        disclaimer.textContent.replace(learnMoreLink.textContent!, '').trim();
+        disclaimer.textContent.replace(learnMoreLink.textContent, '').trim();
     assertEquals(
         loadTimeData.getStringF('experimentalFeatureDisclaimer', testEmail),
         disclaimerText);

@@ -43,7 +43,7 @@ suite('SiteDetailsPermissionDeviceEntry', function() {
     const deviceDisplayName =
         testElement.shadowRoot!.querySelector('.url-directionality');
     assertTrue(!!deviceDisplayName);
-    assertEquals(deviceDisplayName.textContent!.trim(), deviceName);
+    assertEquals(deviceDisplayName.textContent.trim(), deviceName);
 
     // The reset button is not hidden.
     const resetButton = testElement.$.resetSite;
@@ -69,7 +69,7 @@ suite('SiteDetailsPermissionDeviceEntry', function() {
     const deviceDisplayName =
         testElement.shadowRoot!.querySelector('.url-directionality');
     assertTrue(!!deviceDisplayName);
-    assertEquals(deviceDisplayName.textContent!.trim(), deviceName);
+    assertEquals(deviceDisplayName.textContent.trim(), deviceName);
 
     // The reset button is hidden.
     assertTrue(testElement.$.resetSite.hidden);

@@ -61,7 +61,7 @@ suite('PreviewAreaTest', function() {
     const message =
         previewArea.shadowRoot.querySelector('.preview-area-message')!
             .querySelector('span')!;
-    assertEquals('Loading preview', message.textContent!.trim());
+    assertEquals('Loading preview', message.textContent.trim());
 
     previewArea.startPreview(false);
 
@@ -90,7 +90,7 @@ suite('PreviewAreaTest', function() {
         'The selected printer is not available or not installed ' +
             'correctly.  Check your printer or try selecting another ' +
             'printer.',
-        message.textContent!.trim());
+        message.textContent.trim());
   });
 
   /** Validate preview area sets tabindex correctly based on viewport size. */

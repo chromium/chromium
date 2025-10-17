@@ -294,7 +294,7 @@ suite('AutofillAiEntriesListUiTest', function() {
 
       const iconButton = item.querySelector('cr-icon-button')!;
       // Only the Vehicle entity (Toyota) is stored in Wallet.
-      if (!item.textContent!.includes('Toyota')) {
+      if (!item.textContent.includes('Toyota')) {
         const labels = item.querySelectorAll<HTMLElement>('.ellipses');
         assertTrue(
             iconButton.getAttribute('title')!.includes(loadTimeData.getStringF(
@@ -317,12 +317,12 @@ suite('AutofillAiEntriesListUiTest', function() {
         4, listItems.length,
         '3 entity instances and a hidden element were loaded.');
     // The items should now also be sorted alphabetically.
-    assertTrue(listItems[0]!.textContent!.includes('John Doe'));
-    assertTrue(listItems[0]!.textContent!.includes('Driver\'s license'));
-    assertTrue(listItems[1]!.textContent!.includes('John Doe'));
-    assertTrue(listItems[1]!.textContent!.includes('Passport'));
-    assertTrue(listItems[2]!.textContent!.includes('Toyota'));
-    assertTrue(listItems[2]!.textContent!.includes('Car'));
+    assertTrue(listItems[0]!.textContent.includes('John Doe'));
+    assertTrue(listItems[0]!.textContent.includes('Driver\'s license'));
+    assertTrue(listItems[1]!.textContent.includes('John Doe'));
+    assertTrue(listItems[1]!.textContent.includes('Passport'));
+    assertTrue(listItems[2]!.textContent.includes('Toyota'));
+    assertTrue(listItems[2]!.textContent.includes('Car'));
     assertFalse(isVisible(listItems[3]!));
   });
 
@@ -482,7 +482,7 @@ suite('AutofillAiEntriesListUiTest', function() {
     assertEquals(testEntityTypes.length, addSpecificEntityTypeButtons.length);
     for (const index in testEntityTypes) {
       assertTrue(
-          addSpecificEntityTypeButtons[index]!.textContent!.includes(
+          addSpecificEntityTypeButtons[index]!.textContent.includes(
               testEntityTypes[index]!.typeNameAsString));
     }
   });
@@ -527,12 +527,12 @@ suite('AutofillAiEntriesListUiTest', function() {
             4, listItems.length,
             'Three entity instances and a hidden element should be present.');
         // The items should now also be sorted alphabetically.
-        assertTrue(listItems[0]!.textContent!.includes('Honda'));
-        assertTrue(listItems[0]!.textContent!.includes('Car'));
-        assertTrue(listItems[1]!.textContent!.includes('Tom Clark'));
-        assertTrue(listItems[1]!.textContent!.includes('Driver\'s license'));
-        assertTrue(listItems[2]!.textContent!.includes('Tom Clark'));
-        assertTrue(listItems[2]!.textContent!.includes('Passport'));
+        assertTrue(listItems[0]!.textContent.includes('Honda'));
+        assertTrue(listItems[0]!.textContent.includes('Car'));
+        assertTrue(listItems[1]!.textContent.includes('Tom Clark'));
+        assertTrue(listItems[1]!.textContent.includes('Driver\'s license'));
+        assertTrue(listItems[2]!.textContent.includes('Tom Clark'));
+        assertTrue(listItems[2]!.textContent.includes('Passport'));
         assertFalse(isVisible(listItems[3]!));
       });
 
@@ -646,19 +646,19 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
 
     assertEquals(6, labels.length, '3 labels + 3 sublabels should be loaded');
 
-    assertTrue(labels[0]!.textContent!.includes('A label'));
+    assertTrue(labels[0]!.textContent.includes('A label'));
     assertGE(labels[0]!.scrollWidth, labels[0]!.offsetWidth);
-    assertTrue(labels[1]!.textContent!.includes('Car'));
+    assertTrue(labels[1]!.textContent.includes('Car'));
     assertEquals(labels[1]!.scrollWidth, labels[1]!.offsetWidth);
 
-    assertTrue(labels[2]!.textContent!.includes('John Doe'));
+    assertTrue(labels[2]!.textContent.includes('John Doe'));
     assertEquals(labels[2]!.scrollWidth, labels[2]!.offsetWidth);
-    assertTrue(labels[3]!.textContent!.includes('Sublabel'));
+    assertTrue(labels[3]!.textContent.includes('Sublabel'));
     assertGE(labels[3]!.scrollWidth, labels[3]!.offsetWidth);
 
-    assertTrue(labels[4]!.textContent!.includes('Mark Donald'));
+    assertTrue(labels[4]!.textContent.includes('Mark Donald'));
     assertEquals(labels[4]!.scrollWidth, labels[4]!.offsetWidth);
-    assertTrue(labels[5]!.textContent!.includes('Passport'));
+    assertTrue(labels[5]!.textContent.includes('Passport'));
     assertEquals(labels[5]!.scrollWidth, labels[5]!.offsetWidth);
   });
 });

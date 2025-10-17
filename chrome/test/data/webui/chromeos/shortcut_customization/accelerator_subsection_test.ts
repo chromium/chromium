@@ -85,7 +85,7 @@ suite('acceleratorSubsectionTest', function() {
     assertEquals(
         title,
         sectionElement!.shadowRoot!.querySelector(
-                                       '#title')!.textContent!.trim());
+                                       '#title')!.textContent.trim());
   });
 
   test('LoadCategoryAndConfirmDescriptions', async () => {

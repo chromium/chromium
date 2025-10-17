@@ -111,11 +111,11 @@ suite('SafetyHubPage', function() {
     assertTrue(isChildVisible(testElement, '#safeBrowsing'));
     assertEquals(
         testElement.$.safeBrowsing.shadowRoot!.querySelector('#header')!
-            .textContent!.trim(),
+            .textContent.trim(),
         newCardData.header);
     assertEquals(
         testElement.$.safeBrowsing.shadowRoot!.querySelector('#subheader')!
-            .textContent!.trim(),
+            .textContent.trim(),
         newCardData.subheader);
   }
 
@@ -253,11 +253,11 @@ suite('SafetyHubPage', function() {
     // Card header and subheader should be what the browser proxy provides.
     assertEquals(
         testElement.$.passwords.shadowRoot!.querySelector(
-                                               '#header')!.textContent!.trim(),
+                                               '#header')!.textContent.trim(),
         passwordCardMockData.header);
     assertEquals(
         testElement.$.passwords.shadowRoot!.querySelector('#subheader')!
-            .textContent!.trim(),
+            .textContent.trim(),
         passwordCardMockData.subheader);
 
     // Check that the card aria role and description are correct.
@@ -304,11 +304,11 @@ suite('SafetyHubPage', function() {
     // Card header and subheader should be what the browser proxy provides.
     assertEquals(
         testElement.$.version.shadowRoot!.querySelector(
-                                             '#header')!.textContent!.trim(),
+                                             '#header')!.textContent.trim(),
         versionCardMockData.header);
     assertEquals(
         testElement.$.version.shadowRoot!.querySelector(
-                                             '#subheader')!.textContent!.trim(),
+                                             '#subheader')!.textContent.trim(),
         versionCardMockData.subheader);
 
     // Check that the card aria role and description are correct.
@@ -406,11 +406,11 @@ suite('SafetyHubPage', function() {
     // Card header and subheader should be what the browser proxy provides.
     assertEquals(
         testElement.$.safeBrowsing.shadowRoot!.querySelector('#header')!
-            .textContent!.trim(),
+            .textContent.trim(),
         safeBrowsingCardMockData.header);
     assertEquals(
         testElement.$.safeBrowsing.shadowRoot!.querySelector('#subheader')!
-            .textContent!.trim(),
+            .textContent.trim(),
         safeBrowsingCardMockData.subheader);
 
     // Check that the card aria role and description are correct.

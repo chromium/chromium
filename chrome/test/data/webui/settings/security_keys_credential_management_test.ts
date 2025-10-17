@@ -106,7 +106,7 @@ suite('SecurityKeysCredentialManagement', function() {
         'security-keys-credential-management-finished', error);
     await microtasksFinished();
     assertShown(allDivs, dialog, 'pinError');
-    assertTrue(dialog.$.error.textContent!.trim().includes(error));
+    assertTrue(dialog.$.error.textContent.trim().includes(error));
   });
 
   test('PINChangeError', async function() {
@@ -132,7 +132,7 @@ suite('SecurityKeysCredentialManagement', function() {
     assertShown(allDivs, dialog, 'pinError');
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
-    assertTrue(dialog.$.pinError.textContent!.trim().includes(error));
+    assertTrue(dialog.$.pinError.textContent.trim().includes(error));
 
     const setPinEvent = eventToPromise('credential-management-set-pin', dialog);
     dialog.$.confirmButton.click();

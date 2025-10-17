@@ -94,7 +94,7 @@ suite('PrivacyPage', function() {
     flush();
 
     assertTrue(toast.open);
-    assertEquals('test', toast.textContent!.trim());
+    assertEquals('test', toast.textContent.trim());
   });
 
   // Test that clicking on the security page row navigates to

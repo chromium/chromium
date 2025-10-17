@@ -91,10 +91,10 @@ suite('<settings-per-device-keyboard>', () => {
           const name =
               subsectionHeader.shadowRoot!.querySelector('h2')!.textContent;
           if (fakeKeyboards[i]!.isExternal) {
-            assertEquals(fakeKeyboards[i]!.name, name!.trim());
+            assertEquals(fakeKeyboards[i]!.name, name.trim());
           } else {
             assertTrue(subsections[i]!.i18nExists('builtInKeyboardName'));
-            assertEquals('Built-in Keyboard', name!.trim());
+            assertEquals('Built-in Keyboard', name.trim());
           }
         }
       });

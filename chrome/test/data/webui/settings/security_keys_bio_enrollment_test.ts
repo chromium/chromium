@@ -113,7 +113,7 @@ suite('SecurityKeysBioEnrollment', function() {
     await microtasksFinished();
     assertShown(allDivs, dialog, 'error');
     assertTrue(dialog.$.confirmButton.hidden);
-    assertTrue(dialog.$.error.textContent!.trim().includes(error));
+    assertTrue(dialog.$.error.textContent.trim().includes(error));
   });
 
   test('PINChangeError', async function() {
@@ -134,7 +134,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'error');
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
-    assertTrue(dialog.$.error.textContent!.trim().includes(error));
+    assertTrue(dialog.$.error.textContent.trim().includes(error));
 
     const setPinEvent = eventToPromise('bio-enroll-set-pin', dialog);
     dialog.$.confirmButton.click();

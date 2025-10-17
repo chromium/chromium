@@ -183,7 +183,7 @@ suite('AutofillSectionUiTest', function() {
       const expectedMessage =
           loadTimeData.getString('removeSyncAddressConfirmationDescription');
       assertEquals(
-          dialog.$.description.textContent!.trim(), expectedMessage,
+          dialog.$.description.textContent.trim(), expectedMessage,
           'Sync-on message should be visible');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
@@ -208,7 +208,7 @@ suite('AutofillSectionUiTest', function() {
       const expectedMessage =
           loadTimeData.getString('removeLocalAddressConfirmationDescription');
       assertEquals(
-          dialog.$.description.textContent!.trim(), expectedMessage,
+          dialog.$.description.textContent.trim(), expectedMessage,
           'Sync-off message should be visible');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
@@ -225,7 +225,7 @@ suite('AutofillSectionUiTest', function() {
       const expectedMessage =
           loadTimeData.getString('removeLocalAddressConfirmationDescription');
       assertEquals(
-          dialog.$.description.textContent!.trim(), expectedMessage,
+          dialog.$.description.textContent.trim(), expectedMessage,
           'Sync-off message should be visible when account info is missing');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
@@ -244,7 +244,7 @@ suite('AutofillSectionUiTest', function() {
       const expectedMessage = loadTimeData.getStringF(
           'deleteAccountAddressRecordTypeNotice', STUB_USER_ACCOUNT_INFO.email);
       assertEquals(
-          dialog.$.description.textContent!.trim(), expectedMessage,
+          dialog.$.description.textContent.trim(), expectedMessage,
           'Account address message should be visible');
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
@@ -525,7 +525,7 @@ suite('AutofillSectionAddressTests', function() {
     // Eliminate white space between nodes!
     const addressPieces = row.querySelector('#addressSummary')!.children;
     for (const addressPiece of addressPieces) {
-      actualSummary += addressPiece.textContent!.trim();
+      actualSummary += addressPiece.textContent.trim();
     }
 
     assertEquals(addressSummary, actualSummary);
@@ -1268,7 +1268,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertTrue(!!countrySelect);
       assertEquals(
           'United States',
-          countrySelect.selectedOptions[0]!.textContent!.trim());
+          countrySelect.selectedOptions[0]!.textContent.trim());
       index++;
       // Name
       row = rows[index]!;
@@ -1336,7 +1336,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertTrue(!!countrySelect);
       assertEquals(
           'United Kingdom',
-          countrySelect.selectedOptions[0]!.textContent!.trim());
+          countrySelect.selectedOptions[0]!.textContent.trim());
       index++;
       // Name
       row = rows[index]!;
@@ -1413,7 +1413,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       const countrySelect = row.querySelector('select');
       assertTrue(!!countrySelect);
       assertEquals(
-          'Israel', countrySelect.selectedOptions[0]!.textContent!.trim());
+          'Israel', countrySelect.selectedOptions[0]!.textContent.trim());
       index++;
       // Name
       row = rows[index]!;
@@ -1476,7 +1476,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       const countrySelect = row.querySelector('select');
       assertTrue(!!countrySelect);
       assertEquals(
-          'Israel', countrySelect.selectedOptions[0]!.textContent!.trim());
+          'Israel', countrySelect.selectedOptions[0]!.textContent.trim());
       index++;
       // Name
       row = rows[index]!;
