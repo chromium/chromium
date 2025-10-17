@@ -55,7 +55,7 @@ def fix_graph(graph: dict[str, Header],
 
   def force_textual(key: str):
     if key in graph:
-      graph[key].textual = value
+      graph[key].textual = True
 
   def add_dep(frm, to, check=True):
     if check:

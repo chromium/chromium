@@ -152,7 +152,7 @@ def _modularize(out_dir: pathlib.Path, error_log: pathlib.Path | None,
   platform = (out_dir / 'gen/module_platform.txt').read_text()
   logging.info('Detected platform %s', platform)
 
-  out_dir = SOURCE_ROOT / 'build/modules' / out_dir.name
+  out_dir = SOURCE_ROOT / 'build/modules' / platform
   out_dir.mkdir(exist_ok=True, parents=False)
   if compiler.sysroot_dir == IncludeDir.Sysroot:
     render.render_modulemap(out_dir=out_dir,
