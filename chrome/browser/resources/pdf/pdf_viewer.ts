@@ -81,6 +81,9 @@ import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {getSaveToDriveManageStorageUrl, getSaveToDriveOpenInDriveUrl} from './pdf_viewer_utils.js';
 // </if> enable_pdf_save_to_drive
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents, verifyPdfHeader} from './pdf_viewer_utils.js';
+// <if expr="enable_pdf_save_to_drive">
+import {recordSaveToDriveMetrics, recordShowSaveToDriveBubbleMetrics} from './save_to_drive_metrics.js';
+// </if> enable_pdf_save_to_drive
 // clang-format on
 
 // <if expr="enable_pdf_save_to_drive">
@@ -1347,18 +1350,21 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   protected onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
-    // TODO(crbug.com/427449996): Implement logics to reset the SaveToDriveState
-    // back to UNINITIALIZED after the bubble is closed from the finish or error
-    // state, so the next `onSaveToDrive_` call can re-trigger the upload flow.
-    // Also implement the logic to close the bubble if it was already open when
-    // the event is fired.
     if (this.saveToDriveState_ === SaveToDriveState.UNINITIALIZED) {
       PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
       this.saveToDriveRequestType_ = e.detail;
+      let hasEdits = this.hasEdits_;
+      let pdfInk2Enabled = false;
+      // <if expr="enable_pdf_ink2">
+      hasEdits ||= this.hasCommittedInk2Edits_;
+      pdfInk2Enabled = this.pdfInk2Enabled_;
+      // </if>
+      recordSaveToDriveMetrics(e.detail, hasEdits, pdfInk2Enabled);
       return;
     }
     this.getSaveToDriveBubble_().showAt(
         this.$.toolbar.getSaveToDriveBubbleAnchor());
+    recordShowSaveToDriveBubbleMetrics(this.saveToDriveState_);
   }
 
   protected onSaveToDriveBubbleAction_(

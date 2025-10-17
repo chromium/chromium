@@ -259,6 +259,23 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="selectAll"/>
 </enum>
 
+<!-- LINT.IfChange(PDFSaveToDriveBubbleState) -->
+
+<enum name="PDFSaveToDriveBubbleState">
+<!-- This must be kept current with SaveToDriveBubbleState in
+     chrome/browser/resources/pdf/save_to_drive_metrics.ts. -->
+
+  <int value="0" label="Show bubble"/>
+  <int value="1" label="Show bubble in uploading state"/>
+  <int value="2" label="Show bubble in success state"/>
+  <int value="3" label="Show bubble in connection error state"/>
+  <int value="4" label="Show bubble in storage full error state"/>
+  <int value="5" label="Show bubble in session timeout error state"/>
+  <int value="6" label="Show bubble in unknown error state"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/pdf/save_to_drive_metrics.ts:PDFSaveToDriveBubbleState) -->
+
 <enum name="PdfSaveToDriveErrorType">
 <!-- This must be kept current with SaveToDriveErrorType in
      tools/typescript/definitions/pdf_viewer_private.d.ts and chrome/common/extensions/api/pdf_viewer_private.idl. -->
@@ -283,6 +300,21 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/save_to_drive/save_to_drive_recorder.cc:PDFSaveToDrivePrimaryAccountSelectionStatus) -->
+
+<!-- LINT.IfChange(PDFSaveToDriveSaveType) -->
+
+<enum name="PDFSaveToDriveSaveType">
+<!-- This must be kept current with SaveToDriveSaveType in
+     chrome/browser/resources/pdf/save_to_drive_metrics.ts. -->
+
+  <int value="0" label="Save"/>
+  <int value="1" label="Save original only"/>
+  <int value="2" label="Save original"/>
+  <int value="3" label="Save edited"/>
+  <int value="4" label="Save with annotation"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/pdf/save_to_drive_metrics.ts:PDFSaveToDriveSaveType) -->
 
 <enum name="PdfSaveToDriveStatus">
 <!-- This must be kept current with SaveToDriveStatus in
