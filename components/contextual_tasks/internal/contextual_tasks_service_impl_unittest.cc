@@ -203,7 +203,7 @@ class ContextualTasksServiceImplTest : public testing::Test {
   testing::NiceMock<MockContextualTasksObserver> observer_;
 };
 
-TEST_F(ContextualTasksServiceImplTest, CreateTask) {
+TEST_F(ContextualTasksServiceImplTest, CreateEphemeralTask) {
   service_->AddObserver(&observer_);
 
   base::RunLoop run_loop;
@@ -211,7 +211,7 @@ TEST_F(ContextualTasksServiceImplTest, CreateTask) {
       observer_,
       OnTaskAdded(testing::_, ContextualTasksService::TriggerSource::kLocal))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   run_loop.Run();
   EXPECT_TRUE(task.GetTaskId().is_valid());
 
@@ -226,7 +226,7 @@ TEST_F(ContextualTasksServiceImplTest, CreateTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetTaskById) {
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   std::optional<ContextualTask> result = GetTaskById(task.GetTaskId());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(task.GetTaskId(), result->GetTaskId());
@@ -239,8 +239,8 @@ TEST_F(ContextualTasksServiceImplTest, GetTaskById_NotFound) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, CreateAndRemoveMultipleTasks) {
-  ContextualTask task1 = service_->CreateTask();
-  ContextualTask task2 = service_->CreateTask();
+  ContextualTask task1 = service_->CreateEphemeralTask();
+  ContextualTask task2 = service_->CreatePersistentTask();
   EXPECT_EQ(2u, GetTasks().size());
 
   service_->DeleteTask(task1.GetTaskId());
@@ -254,7 +254,7 @@ TEST_F(ContextualTasksServiceImplTest, CreateAndRemoveMultipleTasks) {
 
 TEST_F(ContextualTasksServiceImplTest, DeleteTask) {
   service_->AddObserver(&observer_);
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   EXPECT_EQ(1u, GetTasks().size());
 
   SessionID tab_id = SessionID::FromSerializedValue(1);
@@ -274,7 +274,7 @@ TEST_F(ContextualTasksServiceImplTest, DeleteTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, DeleteTask_Twice) {
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   EXPECT_EQ(1u, GetTasks().size());
   service_->DeleteTask(task.GetTaskId());
   EXPECT_TRUE(GetTasks().empty());
@@ -297,7 +297,7 @@ TEST_F(ContextualTasksServiceImplTest, GetTasks_Empty) {
 
 TEST_F(ContextualTasksServiceImplTest, AddThreadToTask) {
   service_->AddObserver(&observer_);
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
@@ -324,8 +324,8 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, AddAndRemoveThread_MultipleTasks) {
-  ContextualTask task1 = service_->CreateTask();
-  ContextualTask task2 = service_->CreateTask();
+  ContextualTask task1 = service_->CreateEphemeralTask();
+  ContextualTask task2 = service_->CreatePersistentTask();
   ThreadType type = ThreadType::kAiMode;
   std::string server_id1 = "server_id1";
   std::string server_id2 = "server_id2";
@@ -370,7 +370,7 @@ TEST_F(ContextualTasksServiceImplTest, AddAndRemoveThread_MultipleTasks) {
 
 TEST_F(ContextualTasksServiceImplTest, RemoveThreadFromTask) {
   service_->AddObserver(&observer_);
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
@@ -441,7 +441,7 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask_TaskDoesNotExist) {
 
 TEST_F(ContextualTasksServiceImplTest, UpdateThreadTurnId) {
   service_->AddObserver(&observer_);
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
@@ -524,7 +524,7 @@ TEST_F(ContextualTasksServiceImplTest,
 
 TEST_F(ContextualTasksServiceImplTest, UpdateThreadTurnId_ThreadDoesNotExist) {
   service_->AddObserver(&observer_);
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string conversation_turn_id = "conversation_turn_id";
@@ -562,7 +562,7 @@ TEST_F(ContextualTasksServiceImplTest, UpdateThreadTurnId_ThreadDoesNotExist) {
 
 TEST_F(ContextualTasksServiceImplTest, UpdateThreadTurnId_ServerIdMismatch) {
   service_->AddObserver(&observer_);
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
@@ -597,7 +597,7 @@ TEST_F(ContextualTasksServiceImplTest, UpdateThreadTurnId_ServerIdMismatch) {
 
 TEST_F(ContextualTasksServiceImplTest, AttachUrlToTask) {
   service_->AddObserver(&observer_);
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   GURL url("https://www.google.com");
 
   base::RunLoop run_loop;
@@ -617,8 +617,8 @@ TEST_F(ContextualTasksServiceImplTest, AttachUrlToTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, AttachAndDetachUrl_MultipleTasks) {
-  ContextualTask task1 = service_->CreateTask();
-  ContextualTask task2 = service_->CreateTask();
+  ContextualTask task1 = service_->CreateEphemeralTask();
+  ContextualTask task2 = service_->CreatePersistentTask();
   GURL url1("https://www.google.com");
   GURL url2("https://www.youtube.com");
 
@@ -654,7 +654,7 @@ TEST_F(ContextualTasksServiceImplTest, AttachAndDetachUrl_MultipleTasks) {
 
 TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
   service_->AddObserver(&observer_);
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   GURL url("https://www.google.com");
 
   {
@@ -684,7 +684,7 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, AssociateTabWithTask) {
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   SessionID tab_id = SessionID::FromSerializedValue(1);
 
   service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
@@ -696,7 +696,7 @@ TEST_F(ContextualTasksServiceImplTest, AssociateTabWithTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, AssociateTabWithInvalidTask) {
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   SessionID tab_id = SessionID::FromSerializedValue(1);
   base::Uuid task_id = task.GetTaskId();
   service_->DeleteTask(task_id);
@@ -710,7 +710,7 @@ TEST_F(ContextualTasksServiceImplTest, AssociateTabWithInvalidTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, DisassociateTabFromTask) {
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   SessionID tab_id = SessionID::FromSerializedValue(1);
 
   service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
@@ -728,7 +728,7 @@ TEST_F(ContextualTasksServiceImplTest, GetContextualTaskForTab_NotFound) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, ClearAllTabAssociationsForTask) {
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   SessionID tab_id1 = SessionID::FromSerializedValue(1);
   SessionID tab_id2 = SessionID::FromSerializedValue(2);
 
@@ -748,7 +748,7 @@ TEST_F(ContextualTasksServiceImplTest, ClearAllTabAssociationsForTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetContextForTask) {
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   GURL url("https://www.google.com");
   service_->AttachUrlToTask(task.GetTaskId(), url);
 
@@ -774,7 +774,7 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask) {
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetContextForTask_WithTitle) {
-  ContextualTask task = service_->CreateTask();
+  ContextualTask task = service_->CreateEphemeralTask();
   GURL url("https://www.google.com");
   service_->AttachUrlToTask(task.GetTaskId(), url);
 

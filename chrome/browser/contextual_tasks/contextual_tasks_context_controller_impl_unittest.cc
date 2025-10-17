@@ -17,12 +17,16 @@
 namespace contextual_tasks {
 namespace {
 
+const char kTestUrl[] = "https://google.com";
+
 using ::testing::_;
 using ::testing::Return;
 
 class MockContextualTasksService : public ContextualTasksService {
  public:
-  MOCK_METHOD(ContextualTask, CreateTask, (), (override));
+  MOCK_METHOD(ContextualTask, CreatePersistentTask, (), (override));
+  MOCK_METHOD(ContextualTask, CreateEphemeralTask, (), (override));
+  MOCK_METHOD(ContextualTask, CreateTaskFromUrl, (const GURL& url), (override));
   MOCK_METHOD(
       void,
       GetTaskById,
@@ -206,10 +210,11 @@ TEST_F(ContextualTasksContextControllerImplTest, GetTaskById_NotFound) {
   EXPECT_FALSE(task.has_value());
 }
 
-TEST_F(ContextualTasksContextControllerImplTest, CreateTask) {
+TEST_F(ContextualTasksContextControllerImplTest, CreateTaskFromUrl) {
   ContextualTask expected_task(base::Uuid::GenerateRandomV4());
-  EXPECT_CALL(mock_service_, CreateTask()).WillOnce(Return(expected_task));
-  ContextualTask task = controller_->CreateTask();
+  EXPECT_CALL(mock_service_, CreateTaskFromUrl(GURL(kTestUrl)))
+      .WillOnce(Return(expected_task));
+  ContextualTask task = controller_->CreateTaskFromUrl(GURL(kTestUrl));
   EXPECT_EQ(task.GetTaskId(), expected_task.GetTaskId());
 }
 

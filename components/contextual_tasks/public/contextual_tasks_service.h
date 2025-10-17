@@ -83,7 +83,9 @@ class ContextualTasksService : public KeyedService {
   virtual bool IsInitialized() = 0;
 
   // Methods for creating and managing tasks.
-  virtual ContextualTask CreateTask() = 0;
+  virtual ContextualTask CreatePersistentTask() = 0;
+  virtual ContextualTask CreateEphemeralTask() = 0;
+  virtual ContextualTask CreateTaskFromUrl(const GURL& url) = 0;
   virtual void GetTaskById(
       const base::Uuid& task_id,
       base::OnceCallback<void(std::optional<ContextualTask>)> callback)

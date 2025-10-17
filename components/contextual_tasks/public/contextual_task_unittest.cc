@@ -19,6 +19,17 @@ TEST(ContextualTaskTest, GetTaskId) {
   EXPECT_EQ(task_id, task.GetTaskId());
 }
 
+TEST(ContextualTaskTest, IsEphemeral) {
+  base::Uuid task_id1 = base::Uuid::GenerateRandomV4();
+  base::Uuid task_id2 = base::Uuid::GenerateRandomV4();
+  ContextualTask task1(task_id1, /*is_ephemeral=*/true);
+  ContextualTask task2(task_id2, /*is_ephemeral=*/false);
+  EXPECT_TRUE(task1.IsEphemeral());
+  EXPECT_FALSE(task2.IsEphemeral());
+  EXPECT_EQ(task_id1, task1.GetTaskId());
+  EXPECT_EQ(task_id2, task2.GetTaskId());
+}
+
 TEST(ContextualTaskTest, AddAndRemoveUrlResource) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id);

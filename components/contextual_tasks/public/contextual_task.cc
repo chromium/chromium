@@ -23,7 +23,8 @@ Thread::Thread(ThreadType type,
 Thread::Thread(const Thread& other) = default;
 Thread::~Thread() = default;
 
-ContextualTask::ContextualTask(const base::Uuid& task_id) : task_id_(task_id) {}
+ContextualTask::ContextualTask(const base::Uuid& task_id, bool is_ephemeral)
+    : task_id_(task_id), is_ephemeral_(is_ephemeral) {}
 ContextualTask::~ContextualTask() = default;
 
 ContextualTask::ContextualTask(const ContextualTask& other) = default;

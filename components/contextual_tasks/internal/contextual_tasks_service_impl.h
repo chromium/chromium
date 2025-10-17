@@ -52,7 +52,9 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   // ContextualTasksService implementation.
   FeatureEligibility GetFeatureEligibility() override;
   bool IsInitialized() override;
-  ContextualTask CreateTask() override;
+  ContextualTask CreatePersistentTask() override;
+  ContextualTask CreateEphemeralTask() override;
+  ContextualTask CreateTaskFromUrl(const GURL& url) override;
   void GetTaskById(const base::Uuid& task_id,
                    base::OnceCallback<void(std::optional<ContextualTask>)>
                        callback) const override;
@@ -114,6 +116,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   void NotifyTaskAdded(const ContextualTask& task, TriggerSource source);
   void NotifyTaskUpdated(const ContextualTask& task, TriggerSource source);
   void NotifyTaskRemoved(const base::Uuid& task_id, TriggerSource source);
+  ContextualTask AddTaskAndNotify(ContextualTask task);
 
   void OnDataStoresLoaded();
 

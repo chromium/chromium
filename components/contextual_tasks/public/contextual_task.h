@@ -58,7 +58,7 @@ struct UrlResource {
 // with it, such as URLs, session IDs, and ongoing server-side conversations.
 class ContextualTask {
  public:
-  explicit ContextualTask(const base::Uuid& task_id);
+  explicit ContextualTask(const base::Uuid& task_id, bool is_ephemeral = false);
   ~ContextualTask();
 
   ContextualTask(const ContextualTask& other);
@@ -67,6 +67,9 @@ class ContextualTask {
 
   // Returns the unique ID of the task.
   const base::Uuid& GetTaskId() const;
+
+  // Whether the task is ephemeral. Ephemeral tasks aren't persisted.
+  bool IsEphemeral() const { return is_ephemeral_; }
 
   // Sets the title of the task.
   void SetTitle(const std::string& title);
@@ -110,6 +113,9 @@ class ContextualTask {
  private:
   // The unique ID of the task.
   base::Uuid task_id_;
+
+  // Whether the task is ephemeral. Ephemeral tasks are not persisted.
+  bool is_ephemeral_ = false;
 
   // Title of the task;
   std::string title_;

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "components/sessions/core/session_id.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 class ContextualTasksService;
@@ -29,7 +30,9 @@ class ContextualTasksContextControllerImpl
   // ContextualTasksService implementation.
   FeatureEligibility GetFeatureEligibility() override;
   bool IsInitialized() override;
-  ContextualTask CreateTask() override;
+  ContextualTask CreatePersistentTask() override;
+  ContextualTask CreateEphemeralTask() override;
+  ContextualTask CreateTaskFromUrl(const GURL& url) override;
   void GetTaskById(const base::Uuid& task_id,
                    base::OnceCallback<void(std::optional<ContextualTask>)>
                        callback) const override;

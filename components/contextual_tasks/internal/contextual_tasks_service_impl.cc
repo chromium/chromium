@@ -67,14 +67,25 @@ bool ContextualTasksServiceImpl::IsInitialized() {
   return is_initialized_;
 }
 
-ContextualTask ContextualTasksServiceImpl::CreateTask() {
+ContextualTask ContextualTasksServiceImpl::CreatePersistentTask() {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  auto it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
-                                weak_ptr_factory_.GetWeakPtr(), it->second,
-                                TriggerSource::kLocal));
-  return it->second;
+  ContextualTask task(task_id, /*is_ephemeral=*/false);
+  return AddTaskAndNotify(std::move(task));
+}
+
+ContextualTask ContextualTasksServiceImpl::CreateEphemeralTask() {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id, /*is_ephemeral=*/true);
+  return AddTaskAndNotify(std::move(task));
+}
+
+ContextualTask ContextualTasksServiceImpl::CreateTaskFromUrl(const GURL& url) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id, /*is_ephemeral=*/false);
+
+  // TODO(shaktisahu): Mark the task as ephemeral.
+
+  return AddTaskAndNotify(std::move(task));
 }
 
 void ContextualTasksServiceImpl::GetTaskById(
@@ -358,6 +369,16 @@ void ContextualTasksServiceImpl::NotifyTaskRemoved(const base::Uuid& task_id,
   for (auto& observer : observers_) {
     observer.OnTaskRemoved(task_id, source);
   }
+}
+
+ContextualTask ContextualTasksServiceImpl::AddTaskAndNotify(
+    ContextualTask task) {
+  auto it = tasks_.emplace(task.GetTaskId(), task).first;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
+                                weak_ptr_factory_.GetWeakPtr(), it->second,
+                                TriggerSource::kLocal));
+  return it->second;
 }
 
 void ContextualTasksServiceImpl::OnDataStoresLoaded() {
