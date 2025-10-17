@@ -23,6 +23,13 @@ package oak.crypto.v1;
 option java_multiple_files = true;
 option java_package = "com.google.oak.crypto.v1";
 
+// Message encrypted with Authenticated Encryption with Associated Data (AEAD).
+// <https://datatracker.ietf.org/doc/html/rfc5116>
+message AeadEncryptedMessage {
+  bytes ciphertext = 1;
+  bytes associated_data = 2;
+  bytes nonce = 3;
+}
 // Request message encrypted using Hybrid Public Key Encryption (HPKE).
 // <https://www.rfc-editor.org/rfc/rfc9180.html>
 message EncryptedRequest {
@@ -41,14 +48,6 @@ message EncryptedResponse {
   // Message encrypted with Authenticated Encryption with Associated Data (AEAD)
   // using the derived session key.
   AeadEncryptedMessage encrypted_message = 1;
-}
-
-// Message encrypted with Authenticated Encryption with Associated Data (AEAD).
-// <https://datatracker.ietf.org/doc/html/rfc5116>
-message AeadEncryptedMessage {
-  bytes ciphertext = 1;
-  bytes associated_data = 2;
-  bytes nonce = 3;
 }
 
 // Envelope containing session keys required to encrypt/decrypt messages within

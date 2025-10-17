@@ -16,6 +16,8 @@ source_set("legion") {
     "secure_channel.h",
     "secure_channel_impl.cc",
     "secure_channel_impl.h",
+    "session_deserializer.cc",
+    "session_deserializer.h",
     "transport.h",
     "websocket_client.cc",
     "websocket_client.h",
@@ -27,6 +29,7 @@ source_set("legion") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/oak:oak_proto",
+    "//third_party/oak:oak_proto_extras",
   ]
 }
 
@@ -35,6 +38,7 @@ source_set("unit_tests") {
   sources = [
     "client_unittest.cc",
     "secure_channel_impl_unittest.cc",
+    "session_deserializer_unittest.cc",
   ]
   deps = [
     ":legion",
@@ -43,5 +47,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/oak:oak_proto",
+    "//third_party/oak:oak_proto_extras",
+    "//third_party/oak:oak_proto_test_extras",
   ]
 }
