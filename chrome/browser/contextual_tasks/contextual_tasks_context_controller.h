@@ -9,8 +9,7 @@
 
 namespace contextual_tasks {
 
-class ContextualTasksContextController
-    : public contextual_tasks::ContextualTasksService {
+class ContextualTasksContextController : public ContextualTasksService {
  public:
   ~ContextualTasksContextController() override;
 

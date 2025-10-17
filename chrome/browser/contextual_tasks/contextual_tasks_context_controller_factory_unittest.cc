@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/features.h"
 #include "content/public/test/browser_task_environment.h"

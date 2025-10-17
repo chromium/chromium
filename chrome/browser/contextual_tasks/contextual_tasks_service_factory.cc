@@ -4,8 +4,6 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 
-#include <memory>
-
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
