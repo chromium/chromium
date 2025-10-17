@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -76,6 +77,14 @@ network::mojom::PrivateNetworkRequestPolicy OverrideToBlockInsteadOfWarn(
 
 network::mojom::PrivateNetworkRequestPolicy OverrideToWarnInsteadOfBlock(
     network::mojom::PrivateNetworkRequestPolicy);
+
+// TODO(crbug.com/452389539): make this logic part of
+// DeriveClientSecurityState/DerivePrivateNetworkRequestPolicy to reduce errors
+// where the policy is computed but ContentBrowserClient overrides are not taken
+// into account.
+network::mojom::PrivateNetworkRequestPolicy OverrideLocalNetworkAccessPolicy(
+    network::mojom::PrivateNetworkRequestPolicy policy,
+    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override);
 
 }  // namespace content
 
