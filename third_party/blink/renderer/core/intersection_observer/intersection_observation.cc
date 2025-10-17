@@ -30,8 +30,11 @@ int64_t IntersectionObservation::ComputeIntersection(
     ComputeIntersectionsContext& context) {
   DCHECK(Observer());
 
-  cached_rects_.min_scroll_delta_to_update -=
-      accumulated_scroll_delta_since_last_update;
+  if (compute_flags & kConsumeScrollDelta) {
+    cached_rects_.min_scroll_delta_to_update -=
+        accumulated_scroll_delta_since_last_update;
+    accumulated_scroll_delta_since_last_update = gfx::Vector2dF();
+  }
 
   // If we're processing post-layout deliveries only and we don't have a
   // post-layout delivery observer, then return early. Likewise, return if we
@@ -66,8 +69,10 @@ int64_t IntersectionObservation::ComputeIntersection(
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
 #endif
   if (!has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
-      cached_rects_.min_scroll_delta_to_update.x() > 0 &&
-      cached_rects_.min_scroll_delta_to_update.y() > 0) {
+      cached_rects_.min_scroll_delta_to_update.x() >
+          accumulated_scroll_delta_since_last_update.x() &&
+      cached_rects_.min_scroll_delta_to_update.y() >
+          accumulated_scroll_delta_since_last_update.y()) {
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
     cached_rects_backup.emplace(cached_rects_);
 #else

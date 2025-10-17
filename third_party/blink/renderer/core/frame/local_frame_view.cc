@@ -1022,8 +1022,8 @@ void LocalFrameView::RunIntersectionObserverSteps() {
                            LocalFrameUkmAggregator::kIntersectionObservation);
 
   ComputeIntersectionsContext context;
-  bool has_active_observations =
-      UpdateViewportIntersectionsForSubtree(0, context);
+  bool has_active_observations = UpdateViewportIntersectionsForSubtree(
+      IntersectionObservation::kConsumeScrollDelta, context);
   if (FrameOwner* owner = frame_->Owner())
     owner->SetNeedsOcclusionTracking(context.NeedsOcclusionTracking());
   if (has_active_observations) {
@@ -1429,7 +1429,6 @@ void LocalFrameView::ComputePostLayoutIntersections(
     controller->ComputeIntersections(
         flags, *this, accumulated_scroll_delta_since_last_intersection_update_,
         context);
-    accumulated_scroll_delta_since_last_intersection_update_ = gfx::Vector2dF();
   }
 
   for (Frame* child = frame_->Tree().FirstChild(); child;
@@ -4311,7 +4310,10 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     has_active_observations = controller->ComputeIntersections(
         flags, *this, accumulated_scroll_delta_since_last_intersection_update_,
         context);
-    accumulated_scroll_delta_since_last_intersection_update_ = gfx::Vector2dF();
+    if (flags & IntersectionObservation::kConsumeScrollDelta) {
+      accumulated_scroll_delta_since_last_intersection_update_ =
+          gfx::Vector2dF();
+    }
     needs_occlusion_tracking = controller->NeedsOcclusionTracking();
   }
   intersection_observation_state_ = kNotNeeded;
@@ -4530,7 +4532,7 @@ PaintArtifactCompositor* LocalFrameView::GetPaintArtifactCompositor() const {
 
 unsigned LocalFrameView::GetIntersectionObservationFlags(
     unsigned parent_flags) const {
-  unsigned flags = 0;
+  unsigned flags = parent_flags & IntersectionObservation::kConsumeScrollDelta;
 
   const LocalFrame& target_frame = GetFrame();
   const Frame& root_frame = target_frame.Tree().Top();

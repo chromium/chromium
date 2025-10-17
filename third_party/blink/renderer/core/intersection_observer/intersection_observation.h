@@ -59,6 +59,9 @@ class CORE_EXPORT IntersectionObservation final
     kPostLayoutDeliveryOnly = 1 << 6,
     // Corresponding to LocalFrameView::kScrollAndVisibilityOnly.
     kScrollAndVisibilityOnly = 1 << 7,
+    // If set, any accumulated_scroll_delta passed to ComputeIntersection() will
+    // be applied to cached_rects_.min_scroll_delta_to_update.
+    kConsumeScrollDelta = 1 << 8,
   };
 
   IntersectionObservation(IntersectionObserver&, Element&);
