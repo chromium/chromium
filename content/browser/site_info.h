@@ -152,7 +152,6 @@ class CONTENT_EXPORT SiteInfo {
       BrowserContext* browser_context,
       bool does_site_request_dedicated_process_for_coop,
       bool requires_origin_keyed_process,
-      bool is_error_page,
       bool is_sandboxed,
       bool is_pdf);
 

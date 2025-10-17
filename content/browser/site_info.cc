@@ -296,7 +296,6 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                   site_url, isolation_context, browser_context,
                   url_info.requests_coop_isolation(),
                   !url_info.oac_header_request.has_value(),
-                  site_url == GetErrorPageSiteAndLockURL(),
                   url_info.is_sandboxed, url_info.is_pdf)
           ? GURL()
           : agent_cluster_key.GetURL();
@@ -666,7 +665,7 @@ bool SiteInfo::RequiresDedicatedProcess(
   BrowserContext* browser_context =
       isolation_context.browser_or_resource_context().ToBrowserContext();
   return RequiresDedicatedProcessInternal(
-      site_url_, isolation_context, browser_context, is_error_page(),
+      site_url_, isolation_context, browser_context,
       does_site_request_dedicated_process_for_coop_,
       agent_cluster_key_.IsOriginKeyed(), is_sandboxed_, is_pdf_);
 }
@@ -1080,7 +1079,6 @@ bool SiteInfo::RequiresDedicatedProcessInternal(
     BrowserContext* browser_context,
     bool does_site_request_dedicated_process_for_coop,
     bool requires_origin_keyed_process,
-    bool is_error_page,
     bool is_sandboxed,
     bool is_pdf) {
   // If --site-per-process is enabled, site isolation is enabled everywhere.
@@ -1114,7 +1112,7 @@ bool SiteInfo::RequiresDedicatedProcessInternal(
   // Error pages in main frames do require isolation, however since this is
   // missing the context whether this is for a main frame or not, that part
   // is enforced in RenderFrameHostManager.
-  if (is_error_page) {
+  if (site_url == GetErrorPageSiteAndLockURL()) {
     return true;
   }
 
