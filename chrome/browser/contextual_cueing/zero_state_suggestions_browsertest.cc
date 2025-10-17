@@ -212,6 +212,9 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicFlow) {
       "ContextualCueing.GlicSuggestions.SuggestionsFetchLatency."
       "EmptySuggestions",
       0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions", true,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
@@ -531,6 +534,9 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   EXPECT_EQ("suggestion 3", future.Get()[2]);
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions", true,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
@@ -561,6 +567,9 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
       0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions",
+      false, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
@@ -596,6 +605,9 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
   EXPECT_EQ("suggestion 3", future.Get()[2]);
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions", true,
+      1);
 }
 
 }  // namespace contextual_cueing

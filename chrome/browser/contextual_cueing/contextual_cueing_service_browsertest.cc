@@ -309,6 +309,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
       0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions",
+      false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
@@ -337,6 +340,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
       0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions",
+      false, 1);
 }
 
 class ContextualCueingServiceBrowserTestAllowZSSForSrp
@@ -386,6 +392,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestAllowZSSForSrp,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions", true,
       1);
 }
 

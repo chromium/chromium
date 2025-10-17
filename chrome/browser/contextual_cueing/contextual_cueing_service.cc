@@ -379,8 +379,13 @@ void ContextualCueingService::
     std::move(callback).Run({});
     return;
   }
-  if (!IsPageTypeEligibleForContextualSuggestions(
-          web_contents->GetLastCommittedURL())) {
+
+  bool page_type_eligible = IsPageTypeEligibleForContextualSuggestions(
+      web_contents->GetLastCommittedURL());
+  base::UmaHistogramBoolean(
+      "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions",
+      page_type_eligible);
+  if (!page_type_eligible) {
     std::move(callback).Run({});
     return;
   }
@@ -436,6 +441,9 @@ bool ContextualCueingService::
     return !IsPageTypeEligibleForContextualSuggestions(
         web_contents->GetLastCommittedURL());
   });
+  base::UmaHistogramBoolean(
+      "ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions",
+      !pinned_web_contents.empty());
   if (pinned_web_contents.empty()) {
     std::move(callback).Run({});
     return false;
