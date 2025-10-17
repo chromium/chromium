@@ -107,7 +107,10 @@
 }
 
 - (void)dealloc {
-  DCHECK(!_viewController);
+  CHECK(!_viewController, base::NotFatalUntil::M149);
+  CHECK(!_baseNavigationController, base::NotFatalUntil::M149);
+  CHECK(!_mediator, base::NotFatalUntil::M149);
+  CHECK(!_folderEditorCoordinator, base::NotFatalUntil::M149);
 }
 
 #pragma mark - ChromeCoordinator
@@ -187,6 +190,7 @@
   _viewController.dataSource = nil;
   _viewController.mutator = nil;
   _viewController = nil;
+  _baseNavigationController = nil;
 }
 
 #pragma mark - BookmarksFolderChooserMediatorDelegate
