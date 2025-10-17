@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] An element with global registry should not change its registry when moved into a shadow tree with scoped registry.
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] An element with scoped registry should not change its registry when moved out of the shadow tree.
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] An element with scoped registry should not change its registry when moved into another shadow tree with different scoped registry.
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+
