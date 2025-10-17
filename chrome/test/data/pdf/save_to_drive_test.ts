@@ -6,7 +6,7 @@ import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.j
 
 // clang-format off
 import type {PdfNavigator, ViewerSaveToDriveBubbleElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {SaveToDriveBubbleState, SaveToDriveSaveType, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {SaveToDriveBubbleAction, SaveToDriveBubbleState, SaveToDriveSaveType, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import {AnnotationMode, PluginController, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
@@ -53,6 +53,12 @@ function assertBubbleRetryUploadTestOutputs(
   chrome.test.assertEq(saveRequestType, args[1]);
 }
 
+function assertBubbleActionMetric(
+    bubbleAction: SaveToDriveBubbleAction, count: number): void {
+  mockMetricsPrivate.assertEnumerationCount(
+      'PDF.SaveToDrive.BubbleAction', bubbleAction, count);
+}
+
 function assertBubbleAndProgressBar(
     bubble: ViewerSaveToDriveBubbleElement, value: number, max: number): void {
   chrome.test.assertTrue(bubble.$.dialog.open);
@@ -89,6 +95,12 @@ function assertNavigateUrl(
   chrome.test.assertEq(WindowOpenDisposition.NEW_FOREGROUND_TAB, disposition);
 }
 
+function assertRetrySaveTypeMetric(
+    retrySaveTypeMetric: SaveToDriveSaveType, count: number): void {
+  mockMetricsPrivate.assertEnumerationCount(
+      'PDF.SaveToDrive.RetrySaveType', retrySaveTypeMetric, count);
+}
+
 function assertSaveTypeMetric(
     saveToDriveSaveType: SaveToDriveSaveType, count: number): void {
   mockMetricsPrivate.assertEnumerationCount(
@@ -108,7 +120,8 @@ function setUpTestNavigator(): TestPdfNavigator {
 
 async function testBubbleRetryUploadEdits(
     privateProxy: TestPdfViewerPrivateProxy, saveAsEdited: boolean,
-    controlsSaveTypeMetric: SaveToDriveSaveType): Promise<void> {
+    controlsSaveTypeMetric: SaveToDriveSaveType,
+    retrySaveTypeMetric: SaveToDriveSaveType): Promise<void> {
   const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
   mockMetricsPrivate.reset();
   privateProxy.sendUninitializedState();
@@ -138,6 +151,9 @@ async function testBubbleRetryUploadEdits(
   // Click the retry button in the bubble.
   getRequiredElement(bubble, '#retry-button').click();
   await privateProxy.whenCalled('saveToDrive');
+  assertBubbleActionMetric(SaveToDriveBubbleAction.ACTION, 1);
+  assertBubbleActionMetric(SaveToDriveBubbleAction.RETRY, 1);
+  assertRetrySaveTypeMetric(retrySaveTypeMetric, 1);
 
   // Reset the bubble and state for the next test.
   controls.hasEdits = false;
@@ -168,6 +184,8 @@ async function testQuotaExceededState(
   const button = getRequiredElement(bubble, '#manage-storage-button');
   button.click();
   chrome.test.assertFalse(bubble.$.dialog.open);
+  assertBubbleActionMetric(SaveToDriveBubbleAction.ACTION, 1);
+  assertBubbleActionMetric(SaveToDriveBubbleAction.MANAGE_STORAGE, 1);
 
   // Verify the url passed to the navigator.
   assertNavigateUrl(navigator, expectedRedirectUrl);
@@ -296,10 +314,11 @@ const tests = [
         SaveToDriveBubbleState.SHOW_BUBBLE_SUCCESS_STATE, 1);
 
     // Click the close button in the bubble and verify the bubble is closed.
-    const closeButton = getRequiredElement(bubble, '#close');
-    closeButton.click();
+    getRequiredElement(bubble, '#close').click();
     await microtasksFinished();
     chrome.test.assertFalse(bubble.$.dialog.open);
+    assertBubbleActionMetric(SaveToDriveBubbleAction.ACTION, 1);
+    assertBubbleActionMetric(SaveToDriveBubbleAction.CLOSE, 1);
 
     // Click on the save button again and make sure it initiates a new upload
     // and the bubble is not open.
@@ -330,8 +349,7 @@ const tests = [
         SaveToDriveBubbleState.SHOW_BUBBLE_UPLOADING_STATE, 1);
 
     // Click the close button in the bubble and verify the bubble is closed.
-    const closeButton = getRequiredElement(bubble, '#close');
-    closeButton.click();
+    getRequiredElement(bubble, '#close').click();
     await microtasksFinished();
     chrome.test.assertFalse(bubble.$.dialog.open);
 
@@ -365,11 +383,12 @@ const tests = [
 
     // Click the cancel button in the bubble and verify the saveToDrive API is
     // called with the cancelUpload flag and the bubble is closed.
-    const cancelButton = getRequiredElement(bubble, '#cancel-upload-button');
-    cancelButton.click();
+    getRequiredElement(bubble, '#cancel-upload-button').click();
     await privateProxy.whenCalled('saveToDrive');
     chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
     chrome.test.assertFalse(bubble.$.dialog.open);
+    assertBubbleActionMetric(SaveToDriveBubbleAction.ACTION, 1);
+    assertBubbleActionMetric(SaveToDriveBubbleAction.CANCEL_UPLOAD, 1);
 
     // Cancel button click should reset the state, so click on the save button
     // again to make sure it initiates a new upload.
@@ -412,6 +431,7 @@ const tests = [
     const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
     const navigator = setUpTestNavigator();
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+    mockMetricsPrivate.reset();
 
     privateProxy.sendUninitializedState();
     await microtasksFinished();
@@ -433,10 +453,11 @@ const tests = [
 
     // Click the open in Drive button in the bubble and verify the bubble is
     // closed.
-    const button = getRequiredElement(bubble, '#open-in-drive-button');
-    button.click();
+    getRequiredElement(bubble, '#open-in-drive-button').click();
     await navigator.whenCalled('navigate');
     chrome.test.assertFalse(bubble.$.dialog.open);
+    assertBubbleActionMetric(SaveToDriveBubbleAction.ACTION, 1);
+    assertBubbleActionMetric(SaveToDriveBubbleAction.OPEN_IN_DRIVE, 1);
 
     // Verify the url passed to the navigator.
     const redirectUrl = new URL('https://drive.google.com/');
@@ -479,12 +500,11 @@ const tests = [
     // Click the retry button in the bubble.
     getRequiredElement(bubble, '#retry-button').click();
     await privateProxy.whenCalled('saveToDrive');
+    assertBubbleActionMetric(SaveToDriveBubbleAction.ACTION, 1);
+    assertBubbleActionMetric(SaveToDriveBubbleAction.RETRY, 1);
+    assertRetrySaveTypeMetric(SaveToDriveSaveType.SAVE_ORIGINAL_ONLY, 1);
 
-    chrome.test.assertEq(2, privateProxy.getCallCount('saveToDrive'));
-    const args = privateProxy.getArgs('saveToDrive');
-    chrome.test.assertEq(2, args.length);
-    chrome.test.assertEq('ORIGINAL', args[0]);
-    chrome.test.assertEq('ORIGINAL', args[1]);
+    assertBubbleRetryUploadTestOutputs(privateProxy, SaveRequestType.ORIGINAL);
 
     // Reset the bubble open state for the next test.
     closeBubble(bubble);
@@ -496,7 +516,8 @@ const tests = [
     const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
 
     await testBubbleRetryUploadEdits(
-        privateProxy, /*saveAsEdited=*/ true, SaveToDriveSaveType.SAVE_EDITED);
+        privateProxy, /*saveAsEdited=*/ true, SaveToDriveSaveType.SAVE_EDITED,
+        SaveToDriveSaveType.SAVE_EDITED);
 
     // Click on the save button again after `hasEdits` is false to reset the
     // internal `saveToDriveRequestType_`, or else it will enable beforeunload
@@ -771,6 +792,7 @@ const tests = [
 
     await testBubbleRetryUploadEdits(
         privateProxy, /*saveAsEdited=*/ false,
+        SaveToDriveSaveType.SAVE_ORIGINAL_ONLY,
         SaveToDriveSaveType.SAVE_ORIGINAL_ONLY);
 
     assertBubbleRetryUploadTestOutputs(privateProxy, SaveRequestType.ORIGINAL);
@@ -785,6 +807,7 @@ const tests = [
 
     await testBubbleRetryUploadEdits(
         privateProxy, /*saveAsEdited=*/ true,
+        SaveToDriveSaveType.SAVE_WITH_ANNOTATION,
         SaveToDriveSaveType.SAVE_WITH_ANNOTATION);
 
     assertBubbleRetryUploadTestOutputs(
@@ -808,15 +831,14 @@ const tests = [
 
     await testBubbleRetryUploadEdits(
         privateProxy, /*saveAsEdited=*/ false,
-        SaveToDriveSaveType.SAVE_ORIGINAL);
+        SaveToDriveSaveType.SAVE_ORIGINAL, SaveToDriveSaveType.SAVE_ORIGINAL);
 
     assertBubbleRetryUploadTestOutputs(privateProxy, SaveRequestType.ORIGINAL);
     assertSaveTypeMetric(SaveToDriveSaveType.SAVE_ORIGINAL_ONLY, 0);
 
     // Reset strokes for the next test.
     viewer.$.toolbar.setAnnotationMode(AnnotationMode.OFF);
-    const undoButton = getRequiredElement(viewer.$.toolbar, '#undo');
-    undoButton.click();
+    getRequiredElement(viewer.$.toolbar, '#undo').click();
 
     // The test should successfully exist after the stroke is reset.
     chrome.test.succeed();

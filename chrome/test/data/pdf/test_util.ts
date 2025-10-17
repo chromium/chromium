@@ -12,7 +12,7 @@ import type {AnnotationBrush, InkBrushSelectorElement, InkColorSelectorElement, 
 import {AnnotationBrushType, DEFAULT_TEXTBOX_WIDTH, MIN_TEXTBOX_SIZE_PX, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 // <if expr="enable_pdf_save_to_drive">
-import {SaveToDriveBubbleState, SaveToDriveSaveType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {SaveToDriveBubbleAction, SaveToDriveBubbleState, SaveToDriveSaveType } from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -319,7 +319,9 @@ export class MockMetricsPrivate {
   // <if expr="enable_pdf_save_to_drive">
   enumerationCounter: Map<string, Map<number, number>> = new Map();
   metricsEnumSize = new Map<string, number>([
+    ['PDF.SaveToDrive.BubbleAction', SaveToDriveBubbleAction.COUNT],
     ['PDF.SaveToDrive.BubbleState', SaveToDriveBubbleState.COUNT],
+    ['PDF.SaveToDrive.RetrySaveType', SaveToDriveSaveType.COUNT],
     ['PDF.SaveToDrive.SaveType', SaveToDriveSaveType.COUNT],
   ]);
   // </if> enable_pdf_save_to_drive

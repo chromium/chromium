@@ -258,6 +258,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.SaveToDrive.BubbleAction"
+    enum="PDFSaveToDriveBubbleAction" expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the action taken in the Save to Drive bubble from the PDF viewer.
+  </summary>
+</histogram>
+
 <histogram name="PDF.SaveToDrive.BubbleState" enum="PDFSaveToDriveBubbleState"
     expires_after="2026-09-26">
   <owner>faizur@google.com</owner>
@@ -287,6 +296,16 @@ chromium-metrics-reviews@google.com.
     Records which account was used for Save to Drive from the PDF viewer
     relative to the primary account. Recorded when an upload completes
     successfully.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.RetrySaveType" enum="PDFSaveToDriveSaveType"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the save request type of the Save to Drive retry operation from the
+    PDF viewer.
   </summary>
 </histogram>
 
