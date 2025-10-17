@@ -532,36 +532,37 @@ void DoSchemeModificationPreamble() {
       << "Trying to add a scheme after the lists have been locked.";
 }
 
-void DoAddSchemeWithHandler(const char* new_scheme,
-                            const char* handler,
+void DoAddSchemeWithHandler(std::string_view new_scheme,
+                            std::string_view handler,
                             std::vector<SchemeWithHandler>* schemes) {
   DoSchemeModificationPreamble();
   DCHECK(schemes);
-  DCHECK(strlen(new_scheme) > 0);
-  DCHECK(strlen(handler) > 0);
+  DCHECK(!new_scheme.empty());
+  DCHECK(!handler.empty());
   DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
   DCHECK(!base::Contains(*schemes, new_scheme, &SchemeWithHandler::scheme));
-  schemes->push_back({new_scheme, handler});
+  schemes->push_back({std::string(new_scheme), std::string(handler)});
 }
 
-void DoAddScheme(const char* new_scheme, std::vector<std::string>* schemes) {
+void DoAddScheme(std::string_view new_scheme,
+                 std::vector<std::string>* schemes) {
   DoSchemeModificationPreamble();
   DCHECK(schemes);
-  DCHECK(strlen(new_scheme) > 0);
+  DCHECK(!new_scheme.empty());
   DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
   DCHECK(!base::Contains(*schemes, new_scheme));
-  schemes->push_back(new_scheme);
+  schemes->push_back(std::string(new_scheme));
 }
 
-void DoAddSchemeWithType(const char* new_scheme,
+void DoAddSchemeWithType(std::string_view new_scheme,
                          SchemeType type,
                          std::vector<SchemeWithType>* schemes) {
   DoSchemeModificationPreamble();
   DCHECK(schemes);
-  DCHECK(strlen(new_scheme) > 0);
+  DCHECK(!new_scheme.empty());
   DCHECK_EQ(base::ToLowerASCII(new_scheme), new_scheme);
   DCHECK(!base::Contains(*schemes, new_scheme, &SchemeWithType::scheme));
-  schemes->push_back({new_scheme, type});
+  schemes->push_back({std::string(new_scheme), type});
 }
 
 }  // namespace
@@ -608,7 +609,7 @@ bool AllowNonStandardSchemesForAndroidWebView() {
   return GetSchemeRegistry().allow_non_standard_schemes;
 }
 
-void AddStandardScheme(const char* new_scheme, SchemeType type) {
+void AddStandardScheme(std::string_view new_scheme, SchemeType type) {
   DoAddSchemeWithType(new_scheme, type,
                       &GetSchemeRegistryWithoutLocking()->standard_schemes);
 }
@@ -622,12 +623,12 @@ std::vector<std::string> GetStandardSchemes() {
   return result;
 }
 
-void AddReferrerScheme(const char* new_scheme, SchemeType type) {
+void AddReferrerScheme(std::string_view new_scheme, SchemeType type) {
   DoAddSchemeWithType(new_scheme, type,
                       &GetSchemeRegistryWithoutLocking()->referrer_schemes);
 }
 
-void AddSecureScheme(const char* new_scheme) {
+void AddSecureScheme(std::string_view new_scheme) {
   DoAddScheme(new_scheme, &GetSchemeRegistryWithoutLocking()->secure_schemes);
 }
 
@@ -635,7 +636,7 @@ const std::vector<std::string>& GetSecureSchemes() {
   return GetSchemeRegistry().secure_schemes;
 }
 
-void AddLocalScheme(const char* new_scheme) {
+void AddLocalScheme(std::string_view new_scheme) {
   DoAddScheme(new_scheme, &GetSchemeRegistryWithoutLocking()->local_schemes);
 }
 
@@ -643,7 +644,7 @@ const std::vector<std::string>& GetLocalSchemes() {
   return GetSchemeRegistry().local_schemes;
 }
 
-void AddNoAccessScheme(const char* new_scheme) {
+void AddNoAccessScheme(std::string_view new_scheme) {
   DoAddScheme(new_scheme,
               &GetSchemeRegistryWithoutLocking()->no_access_schemes);
 }
@@ -652,7 +653,7 @@ const std::vector<std::string>& GetNoAccessSchemes() {
   return GetSchemeRegistry().no_access_schemes;
 }
 
-void AddCorsEnabledScheme(const char* new_scheme) {
+void AddCorsEnabledScheme(std::string_view new_scheme) {
   DoAddScheme(new_scheme,
               &GetSchemeRegistryWithoutLocking()->cors_enabled_schemes);
 }
@@ -661,7 +662,7 @@ const std::vector<std::string>& GetCorsEnabledSchemes() {
   return GetSchemeRegistry().cors_enabled_schemes;
 }
 
-void AddWebStorageScheme(const char* new_scheme) {
+void AddWebStorageScheme(std::string_view new_scheme) {
   DoAddScheme(new_scheme,
               &GetSchemeRegistryWithoutLocking()->web_storage_schemes);
 }
@@ -670,7 +671,7 @@ const std::vector<std::string>& GetWebStorageSchemes() {
   return GetSchemeRegistry().web_storage_schemes;
 }
 
-void AddCSPBypassingScheme(const char* new_scheme) {
+void AddCSPBypassingScheme(std::string_view new_scheme) {
   DoAddScheme(new_scheme,
               &GetSchemeRegistryWithoutLocking()->csp_bypassing_schemes);
 }
@@ -679,7 +680,7 @@ const std::vector<std::string>& GetCSPBypassingSchemes() {
   return GetSchemeRegistry().csp_bypassing_schemes;
 }
 
-void AddEmptyDocumentScheme(const char* new_scheme) {
+void AddEmptyDocumentScheme(std::string_view new_scheme) {
   DoAddScheme(new_scheme,
               &GetSchemeRegistryWithoutLocking()->empty_document_schemes);
 }
@@ -688,7 +689,8 @@ const std::vector<std::string>& GetEmptyDocumentSchemes() {
   return GetSchemeRegistry().empty_document_schemes;
 }
 
-void AddPredefinedHandlerScheme(const char* new_scheme, const char* handler) {
+void AddPredefinedHandlerScheme(std::string_view new_scheme,
+                                std::string_view handler) {
   DoAddSchemeWithHandler(
       new_scheme, handler,
       &GetSchemeRegistryWithoutLocking()->predefined_handler_schemes);

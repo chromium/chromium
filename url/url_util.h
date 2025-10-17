@@ -60,7 +60,7 @@ COMPONENT_EXPORT(URL) bool AllowNonStandardSchemesForAndroidWebView();
 // URI syntax" (https://tools.ietf.org/html/rfc3986#section-3).
 
 COMPONENT_EXPORT(URL)
-void AddStandardScheme(const char* new_scheme, SchemeType scheme_type);
+void AddStandardScheme(std::string_view new_scheme, SchemeType scheme_type);
 
 // Returns the list of schemes registered for "standard" URLs.  Note, this
 // should not be used if you just need to check if your protocol is standard
@@ -73,28 +73,28 @@ std::vector<std::string> GetStandardSchemes();
 // Adds an application-defined scheme to the internal list of schemes allowed
 // for referrers.
 COMPONENT_EXPORT(URL)
-void AddReferrerScheme(const char* new_scheme, SchemeType scheme_type);
+void AddReferrerScheme(std::string_view new_scheme, SchemeType scheme_type);
 
 // Adds an application-defined scheme to the list of schemes that do not trigger
 // mixed content warnings.
-COMPONENT_EXPORT(URL) void AddSecureScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddSecureScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetSecureSchemes();
 
 // Adds an application-defined scheme to the list of schemes that normal pages
 // cannot link to or access (i.e., with the same security rules as those applied
 // to "file" URLs).
-COMPONENT_EXPORT(URL) void AddLocalScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddLocalScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetLocalSchemes();
 
 // Adds an application-defined scheme to the list of schemes that cause pages
 // loaded with them to not have access to pages loaded with any other URL
 // scheme.
-COMPONENT_EXPORT(URL) void AddNoAccessScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddNoAccessScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetNoAccessSchemes();
 
 // Adds an application-defined scheme to the list of schemes that can be sent
 // CORS requests.
-COMPONENT_EXPORT(URL) void AddCorsEnabledScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddCorsEnabledScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetCorsEnabledSchemes();
 
 // Adds an application-defined scheme to the list of web schemes that can be
@@ -102,17 +102,17 @@ COMPONENT_EXPORT(URL) const std::vector<std::string>& GetCorsEnabledSchemes();
 // to differentiate them from schemes that can store data but are not used on
 // web (e.g. application's internal schemes) or schemes that are used on web but
 // cannot store data.
-COMPONENT_EXPORT(URL) void AddWebStorageScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddWebStorageScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetWebStorageSchemes();
 
 // Adds an application-defined scheme to the list of schemes that can bypass the
 // Content-Security-Policy (CSP) checks.
-COMPONENT_EXPORT(URL) void AddCSPBypassingScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddCSPBypassingScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetCSPBypassingSchemes();
 
 // Adds an application-defined scheme to the list of schemes that are strictly
 // empty documents, allowing them to commit synchronously.
-COMPONENT_EXPORT(URL) void AddEmptyDocumentScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddEmptyDocumentScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetEmptyDocumentSchemes();
 
 // Adds a scheme with a predefined default handler.
@@ -121,7 +121,8 @@ COMPONENT_EXPORT(URL) const std::vector<std::string>& GetEmptyDocumentSchemes();
 // described in the Custom Handler specification.
 // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
 COMPONENT_EXPORT(URL)
-void AddPredefinedHandlerScheme(const char* new_scheme, const char* handler);
+void AddPredefinedHandlerScheme(std::string_view new_scheme,
+                                std::string_view handler);
 COMPONENT_EXPORT(URL)
 std::vector<std::pair<std::string, std::string>> GetPredefinedHandlerSchemes();
 
