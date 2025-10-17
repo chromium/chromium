@@ -95,6 +95,7 @@ const char kInspectUiBubbleLockingCommand[] = "set-bubble-locking";
 const char kInspectUiTCPDiscoveryConfigCommand[] = "set-tcp-discovery-config";
 const char kInspectUiOpenNodeFrontendCommand[] = "open-node-frontend";
 const char kInspectUiLaunchUIDevToolsCommand[] = "launch-ui-devtools";
+const char kInspectUiSetFocusCommand[] = "set-focus";
 
 const char kInspectUiPortForwardingDefaultPort[] = "8080";
 const char kInspectUiPortForwardingDefaultLocation[] = "localhost:8080";
@@ -229,6 +230,7 @@ class InspectMessageHandler : public WebUIMessageHandler {
   void HandleOpenNodeFrontendCommand(const base::Value::List& args);
   void HandleLaunchUIDevToolsCommand(const base::Value::List& args);
   void HandleSetBubbleLocking(const base::Value::List& args);
+  void HandleSetFocus(const base::Value::List& args);
 
   void CreateNativeUIInspectionSession(const std::string& url);
   void OnFrontEndFinished();
@@ -311,6 +313,10 @@ void InspectMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       kInspectUiBubbleLockingCommand,
       base::BindRepeating(&InspectMessageHandler::HandleSetBubbleLocking,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      kInspectUiSetFocusCommand,
+      base::BindRepeating(&InspectMessageHandler::HandleSetFocus,
                           base::Unretained(this)));
 }
 
@@ -425,6 +431,22 @@ void InspectMessageHandler::HandleBooleanPrefChanged(
 
   if (args.size() == 1 && args[0].is_bool()) {
     profile->GetPrefs()->SetBoolean(pref_name, args[0].GetBool());
+  }
+}
+
+void InspectMessageHandler::HandleSetFocus(const base::Value::List& args) {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (!profile) {
+    return;
+  }
+
+  if (args.size() == 1 && args[0].is_bool()) {
+    bool focus = args[0].GetBool();
+    if (focus) {
+      inspect_ui_->StartListeningNotifications();
+    } else {
+      inspect_ui_->StopListeningNotifications();
+    }
   }
 }
 

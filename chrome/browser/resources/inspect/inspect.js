@@ -26,6 +26,7 @@ let HOST_CHROME_VERSION;
 const queryParamsObject = {};
 let browserInspector = 'chrome://tracing';
 let browserInspectorTitle = 'trace';
+let staleDataCounter = 0;
 
 (function() {
 const queryParams = window.location.search;
@@ -95,6 +96,7 @@ function onload() {
   onHashChange();
   initSettings();
   sendCommand('init-ui');
+  initStaleDataWatch();
 }
 
 function onHashChange() {
@@ -234,6 +236,10 @@ function updateUsernameVisibility(deviceSection) {
 }
 
 function populateRemoteTargets(devices) {
+  staleDataCounter = 0;
+  $('devices-stale').hidden = true;
+  $('devices-not-responding').hidden = true;
+
   if (!devices) {
     return;
   }
@@ -781,6 +787,31 @@ function initSettings() {
   });
   $('node-frontend')
       .addEventListener('click', sendCommand.bind(null, 'open-node-frontend'));
+}
+
+function initStaleDataWatch() {
+  let lastFocus = true;
+
+  setInterval(() => {
+    const newFocus = document.hasFocus();
+    if (newFocus !== lastFocus) {
+      lastFocus = newFocus;
+      sendCommand('set-focus', newFocus);
+      staleDataCounter = 0;
+    } else {
+      staleDataCounter++;
+      if (staleDataCounter > 3) {
+        // Unhide appropriate message.
+        if (newFocus) {
+          $('devices-stale').hidden = true;
+          $('devices-not-responding').hidden = false;
+        } else {
+          $('devices-stale').hidden = false;
+          $('devices-not-responding').hidden = true;
+        }
+      }
+    }
+  }, 5000);
 }
 
 function checkboxHandler(command, event) {

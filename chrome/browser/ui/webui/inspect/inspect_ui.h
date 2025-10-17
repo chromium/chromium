@@ -65,14 +65,14 @@ class InspectUI : public content::WebUIController,
   void ShowNativeUILaunchButton(bool enabled);
   void SetHostVersion(const std::string& version);
 
+  void StartListeningNotifications();
+  void StopListeningNotifications();
+
   static void InspectDevices(Browser* browser);
 
  private:
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
-
-  void StartListeningNotifications();
-  void StopListeningNotifications();
 
   void UpdateDiscoverUsbDevicesEnabled();
   void UpdatePortForwardingEnabled();
