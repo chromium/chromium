@@ -38,6 +38,10 @@ class AttributeInstance;
 //   nickname               The instance's string nickname.
 //   date_modified          The date on which this instance was last modified,
 //                          in time_t.
+//   use_count              The number of times that this instance has been
+//                          used.
+//   use_date               The last time that this instance was used to fill a
+//                          form.
 //   record_type            Information about the original storage of the
 //                          entity (local/server).
 //   attributes_read_only   Boolean flag backed by an integer. If 1,
