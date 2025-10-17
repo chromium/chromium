@@ -16,6 +16,8 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
+#include "crypto/ecdsa_utils.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
@@ -68,28 +70,6 @@ std::optional<std::string> BIGNUMToBase64(const BIGNUM* value) {
   return BIGNUMToPadded(value, BN_num_bytes(value));
 }
 
-// Given a DER-encoded ECDSA-Sig-Value, unpack it into a raw ECDSA signature:
-// (r, s) represented as two big-endian, zero-padded 256-bit integers. This
-// function requires that the input be a valid ECDSA signature and that both r
-// and s are <= 256 bits.
-std::vector<uint8_t> UnpackDERSignature(base::span<const uint8_t> der_sig) {
-  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  // Create ECDSA_SIG object from DER-encoded data.
-  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(
-      ECDSA_SIG_from_bytes(der_sig.data(), der_sig.size()));
-  CHECK(ecdsa_sig.get());
-
-  // The result is made of two 32-byte vectors.
-  const size_t kMaxBytesPerBN = 32;
-  std::vector<uint8_t> result(2 * kMaxBytesPerBN);
-
-  CHECK(BN_bn2bin_padded(&result[0], kMaxBytesPerBN, ecdsa_sig->r));
-  CHECK(
-      BN_bn2bin_padded(&result[kMaxBytesPerBN], kMaxBytesPerBN, ecdsa_sig->s));
-
-  return result;
-}
-
 std::optional<std::vector<uint8_t>> SignJwtEs256(
     crypto::keypair::PrivateKey private_key,
     const std::string_view& message) {
@@ -101,7 +81,8 @@ std::optional<std::vector<uint8_t>> SignJwtEs256(
 
   const auto sig = crypto::sign::Sign(crypto::sign::SignatureKind::ECDSA_SHA256,
                                       private_key, base::as_byte_span(message));
-  return UnpackDERSignature(sig);
+  return crypto::ConvertEcdsaDerSignatureToRaw(
+      crypto::keypair::PublicKey::FromPrivateKey(private_key), sig);
 }
 
 std::optional<std::vector<uint8_t>> SignJwtRs256(
