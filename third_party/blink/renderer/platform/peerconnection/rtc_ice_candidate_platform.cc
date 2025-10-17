@@ -52,20 +52,10 @@ RTCIceCandidatePlatform::RTCIceCandidatePlatform(
       sdp_m_line_index_(std::move(sdp_m_line_index)),
       username_fragment_(std::move(username_fragment)),
       url_(std::move(url)) {
-  PopulateFields(false);
+  PopulateFields();
 }
 
-RTCIceCandidatePlatform::RTCIceCandidatePlatform(
-    String candidate,
-    String sdp_mid,
-    std::optional<uint16_t> sdp_m_line_index)
-    : candidate_(std::move(candidate)),
-      sdp_mid_(std::move(sdp_mid)),
-      sdp_m_line_index_(std::move(sdp_m_line_index)) {
-  PopulateFields(true);
-}
-
-void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
+void RTCIceCandidatePlatform::PopulateFields() {
   webrtc::RTCErrorOr<webrtc::Candidate> parsed_candidate =
       webrtc::Candidate::ParseCandidateString(candidate_.Utf8());
   if (!parsed_candidate.ok()) {
@@ -101,9 +91,6 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
   if (type_ == "relay" && priority_ && !url_.IsNull()) {
     relay_protocol_ = PriorityToRelayProtocol(*priority_);
   }
-
-  if (use_username_from_candidate)
-    username_fragment_ = String::FromUTF8(c.username());
 }
 
 }  // namespace blink
