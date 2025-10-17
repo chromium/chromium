@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/page_target_util.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -48,116 +49,6 @@ using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
 namespace {
-
-// Finds the local root of a given RenderFrameHost. The local root is the
-// highest ancestor in the frame tree that shares the same RenderWidgetHost.
-RenderFrameHost* GetLocalRoot(RenderFrameHost* rfh) {
-  RenderFrameHost* local_root = rfh;
-  while (local_root && local_root->GetParent()) {
-    if (local_root->GetRenderWidgetHost() !=
-        local_root->GetParent()->GetRenderWidgetHost()) {
-      break;
-    }
-    local_root = local_root->GetParent();
-  }
-  return local_root;
-}
-
-RenderFrameHost* GetRenderFrameForDocumentIdentifier(
-    content::WebContents& web_contents,
-    std::string_view target_document_token) {
-  RenderFrameHost* render_frame = nullptr;
-  web_contents.ForEachRenderFrameHostWithAction([&target_document_token,
-                                                 &render_frame](
-                                                    RenderFrameHost* rfh) {
-    // Skip inactive frame and its children.
-    if (!rfh->IsActive()) {
-      return RenderFrameHost::FrameIterationAction::kSkipChildren;
-    }
-    auto* user_data = DocumentIdentifierUserData::GetForCurrentDocument(rfh);
-    if (user_data && user_data->serialized_token() == target_document_token) {
-      render_frame = rfh;
-      return RenderFrameHost::FrameIterationAction::kStop;
-    }
-    return RenderFrameHost::FrameIterationAction::kContinue;
-  });
-  return render_frame;
-}
-
-RenderFrameHost* GetRootFrameForWidget(content::WebContents& web_contents,
-                                       RenderWidgetHost* rwh) {
-  RenderFrameHost* root_frame = nullptr;
-  web_contents.ForEachRenderFrameHostWithAction([rwh, &root_frame](
-                                                    RenderFrameHost* rfh) {
-    if (!rfh->IsActive()) {
-      return RenderFrameHost::FrameIterationAction::kSkipChildren;
-    }
-    // A frame is a local root if it has no parent or if its parent belongs
-    // to a different widget. We are looking for the local root frame
-    // associated with the target widget.
-    if (rfh->GetRenderWidgetHost() == rwh &&
-        (!rfh->GetParent() || rfh->GetParent()->GetRenderWidgetHost() != rwh)) {
-      root_frame = rfh;
-      return RenderFrameHost::FrameIterationAction::kStop;
-    }
-    return RenderFrameHost::FrameIterationAction::kContinue;
-  });
-  return root_frame;
-}
-
-RenderFrameHost* FindTargetLocalRootFrame(TabHandle tab_handle,
-                                          PageTarget target) {
-  TabInterface* tab = tab_handle.Get();
-  if (!tab) {
-    return nullptr;
-  }
-
-  WebContents& contents = *tab->GetContents();
-
-  if (std::holds_alternative<gfx::Point>(target)) {
-    RenderWidgetHost* target_rwh =
-        contents.FindWidgetAtPoint(gfx::PointF(std::get<gfx::Point>(target)));
-    if (!target_rwh) {
-      return nullptr;
-    }
-    return GetRootFrameForWidget(contents, target_rwh);
-  }
-
-  CHECK(std::holds_alternative<DomNode>(target));
-
-  RenderFrameHost* target_frame = GetRenderFrameForDocumentIdentifier(
-      *tab->GetContents(), std::get<DomNode>(target).document_identifier);
-
-  // After finding the target frame, walk up to its local root.
-  return GetLocalRoot(target_frame);
-}
-
-// Return TargetNodeInfo from hit test against last observed APC. Returns
-// std::nullopt if Target does not hit any node.
-std::optional<TargetNodeInfo> FindLastObservedNodeForActionTarget(
-    const AnnotatedPageContent* apc,
-    const PageTarget& target) {
-  if (!apc) {
-    return std::nullopt;
-  }
-  // TODO(rodneyding): Refactor FindNode* API to include optional target frame
-  // document identifier to reduce search space.
-  if (std::holds_alternative<gfx::Point>(target)) {
-    return optimization_guide::FindNodeAtPoint(*apc,
-                                               std::get<gfx::Point>(target));
-  }
-  CHECK(std::holds_alternative<DomNode>(target));
-  std::optional<TargetNodeInfo> result = optimization_guide::FindNodeWithID(
-      *apc, std::get<DomNode>(target).document_identifier,
-      std::get<DomNode>(target).node_id);
-  // If such a node isn't found or the node is found under a different
-  // document it's an error.
-  if (!result || result->document_identifier.serialized_token() !=
-                     std::get<DomNode>(target).document_identifier) {
-    return std::nullopt;
-  }
-  return result;
-}
 
 // Perform validation based on APC hit test for coordinate based target to
 // compare the candidate frame with the target frame identified in last
@@ -402,8 +293,7 @@ void PageTool::Invoke(InvokeCallback callback) {
       frame,
       base::BindOnce(&PageTool::OnRenderFrameHostChanged,
                      base::Unretained(this)),
-      base::BindOnce(&PageTool::OnRenderFrameGone,
-                     base::Unretained(this)));
+      base::BindOnce(&PageTool::OnRenderFrameGone, base::Unretained(this)));
 
   chrome_render_frame_->InvokeTool(
       std::move(invocation),

@@ -105,6 +105,8 @@ source_set("impl") {
     "tools/navigate_tool.h",
     "tools/navigate_tool_request.cc",
     "tools/observation_delay_controller.cc",
+    "tools/page_target_util.cc",
+    "tools/page_target_util.h",
     "tools/page_tool.cc",
     "tools/page_tool.h",
     "tools/page_tool_request.cc",
