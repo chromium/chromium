@@ -225,9 +225,6 @@ struct GpuInfo {
       video_encode_accelerator_supported_profiles;
   bool jpeg_decode_accelerator_supported;
 
-  array<ImageDecodeAcceleratorSupportedProfile>
-      image_decode_accelerator_supported_profiles;
-
   bool subpixel_font_rendering;
   uint32 visibility_callback_call_count;
 

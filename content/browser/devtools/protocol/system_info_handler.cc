@@ -176,45 +176,6 @@ VideoEncodeAcceleratorSupportedProfileToProtocol(
       .Build();
 }
 
-std::unique_ptr<SystemInfo::ImageDecodeAcceleratorCapability>
-ImageDecodeAcceleratorSupportedProfileToProtocol(
-    const gpu::ImageDecodeAcceleratorSupportedProfile& profile) {
-  auto subsamplings = std::make_unique<protocol::Array<std::string>>();
-  for (const auto subsampling : profile.subsamplings) {
-    switch (subsampling) {
-      case gpu::ImageDecodeAcceleratorSubsampling::k420:
-        subsamplings->emplace_back(SystemInfo::SubsamplingFormatEnum::Yuv420);
-        break;
-      case gpu::ImageDecodeAcceleratorSubsampling::k422:
-        subsamplings->emplace_back(SystemInfo::SubsamplingFormatEnum::Yuv422);
-        break;
-      case gpu::ImageDecodeAcceleratorSubsampling::k444:
-        subsamplings->emplace_back(SystemInfo::SubsamplingFormatEnum::Yuv444);
-        break;
-    }
-  }
-
-  SystemInfo::ImageType image_type;
-  switch (profile.image_type) {
-    case gpu::ImageDecodeAcceleratorType::kJpeg:
-      image_type = SystemInfo::ImageTypeEnum::Jpeg;
-      break;
-    case gpu::ImageDecodeAcceleratorType::kWebP:
-      image_type = SystemInfo::ImageTypeEnum::Webp;
-      break;
-    case gpu::ImageDecodeAcceleratorType::kUnknown:
-      image_type = SystemInfo::ImageTypeEnum::Unknown;
-      break;
-  }
-
-  return SystemInfo::ImageDecodeAcceleratorCapability::Create()
-      .SetImageType(image_type)
-      .SetMaxDimensions(GfxSizeToSystemInfoSize(profile.max_encoded_dimensions))
-      .SetMinDimensions(GfxSizeToSystemInfoSize(profile.min_encoded_dimensions))
-      .SetSubsamplings(std::move(subsamplings))
-      .Build();
-}
-
 void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
   gpu::GPUInfo gpu_info = GpuDataManagerImpl::GetInstance()->GetGPUInfo();
   auto devices = std::make_unique<protocol::Array<GPUDevice>>();
@@ -260,11 +221,6 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
 
   auto image_profiles = std::make_unique<
       protocol::Array<SystemInfo::ImageDecodeAcceleratorCapability>>();
-  for (const auto& profile :
-       gpu_info.image_decode_accelerator_supported_profiles) {
-    image_profiles->emplace_back(
-        ImageDecodeAcceleratorSupportedProfileToProtocol(profile));
-  }
 
   std::unique_ptr<GPUInfo> gpu =
       GPUInfo::Create()

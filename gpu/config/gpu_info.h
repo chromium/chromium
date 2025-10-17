@@ -505,9 +505,6 @@ struct GPU_CONFIG_EXPORT GPUInfo {
       video_encode_accelerator_supported_profiles;
   bool jpeg_decode_accelerator_supported;
 
-  ImageDecodeAcceleratorSupportedProfiles
-      image_decode_accelerator_supported_profiles;
-
   bool subpixel_font_rendering;
 
   uint32_t visibility_callback_call_count = 0;
