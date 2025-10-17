@@ -8,14 +8,12 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/test/test_sync_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,10 +34,7 @@ class MockHistorySyncOptinPage : public history_sync_optin::mojom::Page {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  MOCK_METHOD(void,
-              SendScreenMode,
-              (history_sync_optin::mojom::ScreenMode screen_mode),
-              (override));
+  MOCK_METHOD(void, SendScreenMode, (ScreenMode screen_mode), (override));
   MOCK_METHOD(void,
               SendAccountInfo,
               (history_sync_optin::mojom::AccountInfoPtr account_info),
@@ -48,23 +43,37 @@ class MockHistorySyncOptinPage : public history_sync_optin::mojom::Page {
   mojo::Receiver<history_sync_optin::mojom::Page> receiver_{this};
 };
 
-// TODO(crbug.com/450448198): Consider using a more lightweight test fixture.
-class HistorySyncOptinHandlerTest : public BrowserWithTestWindowTest {
+class HistorySyncOptinHandlerTest : public testing::TestWithParam<bool> {
  public:
-  HistorySyncOptinHandlerTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    handler_ = std::make_unique<HistorySyncOptinHandler>(
-        handler_remote_.BindNewPipeAndPassReceiver(), page_.BindAndGetRemote(),
-        browser(), profile(), HistorySyncOptinHelper::FlowCompletedCallback(base::DoNothing()));
+  HistorySyncOptinHandlerTest() {
+    TestingProfile::Builder builder;
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment(builder);
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
   }
 
-  void TearDown() override {
-    handler_.reset();
-    BrowserWithTestWindowTest::TearDown();
+  void SetUp() override {
+    handler_ = std::make_unique<HistorySyncOptinHandler>(
+        handler_remote_.BindNewPipeAndPassReceiver(), page_.BindAndGetRemote(),
+        /*browser=*/nullptr, profile(),
+        HistorySyncOptinHelper::FlowCompletedCallback(base::DoNothing()));
+  }
+
+  void TearDown() override { handler_.reset(); }
+
+  bool IsUnrestricted() { return GetParam(); }
+
+  // Returns the expected mode iff capabilities are set.
+  ScreenMode ExpectedScreenMode() {
+    return IsUnrestricted() ? ScreenMode::kUnrestricted
+                            : ScreenMode::kRestricted;
+  }
+
+  TestingProfile* profile() { return profile_.get(); }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
   }
 
   syncer::TestSyncService* test_sync_service() {
@@ -72,23 +81,17 @@ class HistorySyncOptinHandlerTest : public BrowserWithTestWindowTest {
         SyncServiceFactory::GetForProfile(profile()));
   }
 
-  signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(profile());
-  }
-
   AccountInfo SignInAndSetUpSyncService() {
-    AccountInfo account_info = signin::MakeAccountAvailable(
-        identity_manager(), signin::AccountAvailabilityOptionsBuilder()
-                                .AsPrimary(signin::ConsentLevel::kSignin)
-                                .WithGaiaId(GaiaId("gaia_id"))
-                                .Build("test@gmail.com"));
+    AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        "test@gmail.com", signin::ConsentLevel::kSignin);
+
     account_info.full_name = "fullname";
     account_info.given_name = "givenname";
     account_info.hosted_domain = "gmail.com";
     account_info.picture_url = "https://example.com";
     CHECK(account_info.IsValid());
 
-    signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating([](content::BrowserContext* context)
@@ -106,6 +109,11 @@ class HistorySyncOptinHandlerTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
   testing::NiceMock<MockHistorySyncOptinPage> page_;
   mojo::Remote<history_sync_optin::mojom::PageHandler> handler_remote_;
   std::unique_ptr<HistorySyncOptinHandler> handler_;
@@ -113,36 +121,31 @@ class HistorySyncOptinHandlerTest : public BrowserWithTestWindowTest {
 };
 
 // Tests that the handler sends the AccountInfo and ScreenMode when requested.
-TEST_F(HistorySyncOptinHandlerTest, RequestScreenMode) {
+TEST_P(HistorySyncOptinHandlerTest, RequestScreenMode) {
   AccountInfo account_info = SignInAndSetUpSyncService();
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      true);
-  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
+      IsUnrestricted());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
   EXPECT_CALL(page_, SendAccountInfo(_)).Times(2);
-  EXPECT_CALL(page_, SendScreenMode(ScreenMode::kUnrestricted)).Times(1);
-  handler_->RequestAccountInfo();
 
   // The ScreenMode is only sent once.
-  EXPECT_CALL(page_, SendScreenMode(ScreenMode::kRestricted)).Times(0);
-  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      false);
-  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
-}
-
-// Tests that the handler records ScreenMode::kUnrestricted metrics.
-TEST_F(HistorySyncOptinHandlerTest, OnScreenModeUnrestricted) {
-  AccountInfo account_info = SignInAndSetUpSyncService();
-  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      true);
-  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
-  EXPECT_CALL(page_, SendScreenMode(ScreenMode::kUnrestricted)).Times(1);
+  EXPECT_CALL(page_, SendScreenMode(ExpectedScreenMode())).Times(1);
   handler_->RequestAccountInfo();
+
+  // Simulate an AccountInfo update.
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      !IsUnrestricted());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  task_environment_.RunUntilIdle();
 
   histogram_tester_.ExpectUniqueSample(
       "Signin.SyncButtons.Shown",
-      signin_metrics::SyncButtonsType::kSyncNotEqualWeighted, 1);
+      IsUnrestricted()
+          ? signin_metrics::SyncButtonsType::kSyncNotEqualWeighted
+          : signin_metrics::SyncButtonsType::kSyncEqualWeightedFromCapability,
+      1);
   histogram_tester_.ExpectTotalCount(
       "Signin.AccountCapabilities.UserVisibleLatency", 1);
   histogram_tester_.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
@@ -151,9 +154,8 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeUnrestricted) {
       "Signin.AccountCapabilities.ImmediatelyAvailable", true, 1);
 }
 
-// Tests that the handler records ScreenMode::kUnrestricted metrics
-// on accepting the History Sync dialog.
-TEST_F(HistorySyncOptinHandlerTest, OnScreenModeUnrestrictedAccepted) {
+// Tests that user settings are updated on accepting the History Sync dialog.
+TEST_P(HistorySyncOptinHandlerTest, OnScreenModeAccepted) {
   AccountInfo account_info = SignInAndSetUpSyncService();
   DisableAllSyncedDataTypes();
   EXPECT_FALSE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -161,8 +163,8 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeUnrestrictedAccepted) {
 
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      true);
-  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
+      IsUnrestricted());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   handler_->RequestAccountInfo();
   handler_->Accept();
@@ -170,9 +172,8 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeUnrestrictedAccepted) {
       syncer::UserSelectableType::kHistory));
 }
 
-// Tests that the handler records ScreenMode::kUnrestricted metrics
-// on rejecting the History Sync dialog.
-TEST_F(HistorySyncOptinHandlerTest, OnScreenModeUnrestrictedRejected) {
+// Tests that user settings are updated on rejecting the History Sync dialog.
+TEST_P(HistorySyncOptinHandlerTest, OnScreenModeRejected) {
   AccountInfo account_info = SignInAndSetUpSyncService();
   DisableAllSyncedDataTypes();
   EXPECT_FALSE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -180,67 +181,8 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeUnrestrictedRejected) {
 
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      true);
-  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
-
-  handler_->RequestAccountInfo();
-  handler_->Reject();
-  EXPECT_FALSE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory));
-}
-
-// Tests that the handler records ScreenMode::kRestricted metrics.
-TEST_F(HistorySyncOptinHandlerTest, OnScreenModeRestricted) {
-  AccountInfo account_info = SignInAndSetUpSyncService();
-  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      false);
-  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
-  EXPECT_CALL(page_, SendScreenMode(ScreenMode::kRestricted)).Times(1);
-  handler_->RequestAccountInfo();
-
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.SyncButtons.Shown",
-      signin_metrics::SyncButtonsType::kSyncEqualWeightedFromCapability, 1);
-  histogram_tester_.ExpectTotalCount(
-      "Signin.AccountCapabilities.UserVisibleLatency", 1);
-  histogram_tester_.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
-                                     0);
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.AccountCapabilities.ImmediatelyAvailable", true, 1);
-}
-
-// Tests that the handler records ScreenMode::kRestricted metrics
-// on accepting the History Sync dialog.
-TEST_F(HistorySyncOptinHandlerTest, OnScreenModeRestrictedAccepted) {
-  AccountInfo account_info = SignInAndSetUpSyncService();
-  DisableAllSyncedDataTypes();
-  EXPECT_FALSE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory));
-
-  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      false);
-  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
-
-  handler_->RequestAccountInfo();
-  handler_->Accept();
-  EXPECT_TRUE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory));
-}
-
-// Tests that the handler records ScreenMode::kRestricted metrics
-// on rejecting the History Sync dialog.
-TEST_F(HistorySyncOptinHandlerTest, OnScreenModeRestrictedRejected) {
-  AccountInfo account_info = SignInAndSetUpSyncService();
-  DisableAllSyncedDataTypes();
-  EXPECT_FALSE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory));
-
-  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      false);
-  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
+      IsUnrestricted());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   handler_->RequestAccountInfo();
   handler_->Reject();
@@ -250,7 +192,7 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeRestrictedRejected) {
 
 // Tests that the handler send ScreenMode::kDeadlined if account capabilities
 // are not available before the deadline.
-TEST_F(HistorySyncOptinHandlerTest, OnScreenModeTimeout) {
+TEST_P(HistorySyncOptinHandlerTest, OnScreenModeTimeout) {
   AccountInfo account_info = SignInAndSetUpSyncService();
   DisableAllSyncedDataTypes();
   EXPECT_FALSE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -258,7 +200,7 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeTimeout) {
 
   handler_->RequestAccountInfo();
   EXPECT_CALL(page_, SendScreenMode(ScreenMode::kDeadlined));
-  task_environment()->FastForwardBy(base::Seconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   handler_->Accept();
   EXPECT_TRUE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -274,5 +216,16 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeTimeout) {
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountCapabilities.ImmediatelyAvailable", false, 1);
 }
+
+// This boolean parameter controls the value of the account capability
+// `can_show_history_sync_opt_ins_without_minor_mode_restrictions`.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HistorySyncOptinHandlerTest,
+    ::testing::Bool(),  // `true` for unrestricted, `false` for restricted.
+    [](const testing::TestParamInfo<HistorySyncOptinHandlerTest::ParamType>&
+           info) -> std::string {
+      return info.param ? "Unrestricted" : "Restricted";
+    });
 
 }  // namespace
