@@ -20,6 +20,8 @@ enum FileUploadStatus {
   kUploadFailed = 5,
   // File expired.
   kUploadExpired = 6,
+  // File being processed, and suggest signals are ready.
+  kProcessingSuggestSignalsReady = 7,
 };
 
 // For upload error notifications and metrics.

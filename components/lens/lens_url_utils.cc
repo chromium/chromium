@@ -153,6 +153,22 @@ std::string VitQueryParamValueForMimeType(MimeType mime_type) {
   return vitValue;
 }
 
+std::string VitQueryParamValueForMediaType(
+    LensOverlayRequestId_MediaType media_type) {
+  switch (media_type) {
+    case LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE:
+      return kImageVisualInputTypeQueryParameterValue;
+    case LensOverlayRequestId::MEDIA_TYPE_WEBPAGE:
+    case LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE:
+      return kWebpageVisualInputTypeQueryParameterValue;
+    case LensOverlayRequestId::MEDIA_TYPE_PDF:
+    case LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE:
+      return kPdfVisualInputTypeQueryParameterValue;
+    default:
+      return "";
+  }
+}
+
 std::map<std::string, std::string> GetParametersMapWithoutQuery(
     const GURL& url) {
   std::map<std::string, std::string> additional_query_parameters;

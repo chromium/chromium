@@ -325,6 +325,7 @@ CreateInputDataFromAnnotatedPageContent(
       break;
     case FileUploadStatus::kNotUploaded:
     case FileUploadStatus::kProcessing:
+    case FileUploadStatus::kProcessingSuggestSignalsReady:
     case FileUploadStatus::kUploadStarted:
       // No-op, as the state is already `Uploading`.
       return;
