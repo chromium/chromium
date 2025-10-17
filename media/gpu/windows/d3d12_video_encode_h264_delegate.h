@@ -76,7 +76,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH264Delegate
   size_t GetMaxNumOfManualRefBuffers() const override;
   bool ReportsAverageQp() const override;
 
-  bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate) override;
+  bool UpdateRateControl(const VideoBitrateAllocation& bitrate_allocation,
+                         uint32_t framerate) override;
 
   bool SupportsRateControlReconfiguration() const override;
 

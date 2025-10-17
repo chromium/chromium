@@ -74,6 +74,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
       const Bitrate& bitrate,
       uint32_t framerate,
       const std::optional<gfx::Size>& size) override;
+  void RequestEncodingParametersChange(
+      const VideoBitrateAllocation& bitrate_allocation,
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
@@ -101,7 +105,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   void UseOutputBitstreamBufferTask(BitstreamBuffer buffer);
 
   void RequestEncodingParametersChangeTask(
-      const Bitrate& bitrate,
+      const VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate,
       const std::optional<gfx::Size>& size);
 

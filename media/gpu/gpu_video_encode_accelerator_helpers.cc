@@ -230,6 +230,22 @@ VideoBitrateAllocation AllocateDefaultBitrateForTesting(
   return allocation;
 }
 
+VideoBitrateAllocation BitrateToBitrateAllocation(const Bitrate& bitrate) {
+  VideoBitrateAllocation allocation(bitrate.mode());
+  switch (bitrate.mode()) {
+    case Bitrate::Mode::kVariable:
+      allocation.SetBitrate(0, 0, bitrate.target_bps());
+      allocation.SetPeakBps(bitrate.peak_bps());
+      break;
+    case Bitrate::Mode::kConstant:
+      allocation.SetBitrate(0, 0, bitrate.target_bps());
+      break;
+    case Bitrate::Mode::kExternal:
+      break;
+  }
+  return allocation;
+}
+
 VEAEncodingLatencyMetricsHelper::VEAEncodingLatencyMetricsHelper(
     const std::string& uma_prefix,
     VideoCodec codec)

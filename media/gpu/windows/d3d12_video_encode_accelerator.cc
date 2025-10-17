@@ -501,7 +501,20 @@ void D3D12VideoEncodeAccelerator::RequestEncodingParametersChange(
       FROM_HERE,
       BindOnce(
           &D3D12VideoEncodeAccelerator::RequestEncodingParametersChangeTask,
-          encoder_weak_this_, bitrate, framerate, size));
+          encoder_weak_this_, BitrateToBitrateAllocation(bitrate), framerate,
+          size));
+}
+
+void D3D12VideoEncodeAccelerator::RequestEncodingParametersChange(
+    const VideoBitrateAllocation& bitrate_allocation,
+    uint32_t framerate,
+    const std::optional<gfx::Size>& size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
+  encoder_task_runner_->PostTask(
+      FROM_HERE,
+      BindOnce(
+          &D3D12VideoEncodeAccelerator::RequestEncodingParametersChangeTask,
+          encoder_weak_this_, bitrate_allocation, framerate, size));
 }
 
 void D3D12VideoEncodeAccelerator::Destroy() {
@@ -628,7 +641,7 @@ void D3D12VideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 }
 
 void D3D12VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
-    const Bitrate& bitrate,
+    const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate,
     const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
@@ -638,8 +651,8 @@ void D3D12VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
                         "Update output frame size is not supported"});
   }
 
-  if (!encoder_->UpdateRateControl(bitrate, framerate)) {
-    VLOGF(1) << "Failed to update bitrate " << bitrate.ToString()
+  if (!encoder_->UpdateRateControl(bitrate_allocation, framerate)) {
+    VLOGF(1) << "Failed to update bitrate " << bitrate_allocation.ToString()
              << " and framerate " << framerate;
   }
 }

@@ -51,7 +51,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
 
   bool SupportsRateControlReconfiguration() const override;
 
-  bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate) override;
+  bool UpdateRateControl(const VideoBitrateAllocation& bitrate_allocation,
+                         uint32_t framerate) override;
 
   bool ReportsAverageQp() const override;
 
@@ -103,9 +104,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   // Bitrate controller for CBR encoding.
   std::unique_ptr<aom::AV1RateControlRTC> software_brc_;
 
-  // Bitrate allocation in bps.
-  VideoBitrateAllocation bitrate_allocation_{Bitrate::Mode::kConstant};
-
   // The `enc_caps_` is populated based on the capability of d3d12
   // driver in `InitializeVideoEncoder()` and remains constant afterwards.
   D3D12EncodingCapabilities enc_caps_{};
@@ -123,7 +121,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   // The encoding content is a screen content.
   bool is_screen_ = false;
 
-  uint32_t framerate_ = 30;
   AV1BitstreamBuilder::SequenceHeader sequence_header_;
   D3D12VideoEncodeDecodedPictureBuffers<kAV1DPBMaxSize> dpb_;
   int picture_id_ = -1;

@@ -288,18 +288,17 @@ bool D3D12VideoEncodeH264Delegate::ReportsAverageQp() const {
          D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP;
 }
 
-bool D3D12VideoEncodeH264Delegate::UpdateRateControl(const Bitrate& bitrate,
-                                                     uint32_t framerate) {
+bool D3D12VideoEncodeH264Delegate::UpdateRateControl(
+    const VideoBitrateAllocation& bitrate_allocation,
+    uint32_t framerate) {
   if (software_rate_controller_) {
-    if (bitrate.mode() != Bitrate::Mode::kConstant &&
-        bitrate.mode() != Bitrate::Mode::kVariable) {
+    if (bitrate_allocation.GetMode() != Bitrate::Mode::kConstant &&
+        bitrate_allocation.GetMode() != Bitrate::Mode::kVariable) {
       return false;
     }
 
-    config_.bitrate = bitrate;
-    config_.framerate = framerate;
-    VideoBitrateAllocation bitrate_allocation =
-        AllocateBitrateForDefaultEncoding(config_);
+    framerate_ = framerate;
+    bitrate_allocation_ = bitrate_allocation;
     if (bitrate_allocation.GetSumBps() == 0) {
       return false;
     }
@@ -319,7 +318,7 @@ bool D3D12VideoEncodeH264Delegate::UpdateRateControl(const Bitrate& bitrate,
         sum_bitrate += bitrate_allocation.GetBitrateBps(0, i);
         layer_settings.avg_bitrate = sum_bitrate;
         layer_settings.peak_bitrate =
-            bitrate.mode() == Bitrate::Mode::kConstant
+            bitrate_allocation.GetMode() == Bitrate::Mode::kConstant
                 ? sum_bitrate
                 : base::saturated_cast<uint32_t>(sum_bitrate *
                                                  peak_target_ratio);
@@ -333,7 +332,7 @@ bool D3D12VideoEncodeH264Delegate::UpdateRateControl(const Bitrate& bitrate,
         software_rate_controller_->temporal_layers(i).SetBufferParameters(
             rate_controller_settings_.layer_settings[i].hrd_buffer_size,
             sum_bitrate,
-            bitrate.mode() == Bitrate::Mode::kConstant
+            bitrate_allocation.GetMode() == Bitrate::Mode::kConstant
                 ? sum_bitrate
                 : base::saturated_cast<uint32_t>(sum_bitrate *
                                                  peak_target_ratio),
@@ -343,7 +342,8 @@ bool D3D12VideoEncodeH264Delegate::UpdateRateControl(const Bitrate& bitrate,
     return true;
   }
 
-  return D3D12VideoEncodeDelegate::UpdateRateControl(bitrate, framerate);
+  return D3D12VideoEncodeDelegate::UpdateRateControl(bitrate_allocation,
+                                                     framerate);
 }
 
 EncoderStatus D3D12VideoEncodeH264Delegate::EncodeImpl(

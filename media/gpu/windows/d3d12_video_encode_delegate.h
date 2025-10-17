@@ -56,7 +56,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   virtual bool SupportsRateControlReconfiguration() const = 0;
   virtual bool ReportsAverageQp() const;
 
-  virtual bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate);
+  virtual bool UpdateRateControl(
+      const VideoBitrateAllocation& bitrate_allocation,
+      uint32_t framerate);
 
   // Do video processing if the input frame format or resolution is not
   // expected and then call |EncodeImpl()|.
@@ -114,7 +116,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
                                                   uint32_t p_frame_qp,
                                                   uint32_t b_frame_qp);
     static D3D12VideoEncoderRateControl Create(
-        Bitrate bitrate,
+        const VideoBitrateAllocation& bitrate_allocation,
         uint32_t framerate,
         ID3D12VideoDevice3* video_device,
         VideoCodecProfile output_profile);
@@ -153,9 +155,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   Microsoft::WRL::ComPtr<ID3D12Device> device_;
   Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device_;
 
-  // The current used config. Used for reconstructing bitrate allocation when
-  // rate control is updated.
-  VideoEncodeAccelerator::Config config_;
+  // Bitrate allocation in bps.
+  VideoBitrateAllocation bitrate_allocation_{Bitrate::Mode::kConstant};
+  uint32_t framerate_ = 30;
 
   // The the size and format for the input of the D3D12VideoEncoder. The format
   // may be different to input frame, in which case we do internal conversion.

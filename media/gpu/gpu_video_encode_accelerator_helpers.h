@@ -68,6 +68,9 @@ AllocateBitrateForDefaultEncodingWithBitrates(
     const size_t num_temporal_layers,
     const bool uses_vbr);
 
+VideoBitrateAllocation MEDIA_GPU_EXPORT
+BitrateToBitrateAllocation(const Bitrate& bitrate);
+
 class MEDIA_GPU_EXPORT VEAEncodingLatencyMetricsHelper {
  public:
   explicit VEAEncodingLatencyMetricsHelper(const std::string& uma_prefix,
