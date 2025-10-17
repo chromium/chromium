@@ -97,7 +97,10 @@ class ServiceWorkerAutoAttacher
     bool enabled = auto_attach();
     if (have_observer_ != enabled) {
       if (enabled) {
-        ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
+        if (!service_worker_devtools_manager_observation_.IsObserving()) {
+          service_worker_devtools_manager_observation_.Observe(
+              ServiceWorkerDevToolsManager::GetInstance());
+        }
         ServiceWorkerDevToolsAgentHost::List agent_hosts;
         ServiceWorkerDevToolsManager::GetInstance()->AddAllAgentHosts(
             &agent_hosts);
@@ -107,7 +110,7 @@ class ServiceWorkerAutoAttacher
           }
         }
       } else {
-        ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
+        service_worker_devtools_manager_observation_.Reset();
       }
       have_observer_ = enabled;
     }
@@ -127,6 +130,9 @@ class ServiceWorkerAutoAttacher
 
   bool have_observer_ = false;
   raw_ptr<ServiceWorkerDevToolsAgentHost> host_;
+  base::ScopedObservation<ServiceWorkerDevToolsManager,
+                          ServiceWorkerAutoAttacher>
+      service_worker_devtools_manager_observation_{this};
 };
 
 }  // namespace

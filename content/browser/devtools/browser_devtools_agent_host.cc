@@ -101,6 +101,7 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
 
   void ReattachServiceWorkers() {
     DCHECK(auto_attach());
+    DCHECK(service_worker_devtools_manager_observation_.IsObserving());
     ServiceWorkerDevToolsAgentHost::List agent_hosts;
     ServiceWorkerDevToolsManager::GetInstance()->AddAllAgentHosts(&agent_hosts);
     Hosts new_hosts(agent_hosts.begin(), agent_hosts.end());
@@ -109,10 +110,8 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
   }
 
   void ReattachSharedWorkers() {
-    if (!shared_worker_devtools_manager_observation_.IsObserving()) {
-      return;
-    }
     DCHECK(auto_attach());
+    DCHECK(shared_worker_devtools_manager_observation_.IsObserving());
     SharedWorkerDevToolsAgentHost::List agent_hosts;
     SharedWorkerDevToolsManager::GetInstance()->AddAllAgentHosts(&agent_hosts);
     Hosts new_hosts(agent_hosts.begin(), agent_hosts.end());
@@ -124,7 +123,10 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
     if (auto_attach()) {
       base::AutoReset<bool> auto_reset(&processing_existent_targets_, true);
       if (!have_observers_) {
-        ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
+        if (!service_worker_devtools_manager_observation_.IsObserving()) {
+          service_worker_devtools_manager_observation_.Observe(
+              ServiceWorkerDevToolsManager::GetInstance());
+        }
         if (!shared_worker_devtools_manager_observation_.IsObserving()) {
           shared_worker_devtools_manager_observation_.Observe(
               SharedWorkerDevToolsManager::GetInstance());
@@ -145,7 +147,7 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
       if (have_observers_) {
         DevToolsAgentHost::RemoveObserver(this);
         shared_worker_devtools_manager_observation_.Reset();
-        ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
+        service_worker_devtools_manager_observation_.Reset();
       }
     }
     have_observers_ = auto_attach();
@@ -192,6 +194,8 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
 
   bool processing_existent_targets_ = false;
   bool have_observers_ = false;
+  base::ScopedObservation<ServiceWorkerDevToolsManager, BrowserAutoAttacher>
+      service_worker_devtools_manager_observation_{this};
   base::ScopedObservation<SharedWorkerDevToolsManager, BrowserAutoAttacher>
       shared_worker_devtools_manager_observation_{this};
 };
