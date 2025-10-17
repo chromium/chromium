@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ipc/handle_win.h"
+
 #include <windows.h>
 
 #include "base/files/file.h"
-#include "ipc/handle_win.h"
 #include "ipc/platform_file_for_transit.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -224,7 +224,7 @@ if (use_blink) {
     }
 
     if (is_win) {
-      sources += [ "ipc_handle_unittest.cc" ]
+      sources += [ "handle_win_unittest.cc" ]
     }
 
     deps = [
