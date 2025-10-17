@@ -2497,7 +2497,7 @@
 <translation id="2683638487103917598">Папката е подредена</translation>
 <translation id="2684004000387153598">За да продолжите, кликнете „Во ред“, а потоа кликнете „Додај лице“ за да создадете нов профил за адресата на е-пошта.</translation>
 <translation id="2685193395980129388">Дозволено: <ph name="PERMISSION_DETAILS" /></translation>
-<translation id="2687407218262674387">Услови за користење на Google</translation>
+<translation id="2687407218262674387">„Услови за користење“ на Google</translation>
 <translation id="2688196195245426394">Грешка при регистрирање на уредот на серверот: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">Не треба да ја помните лозинкава. Ќе се зачува во Google Password Manager за <ph name="ACCOUNT" /></translation>
 <translation id="2690024944919328218">Покажи ги опциите за јазик</translation>
@@ -3884,6 +3884,7 @@
 <translation id="3656328935986149999">Брзина на курсорот</translation>
 <translation id="3656701180077048004">Додава одложување меѓу моментот на притискање некое копче и моментот на активирање на копчето</translation>
 <translation id="3658871634334445293">Забрзување на TrackPoint</translation>
+<translation id="3659483399659250379">Додајте картичка и друго</translation>
 <translation id="3659929705630080526">Внесовте премногу неточни кодови за пристап. Обидете се повторно подоцна</translation>
 <translation id="3661106764436337772">Пишувајте побрзо и со повеќе самодеоверба</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Најдена е 1 постојна лозинка}one{Најдени се {NUM_PASSWORDS} постојна лозинка}other{Најдени се {NUM_PASSWORDS} постојни лозинки}}</translation>
@@ -7419,7 +7420,6 @@
 <translation id="6135826623269483856">Без дозвола за управување со прозорците на сите екрани</translation>
 <translation id="6136285399872347291">бриши</translation>
 <translation id="6136287496450963112">Вашиот безбедносен клуч не е заштитен со PIN. За да управувате со отпечатоците, прво создајте PIN.</translation>
-<translation id="6136637346277431354">Додајте картички и друго</translation>
 <translation id="6138680304137685902">X9.62 ECDSA потпис со SHA-384</translation>
 <translation id="6140948187512243695">Прикажи детали</translation>
 <translation id="6141988275892716286">Потврдете го преземањето</translation>
@@ -8417,7 +8417,7 @@
 <translation id="6828182567531805778">Внесете ја лозинката за да ги синхронизирате податоците</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Не успеа поставувањето автоматски ажурирања за сите корисници (грешка при извршување preflight: <ph name="ERROR_NUMBER" />)</translation>
-<translation id="682971198310367122">Политика за приватност на Google</translation>
+<translation id="682971198310367122">„Политика за приватност“ на Google</translation>
 <translation id="6830787477693252535">Го гледате вашиот календар за да ви помогне полесно да стигнете до вашиот следен настан во „Календар на Google“.
         <ph name="BREAK" />
         <ph name="BREAK" />

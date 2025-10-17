@@ -3884,6 +3884,7 @@
 <translation id="3656328935986149999">कर्सर की स्पीड</translation>
 <translation id="3656701180077048004">स्लो बटन से, किसी बटन को दबाने और उसके ऐक्टिवेट होने के बीच का समय सेट किया जाता है</translation>
 <translation id="3658871634334445293">TrackPoint ऐक्सेलरेशन</translation>
+<translation id="3659483399659250379">टैब वगैरह जोड़ें</translation>
 <translation id="3659929705630080526">आपने कई बार गलत ऐक्सेस कोड डाला है. बाद में कोशिश करें</translation>
 <translation id="3661106764436337772">तेज़ी और आत्मविश्वास के साथ लिखें</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 मौजूदा पासवर्ड मिला}one{{NUM_PASSWORDS} मौजूदा पासवर्ड मिला}other{{NUM_PASSWORDS} मौजूदा पासवर्ड मिले}}</translation>
@@ -7416,7 +7417,6 @@
 <translation id="6135826623269483856">आपके सभी डिसप्ले पर, विंडो मैनेज करने की अनुमति नहीं है</translation>
 <translation id="6136285399872347291">बैकस्पेस</translation>
 <translation id="6136287496450963112">आपकी सुरक्षा कुंजी को पिन से सुरक्षित नहीं किया गया है. फ़िंगरप्रिंट प्रबंधित करने के लिए, पहले एक पिन बनाएं.</translation>
-<translation id="6136637346277431354">टैब वगैरह जोड़ें</translation>
 <translation id="6138680304137685902">SHA-384 के साथ X9.62 ECDSA हस्ताक्षर</translation>
 <translation id="6140948187512243695">विवरण दिखाएं</translation>
 <translation id="6141988275892716286">डाउनलोड की पुष्टि करें</translation>

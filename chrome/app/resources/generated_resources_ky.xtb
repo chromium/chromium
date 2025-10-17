@@ -3883,6 +3883,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3656328935986149999">Курсордун ылдамдыгы</translation>
 <translation id="3656701180077048004">Сиз баскычты басып, ал иштетилгенге чейинки кечигүүнү кошот</translation>
 <translation id="3658871634334445293">TrackPoint ылдамдаткычы</translation>
+<translation id="3659483399659250379">Өтмөк жана башка нерселерди кошуу</translation>
 <translation id="3659929705630080526">Туура эмес кирүү кодун өтө көп жолу киргиздиңиз. Кийинчерээк кайталаңыз</translation>
 <translation id="3661106764436337772">Тезирээк жана тагыраак жазыңыз</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 учурдагы сырсөз табылды}other{{NUM_PASSWORDS} учурдагы сырсөз табылды}}</translation>
@@ -7418,7 +7419,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6135826623269483856">Сайттарга бардык экрандардагы терезелерди тескөөгө тыюу салынган</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6136287496450963112">Коопсуздук ачкычы PIN код менен корголгон эмес. Манжа издерин башкаруу үчүн адегенде PIN код түзүңүз.</translation>
-<translation id="6136637346277431354">Өтмөктөрдү жана башка нерселерди кошуңуз</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Колтамгасы SHA-384 менен</translation>
 <translation id="6140948187512243695">Чоо-жайын көрсөтүү</translation>
 <translation id="6141988275892716286">Жүктөп алууну ырастаңыз</translation>

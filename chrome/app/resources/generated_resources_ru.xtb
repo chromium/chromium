@@ -3872,6 +3872,7 @@
 <translation id="3656328935986149999">Скорость движения указателя</translation>
 <translation id="3656701180077048004">Между нажатием клавиши и ее действием будет добавлена задержка</translation>
 <translation id="3658871634334445293">Ускорение TrackPoint</translation>
+<translation id="3659483399659250379">Добавьте вкладку или что-нибудь ещё</translation>
 <translation id="3659929705630080526">Слишком часто вводился неправильный код доступа. Повторите попытку позже.</translation>
 <translation id="3661106764436337772">Упростите себе работу</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Обнаружен 1 существующий пароль}one{Обнаружен {NUM_PASSWORDS} существующий пароль}few{Обнаружено {NUM_PASSWORDS} существующих пароля}many{Обнаружено {NUM_PASSWORDS} существующих паролей}other{Обнаружено {NUM_PASSWORDS} существующих пароля}}</translation>
@@ -7406,7 +7407,6 @@
 <translation id="6135826623269483856">Сайты, которым запрещено управление окнами на всех ваших экранах</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6136287496450963112">Ваш электронный ключ не защищен PIN-кодом. Чтобы управлять отпечатками пальцев, создайте PIN-код.</translation>
-<translation id="6136637346277431354">Добавьте вкладки и другое</translation>
 <translation id="6138680304137685902">Подпись ECDSA X9.62 с SHA-384</translation>
 <translation id="6140948187512243695">Показать подробности</translation>
 <translation id="6141988275892716286">Подтвердите скачивание</translation>

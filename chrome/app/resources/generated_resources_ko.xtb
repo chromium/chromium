@@ -3885,6 +3885,7 @@
 <translation id="3656328935986149999">커서 속도</translation>
 <translation id="3656701180077048004">키를 누르는 시점과 활성화되는 시점 사이에 지연 시간을 추가합니다.</translation>
 <translation id="3658871634334445293">TrackPoint 가속</translation>
+<translation id="3659483399659250379">탭 등 배경 정보 추가</translation>
 <translation id="3659929705630080526">잘못된 액세스 코드를 너무 여러 번 입력했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="3661106764436337772">더 빠르고 자신 있게 작성하기</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{기존 비밀번호 1개 찾음}other{기존 비밀번호 {NUM_PASSWORDS}개 찾음}}</translation>
@@ -7419,7 +7420,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6135826623269483856">모든 디스플레이의 창 관리 허용 안함</translation>
 <translation id="6136285399872347291">백스페이스</translation>
 <translation id="6136287496450963112">보안 키가 PIN으로 보호되어 있지 않습니다. 지문을 관리하려면 먼저 PIN을 만드세요.</translation>
-<translation id="6136637346277431354">탭 등 추가</translation>
 <translation id="6138680304137685902">SHA-384를 포함한 X9.62 ECDSA 서명</translation>
 <translation id="6140948187512243695">세부정보 표시</translation>
 <translation id="6141988275892716286">다운로드 확인</translation>

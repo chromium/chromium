@@ -3861,6 +3861,7 @@
 <translation id="3656328935986149999">カーソル速度</translation>
 <translation id="3656701180077048004">キーを押してから有効にするまでの間に待機時間を設けます</translation>
 <translation id="3658871634334445293">TrackPoint アクセラレーション</translation>
+<translation id="3659483399659250379">タブなどを追加</translation>
 <translation id="3659929705630080526">間違ったアクセスコードを複数回入力しました。しばらくしてからもう一度お試しください</translation>
 <translation id="3661106764436337772">より確実な文章をすばやく作成</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 件の既存のパスワードが見つかりました}other{{NUM_PASSWORDS} 件の既存のパスワードが見つかりました}}</translation>
@@ -7389,7 +7390,6 @@
 <translation id="6135826623269483856">全ディスプレイのウィンドウ管理が許可されていません</translation>
 <translation id="6136285399872347291">Backspace</translation>
 <translation id="6136287496450963112">セキュリティ キーは PIN で保護されていません。指紋を管理するには、まず PIN を作成してください。</translation>
-<translation id="6136637346277431354">タブなどを追加</translation>
 <translation id="6138680304137685902">X9.62 ECDSA 署名（SHA-384）</translation>
 <translation id="6140948187512243695">詳細を表示</translation>
 <translation id="6141988275892716286">ダウンロードの確認</translation>

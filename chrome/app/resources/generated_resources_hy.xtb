@@ -3868,6 +3868,7 @@
 <translation id="3656328935986149999">Նշորդի արագությունը</translation>
 <translation id="3656701180077048004">Ավելացնում է հապաղում ստեղնը սեղմելու և դրա ակտիվացման միջև</translation>
 <translation id="3658871634334445293">TrackPoint-ի արագացում</translation>
+<translation id="3659483399659250379">Ավելացրեք ներդիր կամ մեկ այլ բան</translation>
 <translation id="3659929705630080526">Դուք չափից շատ անգամ մուտքի սխալ կոդ եք մուտքագրել։ Փորձեք ավելի ուշ։</translation>
 <translation id="3661106764436337772">Գրեք ավելի արագ և ավելի վստահ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Գտնվել է գոյություն ունեցող 1 գաղտնաբառ}one{Գտնվել է գոյություն ունեցող {NUM_PASSWORDS} գաղտնաբառ}other{Գտնվել է գոյություն ունեցող {NUM_PASSWORDS} գաղտնաբառ}}</translation>
@@ -7399,7 +7400,6 @@
 <translation id="6135826623269483856">Չի թույլատրվում կառավարել պատուհանները բոլոր էկրաններին</translation>
 <translation id="6136285399872347291">հետշարժ</translation>
 <translation id="6136287496450963112">Անվտանգության բանալին պաշտպանված չէ PIN-ով: Մատնահետքերը կառավարելու համար նախ ստեղծեք PIN կոդ:</translation>
-<translation id="6136637346277431354">Ավելացրեք ներդիրներ և ավելին</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ստորագրություն SHA-384-ով</translation>
 <translation id="6140948187512243695">Մանրամասներ</translation>
 <translation id="6141988275892716286">Հաստատեք ներբեռնումը</translation>

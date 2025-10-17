@@ -3860,6 +3860,7 @@
 <translation id="3656328935986149999">光标速度</translation>
 <translation id="3656701180077048004">在按下按键与启用按键之间增加延迟</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
+<translation id="3659483399659250379">添加标签页等</translation>
 <translation id="3659929705630080526">访问代码输错次数过多。请稍后重试</translation>
 <translation id="3661106764436337772">写作更快更自信</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{找到 1 个现有密码}other{找到 {NUM_PASSWORDS} 个现有密码}}</translation>
@@ -4380,7 +4381,7 @@
 <translation id="3983400541576569538">某些应用中的数据可能会丢失</translation>
 <translation id="3983586614702900908">来自未知供应商的设备</translation>
 <translation id="3983764759749072418">Play 商店中的应用有权访问此设备。</translation>
-<translation id="3983769721878416534">点击前延迟</translation>
+<translation id="3983769721878416534">点击前停留</translation>
 <translation id="3984135167056005094">不附带电子邮件地址</translation>
 <translation id="3984159763196946143">无法启动演示模式</translation>
 <translation id="3984536049089846927">下一页</translation>
@@ -7389,7 +7390,6 @@
 <translation id="6135826623269483856">不得管理您的所有显示屏上的窗口</translation>
 <translation id="6136285399872347291">删除</translation>
 <translation id="6136287496450963112">您尚未设置 PIN 码来保护您的安全密钥。若要管理指纹，请先创建一个 PIN 码。</translation>
-<translation id="6136637346277431354">添加标签页等</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
 <translation id="6140948187512243695">显示详细信息</translation>
 <translation id="6141988275892716286">确认下载</translation>

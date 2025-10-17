@@ -2523,7 +2523,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2715751256863167692">Ovom nadogradnjom Chromebook se vraća na zadano, a trenutačni korisnički podaci se uklanjaju.</translation>
 <translation id="2715934493766003251">Pohrana se ne može očistiti dok je uključena sinkronizacija datoteka</translation>
 <translation id="2716986496990888774">Tom postavkom upravlja roditelj.</translation>
-<translation id="271749239614426244">Zanemari pomicanje manjeg pokazivača</translation>
+<translation id="271749239614426244">Zanemari manja pomicanja pokazivača</translation>
 <translation id="2718395828230677721">Noćno svjetlo</translation>
 <translation id="2718998670920917754">Antivirusni softver otkrio je virus.</translation>
 <translation id="2719936478972253983">Sljedeći su kolačići blokirani</translation>
@@ -3872,6 +3872,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3656328935986149999">Brzina pokazivača</translation>
 <translation id="3656701180077048004">Dodaje odgodu između pritiska na tipku i njezine aktivacije</translation>
 <translation id="3658871634334445293">TrackPoint ubrzanje</translation>
+<translation id="3659483399659250379">Dodajte karticu i druge datoteke</translation>
 <translation id="3659929705630080526">Unijeli ste netočnu pristupnu šifru previše puta. Pokušajte ponovo kasnije</translation>
 <translation id="3661106764436337772">Pišite brže i samopouzdanije</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Pronađena je 1 postojeća zaporka}one{Pronađena je {NUM_PASSWORDS} postojeća zaporka}few{Pronađene su {NUM_PASSWORDS} postojeće zaporke}other{Pronađeno je {NUM_PASSWORDS} postojećih zaporki}}</translation>
@@ -7402,7 +7403,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6135826623269483856">Nije dopušteno upravljanje prozorima na svim zaslonima</translation>
 <translation id="6136285399872347291">brisanje unatrag</translation>
 <translation id="6136287496450963112">Vaš sigurnosni ključ nije zaštićen PIN-om. Za upravljanje otiscima prstiju najprije izradite PIN.</translation>
-<translation id="6136637346277431354">Dodajte kartice i drugo</translation>
 <translation id="6138680304137685902">X9.62 ECDSA potpis uz SHA-384</translation>
 <translation id="6140948187512243695">Prikaži detalje</translation>
 <translation id="6141988275892716286">Potvrda preuzimanja</translation>

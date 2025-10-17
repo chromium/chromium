@@ -3884,6 +3884,7 @@
 <translation id="3656328935986149999">কার্সরের স্পিড</translation>
 <translation id="3656701180077048004">আপনি 'কী' প্রেস করা ও তা চালু হওয়ার সময়ের মধ্যে বিলম্ব যোগ করে</translation>
 <translation id="3658871634334445293">TrackPoint অ্যাক্সিলারেশন</translation>
+<translation id="3659483399659250379">কোনও ট্যাব ও আরও অনেক কিছু যোগ করুন</translation>
 <translation id="3659929705630080526">আপনি অনেক বার ভুল অ্যাক্সেস কোড লিখেছেন। পরে আবার চেষ্টা করুন</translation>
 <translation id="3661106764436337772">আরও দ্রুত ও বেশি আত্মবিশ্বাসের সাথে লিখুন</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{আগে থাকা ১টি পাসওয়ার্ড পাওয়া গেছে}one{আগে থাকা {NUM_PASSWORDS}টি পাসওয়ার্ড পাওয়া গেছে}other{আগে থাকা {NUM_PASSWORDS}টি পাসওয়ার্ড পাওয়া গেছে}}</translation>
@@ -7420,7 +7421,6 @@
 <translation id="6135826623269483856">আপনার সব ডিসপ্লেতে উইন্ডো ম্যানেজ করার অনুমতি নেই</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6136287496450963112">আপনার নিরাপত্তা কী কোনও পিন দ্বারা সুরক্ষিত নেই। আঙ্গুলের ছাপ ম্যানেজ করতে, প্রথমে পিন তৈরি করুন।</translation>
-<translation id="6136637346277431354">ট্যাব ও আরও অনেক কিছু যোগ করুন</translation>
 <translation id="6138680304137685902">SHA-384 সহ X9.62 ECDSA স্বাক্ষর</translation>
 <translation id="6140948187512243695">বিশদ বিবরণ দেখান</translation>
 <translation id="6141988275892716286">ডাউনলোড নিশ্চিত করুন</translation>

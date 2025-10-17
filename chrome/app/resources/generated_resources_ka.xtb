@@ -3870,6 +3870,7 @@
 <translation id="3656328935986149999">კურსორის სიჩქარე</translation>
 <translation id="3656701180077048004">დაამატებს კლავიშის დაჭერიდან მის გააქტიურებამდე დაყოვნების დროს</translation>
 <translation id="3658871634334445293">TrackPoint-ის აჩქარება</translation>
+<translation id="3659483399659250379">ჩანართის ან სხვა რამის დამატება</translation>
 <translation id="3659929705630080526">წვდომის არასწორი კოდი ზედმეტად ბევრჯერ შეიყვანეთ. ცადეთ მოგვიანებით</translation>
 <translation id="3661106764436337772">წერეთ უფრო სწრაფად და თავდაჯერებულად</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{მოიძებნა 1 არსებული პაროლი}other{მოიძებნა {NUM_PASSWORDS} არსებული პაროლი}}</translation>
@@ -7405,7 +7406,6 @@
 <translation id="6135826623269483856">აკრძალული აქვს ფანჯრების მართვა თქვენს ყველა ეკრანზე</translation>
 <translation id="6136285399872347291">უკუშლა</translation>
 <translation id="6136287496450963112">თქვენი უსაფრთხოების გასაღები არ არის დაცული PIN-კოდით. თითის ანაბეჭდების სამართავად, პირველ რიგში, შექმენით PIN-კოდი.</translation>
-<translation id="6136637346277431354">ჩანართებისა და სხვ. დამატება</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ხელმოწერა SHA-384-ით</translation>
 <translation id="6140948187512243695">დეტალების ჩვენება</translation>
 <translation id="6141988275892716286">დაადასტურეთ ჩამოტვირთვა</translation>

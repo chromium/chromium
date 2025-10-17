@@ -3871,6 +3871,7 @@
 <translation id="3656328935986149999">Хуткасць курсора</translation>
 <translation id="3656701180077048004">Дадае затрымку паміж момантам націскання на клавішу і яе актывацыяй</translation>
 <translation id="3658871634334445293">Паскарэнне TrackPoint</translation>
+<translation id="3659483399659250379">Дадайце ўкладку і іншае змесціва</translation>
 <translation id="3659929705630080526">Вы ўвялі няправільны код доступу занадта шмат разоў. Паўтарыце спробу пазней</translation>
 <translation id="3661106764436337772">Пішыце хутчэй і з большай упэўненасцю</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 пароль ужо існуе}one{{NUM_PASSWORDS} пароль ужо існуе}few{{NUM_PASSWORDS} паролі ўжо існуюць}many{{NUM_PASSWORDS} пароляў ужо існуюць}other{{NUM_PASSWORDS} пароля ўжо існуюць}}</translation>
@@ -7403,7 +7404,6 @@
 <translation id="6135826623269483856">Сайты, якім забаронена кіраваць вокнамі на ўсіх дысплэях</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6136287496450963112">Ключ бяспекі не абаронены PIN-кодам. Каб кіраваць адбіткамі пальцаў, спачатку стварыце PIN-код.</translation>
-<translation id="6136637346277431354">Дадайце ўкладкі і іншае змесціва</translation>
 <translation id="6138680304137685902">Подпіс X9.62 ECDSA з SHA-384</translation>
 <translation id="6140948187512243695">Паказаць падрабязныя звесткі</translation>
 <translation id="6141988275892716286">Пацвярджэнне спампоўвання</translation>

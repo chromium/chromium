@@ -1254,7 +1254,7 @@
 <translation id="3087734570205094154">Bas</translation>
 <translation id="3090667236485488075">Verre</translation>
 <translation id="3093122472063815077">L'écran de progression Acheter maintenant, payer plus tard est ouvert à mi-hauteur.</translation>
-<translation id="309381737510736393">Lorsque votre organisation limite l'enregistrement sur votre compte Google, vous ne pouvez pas partager d'onglets ni collaborer avec d'autres personnes.</translation>
+<translation id="309381737510736393">Lorsque votre organisation limite l'enregistrement sur votre compte Google, vous ne pouvez pas partager d'onglets ni collaborer avec d'autres personnes</translation>
 <translation id="3094051226187213523">Ouvrez le mode IA avec cette suggestion.</translation>
 <translation id="3095940652251934233">Relevé</translation>
 <translation id="3098513225387949945">Ignoré parce que la liste de désactivation contient un motif égal à « * », ce qui équivaut à désactiver la politique.</translation>
@@ -3655,7 +3655,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7020464868401003526">L'URL du raccourci dépasse la longueur maximale autorisée de <ph name="MAX_LENGTH" /> caractères.</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez et suggère ensuite des annonces à d'autres sites. Ce site récupère également les sujets de vos annonces à partir de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7023162328967545559">Avertissement de l'administrateur</translation>
-<translation id="7023765275461720661">Associer le compte et payer avec <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7030164307377592766">modifier les paramètres de remplissage des modes de paiement</translation>
 <translation id="7031110846419387930">Informations concernant votre navigateur, votre système d'exploitation, votre appareil, les logiciels installés, les fichiers et les adresses IP</translation>
