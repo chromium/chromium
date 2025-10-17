@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -319,13 +318,13 @@ public class ToolbarPhone extends ToolbarLayout
                 OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(context);
         mToolbarBackgroundColorForNtp =
                 ContextCompat.getColor(getContext(), R.color.home_surface_background_color);
-        float LocationBarBackgroundColorAlphaForNtp =
+        float locationBarBackgroundColorAlphaForNtp =
                 ResourcesCompat.getFloat(
                         getResources(), R.dimen.home_surface_search_box_background_alpha);
         mLocationBarBackgroundColorForNtp =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
-                        LocationBarBackgroundColorAlphaForNtp);
+                        locationBarBackgroundColorAlphaForNtp);
         mDisableLocationBarRelayout = ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
     }
 
@@ -1001,13 +1000,6 @@ public class ToolbarPhone extends ToolbarLayout
         // TODO(crbug.com/430347234): Refactor these to Transitions.
         if (isLocationBarShownInNtp()) {
             updateNtpTransitionAnimation();
-            // Update NTP page for URL focus.
-            Tab currentTab = getToolbarDataProvider().getTab();
-            if (currentTab != null) {
-                getToolbarDataProvider()
-                        .getNewTabPageDelegate()
-                        .setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
-            }
         }
         // Update LB child views - updates visibility of buttons, margins, etc using fraction.
         // TODO(crbug.com/430347234): Refactor these to Transitions.
@@ -1104,12 +1096,6 @@ public class ToolbarPhone extends ToolbarLayout
         locationBarBaseTranslationX *= 1f - mUrlExpansionFraction;
 
         boolean isLocationBarShownInNtp = isLocationBarShownInNtp();
-        Tab currentTab = getToolbarDataProvider().getTab();
-        if (currentTab != null) {
-            getToolbarDataProvider()
-                    .getNewTabPageDelegate()
-                    .setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
-        }
 
         float locationBarTranslationX;
         if (isLocationBarRtl) {
@@ -1309,6 +1295,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
+        ntpDelegate.setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
         // #getSearchBoxBounds is only valid once the NTP can actually draw itself.
         if (ntpDelegate.hasCompletedFirstLayout()) {
             ntpDelegate.getSearchBoxBounds(mNtpSearchBoxBounds, mNtpSearchBoxTranslation);
