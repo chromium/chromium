@@ -353,7 +353,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling breakpad
   # and whatever else without interference from each other.
-  'breakpad_revision': 'd0b41ca2a38c7b14c4b7853254eb5bf3b4039691',
+  'breakpad_revision': '85e647e1feb9599427a8fb1e3cd563de44d76557',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
