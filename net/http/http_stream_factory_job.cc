@@ -1243,8 +1243,7 @@ void HttpStreamFactory::Job::OnSpdySessionAvailable(
 
 int HttpStreamFactory::Job::ReconsiderProxyAfterError(int error) {
   // Check if the error was a proxy failure.
-  if (!CanFalloverToNextProxy(proxy_info_.proxy_chain(), error, &error,
-                              proxy_info_.is_for_ip_protection())) {
+  if (!CanFalloverToNextProxy(proxy_info_.proxy_chain(), error, &error)) {
     return error;
   }
 

@@ -61,12 +61,9 @@ class ProxyChain;
 //  - `final_error` is an out parameter that is set with the "final" error to
 //    report to the caller. The error is only re-written in cases where
 //    CanFalloverToNextProxy() returns false.
-//  - `is_for_ip_protection` is true if this request is to an IP Protection
-//    proxy.
 NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int error,
-                                       int* final_error,
-                                       bool is_for_ip_protection = false);
+                                       int* final_error);
 
 }  // namespace net
 

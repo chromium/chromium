@@ -351,8 +351,7 @@ int ProxyResolvingClientSocket::ReconsiderProxyAfterError(int error) {
   DCHECK_NE(error, net::ERR_IO_PENDING);
 
   // Check if the error was a proxy failure.
-  if (!net::CanFalloverToNextProxy(proxy_info_.proxy_chain(), error, &error,
-                                   proxy_info_.is_for_ip_protection())) {
+  if (!net::CanFalloverToNextProxy(proxy_info_.proxy_chain(), error, &error)) {
     return error;
   }
 

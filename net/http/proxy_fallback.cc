@@ -15,9 +15,8 @@ namespace net {
 
 NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int error,
-                                       int* final_error,
-                                       bool is_for_ip_protection) {
-  if (is_for_ip_protection) {
+                                       int* final_error) {
+  if (proxy_chain.is_for_ip_protection()) {
     // Log the error.
     // Useful to know if errors not handled below are passed to this function.
     if (const int chain_id = proxy_chain.ip_protection_chain_id();
@@ -98,7 +97,7 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
       // similarly don't fallback, and some client's PAC configurations rely on
       // this for some degree of content blocking. See https://crbug.com/680837
       // for details.
-      return is_for_ip_protection;
+      return proxy_chain.is_for_ip_protection();
 
     case ERR_SOCKS_CONNECTION_HOST_UNREACHABLE:
       // Remap the SOCKS-specific "host unreachable" error to a more
