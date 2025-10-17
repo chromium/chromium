@@ -6534,7 +6534,7 @@ static_library("browser") {
       "//components/os_crypt/async/browser:dpapi_key_provider",
       "//components/stylus_handwriting/win",
       "//sandbox/win:sandbox",
-      "//services/proxy_resolver_win/public/mojom",
+      "//services/proxy_resolver/public/mojom",
       "//third_party/crashpad/crashpad/client",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",

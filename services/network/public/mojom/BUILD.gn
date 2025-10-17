@@ -685,10 +685,6 @@ mojom("url_loader_base") {
     "//url/mojom:url_mojom_origin",
   ]
 
-  if (is_win) {
-    public_deps += [ "//services/proxy_resolver_win/public/mojom" ]
-  }
-
   enabled_features = []
   if (is_android || is_chromeos || is_linux) {
     enabled_features += [ "network_change_notifier_in_browser" ]
@@ -1759,10 +1755,6 @@ mojom("mojom") {
     "//url/mojom:url_mojom_origin",
     "//url/mojom:url_mojom_scheme_host_port",
   ]
-
-  if (is_win) {
-    public_deps += [ "//services/proxy_resolver_win/public/mojom" ]
-  }
 
   enabled_features = []
 

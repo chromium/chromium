@@ -22,7 +22,7 @@
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_request.h"
 #include "net/proxy_resolution/win/winhttp_status.h"
-#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -31,19 +31,24 @@ namespace network {
 namespace {
 
 class MockWindowsSystemProxyResolver
-    : public proxy_resolver_win::mojom::WindowsSystemProxyResolver {
+    : public proxy_resolver::mojom::SystemProxyResolver {
  public:
   MockWindowsSystemProxyResolver() = default;
   ~MockWindowsSystemProxyResolver() override = default;
 
-  // proxy_resolver_win::mojom::WindowsSystemProxyResolver implementation:
+  // proxy_resolver::mojom::SystemProxyResolver implementation:
   void GetProxyForUrl(const GURL& url,
                       GetProxyForUrlCallback callback) override {
+    auto status = proxy_resolver::mojom::SystemProxyResolutionStatus::New();
+    status->is_success = true;
+    status->os_error = 0;
+    status->win_http_status = net::WinHttpStatus::kOk;
+
     // Simulate asynchronous nature of this call by posting a task to run the
     // callback.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), net::ProxyList(),
-                                  net::WinHttpStatus::kOk, 0));
+                                  std::move(status)));
   }
 };
 
@@ -67,7 +72,7 @@ class MockWindowsSystemProxyResolutionRequest
   void WaitForProxyResolutionComplete() { loop_.Run(); }
 
   void ProxyResolutionComplete(const net::ProxyList& proxy_list,
-                               net::WinHttpStatus winhttp_status,
+                               net::WinHttpStatus win_http_status,
                                int windows_error) override {
     EXPECT_TRUE(GetProxyResolutionRequestForTesting());
     DeleteRequest();
@@ -85,8 +90,7 @@ class MockWindowsSystemProxyResolutionRequest
 class WindowsSystemProxyResolverMojoTest : public testing::Test {
  public:
   void SetUp() override {
-    mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
-        remote;
+    mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver> remote;
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<MockWindowsSystemProxyResolver>(),
         remote.InitWithNewPipeAndPassReceiver());

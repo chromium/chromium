@@ -28,9 +28,9 @@ class WindowsSystemProxyResolverMojo::RequestImpl final
 
  private:
   // Implements the callback for GetProxyForUrl()
-  void ReportResult(const net::ProxyList& proxy_list,
-                    net::WinHttpStatus winhttp_status,
-                    int windows_error);
+  void ReportResult(
+      const net::ProxyList& proxy_list,
+      proxy_resolver::mojom::SystemProxyResolutionStatusPtr status);
 
   // As described at WindowsSystemProxyResolutionRequest::GetProxyForUrl,
   // `callback_target_` must outlive `this`.
@@ -62,15 +62,21 @@ WindowsSystemProxyResolverMojo::RequestImpl::~RequestImpl() {
 
 void WindowsSystemProxyResolverMojo::RequestImpl::ReportResult(
     const net::ProxyList& proxy_list,
-    net::WinHttpStatus winhttp_status,
-    int windows_error) {
+    proxy_resolver::mojom::SystemProxyResolutionStatusPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(status);
+  net::WinHttpStatus winhttp_status =
+      status->is_success ? net::WinHttpStatus::kOk
+                         : status->win_http_status.value_or(
+                               net::WinHttpStatus::kStatusCallbackFailed);
+  int windows_error = status->os_error;
+
   callback_target_->ProxyResolutionComplete(proxy_list, winhttp_status,
                                             windows_error);
 }
 
 WindowsSystemProxyResolverMojo::WindowsSystemProxyResolverMojo(
-    mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+    mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
         mojo_windows_system_proxy_resolver)
     : mojo_windows_system_proxy_resolver_(
           std::move(mojo_windows_system_proxy_resolver)) {}

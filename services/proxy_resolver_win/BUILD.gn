@@ -23,7 +23,8 @@ component("proxy_resolver_win") {
 
   public_deps = [
     "//net",
-    "//services/proxy_resolver_win/public/mojom",
+    "//services/network/public/cpp",
+    "//services/proxy_resolver/public/mojom",
   ]
 
   defines = [ "IS_PROXY_RESOLVER_WIN_IMPL" ]
@@ -39,7 +40,8 @@ source_set("tests") {
     "//base",
     "//base/test:test_support",
     "//net:test_support",
-    "//services/proxy_resolver_win/public/mojom",
+    "//services/network/public/cpp",
+    "//services/proxy_resolver/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -2801,9 +2801,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (params_->windows_system_proxy_resolver) {
+  if (params_->system_proxy_resolver) {
     builder.SetMojoWindowsSystemProxyResolver(
-        std::move(params_->windows_system_proxy_resolver));
+        std::move(params_->system_proxy_resolver));
   }
 #endif  // BUILDFLAG(IS_WIN)
 

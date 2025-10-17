@@ -19,7 +19,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #endif
 
 namespace net {
@@ -38,7 +38,7 @@ namespace network {
 // WindowsSystemProxyResolutionService that may mojo all proxy resolutions to a
 // utility process if enabled. The consumer is responsible for providing either
 // the proxy_resolver::mojom::ProxyResolverFactory or
-// proxy_resolver_win::mojom::WindowsSystemProxyResolver respectively. If a
+// proxy_resolver::mojom::SystemProxyResolver respectively. If a
 // ProxyResolutionService is set directly via the URLRequestContextBuilder API,
 // it will be used instead either of the ProxyResolutionService implementations
 // mentioned here.
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
 
 #if BUILDFLAG(IS_WIN)
   void SetMojoWindowsSystemProxyResolver(
-      mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+      mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
           mojo_windows_system_proxy_resolver);
 #endif
 
@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
       mojo_proxy_resolver_factory_;
 
 #if BUILDFLAG(IS_WIN)
-  mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+  mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
       mojo_windows_system_proxy_resolver_;
 #endif
 };

@@ -455,7 +455,6 @@ include_rules = [
   "+services/proxy_resolver",  # Android runs the packaged proxy resolver
                                # service in process and needs impl access.
   "+services/proxy_resolver/public/mojom",
-  "+services/proxy_resolver_win/public/mojom",
   "+services/resource_coordinator/public/cpp",
   "+services/screen_ai",
   "+services/strings",

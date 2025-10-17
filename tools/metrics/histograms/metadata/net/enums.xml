@@ -4003,7 +4003,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="EmptyProxyList"/>
 </enum>
 
-<!-- LINT.ThenChange(//services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom:WinHttpStatus) -->
+<!-- LINT.ThenChange(//services/proxy_resolver/public/mojom/proxy_resolver.mojom:WinHttpStatus) -->
 
 <enum name="ZeroRttState">
   <int value="0" label="Attempted and succeeded"/>
