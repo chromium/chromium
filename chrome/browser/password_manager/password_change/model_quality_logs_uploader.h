@@ -49,6 +49,20 @@ class ModelQualityLogsUploader {
       std::unique_ptr<LoggingData> logging_data,
       base::Time server_request_start_time);
 
+  // Sets quality data for Step=SUBMIT_FORM_STEP.
+  void SetSubmitFormQuality(
+      const std::optional<optimization_guide::proto::PasswordChangeResponse>&
+          response,
+      std::unique_ptr<LoggingData> logging_data,
+      base::Time server_request_start_time);
+
+  // Sets quality data for Step=VERIFY_SUBMISSION_STEP.
+  void SetVerifySubmissionQuality(
+      const std::optional<optimization_guide::proto::PasswordChangeResponse>&
+          response,
+      std::unique_ptr<LoggingData> logging_data,
+      base::Time server_request_start_time);
+
   // To be called if no form is seen after actuating on
   // Step=OPEN_FORM_STEP.
   void FormNotDetectedAfterOpening();
@@ -77,20 +91,6 @@ class ModelQualityLogsUploader {
   // To be called if element to click was not found
   // in Step=OPEN_FORM_STEP.
   void SubmitFormTargetElementNotFound();
-
-  // Sets quality data for Step=SUBMIT_FORM_STEP.
-  void SetSubmitFormQuality(
-      const std::optional<optimization_guide::proto::PasswordChangeResponse>&
-          response,
-      std::unique_ptr<LoggingData> logging_data,
-      base::Time server_request_start_time);
-
-  // Sets quality data for Step=VERIFY_SUBMISSION_STEP.
-  void SetVerifySubmissionQuality(
-      const std::optional<optimization_guide::proto::PasswordChangeResponse>&
-          response,
-      std::unique_ptr<LoggingData> logging_data,
-      base::Time server_request_start_time);
 
   // Called when the user clicks 'continue' during the login check step
   // to begin the password change flow, which may indicate an incorrect
