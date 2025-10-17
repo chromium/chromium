@@ -14,7 +14,7 @@ namespace switches {
 // Mitigate overlap cases between the legacy search engine promo and the
 // device-based program eligibility determinations.
 BASE_FEATURE(kMitigateLegacySearchEnginePromoOverlap,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRestrictLegacySearchEnginePromoOnFormFactors,
              base::FEATURE_ENABLED_BY_DEFAULT);

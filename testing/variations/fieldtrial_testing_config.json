@@ -15957,21 +15957,6 @@
             ]
         }
     ],
-    "MitigateLegacySearchEnginePromoOverlap": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MitigateLegacySearchEnginePromoOverlap"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoChannelAssociatedSendUsesRunOrPostTask": [
         {
             "platforms": [
