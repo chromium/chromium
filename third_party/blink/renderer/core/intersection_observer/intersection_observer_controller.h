@@ -37,6 +37,8 @@ class CORE_EXPORT ComputeIntersectionsContext {
       unsigned flags);
   void UpdateNextRunDelay(base::TimeDelta delay);
   base::TimeDelta GetAndResetNextRunDelay();
+  bool NeedsOcclusionTracking() const { return needs_occlusion_tracking_; }
+  void SetNeedsOcclusionTracking() { needs_occlusion_tracking_ = true; }
 
  private:
   base::TimeTicks monotonic_time_;
@@ -51,6 +53,7 @@ class CORE_EXPORT ComputeIntersectionsContext {
   std::optional<IntersectionGeometry::RootGeometry> implicit_root_geometry_;
 
   base::TimeDelta next_run_delay_ = base::TimeDelta::Max();
+  bool needs_occlusion_tracking_ = false;
 };
 
 class CORE_EXPORT IntersectionObserverController
@@ -70,8 +73,7 @@ class CORE_EXPORT IntersectionObserverController
   // The flags argument is composed of values from
   // IntersectionObservation::ComputeFlags. They are dirty bits that control
   // whether an IntersectionObserver needs to do any work. The return value
-  // communicates whether observer->trackVisibility() is true for any tracked
-  // observer.
+  // communicates whether there are any active observations.
   bool ComputeIntersections(
       unsigned flags,
       LocalFrameView&,

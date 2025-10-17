@@ -1022,10 +1022,16 @@ void LocalFrameView::RunIntersectionObserverSteps() {
                            LocalFrameUkmAggregator::kIntersectionObservation);
 
   ComputeIntersectionsContext context;
-  bool needs_occlusion_tracking =
+  bool has_active_observations =
       UpdateViewportIntersectionsForSubtree(0, context);
   if (FrameOwner* owner = frame_->Owner())
-    owner->SetNeedsOcclusionTracking(needs_occlusion_tracking);
+    owner->SetNeedsOcclusionTracking(context.NeedsOcclusionTracking());
+  if (has_active_observations) {
+    GetChromeClient()->RequestMainFrameOnCompositorAnimation(
+        *frame_, context.NeedsOcclusionTracking()
+                     ? cc::PropertyChangeForcesCommitCriteria::kAny
+                     : cc::PropertyChangeForcesCommitCriteria::kTransform);
+  }
 #if DCHECK_IS_ON()
   DCHECK(was_dirty || !NeedsLayout());
 #endif
@@ -4276,14 +4282,12 @@ void LocalFrameView::CollectDraggableRegions(
 bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     unsigned parent_flags,
     ComputeIntersectionsContext& context) {
-  // This will be recomputed, but default to the previous computed value if
-  // there's an early return.
-  bool needs_occlusion_tracking = false;
   IntersectionObserverController* controller =
       GetFrame().GetDocument()->GetIntersectionObserverController();
-  if (controller) {
-    needs_occlusion_tracking = controller->NeedsOcclusionTracking();
-  }
+  // This will be recomputed, but default to the previous computed value if
+  // there's an early return.
+  bool needs_occlusion_tracking =
+      controller && controller->NeedsOcclusionTracking();
 
   // TODO(dcheng): Since LocalFrameView tree updates are deferred, FrameViews
   // might still be in the LocalFrameView hierarchy even though the associated
@@ -4291,19 +4295,24 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
   // in lifecycle updates are still needed when there are no more deferred
   // LocalFrameView updates: https://crbug.com/561683
   if (!GetFrame().GetDocument()->IsActive()) {
-    return needs_occlusion_tracking;
+    if (needs_occlusion_tracking) {
+      context.SetNeedsOcclusionTracking();
+    }
+    return false;
   }
 
+  bool has_active_observations = false;
   unsigned flags = GetIntersectionObservationFlags(parent_flags);
   // Update anyway, even if the frame is display locked or throttled. If the
   // frame is display locked or the layout is dirty, this will create a
   // degenerate "not intersecting" notification or schedule a delayed update
   // if needed.
   if (controller) {
-    needs_occlusion_tracking = controller->ComputeIntersections(
+    has_active_observations = controller->ComputeIntersections(
         flags, *this, accumulated_scroll_delta_since_last_intersection_update_,
         context);
     accumulated_scroll_delta_since_last_intersection_update_ = gfx::Vector2dF();
+    needs_occlusion_tracking = controller->NeedsOcclusionTracking();
   }
   intersection_observation_state_ = kNotNeeded;
 
@@ -4314,9 +4323,13 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     UpdateViewportIntersection(flags, needs_occlusion_tracking);
   }
 
+  if (needs_occlusion_tracking) {
+    context.SetNeedsOcclusionTracking();
+  }
+
   for (Frame* child = frame_->Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {
-    needs_occlusion_tracking |=
+    has_active_observations |=
         child->View()->UpdateViewportIntersectionsForSubtree(flags, context);
   }
 
@@ -4325,14 +4338,14 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     for (HTMLFencedFrameElement* fenced_frame :
          fenced_frames->GetFencedFrames()) {
       if (Frame* frame = fenced_frame->ContentFrame()) {
-        needs_occlusion_tracking |=
+        has_active_observations |=
             frame->View()->UpdateViewportIntersectionsForSubtree(flags,
                                                                  context);
       }
     }
   }
 
-  return needs_occlusion_tracking;
+  return has_active_observations;
 }
 
 void LocalFrameView::DeliverSynchronousIntersectionObservations() {

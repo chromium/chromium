@@ -562,6 +562,10 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void SetShouldThrottleFrameRate(bool flag);
 
+  void RequestMainFrameOnCompositorAnimation(
+      cc::PropertyChangeForcesCommitCriteria
+          property_change_forces_commit_criteria);
+
   // Pause all rendering (main and compositor thread) in the compositor.
   [[nodiscard]] std::unique_ptr<cc::ScopedPauseRendering> PauseRendering();
 

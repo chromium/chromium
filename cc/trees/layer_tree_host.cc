@@ -810,6 +810,12 @@ void LayerTreeHost::SetNeedsCommitWithForcedRedraw() {
   proxy_->SetNeedsCommit();
 }
 
+void LayerTreeHost::RequestMainFrameOnCompositorAnimation(
+    PropertyChangeForcesCommitCriteria property_change_forces_commit_criteria) {
+  pending_commit_state()->property_change_forces_commit_criteria =
+      property_change_forces_commit_criteria;
+}
+
 void LayerTreeHost::SetDebugState(const LayerTreeDebugState& new_debug_state) {
   if (pending_commit_state()->debug_state == new_debug_state) {
     return;

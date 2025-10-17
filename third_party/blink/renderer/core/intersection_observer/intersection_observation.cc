@@ -29,6 +29,7 @@ int64_t IntersectionObservation::ComputeIntersection(
     gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     ComputeIntersectionsContext& context) {
   DCHECK(Observer());
+
   cached_rects_.min_scroll_delta_to_update -=
       accumulated_scroll_delta_since_last_update;
 
@@ -51,7 +52,7 @@ int64_t IntersectionObservation::ComputeIntersection(
     needs_update_ = true;
   }
 
-  if (!ShouldCompute(compute_flags)) {
+  if (!CanCompute() || !ShouldCompute(compute_flags)) {
     return 0;
   }
   if (MaybeDelayAndReschedule(compute_flags, context)) {
@@ -103,11 +104,12 @@ int64_t IntersectionObservation::ComputeIntersection(
   return geometry.DidComputeGeometry() ? 1 : 0;
 }
 
-void IntersectionObservation::ComputeIntersectionImmediately(
+void IntersectionObservation::ComputeIntersectionForDisconnectedTarget(
     ComputeIntersectionsContext& context) {
-  ComputeIntersection(kImplicitRootObserversNeedUpdate |
-                          kExplicitRootObserversNeedUpdate | kIgnoreDelay,
-                      IntersectionGeometry::kInfiniteScrollDelta, context);
+  int flags = kImplicitRootObserversNeedUpdate |
+              kExplicitRootObserversNeedUpdate | kIgnoreDelay;
+  ComputeIntersection(flags, IntersectionGeometry::kInfiniteScrollDelta,
+                      context);
 }
 
 gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
@@ -167,11 +169,12 @@ bool IntersectionObservation::CanUseCachedRectsForTesting(
   return geometry.CanUseCachedRectsForTesting();
 }
 
+bool IntersectionObservation::CanCompute() const {
+  return !!target_ && observer_->RootIsValid() &&
+         !!observer_->GetExecutionContext();
+}
+
 bool IntersectionObservation::ShouldCompute(unsigned flags) const {
-  if (!target_ || !observer_->RootIsValid() ||
-      !observer_->GetExecutionContext()) {
-    return false;
-  }
   if (!needs_update_) {
     return false;
   }

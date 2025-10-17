@@ -306,7 +306,7 @@ void LayerTreeHostImpl::DidUpdateScrollAnimationCurve() {
 }
 
 void LayerTreeHostImpl::DidStartPinchZoom() {
-  client_->RenewTreePriority();
+  RenewTreePriority();
   frame_trackers_.StartSequence(FrameSequenceTrackerType::kPinchZoom);
 }
 
@@ -321,7 +321,7 @@ void LayerTreeHostImpl::DidEndPinchZoom() {
 
 void LayerTreeHostImpl::DidUpdatePinchZoom() {
   SetNeedsRedraw(/*animation_only=*/false, /*skip_if_inside_draw=*/false);
-  client_->RenewTreePriority();
+  RenewTreePriority();
 }
 
 void LayerTreeHostImpl::DidStartScroll() {
@@ -329,7 +329,7 @@ void LayerTreeHostImpl::DidStartScroll() {
   if (!settings().single_thread_proxy_scheduler) {
     client_->SetHasActiveThreadedScroll(true);
   }
-  client_->RenewTreePriority();
+  RenewTreePriority();
 }
 
 void LayerTreeHostImpl::DidEndScroll() {
@@ -891,6 +891,10 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   if (paint_worklet_tracker_.InvalidatePaintWorkletsOnPendingTree()) {
     client_->SetNeedsImplSideInvalidation(
         true /* needs_first_draw_on_activation */);
+    if (sync_tree()->property_change_forces_commit_criteria() ==
+        PropertyChangeForcesCommitCriteria::kAny) {
+      SetNeedsCommit();
+    }
   }
   PaintImageIdFlatSet dirty_paint_worklet_ids;
   PaintWorkletJobMap dirty_paint_worklets =
@@ -1189,8 +1193,8 @@ void LayerTreeHostImpl::StartPageScaleAnimation(const gfx::Point& target_offset,
   }
 
   SetNeedsOneBeginImplFrame();
-  client_->SetNeedsCommitOnImplThread();
-  client_->RenewTreePriority();
+  SetNeedsCommit();
+  RenewTreePriority();
 }
 
 void LayerTreeHostImpl::SetNeedsAnimateInput() {
@@ -1696,8 +1700,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 }
 
 void LayerTreeHostImpl::DidAnimateScrollOffset() {
-  client_->SetNeedsCommitOnImplThread();
-  client_->RenewTreePriority();
+  SetNeedsCommit();
+  RenewTreePriority();
 }
 
 void LayerTreeHostImpl::SetViewportDamage(const gfx::Rect& damage_rect) {
@@ -2285,7 +2289,7 @@ void LayerTreeHostImpl::SetMemoryPolicyImpl(const ManagedMemoryPolicy& policy) {
   }
 
   if (needs_commit)
-    client_->SetNeedsCommitOnImplThread();
+    SetNeedsCommit();
 }
 
 void LayerTreeHostImpl::SetExternalTilePriorityConstraints(
@@ -3031,7 +3035,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     // may force a separate render pass for the layer, which will persist until
     // a new commit removes it. Force a commit after copy requests, to remove
     // extra render passes.
-    client_->SetNeedsCommitOnImplThread();
+    SetNeedsCommit();
   }
 
   // The next frame should start by assuming nothing has changed, and changes
@@ -4057,7 +4061,7 @@ void LayerTreeHostImpl::ActivateSyncTree() {
   }
 
   active_tree_->DidBecomeActive();
-  client_->RenewTreePriority();
+  RenewTreePriority();
 
   // If we have any picture layers, then by activating we also modified tile
   // priorities.
@@ -4469,7 +4473,7 @@ void LayerTreeHostImpl::DidChangeScrollbarVisibility() {
   // Need a commit since input handling for scrollbars is handled in Blink so
   // we need to communicate to Blink when the compositor shows/hides the
   // scrollbars.
-  client_->SetNeedsCommitOnImplThread();
+  SetNeedsCommit();
 }
 
 void LayerTreeHostImpl::CleanUpTileManagerResources() {
@@ -4770,7 +4774,7 @@ void LayerTreeHostImpl::UpdateImageDecodingHints(
       std::move(decoding_mode_map));
 }
 
-void LayerTreeHostImpl::RenewTreePriorityForTesting() {
+void LayerTreeHostImpl::RenewTreePriority() {
   client_->RenewTreePriority();
 }
 
@@ -4890,7 +4894,7 @@ void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
         }
       }
     }
-    client_->RenewTreePriority();
+    RenewTreePriority();
   }
 
   if (!animated) {
@@ -5181,8 +5185,8 @@ bool LayerTreeHostImpl::AnimatePageScale(base::TimeTicks monotonic_time) {
 
   if (page_scale_animation_->IsAnimationCompleteAtTime(monotonic_time)) {
     page_scale_animation_ = nullptr;
-    client_->SetNeedsCommitOnImplThread();
-    client_->RenewTreePriority();
+    SetNeedsCommit();
+    RenewTreePriority();
     client_->DidCompletePageScaleAnimationOnImplThread();
   } else {
     SetNeedsOneBeginImplFrame();
@@ -5220,8 +5224,8 @@ bool LayerTreeHostImpl::AnimateBrowserControls(base::TimeTicks time) {
   // it is too late for InputHandler to do the snapping.
   viewport().SnapIfNeeded();
 
-  client_->SetNeedsCommitOnImplThread();
-  client_->RenewTreePriority();
+  SetNeedsCommit();
+  RenewTreePriority();
   return true;
 }
 
@@ -5861,9 +5865,9 @@ void LayerTreeHostImpl::EvictAllUIResources() {
     DeleteUIResource(uid);
     evicted_ui_resources_.insert(uid);
   }
-  client_->SetNeedsCommitOnImplThread();
+  SetNeedsCommit();
   client_->OnCanDrawStateChanged(CanDraw());
-  client_->RenewTreePriority();
+  RenewTreePriority();
 }
 
 viz::ResourceId LayerTreeHostImpl::ResourceIdForUIResource(

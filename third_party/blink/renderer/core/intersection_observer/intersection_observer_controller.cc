@@ -148,6 +148,7 @@ bool IntersectionObserverController::ComputeIntersections(
     metrics_timer.emplace(*metrics_aggregator);
   }
 
+  bool has_active_observations = false;
   auto compute_observer_intersections = [&](IntersectionObserver& observer,
                                             const auto& observations) {
     CHECK(!observations.empty());
@@ -157,6 +158,7 @@ bool IntersectionObserverController::ComputeIntersections(
     }
     int64_t count = 0;
     for (auto& observation : observations) {
+      has_active_observations |= observation->CanCompute();
       count += observation->ComputeIntersection(
           flags, accumulated_scroll_delta_since_last_update, context);
     }
@@ -194,7 +196,7 @@ bool IntersectionObserverController::ComputeIntersections(
     frame_view.ScheduleDelayedIntersection(delay);
   }
 
-  return needs_occlusion_tracking_;
+  return has_active_observations;
 }
 
 void IntersectionObserverController::AddTrackedObserver(

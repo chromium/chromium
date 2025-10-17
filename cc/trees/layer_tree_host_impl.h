@@ -867,7 +867,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return frame_trackers_.FrameSequenceTrackerActiveTypes();
   }
 
-  void RenewTreePriorityForTesting();
+  void RenewTreePriorityForTesting() { RenewTreePriority(); }
 
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
@@ -993,6 +993,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void RecreateTileResources();
 
   void AnimateInternal();
+
+  void RenewTreePriority();
 
   // The function is called to update state on the sync tree after a commit
   // finishes or after the sync tree was created to invalidate content on the

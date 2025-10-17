@@ -2937,6 +2937,12 @@
       status: "stable",
     },
     {
+      // If enabled, BeginMainFrame will always be requested when there are
+      // active IntersectionObservers and also active composited animations.
+      name: "IntersectionObserverCompositedAnimationsForceMainFrames",
+      status: "stable",
+    },
+    {
       name: "InvertedColors",
       status: "experimental",
     },

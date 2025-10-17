@@ -91,6 +91,10 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void StopDeferringCommits(LocalFrame& main_frame,
                             cc::PaintHoldingCommitTrigger) override;
   void SetShouldThrottleFrameRate(bool flag, LocalFrame& main_frame) override;
+  void RequestMainFrameOnCompositorAnimation(
+      LocalFrame&,
+      cc::PropertyChangeForcesCommitCriteria
+          property_change_forces_commit_criteria) override;
   std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
       LocalFrame&) override;
   std::optional<int> GetMaxRenderBufferBounds(LocalFrame&) const override;

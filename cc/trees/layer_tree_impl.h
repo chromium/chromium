@@ -279,7 +279,8 @@ class CC_EXPORT LayerTreeImpl {
     kBackdropFilter = 3,
     kMaxValue = kBackdropFilter
   };
-  void ValidateEffectTreeeMapping(ElementId, PropertyMutation);
+  void ValidateEffectTreeMapping(ElementId, PropertyMutation);
+  void RequestCommitForPropertyMutationIfNeeded(PropertyMutation);
 
   void SetTransformMutated(ElementId element_id,
                            const gfx::Transform& transform);
@@ -287,6 +288,10 @@ class CC_EXPORT LayerTreeImpl {
   void SetFilterMutated(ElementId element_id, const FilterOperations& filters);
   void SetBackdropFilterMutated(ElementId element_id,
                                 const FilterOperations& backdrop_filters);
+  PropertyChangeForcesCommitCriteria property_change_forces_commit_criteria()
+      const {
+    return property_change_forces_commit_criteria_;
+  }
 
   int source_frame_number() const { return source_frame_number_; }
   void set_source_frame_number(int frame_number) {
@@ -942,6 +947,9 @@ class CC_EXPORT LayerTreeImpl {
   // Whether we have a request to force-send RenderFrameMetadata with the next
   // frame.
   bool force_send_metadata_request_ : 1 = false;
+
+  PropertyChangeForcesCommitCriteria property_change_forces_commit_criteria_ =
+      PropertyChangeForcesCommitCriteria::kNone;
 
   gfx::Rect device_viewport_rect_;
 

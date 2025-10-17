@@ -398,6 +398,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // CompositorFrame.
   void SetNeedsCommitWithForcedRedraw();
 
+  // Requests a main frame if a composited animation changes a draw property.
+  void RequestMainFrameOnCompositorAnimation(
+      PropertyChangeForcesCommitCriteria
+          property_change_forces_commit_criteria);
+
   // Input Handling ---------------------------------------------
 
   // Sets the state of the browser controls. (Used for URL bar animations).

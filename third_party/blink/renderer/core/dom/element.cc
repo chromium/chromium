@@ -4073,7 +4073,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     node_data->InvalidateAssociatedAnimationEffects();
     if (was_in_document) {
       if (auto* observer_data = data->IntersectionObserverData()) {
-        observer_data->ComputeIntersectionsForTarget();
+        observer_data->ComputeIntersectionsForDisconnectedTarget();
         observer_data->StopTrackingWithController(
             document.EnsureIntersectionObserverController());
       }

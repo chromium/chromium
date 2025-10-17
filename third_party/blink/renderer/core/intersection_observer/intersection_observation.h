@@ -65,13 +65,16 @@ class CORE_EXPORT IntersectionObservation final
 
   IntersectionObserver* Observer() const { return observer_.Get(); }
   Element* Target() const { return target_.Get(); }
+  // Returns true if root and target are valid, connected, and have the required
+  // DOM hierarchy to compute an intersection.
+  bool CanCompute() const;
   // Returns 1 if the geometry was recalculated, otherwise 0. This could be a
   // bool, but int64_t matches IntersectionObserver::ComputeIntersections().
   int64_t ComputeIntersection(
       unsigned flags,
       gfx::Vector2dF accumulated_scroll_delta_since_last_update,
       ComputeIntersectionsContext&);
-  void ComputeIntersectionImmediately(ComputeIntersectionsContext&);
+  void ComputeIntersectionForDisconnectedTarget(ComputeIntersectionsContext&);
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();

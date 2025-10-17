@@ -216,8 +216,10 @@ SET TIMEOUT: html/webappapis/scripting/events/event-handler-processing-algorithm
 SET TIMEOUT: html/webappapis/scripting/processing-model-2/*
 SET TIMEOUT: IndexedDB/*
 SET TIMEOUT: infrastructure/*
+SET TIMEOUT: intersection-observer/animating.html
 SET TIMEOUT: intersection-observer/resources/*
 SET TIMEOUT: intersection-observer/target-in-different-window.html
+SET TIMEOUT: intersection-observer/v2/animated-opacity.html
 SET TIMEOUT: js-self-profiling/resources/profiling-script.js
 SET TIMEOUT: measure-memory/*
 SET TIMEOUT: media-source/mediasource-util.js

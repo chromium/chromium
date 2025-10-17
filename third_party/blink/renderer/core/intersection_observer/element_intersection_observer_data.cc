@@ -59,10 +59,11 @@ void ElementIntersectionObserverData::StopTrackingWithController(
     controller.RemoveTrackedObserver(*observer);
 }
 
-void ElementIntersectionObserverData::ComputeIntersectionsForTarget() {
+void ElementIntersectionObserverData::
+    ComputeIntersectionsForDisconnectedTarget() {
   ComputeIntersectionsContext context;
   for (auto& [observer, observation] : observations_) {
-    observation->ComputeIntersectionImmediately(context);
+    observation->ComputeIntersectionForDisconnectedTarget(context);
   }
 }
 

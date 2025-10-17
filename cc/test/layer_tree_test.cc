@@ -427,7 +427,6 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   void WillBeginMainFrame() override { test_hooks_->WillBeginMainFrame(); }
 
   void DidBeginMainFrame() override { test_hooks_->DidBeginMainFrame(); }
-
   void WillUpdateLayers() override {}
   void DidUpdateLayers() override {}
 

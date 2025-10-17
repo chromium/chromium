@@ -50,6 +50,7 @@
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_frame_sink.h"
+#include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/occlusion_tracker.h"
@@ -808,6 +809,8 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
   set_event_listener_properties(EventListenerClass::kTouchEndOrCancel,
                                 commit_state.GetEventListenerProperties(
                                     EventListenerClass::kTouchEndOrCancel));
+  property_change_forces_commit_criteria_ =
+      commit_state.property_change_forces_commit_criteria;
 
   SetViewportPropertyIds(commit_state.viewport_property_ids);
 
@@ -1091,8 +1094,8 @@ ElementListType LayerTreeImpl::GetElementTypeForAnimation() const {
   return IsActiveTree() ? ElementListType::ACTIVE : ElementListType::PENDING;
 }
 
-void LayerTreeImpl::ValidateEffectTreeeMapping(ElementId element_id,
-                                               PropertyMutation mutation) {
+void LayerTreeImpl::ValidateEffectTreeMapping(ElementId element_id,
+                                              PropertyMutation mutation) {
   auto count = property_trees()->effect_tree().element_id_to_node_index().count(
       element_id);
 
@@ -1102,36 +1105,71 @@ void LayerTreeImpl::ValidateEffectTreeeMapping(ElementId element_id,
   }
 }
 
+void LayerTreeImpl::RequestCommitForPropertyMutationIfNeeded(
+    PropertyMutation mutation) {
+  // If the animation isn't active on the sync tree then it has been invalidated
+  // on the main thread and the main thread doesn't need to react to it.
+  if (!IsPendingTree() && !IsRecycleTree()) {
+    return;
+  }
+  bool needs_commit = false;
+  switch (mutation) {
+    case PropertyMutation::kTransform:
+      needs_commit = property_change_forces_commit_criteria_ !=
+                     PropertyChangeForcesCommitCriteria::kNone;
+      break;
+    case PropertyMutation::kOpacity:
+    case PropertyMutation::kFilter:
+    case PropertyMutation::kBackdropFilter:
+      needs_commit = property_change_forces_commit_criteria_ ==
+                     PropertyChangeForcesCommitCriteria::kAny;
+      break;
+    default:
+      NOTREACHED();
+  }
+  if (needs_commit) {
+    host_impl_->SetNeedsCommit();
+  }
+}
+
 void LayerTreeImpl::SetTransformMutated(ElementId element_id,
                                         const gfx::Transform& transform) {
-  ValidateEffectTreeeMapping(element_id, PropertyMutation::kTransform);
-  if (property_trees()->transform_tree_mutable().OnTransformAnimated(element_id,
-                                                                     transform))
+  ValidateEffectTreeMapping(element_id, PropertyMutation::kTransform);
+  if (property_trees()->transform_tree_mutable().OnTransformAnimated(
+          element_id, transform)) {
     set_needs_update_draw_properties();
+    RequestCommitForPropertyMutationIfNeeded(PropertyMutation::kTransform);
+  }
 }
 
 void LayerTreeImpl::SetOpacityMutated(ElementId element_id, float opacity) {
-  ValidateEffectTreeeMapping(element_id, PropertyMutation::kOpacity);
+  ValidateEffectTreeMapping(element_id, PropertyMutation::kOpacity);
   if (property_trees()->effect_tree_mutable().OnOpacityAnimated(element_id,
-                                                                opacity))
+                                                                opacity)) {
     set_needs_update_draw_properties();
+    RequestCommitForPropertyMutationIfNeeded(PropertyMutation::kOpacity);
+  }
 }
 
 void LayerTreeImpl::SetFilterMutated(ElementId element_id,
                                      const FilterOperations& filters) {
-  ValidateEffectTreeeMapping(element_id, PropertyMutation::kFilter);
+  ValidateEffectTreeMapping(element_id, PropertyMutation::kFilter);
   if (property_trees()->effect_tree_mutable().OnFilterAnimated(element_id,
-                                                               filters))
+                                                               filters)) {
     set_needs_update_draw_properties();
+    RequestCommitForPropertyMutationIfNeeded(PropertyMutation::kFilter);
+  }
 }
 
 void LayerTreeImpl::SetBackdropFilterMutated(
     ElementId element_id,
     const FilterOperations& backdrop_filters) {
-  ValidateEffectTreeeMapping(element_id, PropertyMutation::kBackdropFilter);
+  ValidateEffectTreeMapping(element_id, PropertyMutation::kBackdropFilter);
   if (property_trees()->effect_tree_mutable().OnBackdropFilterAnimated(
-          element_id, backdrop_filters))
+          element_id, backdrop_filters)) {
     set_needs_update_draw_properties();
+    RequestCommitForPropertyMutationIfNeeded(PropertyMutation::kBackdropFilter);
+  }
 }
 
 void LayerTreeImpl::AddPresentationCallbacks(

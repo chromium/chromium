@@ -2124,6 +2124,13 @@ void WebFrameWidgetImpl::SetShouldThrottleFrameRate(bool flag) {
   return widget_base_->LayerTreeHost()->SetShouldThrottleFrameRate(flag);
 }
 
+void WebFrameWidgetImpl::RequestMainFrameOnCompositorAnimation(
+    cc::PropertyChangeForcesCommitCriteria
+        property_change_forces_commit_criteria) {
+  widget_base_->LayerTreeHost()->RequestMainFrameOnCompositorAnimation(
+      property_change_forces_commit_criteria);
+}
+
 std::optional<int> WebFrameWidgetImpl::GetMaxRenderBufferBounds() const {
   if (!View()->does_composite()) {
     return std::nullopt;

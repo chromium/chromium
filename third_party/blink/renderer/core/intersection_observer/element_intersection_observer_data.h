@@ -42,8 +42,8 @@ class CORE_EXPORT ElementIntersectionObserverData final
   void StopTrackingWithController(IntersectionObserverController&);
 
   // Run the IntersectionObserver algorithm for all observations for which this
-  // element is target.
-  void ComputeIntersectionsForTarget();
+  // element is target, to produce "not-intersecting" notifications if needed.
+  void ComputeIntersectionsForDisconnectedTarget();
   bool NeedsOcclusionTracking() const;
 
   void Trace(Visitor*) const override;

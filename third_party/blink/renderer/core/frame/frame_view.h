@@ -29,8 +29,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   // parent_flags is the result of calling GetIntersectionObservationFlags on
   // the LocalFrameView parent of this FrameView (if any). It contains dirty
   // bits based on whether geometry may have changed in the parent frame.
-  // Returns true if the frame needs occlusion tracking (i.e. trackVisibility()
-  // is true for any tracked observer in the frame subtree).
+  // Returns true if there are any active observations in the subtree.
   virtual bool UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
       ComputeIntersectionsContext&) = 0;

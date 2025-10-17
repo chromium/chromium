@@ -107,7 +107,7 @@ bool RemoteFrameView::UpdateViewportIntersectionsForSubtree(
     unsigned parent_flags,
     ComputeIntersectionsContext&) {
   UpdateViewportIntersection(parent_flags, needs_occlusion_tracking_);
-  return needs_occlusion_tracking_;
+  return true;
 }
 
 void RemoteFrameView::SetViewportIntersection(

@@ -76,6 +76,12 @@ struct PaintBenchmarkResult {
   size_t painter_memory_usage = 0;
 };
 
+// Under certain circumstances, the client may request BeginMainFrame to be
+// scheduled whenever a relevant property change happens in the compositor.
+// This mechanism covers changes to *any* layer; in the future it might be
+// useful to add a filter mechanism to limit the effect to specific layers.
+enum class PropertyChangeForcesCommitCriteria { kNone, kTransform, kAny };
+
 // A LayerTreeHost is bound to a LayerTreeHostClient. The main rendering
 // loop (in ProxyMain or SingleThreadProxy) calls methods on the
 // LayerTreeHost, which then handles them and also calls into the equivalent
