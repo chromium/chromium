@@ -1147,11 +1147,8 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
     // attribute present. In this case, we should assert that there is at least
     // a trailing newline, and then strip it to generate a nameless tag.
     title_str = content.Substr(0, 0);
-    if (*content.Str().end() != '\n') {
-      duration_str = content;
-    } else {
-      duration_str = content.Substr(0, content.Str().length() - 1);
-    }
+    duration_str = content;
+    duration_str.TrimEnd();
   } else {
     duration_str = content.Substr(0, comma);
     title_str = content.Substr(comma + 1);

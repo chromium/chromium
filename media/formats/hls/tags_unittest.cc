@@ -1505,6 +1505,10 @@ TEST(HlsTagsTest, ParseInfTag) {
     result = OkTest<InfTag>("123");
     EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123)));
     EXPECT_EQ(result.tag.title.Str(), "");
+
+    result = OkTest<InfTag>("123\n");
+    EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123)));
+    EXPECT_EQ(result.tag.title.Str(), "");
   } else {
     // By Spec, this should be an error, but alas, feral manifests exist and
     // often lack the trailing comma emblematic of their domesticated brethren.

@@ -60,6 +60,11 @@ void SourceStringBase<Self>::TrimStart() {
 }
 
 template <typename Self>
+void SourceStringBase<Self>::TrimEnd() {
+  str_ = base::TrimWhitespaceASCII(str_, base::TRIM_TRAILING);
+}
+
+template <typename Self>
 SourceStringBase<Self>::SourceStringBase(size_t line,
                                          size_t column,
                                          std::string_view str)

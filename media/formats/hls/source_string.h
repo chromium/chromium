@@ -64,6 +64,9 @@ class MEDIA_EXPORT SourceStringBase {
   // never appear in `SourceString`.
   void TrimStart();
 
+  // Trims whitespace (' ', '\t', '\n', '\r') from the end of this SourceString.
+  void TrimEnd();
+
   // Returns whether this string contains variable substitutions, i.e. is
   // different from the original source.
   bool ContainsSubstitutions() const;
