@@ -889,7 +889,6 @@ TEST_F(ContextualTasksServiceImplTest, BuildContextualTasksFromLoadedData) {
   service_->AddObserver(&observer_);
 
   EXPECT_FALSE(service_->IsInitialized());
-
   CallOnThreadDataStoreLoaded();
   CallOnContextualTaskDataStoreLoaded();
 

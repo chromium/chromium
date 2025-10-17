@@ -82,6 +82,16 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
   virtual std::optional<ContextualTask> GetTaskById(
       const std::string& task_id) const;
 
+  // Called when a task is added, updated or removed.
+  virtual void OnTaskAddedLocally(const ContextualTask& contextual_task);
+  virtual void OnTaskRemovedLocally(const base::Uuid& task_id);
+  virtual void OnTaskUpdatedLocally(const ContextualTask& contextual_task);
+
+  // Called when a URL is attached/removed from a task.
+  virtual void OnUrlAddedToTaskLocally(const base::Uuid& task_id,
+                                       const UrlResource& url_resource);
+  virtual void OnUrlRemovedFromTaskLocally(const base::Uuid& url_id);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -95,11 +105,11 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::DataTypeStore::RecordList> entries);
 
-  void InsertEntityProto(
+  void AddEntityToMap(
       const proto::ContextualTaskEntity& contextual_task_entity);
-  void UpdateEntityProto(
+  void UpdateEntityInMap(
       const proto::ContextualTaskEntity& contextual_task_entity);
-  void DeleteEntityProto(const std::string& guid);
+  void DeleteEntityFromMap(const std::string& guid);
   std::optional<proto::ContextualTaskEntity> GetEntityProto(
       const std::string& guid);
 
@@ -107,6 +117,12 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnDataTypeStoreCommit(const std::optional<syncer::ModelError>& error);
+
+  // Updates and/or adds the specifics into the DataTypeStore and send to sync.
+  void UpsertEntityToSync(const proto::ContextualTaskEntity& data);
+
+  // Deletes the specifics from the DataTypeStore and sync.
+  void RemoveEntitiesFromSync(const std::vector<std::string>& storage_keys);
 
   base::ObserverList<Observer> observers_;
 

@@ -113,6 +113,7 @@ void ContextualTasksServiceImpl::GetTasks(
 }
 
 void ContextualTasksServiceImpl::DeleteTask(const base::Uuid& task_id) {
+  contextual_task_sync_bridge_->OnTaskRemovedLocally(task_id);
   RemoveTaskInternal(task_id, TriggerSource::kLocal);
 }
 
@@ -128,11 +129,13 @@ void ContextualTasksServiceImpl::AddThreadToTask(const base::Uuid& task_id,
   it->second.AddThread(thread);
 
   if (is_new_task) {
+    contextual_task_sync_bridge_->OnTaskAddedLocally(it->second);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
                                   weak_ptr_factory_.GetWeakPtr(), it->second,
                                   TriggerSource::kLocal));
   } else {
+    contextual_task_sync_bridge_->OnTaskUpdatedLocally(it->second);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
@@ -197,8 +200,10 @@ void ContextualTasksServiceImpl::AttachUrlToTask(const base::Uuid& task_id,
                                                  const GURL& url) {
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
-    if (it->second.AddUrlResource(
-            UrlResource(base::Uuid::GenerateRandomV4(), url))) {
+    UrlResource url_resource(base::Uuid::GenerateRandomV4(), url);
+    if (it->second.AddUrlResource(url_resource)) {
+      contextual_task_sync_bridge_->OnUrlAddedToTaskLocally(task_id,
+                                                            url_resource);
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
@@ -212,12 +217,15 @@ void ContextualTasksServiceImpl::DetachUrlFromTask(const base::Uuid& task_id,
                                                    const GURL& url) {
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
-    it->second.RemoveUrl(url);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
-                       weak_ptr_factory_.GetWeakPtr(), it->second,
-                       TriggerSource::kLocal));
+    std::optional<base::Uuid> url_id = it->second.RemoveUrl(url);
+    if (url_id) {
+      contextual_task_sync_bridge_->OnUrlRemovedFromTaskLocally(url_id.value());
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
+                         weak_ptr_factory_.GetWeakPtr(), it->second,
+                         TriggerSource::kLocal));
+    }
   }
 }
 
@@ -430,6 +438,7 @@ void ContextualTasksServiceImpl::NotifyTaskRemoved(const base::Uuid& task_id,
 ContextualTask ContextualTasksServiceImpl::AddTaskAndNotify(
     ContextualTask task) {
   auto it = tasks_.emplace(task.GetTaskId(), task).first;
+  contextual_task_sync_bridge_->OnTaskAddedLocally(task);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
                                 weak_ptr_factory_.GetWeakPtr(), it->second,

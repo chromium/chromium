@@ -95,8 +95,9 @@ class ContextualTask {
   // Returns the URLs relevant to the task.
   std::vector<UrlResource> GetUrlResources() const;
 
-  // Removes a URL from the task.
-  void RemoveUrl(const GURL& url);
+  // Removes a URL from the task. Returns the ID of the removed UrlResource if
+  // found, otherwise returns std::nullopt.
+  std::optional<base::Uuid> RemoveUrl(const GURL& url);
 
   // Returns the tab IDs of tabs related to the task.
   std::vector<SessionID> GetTabIds() const;

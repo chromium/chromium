@@ -65,6 +65,8 @@ class ContextualTaskSyncBridgeTest : public testing::Test {
   void SetUp() override {
     ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics(_))
         .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
+    ON_CALL(mock_processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<ContextualTaskSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest());
@@ -141,8 +143,8 @@ TEST_F(ContextualTaskSyncBridgeTest,
   syncer::EntityChangeList update_list;
   update_list.push_back(CreateEntityChange(
       "guid_existing", "Updated Title", syncer::EntityChange::ACTION_UPDATE));
-  update_list.push_back(CreateEntityChange(
-      "guid_delete", "", syncer::EntityChange::ACTION_DELETE));
+  update_list.push_back(
+      CreateEntityChange("guid_add", "", syncer::EntityChange::ACTION_DELETE));
 
   EXPECT_CALL(observer_, OnTaskAddedOrUpdatedRemotely(_))
       .WillOnce([&](const std::vector<ContextualTask>& tasks) {
@@ -228,6 +230,100 @@ TEST_F(ContextualTaskSyncBridgeTest, GetTaskById) {
   std::optional<ContextualTask> not_found_task =
       bridge_->GetTaskById(base::Uuid::GenerateRandomV4().AsLowercaseString());
   EXPECT_FALSE(not_found_task.has_value());
+}
+
+TEST_F(ContextualTaskSyncBridgeTest, OnTaskAddedLocally) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  task.SetTitle("New Task");
+
+  EXPECT_CALL(mock_processor_, Put(_, _, _));
+  bridge_->OnTaskAddedLocally(task);
+
+  std::optional<ContextualTask> retrieved_task =
+      bridge_->GetTaskById(task_id.AsLowercaseString());
+  ASSERT_TRUE(retrieved_task.has_value());
+  EXPECT_EQ(task.GetTitle(), retrieved_task->GetTitle());
+}
+
+TEST_F(ContextualTaskSyncBridgeTest, OnTaskRemovedLocally) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  task.SetTitle("Task to Remove");
+  bridge_->OnTaskAddedLocally(task);
+
+  UrlResource url_resource(base::Uuid::GenerateRandomV4(),
+                           GURL("https://example.com"));
+  bridge_->OnUrlAddedToTaskLocally(task_id, url_resource);
+
+  ASSERT_TRUE(bridge_->GetTaskById(task_id.AsLowercaseString()).has_value());
+  ASSERT_EQ(1u, bridge_->GetTaskById(task_id.AsLowercaseString())
+                    ->GetUrlResources()
+                    .size());
+
+  EXPECT_CALL(mock_processor_, Delete(task_id.AsLowercaseString(), _, _));
+  EXPECT_CALL(mock_processor_,
+              Delete(url_resource.url_id.AsLowercaseString(), _, _));
+  bridge_->OnTaskRemovedLocally(task_id);
+
+  EXPECT_FALSE(bridge_->GetTaskById(task_id.AsLowercaseString()).has_value());
+}
+
+TEST_F(ContextualTaskSyncBridgeTest, OnTaskUpdatedLocally) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  task.SetTitle("Initial Title");
+
+  bridge_->OnTaskAddedLocally(task);
+  task.SetTitle("Updated Title");
+
+  EXPECT_CALL(mock_processor_, Put(_, _, _));
+  bridge_->OnTaskUpdatedLocally(task);
+
+  std::optional<ContextualTask> retrieved_task =
+      bridge_->GetTaskById(task_id.AsLowercaseString());
+  ASSERT_TRUE(retrieved_task.has_value());
+  EXPECT_EQ("Updated Title", retrieved_task->GetTitle());
+}
+
+TEST_F(ContextualTaskSyncBridgeTest, OnUrlAddedToTask) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  bridge_->OnTaskAddedLocally(task);
+
+  UrlResource url_resource(base::Uuid::GenerateRandomV4(),
+                           GURL("https://example.com"));
+
+  EXPECT_CALL(mock_processor_, Put(_, _, _));
+  bridge_->OnUrlAddedToTaskLocally(task_id, url_resource);
+
+  std::optional<ContextualTask> retrieved_task =
+      bridge_->GetTaskById(task_id.AsLowercaseString());
+  ASSERT_TRUE(retrieved_task.has_value());
+  ASSERT_EQ(1u, retrieved_task->GetUrlResources().size());
+  EXPECT_EQ(url_resource.url, retrieved_task->GetUrlResources()[0].url);
+}
+
+TEST_F(ContextualTaskSyncBridgeTest, OnUrlRemovedFromTask) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  bridge_->OnTaskAddedLocally(task);
+
+  UrlResource url_resource(base::Uuid::GenerateRandomV4(),
+                           GURL("https://example.com"));
+  bridge_->OnUrlAddedToTaskLocally(task_id, url_resource);
+
+  ASSERT_EQ(1u, bridge_->GetTaskById(task_id.AsLowercaseString())
+                    ->GetUrlResources()
+                    .size());
+
+  EXPECT_CALL(mock_processor_, Delete(_, _, _));
+  bridge_->OnUrlRemovedFromTaskLocally(url_resource.url_id);
+
+  std::optional<ContextualTask> retrieved_task =
+      bridge_->GetTaskById(task_id.AsLowercaseString());
+  ASSERT_TRUE(retrieved_task.has_value());
+  EXPECT_TRUE(retrieved_task->GetUrlResources().empty());
 }
 
 }  // namespace contextual_tasks

@@ -36,13 +36,14 @@ TEST(ContextualTaskTest, AddAndRemoveUrlResource) {
   UrlResource url_resource(base::Uuid::GenerateRandomV4(),
                            GURL("https://www.google.com"));
 
-  task.AddUrlResource(url_resource);
-  task.AddUrlResource(url_resource);
+  EXPECT_TRUE(task.AddUrlResource(url_resource));
+  EXPECT_FALSE(task.AddUrlResource(url_resource));
 
   EXPECT_EQ(1u, task.GetUrlResources().size());
 
-  task.RemoveUrl(url_resource.url);
+  EXPECT_EQ(url_resource.url_id, task.RemoveUrl(url_resource.url));
   EXPECT_EQ(0u, task.GetUrlResources().size());
+  EXPECT_EQ(std::nullopt, task.RemoveUrl(url_resource.url));
 }
 
 TEST(ContextualTaskTest, AddThread) {

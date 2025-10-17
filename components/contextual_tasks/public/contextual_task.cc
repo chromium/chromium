@@ -80,11 +80,18 @@ std::vector<UrlResource> ContextualTask::GetUrlResources() const {
   return url_resources_;
 }
 
-void ContextualTask::RemoveUrl(const GURL& url) {
-  url_resources_.erase(
-      std::remove_if(url_resources_.begin(), url_resources_.end(),
-                     [&](const auto& resource) { return resource.url == url; }),
-      url_resources_.end());
+std::optional<base::Uuid> ContextualTask::RemoveUrl(const GURL& url) {
+  auto it =
+      std::find_if(url_resources_.begin(), url_resources_.end(),
+                   [&](const auto& resource) { return resource.url == url; });
+
+  if (it != url_resources_.end()) {
+    base::Uuid removed_id = it->url_id;
+    url_resources_.erase(it);
+    return removed_id;
+  }
+
+  return std::nullopt;
 }
 
 std::vector<SessionID> ContextualTask::GetTabIds() const {
