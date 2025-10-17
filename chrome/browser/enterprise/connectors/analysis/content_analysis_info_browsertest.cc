@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest, GetActiveUser) {
   ASSERT_EQ(expected_active_email(),
             GetActiveContentAreaUser(identity_manager, url()));
   ASSERT_EQ(expected_active_email(),
-            GetURLFActiveContentAreaUser(identity_manager, url()));
+            GetActiveContentAreaUser(identity_manager, url()));
 }
 
 IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest,
@@ -442,8 +442,6 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest,
       IdentityManagerFactory::GetForProfile(browser()->profile());
   ASSERT_EQ(expected_active_email(),
             GetActiveContentAreaUser(identity_manager, non_urlf_url));
-  ASSERT_TRUE(
-      GetURLFActiveContentAreaUser(identity_manager, non_urlf_url).empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

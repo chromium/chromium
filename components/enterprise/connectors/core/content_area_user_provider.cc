@@ -109,15 +109,6 @@ std::string GetActiveContentAreaUser(signin::IdentityManager* im,
   return GetEmailFromUrl(im, tab_url);
 }
 
-std::string GetURLFActiveContentAreaUser(signin::IdentityManager* im,
-                                         const GURL& tab_url) {
-  if (!IncludeContentAreaAccountEmail(tab_url, TabWorkspaceDomains())) {
-    return "";
-  }
-
-  return GetEmailFromUrl(im, tab_url);
-}
-
 std::string GetActiveFrameUser(signin::IdentityManager* im,
                                const GURL& tab_url,
                                const GURL& frame_url) {

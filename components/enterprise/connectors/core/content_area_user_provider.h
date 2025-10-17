@@ -18,12 +18,6 @@ namespace enterprise_connectors {
 std::string GetActiveContentAreaUser(signin::IdentityManager* im,
                                      const GURL& tab_url);
 
-// Returns email of the active Gaia user based on the values provided by
-// tab url and identity manager. Only returns a value for certain Workspace
-// sites supported for URL filtering.
-std::string GetURLFActiveContentAreaUser(signin::IdentityManager* im,
-                                         const GURL& tab_url);
-
 // Returns email of the active Gaia user based on the values found in the
 // provided frame URL and identity manager. Only returns a value if `tab_url` is
 // a Workspace site.

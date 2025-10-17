@@ -114,7 +114,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       /*is_guest_session=*/false,
       base::BindRepeating(&enterprise_connectors::GetProfileEmail,
                           identity_manager),
-      base::BindRepeating(&enterprise_connectors::GetURLFActiveContentAreaUser,
+      base::BindRepeating(&enterprise_connectors::GetActiveContentAreaUser,
                           IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(&IsProfileAffiliated, profile),
       IsCommandLineSwitchEnabled());
