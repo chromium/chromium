@@ -173,6 +173,12 @@ crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1334650 [ linux ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 
+# WebGpu is not enable on mac pro
+[ mac amd-0x679e ] ContextLost_WebGPUBlockedAfterJSNavigation [ Skip ]
+[ mac amd-0x679e ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+[ mac amd-0x679e ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
+[ mac amd-0x679e ] GpuNormalTermination_WebGPUNotBlocked [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
