@@ -21,6 +21,9 @@ class PagePlaceholderBrowserAgent final
  public:
   ~PagePlaceholderBrowserAgent() final;
 
+  // Returns whether a page placeholder will be displayed for WebState.
+  static bool IsPagePlaceholderPlannedForWebState(web::WebState* web_state);
+
   // WebStateListObserver implementation.
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
