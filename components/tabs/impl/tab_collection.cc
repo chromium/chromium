@@ -277,6 +277,23 @@ void TabCollection::NotifyOnChildrenRemoved(
   }
 }
 
+void TabCollection::NotifyOnChildMoved(base::PassKey<TabCollection> pass_key,
+                                       const TabCollectionNodeHandle& handle,
+                                       const Position& src_position,
+                                       const Position& dst_position,
+                                       TabCollection* notification_root) {
+  TabCollectionObserver::NodeData src_data =
+      TabCollectionObserver::NodeData(src_position, handle);
+
+  observers_.Notify(&TabCollectionObserver::OnChildMoved, dst_position,
+                    src_data);
+
+  if (this != notification_root) {
+    parent_->NotifyOnChildMoved(pass_key, handle, src_position, dst_position,
+                                notification_root);
+  }
+}
+
 TabInterface* TabCollection::AddTab(std::unique_ptr<TabInterface> tab,
                                     size_t index) {
   CHECK(tab);

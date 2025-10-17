@@ -249,6 +249,12 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
                                const NodeHandles& handles,
                                TabCollection* notification_root);
 
+  void NotifyOnChildMoved(base::PassKey<TabCollection> pass_key,
+                          const NodeHandle& handle,
+                          const Position& src_position,
+                          const Position& dst_position,
+                          TabCollection* notification_root);
+
  protected:
   explicit TabCollection(Type type,
                          std::unordered_set<Type> supported_child_collections,

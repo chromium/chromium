@@ -154,6 +154,10 @@ class TabStripCollection : public TabCollection {
                             const TabCollection::Position& position);
   std::unique_ptr<TabCollection> RemoveTabCollectionImpl(
       TabCollection* collection);
+  void MoveTabImpl(TabInterface* tab_ptr,
+                   const TabCollection::Position& position);
+  void MoveCollectionImpl(TabCollection* collection_ptr,
+                          const TabCollection::Position& position);
 
   // Helper to compute the parent collection and direct index in the collection
   // to insert a tab or collection based on insertion properties like the
