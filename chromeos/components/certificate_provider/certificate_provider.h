@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_
-#define CHROME_BROWSER_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_
+#ifndef CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_
+#define CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_
 
+#include "base/component_export.h"
 #include "net/ssl/client_cert_identity.h"
 
 namespace chromeos {
 
-class CertificateProvider {
+class COMPONENT_EXPORT(CERTIFICATE_PROVIDER) CertificateProvider {
  public:
   CertificateProvider() = default;
   CertificateProvider(const CertificateProvider&) = delete;
@@ -22,4 +23,4 @@ class CertificateProvider {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_
+#endif  // CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_

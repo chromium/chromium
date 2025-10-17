@@ -17,7 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"

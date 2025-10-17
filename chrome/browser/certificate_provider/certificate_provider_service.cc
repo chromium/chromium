@@ -18,7 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/net_errors.h"
 

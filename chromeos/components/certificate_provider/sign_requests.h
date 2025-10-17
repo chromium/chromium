@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CERTIFICATE_PROVIDER_SIGN_REQUESTS_H_
-#define CHROME_BROWSER_CERTIFICATE_PROVIDER_SIGN_REQUESTS_H_
+#ifndef CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_SIGN_REQUESTS_H_
+#define CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_SIGN_REQUESTS_H_
 
 #include <map>
 #include <optional>
@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/account_id/account_id.h"
@@ -20,7 +21,7 @@
 namespace chromeos {
 namespace certificate_provider {
 
-class SignRequests {
+class COMPONENT_EXPORT(CERTIFICATE_PROVIDER) SignRequests {
  public:
   using ExtensionNameRequestIdPair = std::pair<std::string, int>;
 
@@ -88,4 +89,4 @@ class SignRequests {
 }  // namespace certificate_provider
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CERTIFICATE_PROVIDER_SIGN_REQUESTS_H_
+#endif  // CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_SIGN_REQUESTS_H_

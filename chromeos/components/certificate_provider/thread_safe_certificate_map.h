@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
-#define CHROME_BROWSER_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
+#ifndef CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
+#define CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/components/certificate_provider/certificate_info.h"
@@ -21,7 +22,7 @@ class X509Certificate;
 namespace chromeos {
 namespace certificate_provider {
 
-class ThreadSafeCertificateMap {
+class COMPONENT_EXPORT(CERTIFICATE_PROVIDER) ThreadSafeCertificateMap {
  public:
   ThreadSafeCertificateMap();
   ThreadSafeCertificateMap(const ThreadSafeCertificateMap&) = delete;
@@ -85,4 +86,4 @@ class ThreadSafeCertificateMap {
 }  // namespace certificate_provider
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
+#endif  // CHROMEOS_COMPONENTS_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_

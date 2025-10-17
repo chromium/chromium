@@ -6,15 +6,11 @@ assert(is_chromeos)
 
 source_set("certificate_provider") {
   sources = [
-    "certificate_provider.h",
     "certificate_provider_service.h",
     "certificate_provider_service_factory.h",
-    "certificate_requests.h",
     "pin_dialog_manager.h",
     "security_token_pin_dialog_host.h",
     "security_token_pin_dialog_host_popup_impl.h",
-    "sign_requests.h",
-    "thread_safe_certificate_map.h",
   ]
   public_deps = [
     "//base",
@@ -31,11 +27,8 @@ source_set("impl") {
   sources = [
     "certificate_provider_service.cc",
     "certificate_provider_service_factory.cc",
-    "certificate_requests.cc",
     "pin_dialog_manager.cc",
     "security_token_pin_dialog_host_popup_impl.cc",
-    "sign_requests.cc",
-    "thread_safe_certificate_map.cc",
   ]
   deps = [
     ":certificate_provider",

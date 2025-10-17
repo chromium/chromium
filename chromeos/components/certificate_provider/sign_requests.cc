@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/certificate_provider/sign_requests.h"
+#include "chromeos/components/certificate_provider/sign_requests.h"
 
 namespace chromeos {
 namespace certificate_provider {
