@@ -7702,7 +7702,7 @@ crbug.com/1431236 external/wpt/long-animation-frame/tentative/loaf-user-callback
 crbug.com/1416271 external/wpt/js-self-profiling/time-domain.window.html [ Crash Failure Pass ]
 
 # Flake 2023-04-07
-crbug.com/1431272 [ Win ] external/wpt/cookies/attributes/domain.sub.html [ Pass Timeout ]
+crbug.com/1431272 crbug.com/449283206 external/wpt/cookies/attributes/domain.sub.html [ Pass Timeout ]
 
 # Sheriff 2023-04-13
 crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-picture.https.sub.html [ Crash Pass Timeout ]
