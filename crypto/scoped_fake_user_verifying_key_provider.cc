@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
@@ -204,4 +205,18 @@ ScopedFailingUserVerifyingKeyProvider::
     ~ScopedFailingUserVerifyingKeyProvider() {
   internal::SetUserVerifyingKeyProviderForTesting(nullptr);
 }
+
+ScopedUserVerifyingKeysSupportedOverride::
+    ScopedUserVerifyingKeysSupportedOverride(
+        UserVerifyingKeysSupportedOverride override) {
+  internal::SetUserVerifyingKeysSupportedOverrideForTesting(
+      std::move(override));
+}
+
+ScopedUserVerifyingKeysSupportedOverride::
+    ~ScopedUserVerifyingKeysSupportedOverride() {
+  internal::SetUserVerifyingKeysSupportedOverrideForTesting(
+      base::NullCallback());
+}
+
 }  // namespace crypto

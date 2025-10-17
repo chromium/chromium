@@ -134,10 +134,10 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   enum class AccountState {
     // There isn't a primary account, or enclave support is disabled.
     kNone,
-    // The enclave state is still being loaded from disk.
+    // The GPM state is still being loaded. This may be loading the enclave
+    // state from disk, checking for biometric availability, or pending network
+    // requests.
     kLoading,
-    // The state of the account is unknown pending network requests.
-    kChecking,
     // The account can be recovered via user action.
     kRecoverable,
     // The account cannot be recovered, but could be reset.
@@ -335,7 +335,7 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   base::ScopedObservation<EnclaveManager, EnclaveManager::Observer>
       enclave_manager_observer_{this};
 
-  AccountState account_state_ = AccountState::kNone;
+  AccountState account_state_ = AccountState::kLoading;
   bool pin_is_arbitrary_ = false;
   std::optional<std::string> pin_;
   std::vector<sync_pb::WebauthnCredentialSpecifics> creds_;
