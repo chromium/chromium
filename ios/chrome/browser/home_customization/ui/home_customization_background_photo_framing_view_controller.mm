@@ -429,7 +429,17 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
 
   // Calculate the scale needed to fill the screen.
   CGFloat widthScale = scrollViewSize.width / imageSize.width;
+  // Ensure that the image will fill the screen. Due to floating point
+  // imprecision, sometimes the image would be slightly smaller than the screen,
+  // so fix that here.
+  if (widthScale * imageSize.width < scrollViewSize.width) {
+    widthScale = std::nextafter(widthScale, CGFLOAT_MAX);
+  }
   CGFloat heightScale = scrollViewSize.height / imageSize.height;
+  if (heightScale * imageSize.height < scrollViewSize.height) {
+    heightScale = std::nextafter(heightScale, CGFLOAT_MAX);
+  }
+
   CGFloat minimumScale = MAX(widthScale, heightScale);
 
   _scrollView.minimumZoomScale = minimumScale;
