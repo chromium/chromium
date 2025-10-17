@@ -184,7 +184,6 @@ ExtensionActionViewController::ExtensionActionViewController(
       profile_(browser->GetProfile()),
       extension_action_(extension_action),
       extensions_container_(extensions_container),
-      popup_host_(nullptr),
       view_delegate_(nullptr),
       platform_delegate_(std::move(platform_delegate)),
       icon_factory_(extension_.get(), extension_action, this),
@@ -362,28 +361,15 @@ bool ExtensionActionViewController::IsEnabled(
 }
 
 bool ExtensionActionViewController::IsShowingPopup() const {
-  return popup_host_ != nullptr;
+  return platform_delegate_->IsShowingPopup();
 }
 
 void ExtensionActionViewController::HidePopup() {
-  if (IsShowingPopup()) {
-    // Only call Close() on the popup if it's been shown; otherwise, the popup
-    // will be cleaned up in ShowPopup().
-    if (has_opened_popup_) {
-      popup_host_->Close();
-    }
-    // We need to do these actions synchronously (instead of closing and then
-    // performing the rest of the cleanup in OnExtensionHostDestroyed()) because
-    // the extension host may close asynchronously, and we need to keep the view
-    // delegate up to date.
-    if (popup_host_) {
-      OnPopupClosed();
-    }
-  }
+  return platform_delegate_->HidePopup();
 }
 
 gfx::NativeView ExtensionActionViewController::GetPopupNativeView() {
-  return popup_host_ ? popup_host_->view()->GetNativeView() : gfx::NativeView();
+  return platform_delegate_->GetPopupNativeView();
 }
 
 ui::MenuModel* ExtensionActionViewController::GetContextMenu(
@@ -448,8 +434,7 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
 
   if (action == extensions::ExtensionAction::ShowAction::kShowPopup) {
     constexpr bool kByUser = true;
-    GetPreferredPopupViewController()->TriggerPopup(
-        PopupShowAction::kShow, kByUser, ShowPopupCallback());
+    TriggerPopup(PopupShowAction::kShow, kByUser, ShowPopupCallback());
   } else if (action ==
              extensions::ExtensionAction::ShowAction::kToggleSidePanel) {
     extensions::side_panel_util::ToggleExtensionSidePanel(browser_,
@@ -566,8 +551,8 @@ void ExtensionActionViewController::OnCommandServiceDestroying() {
 void ExtensionActionViewController::InspectPopup() {
   // This method is only triggered through user action (clicking on the context
   // menu entry).
-  GetPreferredPopupViewController()->TriggerPopup(
-      PopupShowAction::kShowAndInspect, /*by_user*/ true, ShowPopupCallback());
+  TriggerPopup(PopupShowAction::kShowAndInspect, /*by_user*/ true,
+               ShowPopupCallback());
 }
 
 content::WebContents* ExtensionActionViewController::GetCurrentWebContents()
@@ -588,11 +573,6 @@ void ExtensionActionViewController::NotifyUpdateToDelegate() {
 
 void ExtensionActionViewController::OnIconUpdated() {
   NotifyUpdateToDelegate();
-}
-
-void ExtensionActionViewController::OnExtensionHostDestroyed(
-    extensions::ExtensionHost* host) {
-  OnPopupClosed();
 }
 
 extensions::SitePermissionsHelper::SiteInteraction
@@ -671,17 +651,10 @@ ExtensionActionViewController::GetIconImageSourceForTesting(
   return GetIconImageSource(web_contents, size);
 }
 
-ExtensionActionViewController*
-ExtensionActionViewController::GetPreferredPopupViewController() {
-  return static_cast<ExtensionActionViewController*>(
-      extensions_container_->GetActionForId(GetId()));
-}
-
 void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
                                                  bool by_user,
                                                  ShowPopupCallback callback) {
   DCHECK(ExtensionIsValid());
-  DCHECK_EQ(this, GetPreferredPopupViewController());
 
   content::WebContents* const web_contents = GetCurrentWebContents();
   const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
@@ -697,56 +670,8 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
   // valid and has a valid popup URL.
   CHECK(host);
 
-  // Always hide the current popup, even if it's not owned by this extension.
-  // Only one popup should be visible at a time.
-  extensions_container_->HideActivePopup();
-
-  extensions_container_->CloseOverflowMenuIfOpen();
-
-  popup_host_ = host.get();
-  popup_host_observation_.Observe(popup_host_.get());
-  extensions_container_->SetPopupOwner(this);
-
-  extensions_container_->PopOutAction(
-      GetId(), base::BindOnce(&ExtensionActionViewController::ShowPopup,
-                              weak_factory_.GetWeakPtr(), std::move(host),
-                              by_user, show_action, std::move(callback)));
-}
-
-void ExtensionActionViewController::ShowPopup(
-    std::unique_ptr<extensions::ExtensionViewHost> popup_host,
-    bool by_user,
-    PopupShowAction show_action,
-    ShowPopupCallback callback) {
-  // It's possible that the popup should be closed before it finishes opening
-  // (since it can open asynchronously). Check before proceeding.
-  if (!popup_host_) {
-    if (callback) {
-      std::move(callback).Run(nullptr);
-    }
-    return;
-  }
-  // NOTE: Today, ShowPopup() always synchronously creates the platform-specific
-  // popup class, which is what we care most about (since `has_opened_popup_`
-  // is used to determine whether we need to manually close the
-  // ExtensionViewHost). This doesn't necessarily mean that the popup has
-  // completed rendering on the screen.
-  has_opened_popup_ = true;
-  platform_delegate_->ShowPopup(std::move(popup_host), show_action,
-                                std::move(callback));
-  extensions_container_->OnPopupShown(GetId(), by_user);
-}
-
-void ExtensionActionViewController::OnPopupClosed() {
-  DCHECK(popup_host_observation_.IsObservingSource(popup_host_.get()));
-  popup_host_observation_.Reset();
-  popup_host_ = nullptr;
-  has_opened_popup_ = false;
-  extensions_container_->SetPopupOwner(nullptr);
-  if (extensions_container_->GetPoppedOutActionId() == GetId()) {
-    extensions_container_->UndoPopOut();
-  }
-  extensions_container_->OnPopupClosed(GetId());
+  platform_delegate_->TriggerPopup(std::move(host), show_action, by_user,
+                                   std::move(callback));
 }
 
 std::unique_ptr<IconWithBadgeImageSource>

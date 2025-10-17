@@ -32,7 +32,6 @@ class Command;
 class Extension;
 class ExtensionAction;
 class ExtensionRegistry;
-class ExtensionViewHost;
 class SitePermissionsHelper;
 }  // namespace extensions
 
@@ -52,8 +51,7 @@ class ExtensionActionViewController
       public ToolbarActionsModel::Observer,
       public extensions::ExtensionActionIconFactory::Observer,
       public extensions::CommandService::Observer,
-      public extensions::ExtensionContextMenuModel::PopupDelegate,
-      public extensions::ExtensionHostObserver {
+      public extensions::ExtensionContextMenuModel::PopupDelegate {
  public:
   static std::unique_ptr<ExtensionActionViewController> Create(
       const extensions::ExtensionId& extension_id,
@@ -152,6 +150,9 @@ class ExtensionActionViewController
     return extension_action_;
   }
   ToolbarActionViewDelegate* view_delegate() { return view_delegate_; }
+  ExtensionActionPlatformDelegate* platform_delegate() {
+    return platform_delegate_.get();
+  }
 
   std::unique_ptr<IconWithBadgeImageSource> GetIconImageSourceForTesting(
       content::WebContents* web_contents,
@@ -177,19 +178,11 @@ class ExtensionActionViewController
   // extensions::ExtensionActionIconFactory::Observer:
   void OnIconUpdated() override;
 
-  // ExtensionHostObserver:
-  void OnExtensionHostDestroyed(extensions::ExtensionHost* host) override;
-
   // Checks if the associated |extension| is still valid by checking its
   // status in the registry. Since the OnExtensionUnloaded() notifications are
   // not in a deterministic order, it's possible that the view tries to refresh
   // itself before we're notified to remove it.
   bool ExtensionIsValid() const;
-
-  // In some cases (such as when an action is shown in a menu), a substitute
-  // ToolbarActionViewController should be used for showing popups. This
-  // returns the preferred controller.
-  ExtensionActionViewController* GetPreferredPopupViewController();
 
   // Begins the process of showing the popup for the extension action on the
   // current web contents. |by_user| is true if popup is being triggered by a
@@ -199,15 +192,6 @@ class ExtensionActionViewController
   void TriggerPopup(PopupShowAction show_action,
                     bool by_user,
                     ShowPopupCallback callback);
-
-  // Shows the popup with the given |host|.
-  void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
-                 bool by_user,
-                 PopupShowAction show_action,
-                 ShowPopupCallback callback);
-
-  // Handles cleanup after the popup closes.
-  void OnPopupClosed();
 
   // Returns the image source for the icon.
   std::unique_ptr<IconWithBadgeImageSource> GetIconImageSource(
@@ -231,15 +215,6 @@ class ExtensionActionViewController
   // The corresponding ExtensionsContainer on the toolbar.
   const raw_ptr<ExtensionsContainer> extensions_container_;
 
-  // The extension popup's host if the popup is visible; null otherwise.
-  raw_ptr<extensions::ExtensionViewHost> popup_host_;
-
-  // Whether the toolbar action has opened an active popup. This is unique from
-  // `popup_host_` since `popup_host_` may be non-null even if the popup hasn't
-  // opened yet if we're waiting on other UI to be ready (e.g. the action to
-  // slide out in the toolbar).
-  bool has_opened_popup_ = false;
-
   // The context menu model for the extension.
   std::unique_ptr<extensions::ExtensionContextMenuModel> context_menu_model_;
 
@@ -261,15 +236,9 @@ class ExtensionActionViewController
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_model_observation_{this};
 
-  base::ScopedObservation<extensions::ExtensionHost,
-                          extensions::ExtensionHostObserver>
-      popup_host_observation_{this};
-
   base::ScopedObservation<extensions::CommandService,
                           extensions::CommandService::Observer>
       command_service_observation_{this};
-
-  base::WeakPtrFactory<ExtensionActionViewController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_
