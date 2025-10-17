@@ -220,10 +220,7 @@ void GlicInstanceCoordinatorImpl::RemoveGlobalStateObserver(
 }
 
 bool GlicInstanceCoordinatorImpl::IsDetached() const {
-  // TODO: Called by GlicProfileManager. Needs implemented or refactored and
-  // removed.
-  NOTIMPLEMENTED();
-  return false;
+  return GetInstanceWithFloaty() != nullptr;
 }
 
 base::CallbackListSubscription
@@ -425,7 +422,7 @@ void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(
   }
 }
 
-GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceWithFloaty() {
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceWithFloaty() const {
   for (const auto& [unused, instance] : instances_) {
     if (instance->GetPanelState().kind == mojom::PanelState_Kind::kDetached) {
       return instance.get();

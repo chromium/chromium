@@ -121,7 +121,7 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
                                       tabs::TabInterface* tab_to_bind) override;
 
   // Returns a pointer to an instance with a Floaty embedder or nullptr.
-  GlicInstanceImpl* GetInstanceWithFloaty();
+  GlicInstanceImpl* GetInstanceWithFloaty() const;
 
   // Testing support.
   void SetWarmingEnabledForTesting(bool warming_enabled);
