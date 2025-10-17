@@ -166,8 +166,4 @@ public interface WebSettingsBoundaryInterface {
     // LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/AwSettings.java:AwSettingsHyperlinkContextMenuItems)
 
     void setHyperlinkContextMenuItems(@HyperlinkContextMenuItems int hyperlinkMenuItems);
-
-    void setBackForwardCacheSettingsTimeout(int timeout);
-
-    void setBackForwardCacheSettingsMaxPagesInCache(int pagesInCache);
 }

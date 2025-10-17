@@ -129,7 +129,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.CUSTOM_REQUEST_HEADERS,
                 Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_V2 + Features.DEV_SUFFIX,
-                Features.BACK_FORWARD_CACHE_SETTINGS_V2 + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_V1,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
@@ -473,7 +472,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int HAS_ORIGIN_MATCHED_HEADER = 152;
         int CLEAR_ORIGIN_MATCHED_HEADER = 153;
         int CLEAR_ALL_ORIGIN_MATCHED_HEADERS = 154;
-        @Deprecated int SET_BACK_FORWARD_CACHE_SETTINGS = 155;
+        int SET_BACK_FORWARD_CACHE_SETTINGS = 155;
         int GET_BACK_FORWARD_CACHE_SETTINGS = 156;
         int BACK_FORWARD_CACHE_SETTINGS_GET_TIMEOUT_IN_SECONDS = 157;
         int BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE = 158;

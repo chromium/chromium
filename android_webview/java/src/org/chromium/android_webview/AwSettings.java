@@ -52,6 +52,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Stores Android WebView specific settings that does not need to be synced to WebKit.
@@ -214,8 +215,7 @@ public class AwSettings {
     private boolean mBackForwardCacheEnabled;
     private boolean mHasCalledSetBackForwardCacheEnabledBefore;
 
-    private int mBackForwardCacheTimeoutInSeconds;
-    private int mBackForwardCacheMaxPagesInCache;
+    private @Nullable AwBackForwardCacheSettings mAwBackForwardCacheSettings;
 
     private boolean mCssHexAlphaColorEnabled;
     private boolean mScrollTopLeftInteropEnabled;
@@ -362,14 +362,9 @@ public class AwSettings {
                     AwSettings.this::updateBackForwardCacheEnabledOnUiThreadLocked);
         }
 
-        void updateBackForwardCacheSettingsTimeout() {
+        void updateBackForwardCacheSettings() {
             runOnUiThreadBlockingAndLocked(
-                    AwSettings.this::updateBackForwardCacheSettingsTimeoutOnUiThreadLocked);
-        }
-
-        void updateBackForwardCacheSettingsMaxPagesInCache() {
-            runOnUiThreadBlockingAndLocked(
-                    AwSettings.this::updateBackForwardCacheSettingsMaxPagesInCacheOnUiThreadLocked);
+                    AwSettings.this::updateBackForwardCacheSettingsOnUiThreadLocked);
         }
 
         void updateGeolocationEnabled() {
@@ -1851,45 +1846,26 @@ public class AwSettings {
         }
     }
 
-    public void setBackForwardCacheTimeoutInSeconds(int timeoutInSeconds) {
-        if (TRACE) Log.i(TAG, "setBackForwardCacheTimeoutInSeconds=" + timeoutInSeconds);
+    public void setBackForwardCacheSettings(AwBackForwardCacheSettings backForwardCacheSettings) {
+        if (TRACE) Log.i(TAG, "setBackForwardCacheSettings=" + backForwardCacheSettings);
+        assert backForwardCacheSettings != null;
         // Setting BackForwardCacheSettings implicitly enables BFCache as well.
         setBackForwardCacheEnabled(true);
         synchronized (mAwSettingsLock) {
-            if (mBackForwardCacheTimeoutInSeconds == timeoutInSeconds) {
+            if (Objects.equals(mAwBackForwardCacheSettings, backForwardCacheSettings)) {
                 return;
             }
-            mBackForwardCacheTimeoutInSeconds = timeoutInSeconds;
-            mEventHandler.updateBackForwardCacheSettingsTimeout();
-        }
-    }
-
-    public void setBackForwardCacheMaxPagesInCache(int maxPagesInCache) {
-        if (TRACE) Log.i(TAG, "setBackForwardCacheMaxPagesInCache=" + maxPagesInCache);
-        // Setting BackForwardCacheSettings implicitly enables BFCache as well.
-        setBackForwardCacheEnabled(true);
-        synchronized (mAwSettingsLock) {
-            if (mBackForwardCacheMaxPagesInCache == maxPagesInCache) {
-                return;
-            }
-            mBackForwardCacheMaxPagesInCache = maxPagesInCache;
-            mEventHandler.updateBackForwardCacheSettingsMaxPagesInCache();
+            mAwBackForwardCacheSettings = backForwardCacheSettings;
+            mEventHandler.updateBackForwardCacheSettings();
         }
     }
 
     @CalledByNative
-    public int getBackForwardCacheSettingsTimeout() {
+    @Nullable
+    public AwBackForwardCacheSettings getBackForwardCacheSettings() {
         synchronized (mAwSettingsLock) {
             assert Thread.holdsLock(mAwSettingsLock);
-            return mBackForwardCacheTimeoutInSeconds;
-        }
-    }
-
-    @CalledByNative
-    public int getBackForwardCacheSettingsMaxPagesInCache() {
-        synchronized (mAwSettingsLock) {
-            assert Thread.holdsLock(mAwSettingsLock);
-            return mBackForwardCacheMaxPagesInCache;
+            return mAwBackForwardCacheSettings;
         }
     }
 
@@ -2197,25 +2173,19 @@ public class AwSettings {
     private void updateBackForwardCacheEnabledOnUiThreadLocked() {
         assert mEventHandler.mHandler != null;
         ThreadUtils.assertOnUiThread();
-        if (mNativeAwSettings == 0) return;
-        AwSettingsJni.get().updateBackForwardCacheEnabledLocked(mNativeAwSettings, AwSettings.this);
+        if (mNativeAwSettings != 0) {
+            AwSettingsJni.get()
+                    .updateBackForwardCacheEnabledLocked(mNativeAwSettings, AwSettings.this);
+        }
     }
 
-    private void updateBackForwardCacheSettingsTimeoutOnUiThreadLocked() {
+    private void updateBackForwardCacheSettingsOnUiThreadLocked() {
         assert mEventHandler.mHandler != null;
         ThreadUtils.assertOnUiThread();
-        if (mNativeAwSettings == 0) return;
-        AwSettingsJni.get()
-                .updateBackForwardCacheSettingsTimeoutLocked(mNativeAwSettings, AwSettings.this);
-    }
-
-    private void updateBackForwardCacheSettingsMaxPagesInCacheOnUiThreadLocked() {
-        assert mEventHandler.mHandler != null;
-        ThreadUtils.assertOnUiThread();
-        if (mNativeAwSettings == 0) return;
-        AwSettingsJni.get()
-                .updateBackForwardCacheSettingsMaxPagesInCacheLocked(
-                        mNativeAwSettings, AwSettings.this);
+        if (mNativeAwSettings != 0) {
+            AwSettingsJni.get()
+                    .updateBackForwardCacheSettingsLocked(mNativeAwSettings, AwSettings.this);
+        }
     }
 
     private void updateGeolocationEnabledOnUiThreadLocked() {
@@ -2376,10 +2346,7 @@ public class AwSettings {
 
         void updateBackForwardCacheEnabledLocked(long nativeAwSettings, AwSettings caller);
 
-        void updateBackForwardCacheSettingsTimeoutLocked(long nativeAwSettings, AwSettings caller);
-
-        void updateBackForwardCacheSettingsMaxPagesInCacheLocked(
-                long nativeAwSettings, AwSettings caller);
+        void updateBackForwardCacheSettingsLocked(long nativeAwSettings, AwSettings caller);
 
         boolean isForceDarkApplied(long nativeAwSettings, AwSettings caller);
 
