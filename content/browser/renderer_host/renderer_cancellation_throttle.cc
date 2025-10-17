@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/renderer_cancellation_throttle.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 
@@ -15,8 +16,9 @@ namespace {
 // "Navigation.RendererInitiatedCancellation.DeferStartToCancellationWindowEnd"
 // UMA, 99% of navigations' cancellation window ends in under 2000ms, and all
 // cancellation windows end in under 10000ms, so setting this to 11000ms.
-constexpr base::TimeDelta kDefaultCancellationTimeout = base::Seconds(11);
-base::TimeDelta g_cancellation_timeout = kDefaultCancellationTimeout;
+const base::FeatureParam<base::TimeDelta> throttle_timeout{
+    &features::kRendererCancellationThrottleImprovements, "timeout",
+    base::Milliseconds(11000)};
 
 }  // namespace
 
@@ -31,21 +33,24 @@ void RendererCancellationThrottle::MaybeCreateAndAdd(
   }
 }
 
-// static
-void RendererCancellationThrottle::SetCancellationTimeoutForTesting(
-    base::TimeDelta timeout) {
-  if (timeout.is_zero()) {
-    g_cancellation_timeout = kDefaultCancellationTimeout;
-  } else {
-    g_cancellation_timeout = timeout;
-  }
-}
-
 RendererCancellationThrottle::RendererCancellationThrottle(
     NavigationThrottleRegistry& registry)
     : NavigationThrottle(registry) {}
 
-RendererCancellationThrottle::~RendererCancellationThrottle() = default;
+RendererCancellationThrottle::~RendererCancellationThrottle() {
+  if (defer_start_time_ == base::TimeTicks()) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "Navigation.RendererCancellationThrottle.NavigationCancelled",
+      !did_resume_navigation_);
+  if (!did_resume_navigation_) {
+    base::UmaHistogramTimes(
+        "Navigation.RendererCancellationThrottle.NavigationCancelled."
+        "TimeUntilCancel",
+        base::TimeTicks::Now() - defer_start_time_);
+  }
+}
 
 NavigationThrottle::ThrottleCheckResult
 RendererCancellationThrottle::WillProcessResponse() {
@@ -81,6 +86,7 @@ RendererCancellationThrottle::WaitForRendererCancellationIfNeeded() {
 
   // Start the cancellation timeout, to warn users of an unresponsive renderer
   // if the cancellation window is longer than the set time limit.
+  defer_start_time_ = base::TimeTicks::Now();
   RestartTimeout();
   // Wait for the navigation cancellation window to end before continuing.
   request->set_renderer_cancellation_window_ended_callback(base::BindOnce(
@@ -91,17 +97,53 @@ RendererCancellationThrottle::WaitForRendererCancellationIfNeeded() {
 }
 
 void RendererCancellationThrottle::NavigationCancellationWindowEnded() {
-  CHECK(NavigationRequest::From(navigation_handle())
-            ->renderer_cancellation_window_ended());
+  if (did_resume_navigation_) {
+    // The timeout handler already resumed the navigation.
+    return;
+  }
+
+  base::UmaHistogramBoolean(
+      "Navigation.RendererCancellationThrottle.NotCancelled.TimeoutIsHit",
+      false);
+  base::UmaHistogramTimes(
+      "Navigation.RendererCancellationThrottle.TimeUntilWindowEnd",
+      base::TimeTicks::Now() - defer_start_time_);
+  NavigationRequest* request = NavigationRequest::From(navigation_handle());
+  CHECK(request->renderer_cancellation_window_ended());
+
   // Stop the timeout and notify that renderer is responsive if necessary.
   renderer_cancellation_timeout_timer_.Stop();
-  NavigationRequest* request = NavigationRequest::From(navigation_handle());
-  request->GetRenderFrameHost()->GetRenderWidgetHost()->RendererIsResponsive();
 
+  if (!base::FeatureList::IsEnabled(
+          features::kRendererCancellationThrottleImprovements)) {
+    request->GetRenderFrameHost()
+        ->GetRenderWidgetHost()
+        ->RendererIsResponsive();
+  }
+  did_resume_navigation_ = true;
   Resume();
 }
 
+void RendererCancellationThrottle::SetOnTimeoutCallbackForTesting(
+    base::OnceClosure callback) {
+  on_timeout_callback_for_testing_ = std::move(callback);
+}
+
 void RendererCancellationThrottle::OnTimeout() {
+  if (on_timeout_callback_for_testing_) {
+    std::move(on_timeout_callback_for_testing_).Run();
+  }
+  base::UmaHistogramBoolean(
+      "Navigation.RendererCancellationThrottle.NotCancelled.TimeoutIsHit",
+      true);
+  if (base::FeatureList::IsEnabled(
+          features::kRendererCancellationThrottleImprovements)) {
+    // Resume the navigation once it hits the timeout, without marking the
+    // renderer as unresponsive.
+    did_resume_navigation_ = true;
+    Resume();
+    return;
+  }
   // Warn that the renderer is unresponsive.
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
   DCHECK(request);
@@ -121,7 +163,7 @@ void RendererCancellationThrottle::OnTimeout() {
 
 void RendererCancellationThrottle::RestartTimeout() {
   renderer_cancellation_timeout_timer_.Start(
-      FROM_HERE, g_cancellation_timeout,
+      FROM_HERE, throttle_timeout.Get(),
       base::BindOnce(&RendererCancellationThrottle::OnTimeout,
                      base::Unretained(this)));
 }

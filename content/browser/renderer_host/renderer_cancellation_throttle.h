@@ -42,10 +42,6 @@ class CONTENT_EXPORT RendererCancellationThrottle : public NavigationThrottle {
  public:
   static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
-  // Sets the cancellation timeout. Resets the timeout to the default value if
-  // `timeout` is zero.
-  static void SetCancellationTimeoutForTesting(base::TimeDelta timeout);
-
   explicit RendererCancellationThrottle(NavigationThrottleRegistry& registry);
   ~RendererCancellationThrottle() override;
   RendererCancellationThrottle() = delete;
@@ -56,17 +52,22 @@ class CONTENT_EXPORT RendererCancellationThrottle : public NavigationThrottle {
   // The renderer had indicated that the navigation cancellation window had
   // ended, so the navigation can resume.
   void NavigationCancellationWindowEnded();
+  void SetOnTimeoutCallbackForTesting(base::OnceClosure callback);
+  const char* GetNameForLogging() override;
 
  private:
   NavigationThrottle::ThrottleCheckResult WillProcessResponse() override;
   NavigationThrottle::ThrottleCheckResult WillCommitWithoutUrlLoader() override;
-  const char* GetNameForLogging() override;
 
   NavigationThrottle::ThrottleCheckResult WaitForRendererCancellationIfNeeded();
   void OnTimeout();
   void RestartTimeout();
 
+  base::OnceClosure on_timeout_callback_for_testing_;
   base::OneShotTimer renderer_cancellation_timeout_timer_;
+  base::TimeTicks defer_start_time_;
+
+  bool did_resume_navigation_ = false;
 
   base::WeakPtrFactory<RendererCancellationThrottle> weak_factory_{this};
 };
