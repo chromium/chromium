@@ -17,6 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -111,8 +112,40 @@ class VideoFrameImageUtilTest : public ::testing::Test {
       bool allow_zero_copy_images = true,
       CanvasResourceProvider* resource_provider = nullptr,
       media::PaintCanvasVideoRenderer* video_renderer = nullptr,
-      const gfx::Rect& dest_rect = gfx::Rect(),
+      gfx::Rect dest_rect = gfx::Rect(),
       bool prefer_tagged_orientation = true) {
+    const auto transform =
+        frame->metadata().transformation.value_or(media::kNoTransformation);
+    if (dest_rect.IsEmpty()) {
+      // Since we're copying, the destination is always aligned with the origin.
+      const auto& visible_rect = frame->visible_rect();
+      dest_rect = gfx::Rect(0, 0, visible_rect.width(), visible_rect.height());
+      if (transform.rotation == media::VIDEO_ROTATION_90 ||
+          transform.rotation == media::VIDEO_ROTATION_270) {
+        dest_rect.Transpose();
+      }
+    }
+
+    std::unique_ptr<CanvasResourceProvider> local_resource_provider;
+
+    if (!resource_provider) {
+      auto frame_color_space = frame->CompatRGBColorSpace();
+      local_resource_provider = CreateResourceProviderForVideoFrame(
+          dest_rect.size(), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+          frame_color_space,
+          SharedGpuContext::ContextProviderWrapper()
+              ? SharedGpuContext::ContextProviderWrapper()
+                    ->ContextProvider()
+                    .RasterContextProvider()
+              : nullptr);
+      if (!local_resource_provider) {
+        DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
+        return nullptr;
+      }
+
+      resource_provider = local_resource_provider.get();
+      CHECK(resource_provider);
+    }
     return CreateImageFromVideoFrame(std::move(frame), resource_provider,
                                      video_renderer, dest_rect,
                                      prefer_tagged_orientation);
@@ -334,20 +367,6 @@ TEST_F(VideoFrameImageUtilTest, WorkaroundCreateResourceProviderForVideoFrame) {
     ASSERT_TRUE(provider);
     EXPECT_FALSE(provider->IsAccelerated());
   }
-}
-
-TEST_F(VideoFrameImageUtilTest, DestRectWithoutCanvasResourceProvider) {
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                                   media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
-                                   test_sii_.get());
-
-  // A CanvasResourceProvider must be provided with a custom destination rect.
-  auto image = DoCreateImageFromVideoFrame(cpu_frame, true, nullptr, nullptr,
-                                           gfx::Rect(0, 0, 10, 10));
-  ASSERT_FALSE(image);
-  task_environment_.RunUntilIdle();
 }
 
 TEST_F(VideoFrameImageUtilTest, CanvasResourceProviderTooSmallForDestRect) {

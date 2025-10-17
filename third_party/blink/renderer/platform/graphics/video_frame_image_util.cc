@@ -116,25 +116,13 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     const gfx::Rect& dest_rect,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb) {
-  auto frame_color_space = frame->CompatRGBColorSpace();
-
   DCHECK(frame);
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
 
   gfx::Rect final_dest_rect = dest_rect;
-  if (final_dest_rect.IsEmpty()) {
-    // Since we're copying, the destination is always aligned with the origin.
-    const auto& visible_rect = frame->visible_rect();
-    final_dest_rect =
-        gfx::Rect(0, 0, visible_rect.width(), visible_rect.height());
-    if (transform.rotation == media::VIDEO_ROTATION_90 ||
-        transform.rotation == media::VIDEO_ROTATION_270) {
-      final_dest_rect.Transpose();
-    }
-  } else if (!resource_provider) {
-    DLOG(ERROR) << "An external CanvasResourceProvider must be provided when "
-                   "providing a custom destination rect.";
+  if (!resource_provider) {
+    DLOG(ERROR) << "An external CanvasResourceProvider must be provided";
     return nullptr;
   } else if (!gfx::Rect(resource_provider->Size()).Contains(final_dest_rect)) {
     DLOG(ERROR)
@@ -145,23 +133,9 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   }
 
   auto raster_context_provider = GetRasterContextProvider();
-  std::unique_ptr<CanvasResourceProvider> local_resource_provider;
-  // TODO(https://crbug.com/1341235): The choice of format and alpha type
-  // is inappropriate in many circumstances.
-  if (!resource_provider) {
-    local_resource_provider = CreateResourceProviderForVideoFrame(
-        final_dest_rect.size(), GetN32FormatForCanvas(), kPremul_SkAlphaType,
-        frame_color_space, raster_context_provider.get());
-    if (!local_resource_provider) {
-      DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
-      return nullptr;
-    }
-
-    resource_provider = local_resource_provider.get();
-  }
-
-  if (resource_provider->IsAccelerated())
+  if (resource_provider->IsAccelerated()) {
     prefer_tagged_orientation = false;
+  }
 
   if (!DrawVideoFrameIntoResourceProvider(
           std::move(frame), resource_provider, raster_context_provider.get(),
