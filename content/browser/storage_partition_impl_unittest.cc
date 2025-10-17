@@ -2784,4 +2784,39 @@ TEST_F(StoragePartitionImplShaderCacheTest,
   run_loop.Run();
 }
 
+TEST_F(StoragePartitionImplTest, GetPartitionUuidForOrigin) {
+  const auto kStorageKey1 =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const auto kStorageKey2 =
+      blink::StorageKey::CreateFromStringForTesting("http://host2:1/");
+
+  StoragePartitionImpl* partition1 = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  const base::UnguessableToken& uuid1 =
+      partition1->GetPartitionUUIDPerStorageKey(kStorageKey1);
+  EXPECT_TRUE(!uuid1.is_empty());
+
+  // Check that UUID is consistent across the same partition.
+  const base::UnguessableToken& uuid2 =
+      partition1->GetPartitionUUIDPerStorageKey(kStorageKey1);
+  EXPECT_TRUE(!uuid2.is_empty());
+  EXPECT_EQ(uuid1, uuid2);
+
+  // Check that UUID is different per-origin.
+  const base::UnguessableToken& uuid3 =
+      partition1->GetPartitionUUIDPerStorageKey(kStorageKey2);
+  EXPECT_TRUE(!uuid3.is_empty());
+  EXPECT_NE(uuid2, uuid3);
+
+  // Check that different partitions have different UUIDs.
+  StoragePartitionConfig config = StoragePartitionConfig::Create(
+      browser_context(), "in_memory", "TestInMemory", /*in_memory=*/true);
+  StoragePartitionImpl* partition2 = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetStoragePartition(config, /*can_create=*/true));
+  const base::UnguessableToken& uuid4 =
+      partition2->GetPartitionUUIDPerStorageKey(kStorageKey1);
+  EXPECT_TRUE(!uuid4.is_empty());
+  EXPECT_NE(uuid1, uuid4);
+}
+
 }  // namespace content

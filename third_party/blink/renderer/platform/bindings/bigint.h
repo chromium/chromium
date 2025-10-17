@@ -29,6 +29,8 @@ class PLATFORM_EXPORT BigInt final {
     words_.resize(word_count);
     bigint->ToWordsArray(&sign_bit_, &word_count, words_.data());
   }
+  explicit BigInt(absl::uint128 bigint)
+      : words_{absl::Uint128Low64(bigint), absl::Uint128High64(bigint)} {}
 
   bool IsNegative() const { return sign_bit_ != 0; }
   bool FitsIn128Bits() const { return words_.size() <= 2; }

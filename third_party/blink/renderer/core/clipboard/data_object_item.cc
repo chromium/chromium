@@ -31,8 +31,6 @@
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -116,7 +114,7 @@ DataObjectItem* DataObjectItem::CreateFromFileSharedBuffer(
 DataObjectItem* DataObjectItem::CreateFromClipboard(
     SystemClipboard* system_clipboard,
     const String& type,
-    const ClipboardSequenceNumberToken& sequence_number) {
+    absl::uint128 sequence_number) {
   if (type == ui::kMimeTypePng) {
     return MakeGarbageCollected<DataObjectItem>(
         kFileKind, type, sequence_number, system_clipboard);
@@ -129,14 +127,13 @@ DataObjectItem::DataObjectItem(ItemKind kind, const String& type)
     : source_(DataSource::kInternalSource),
       kind_(kind),
       type_(type),
-      sequence_number_(base::UnguessableToken::Create()),
+      sequence_number_(0),
       system_clipboard_(nullptr) {}
 
-DataObjectItem::DataObjectItem(
-    ItemKind kind,
-    const String& type,
-    const ClipboardSequenceNumberToken& sequence_number,
-    SystemClipboard* system_clipboard)
+DataObjectItem::DataObjectItem(ItemKind kind,
+                               const String& type,
+                               absl::uint128 sequence_number,
+                               SystemClipboard* system_clipboard)
     : source_(DataSource::kClipboardSource),
       kind_(kind),
       type_(type),

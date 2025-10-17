@@ -22,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom-forward.h"
@@ -551,6 +552,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       const base::TimeDelta& delay,
       base::RepeatingClosure callback);
 
+  const base::UnguessableToken& GetPartitionUUIDPerStorageKey(
+      const blink::StorageKey& storage_key);
+
   // Increments/decrements/gets the active document count tracked in
   // `active_document_per_nik_count_`.
   void IncrementActiveDocumentCount(const net::NetworkIsolationKey& nik);
@@ -965,6 +969,12 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Tracks the number of active documents within the same StoragePartition,
   // keyed by NetworkIsolationKeys.
   std::map<net::NetworkIsolationKey, int> active_document_per_nik_count_;
+
+  // This is a unique identifier of a pair (partition, storage key) across the
+  // lifetime of the browser. Used mostly for computing clipboard version token
+  // for the particular partition.
+  std::map<blink::StorageKey, base::UnguessableToken>
+      partition_uuid_per_storage_key_;
 
   // Used to observe idle scenario.
   base::ScopedObservation<

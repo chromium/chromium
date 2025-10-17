@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/base_paths.h"
@@ -11,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
@@ -22,6 +24,8 @@
 #include "content/public/test/permissions_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/file_info.h"
@@ -208,6 +212,10 @@ class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
         shell(), embedded_https_test_server().GetURL("/title1.html")));
     shell()->web_contents()->Focus();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kClipboardChangeEvent};
 };
 
 IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, EmptyClipboard) {
@@ -244,6 +252,45 @@ IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, NumberOfFormatsOnRead) {
                                      1);
   histogram_tester.ExpectBucketCount("Blink.Clipboard.Read.NumberOfFormats", 1,
                                      1);
+}
+
+namespace {
+bool IsUint128(std::string_view data) {
+  absl::uint128 deserialized;
+  return absl::SimpleAtoi(data, &deserialized);
+}
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, ClipboardChangeEvent) {
+  NavigateAndSetFocusToPage();
+  SetPermissionOverrideForStrictlyProcessedWriteTests(
+      blink::mojom::PermissionStatus::GRANTED);
+
+  // Set up a listener for the clipboardchange event.
+  const char write_text_and_print_change_id[] = R"JS(
+    (async () => {
+      var p = new Promise((resolve, reject) => {
+        navigator.clipboard.addEventListener('clipboardchange', (event) => {
+          resolve(event.changeId.toString());
+          resolve();
+        }, {once: true});
+      });
+      await navigator.clipboard.writeText("Cthulhu");
+      return await p;
+    })();
+  )JS";
+
+  auto first_try_result =
+      EvalJs(shell(), write_text_and_print_change_id).ExtractString();
+  EXPECT_TRUE(IsUint128(first_try_result))
+      << "Result is not Uint128, instead: " << first_try_result;
+
+  auto second_try_result =
+      EvalJs(shell(), write_text_and_print_change_id).ExtractString();
+  EXPECT_TRUE(IsUint128(second_try_result))
+      << "Result is not Uint128, instead: " << second_try_result;
+
+  EXPECT_NE(first_try_result, second_try_result);
 }
 
 }  // namespace content

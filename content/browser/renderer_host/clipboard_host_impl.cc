@@ -15,11 +15,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_util.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -34,6 +36,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
+#include "crypto/hmac.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
@@ -157,9 +160,25 @@ ClipboardHostImpl::~ClipboardHostImpl() {
 
 void ClipboardHostImpl::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
                                           GetSequenceNumberCallback callback) {
-  std::move(callback).Run(
-      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-          clipboard_buffer));
+  const ui::ClipboardSequenceNumberToken seqno =
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(clipboard_buffer);
+  const base::UnguessableToken& salt =
+      static_cast<StoragePartitionImpl*>(
+          render_frame_host().GetProcess()->GetStoragePartition())
+          ->GetPartitionUUIDPerStorageKey(render_frame_host().GetStorageKey());
+
+  // Generate a per-partition sequence number derived from the overall
+  // clipboard sequence number, using HMAC-SHA256 with the domain-string
+  // "clipboard-change-id-", that is:
+  //   HMAC_SHA256(seqno, "clipboard-change-id-"||uuid)
+  const std::array result = crypto::hmac::SignSha256(
+      seqno.value().AsBytes(), base::as_byte_span(base::StrCat(
+                                   {"clipboard-change-id-", salt.ToString()})));
+
+  const base::span result_span(result);
+  std::move(callback).Run(absl::MakeUint128(
+      base::U64FromLittleEndian(result_span.first<8>()),
+      base::U64FromLittleEndian(result_span.subspan<8, 8>())));
 }
 
 void ClipboardHostImpl::ReadAvailableTypes(

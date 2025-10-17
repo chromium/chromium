@@ -71,7 +71,7 @@ ClipboardItem::ClipboardItem(
     const HeapVector<
         std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>&
         representations,
-    ClipboardSequenceNumberToken sequence_number)
+    absl::uint128 sequence_number)
     : sequence_number_(sequence_number),
       creation_time_(base::TimeTicks::Now()) {
   for (const auto& representation : representations) {
@@ -162,7 +162,7 @@ void ClipboardItem::CaptureTelemetry(ExecutionContext* context,
   SystemClipboard* system_clipboard =
       window.GetFrame() ? window.GetFrame()->GetSystemClipboard() : nullptr;
   if (system_clipboard) {
-    ClipboardSequenceNumberToken seqno = system_clipboard->SequenceNumber();
+    absl::uint128 seqno = system_clipboard->SequenceNumber();
     if (seqno != sequence_number_) {
       // Case 1: Clipboard changed between read() and getType()
       UseCounter::Count(context,

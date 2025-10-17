@@ -88,10 +88,6 @@ mojom_component("tokens") {
           cpp = "::blink::AttributionSrcToken"
         },
         {
-          mojom = "blink.mojom.ClipboardSequenceNumberToken"
-          cpp = "::blink::ClipboardSequenceNumberToken"
-        },
-        {
           mojom = "blink.mojom.ExecutionContextToken"
           cpp = "::blink::ExecutionContextToken"
         },

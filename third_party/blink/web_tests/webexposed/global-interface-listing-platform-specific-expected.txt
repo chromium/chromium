@@ -96,6 +96,7 @@ interface Clipboard : EventTarget
     setter onclipboardchange
 interface ClipboardChangeEvent : Event
     attribute @@toStringTag
+    getter changeId
     getter types
     method constructor
 interface Navigator

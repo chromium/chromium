@@ -3,5 +3,6 @@
 // found in the LICENSE file.
 
 dictionary ClipboardChangeEventInit : EventInit {
-    sequence<DOMString> types;
+  sequence<DOMString> types;
+  bigint changeId;
 };

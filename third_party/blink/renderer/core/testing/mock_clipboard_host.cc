@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 
 #include "base/containers/contains.h"
+#include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -56,7 +57,10 @@ void MockClipboardHost::WriteFiles(mojom::blink::ClipboardFilesPtr files) {
 void MockClipboardHost::GetSequenceNumber(
     mojom::ClipboardBuffer clipboard_buffer,
     GetSequenceNumberCallback callback) {
-  std::move(callback).Run(sequence_number_);
+  auto bytes = sequence_number_.value().AsBytes();
+  std::move(callback).Run(
+      absl::MakeUint128(base::U64FromLittleEndian(bytes.first<8>()),
+                        base::U64FromLittleEndian(bytes.last<8>())));
 }
 
 Vector<String> MockClipboardHost::ReadStandardFormatNames() {

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event.h"
+#include "third_party/blink/renderer/platform/bindings/bigint.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
@@ -110,13 +111,13 @@ void ClipboardChangeEventController::OnClipboardChanged() {
   if (window.document()->hasFocus()) {
     fire_clipboardchange_on_focus_ = false;
     if (event_target_) {
-      Vector<String> available_types =
-          GetSystemClipboard()->ReadAvailableTypes();
+      SystemClipboard* system_clipboard = GetSystemClipboard();
+      Vector<String> available_types = system_clipboard->ReadAvailableTypes();
       Vector<String> standard_types =
           FilterForStandardMimeTypes(available_types);
 
-      event_target_->DispatchEvent(
-          *ClipboardChangeEvent::Create(standard_types));
+      event_target_->DispatchEvent(*ClipboardChangeEvent::Create(
+          standard_types, blink::BigInt(system_clipboard->SequenceNumber())));
 
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kClipboardChangeEventFired);

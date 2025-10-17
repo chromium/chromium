@@ -57,6 +57,7 @@
 #include "printing/page_range.h"
 #include "printing/print_settings.h"
 #include "services/network/public/mojom/cors.mojom.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -2206,12 +2207,12 @@ void TestRunnerBindings::CopyImageThen(int x,
   frame_->GetBrowserInterfaceBroker().GetInterface(
       remote_clipboard.BindNewPipeAndPassReceiver());
 
-  blink::ClipboardSequenceNumberToken sequence_number_before;
+  absl::uint128 sequence_number_before;
   CHECK(remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
                                             &sequence_number_before));
   GetWebFrame()->CopyImageAtForTesting(gfx::Point(x, y));
   auto sequence_number_after = sequence_number_before;
-  while (sequence_number_before.value() == sequence_number_after.value()) {
+  while (sequence_number_before == sequence_number_after) {
     // TODO(crbug.com/40588468): Ideally we would CHECK here that the mojo call
     // succeeded, but this crashes under some circumstances (crbug.com/1232810).
     remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,

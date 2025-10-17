@@ -51,7 +51,7 @@ class CORE_EXPORT SystemClipboard final
   // Inherited from ClipboardListener.
   void OnClipboardDataChanged() override;
 
-  ClipboardSequenceNumberToken SequenceNumber();
+  absl::uint128 SequenceNumber();
   bool IsSelectionMode() const;
   void SetSelectionMode(bool);
   Vector<String> ReadAvailableTypes();

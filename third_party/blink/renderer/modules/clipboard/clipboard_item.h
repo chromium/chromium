@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_ITEM_H_
 
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -44,8 +45,7 @@ class MODULES_EXPORT ClipboardItem final : public ScriptWrappable {
       const HeapVector<
           std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>&
           representations,
-      ClipboardSequenceNumberToken sequence_number =
-          ClipboardSequenceNumberToken());
+      absl::uint128 sequence_number = 0);
 
   // Returns the MIME types contained in the `ClipboardItem`.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboarditem-types
@@ -87,7 +87,7 @@ class MODULES_EXPORT ClipboardItem final : public ScriptWrappable {
   // The vector of custom MIME types that have a "web " prefix.
   Vector<String> custom_format_types_;
 
-  ClipboardSequenceNumberToken sequence_number_;
+  absl::uint128 sequence_number_;
   HashMap<String, base::TimeTicks> last_get_type_calls_;
   base::TimeTicks creation_time_;
 };

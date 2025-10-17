@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_CHANGE_EVENT_H_
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/platform/bindings/bigint.h"
 
 namespace blink {
 
@@ -19,12 +20,13 @@ class ClipboardChangeEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ClipboardChangeEvent(const Vector<String>& types);
-  ClipboardChangeEvent(const ClipboardChangeEventInit* initializer);
+  ClipboardChangeEvent(const Vector<String>& types, const BigInt& change_id);
+  explicit ClipboardChangeEvent(const ClipboardChangeEventInit* initializer);
   ~ClipboardChangeEvent() override;
 
-  static ClipboardChangeEvent* Create(const Vector<String>& types) {
-    return MakeGarbageCollected<ClipboardChangeEvent>(types);
+  static ClipboardChangeEvent* Create(const Vector<String>& types,
+                                      const BigInt& change_id) {
+    return MakeGarbageCollected<ClipboardChangeEvent>(types, change_id);
   }
 
   static ClipboardChangeEvent* Create(
@@ -35,9 +37,11 @@ class ClipboardChangeEvent final : public Event {
   void Trace(Visitor*) const override;
 
   Vector<String> types() const;
+  blink::BigInt changeId() const;
 
  private:
   Vector<String> types_;
+  BigInt change_id_;
 };
 
 }  // namespace blink
