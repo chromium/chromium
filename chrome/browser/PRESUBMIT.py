@@ -4,7 +4,7 @@
 
 """Presubmit script for Chromium browser code."""
 
-
+import os
 import re
 
 # Checks whether an autofill-related browsertest fixture class inherits from
@@ -280,6 +280,67 @@ def _CheckAshSourcesForBadIncludes(input_api, output_api):
   return results
 
 
+###############################################################################
+# Check if all flag_descriptions are used from about_flags (cleanup)
+###############################################################################
+
+FLAG_DESCRIPTIONS  = 'chrome/browser/flag_descriptions.h'
+ABOUT_FLAGS        = 'chrome/browser/about_flags.cc'
+IDENTIFIER_FLAG_RE = re.compile(r'\bk[A-Z][A-Za-z0-9]+\b')
+PREPROCESSOR_RE    = re.compile(r'^#if(?!ndef CHROME_BROWSER)', re.MULTILINE)
+
+def _ReadFile(input_api, relpath: str):
+  root = input_api.change.RepositoryRoot()
+  abspath = os.path.join(root, relpath)
+  with open(abspath, 'r', encoding='utf-8', errors='ignore') as f:
+    return f.read()
+
+def _NaiveExtractIdentifiers(text: str) -> set[str]:
+    return set(IDENTIFIER_FLAG_RE.findall(text))
+
+def _ReadIdentifiersFromFile(input_api, relpath: str):
+  root = input_api.change.RepositoryRoot()
+  abspath = os.path.join(root, relpath)
+  with open(abspath, 'r', encoding='utf-8', errors='ignore') as f:
+    return set(IDENTIFIER_FLAG_RE.findall(f.read()))
+
+def _FlagFilesHaveChanged(input_api) -> bool:
+  """ Detect if any of the files of interest have changed. """
+  flag_files = {FLAG_DESCRIPTIONS, ABOUT_FLAGS}
+  for f in input_api.AffectedFiles(include_deletes=False):
+    if f.LocalPath().replace('\\', '/') in flag_files:
+      return True
+  return False
+
+def _CheckForUnwantedFlagDescriptionContent(input_api, output_api):
+  result = []
+
+  fd_content = _ReadFile(input_api, FLAG_DESCRIPTIONS)
+  about_content = _ReadFile(input_api, ABOUT_FLAGS)
+
+  fd_idents = _NaiveExtractIdentifiers(fd_content)
+  about_idents = _NaiveExtractIdentifiers(about_content)
+
+  redundant_idents = sorted(list(fd_idents - about_idents))
+  if len(redundant_idents) > 0:
+    result.append(output_api.PresubmitError(
+        'The following flag_descriptions.h identifiers are no longer needed '
+        'and should be removed:\n\t- ' + '\n\t- '.join(redundant_idents)))
+
+  # Check for newly added #if(defined) -- can't have #else/#elif/#endif without
+  # #if, so no need to look for that.
+  if PREPROCESSOR_RE.search(fd_content):
+    result.append(output_api.PresubmitError(
+        'Preprocessor conditional directives should not be used in {}'.format(FLAG_DESCRIPTIONS)))
+
+  # TODO: check if fd_flags are sorted.
+
+  return result
+
+###############################################################################
+# Presubmit aggregator
+###############################################################################
+
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
@@ -294,7 +355,11 @@ def _CommonChecks(input_api, output_api):
   results.extend(_CheckForUselessExterns(input_api, output_api))
   results.extend(_CheckBuildFilesForIndirectAshSources(input_api, output_api))
   results.extend(_CheckAshSourcesForBadIncludes(input_api, output_api))
+
+  if _FlagFilesHaveChanged(input_api):
+    results.extend(_CheckForUnwantedFlagDescriptionContent(input_api, output_api))
   return results
+
 
 def CheckChangeOnUpload(input_api, output_api):
   return _CommonChecks(input_api, output_api)
