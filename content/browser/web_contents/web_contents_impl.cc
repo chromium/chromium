@@ -1815,6 +1815,10 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
   }
 }
 
+SecureEmbedDelegate* WebContentsImpl::GetSecureEmbedDelegate() {
+  return secure_embed_delegate_;
+}
+
 const RenderFrameHostImpl* WebContentsImpl::GetPrimaryMainFrame() const {
   return primary_frame_tree_.root()->current_frame_host();
 }

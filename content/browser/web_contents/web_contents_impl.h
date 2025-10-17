@@ -386,6 +386,8 @@ class CONTENT_EXPORT WebContentsImpl
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() final;
   void SetDelegate(WebContentsDelegate* delegate) override;
+  SecureEmbedDelegate* GetSecureEmbedDelegate() override;
+
   NavigationControllerImpl& GetController() override;
   const NavigationControllerImpl& GetController() const override;
   BrowserContext* GetBrowserContext() override;

@@ -96,6 +96,9 @@ class WebContentsViewChildFrame : public WebContentsView,
       RenderWidgetHost* render_widget_host);
 
  private:
+  WebContentsImpl* GetHostingWebContents();
+  const WebContentsImpl* GetHostingWebContents() const;
+
   WebContentsView* GetOuterView();
   const WebContentsView* GetOuterView() const;
 

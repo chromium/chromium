@@ -447,6 +447,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual WebContentsDelegate* GetDelegate() = 0;
   virtual void SetDelegate(WebContentsDelegate* delegate) = 0;
 
+  virtual SecureEmbedDelegate* GetSecureEmbedDelegate() = 0;
+
   // Gets the NavigationController for primary frame tree of this WebContents.
   // See comments on NavigationController for more details.
   virtual NavigationController& GetController() = 0;

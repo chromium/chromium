@@ -11,6 +11,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/secure_embed_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -48,25 +49,37 @@ WebContentsViewChildFrame::WebContentsViewChildFrame(
 
 WebContentsViewChildFrame::~WebContentsViewChildFrame() = default;
 
-WebContentsView* WebContentsViewChildFrame::GetOuterView() {
+WebContentsImpl* WebContentsViewChildFrame::GetHostingWebContents() {
   if (auto* outer_web_contents = web_contents_->GetOuterWebContents()) {
-    return outer_web_contents->GetView();
+    return outer_web_contents;
+  }
+  if (auto* secure_embed_delegate = web_contents_->GetSecureEmbedDelegate()) {
+    return static_cast<WebContentsImpl*>(
+        secure_embed_delegate->GetEmbedderWebContents());
+  }
+  return nullptr;
+}
+
+const WebContentsImpl* WebContentsViewChildFrame::GetHostingWebContents()
+    const {
+  return const_cast<WebContentsViewChildFrame*>(this)->GetHostingWebContents();
+}
+
+WebContentsView* WebContentsViewChildFrame::GetOuterView() {
+  if (auto* hosting_web_contents = GetHostingWebContents()) {
+    return hosting_web_contents->GetView();
   }
 
   return nullptr;
 }
 
 const WebContentsView* WebContentsViewChildFrame::GetOuterView() const {
-  if (auto* outer_web_contents = web_contents_->GetOuterWebContents()) {
-    return outer_web_contents->GetView();
-  }
-
-  return nullptr;
+  return const_cast<WebContentsViewChildFrame*>(this)->GetOuterView();
 }
 
 RenderViewHostDelegateView* WebContentsViewChildFrame::GetOuterDelegateView() {
   RenderViewHostImpl* outer_rvh = static_cast<RenderViewHostImpl*>(
-      web_contents_->GetOuterWebContents()->GetRenderViewHost());
+      GetHostingWebContents()->GetRenderViewHost());
   CHECK(outer_rvh);
   return outer_rvh->GetDelegate()->GetDelegateView();
 }
@@ -262,7 +275,7 @@ void WebContentsViewChildFrame::StartDragging(
     view->StartDragging(drop_data, source_origin, ops, image, cursor_offset,
                         drag_obj_rect, event_info, source_rwh);
   } else {
-    web_contents_->GetOuterWebContents()->SystemDragEnded(source_rwh);
+    GetHostingWebContents()->SystemDragEnded(source_rwh);
   }
 }
 
