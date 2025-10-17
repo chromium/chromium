@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -97,6 +98,14 @@ bool HistorySyncOptinService::
   return true;
 }
 
+void HistorySyncOptinService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void HistorySyncOptinService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool HistorySyncOptinService::Initialize(
     const AccountInfo& account_info,
     std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
@@ -132,10 +141,17 @@ void HistorySyncOptinService::Reset() {
   history_sync_optin_observation_.Reset();
   history_sync_optin_helper_.reset();
   history_sync_optin_delegate_.reset();
+  for (Observer& observer : observers_) {
+    observer.OnHistorySyncOptinServiceReset();
+  }
 }
 
 void HistorySyncOptinService::OnHistorySyncOptinHelperFlowFinished() {
-  Reset();
+  // As the history_sync_optin_helper_ finishes the flow, it will be destroyed
+  // by this call. Post a task to avoid re-entrant calls.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&HistorySyncOptinService::Reset,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HistorySyncOptinService::OnPrimaryAccountChanged(

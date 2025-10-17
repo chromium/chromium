@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 
+#include <cstddef>
+
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -84,6 +89,55 @@ std::unique_ptr<KeyedService> BuildHistorySyncOptinService(
   return std::make_unique<HistorySyncOptinService>(
       Profile::FromBrowserContext(context));
 }
+
+class ResetObserver : public HistorySyncOptinService::Observer {
+ public:
+  explicit ResetObserver(HistorySyncOptinService* history_sync_optin_service) {
+    CHECK(history_sync_optin_service);
+    observation_.Observe(history_sync_optin_service);
+  }
+
+  void WaitForReset() {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+  ~ResetObserver() override = default;
+
+  void StopObserving() { observation_.Reset(); }
+
+ private:
+  void OnHistorySyncOptinServiceReset() override {
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  base::OnceClosure quit_closure_;
+  base::ScopedObservation<HistorySyncOptinService,
+                          HistorySyncOptinService::Observer>
+      observation_{this};
+};
+
+class CrashingObserver : public HistorySyncOptinHelper::Observer {
+ public:
+  explicit CrashingObserver(HistorySyncOptinHelper* helper) : helper_(helper) {
+    observation_.Observe(helper);
+  }
+
+  void OnHistorySyncOptinHelperFlowFinished() override {
+    // If the HistorySyncOptinServer had already deleted the helper on the first
+    // observer's `OnHistorySyncOptinHelperFlowFinished` invocation then this
+    // would crash.
+    helper_->GetAccountStateFetcherForTesting();
+  }
+
+ private:
+  raw_ptr<HistorySyncOptinHelper> helper_;
+  base::ScopedObservation<HistorySyncOptinHelper,
+                          HistorySyncOptinHelper::Observer>
+      observation_{this};
+};
 
 class HistorySyncOptinServiceTest : public testing::Test {
  public:
@@ -197,9 +251,12 @@ TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
       signin_metrics::AccessPoint::kSettings);
   EXPECT_FALSE(flow_started);
 
+  ResetObserver service_observer(service_.get());
   // Complete the first flow.
   std::move(captured_callback.value())
       .Run(HistorySyncOptinHelper::ScreenChoiceResult::kAccepted);
+  // Wait for the synchronous reset of the service_'s state.
+  service_observer.WaitForReset();
 
   // After the previous flow finished a new one can be started.
   auto second_delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
@@ -218,6 +275,7 @@ TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
 // affect the history sync flow of the new profile, which proceeds normally.
 TEST_F(HistorySyncOptinServiceTest,
        FlowInProgressDuringOriginalProfileTeardown) {
+  base::test::TestFuture<void> future;
   base::HistogramTester histogram_tester;
 
   // Sign-in with the managed user account to the existing `profile_`.
@@ -248,18 +306,25 @@ TEST_F(HistorySyncOptinServiceTest,
   IdentityTestEnvironmentProfileAdaptor new_profile_adaptor(
       new_managed_profile);
 
-  base::OnceCallback<void(Profile*, bool)> captured_callback;
   auto* disclaimer_service =
       static_cast<MockProfileManagementDisclaimerService*>(
           ProfileManagementDisclaimerServiceFactory::GetForProfile(
               profile_.get()));
+
+  ResetObserver service_observer(service_.get());
 
   EXPECT_CALL(*disclaimer_service, EnsureManagedProfileForAccount)
       .WillOnce([&](const CoreAccountId&, signin_metrics::AccessPoint,
                     base::OnceCallback<void(Profile*, bool)> callback) {
         MakePrimaryAccountAvailable(original_managed_account_info.email,
                                     &new_profile_adaptor);
-        captured_callback = std::move(callback);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), new_managed_profile, true));
+        // The service is shutdown after the callback above has run.
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindLambdaForTesting([&]() { service_->Shutdown(); }));
       });
 
   auto original_delegate =
@@ -279,24 +344,17 @@ TEST_F(HistorySyncOptinServiceTest,
   // invoke the history sync screen.
   EXPECT_CALL(*new_profile_delegate_ptr,
               ShowHistorySyncOptinScreen(new_managed_profile, testing::_))
-      .Times(1);
+      .WillOnce(testing::InvokeWithoutArgs([&future] { future.SetValue(); }));
 
   // Start the history sync opt-in flow with the managed account.
   bool flow_started = service_->StartHistorySyncOptinFlow(
       original_managed_account_info, std::move(original_delegate),
       signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_TRUE(flow_started);
-
-  ASSERT_TRUE(new_profile_adaptor.identity_test_env()
-                  ->identity_manager()
-                  ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  ASSERT_TRUE(captured_callback);
-  std::move(captured_callback).Run(new_managed_profile, true);
-  // Destroy the service tied to the original profile. It should not affect the
-  // flow.
-  service_->Shutdown();
-  service_.reset();
+  EXPECT_TRUE(future.Wait());
+  // Wait for the original service to be reset.
+  service_observer.WaitForReset();
+  service_observer.StopObserving();
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Started",
@@ -308,6 +366,7 @@ TEST_F(HistorySyncOptinServiceTest,
 // invoke only once the HistorySyncOptinHelper::ShowHistorySyncOptinScreen.
 TEST_F(HistorySyncOptinServiceTest,
        MakesSingleHistorySyncOptinScreenInvocation) {
+  base::test::TestFuture<void> future;
   base::HistogramTester histogram_tester;
 
   // Sign-in with the managed user account to the existing `profile_`.
@@ -325,22 +384,62 @@ TEST_F(HistorySyncOptinServiceTest,
   EXPECT_CALL(*disclaimer_service, EnsureManagedProfileForAccount)
       .WillOnce([&](const CoreAccountId&, signin_metrics::AccessPoint,
                     base::OnceCallback<void(Profile*, bool)> callback) {
-        std::move(callback).Run(profile_.get(), true);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), profile_.get(), true));
       });
 
   auto delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
   auto* delegate_ptr = delegate.get();
   EXPECT_CALL(*delegate_ptr, ShowHistorySyncOptinScreen(testing::_, testing::_))
-      .Times(1);
+      .WillOnce(testing::InvokeWithoutArgs([&future] { future.SetValue(); }));
 
   // Start the history sync opt-in flow with the managed account.
   bool flow_started = service_->StartHistorySyncOptinFlow(
       original_managed_account_info, std::move(delegate),
       signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_TRUE(flow_started);
+  EXPECT_TRUE(future.Wait());
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Started",
       /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
       /*expected_bucket_count=*/1);
+}
+
+// Regression test ensuring that the service doesn't destruct prematurely it's
+// objects (including the helper), while they are still in use.
+TEST_F(HistorySyncOptinServiceTest,
+       MultipleObserversDoNotCrashOnFlowCompletion) {
+  AccountInfo account_info =
+      MakePrimaryAccountAvailable(kMainEmail, identity_test_env_adaptor_.get());
+  DisableHistorySync(profile_.get());
+
+  auto delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+
+  HistorySyncOptinHelper::FlowCompletedCallback captured_callback;
+  EXPECT_CALL(*delegate_ptr,
+              ShowHistorySyncOptinScreen(profile_.get(), testing::_))
+      .WillOnce([&](Profile* profile,
+                    HistorySyncOptinHelper::FlowCompletedCallback
+                        history_optin_completed_callback) {
+        captured_callback = std::move(history_optin_completed_callback);
+      });
+
+  service_->StartHistorySyncOptinFlow(
+      account_info, std::move(delegate),
+      signin_metrics::AccessPoint::kAccountMenu);
+
+  HistorySyncOptinHelper* helper =
+      service_->GetHistorySyncOptinHelperForTesting();
+  ASSERT_TRUE(helper);
+
+  CrashingObserver observer(helper);
+
+  std::move(captured_callback)
+      .value()
+      .Run(HistorySyncOptinHelper::ScreenChoiceResult::kAccepted);
+  // Completing the flow results in destructing the helper, but this should
+  // happen only when it is no longer in use.
 }

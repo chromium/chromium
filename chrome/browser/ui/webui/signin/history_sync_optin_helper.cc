@@ -372,8 +372,7 @@ void HistorySyncOptinHelper::NotifyFlowFinishedWithHistorySyncScreenAttempted(
   if (user_choice != ScreenChoiceResult::kScreenSkipped) {
     RecordMetricsForHistorySyncUserChoice(user_choice, access_point());
   }
-  // Observer notification must be the last step, as the observer
-  // may delete this helper (see HistorySyncOptinService).
+
   for (Observer& observer : observers_) {
     observer.OnHistorySyncOptinHelperFlowFinished();
   }

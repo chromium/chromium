@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -37,6 +38,15 @@ class HistorySyncOptinService : public KeyedService,
                                 public HistorySyncOptinHelper::Observer,
                                 public signin::IdentityManager::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the HistorySyncOptinService resets its state.
+    virtual void OnHistorySyncOptinServiceReset() {}
+
+   protected:
+    ~Observer() override = default;
+  };
+
   explicit HistorySyncOptinService(Profile* profile);
   ~HistorySyncOptinService() override;
   HistorySyncOptinService(const HistorySyncOptinService&) = delete;
@@ -53,9 +63,21 @@ class HistorySyncOptinService : public KeyedService,
       std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
       signin_metrics::AccessPoint access_point);
 
+  base::WeakPtr<HistorySyncOptinService> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  HistorySyncOptinHelper* GetHistorySyncOptinHelperForTesting() {
+    return history_sync_optin_helper_.get();
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HistorySyncOptinServiceTest,
                            FlowInProgressDuringOriginalProfileTeardown);
+  FRIEND_TEST_ALL_PREFIXES(HistorySyncOptinServiceTest, MultipleObservers);
 
   bool Initialize(const AccountInfo& account_info,
                   std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
@@ -91,6 +113,10 @@ class HistorySyncOptinService : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_scoped_observation_{this};
+
+  base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<HistorySyncOptinService> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_HISTORY_SYNC_OPTIN_SERVICE_H_
