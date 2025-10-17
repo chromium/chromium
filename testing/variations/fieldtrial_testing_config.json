@@ -9744,7 +9744,6 @@
     "EnableBestEffortTaskInhibitingPolicy": [
         {
             "platforms": [
-                "android",
                 "ios",
                 "linux",
                 "mac",

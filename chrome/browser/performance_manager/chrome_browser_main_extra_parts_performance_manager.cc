@@ -229,13 +229,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           performance_manager::policies::UrgentPageDiscardingPolicy>());
 #endif  // URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
 
-  if (base::FeatureList::IsEnabled(performance_manager::features::
-                                       kEnableBestEffortTaskInhibitingPolicy)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::BestEffortTaskInhibitingPolicy>());
-  }
-
   if (base::FeatureList::IsEnabled(
           performance_manager::features::
               kBackgroundTabLoadingFromPerformanceManager)) {
@@ -266,6 +259,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(
       std::make_unique<performance_manager::policies::MemorySaverModePolicy>());
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  if (base::FeatureList::IsEnabled(performance_manager::features::
+                                       kEnableBestEffortTaskInhibitingPolicy)) {
+    graph->PassToGraph(
+        std::make_unique<
+            performance_manager::policies::BestEffortTaskInhibitingPolicy>());
+  }
 
   graph->PassToGraph(
       std::make_unique<performance_manager::metrics::PageResourceMonitor>());
