@@ -166,4 +166,4 @@ crbug.com/389367896 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.wo
 crbug.com/415293999 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Skip ]
 
 # Gardener 2025-08-26
-crbug.com/441382126 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Failure ]
+crbug.com/441382126 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Timeout Failure ]
