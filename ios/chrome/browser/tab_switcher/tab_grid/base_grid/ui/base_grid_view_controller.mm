@@ -79,12 +79,28 @@ NSString* const kGroupCellIdentifier = @"GroupGridCellIdentifier";
 
 CGFloat const kCellMaxHeightForEmptyThumbnailCenteredPortraitLayout = 275;
 
+// Threshold when dragging a cell through the far side of another cell in which
+// it should be considered a reorder instead of a highlight preview to
+// create/add to a group.
+// TODO(crbug.com/450613202): Define a fixed point margin for different device
+// size support.
+CGFloat kDragReorderMargin = 0.2;
+
 // Returns the accessibility identifier to set on a GroupGridCell when
 // positioned at the given index.
 NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   return [NSString
       stringWithFormat:@"%@%ld", kGroupGridCellIdentifierPrefix, index];
 }
+
+// The entry direction of a cell drag into a neighboring cell.
+typedef NS_ENUM(NSInteger, DragEntrySide) {
+  DragEntrySideNone,
+  DragEntrySideRight,
+  DragEntrySideLeft,
+  DragEntrySideDown,
+  DragEntrySideUp
+};
 
 }  // namespace
 
@@ -127,6 +143,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // Tracks if the items are in a batch action, which are the "Close All" or
 // "Undo" the close all.
 @property(nonatomic) BOOL isClosingAllOrUndoRunning;
+// Caches the initial entry direction for a cell drag into other cells.
+@property(nonatomic, strong)
+    NSMutableDictionary<NSIndexPath*, NSNumber*>* entryDirectionCache;
 @end
 
 @implementation BaseGridViewController {
@@ -261,6 +280,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   self.pointerInteractionCells = [NSHashTable<GridCell*> weakObjectsHashTable];
 
   [self updateTabsSectionHeaderType];
+
+  if (IsTabGridDragAndDropEnabled()) {
+    self.entryDirectionCache = [NSMutableDictionary dictionary];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -707,6 +730,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
+  if (IsTabGridDragAndDropEnabled()) {
+    [self.entryDirectionCache removeAllObjects];
+  }
   self.dragEndAtNewIndex = NO;
   self.localDragActionInProgress = YES;
 
@@ -741,6 +767,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
      dragSessionDidEnd:(id<UIDragSession>)session {
+  if (IsTabGridDragAndDropEnabled()) {
+    [self clearCurrentlyHighlightedCell];
+    [self.entryDirectionCache removeAllObjects];
+  }
   self.localDragActionInProgress = NO;
 
   DragDropItem dragEvent = self.dragEndAtNewIndex
@@ -891,15 +921,61 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         initWithDropOperation:UIDropOperationForbidden
                        intent:UICollectionViewDropIntentUnspecified];
   }
-  // This is how the explicit forbidden icon or (+) copy icon is shown. Move has
-  // no explicit icon.
-  UIDropOperation dropOperation = [self.dragDropHandler
-      dropOperationForDropSession:session
-                          toIndex:destinationIndexPath.item];
-  return [[UICollectionViewDropProposal alloc]
-      initWithDropOperation:dropOperation
-                     intent:
-                         UICollectionViewDropIntentInsertAtDestinationIndexPath];
+
+  CGPoint locationInCollectionView = [session locationInView:collectionView];
+  NSIndexPath* destinationItemIndexPath =
+      [collectionView indexPathForItemAtPoint:locationInCollectionView];
+  NSIndexPath* draggedItemIndexPath = [self.diffableDataSource
+      indexPathForItemIdentifier:_draggedItemIdentifier];
+  if (IsTabGridDragAndDropEnabled() && destinationItemIndexPath &&
+      draggedItemIndexPath != destinationItemIndexPath) {
+    // If the drag goes into a different cell's frame, either highlight or allow
+    // for reorder depending on location.
+    DragEntrySide entryDirection = DragEntrySideNone;
+    NSNumber* cachedDirectionNum =
+        self.entryDirectionCache[destinationItemIndexPath];
+    if (cachedDirectionNum) {
+      entryDirection =
+          static_cast<DragEntrySide>([cachedDirectionNum integerValue]);
+    } else {
+      entryDirection =
+          [self calculateEntryDirectionFromSource:draggedItemIndexPath
+                                         toTarget:destinationItemIndexPath];
+      self.entryDirectionCache[destinationItemIndexPath] = @(entryDirection);
+    }
+
+    BOOL shouldGroup =
+        [self shouldGroupForDragAtLocation:locationInCollectionView
+                         inCellAtIndexPath:destinationItemIndexPath
+                        withEntryDirection:entryDirection];
+    if (shouldGroup) {
+      [self highlightCellAtIndexPath:destinationItemIndexPath];
+      return [[UICollectionViewDropProposal alloc]
+          initWithDropOperation:UIDropOperationCopy
+                         intent:
+                             UICollectionViewDropIntentInsertIntoDestinationIndexPath];
+    } else {
+      [self clearCurrentlyHighlightedCell];
+      return [[UICollectionViewDropProposal alloc]
+          initWithDropOperation:UIDropOperationMove
+                         intent:
+                             UICollectionViewDropIntentInsertAtDestinationIndexPath];
+    }
+  } else {
+    if (IsTabGridDragAndDropEnabled()) {
+      [self clearCurrentlyHighlightedCell];
+    }
+
+    // This is how the explicit forbidden icon or (+) copy icon is shown. Move
+    // has no explicit icon.
+    UIDropOperation dropOperation = [self.dragDropHandler
+        dropOperationForDropSession:session
+                            toIndex:destinationIndexPath.item];
+    return [[UICollectionViewDropProposal alloc]
+        initWithDropOperation:dropOperation
+                       intent:
+                           UICollectionViewDropIntentInsertAtDestinationIndexPath];
+  }
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -982,6 +1058,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidExit:(id<UIDropSession>)session {
+  if (IsTabGridDragAndDropEnabled()) {
+    [self clearCurrentlyHighlightedCell];
+  }
   if (!_localDragActionInProgress) {
     // Enable back toolbar buttons if no items are dragged in the current
     // collection view.
@@ -991,6 +1070,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
      dropSessionDidEnd:(id<UIDropSession>)session {
+  if (IsTabGridDragAndDropEnabled()) {
+    [self clearCurrentlyHighlightedCell];
+  }
   if (IsPinnedTabsEnabled()) {
     // Notify the delegate that a drag ends from another app.
     [self.delegate gridViewControllerDropAnimationDidEnd:self];
@@ -1990,6 +2072,92 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   return EmptyThumbnailLayoutTypePortrait;
 }
 
+// Calculates the entry drag direction based on the relative position between
+// `sourceIndexPath` and `targetIndexPath`.
+- (DragEntrySide)calculateEntryDirectionFromSource:(NSIndexPath*)sourceIndexPath
+                                          toTarget:
+                                              (NSIndexPath*)targetIndexPath {
+  if (!sourceIndexPath || !targetIndexPath ||
+      [sourceIndexPath isEqual:targetIndexPath]) {
+    return DragEntrySideNone;
+  }
+
+  // Get the frame of the source and target items
+  UICollectionViewLayoutAttributes* sourceAttrs =
+      [self.collectionView layoutAttributesForItemAtIndexPath:sourceIndexPath];
+  UICollectionViewLayoutAttributes* targetAttrs =
+      [self.collectionView layoutAttributesForItemAtIndexPath:targetIndexPath];
+  if (!sourceAttrs || !targetAttrs) {
+    return DragEntrySideNone;
+  }
+
+  // Use the centers of the cells for a stable vector calculation
+  CGPoint sourceCenter = sourceAttrs.center;
+  CGPoint targetCenter = targetAttrs.center;
+  CGFloat deltaX = targetCenter.x - sourceCenter.x;
+  CGFloat deltaY = targetCenter.y - sourceCenter.y;
+  if (fabs(deltaX) > fabs(deltaY)) {
+    // Horizontal direction.
+    if (deltaX > 0) {
+      return DragEntrySideLeft;  // Moving from Left to Right
+    } else {
+      return DragEntrySideRight;  // Moving from Right to Left
+    }
+  } else {
+    // Vertical direction.
+    if (deltaY > 0) {
+      return DragEntrySideUp;  // Moving from Top to Bottom
+    } else {
+      return DragEntrySideDown;  // Moving from Bottom to Top
+    }
+  }
+}
+
+// Returns NO if the drag has gone through to the far side of a cell at
+// `destinationItemIndexPath`.
+- (BOOL)shouldGroupForDragAtLocation:(CGPoint)locationInCollectionView
+                   inCellAtIndexPath:(NSIndexPath*)destinationItemIndexPath
+                  withEntryDirection:(DragEntrySide)entryDirection {
+  UICollectionViewLayoutAttributes* attributes = [self.collectionView
+      layoutAttributesForItemAtIndexPath:destinationItemIndexPath];
+  CGRect cellFrame = attributes.frame;
+  switch (entryDirection) {
+    case DragEntrySideLeft:  // Entered from Left, Reorder zone is the
+      // rightmost 20%.
+      if (locationInCollectionView.x >
+          (cellFrame.origin.x +
+           cellFrame.size.width * (1.0 - kDragReorderMargin))) {
+        return NO;
+      }
+      break;
+    case DragEntrySideRight:  // Entered from Right, Reorder zone is the
+      // leftmost 20%.
+      if (locationInCollectionView.x <
+          (cellFrame.origin.x + cellFrame.size.width * kDragReorderMargin)) {
+        return NO;
+      }
+      break;
+    case DragEntrySideUp:  // Entered from Top, Reorder zone is the
+      // bottommost 20%.
+      if (locationInCollectionView.y >
+          (cellFrame.origin.y +
+           cellFrame.size.height * (1.0 - kDragReorderMargin))) {
+        return NO;
+      }
+      break;
+    case DragEntrySideDown:  // Entered from Bottom, Reorder zone is the
+      // topmost 20%.
+      if (locationInCollectionView.y <
+          (cellFrame.origin.y + cellFrame.size.height * kDragReorderMargin)) {
+        return NO;
+      }
+      break;
+    case DragEntrySideNone:
+      NOTREACHED();
+  }
+  return YES;
+}
+
 // Highlights the cell at `indexPath`.
 - (void)highlightCellAtIndexPath:(NSIndexPath*)indexPath {
   if (_highlightedGroupIndexPath == indexPath) {
@@ -2020,6 +2188,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       GroupGridCell* groupGridCell = ObjCCastStrict<GroupGridCell>(cell);
       [groupGridCell setHighlightForGrouping:NO];
     }
+    [self.entryDirectionCache removeObjectForKey:_highlightedGroupIndexPath];
     _highlightedGroupIndexPath = nil;
   }
 }
