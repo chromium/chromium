@@ -527,20 +527,8 @@ void CanvasResourceSharedImage::WaitSyncToken() {
 }
 
 void CanvasResourceSharedImage::GetSyncToken() {
-  if (GetClientSharedImage()->is_software()) {
-    // This class doesn't currently have a way of verifying the sync token
-    // within this call for software SharedImages, so it instead ensures that it
-    // is verified at the time of generation.
-    DCHECK(sync_token().verified_flush());
-  }
-
-  if (is_cross_thread()) {
-    // Sync token should be generated at Transfer time, which must always be
-    // called before cross-thread usage. And since we don't allow writes on
-    // another thread, the sync token generated at Transfer time shouldn't
-    // have been invalidated.
-    DCHECK(sync_token().verified_flush());
-  }
+  CHECK(!GetClientSharedImage()->is_software());
+  DCHECK(!is_cross_thread());
 
   auto* raster_interface = RasterInterface();
 
