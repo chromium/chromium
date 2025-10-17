@@ -9,7 +9,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
-#include "components/password_manager/core/browser/actor_login/internal/actor_login_util.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -84,7 +84,8 @@ Credential PasswordFormToCredential(
            password_manager::PasswordForm::MatchType::kGrouped);
   Credential credential;
   credential.username = form.username_value;
-  credential.source_site_or_app = GetSourceSiteOrAppFromUrl(form.url);
+  credential.source_site_or_app =
+      ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(form.url);
   credential.request_origin = request_origin;
   credential.immediatelyAvailableToLogin = immediately_available_to_login;
   credential.has_persistent_permission = form.actor_login_approved;
@@ -127,8 +128,10 @@ ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
 
   password_manager::PasswordFormCache* form_cache =
       password_manager_->GetPasswordFormCache();
+  ActorLoginFormFinder login_form_finder(client);
   password_manager::PasswordFormManager* signin_form_manager =
-      form_cache ? GetSigninFormManager(request_origin_, form_cache) : nullptr;
+      form_cache ? login_form_finder.GetSigninFormManager(request_origin_)
+                 : nullptr;
 
   if (signin_form_manager) {
     immediately_available_to_login_ = true;

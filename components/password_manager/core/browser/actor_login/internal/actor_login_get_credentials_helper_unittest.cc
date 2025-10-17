@@ -41,6 +41,11 @@ namespace {
 class FakePasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
+  MOCK_METHOD(password_manager::PasswordManagerInterface*,
+              GetPasswordManager,
+              (),
+              (override, const));
+
   FakePasswordManagerClient() {
     profile_store_ = base::MakeRefCounted<password_manager::TestPasswordStore>(
         password_manager::IsAccountStore(false));
@@ -95,6 +100,8 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
     ON_CALL(password_manager_, GetPasswordFormCache())
         .WillByDefault(Return(&form_cache_));
     ON_CALL(password_manager_, GetClient()).WillByDefault(Return(&client_));
+    ON_CALL(client_, GetPasswordManager)
+        .WillByDefault(Return(&password_manager_));
   }
 
   void TearDown() override {

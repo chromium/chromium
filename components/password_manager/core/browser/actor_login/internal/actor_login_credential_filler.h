@@ -14,6 +14,8 @@
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "url/gurl.h"
 
+class ActorLoginFormFinder;
+
 namespace password_manager {
 class PasswordManagerInterface;
 }  // namespace password_manager
@@ -109,6 +111,9 @@ class ActorLoginCredentialFiller {
 
   // Safe to access from everywhere apart from the destructor.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // Helper object for finding login forms.
+  std::unique_ptr<ActorLoginFormFinder> login_form_finder_;
 
   // The callback to call with the result of the login attempt.
   LoginStatusResultOrErrorReply callback_;

@@ -52,6 +52,11 @@ constexpr char kTestUrl[] = "https://example.com/login";
 class FakePasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
+  MOCK_METHOD(password_manager::PasswordManagerInterface*,
+              GetPasswordManager,
+              (),
+              (override, const));
+
   FakePasswordManagerClient() {
     profile_store_ = base::MakeRefCounted<password_manager::TestPasswordStore>(
         password_manager::IsAccountStore(false));
@@ -149,6 +154,8 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
     SetUpGetCredentialsDeps();
     ON_CALL(mock_password_manager_, GetClient())
         .WillByDefault(Return(&client_));
+    ON_CALL(client_, GetPasswordManager)
+        .WillByDefault(Return(&mock_password_manager_));
   }
 
   void SetUpGetCredentialsDeps() {
@@ -158,6 +165,8 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(Return(&mock_form_cache_));
     ON_CALL(mock_form_cache_, GetFormManagers())
         .WillByDefault(Return(base::span(form_managers_)));
+    ON_CALL(client_, GetPasswordManager)
+        .WillByDefault(Return(&mock_password_manager_));
   }
 
  protected:

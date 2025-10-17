@@ -17,7 +17,7 @@
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
-#include "components/password_manager/core/browser/actor_login/internal/actor_login_util.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -99,6 +99,7 @@ ActorLoginCredentialFiller::ActorLoginCredentialFiller(
       credential_(credential),
       should_store_permission_(should_store_permission),
       client_(client),
+      login_form_finder_(std::make_unique<ActorLoginFormFinder>(client_)),
       callback_(std::move(callback)) {}
 
 ActorLoginCredentialFiller::~ActorLoginCredentialFiller() = default;
@@ -130,7 +131,7 @@ void ActorLoginCredentialFiller::AttemptLogin(
   CHECK(form_cache);
 
   PasswordFormManager* signin_form_manager =
-      GetSigninFormManager(origin_, form_cache);
+      login_form_finder_->GetSigninFormManager(origin_);
   if (!signin_form_manager) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_NO_SIGNIN_FORM);
     std::move(callback_).Run(LoginStatusResult::kErrorNoSigninForm);
@@ -188,8 +189,8 @@ const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
   for (const password_manager::PasswordForm& stored_credential_form :
        signin_form_manager.GetBestMatches()) {
     if (stored_credential_form.username_value == credential_.username &&
-        GetSourceSiteOrAppFromUrl(stored_credential_form.url) ==
-            credential_.source_site_or_app) {
+        ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(
+            stored_credential_form.url) == credential_.source_site_or_app) {
       matching_stored_credential = &stored_credential_form;
       break;
     }
@@ -283,7 +284,7 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
 
     const password_manager::PasswordForm* parsed_form =
         manager->GetParsedObservedForm();
-    if (!parsed_form || !IsLoginForm(*parsed_form)) {
+    if (!parsed_form || !login_form_finder_->IsLoginForm(*parsed_form)) {
       continue;
     }
     if (should_store_permission_) {

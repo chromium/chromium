@@ -12,12 +12,12 @@ source_set("delegate") {
     "actor_login_credential_filler.cc",
     "actor_login_credential_filler.h",
     "actor_login_delegate.h",
+    "actor_login_form_finder.cc",
+    "actor_login_form_finder.h",
     "actor_login_get_credentials_helper.cc",
     "actor_login_get_credentials_helper.h",
     "actor_login_metrics.cc",
     "actor_login_metrics.h",
-    "actor_login_util.cc",
-    "actor_login_util.h",
   ]
 
   visibility = [
