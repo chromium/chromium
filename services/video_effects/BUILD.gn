@@ -3,56 +3,8 @@
 # found in the LICENSE file.
 
 import("//services/video_effects/args.gni")
-import("//third_party/mediapipe/features.gni")
 
 if (enable_video_effects) {
-  source_set("service") {
-    public = [
-      "gpu_channel_host_provider.h",
-      "video_effects_processor_impl.h",
-      "video_effects_service_impl.h",
-    ]
-
-    sources = [
-      "video_effects_processor_impl.cc",
-      "video_effects_processor_webgpu.cc",
-      "video_effects_processor_webgpu.h",
-      "video_effects_service_impl.cc",
-      "viz_gpu_channel_host_provider.cc",
-      "viz_gpu_channel_host_provider.h",
-      "webgpu_device.cc",
-      "webgpu_device.h",
-    ]
-
-    visibility = [
-      "//content/utility",
-      "//services/video_effects:tests",
-    ]
-
-    public_deps = [
-      "//services/video_effects/public/mojom",
-      "//services/viz/public/cpp/gpu",
-    ]
-
-    deps = [
-      "//gpu/command_buffer/client:raster_interface",
-      "//gpu/command_buffer/client:webgpu_interface",
-      "//gpu/webgpu:common",
-      "//third_party/blink/public/common/tokens:tokens_headers",
-      "//third_party/dawn/include/dawn:cpp_headers",
-      "//third_party/dawn/src/dawn:proc",
-      "//third_party/dawn/src/dawn/wire",
-      "//third_party/mediapipe:buildflags",
-    ]
-
-    if (mediapipe_build_with_gpu_support) {
-      deps += [
-        "//services/video_effects/calculators:graph",
-        "//third_party/mediapipe",
-      ]
-    }
-  }
-
   if (is_linux) {
     source_set("sandbox_hook") {
       public = [ "video_effects_sandbox_hook_linux.h" ]
@@ -63,22 +15,5 @@ if (enable_video_effects) {
         "//services/on_device_model/ml:ml_holder_no_internal",
       ]
     }
-  }
-
-  source_set("tests") {
-    testonly = true
-
-    sources = [
-      "test_gpu_channel_host_provider.cc",
-      "test_gpu_channel_host_provider.h",
-      "video_effects_processor_impl_unittest.cc",
-    ]
-
-    deps = [
-      "//base/test:test_support",
-      "//gpu/ipc/common:test_support",
-      "//services/video_effects:service",
-      "//testing/gtest",
-    ]
   }
 }
