@@ -23,7 +23,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   <div id="searchboxContainer">
     <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
         ?color-source-is-baseline="${this.colorSourceIsBaseline}"
-        @open-composebox="${this.toggleComposebox_}"
+        @open-composebox="${this.openComposebox_}"
         @open-lens-search="${this.onOpenLensSearch_}"
         @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"
         ?had-secondary-side="${this.realboxHadSecondarySide}"

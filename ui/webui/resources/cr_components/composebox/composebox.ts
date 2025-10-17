@@ -24,6 +24,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './composebox.css.js';
@@ -192,7 +193,7 @@ export class ComposeboxElement extends I18nMixinLit
                 this.$.context.updateFileStatus(token, status, errorType);
             if (errorMessage) {
                 this.$.errorScrim.setErrorMessage(errorMessage);
-            } else if (file){
+            } else if (file) {
               if (status === FileUploadStatus.kProcessing && this.showZps &&
                   (this.enableImageContextualSuggestions_ ||
                    !file.type.includes('image'))) {
@@ -294,17 +295,31 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  setContext(files: ComposeboxFile[]) {
+    this.$.context.setContextFiles(files);
+  }
+
   getText() {
     return this.$.input.value;
   }
 
-  resetText() {
-    this.$.input.value = '';
+  setText(text: string) {
+    this.$.input.value = text;
+  }
+
+  getAndResetContextFiles() {
+    let files: ComposeboxFile[] = [];
+    if (this.contextFilesSize_ > 0) {
+      files = this.$.context.resetContextFiles();
+      this.contextFilesSize_ = 0;
+      this.searchboxHandler_.clearFiles();
+    }
+    return files;
   }
 
   resetModes() {
     this.$.context.resetModes();
-  }
+}
 
   getSmartComposeForTesting() {
     return this.smartComposeInlineHint_;
@@ -359,7 +374,10 @@ export class ComposeboxElement extends I18nMixinLit
         stringToMojoString16(this.$.input.value), false);
   }
 
-  protected async addFileContext_(e: CustomEvent) {
+  protected async addFileContext_(e: CustomEvent<{
+      files: File[], isImage: boolean,
+      onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
+  }>) {
     const composeboxFiles: Map<UnguessableToken, ComposeboxFile> = new Map();
     for (const file of e.detail.files) {
       const fileBuffer = await file.arrayBuffer();
@@ -380,6 +398,8 @@ export class ComposeboxElement extends I18nMixinLit
           type: file.type,
           status: FileUploadStatus.kNotUploaded,
           url: null,
+          file: file,
+          tabId: null,
         };
       composeboxFiles.set(token, attachment);
       const announcer = getAnnouncerInstance();
@@ -389,7 +409,10 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.input.focus();
   }
 
-  protected async addTabContext_(e: CustomEvent) {
+  protected async addTabContext_(e: CustomEvent<{
+      id: number, title: string, url: Url,
+      onContextAdded: (file: ComposeboxFile) => void,
+  }>) {
     const {token} = await this.searchboxHandler_.addTabContext(e.detail.id);
     if (!token) {
       return;
@@ -402,6 +425,8 @@ export class ComposeboxElement extends I18nMixinLit
       type: 'tab',
       status: FileUploadStatus.kNotUploaded,
       url: e.detail.url,
+      file: null,
+      tabId: e.detail.id,
     };
     e.detail.onContextAdded(attachment);
     this.$.input.focus();
@@ -612,7 +637,10 @@ export class ComposeboxElement extends I18nMixinLit
 
   private closeComposebox_() {
     this.resetModes();
-    this.fire('close-composebox', {composeboxText: this.$.input.value});
+    this.fire('close-composebox', {
+      composeboxText: this.$.input.value,
+      contextFiles: this.getAndResetContextFiles(),
+    });
 
     if (this.isCollapsible) {
       this.expanded_ = false;
@@ -649,7 +677,7 @@ export class ComposeboxElement extends I18nMixinLit
     // If the composebox is expandable, collapse it and clear the input after
     // submitting.
     if (this.isCollapsible) {
-      this.resetText();
+      this.setText('');
       this.$.input.blur();
       this.submitEnabled_ = false;
     }

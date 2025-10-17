@@ -569,6 +569,12 @@ export class SearchboxElement extends SearchboxElementBase {
     this.$.input.select();
   }
 
+  setContext(files: ComposeboxFile[]) {
+    if (this.ntpRealboxNextEnabled) {
+      this.$.context.setContextFiles(files);
+    }
+  }
+
   //============================================================================
   // Callbacks
   //============================================================================
@@ -1065,6 +1071,8 @@ export class SearchboxElement extends SearchboxElementBase {
           type: file.type,
           status: FileUploadStatus.kNotUploaded,
           url: null,
+          file: file,
+          tabId: null,
         };
       composeboxFiles.set(token, attachment);
     }
@@ -1087,6 +1095,8 @@ export class SearchboxElement extends SearchboxElementBase {
       type: 'tab',
       status: FileUploadStatus.kNotUploaded,
       url: e.detail.url,
+      file: null,
+      tabId: e.detail.id,
     };
     e.detail.onContextAdded(attachment);
   }
@@ -1105,7 +1115,7 @@ export class SearchboxElement extends SearchboxElementBase {
     if (e.detail.files !== this.contextFilesCount_) {
       this.contextFilesCount_ = e.detail.files;
       if (e.detail.files > 1) {
-        this.dispatchEvent(new CustomEvent('open-composebox'));
+        this.openComposebox_();
       }
     }
   }
@@ -1148,12 +1158,26 @@ export class SearchboxElement extends SearchboxElementBase {
         window.open(href, '_self');
       }
     } else {
-      this.dispatchEvent(new CustomEvent('open-composebox'));
+      this.openComposebox_();
     }
 
     chrome.metricsPrivate.recordBoolean(
         'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
         !this.isInputEmpty());
+  }
+
+  protected openComposebox_() {
+    let files: ComposeboxFile[] = [];
+    if (this.contextFilesCount_ > 0) {
+      files = this.$.context.resetContextFiles();
+      this.pageHandler_.clearFiles();
+      this.contextFilesCount_ = 0;
+    }
+    this.dispatchEvent(new CustomEvent('open-composebox', {
+      detail: {searchboxText: this.$.input.value, contextFiles: files},
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   hasThumbnail(): boolean {
