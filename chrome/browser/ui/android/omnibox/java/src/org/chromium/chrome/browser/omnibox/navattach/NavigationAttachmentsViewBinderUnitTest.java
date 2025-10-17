@@ -47,6 +47,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock Button mFileButton;
     private @Mock NavigationAttachmentsRecyclerView mRecyclerView;
     private @Mock SwitchCompat mSwitch;
+    private @Mock View mRecentTabsHeader;
 
     private PropertyModel mModel;
     private NavigationAttachmentsViewHolder mViewHolder;
@@ -59,11 +60,15 @@ public class NavigationAttachmentsViewBinderUnitTest {
         doReturn(mAddButton).when(mParent).findViewById(R.id.location_bar_attachments_add);
         doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
         doReturn(mSwitch).when(mParent).findViewById(R.id.location_bar_navigation_type);
+        doReturn(mRecentTabsHeader)
+                .when(mParent)
+                .findViewById(R.id.navigation_attachments_recent_tabs_header);
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
         mViewHolder.popup.mCameraButton = mCameraButton;
         mViewHolder.popup.mGalleryButton = mGalleryButton;
         mViewHolder.popup.mFileButton = mFileButton;
+        mViewHolder.popup.mRecentTabsHeader = mRecentTabsHeader;
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
     }
@@ -151,5 +156,13 @@ public class NavigationAttachmentsViewBinderUnitTest {
         listenerCaptor.getValue().onClick(mFileButton);
 
         verify(runnable).run();
+    }
+
+    @Test
+    public void recentTabsHeader() {
+        mModel.set(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE, true);
+        verify(mPopup.mRecentTabsHeader).setVisibility(View.VISIBLE);
+        mModel.set(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE, false);
+        verify(mPopup.mRecentTabsHeader).setVisibility(View.GONE);
     }
 }

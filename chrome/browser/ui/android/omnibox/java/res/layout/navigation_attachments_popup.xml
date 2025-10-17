@@ -9,9 +9,22 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingStart="8dp"
     android:paddingEnd="8dp"
+    android:paddingTop="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/navigation_attachments_recent_tabs_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
+        android:singleLine="true"
+        android:text="@string/recent_tabs"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:visibility="gone"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tab_attachment_recycler_view"

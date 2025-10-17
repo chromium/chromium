@@ -199,8 +199,12 @@ class NavigationAttachmentsMediator {
     }
 
     private void buildModelListForRecentTabs() {
-        if (mTabModelSelectorSupplier.get() == null) return;
         mTabAttachmentsModelList.clear();
+        if (mTabModelSelectorSupplier.get() == null) {
+            mModel.set(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE, false);
+            return;
+        }
+
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         List<Tab> tabs =
                 Ordering.from(Comparator.comparingLong(Tab::getTimestampMillis))
@@ -221,6 +225,9 @@ class NavigationAttachmentsMediator {
                             tabProperties);
             mTabAttachmentsModelList.add(listItem);
         }
+        mModel.set(
+                NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE,
+                !mTabAttachmentsModelList.isEmpty());
     }
 
     @VisibleForTesting

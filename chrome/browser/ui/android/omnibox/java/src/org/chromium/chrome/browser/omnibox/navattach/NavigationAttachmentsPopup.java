@@ -30,6 +30,7 @@ class NavigationAttachmentsPopup {
     /* package */ Button mFileButton;
     /* package */ Button mClipboardButton;
     /* package */ TabAttachmentPopupChoicesRecyclerViewAdapter mTabAttachmentsAdapter;
+    /* package */ View mRecentTabsHeader;
 
     NavigationAttachmentsPopup(
             Context context, View anchorView, ModelList tabAttachmentsModelList) {
@@ -59,6 +60,8 @@ class NavigationAttachmentsPopup {
         mFileButton = mContentView.findViewById(R.id.navigation_attachments_pick_file_button);
         mClipboardButton =
                 mContentView.findViewById(R.id.navigation_attachments_paste_from_clipboard_button);
+        mRecentTabsHeader =
+                mContentView.findViewById(R.id.navigation_attachments_recent_tabs_header);
 
         mTabAttachmentsAdapter =
                 new TabAttachmentPopupChoicesRecyclerViewAdapter(tabAttachmentsModelList);

@@ -146,6 +146,7 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void popupAddsTabs() {
+        assertFalse(mModel.get(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE));
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(100L).when(mTab1).getTimestampMillis();
         doReturn("Title2").when(mTab2).getTitle();
@@ -157,6 +158,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(false).when(mPopup).isShowing();
         runnable.run();
 
+        assertTrue(mModel.get(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE));
         assertEquals(2, mTabAttachmentsModelList.size());
         assertEquals(
                 TabAttachmentPopupChoicesRecyclerViewAdapter.TAB_ATTACHMENT_ITEM_TYPE,

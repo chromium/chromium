@@ -66,6 +66,10 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_GALLERY_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the recent tabs header is visible. */
+    public static final WritableBooleanPropertyKey RECENT_TABS_HEADER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         ADAPTER,
         ADD_BUTTON_VISIBLE,
@@ -80,5 +84,6 @@ class NavigationAttachmentsProperties {
         POPUP_CLIPBOARD_CLICKED,
         POPUP_FILE_CLICKED,
         POPUP_GALLERY_CLICKED,
+        RECENT_TABS_HEADER_VISIBLE
     };
 }
