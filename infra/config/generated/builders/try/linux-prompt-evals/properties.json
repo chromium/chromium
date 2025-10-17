@@ -31,12 +31,6 @@
           "builder": "linux-prompt-evals",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-prompt-evals",
-          "group": "tryserver.chromium.prompt_eval"
-        }
       ]
     }
   },
@@ -49,7 +43,7 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted"
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -58,6 +52,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.prompt_eval",
+  "builder_group": "tryserver.chromium.prompt_eval",
   "recipe": "chromium/eval_prompts"
 }
