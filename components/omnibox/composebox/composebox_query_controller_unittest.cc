@@ -104,7 +104,8 @@ class ComposeboxQueryControllerTest
       bool suppress_lns_surface_param_if_no_image = true,
       bool enable_multi_context_input_flow = false,
       bool enable_viewport_images = true,
-      bool use_separate_request_ids_for_multi_context_viewport_images = true) {
+      bool use_separate_request_ids_for_multi_context_viewport_images = true,
+      bool clear_previous_state_on_session_start = false) {
     // Create the config params.
     auto config_params = std::make_unique<
         ComposeboxQueryController::QueryControllerConfigParams>();
@@ -116,6 +117,8 @@ class ComposeboxQueryControllerTest
     config_params->enable_viewport_images = enable_viewport_images;
     config_params->use_separate_request_ids_for_multi_context_viewport_images =
         use_separate_request_ids_for_multi_context_viewport_images;
+    config_params->clear_previous_state_on_session_start =
+        clear_previous_state_on_session_start;
 
     // Create the controller.
     controller_ = std::make_unique<TestComposeboxQueryController>(
@@ -169,7 +172,8 @@ class ComposeboxQueryControllerTest
   }
 
   void WaitForClusterInfo(QueryControllerState expected_state =
-                              QueryControllerState::kClusterInfoReceived) {
+                              QueryControllerState::kClusterInfoReceived,
+                          int fetch_request_count = 1) {
     EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
               controller_state_future_.Take());
     EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
@@ -178,7 +182,8 @@ class ComposeboxQueryControllerTest
     EXPECT_EQ(expected_state, controller_state_future_.Take());
     EXPECT_EQ(expected_state, controller().query_controller_state());
 
-    EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(), 1);
+    EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(),
+              fetch_request_count);
     // The cluster info request should have the cors variations header.
     EXPECT_THAT(controller().last_sent_cors_exempt_headers(),
                 testing::Contains(kVariationsHeaderKey));
@@ -435,6 +440,43 @@ TEST_F(ComposeboxQueryControllerTest,
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo(
       /*expected_state=*/QueryControllerState::kClusterInfoInvalid);
+}
+
+TEST_F(ComposeboxQueryControllerTest, NotifySessionStartedClearPreviousState) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_multi_context_input_flow=*/false,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_multi_context_viewport_images=*/true,
+      /*clear_previous_state_on_session_start=*/true);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Check that file is in cache.
+  EXPECT_TRUE(controller().GetFileInfo(file_token));
+
+  // Act: Restart the session, but clear state on session start.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate state is cleared, and re-fetched.
+  EXPECT_FALSE(controller().GetFileInfo(file_token));
+
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoReceived,
+      /*fetch_request_count=*/2);
 }
 
 TEST_F(ComposeboxQueryControllerTest, NotifySessionAbandoned) {
