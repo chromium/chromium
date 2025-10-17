@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/common/pref_names.h"
@@ -43,6 +44,7 @@ struct ProfilePickerTestParam {
   bool use_glic_version = false;
   bool no_glic_eligible_profiles = false;
   bool is_enterprise_badging_enabled = false;
+  bool is_profile_picker_first_run = true;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -57,6 +59,8 @@ std::string ParamToTestSuffix(
 // Permutations of supported parameters.
 const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
+    {.pixel_test_param = {.test_suffix = "RegularSecondPickerRun"},
+     .is_profile_picker_first_run = false},
     {
         .pixel_test_param = {.test_suffix = "MultipleProfiles"},
         .use_multiple_profiles = true,
@@ -217,7 +221,8 @@ void AddMultipleProfiles(bool is_glic_version, bool has_supervised_user) {
 }  // namespace
 
 class ProfilePickerUIPixelTest
-    : public ProfilesPixelTestBaseT<UiBrowserTest>,
+    : public WithProfilePickerTestHelpers,
+      public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<ProfilePickerTestParam> {
  public:
   ProfilePickerUIPixelTest()
@@ -284,6 +289,15 @@ class ProfilePickerUIPixelTest
             // the only constructor that lets us force a profile to use.
             : ProfilePicker::Params::ForFirstRun(
                   browser()->profile()->GetPath(), base::DoNothing());
+
+    if (!GetParam().is_profile_picker_first_run) {
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+      WaitForLoadStop(GURL("chrome://profile-picker"));
+      CHECK(ProfilePicker::IsOpen());
+      ProfilePicker::Hide();
+      WaitForPickerClosed();
+    }
 
     profile_picker_view_ = new ProfileManagementStepTestView(
         std::move(params),

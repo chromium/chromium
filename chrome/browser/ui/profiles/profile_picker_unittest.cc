@@ -6,19 +6,13 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
-#include "base/time/time.h"
-#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -43,8 +37,6 @@ class ProfilePickerTest : public testing::Test {
         ->GetProfileAttributesWithPath(profile->GetPath());
   }
 
-  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
-
   TestingProfileManager* testing_profile_manager() {
     return &testing_profile_manager_;
   }
@@ -54,97 +46,42 @@ class ProfilePickerTest : public testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
 };
 
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_TwoActive) {
-  TestingProfile* profile1 =
-      testing_profile_manager()->CreateTestingProfile("profile1");
-  GetProfileAttributes(profile1)->SetActiveTimeToNow();
-  TestingProfile* profile2 =
-      testing_profile_manager()->CreateTestingProfile("profile2");
-  GetProfileAttributes(profile2)->SetActiveTimeToNow();
-
-  EXPECT_EQ(ProfilePicker::GetStartupMode(),
-            StartupProfileMode::kProfilePicker);
-
-  // Should be within the activity time threshold.
-  task_environment()->FastForwardBy(base::Days(27));
-  EXPECT_EQ(ProfilePicker::GetStartupMode(),
-            StartupProfileMode::kProfilePicker);
-}
-
-TEST_F(ProfilePickerTest,
-       ShouldShowAtLaunch_MultipleProfiles_Inactive_SeenPicker) {
+TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_Default) {
   testing_profile_manager()->CreateTestingProfile("profile1");
   testing_profile_manager()->CreateTestingProfile("profile2");
-  local_state()->SetBoolean(prefs::kBrowserProfilePickerShown, true);
+  ASSERT_TRUE(
+      local_state()->GetBoolean(prefs::kBrowserShowProfilePickerOnStartup));
 
   EXPECT_EQ(ProfilePicker::GetStartupMode(),
             StartupProfileMode::kProfilePicker);
 }
 
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_OneGuest) {
-  TestingProfile* profile1 =
-      testing_profile_manager()->CreateTestingProfile("profile1");
-  GetProfileAttributes(profile1)->SetActiveTimeToNow();
+TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_DisabledStartup) {
+  testing_profile_manager()->CreateTestingProfile("profile1");
   testing_profile_manager()->CreateTestingProfile("profile2");
-  testing_profile_manager()->CreateGuestProfile();
-
-  EXPECT_EQ(ProfilePicker::GetStartupMode(),
-            StartupProfileMode::kBrowserWindow);
-}
-
-TEST_F(ProfilePickerTest,
-       ShouldShowAtLaunch_MultipleProfiles_TwoActive_Disabled) {
-  TestingProfile* profile1 =
-      testing_profile_manager()->CreateTestingProfile("profile1");
-  GetProfileAttributes(profile1)->SetActiveTimeToNow();
-  TestingProfile* profile2 =
-      testing_profile_manager()->CreateTestingProfile("profile2");
-  GetProfileAttributes(profile2)->SetActiveTimeToNow();
   local_state()->SetBoolean(prefs::kBrowserShowProfilePickerOnStartup, false);
 
   EXPECT_EQ(ProfilePicker::GetStartupMode(),
             StartupProfileMode::kBrowserWindow);
 }
 
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_Inactive) {
-  testing_profile_manager()->CreateTestingProfile("profile1");
-  testing_profile_manager()->CreateTestingProfile("profile2");
-
-  EXPECT_EQ(ProfilePicker::GetStartupMode(),
-            StartupProfileMode::kBrowserWindow);
-}
-
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_Expired) {
-  TestingProfile* profile1 =
-      testing_profile_manager()->CreateTestingProfile("profile1");
-  GetProfileAttributes(profile1)->SetActiveTimeToNow();
-  TestingProfile* profile2 =
-      testing_profile_manager()->CreateTestingProfile("profile2");
-  GetProfileAttributes(profile2)->SetActiveTimeToNow();
-  // Should be outside of the activity time threshold.
-  task_environment()->FastForwardBy(base::Days(29));
-
-  EXPECT_EQ(ProfilePicker::GetStartupMode(),
-            StartupProfileMode::kBrowserWindow);
-}
-
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_OneActive) {
-  TestingProfile* profile1 =
-      testing_profile_manager()->CreateTestingProfile("profile1");
-  GetProfileAttributes(profile1)->SetActiveTimeToNow();
-  testing_profile_manager()->CreateTestingProfile("profile2");
-  EXPECT_EQ(ProfilePicker::GetStartupMode(),
-            StartupProfileMode::kBrowserWindow);
-}
-
 TEST_F(ProfilePickerTest, ShouldShowAtLaunch_SingleProfile) {
   testing_profile_manager()->CreateTestingProfile("profile1");
-  local_state()->SetBoolean(prefs::kBrowserProfilePickerShown, true);
+  ASSERT_TRUE(
+      local_state()->GetBoolean(prefs::kBrowserShowProfilePickerOnStartup));
+
+  EXPECT_EQ(ProfilePicker::GetStartupMode(),
+            StartupProfileMode::kBrowserWindow);
+}
+
+TEST_F(ProfilePickerTest, ShouldShowAtLaunch_SingleProfile_DisabledStartup) {
+  testing_profile_manager()->CreateTestingProfile("profile1");
+  local_state()->SetBoolean(prefs::kBrowserShowProfilePickerOnStartup, false);
+
   EXPECT_EQ(ProfilePicker::GetStartupMode(),
             StartupProfileMode::kBrowserWindow);
 }
@@ -189,7 +126,6 @@ TEST_F(ProfilePickerTest,
         testing_profile_manager()->CreateTestingProfile("profile1");
     GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"), u"test@corp.com",
                                                 true);
-    GetProfileAttributes(profile1)->SetActiveTimeToNow();
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kProfileEmail, "test@corp.com");
@@ -211,12 +147,10 @@ TEST_F(
         testing_profile_manager()->CreateTestingProfile("profile1");
     GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"), u"test@corp.com",
                                                 true);
-    GetProfileAttributes(profile1)->SetActiveTimeToNow();
     TestingProfile* profile2 =
         testing_profile_manager()->CreateTestingProfile("profile2");
-    GetProfileAttributes(profile2)->SetAuthInfo(GaiaId("foo"), u"test2@corp.com",
-                                                true);
-    GetProfileAttributes(profile2)->SetActiveTimeToNow();
+    GetProfileAttributes(profile2)->SetAuthInfo(GaiaId("foo"),
+                                                u"test2@corp.com", true);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kProfileEmail, "test@corp.com");

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/profiles/profile_picker.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/command_line.h"
@@ -12,26 +11,18 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 
 namespace {
 
 bool g_open_command_line_urls_in_next_profile_opened = false;
-
-constexpr base::TimeDelta kActiveTimeThreshold = base::Days(28);
 
 ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
   int availability_on_startup = g_browser_process->local_state()->GetInteger(
@@ -186,20 +177,6 @@ StartupProfileMode ProfilePicker::GetStartupMode() {
   size_t number_of_profiles = profile_manager->GetNumberOfProfiles();
   // Need to consider 0 profiles as this is what happens in some browser-tests.
   if (number_of_profiles <= 1) {
-    return StartupProfileMode::kBrowserWindow;
-  }
-
-  std::vector<ProfileAttributesEntry*> profile_attributes =
-      profile_manager->GetProfileAttributesStorage().GetAllProfilesAttributes();
-  int number_of_active_profiles = std::ranges::count_if(
-      profile_attributes, [](ProfileAttributesEntry* entry) {
-        return (base::Time::Now() - entry->GetActiveTime() <
-                kActiveTimeThreshold);
-      });
-  // Don't show the profile picker at launch if the user has less than two
-  // active profiles. However, if the user has already seen the profile picker
-  // before, respect user's preference.
-  if (number_of_active_profiles < 2 && !Shown()) {
     return StartupProfileMode::kBrowserWindow;
   }
 
