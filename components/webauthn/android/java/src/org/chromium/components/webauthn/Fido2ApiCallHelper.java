@@ -81,8 +81,8 @@ public class Fido2ApiCallHelper {
                         Fido2ApiCall.TRANSACTION_GETCREDENTIALS,
                         args,
                         result);
-        task.addOnSuccessListener(successCallback);
-        task.addOnFailureListener(failureCallback);
+        task.addOnSuccessListener(GmsCoreUtils.wrapSuccessCallback(successCallback));
+        task.addOnFailureListener(GmsCoreUtils.wrapFailureCallback(failureCallback));
     }
 
     public void invokePasskeyCacheGetCredentials(
@@ -107,8 +107,8 @@ public class Fido2ApiCallHelper {
                         Fido2ApiCall.TRANSACTION_LIST_PASSKEYS_FOR_RP,
                         args,
                         result);
-        task.addOnSuccessListener(successListener);
-        task.addOnFailureListener(failureListener);
+        task.addOnSuccessListener(GmsCoreUtils.wrapSuccessCallback(successListener));
+        task.addOnFailureListener(GmsCoreUtils.wrapFailureCallback(failureListener));
     }
 
     public void invokeFido2MakeCredential(
@@ -140,8 +140,8 @@ public class Fido2ApiCallHelper {
 
         Task<PendingIntent> task =
                 call.run(params.mRegisterMethodId, Fido2ApiCall.TRANSACTION_REGISTER, args, result);
-        task.addOnSuccessListener(successCallback);
-        task.addOnFailureListener(failureCallback);
+        task.addOnSuccessListener(GmsCoreUtils.wrapSuccessCallback(successCallback));
+        task.addOnFailureListener(GmsCoreUtils.wrapFailureCallback(failureCallback));
     }
 
     public void invokeFido2GetAssertion(
@@ -170,7 +170,7 @@ public class Fido2ApiCallHelper {
                 options, uri, clientDataHash, /* tunnelId= */ null, resultReceiver, args);
         Task<PendingIntent> task =
                 call.run(params.mSignMethodId, Fido2ApiCall.TRANSACTION_SIGN, args, result);
-        task.addOnSuccessListener(successCallback);
-        task.addOnFailureListener(failureCallback);
+        task.addOnSuccessListener(GmsCoreUtils.wrapSuccessCallback(successCallback));
+        task.addOnFailureListener(GmsCoreUtils.wrapFailureCallback(failureCallback));
     }
 }

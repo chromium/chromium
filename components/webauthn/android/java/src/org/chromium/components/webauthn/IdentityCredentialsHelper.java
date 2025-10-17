@@ -62,15 +62,18 @@ public class IdentityCredentialsHelper {
                             assertNonNull(mAuthenticationContextProvider.getContext()));
             client.createCredential(buildConditionalCreateRequest(options, origin, clientDataHash))
                     .addOnSuccessListener(
-                            (handle) ->
-                                    onConditionalCreateSuccess(
-                                            clientDataJson,
-                                            options,
-                                            responseCallback,
-                                            errorCallback,
-                                            handle))
+                            GmsCoreUtils.wrapSuccessCallback(
+                                    (handle) ->
+                                            onConditionalCreateSuccess(
+                                                    clientDataJson,
+                                                    options,
+                                                    responseCallback,
+                                                    errorCallback,
+                                                    handle)))
                     .addOnFailureListener(
-                            (exception) -> onConditionalCreateFailure(errorCallback, exception));
+                            GmsCoreUtils.wrapFailureCallback(
+                                    (exception) ->
+                                            onConditionalCreateFailure(errorCallback, exception)));
         } catch (Exception e) {
             logError(TAG, "CreateCredential failed ", e);
             errorCallback.onResult(
@@ -129,9 +132,12 @@ public class IdentityCredentialsHelper {
                             assertNonNull(mAuthenticationContextProvider.getContext()));
             client.signalCredentialState(buildSignalCredentialStateRequest(options, origin))
                     .addOnSuccessListener(
-                            (handle) -> log(TAG, "Signal API request completed successfully"))
+                            GmsCoreUtils.wrapSuccessCallback(
+                                    (handle) ->
+                                            log(TAG, "Signal API request completed successfully")))
                     .addOnFailureListener(
-                            (e) -> logError(TAG, "Signal API Report request failed ", e));
+                            GmsCoreUtils.wrapFailureCallback(
+                                    (e) -> logError(TAG, "Signal API Report request failed ", e)));
         } catch (Exception e) {
             logError(TAG, "handleReportRequest failed ", e);
             return;

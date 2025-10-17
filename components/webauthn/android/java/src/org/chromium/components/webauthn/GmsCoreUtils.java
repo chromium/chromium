@@ -4,7 +4,12 @@
 
 package org.chromium.components.webauthn;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import org.chromium.base.PackageUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 
 @NullMarked
@@ -59,5 +64,37 @@ public class GmsCoreUtils {
 
     public static void setGmsCoreVersionForTesting(int version) {
         sGmsCorePackageVersion = version;
+    }
+
+    /**
+     * Returns a SuccessListener callback that wraps another SuccessListener callback, but posts the
+     * inner callback's invocation to the UI thread to avoid contention over state. Intent callbacks
+     * can be run on a different thread from the one on which they were originally invoked.
+     */
+    public static <T> OnSuccessListener<T> wrapSuccessCallback(OnSuccessListener<T> callback) {
+        return (result) -> {
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_USER_VISIBLE,
+                    () -> {
+                        callback.onSuccess(result);
+                    });
+        };
+    }
+
+    /**
+     * Returns a FailureListener callback that wraps another FailureListener callback, but posts the
+     * inner callback's invocation to the UI thread to avoid contention over state. Intent callbacks
+     * can be run on a different thread from the one on which they were originally invoked.
+     */
+    public static OnFailureListener wrapFailureCallback(OnFailureListener callback) {
+        // Post callbacks to UI thread to avoid contention over state, since this can be called
+        // on a different thread than was originally used to invoke the Intent.
+        return (e) -> {
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_USER_VISIBLE,
+                    () -> {
+                        callback.onFailure(e);
+                    });
+        };
     }
 }
