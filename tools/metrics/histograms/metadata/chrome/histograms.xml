@@ -77,6 +77,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.FontDataService.EmptyPathOnGetFileHandle"
+    enum="Boolean" expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Records whether the font path is empty when attempting to obtain the file
+    handle for a font.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.FontDataService.WinLastError" enum="WinGetLastError"
     expires_after="2026-08-31">
   <owner>andresrperez@chromium.org</owner>
@@ -84,8 +95,7 @@ chromium-metrics-reviews@google.com.
   <owner>etienneb@chromium.org</owner>
   <summary>
     The Windows last error obtained from a call to GetLastError after a failed
-    attempt to obtain the resource name of a typeface, in the process of getting
-    a file handle.
+    attempt to obtain the file handle for a font.
   </summary>
 </histogram>
 
