@@ -1423,20 +1423,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsOnFocusZpsTest,
   location_bar->omnibox_view()->RequestFocus();
 }
 
-class OmniboxViewViewsHintTextLimitingBrowserTest
-    : public OmniboxViewViewsTest {
+class OmniboxViewViewsAIMBrowserTest : public OmniboxViewViewsTest {
  public:
-  OmniboxViewViewsHintTextLimitingBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {omnibox::kAiModeOmniboxEntryPoint,
-             {{"AimHintImpressionLimitDaily", "2"},
-              {"AimHintImpressionLimitTotal", "5"},
-              {"EnableHintImpressionLimits", "true"}}},
-        },
-        {lens::features::kLensOverlay});
-  }
-
   void SetUpOnMainThread() override {
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   }
@@ -1477,6 +1465,26 @@ class OmniboxViewViewsHintTextLimitingBrowserTest
         }));
   }
 
+  PrefService* prefs() { return browser()->profile()->GetPrefs(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class OmniboxViewViewsHintTextLimitingBrowserTest
+    : public OmniboxViewViewsAIMBrowserTest {
+ public:
+  OmniboxViewViewsHintTextLimitingBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {omnibox::kAiModeOmniboxEntryPoint,
+             {{"AimHintImpressionLimitDaily", "2"},
+              {"AimHintImpressionLimitTotal", "5"},
+              {"EnableHintImpressionLimits", "true"}}},
+        },
+        {lens::features::kLensOverlay});
+  }
+
+ protected:
   void FocusAndPaint() {
     omnibox()->SetUserText(u"");
     OmniboxViewViews* view = static_cast<OmniboxViewViews*>(omnibox());
@@ -1485,8 +1493,6 @@ class OmniboxViewViewsHintTextLimitingBrowserTest
     gfx::Canvas canvas(gfx::Size(200, 200), 1.0f, true);
     view->OnPaint(&canvas);
   }
-
-  PrefService* prefs() { return browser()->profile()->GetPrefs(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1610,7 +1616,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingDisabledBrowserTest,
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintDailyImpressionsCount), 0);
 }
 
-class OmniboxViewViewsAIMButtonPreferenceTest : public OmniboxViewViewsTest {
+class OmniboxViewViewsAIMButtonPreferenceTest
+    : public OmniboxViewViewsAIMBrowserTest {
  public:
   OmniboxViewViewsAIMButtonPreferenceTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -1618,45 +1625,7 @@ class OmniboxViewViewsAIMButtonPreferenceTest : public OmniboxViewViewsTest {
         {lens::features::kLensOverlay, features::kPageActionsMigration});
   }
 
-  void SetUpOnMainThread() override {
-    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  }
-
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    OmniboxViewViewsTest::SetUpBrowserContextKeyedServices(context);
-    SetUpAimEligibilityService(context,
-                               /*is_locally_eligible=*/true,
-                               /*is_server_eligible=*/true,
-                               /*server_eligibility_enabled=*/true);
-  }
-
  protected:
-  void SetUpAimEligibilityService(content::BrowserContext* context,
-                                  bool is_locally_eligible,
-                                  bool is_server_eligible,
-                                  bool server_eligibility_enabled) {
-    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        Profile::FromBrowserContext(context),
-        base::BindLambdaForTesting([=](content::BrowserContext* context) {
-          Profile* profile = Profile::FromBrowserContext(context);
-          auto mock_service = std::make_unique<MockAimEligibilityService>(
-              *profile->GetPrefs(),
-              TemplateURLServiceFactory::GetForProfile(profile),
-              /*url_loader_factory=*/nullptr,
-              /*identity_manager=*/nullptr);
-          ON_CALL(*mock_service, IsAimLocallyEligible())
-              .WillByDefault(Return(is_locally_eligible));
-          ON_CALL(*mock_service, IsServerEligibilityEnabled())
-              .WillByDefault(Return(server_eligibility_enabled));
-          ON_CALL(*mock_service, IsAimEligible())
-              .WillByDefault(
-                  Return(is_locally_eligible &&
-                         (!server_eligibility_enabled || is_server_eligible)));
-          return static_cast<std::unique_ptr<KeyedService>>(
-              std::move(mock_service));
-        }));
-  }
 
   void FocusOmnibox() {
     omnibox()->SetUserText(u"");
@@ -1664,8 +1633,6 @@ class OmniboxViewViewsAIMButtonPreferenceTest : public OmniboxViewViewsTest {
     view->RequestFocus();
     ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
   }
-
-  PrefService* prefs() { return browser()->profile()->GetPrefs(); }
 
   OmniboxViewViews* omnibox_views() {
     return static_cast<OmniboxViewViews*>(omnibox());
