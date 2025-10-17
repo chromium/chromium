@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/webauthn/coordinator/credential_export_coordinator.h"
 
+#import <string>
+
 #import "base/memory/raw_ptr.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -11,16 +13,20 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/webauthn/coordinator/credential_export_mediator.h"
+#import "ios/chrome/browser/webauthn/public/passkey_welcome_screen_util.h"
 #import "ios/chrome/browser/webauthn/ui/credential_export_view_controller.h"
 #import "ios/chrome/browser/webauthn/ui/credential_export_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
+#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
+#import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface CredentialExportCoordinator () <
     CredentialExportViewControllerPresentationDelegate,
-    PasskeyKeychainProviderBridgeDelegate>
+    PasskeyKeychainProviderBridgeDelegate,
+    PasskeyWelcomeScreenViewControllerDelegate>
 @end
 
 @implementation CredentialExportCoordinator {
@@ -38,6 +44,9 @@
 
   // Provides access to stored WebAuthn credentials.
   raw_ptr<webauthn::PasskeyModel> _passkeyModel;
+
+  // Email of the signed in user account.
+  std::string _userEmail;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -68,6 +77,10 @@
                initWithWindow:_baseNavigationController.view.window
       savedPasswordsPresenter:_savedPasswordsPresenter
                  passkeyModel:_passkeyModel];
+
+  _userEmail = IdentityManagerFactory::GetForProfile(self.profile)
+                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                   .email;
 
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }
@@ -110,21 +123,34 @@
   completion();
 }
 
-// TODO(crbug.com/449701042): Display all types of welcome views.
 - (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock {
-  enrollBlock();
+  CreateAndPresentPasskeyWelcomeScreen(
+      PasskeyWelcomeScreenPurpose::kEnroll, _baseNavigationController,
+      /*delegate=*/self, enrollBlock, _userEmail);
 }
 
 - (void)showFixDegradedRecoverabilityWelcomeScreen:
     (ProceduralBlock)fixDegradedRecoverabilityBlock {
-  fixDegradedRecoverabilityBlock();
+  CreateAndPresentPasskeyWelcomeScreen(
+      PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability,
+      _baseNavigationController, /*delegate=*/self,
+      fixDegradedRecoverabilityBlock, _userEmail);
 }
 
 - (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock {
-  reauthenticateBlock();
+  CreateAndPresentPasskeyWelcomeScreen(
+      PasskeyWelcomeScreenPurpose::kReauthenticate, _baseNavigationController,
+      /*delegate=*/self, reauthenticateBlock, _userEmail);
 }
 
 - (void)providerDidCompleteReauthentication {
+}
+
+#pragma mark - PasskeyWelcomeScreenViewControllerDelegate
+
+- (void)passkeyWelcomeScreenViewControllerShouldBeDismissed:
+    (PasskeyWelcomeScreenViewController*)passkeyWelcomeScreenViewController {
+  [_baseNavigationController popToViewController:_viewController animated:YES];
 }
 
 #pragma mark - Private
