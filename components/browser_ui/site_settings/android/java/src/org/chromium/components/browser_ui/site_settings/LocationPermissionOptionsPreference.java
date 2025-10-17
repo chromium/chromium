@@ -73,7 +73,9 @@ public class LocationPermissionOptionsPreference extends Preference
 
         mSetting = info.getGeolocationSetting(browserContextHandle);
 
-        // TODO(crbug.com/418936295): Handle behaviour when location permission is blocked.
+        // Subpage should not be visible if location permission is blocked.
+        assert mSetting.mApproximate == ContentSetting.ALLOW;
+
         mIsPreciseSelected = mSetting.mPrecise == ContentSetting.ALLOW;
         notifyChanged();
     }

@@ -35,7 +35,9 @@ public class TwoActionSwitchPreference extends ChromeSwitchPreference {
         super.onBindViewHolder(holder);
 
         // Override the default ChromeSwitchPreference click listener.
-        holder.itemView.setOnClickListener(mPrimaryButtonClickListener);
+        if (mPrimaryButtonClickListener != null) {
+            holder.itemView.setOnClickListener(mPrimaryButtonClickListener);
+        }
 
         View switchContainer = holder.itemView.findViewById(R.id.switch_container);
         assert switchContainer != null;
@@ -46,6 +48,7 @@ public class TwoActionSwitchPreference extends ChromeSwitchPreference {
         this.onClick();
     }
 
+    /** Sets the primary click listener for the left hand side of the preference. */
     public void setPrimaryButtonClickListener(View.@Nullable OnClickListener clickListener) {
         if (mPrimaryButtonClickListener != clickListener) {
             mPrimaryButtonClickListener = clickListener;

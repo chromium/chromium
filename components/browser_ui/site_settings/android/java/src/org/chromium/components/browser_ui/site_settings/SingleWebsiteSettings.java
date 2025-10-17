@@ -674,23 +674,22 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     private TwoActionSwitchPreference createTwoActionLocationSwitchPreference() {
         TwoActionSwitchPreference preference = new TwoActionSwitchPreference(getStyledContext());
-        preference.setPrimaryButtonClickListener(
-                (v) -> {
-                    if (getSettingsNavigation() != null) {
-                        Bundle fragmentArgs = new Bundle();
-                        fragmentArgs.putSerializable(EXTRA_SITE, mSite);
-                        getSettingsNavigation()
-                                .startSettings(
-                                        getActivity(),
-                                        LocationPermissionSubpageSettings.class,
-                                        fragmentArgs);
-                    } else if (mWebsiteSettingsObserver != null) {
-                        mWebsiteSettingsObserver.onLocationPermissionSubpageClicked();
-                    } else {
-                        assert false : "Not reached.";
-                    }
-                });
+        preference.setPrimaryButtonClickListener((v) -> openLocationPermissionSubpage());
         return preference;
+    }
+
+    private void openLocationPermissionSubpage() {
+        if (getSettingsNavigation() != null) {
+            Bundle fragmentArgs = new Bundle();
+            fragmentArgs.putSerializable(EXTRA_SITE, mSite);
+            getSettingsNavigation()
+                    .startSettings(
+                            getActivity(), LocationPermissionSubpageSettings.class, fragmentArgs);
+        } else if (mWebsiteSettingsObserver != null) {
+            mWebsiteSettingsObserver.onLocationPermissionSubpageClicked();
+        } else {
+            assert false : "Not reached.";
+        }
     }
 
     @RequiresNonNull({"mSite"})
@@ -1380,6 +1379,14 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 permission.mApproximate == ContentSetting.ALLOW
                         && permission.mApproximate != permission.mPrecise;
 
+        if (preference instanceof TwoActionSwitchPreference) {
+            ((TwoActionSwitchPreference) preference)
+                    .setPrimaryButtonClickListener(
+                            permission.mApproximate == ContentSetting.BLOCK
+                                    ? null
+                                    : (v) -> openLocationPermissionSubpage());
+        }
+
         if (setupAppDelegatePreference(
                 preference,
                 R.string.website_location_settings,
@@ -1596,6 +1603,14 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     browserContextHandle,
                     new GeolocationSetting(
                             /* approximate= */ permission, /* precise= */ newPreciseValue));
+
+            if (preference instanceof TwoActionSwitchPreference) {
+                ((TwoActionSwitchPreference) preference)
+                        .setPrimaryButtonClickListener(
+                                permission == ContentSetting.BLOCK
+                                        ? null
+                                        : (v) -> openLocationPermissionSubpage());
+            }
         } else {
             mSite.setContentSetting(browserContextHandle, type, permission);
         }
