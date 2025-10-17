@@ -107,7 +107,7 @@ BASE_FEATURE(kAutozoomNudgeSessionReset, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables a settings option to set an explicit charge limit for Chromebooks.
 BASE_FEATURE(kBatteryChargeLimit,
              "CrosBatteryChargeLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Make Battery Saver available.
 BASE_FEATURE(kBatterySaver,
