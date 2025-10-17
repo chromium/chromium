@@ -2298,10 +2298,15 @@ EVENT_TYPE(QUIC_SESSION_POOL_JOB_BOUND_TO)
 EVENT_TYPE(BOUND_TO_QUIC_SESSION_POOL_JOB)
 
 // Measures the time taken by a DirectJob to establish a QUIC connection.
-// The event parameters are:
+// The begin event parameters are:
 //  {
 //     "require_confirmation": <True if we require handshake confirmation
 //                              in the connection>
+//  }
+//
+// The end event parameters are:
+//  {
+//     "net_error": <Net error code the connect failed with, on error>,
 //  }
 EVENT_TYPE(QUIC_SESSION_POOL_JOB_CONNECT)
 
