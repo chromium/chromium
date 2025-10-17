@@ -11,10 +11,6 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/sync_token.h"
 
-namespace cc {
-struct ImageHeaderMetadata;
-}
-
 namespace gpu {
 
 // TODO(andrescj): move API documentation from ImageDecodeAcceleratorProxy to
@@ -22,9 +18,6 @@ namespace gpu {
 class ImageDecodeAcceleratorInterface {
  public:
   virtual ~ImageDecodeAcceleratorInterface() {}
-
-  virtual bool IsImageSupported(
-      const cc::ImageHeaderMetadata* image_metadata) const = 0;
 };
 
 }  // namespace gpu

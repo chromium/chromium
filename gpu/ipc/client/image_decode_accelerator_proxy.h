@@ -57,12 +57,6 @@ class GPU_IPC_CLIENT_EXPORT ImageDecodeAcceleratorProxy
 
   ~ImageDecodeAcceleratorProxy() override;
 
-  // Determines if |image_metadata| corresponds to an image that can be decoded
-  // using hardware decode acceleration. The ScheduleImageDecode() method should
-  // only be called for images for which IsImageSupported() returns true.
-  bool IsImageSupported(
-      const cc::ImageHeaderMetadata* image_metadata) const override;
-
  private:
   const raw_ptr<GpuChannelHost> host_;
 };

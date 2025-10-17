@@ -723,8 +723,7 @@ unsigned int RasterImplementation::GetTransferBufferFreeSize() const {
 
 bool RasterImplementation::CanDecodeWithHardwareAcceleration(
     const cc::ImageHeaderMetadata* image_metadata) const {
-  return image_decode_accelerator_ &&
-         image_decode_accelerator_->IsImageSupported(image_metadata);
+  return false;
 }
 
 const std::string& RasterImplementation::GetLogPrefix() const {

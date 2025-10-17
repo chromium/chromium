@@ -29,9 +29,4 @@ ImageDecodeAcceleratorProxy::ImageDecodeAcceleratorProxy(GpuChannelHost* host,
 
 ImageDecodeAcceleratorProxy::~ImageDecodeAcceleratorProxy() {}
 
-bool ImageDecodeAcceleratorProxy::IsImageSupported(
-    const cc::ImageHeaderMetadata* image_metadata) const {
-  return false;
-}
-
 }  // namespace gpu
