@@ -849,7 +849,7 @@ public class NotificationContentDetectionManager {
         if (useServiceIntent) {
             return PendingIntentProvider.getService(
                     context,
-                    NotificationPlatformBridge.PENDING_INTENT_REQUEST_CODE,
+                    NotificationConstants.PENDING_INTENT_REQUEST_CODE,
                     intent,
                     PendingIntent.FLAG_UPDATE_CURRENT,
                     /* mutable= */ false);
@@ -857,7 +857,7 @@ public class NotificationContentDetectionManager {
 
         return PendingIntentProvider.getBroadcast(
                 context,
-                NotificationPlatformBridge.PENDING_INTENT_REQUEST_CODE,
+                NotificationConstants.PENDING_INTENT_REQUEST_CODE,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT,
                 /* mutable= */ false);

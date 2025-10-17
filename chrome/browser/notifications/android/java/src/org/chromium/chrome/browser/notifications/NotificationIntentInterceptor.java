@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.app.RemoteInput;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -319,6 +320,18 @@ public class NotificationIntentInterceptor {
             return false;
         }
 
+        // If the notification action was a text action, add the reply to the PendingIntent
+        Intent replyIntent = new Intent();
+        Bundle remoteInputResults = RemoteInput.getResultsFromIntent(intent);
+        if (remoteInputResults != null) {
+            CharSequence reply =
+                    remoteInputResults.getCharSequence(NotificationConstants.KEY_TEXT_REPLY);
+            if (reply != null) {
+                replyIntent.putExtra(
+                        NotificationConstants.EXTRA_NOTIFICATION_REPLY, reply.toString());
+            }
+        }
+
         PendingIntent pendingIntent =
                 (PendingIntent) intent.getParcelableExtra(EXTRA_PENDING_INTENT);
         if (pendingIntent == null) {
@@ -326,8 +339,13 @@ public class NotificationIntentInterceptor {
             return false;
         }
 
+        Context applicationContext = ContextUtils.getApplicationContext();
+
         try {
-            pendingIntent.send();
+            pendingIntent.send(
+                    applicationContext,
+                    NotificationConstants.PENDING_INTENT_REQUEST_CODE,
+                    replyIntent);
             return true;
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, "The PendingIntent to fire is canceled.");

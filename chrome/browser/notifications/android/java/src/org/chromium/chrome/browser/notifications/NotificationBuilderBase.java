@@ -555,15 +555,11 @@ public abstract class NotificationBuilderBase {
                             .build());
         }
 
-        if (action.umaActionType == NotificationUmaTracker.ActionType.UNKNOWN) {
-            builder.addAction(actionBuilder.build());
-        } else {
-            builder.addAction(
-                    actionBuilder.build(),
-                    action.intent.getFlags(),
-                    action.umaActionType,
-                    /* requestCode= */ 0);
-        }
+        builder.addAction(
+                actionBuilder.build(),
+                action.intent.getFlags(),
+                action.umaActionType,
+                /* requestCode= */ 0);
     }
 
     /**

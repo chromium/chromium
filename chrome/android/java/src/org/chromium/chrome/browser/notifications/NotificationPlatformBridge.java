@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.ACTION_REPORT_AS_SAFE;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.ACTION_REPORT_UNWARNED_NOTIFICATION_AS_SPAM;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.ACTION_REPORT_WARNED_NOTIFICATION_AS_SPAM;
+import static org.chromium.chrome.browser.notifications.NotificationConstants.PENDING_INTENT_REQUEST_CODE;
 import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
 
 import android.app.Notification;
@@ -95,10 +96,6 @@ public class NotificationPlatformBridge {
     // tag is always set, which is a safe and sufficient way of identifying a notification, so the
     // integer id is not needed anymore except it must not vary in an uncontrolled way.
     public static final int PLATFORM_ID = -1;
-
-    // We always use the same request code for pending intents. We use other ways to force
-    // uniqueness of pending intents when necessary.
-    static final int PENDING_INTENT_REQUEST_CODE = 0;
 
     static final int[] EMPTY_VIBRATION_PATTERN = new int[0];
 
