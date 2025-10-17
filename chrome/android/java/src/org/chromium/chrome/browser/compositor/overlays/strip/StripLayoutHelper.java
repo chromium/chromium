@@ -440,6 +440,11 @@ public class StripLayoutHelper
                         recordPinnedOnlyTabStripUserAction();
                     }
                 }
+
+                @Override
+                public void willUndoTabClosure(List<Tab> tabs, boolean isAllTabs) {
+                    finishAnimations();
+                }
             };
 
     // External influences
@@ -1680,15 +1685,18 @@ public class StripLayoutHelper
     }
 
     /**
-     * Called when a multiple tabs are being closed. When called, the closing tabs will not be part
-     * of the model.
+     * Called when multiple tabs are being closed. When called, the closing tabs will not be part of
+     * the model.
      *
      * @param tabs The list of tabs that are being closed.
      */
     public void multipleTabsClosed(List<Tab> tabs) {
         for (Tab tab : tabs) {
             StripLayoutTab stripTab = findTabById(tab.getId());
-            if (stripTab != null && !stripTab.isDying()) mClosingTabs.add(stripTab);
+            if (stripTab != null && !stripTab.isDying()) {
+                mClosingTabs.add(stripTab);
+                stripTab.setSkipAsyncClosure(/* skipAsyncClosure= */ true);
+            }
         }
         if (!mClosingTabs.isEmpty()) {
             requestCloseAnimations();
@@ -3625,9 +3633,6 @@ public class StripLayoutHelper
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        // Reset any closing-related state on the closing views before they are
-                        // reused in the following rebuild.
-                        resetClosingViewsState();
                         boolean runImprovedTabAnimations = mStripTabs.length > 1;
                         rebuildStripTabs(/* deferAnimations= */ false);
                         if (!ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) {
@@ -3636,27 +3641,6 @@ public class StripLayoutHelper
                         clearStateOnCloseAnimationsEnd();
                     }
                 });
-    }
-
-    private void resetClosingViewsState() {
-        // TODO(crbug.com/443337907): If the tab closure(s) are cancelled, we are notified after the
-        //  Tabs are already readded to the TabModel. This causes us to reuse these (stale) closing
-        //  views in the subsequent rebuild. As a temporary fix, we manually reset the relevant
-        //  state here. A longer term fix would be to be notified of the cancellation earlier in the
-        //  flow so we can #finishAnimations and rebuild without these closing views, so that we
-        //  don't end up reusing these stale views (and having to clear this state). e.g., add some
-        //  #willCancelTabClosure event.
-        for (StripLayoutGroupTitle groupTitle : mClosingGroupTitles) {
-            groupTitle.setIsDying(/* isDying= */ false);
-            groupTitle.setWillClose(/* willClose= */ false);
-        }
-        for (StripLayoutTab tab : mClosingTabs) {
-            tab.setOffsetY(/* offsetY= */ 0);
-            tab.setDrawY(/* y= */ 0);
-            tab.setIsDying(/* isDying= */ false);
-            tab.setWillClose(/* willClose= */ false);
-            tab.setIsClosed(/* isClosed= */ false);
-        }
     }
 
     private void clearStateOnCloseAnimationsEnd() {
@@ -3707,7 +3691,7 @@ public class StripLayoutHelper
         // 2. Figure out which tabs need to be closed.
         ArrayList<StripLayoutTab> tabsToRemove = new ArrayList<>();
         for (StripLayoutTab tab : mStripTabs) {
-            if (tab.isDying()) tabsToRemove.add(tab);
+            if (tab.isDying() && !tab.shouldSkipAsyncClosure()) tabsToRemove.add(tab);
         }
 
         if (tabsToRemove.isEmpty()) return;

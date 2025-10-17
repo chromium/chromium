@@ -154,6 +154,7 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mStartDividerVisible;
     private boolean mEndDividerVisible;
     private boolean mForceHideEndDivider;
+    private boolean mSkipAsyncClosure;
     private float mBottomMargin;
     private float mContainerOpacity;
 
@@ -574,6 +575,23 @@ public class StripLayoutTab extends StripLayoutView {
      */
     public boolean isClosed() {
         return mIsClosed;
+    }
+
+    /**
+     * Mark that this tab is closing through the new tab closure flow, and needs to skip the async
+     * closure from the old tab closure flow. Can be removed once the migration is complete. See
+     * crbug.com/443337907.
+     */
+    public void setSkipAsyncClosure(boolean skipAsyncClosure) {
+        mSkipAsyncClosure = skipAsyncClosure;
+    }
+
+    /**
+     * Returns true if the tab should skip the async closure from the old tab closure flow. Can be
+     * removed once the migration is complete. See crbug.com/443337907.
+     */
+    public boolean shouldSkipAsyncClosure() {
+        return mSkipAsyncClosure;
     }
 
     /**
