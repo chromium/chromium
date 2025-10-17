@@ -4722,7 +4722,7 @@ inline constexpr char kProofreaderAPIForGeminiNanoDescription[] =
     "additional details about appropriate use of Generative AI.";
 
 // Android ---------------------------------------------------------------------
-// FLAG_DESCRIPTOINS_ANDROID_START
+// FLAG_DESCRIPTIONS_ANDROID_START
 
 
 inline constexpr char kAAudioPerStreamDeviceSelectionName[] =
@@ -5852,7 +5852,7 @@ inline constexpr char kOpenXRAndroidSmoothDepthDescription[] =
     "Forces the OpenXR Android runtime to use the Smooth depth image. When "
     "Disabled, the raw depth image will be used instead.";
 
-// FLAG_DESCRIPTOINS_ANDROID_END
+// FLAG_DESCRIPTIONS_ANDROID_END
 // Non-Android -----------------------------------------------------------------
 
 
