@@ -653,3 +653,60 @@ async def test_network_before_request_sent_event_fetch_post(
             "timestamp": ANY_TIMESTAMP
         }
     })
+
+
+@pytest.mark.asyncio
+async def test_network_before_request_sent_event_redirects_with_data_collectors(
+        websocket, context_id, url_example, url_permanent_redirect,
+        read_messages):
+
+    await execute_command(
+        websocket, {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["request", "response"],
+                "maxEncodedDataSize": 200_000_000
+            }
+        })
+
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    # Init navigation.
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url_permanent_redirect,
+                "wait": "complete",
+            }
+        })
+
+    messages = await read_messages(2, sort=False)
+    # Assert the 2 navigation events are received.
+    assert messages == [
+        AnyExtending({
+            "type": "event",
+            "method": "network.beforeRequestSent",
+            "params": {
+                "context": context_id,
+                "redirectCount": 0,
+                "request": {
+                    "method": "GET",
+                    "url": url_permanent_redirect
+                },
+            },
+        }),
+        AnyExtending({
+            "type": "event",
+            "method": "network.beforeRequestSent",
+            "params": {
+                "context": context_id,
+                "redirectCount": 1,
+                "request": {
+                    "method": "GET",
+                    "url": url_example
+                },
+            },
+        })
+    ]

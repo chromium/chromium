@@ -97,7 +97,8 @@ export class NetworkStorage {
     redirectCount?: number,
   ): NetworkRequest {
     let request = this.getRequestById(id);
-    if (request) {
+    if (redirectCount === undefined && request) {
+      // Force re-creating requests for redirects.
       return request;
     }
 

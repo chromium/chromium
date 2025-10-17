@@ -419,6 +419,11 @@ def url_echo(get_url_echo):
 
 
 @pytest.fixture
+def url_permanent_redirect(local_server_http):
+    return local_server_http.url_permanent_redirect()
+
+
+@pytest.fixture
 def read_messages(websocket, read_all_messages):
     """
     Reads the specified number of messages from the WebSocket, returning them in
