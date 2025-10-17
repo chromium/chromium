@@ -55,7 +55,8 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 
-#if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER)
+#if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER) || \
+    defined(UNDEFINED_SANITIZER)
 #include <mach-o/loader.h>
 
 #include "base/base_paths.h"
@@ -160,7 +161,8 @@ void RecordCopyShortcutResult(CopyShortcutResult result) {
                                 result);
 }
 
-#if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER)
+#if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER) || \
+    defined(UNDEFINED_SANITIZER)
 // Adds `new_rpath` to the paths the binary at `executable_path` will look at
 // when loading shared libraries. Assumes there is enough room in the headers of
 // the binary to fit the added path.
@@ -689,7 +691,8 @@ bool WebAppShortcutCreator::BuildShortcut(
     return false;
   }
 
-#if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER)
+#if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER) || \
+    defined(UNDEFINED_SANITIZER)
   // Test bots could have the build in a different path than where it was on a
   // build bot. If this is the case in a component build, we'll need to fix the
   // rpath of app_mode_loader to make sure it can still find its dynamic
