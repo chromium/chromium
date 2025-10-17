@@ -495,10 +495,6 @@ void CanvasResourceProviderSharedImage::EndWriteAccess() {
 void CanvasResourceProviderSharedImage::WillDrawInternal() {
   DCHECK(resource_);
 
-  if (IsGpuContextLost()) {
-    return;
-  }
-
   // Since the resource will be updated, the cached snapshot is no longer
   // valid. Note that it is important to release this reference here to not
   // trigger copy-on-write below from the resource ref in the snapshot.
@@ -793,6 +789,10 @@ CanvasResourceProviderSharedImage::GetBackingClientSharedImageForExternalWrite(
 
 void CanvasResourceProviderSharedImage::EndExternalWrite(
     const gpu::SyncToken& external_write_sync_token) {
+  if (IsGpuContextLost()) {
+    return;
+  }
+
   resource()->EndExternalWrite(external_write_sync_token);
 }
 
@@ -809,7 +809,7 @@ void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
     // TODO(crbug.com/40183122): Video frames don't work without this
     // conditional WillDraw(), but we are getting memory leak on CreatePattern
     // with it. There should be a better way to solve this.
-    if (cached_snapshot_) {
+    if (cached_snapshot_ && !IsGpuContextLost()) {
       WillDrawInternal();
       EnsureWriteAccess();
     }
