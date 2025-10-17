@@ -333,15 +333,12 @@ class IdlCompiler(object):
 
         self._ir_map.move_to_new_phase()
 
-        # TODO(crbug.com/449800522): Remove `WebGL2RenderingContextBase`
-        # condition after WebGL2RenderingContextBase follows the spec.
         across_component_mixins = {
             mixins[include.mixin_identifier]
             for include_list in includes.values()
             for include in include_list
-            if include.interafce_identifier != "WebGL2RenderingContextBase" and
-            check_across_component(interfaces[include.interafce_identifier],
-                                   mixins[include.mixin_identifier])
+            if check_across_component(interfaces[include.interafce_identifier],
+                                      mixins[include.mixin_identifier])
         }
 
         for old_ir in mixins.values():
