@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
@@ -48,21 +49,63 @@ class DummyDelegateImpl : public GlicMetrics::Delegate {
   gfx::Size GetWindowSize() const override { return {}; }
   bool IsWindowShowing() const override { return false; }
   bool IsWindowAttached() const override { return false; }
-  content::WebContents* GetContents() override { return nullptr; }
+  content::WebContents* GetFocusedWebContents() override { return nullptr; }
   ActiveTabSharingState GetActiveTabSharingState() override {
     return ActiveTabSharingState::kNoTabCanBeShared;
   }
   int32_t GetNumPinnedTabs() const override { return 0; }
+  std::vector<content::WebContents*> GetPinnedAndSharedWebContents() override {
+    return std::vector<content::WebContents*>();
+  }
 };
 
-class DelegateImpl : public GlicMetrics::Delegate {
+class BaseDelegate : public GlicMetrics::Delegate {
+ public:
+  explicit BaseDelegate(GlicSharingManager* sharing_manager,
+                        PrefService* pref_service)
+      : sharing_manager_(sharing_manager), pref_service_(pref_service) {}
+  content::WebContents* GetFocusedWebContents() override {
+    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
+    return ftd.is_focus() ? ftd.focus()->GetContents() : nullptr;
+  }
+  ActiveTabSharingState GetActiveTabSharingState() override {
+    if (!pref_service_->GetBoolean(prefs::kGlicTabContextEnabled)) {
+      return ActiveTabSharingState::kTabContextPermissionNotGranted;
+    }
+    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
+    if (ftd.is_focus()) {
+      return ActiveTabSharingState::kActiveTabIsShared;
+    } else if (ftd.unfocused_tab()) {
+      return ActiveTabSharingState::kCannotShareActiveTab;
+    }
+    return ActiveTabSharingState::kNoTabCanBeShared;
+  }
+  int32_t GetNumPinnedTabs() const override {
+    return sharing_manager_->GetNumPinnedTabs();
+  }
+  std::vector<content::WebContents*> GetPinnedAndSharedWebContents() override {
+    std::vector<content::WebContents*> pinned_and_shared;
+    for (content::WebContents* web_contents :
+         sharing_manager_->GetPinnedTabs()) {
+      if (IsTabValidForSharing(web_contents)) {
+        pinned_and_shared.push_back(web_contents);
+      }
+    }
+    return pinned_and_shared;
+  }
+
+ protected:
+  raw_ptr<GlicSharingManager> sharing_manager_;
+  raw_ptr<PrefService> pref_service_;
+};
+
+class DelegateImpl : public BaseDelegate {
  public:
   explicit DelegateImpl(GlicWindowControllerInterface* window_controller,
                         GlicSharingManager* sharing_manager,
                         PrefService* pref_service)
-      : window_controller_(window_controller),
-        sharing_manager_(sharing_manager),
-        pref_service_(pref_service) {}
+      : BaseDelegate(sharing_manager, pref_service),
+        window_controller_(window_controller) {}
   gfx::Size GetWindowSize() const override {
     return window_controller_->GetPanelSize();
   }
@@ -72,40 +115,18 @@ class DelegateImpl : public GlicMetrics::Delegate {
   bool IsWindowAttached() const override {
     return window_controller_->IsAttached();
   }
-  content::WebContents* GetContents() override {
-    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
-    return ftd.is_focus() ? ftd.focus()->GetContents() : nullptr;
-  }
-  ActiveTabSharingState GetActiveTabSharingState() override {
-    if (!pref_service_->GetBoolean(prefs::kGlicTabContextEnabled)) {
-      return ActiveTabSharingState::kTabContextPermissionNotGranted;
-    }
-    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
-    if (ftd.is_focus()) {
-      return ActiveTabSharingState::kActiveTabIsShared;
-    } else if (ftd.unfocused_tab()) {
-      return ActiveTabSharingState::kCannotShareActiveTab;
-    }
-    return ActiveTabSharingState::kNoTabCanBeShared;
-  }
-  int32_t GetNumPinnedTabs() const override {
-    return sharing_manager_->GetNumPinnedTabs();
-  }
 
  private:
   raw_ptr<GlicWindowControllerInterface> window_controller_;
-  raw_ptr<GlicSharingManager> sharing_manager_;
-  raw_ptr<PrefService> pref_service_;
 };
 
-class DelegateMultiInstanceImpl : public GlicMetrics::Delegate {
+class DelegateMultiInstanceImpl : public BaseDelegate {
  public:
   explicit DelegateMultiInstanceImpl(GlicInstance* glic_instance,
                                      GlicSharingManager* sharing_manager,
                                      PrefService* pref_service)
-      : glic_instance_(glic_instance),
-        sharing_manager_(sharing_manager),
-        pref_service_(pref_service) {}
+      : BaseDelegate(sharing_manager, pref_service),
+        glic_instance_(glic_instance) {}
   gfx::Size GetWindowSize() const override {
     return glic_instance_->GetPanelSize();
   }
@@ -113,30 +134,9 @@ class DelegateMultiInstanceImpl : public GlicMetrics::Delegate {
   bool IsWindowAttached() const override {
     return glic_instance_->IsAttached();
   }
-  content::WebContents* GetContents() override {
-    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
-    return ftd.is_focus() ? ftd.focus()->GetContents() : nullptr;
-  }
-  ActiveTabSharingState GetActiveTabSharingState() override {
-    if (!pref_service_->GetBoolean(prefs::kGlicTabContextEnabled)) {
-      return ActiveTabSharingState::kTabContextPermissionNotGranted;
-    }
-    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
-    if (ftd.is_focus()) {
-      return ActiveTabSharingState::kActiveTabIsShared;
-    } else if (ftd.unfocused_tab()) {
-      return ActiveTabSharingState::kCannotShareActiveTab;
-    }
-    return ActiveTabSharingState::kNoTabCanBeShared;
-  }
-  int32_t GetNumPinnedTabs() const override {
-    return sharing_manager_->GetNumPinnedTabs();
-  }
 
  private:
   raw_ptr<GlicInstance> glic_instance_;
-  raw_ptr<GlicSharingManager> sharing_manager_;
-  raw_ptr<PrefService> pref_service_;
 };
 
 constexpr char kHistogramGlicPanelPresentationTimePrefix[] =
@@ -314,6 +314,7 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
       base::BindRepeating(&GlicMetrics::OnTabContextEnabledPrefChanged,
                           base::Unretained(this)));
 }
+
 GlicMetrics::~GlicMetrics() = default;
 
 void GlicMetrics::OnFreAccepted() {
@@ -336,7 +337,21 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   base::UmaHistogramEnumeration(
       "Glic.Sharing.ActiveTabSharingState.OnUserInputSubmitted",
       delegate_->GetActiveTabSharingState());
+  // Reset turn data and start populating it for the new turn being started.
+  turn_ = {};
   turn_.input_submitted_time_ = base::TimeTicks::Now();
+  // Favor using the focused tab for UKM source; otherwise use the latest
+  // extracted one if there are any pinned tabs being shared. If none of these
+  // is true, leave turn_.chosen_source_id_ as its default of NoURLSourceId.
+  content::WebContents* focused = delegate_->GetFocusedWebContents();
+  if (focused) {
+    turn_.chosen_source_id_ =
+        focused->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  } else if (delegate_->GetPinnedAndSharedWebContents().size() > 0) {
+    turn_.chosen_source_id_ = last_tab_context_source_id_;
+  }
+  last_tab_context_source_id_ = ukm::NoURLSourceId();
+
   input_mode_ = mode;
   inputs_modes_used_.insert(mode);
 }
@@ -414,12 +429,13 @@ void GlicMetrics::OnResponseStarted() {
       base::StrCat({"Glic.Response.StartTime.InputMode.", mode_string}),
       start_time);
 
-  if (turn_.did_request_context_) {
-    base::UmaHistogramMediumTimes("Glic.Response.StartTime.WithContext",
-                                  start_time);
+  // If source ID was chosen, we assume tab context was extracted.
+  if (turn_.chosen_source_id_ != ukm::NoURLSourceId()) {
+    base::UmaHistogramMediumTimes(
+        "Glic.Response.StartTime.TabContext.LikelyWith", start_time);
   } else {
-    base::UmaHistogramMediumTimes("Glic.Response.StartTime.WithoutContext",
-                                  start_time);
+    base::UmaHistogramMediumTimes(
+        "Glic.Response.StartTime.TabContext.LikelyWithout", start_time);
   }
   base::RecordAction(base::UserMetricsAction("GlicResponse"));
   ++session_responses_;
@@ -437,7 +453,7 @@ void GlicMetrics::OnResponseStarted() {
   base::UmaHistogramCounts100("Glic.Response.TabsPinnedForSharingCount",
                               delegate_->GetNumPinnedTabs());
 
-  ukm::builders::Glic_Response(turn_.source_id_)
+  ukm::builders::Glic_Response(turn_.chosen_source_id_)
       .SetAttached(attached)
       .SetInvocationSource(static_cast<int64_t>(invocation_source_))
       .SetWebClientMode(static_cast<int64_t>(input_mode_))
@@ -520,7 +536,8 @@ void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
   base::UmaHistogramBoolean("Glic.Session.Open.Attached", attached);
   base::UmaHistogramEnumeration("Glic.Session.Open.InvocationSource", source);
 
-  ukm::builders::Glic_WindowOpen(turn_.source_id_)
+  // TODO(b/452120577): turn.chosen_source_id_ is still undefined at this point.
+  ukm::builders::Glic_WindowOpen(turn_.chosen_source_id_)
       .SetAttached(attached)
       .SetInvocationSource(static_cast<int64_t>(source))
       .Record(ukm::UkmRecorder::Get());
@@ -758,16 +775,9 @@ void GlicMetrics::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
 }
 
-void GlicMetrics::DidRequestContextFromFocusedTab() {
-  turn_.did_request_context_ = true;
-
-  content::WebContents* web_contents = delegate_->GetContents();
-  if (web_contents) {
-    turn_.source_id_ =
-        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  } else {
-    turn_.source_id_ = ukm::NoURLSourceId();
-  }
+void GlicMetrics::DidRequestContextFromTab(content::WebContents& web_contents) {
+  last_tab_context_source_id_ =
+      web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
 void GlicMetrics::SetStartingMode(mojom::WebClientMode mode) {

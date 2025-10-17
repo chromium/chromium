@@ -268,9 +268,11 @@ class GlicMetrics {
     virtual gfx::Size GetWindowSize() const = 0;
     virtual bool IsWindowShowing() const = 0;
     virtual bool IsWindowAttached() const = 0;
-    virtual content::WebContents* GetContents() = 0;
+    virtual content::WebContents* GetFocusedWebContents() = 0;
     virtual ActiveTabSharingState GetActiveTabSharingState() = 0;
     virtual int32_t GetNumPinnedTabs() const = 0;
+    virtual std::vector<content::WebContents*>
+    GetPinnedAndSharedWebContents() = 0;
   };
 
   GlicMetrics(Profile* profile, GlicEnabling* enabling);
@@ -363,8 +365,8 @@ class GlicMetrics {
 
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
-  // Must be called when context is requested.
-  void DidRequestContextFromFocusedTab();
+  // Must be called when context is requested from a tab.
+  void DidRequestContextFromTab(content::WebContents& web_contents);
 
   // Sets the starting input mode of the web client.
   void SetStartingMode(mojom::WebClientMode mode);
@@ -415,20 +417,25 @@ class GlicMetrics {
     // OnResponseStopped(). This is a workaround and should be removed, see
     // crbug.com/399151164.
     bool response_started_ = false;
-    bool did_request_context_ = false;
     bool reported_reaction_time_canned_ = false;
     bool reported_reaction_time_modelled_ = false;
-    // The source id at the time context is requested. If context
-    // was not requested then this is `no_url_source_id_`.
-    ukm::SourceId source_id_ = ukm::NoURLSourceId();
+    // A chosen source id from which context was requested.
+    ukm::SourceId chosen_source_id_ = ukm::NoURLSourceId();
   };
 
+  // Tracks information related to individual request/response turns.
+  // It is reset when new user input is submitted and populated as the turn
+  // progresses. It is also reset at when the response stops.
   TurnInfo turn_;
 
   // The last web client input mode used by the user.
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
   std::set<mojom::WebClientMode> inputs_modes_used_;
   int attach_change_count_ = 0;
+
+  // Tracks the source ID from the latest tab context requested by the web
+  // client. It is reset when user input is submitted.
+  ukm::SourceId last_tab_context_source_id_ = ukm::NoURLSourceId();
 
   mojom::WebClientModel current_model_ = mojom::WebClientModel::kDefault;
 

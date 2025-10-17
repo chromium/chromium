@@ -206,7 +206,7 @@ void GlicSharingManagerImpl::GetContextFromTab(
     tabs::TabHandle tab_handle,
     const mojom::GetTabContextOptions& options,
     base::OnceCallback<void(GlicGetContextResult)> callback) {
-  auto* tab = tab_handle.Get();
+  tabs::TabInterface* tab = tab_handle.Get();
   if (!tab) {
     std::move(callback).Run(base::unexpected(GlicGetContextError{
         GlicGetContextFromTabError::kTabNotFound, "tab not found"}));
@@ -230,11 +230,9 @@ void GlicSharingManagerImpl::GetContextFromTab(
         GlicGetContextFromTabError::kPermissionDenied, "permission denied"}));
     return;
   }
-  if (is_focused) {
-    metrics_->DidRequestContextFromFocusedTab();
-  } else {
-    // TODO(b/422240100): Handle metrics for pinned tabs.
-  }
+
+  // If tab context was allowed to be extracted, report to metrics.
+  metrics_->DidRequestContextFromTab(*tab->GetContents());
 
   GetContextFromTabImpl(tab, options, std::move(callback));
 }

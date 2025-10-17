@@ -1008,7 +1008,7 @@ chromium-metrics-reviews@google.com.
   <token key="Mode" variants="WebClientMode"/>
 </histogram>
 
-<histogram name="Glic.Response.StartTime.{ContextStatus}" units="ms"
+<histogram name="Glic.Response.StartTime.TabContext.{ContextStatus}" units="ms"
     expires_after="2026-03-22">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
@@ -1019,14 +1019,15 @@ chromium-metrics-reviews@google.com.
     until a response starts being presented to the user. This is reported for
     all web client modes (text or audio).
 
-    (*) Chrome knows if context was or was not requested by the web client, but
-    not if it was actually included in any requests.
+    (*) Chrome knows if tab context was requested by the web client and the
+    internal state of tabs' sharing status, but it cannot know for certain if
+    tab context was or was not actually attached to requests by the web client.
   </summary>
   <token key="ContextStatus">
-    <variant name="WithContext"
-        summary="context was requested by the web client"/>
-    <variant name="WithoutContext"
-        summary="context was NOT requested by the web client"/>
+    <variant name="LikelyWith"
+        summary="tab context was likely used in the request"/>
+    <variant name="LikelyWithout"
+        summary="tab context was likely NOT used in the request"/>
   </token>
 </histogram>
 
