@@ -29,7 +29,7 @@ namespace net {
 
 namespace {
 
-IPEndPoint MakeIPEndPoint(std::string_view addr, uint16_t port = 80) {
+IPEndPoint MakeIPEndPoint(std::string_view addr, uint16_t port) {
   return IPEndPoint(*IPAddress::FromIPLiteral(addr), port);
 }
 
@@ -266,13 +266,13 @@ ServiceEndpointBuilder::~ServiceEndpointBuilder() = default;
 
 ServiceEndpointBuilder& ServiceEndpointBuilder::add_v4(std::string_view addr,
                                                        uint16_t port) {
-  endpoint_.ipv4_endpoints.emplace_back(MakeIPEndPoint(addr));
+  endpoint_.ipv4_endpoints.emplace_back(MakeIPEndPoint(addr, port));
   return *this;
 }
 
 ServiceEndpointBuilder& ServiceEndpointBuilder::add_v6(std::string_view addr,
                                                        uint16_t port) {
-  endpoint_.ipv6_endpoints.emplace_back(MakeIPEndPoint(addr));
+  endpoint_.ipv6_endpoints.emplace_back(MakeIPEndPoint(addr, port));
   return *this;
 }
 
