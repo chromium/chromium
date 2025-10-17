@@ -68,9 +68,9 @@ void GlicActorTaskIconManager::OnInstanceStateChange(bool is_showing,
 void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   current_task_id_ = task_id;
 
-  // Get the glic::GlicInstance associated with the task.
-  glic::GlicInstance* instance =
-      window_controller_->GetInstanceForTab(GetLastUpdatedTab());
+  // TODO(crbug.com/446734119): Instead ActorTask should hold a glic
+  // InstanceId and use that to retrieve the instance.
+  glic::GlicInstance* instance = window_controller_->GetInstances().front();
   if (!instance) {
     return;
   }
