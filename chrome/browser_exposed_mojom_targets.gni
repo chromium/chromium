@@ -210,7 +210,6 @@ browser_exposed_mojom_targets = [
   "//media/capture/mojom:video_capture_buffer",
   "//media/capture/mojom:video_capture_types",
   "//media/capture/mojom:video_capture",
-  "//media/capture/mojom:video_effects_manager",
   "//media/midi:mojo",
   "//media/mojo/mojom:audio_data",
   "//media/mojo/mojom:encryption_pattern",

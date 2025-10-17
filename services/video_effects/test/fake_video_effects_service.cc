@@ -21,20 +21,6 @@ FakeVideoEffectsService::FakeVideoEffectsService(
 
 FakeVideoEffectsService::~FakeVideoEffectsService() = default;
 
-void FakeVideoEffectsService::CreateEffectsProcessor(
-    const std::string& device_id,
-    mojo::PendingRemote<viz::mojom::Gpu> gpu,
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> manager,
-    mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) {
-  processors_.insert(
-      std::make_pair(device_id, std::make_unique<FakeVideoEffectsProcessor>(
-                                    std::move(processor), std::move(manager))));
-
-  if (effects_processor_creation_cb_) {
-    std::move(effects_processor_creation_cb_).Run();
-  }
-}
-
 base::test::TestFuture<void>
 FakeVideoEffectsService::GetEffectsProcessorCreationFuture() {
   CHECK(!effects_processor_creation_cb_);

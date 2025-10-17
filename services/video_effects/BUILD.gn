@@ -72,13 +72,11 @@ if (enable_video_effects) {
       "test_gpu_channel_host_provider.cc",
       "test_gpu_channel_host_provider.h",
       "video_effects_processor_impl_unittest.cc",
-      "video_effects_service_impl_unittest.cc",
     ]
 
     deps = [
       "//base/test:test_support",
       "//gpu/ipc/common:test_support",
-      "//media/capture/mojom:video_effects_manager",
       "//services/video_effects:service",
       "//testing/gtest",
     ]

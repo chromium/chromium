@@ -15,7 +15,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,13 +37,6 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
   ~VideoEffectsServiceImpl() override;
-
-  // mojom::VideoEffectsService implementation:
-  void CreateEffectsProcessor(
-      const std::string& device_id,
-      mojo::PendingRemote<viz::mojom::Gpu> gpu,
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> manager,
-      mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) override;
 
   void SetBackgroundSegmentationModel(base::File model_file) override;
 
@@ -69,8 +61,6 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService,
   // `processors_`.
   void FinishCreatingEffectsProcessor(
       const std::string& device_id,
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-          manager_remote,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver);
 
   // Helper - used to clean up instances of `VideoEffectsProcessor`s that are
@@ -107,8 +97,6 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService,
     PendingEffectsProcessor& operator=(PendingEffectsProcessor&&);
     ~PendingEffectsProcessor();
 
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        manager_remote;
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver;
   };
 

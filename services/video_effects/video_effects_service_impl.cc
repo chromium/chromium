@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
+#include "base/task/bind_post_task.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
@@ -35,49 +35,6 @@ VideoEffectsServiceImpl::~VideoEffectsServiceImpl() {
   if (gpu_channel_host_provider_) {
     gpu_channel_host_provider_->RemoveObserver(*this);
   }
-}
-
-void VideoEffectsServiceImpl::CreateEffectsProcessor(
-    const std::string& device_id,
-    mojo::PendingRemote<viz::mojom::Gpu> gpu_remote,
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        manager_remote,
-    mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (processors_.contains(device_id) ||
-      pending_processors_.contains(device_id)) {
-    return;
-  }
-
-  // If this is the first request, create the context objects.
-  if (!gpu_channel_host_provider_) {
-    auto gpu = viz::Gpu::Create(std::move(gpu_remote), io_task_runner_);
-    gpu_channel_host_provider_ = new VizGpuChannelHostProvider(std::move(gpu));
-    gpu_channel_host_provider_->AddObserver(*this);
-  }
-
-  if (device_) {
-    // We already have a wgpu::Device.  Go ahead and create the processor.
-    FinishCreatingEffectsProcessor(device_id, std::move(manager_remote),
-                                   std::move(processor_receiver));
-    return;
-  }
-
-  // Store the pending request.
-  PendingEffectsProcessor pending;
-  pending.manager_remote = std::move(manager_remote);
-  pending.processor_receiver = std::move(processor_receiver);
-  auto [_, inserted] =
-      pending_processors_.insert(std::make_pair(device_id, std::move(pending)));
-  CHECK(inserted);
-
-  if (!webgpu_device_) {
-    CreateWebGpuDeviceAndEffectsProcessors();
-    return;
-  }
-  // A wgpu::Device is already being created.  We don't need to do anything as
-  // pending processors will be created when it is ready.
 }
 
 void VideoEffectsServiceImpl::OnPermanentError(
@@ -163,7 +120,6 @@ void VideoEffectsServiceImpl::FinishCreatingEffectsProcessors() {
   // Called in-sequence by OnDeviceCreated().
   for (auto& it : pending_processors_) {
     FinishCreatingEffectsProcessor(it.first,
-                                   std::move(it.second.manager_remote),
                                    std::move(it.second.processor_receiver));
   }
   pending_processors_.clear();
@@ -171,8 +127,6 @@ void VideoEffectsServiceImpl::FinishCreatingEffectsProcessors() {
 
 void VideoEffectsServiceImpl::FinishCreatingEffectsProcessor(
     const std::string& device_id,
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver) {
   // Called in-sequence.
   if (!device_) {
@@ -186,8 +140,8 @@ void VideoEffectsServiceImpl::FinishCreatingEffectsProcessor(
                      weak_ptr_factory_.GetWeakPtr(), device_id);
 
   auto effects_processor = std::make_unique<VideoEffectsProcessorImpl>(
-      device_, std::move(manager_remote), std::move(processor_receiver),
-      gpu_channel_host_provider_, std::move(on_unrecoverable_processor_error));
+      device_, std::move(processor_receiver), gpu_channel_host_provider_,
+      std::move(on_unrecoverable_processor_error));
 
   if (!effects_processor->Initialize()) {
     return;

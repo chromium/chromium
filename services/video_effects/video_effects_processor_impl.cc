@@ -23,15 +23,11 @@ namespace video_effects {
 
 VideoEffectsProcessorImpl::VideoEffectsProcessorImpl(
     wgpu::Device device,
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
     scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider,
     base::OnceClosure on_unrecoverable_error)
     : device_(device),
-      manager_remote_(std::move(manager_remote)),
       processor_receiver_(this, std::move(processor_receiver)),
-      configuration_observer_receiver_(this),
       gpu_channel_host_provider_(gpu_channel_host_provider),
       on_unrecoverable_error_(std::move(on_unrecoverable_error)) {
   CHECK(gpu_channel_host_provider_);
@@ -39,11 +35,6 @@ VideoEffectsProcessorImpl::VideoEffectsProcessorImpl(
   processor_receiver_.set_disconnect_handler(
       base::BindOnce(&VideoEffectsProcessorImpl::OnMojoDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
-  manager_remote_.set_disconnect_handler(
-      base::BindOnce(&VideoEffectsProcessorImpl::OnMojoDisconnected,
-                     weak_ptr_factory_.GetWeakPtr()));
-  manager_remote_->AddObserver(
-      configuration_observer_.BindNewPipeAndPassRemote());
 }
 
 VideoEffectsProcessorImpl::~VideoEffectsProcessorImpl() {
@@ -119,27 +110,13 @@ void VideoEffectsProcessorImpl::OnPermanentError(
   MaybeCallOnUnrecoverableError();
 }
 
-void VideoEffectsProcessorImpl::OnConfigurationChanged(
-    media::mojom::VideoEffectsConfigurationPtr configuration) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // We've seen a config, so let's make sure `runtime_config_` isn't nullopt.
-  // Existence or absence of `configuration->blur` controls whether blur effect
-  // is enabled or not:
-  runtime_config_.emplace(RuntimeConfig{
-      .blur_state =
-          !!configuration->blur ? BlurState::kEnabled : BlurState::kDisabled});
-}
-
 void VideoEffectsProcessorImpl::OnMojoDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // One of the pipes has been disconnected, tear down both and notify the
+  // The pipe has been disconnected. Tear it down and notify the
   // `on_unrecoverable_error_` since the owner of this processor instance may
   // want to tear us down (the processor is no longer usable).
   processor_receiver_.reset();
-  configuration_observer_.reset();
-  manager_remote_.reset();
 
   MaybeCallOnUnrecoverableError();
 }

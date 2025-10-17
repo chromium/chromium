@@ -29,15 +29,6 @@ class FakeVideoEffectsService : public mojom::VideoEffectsService {
   ~FakeVideoEffectsService() override;
 
   // mojom::VideoEffectsService implementation:
-
-  // The fake implementation will ensure that the remote end of the passed in
-  // `processor` receiver will stay connected for as long as the fake is alive.
-  void CreateEffectsProcessor(
-      const std::string& device_id,
-      mojo::PendingRemote<viz::mojom::Gpu> gpu,
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> manager,
-      mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) override;
-
   void SetBackgroundSegmentationModel(base::File model_file) override;
 
   // Returns a test future which will be resolved when the next video effects

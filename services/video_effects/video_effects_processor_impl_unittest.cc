@@ -19,7 +19,6 @@
 #include "gpu/ipc/common/gpu_channel.mojom-forward.h"
 #include "gpu/ipc/common/mock_gpu_channel.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
-#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -50,8 +49,7 @@ class VideoEffectsProcessorTest : public testing::Test {
     on_processor_error_.emplace();
 
     processor_impl_.emplace(
-        wgpu::Device{}, manager_receiver_.InitWithNewPipeAndPassRemote(),
-        processor_remote_.BindNewPipeAndPassReceiver(),
+        wgpu::Device{}, processor_remote_.BindNewPipeAndPassReceiver(),
         gpu_channel_host_provider, on_processor_error_->GetCallback());
   }
 
@@ -67,8 +65,6 @@ class VideoEffectsProcessorTest : public testing::Test {
   // Processor under test's remote. The unit-tests will usually interact with
   // the processor via the remote.
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote_;
-  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
-      manager_receiver_;
 };
 
 TEST_F(VideoEffectsProcessorTest, InitializeSucceeds) {
@@ -92,11 +88,6 @@ TEST_F(VideoEffectsProcessorTest, InitializeSucceeds) {
   // providers and wgpu::Device
   //  EXPECT_TRUE(processor_impl_->Initialize());
   EXPECT_FALSE(processor_impl_->Initialize());
-}
-
-TEST_F(VideoEffectsProcessorTest, ErrorCallbackCalledWhenManagerDisconnects) {
-  manager_receiver_.reset();
-  EXPECT_TRUE(on_processor_error_->Wait());
 }
 
 TEST_F(VideoEffectsProcessorTest, ErrorCallbackCalledWhenProcessorDisconnects) {

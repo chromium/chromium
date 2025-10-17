@@ -15,7 +15,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
-#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,10 +28,8 @@
 
 namespace video_effects {
 
-class VideoEffectsProcessorImpl
-    : public mojom::VideoEffectsProcessor,
-      public GpuChannelHostProvider::Observer,
-      public media::mojom::VideoEffectsConfigurationObserver {
+class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
+                                  public GpuChannelHostProvider::Observer {
  public:
   // `gpu_channel_host_provider` must outlive this processor.
   // `on_unrecoverable_error` will be called after an unrecoverable condition
@@ -41,8 +38,6 @@ class VideoEffectsProcessorImpl
   // the processor was unable to reinitialize GPU resources after context loss.
   explicit VideoEffectsProcessorImpl(
       wgpu::Device device,
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-          manager_remote,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
       scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider,
       base::OnceClosure on_unrecoverable_error);
@@ -71,13 +66,9 @@ class VideoEffectsProcessorImpl
   void OnContextLost(scoped_refptr<GpuChannelHostProvider>) override;
   void OnPermanentError(scoped_refptr<GpuChannelHostProvider>) override;
 
-  // media::mojom::VideoEffectsConfigurationObserver:
-  void OnConfigurationChanged(
-      media::mojom::VideoEffectsConfigurationPtr configuration) override;
-
-  // Registered as a disconnect handler for `manager_remote_` and
-  // `processor_receiver_`. Calling it will cause this processor to become
-  // defunct as we cannot work without functional mojo connections.
+  // Registered as a disconnect handler for `processor_receiver_`. Calling it
+  // will cause this processor to become defunct as we cannot work without
+  // functional mojo connections.
   void OnMojoDisconnected();
 
   // Initializes GPU state (context providers and shared image interface).
@@ -91,12 +82,7 @@ class VideoEffectsProcessorImpl
 
   wgpu::Device device_;
 
-  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> manager_remote_;
-  mojo::Receiver<media::mojom::VideoEffectsConfigurationObserver>
-      configuration_observer_{this};
   mojo::Receiver<mojom::VideoEffectsProcessor> processor_receiver_;
-  mojo::Receiver<media::mojom::VideoEffectsConfigurationObserver>
-      configuration_observer_receiver_;
 
   scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider_;
 

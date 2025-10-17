@@ -11,13 +11,9 @@
 namespace video_effects {
 
 FakeVideoEffectsProcessor::FakeVideoEffectsProcessor(
-    mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor,
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> manager)
-    : receiver_(this, std::move(processor)), manager_(std::move(manager)) {
+    mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor)
+    : receiver_(this, std::move(processor)) {
   receiver_.set_disconnect_handler(
-      base::BindOnce(&FakeVideoEffectsProcessor::OnMojoConnectionLost,
-                     weak_ptr_factory_.GetWeakPtr()));
-  manager_.set_disconnect_handler(
       base::BindOnce(&FakeVideoEffectsProcessor::OnMojoConnectionLost,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -34,14 +30,8 @@ void FakeVideoEffectsProcessor::PostProcess(
       mojom::PostProcessResult::NewError(mojom::PostProcessError::kUnknown));
 }
 
-mojo::Remote<media::mojom::ReadonlyVideoEffectsManager>&
-FakeVideoEffectsProcessor::GetVideoEffectsManager() {
-  return manager_;
-}
-
 void FakeVideoEffectsProcessor::OnMojoConnectionLost() {
   receiver_.reset();
-  manager_.reset();
 }
 
 }  // namespace video_effects
