@@ -13,6 +13,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/legion/legion_common.h"
+#include "components/legion/transport.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,7 +23,6 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "url/gurl.h"
-#include "components/legion/transport.h"
 
 namespace network::mojom {
 class NetworkContext;
@@ -33,15 +34,6 @@ class WebSocketClient : public Transport,
                         public network::mojom::WebSocketHandshakeClient,
                         public network::mojom::WebSocketClient {
  public:
-  enum class SocketStatus {
-    // Response received successfully.
-    kOk,
-    // Socket was closed by the server.
-    kSocketClosed,
-    // An error occurred on the client. Socket is now closed.
-    kError,
-  };
-
   using NetworkContextFactory =
       base::RepeatingCallback<network::mojom::NetworkContext*()>;
 
@@ -51,7 +43,8 @@ class WebSocketClient : public Transport,
   ~WebSocketClient() override;
 
   // Transport:
-  void Send(Request request, ResponseCallback callback) override;
+  void Send(const oak::session::v1::SessionRequest& request,
+            ResponseCallback callback) override;
 
  private:
   enum class State {
@@ -61,13 +54,15 @@ class WebSocketClient : public Transport,
     kDisconnected,
   };
 
+  void Send(Request request);
   void Connect();
-  void OnResponse(SocketStatus status, std::vector<uint8_t> data);
+  void OnResponse(
+      base::expected<std::vector<uint8_t>, TransportError> response);
   void InternalWrite(base::span<const uint8_t> data);
   void ReadFromDataPipe(MojoResult result,
                         const mojo::HandleSignalsState& state);
   void ProcessCompletedResponse();
-  void ClosePipe(SocketStatus status);
+  void ClosePipe(TransportError status);
   void OnMojoPipeDisconnect();
 
   // network::mojom::WebSocketHandshakeClient:

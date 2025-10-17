@@ -54,7 +54,8 @@ void SecureChannelImpl::Write(Request request,
     case State::kUninitialized:
       StartSessionEstablishment();
       break;
-    case State::kEstablishingSession:
+    case State::kPerformingAttestation:
+    case State::kPerformingHandshake:
       // Request is queued and will be processed once the session is
       // established.
       break;
@@ -72,19 +73,16 @@ void SecureChannelImpl::Write(Request request,
 
 void SecureChannelImpl::Send(
     const oak::session::v1::SessionRequest& session_request) {
-  // TODO: serialize session_request to request and maybe even move
-  // serialization and seserialization into Transport?
-  Request request;
-
   // TODO: OnResponseReceived should probably be a repeating callback set on
   // Transport to allow for parallel requests.
-  transport_->Send(std::move(request),
+  transport_->Send(session_request,
                    base::BindOnce(&SecureChannelImpl::OnResponseReceived,
                                   weak_factory_.GetWeakPtr()));
 }
 
 void SecureChannelImpl::OnResponseReceived(
-    base::expected<Response, Transport::TransportError> response) {
+    base::expected<oak::session::v1::SessionResponse, Transport::TransportError>
+        response) {
   if (!response.has_value()) {
     // TODO: derive result code from state_ and print state.
     DLOG(ERROR) << "Transport error: " << static_cast<int>(response.error());
@@ -93,21 +91,22 @@ void SecureChannelImpl::OnResponseReceived(
     return;
   }
 
-  // TODO: deserialize response to session_response.
-  oak::session::v1::SessionResponse session_response;
+  oak::session::v1::SessionResponse& session_response = response.value();
   if (session_response.has_attest_response()) {
     OnAttestationResponse(session_response.attest_response());
-  }
-  if (session_response.has_handshake_response()) {
+  } else if (session_response.has_handshake_response()) {
     OnHandshakeResponse(session_response.handshake_response());
-  }
-  if (session_response.has_encrypted_message()) {
+  } else if (session_response.has_encrypted_message()) {
     OnEncryptedResponse(session_response.encrypted_message());
+  } else {
+    LOG(ERROR) << "Response does not contain any messages";
   }
 }
 
 void SecureChannelImpl::OnAttestationResponse(
     const oak::session::v1::AttestResponse& response) {
+  DCHECK_EQ(state_, State::kPerformingAttestation);
+
   // Step 2: Verify Attestation Response
   if (!attestation_handler_->VerifyAttestationResponse(response)) {
     DLOG(ERROR) << "Attestation verification failed.";
@@ -117,6 +116,7 @@ void SecureChannelImpl::OnAttestationResponse(
   }
   DVLOG(1) << "Attestation verified successfully.";
 
+  state_ = SecureChannelImpl::State::kPerformingHandshake;
   // Step 3: Get and Send Handshake Request
   std::optional<oak::session::v1::HandshakeRequest> handshake_request =
       oak_session_->GetHandshakeMessage();
@@ -135,6 +135,8 @@ void SecureChannelImpl::OnAttestationResponse(
 
 void SecureChannelImpl::OnHandshakeResponse(
     const oak::session::v1::HandshakeResponse& response) {
+  DCHECK_EQ(state_, State::kPerformingHandshake);
+
   // Step 4: Process Handshake Response
   if (!oak_session_->ProcessHandshakeResponse(response)) {
     DLOG(ERROR) << "Failed to handle handshake response.";
@@ -197,7 +199,7 @@ void SecureChannelImpl::StartSessionEstablishment() {
     return;
   }
 
-  state_ = State::kEstablishingSession;
+  state_ = State::kPerformingAttestation;
   DVLOG(1) << "Sending attestation request.";
   oak::session::v1::SessionRequest request;
   *request.mutable_attest_request() = std::move(attestation_req.value());
@@ -205,11 +207,11 @@ void SecureChannelImpl::StartSessionEstablishment() {
 }
 
 void SecureChannelImpl::ProcessNextRequest() {
-  if (pending_requests_.empty() || request_in_flight_) {
+  DCHECK_EQ(state_, State::kEstablished);
+  if (pending_requests_.empty() || request_in_flight_ ||
+      state_ != State::kEstablished) {
     return;
   }
-
-  DCHECK_EQ(state_, State::kEstablished);
 
   // Step 5: Encrypt and Send the original request
   std::optional<oak::session::v1::EncryptedMessage> encrypted_request =

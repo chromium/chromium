@@ -7,7 +7,10 @@
 
 #include <optional>
 
-#include "third_party/oak/chromium/proto/session/session.pb.h"
+namespace oak::session::v1 {
+class AttestResponse;
+class AttestRequest;
+}  // namespace oak::session::v1
 
 namespace legion {
 

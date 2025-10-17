@@ -52,7 +52,8 @@ class SecureChannelImpl : public SecureChannel {
   // Stages of the secure channel establishment and write process.
   enum class State {
     kUninitialized,
-    kEstablishingSession,
+    kPerformingAttestation,
+    kPerformingHandshake,
     kEstablished,
     kPermanentFailure,
   };
@@ -65,8 +66,8 @@ class SecureChannelImpl : public SecureChannel {
 
   // Helpers to send and receive data that is converted to proto messages.
   void Send(const oak::session::v1::SessionRequest& request);
-  void OnResponseReceived(
-      base::expected<Response, Transport::TransportError> response);
+  void OnResponseReceived(base::expected<oak::session::v1::SessionResponse,
+                                         Transport::TransportError> response);
 
   // Callbacks for the asynchronous session establishment steps and for sending
   // encrypted requests.

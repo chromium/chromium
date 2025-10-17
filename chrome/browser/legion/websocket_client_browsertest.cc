@@ -19,6 +19,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/oak/chromium/proto/session/session.pb.h"
+#include "third_party/oak/chromium/proto/session/session.test.h"
+#include "third_party/oak/chromium/proto/session/session.to_value.h"
 
 namespace legion {
 
@@ -40,7 +43,8 @@ class LegionWebSocketClientBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(LegionWebSocketClientBrowserTest,
                        MANUAL_WriteTestRequest) {
-  base::test::TestFuture<base::expected<Response, Transport::TransportError>>
+  base::test::TestFuture<base::expected<oak::session::v1::SessionResponse,
+                                        Transport::TransportError>>
       future;
   LOG(ERROR) << "Connecting: " << url();
   auto client = std::make_unique<WebSocketClient>(
@@ -55,17 +59,16 @@ IN_PROC_BROWSER_TEST_F(LegionWebSocketClientBrowserTest,
 
   Transport* transport = client.get();
 
-  std::string message =
-      R"({"attestRequest":{"assertions":{},"endorsedEvidence":{}}})";
-  std::vector<uint8_t> data(message.begin(), message.end());
-  transport->Send(std::move(data), future.GetCallback());
+  oak::session::v1::SessionRequest request;
+  request.mutable_attest_request();
+  LOG(ERROR) << "Request: " << oak::session::v1::Serialize(request);
+  transport->Send(std::move(request), future.GetCallback());
 
   auto result = future.Take();
   ASSERT_TRUE(result.has_value());
 
   const auto& response = result.value();
-  EXPECT_FALSE(response.empty());
-  LOG(ERROR) << "Response: " << std::string(response.begin(), response.end());
+  LOG(ERROR) << "Response: " << oak::session::v1::Serialize(response);
   EXPECT_FALSE(true);  // Fail test to see log output.
 }
 

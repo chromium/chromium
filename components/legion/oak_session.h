@@ -10,7 +10,12 @@
 #include <vector>
 
 #include "components/legion/legion_common.h"
-#include "third_party/oak/chromium/proto/session/session.pb.h"
+
+namespace oak::session::v1 {
+class EncryptedMessage;
+class HandshakeRequest;
+class HandshakeResponse;
+}  // namespace oak::session::v1
 
 namespace legion {
 

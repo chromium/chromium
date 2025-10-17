@@ -24,6 +24,9 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//components/legion",
       "//content/test:test_support",
+      "//third_party/oak:oak_proto",
+      "//third_party/oak:oak_proto_extras",
+      "//third_party/oak:oak_proto_test_extras",
     ]
   }
 }
