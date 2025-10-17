@@ -3668,22 +3668,6 @@ void HWNDMessageHandler::UpdateDwmFrame() {
   }
 }
 
-void HWNDMessageHandler::GenerateTouchEvent(ui::EventType event_type,
-                                            const gfx::Point& point,
-                                            ui::PointerId id,
-                                            base::TimeTicks time_stamp,
-                                            TouchEvents* touch_events) {
-  ui::TouchEvent event(event_type, point, time_stamp,
-                       ui::PointerDetails(ui::EventPointerType::kTouch, id));
-
-  event.SetFlags(ui::GetModifiersFromKeyState());
-
-  event.latency()->AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, time_stamp);
-
-  touch_events->push_back(event);
-}
-
 bool HWNDMessageHandler::HandleMouseInputForCaption(unsigned int message,
                                                     WPARAM w_param,
                                                     LPARAM l_param) {
