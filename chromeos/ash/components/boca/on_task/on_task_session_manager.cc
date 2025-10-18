@@ -73,6 +73,8 @@ void OnTaskSessionManager::OnSessionStarted(
         window_id, /*close_bundle_content=*/true);
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
         window_id, {active_tab_tracker_.get(), this});
+    system_web_app_manager_->SetParentTabsRestriction(
+        window_id, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
   } else {
     system_web_app_launch_helper_->LaunchBocaSWA();
   }
@@ -262,6 +264,11 @@ void OnTaskSessionManager::OnAppReloaded() {
       window_id, /*close_bundle_content=*/true);
   system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
       window_id, {active_tab_tracker_.get(), this});
+
+  // Also set `DOMAIN_NAVIGATION` nav restriction on the homepage to prevent
+  // locked mode nav escape from extensions and new tabs.
+  system_web_app_manager_->SetParentTabsRestriction(
+      window_id, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
 
   // Reopen only content that was originally shared by the provider. We also
   // clear stale tab ids that were tracked with the previous instance.
@@ -555,11 +562,15 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
     return;
   }
 
-  // Set up window tracker for the newly launched Boca SWA.
+  // Set up window tracker for the newly launched Boca SWA. Also set
+  // `DOMAIN_NAVIGATION` nav restriction on the homepage to prevent locked mode
+  // nav escape from extensions and new tabs.
   // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
   // `OnTaskSystemWebAppManager`.
   system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id,
                                                                  observers_);
+  system_web_app_manager_->SetParentTabsRestriction(
+      window_id, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION);
 
   // Execute all pending tasks. Start with the tab management ones first to
   // ensure that the browser keeps immersive mode enabled on window pinning.

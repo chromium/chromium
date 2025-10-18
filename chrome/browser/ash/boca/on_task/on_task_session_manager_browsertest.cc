@@ -177,6 +177,32 @@ class OnTaskSessionManagerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(
+    OnTaskSessionManagerBrowserTest,
+    ShouldEnforceDomainNavRestrictionOnHomepageOnSessionStart) {
+  content::TestNavigationObserver navigation_observer(
+      (GURL(kChromeBocaAppUntrustedIndexURL)));
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Start OnTask session to spin up the SWA and the homepage.
+  GetOnTaskSessionManager()->OnSessionStarted(kSessionId,
+                                              ::boca::UserIdentity());
+  navigation_observer.Wait();
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->count(), 1);
+
+  // Attempt to navigate away on the home tab and verify it does not go through.
+  // Wait until nav restrictions have been applied on the tab.
+  content::RunAllTasksUntilIdle();
+  const GURL test_url(kTestUrl1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, test_url));
+  EXPECT_NE(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            test_url);
+}
+
 IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
                        ShouldOpenTabsOnBundleUpdated) {
   content::TestNavigationObserver navigation_observer_1((GURL(kTestUrl1)));
@@ -714,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
                        RestoreTabsSentByProviderOnAppReload) {
-  content::TestNavigationObserver navigation_observer((GURL(kTestUrl1)));
+  content::TestNavigationObserver navigation_observer((GURL(kTestUrl2)));
   navigation_observer.StartWatchingNewWebContents();
 
   // Start OnTask session and spawn two tabs outside the homepage tab.
@@ -722,7 +748,14 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
                                               ::boca::UserIdentity());
   ::boca::Bundle bundle;
   bundle.add_content_configs()->set_url(kTestUrl1);
-  bundle.add_content_configs()->set_url(kTestUrl2);
+
+  // Add more content but set the navigation type to be 'One link away from this
+  // page' for testing purposes.
+  ::boca::ContentConfig* const content_config =
+      bundle.mutable_content_configs()->Add();
+  content_config->set_url(kTestUrl2);
+  content_config->mutable_locked_navigation_options()->set_navigation_type(
+      LockedNavigationOptions::LIMITED_NAVIGATION);
   GetOnTaskSessionManager()->OnBundleUpdated(bundle);
   navigation_observer.Wait();
 
@@ -738,8 +771,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             GURL(kTestUrl2));
 
-  // Open a new tab that is not sent by the provider from Boca homepage.
-  tab_strip_model->ActivateTabAt(0);
+  // Open a new tab that is not sent by the provider. Wait until nav
+  // restrictions have been applied on the tab.
+  content::RunAllTasksUntilIdle();
   const GURL new_url(embedded_test_server()->GetURL("/test/new_page.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       boca_app_browser, new_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
