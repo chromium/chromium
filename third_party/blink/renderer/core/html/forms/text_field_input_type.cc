@@ -620,6 +620,10 @@ void TextFieldInputType::SubtreeHasChanged() {
   GetElement().PseudoStateChanged(CSSSelector::kPseudoInRange);
   GetElement().PseudoStateChanged(CSSSelector::kPseudoOutOfRange);
 
+  if (RuntimeEnabledFeatures::FormControlRangeEnabled()) {
+    GetElement().CommitFormControlRangeEdit();
+  }
+
   DidSetValueByUserEdit();
 }
 

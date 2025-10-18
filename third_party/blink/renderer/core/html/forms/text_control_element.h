@@ -38,6 +38,7 @@ namespace blink {
 
 class ExceptionState;
 class V8SelectionMode;
+class FormControlRange;
 
 enum TextFieldSelectionDirection {
   kSelectionHasNoDirection,
@@ -193,6 +194,14 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   TextOverflowData ValueForTextOverflow() const;
 
+  // Register/unregister ranges that need to be notified of value changes.
+  void RegisterFormControlRange(FormControlRange* range);
+  void UnregisterFormControlRange(FormControlRange* range);
+
+  // Use the pre-edit baseline to compute and apply the edit once an observable
+  // value mutation occurs, before 'input' listeners run.
+  void CommitFormControlRangeEdit();
+
  protected:
   TextControlElement(const QualifiedName&, Document&);
   virtual HTMLElement* UpdatePlaceholderText() = 0;
@@ -279,6 +288,17 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // for suggested values too.
   bool PlaceholderShouldBeVisible() const;
 
+  // Notify observers of a single replace in this element’s value at
+  // `change_offset`: removed `deleted_count` and added `inserted_count`
+  // characters.
+  void NotifyFormControlRangesOfTextChange(unsigned change_offset,
+                                           unsigned deleted_count,
+                                           unsigned inserted_count) const;
+
+  // Capture the control’s pre-edit value and selection at 'beforeinput'.
+  // This baseline is held until the first observable value mutation.
+  void CaptureFormControlRangePreEdit();
+
   // Held directly instead of looked up by ID for speed.
   // Not only is the lookup faster, but for simple text inputs it avoids
   // creating a number of TreeScope data structures to track elements by ID.
@@ -296,6 +316,23 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   String suggested_value_;
   String value_before_set_suggested_value_;
+
+  // Snapshot taken at 'beforeinput' retained until the first observable change.
+  // Selection defines the edit region; that change is treated as one replace
+  // of the region (e.g. replacing "abc" with "xyz") rather than multiple
+  // small diffs, so ranges update consistently.
+  struct PendingUserEditSnapshot {
+    String old_value;
+    unsigned selection_start = 0;
+    unsigned selection_end = 0;
+  };
+
+  // Holds a pending user edit captured at 'beforeinput' until the first
+  // observable value mutation occurs.
+  std::optional<PendingUserEditSnapshot> pending_user_edit_;
+
+  // Holds FormControlRange instances that observe this text control.
+  HeapVector<Member<FormControlRange>> form_control_ranges_;
 
   // Indicate whether there is one scheduled selectionchange event.
   bool has_scheduled_selectionchange_event_ = false;

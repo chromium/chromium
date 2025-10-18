@@ -17,7 +17,7 @@ class Node;
 class TextControlElement;
 
 // A live range over a single text-control element (<input> or <textarea>).
-// Endpoints are exposed as (host element, UTF-16 value indices) rather than
+// Endpoints are exposed as (host element, UTF-16 `value` indices) rather than
 // internal shadow-DOM nodes.
 class CORE_EXPORT FormControlRange final : public AbstractRange {
   DEFINE_WRAPPERTYPEINFO();
@@ -34,7 +34,7 @@ class CORE_EXPORT FormControlRange final : public AbstractRange {
   Node* startContainer() const override;
   Node* endContainer() const override;
 
-  // Offsets are indices into the host's .value
+  // Offsets are indices into the host's `.value`.
   unsigned startOffset() const override;
   unsigned endOffset() const override;
 
@@ -54,6 +54,14 @@ class CORE_EXPORT FormControlRange final : public AbstractRange {
 
   // Returns the substring of element.value; empty string if unset or invalid.
   String toString() const;
+
+  // Update `form_control_` after a text replacement at `change_offset`: removes
+  // `deleted_count` code units and adds `inserted_count`.
+  // `start_offset_in_value_` and `end_offset_in_value_` are adjusted to reflect
+  // the edit and clamped to the current value of `form_control_`.
+  void UpdateOffsetsForTextChange(unsigned change_offset,
+                                  unsigned deleted_count,
+                                  unsigned inserted_count);
 
  private:
   Member<Document> owner_document_;

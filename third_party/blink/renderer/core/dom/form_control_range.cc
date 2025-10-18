@@ -92,7 +92,15 @@ void FormControlRange::setFormControlRange(Node* element,
     end_offset = start_offset;
   }
 
-  form_control_ = text_control;
+  // Rebind to the new control if changed and update registration to receive
+  // value mutation notifications.
+  if (form_control_ != text_control) {
+    if (form_control_) {
+      form_control_->UnregisterFormControlRange(this);
+    }
+    form_control_ = text_control;
+    form_control_->RegisterFormControlRange(this);
+  }
   start_offset_in_value_ = start_offset;
   end_offset_in_value_ = end_offset;
 }
@@ -111,6 +119,76 @@ String FormControlRange::toString() const {
 
   return value.Substring(start_offset_in_value_,
                          end_offset - start_offset_in_value_);
+}
+
+void FormControlRange::UpdateOffsetsForTextChange(unsigned change_offset,
+                                                  unsigned deleted_count,
+                                                  unsigned inserted_count) {
+  DCHECK(RuntimeEnabledFeatures::FormControlRangeEnabled());
+  if (!form_control_ || (deleted_count == 0 && inserted_count == 0)) {
+    return;
+  }
+
+  // State before the change.
+  const unsigned pre_start = start_offset_in_value_;
+  const unsigned pre_end = end_offset_in_value_;
+
+  // Special case: pure insertion handling (no deletions) to match DOM Range
+  // behavior.
+  // A collapsed caret stays before inserted text, insertion at the range start
+  // extends it, and insertion at the end leaves it unchanged.
+  if (deleted_count == 0 && inserted_count > 0) {
+    // Collapsed insertion: caret remains before new text.
+    if (pre_start == pre_end && change_offset == pre_start) {
+      return;
+    }
+    // Insertion at range start: extend the end to include the new text.
+    if (pre_start != pre_end && change_offset == pre_start) {
+      end_offset_in_value_ = pre_end + inserted_count;
+      return;
+    }
+    // Insertion at range end: leave the range unchanged.
+    if (pre_start != pre_end && change_offset == pre_end) {
+      return;
+    }
+  }
+
+  const unsigned change_end = change_offset + deleted_count;
+  auto calculate_new_offset = [&](unsigned pos) -> unsigned {
+    // Case 1: Position is before the change, so it remains unchanged.
+    if (pos < change_offset) {
+      return pos;
+    }
+
+    // Case 2: Position is inside the deleted region, so move it to the start of
+    // the change.
+    if (pos < change_end) {
+      return change_offset;
+    }
+
+    // Case 3: Position is after the change, so shift it by the net difference.
+    return pos - deleted_count + inserted_count;
+  };
+
+  unsigned new_start = calculate_new_offset(pre_start);
+  unsigned new_end = calculate_new_offset(pre_end);
+
+  // Clamp to the current value length and ensure start does not exceed end.
+  const unsigned value_length = form_control_->Value().length();
+  if (new_start > value_length) {
+    new_start = value_length;
+  }
+  if (new_end > value_length) {
+    new_end = value_length;
+  }
+
+  // Auto-collapse to higher index if needed.
+  if (new_start > new_end) {
+    new_end = new_start;
+  }
+
+  start_offset_in_value_ = new_start;
+  end_offset_in_value_ = new_end;
 }
 
 }  // namespace blink

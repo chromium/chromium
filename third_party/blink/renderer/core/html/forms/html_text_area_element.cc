@@ -393,6 +393,10 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
     CalculateAndAdjustAutoDirectionality();
   }
 
+  if (RuntimeEnabledFeatures::FormControlRangeEnabled()) {
+    CommitFormControlRangeEdit();
+  }
+
   if (!IsFocused())
     return;
 
