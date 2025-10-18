@@ -5,8 +5,13 @@
 #include "components/passage_embeddings/passage_embedder_model_observer.h"
 
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/download/public/background_service/download_params.h"
+#endif
 
 namespace passage_embeddings {
 
@@ -22,6 +27,16 @@ PassageEmbedderModelObserver::PassageEmbedderModelObserver(
                                  OPTIMIZATION_TARGET_PASSAGE_EMBEDDER) {
   VLOG(3) << "Target: " << target_;
   if (model_provider_) {
+#if BUILDFLAG(IS_ANDROID)
+    download::SchedulingParams scheduling_params;
+    scheduling_params.priority = download::SchedulingParams::Priority::HIGH;
+    scheduling_params.network_requirements =
+        download::SchedulingParams::NetworkRequirements::UNMETERED;
+    scheduling_params.battery_requirements =
+        download::SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE;
+    model_provider_->SetModelDownloadSchedulingParams(target_,
+                                                      scheduling_params);
+#endif
     model_provider_->AddObserverForOptimizationTargetModel(
         target_,
         /*model_metadata=*/std::nullopt,
