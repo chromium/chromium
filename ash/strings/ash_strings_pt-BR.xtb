@@ -346,7 +346,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2152796271648108398">Clima no momento</translation>
 <translation id="2152895518047545149">Parece que não há nada pendente. Bom trabalho!</translation>
 <translation id="2159568970844941445">Não há imagens no app Arquivos</translation>
-<translation id="2161132820593978283">Use o enquadramento da câmera para ficar no centro da tela durante videochamadas. Ative essa opção nas Configurações rápidas.</translation>
+<translation id="2161132820593978283">Use o enquadramento da câmera para ficar no centro da tela durante videochamadas. Ative essa opção nas Configurações Rápidas.</translation>
 <translation id="216955976692983107">Redimensionar janela em mosaico para a direita</translation>
 <translation id="2185166372312820725">Ir para a guia anterior</translation>
 <translation id="2185444992308415167">Percorrer as guias 1 a 8</translation>
@@ -902,7 +902,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3982013579989864579">Trocar a saída de áudio?</translation>
 <translation id="3984536049089846927">Próxima página</translation>
 <translation id="3986082989454912832">Atender</translation>
-<translation id="3990002060657467458">Os controles usados com frequência, como Wi-Fi, Bluetooth e volume, estão nas Configurações rápidas. Elas também permitem fazer capturas de tela.</translation>
+<translation id="3990002060657467458">Os controles usados com frequência, como Wi-Fi, Bluetooth e volume, estão nas Configurações Rápidas. Elas também permitem fazer capturas de tela.</translation>
 <translation id="3991203706072366707">Desativado para <ph name="GAME_APP_NAME" /></translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta traseira da direita)</translation>
 <translation id="4002066346123236978">Título</translation>
@@ -920,7 +920,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4039699481424758547">Pressione "Enter" para fazer uma captura de tela da janela <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Você está compartilhando sua tela</translation>
 <translation id="404437169852192935">Atualizações encerradas</translation>
-<translation id="4049230407053723315">Configurações rápidas</translation>
+<translation id="4049230407053723315">Configurações Rápidas</translation>
 <translation id="4054070260844648638">Visível para todos</translation>
 <translation id="4057003836560082631">Guia <ph name="INDEX" /> de <ph name="TOTAL_COUNT" /> do navegador. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Para ver sugestões personalizadas do que fazer em seguida, pressione a tecla Visão geral</translation>
@@ -1224,7 +1224,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4964188651935955085">Quando você desativar o Bluetooth, este dispositivo externo será desconectado do <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Aumentar o volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h<ph name="MINUTES" />min<ph name="SECONDS" />s</translation>
-<translation id="496999337731226334">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. Os controles usados com frequência, como Wi-Fi, Bluetooth e volume, estão nas Configurações rápidas. Elas também permitem fazer capturas de tela. Pressione Alt + Shift + S para abrir as Configurações rápidas.</translation>
+<translation id="496999337731226334">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. Os controles usados com frequência, como Wi-Fi, Bluetooth e volume, estão nas Configurações Rápidas. Elas também permitem fazer capturas de tela. Pressione Alt + Shift + S para abrir as Configurações Rápidas.</translation>
 <translation id="4975771730019223894">Notificações de apps</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1489,7 +1489,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5790085346892983794">Sucesso</translation>
 <translation id="5791926618942305301">Na captura de tela, defina como <ph name="SOURCE" /> <ph name="TYPE" />. Pressione Tab para escolher o tipo de captura. Pressione Enter para capturar. Para selecionar a área, defina como uma captura de tela parcial. Pressione a barra de espaço para selecionar a região, se ainda não estiver ativa.</translation>
 <translation id="579415080077680903">Silenciar</translation>
-<translation id="5802516411616338943">Abrir as Configurações rápidas</translation>
+<translation id="5802516411616338943">Abrir as Configurações Rápidas</translation>
 <translation id="5804651031882187592">Desative a configuração "Bloquear chip"</translation>
 <translation id="5805809050170488595">Clique para ativar <ph name="NETWORK_NAME" /></translation>
 <translation id="5818796501620225415">Você pode adicionar mais tempo ou encerrar sua sessão de foco</translation>
@@ -1926,7 +1926,7 @@ Nova instalação</translation>
 <translation id="7262906531272962081">Criar lembrete</translation>
 <translation id="7264788308526527464">Reduzir <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7285232777292757180">Use a ferramenta de captura de tela nas Configurações rápidas para fazer capturas de tela</translation>
+<translation id="7285232777292757180">Use a ferramenta de captura de tela nas Configurações Rápidas para fazer capturas de tela</translation>
 <translation id="7301826272005790482">Dispensar sugestões de janela</translation>
 <translation id="7302889331339392448">O recurso Legenda instantânea está desativado.</translation>
 <translation id="7303365578352795231">Respondendo em outro dispositivo.</translation>
@@ -2223,7 +2223,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8192727139462702395">Quando você desativar o Bluetooth, estes dispositivos externos serão desconectados do <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Transmitindo guia</translation>
 <translation id="8200772114523450471">Retomar</translation>
-<translation id="820256110035940528"><ph name="TITLE" /> Você manteve o Foco por <ph name="FOCUSED_TIME" />. Abra as Configurações rápidas para usar o Foco de novo.</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> Você manteve o Foco por <ph name="FOCUSED_TIME" />. Abra as Configurações Rápidas para usar o Foco de novo.</translation>
 <translation id="8203224998425013577">Mostrar mais emojis e GIFs</translation>
 <translation id="8203795194971602413">Clicar com o botão direito</translation>
 <translation id="8205469348819768313">Quer usar a tecla Page Down? Use</translation>
