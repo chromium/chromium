@@ -67,6 +67,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
   using CopyViewCallback =
       base::RepeatingCallback<void(std::unique_ptr<viz::CopyOutputRequest>)>;
 
+  using HitTestCallback = base::RepeatingCallback<bool()>;
+
   // Stores an anchored view to delete itself at the end of its lifetime
   // automatically. This helps manage the lifecyle without the dependency
   // on |ViewAndroid|.
@@ -225,6 +227,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
   std::unique_ptr<viz::CopyOutputRequest> MaybeRequestCopyOfView(
       std::unique_ptr<viz::CopyOutputRequest> request);
 
+  void SetHitTestCallback(HitTestCallback callback);
+
   void set_event_handler(EventHandlerAndroid* handler) {
     event_handler_ = handler;
   }
@@ -355,6 +359,10 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   // Copy output of View rather than window.
   CopyViewCallback copy_view_callback_;
+
+  // Conducts additional HitTest check to determine if a HitTest can actually
+  // be sent to the view.
+  HitTestCallback hit_test_callback_;
 
   bool controls_resize_view_ = false;
 
