@@ -1125,4 +1125,10 @@ BASE_DECLARE_FEATURE(kMultilineBrowserOmnibox);
 // Returns true if the MultilineBrowserOmnibox feature is enabled.
 bool IsMultilineBrowserOmniboxEnabled();
 
+// Feature flag for settings controls auto open remote tab groups.
+BASE_DECLARE_FEATURE(kIOSAutoOpenRemoteTabGroupsSettings);
+
+// Whether the kIOSAutoOpenRemoteTabGroupsSettings feature is enabled.
+bool IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

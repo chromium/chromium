@@ -1031,9 +1031,12 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (TableViewItem*)tabsSettingsDetailItem {
+  NSString* title = l10n_util::GetNSString(
+      IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled()
+          ? IDS_IOS_TABS_AND_TAB_GROUPS_MANAGEMENT_SETTINGS
+          : IDS_IOS_TABS_MANAGEMENT_SETTINGS);
   return [self detailItemWithType:SettingsItemTypeTabs
-                             text:l10n_util::GetNSString(
-                                      IDS_IOS_TABS_MANAGEMENT_SETTINGS)
+                             text:title
                        detailText:nil
                            symbol:DefaultSettingsRootSymbol(kTabsSymbol)
             symbolBackgroundColor:[UIColor colorNamed:kOrange500Color]

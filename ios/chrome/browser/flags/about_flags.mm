@@ -2858,7 +2858,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"multiline-browser-omnibox",
      flag_descriptions::kMultilineBrowserOmniboxName,
      flag_descriptions::kMultilineBrowserOmniboxDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kMultilineBrowserOmnibox)}};
+     FEATURE_VALUE_TYPE(kMultilineBrowserOmnibox)},
+    {"ios-auto-open-remote-tab-groups-settings",
+     flag_descriptions::kIOSAutoOpenRemoteTabGroupsSettingsName,
+     flag_descriptions::kIOSAutoOpenRemoteTabGroupsSettingsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSAutoOpenRemoteTabGroupsSettings)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

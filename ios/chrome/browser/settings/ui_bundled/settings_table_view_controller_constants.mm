@@ -71,6 +71,8 @@ NSString* const kSettingsWaitButtonId = @"kSettingsWaitButtonId";
 NSString* const kSettingsTabsCellId = @"kSettingsTabsCellId";
 NSString* const kSettingsMoveInactiveTabsCellId =
     @"kSettingsMoveInactiveTabsCellId";
+NSString* const kSettingsAutomaticallyOpenTabGroupsCellId =
+    @"kSettingsAutomaticallyOpenTabGroupsCellId";
 NSString* const kSettingsPrivacyGuideCellId = @"kSettingsPrivacyGuideCellId";
 NSString* const kSettingsDetectUnitsCellId = @"kSettingsDetectUnitsCellId";
 NSString* const kSettingsSafetyCheckCellId = @"SettingsSafetyCheckCellId";

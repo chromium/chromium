@@ -651,6 +651,11 @@ inline constexpr char kAutofillBrandingIconAnimationRemainingCount[] =
 inline constexpr char kAutofillBrandingIconDisplayCount[] =
     "ios.autofill.branding.display_count";
 
+// A boolean used for the automatically open tab groups from other devices
+// setting.
+inline constexpr char kAutomaticallyOpenTabGroupsEnabled[] =
+    "ios.settings.automatically_open_tab_groups_enabled";
+
 // A boolean used to determine if the Price Tracking UI has been shown.
 inline constexpr char kPriceNotificationsHasBeenShown[] =
     "ios.price_notifications.has_been_shown";

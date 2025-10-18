@@ -11,6 +11,9 @@
 // Called when the value of prefs::kInactiveTabsTimeThreshold changed.
 - (void)setInactiveTabsTimeThreshold:(int)threshold;
 
+// Called when the value of prefs::kAutomaticallyOpenTabGroupsEnabled changed.
+- (void)setAutomaticallyOpenTabGroupsEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_TABS_SETTINGS_CONSUMER_H_

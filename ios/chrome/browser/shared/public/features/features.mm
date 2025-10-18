@@ -1173,3 +1173,10 @@ BASE_FEATURE(kMultilineBrowserOmnibox, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsMultilineBrowserOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kMultilineBrowserOmnibox);
 }
+
+BASE_FEATURE(kIOSAutoOpenRemoteTabGroupsSettings,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kIOSAutoOpenRemoteTabGroupsSettings);
+}

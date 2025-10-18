@@ -1018,6 +1018,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preferences related to tab grid.
   // Default to 0 which is the unassigned value.
   registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
+  registry->RegisterBooleanPref(prefs::kAutomaticallyOpenTabGroupsEnabled,
+                                false);
 
   registry->RegisterDictionaryPref(prefs::kIosPreRestoreAccountInfo);
 
