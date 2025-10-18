@@ -46,7 +46,7 @@ class PipewireCaptureStream::CallbackProxy
   // from different threads. It also ensures that the initial frame is
   // delivered before any frames received from the SharedScreenCastStream.
   base::Lock lock_;
-  bool started_ GUARDED_BY(lock_);
+  bool started_ GUARDED_BY(lock_) = false;
   scoped_refptr<base::SequencedTaskRunner> callback_sequence_ =
       base::SequencedTaskRunner::GetCurrentDefault();
   base::WeakPtr<PipewireCaptureStream> parent_;

@@ -178,6 +178,11 @@ void WebrtcVideoStream::Core::OnCaptureResult(
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  if (!current_frame_stats_) {
+    LOG(WARNING) << "OnCaptureResult() was called before OnFrameCaptureStart()";
+    // Call OnFrameCaptureStart() to create the `current_frame_stats_`.
+    OnFrameCaptureStart();
+  }
   current_frame_stats_->capture_ended_time = base::TimeTicks::Now();
   current_frame_stats_->capture_delay =
       base::Milliseconds(frame ? frame->capture_time_ms() : 0);
