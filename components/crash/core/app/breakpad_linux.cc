@@ -914,7 +914,7 @@ void CloseAllFileDescriptors() {
     const char* name;
     while (reader.GetNextEntry(&name)) {
       int i;
-      if (my_strtoui(&i, name) && i > 2 && i != fd)
+      if (my_strtoi_nonneg(&i, name) && i > 2 && i != fd)
         IGNORE_RET(sys_close(i));
       reader.PopEntry();
     }
