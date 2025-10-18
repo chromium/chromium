@@ -19,9 +19,6 @@ class ComponentExtensionContentSettingsAllowlist;
 // A provider that supplies HostContentSettingsMap with a list of auto-granted
 // permissions from the underlying
 // ComponentExtensionContentSettingsAllowList.
-//
-// PartitionKey is ignored by this provider because the content settings should
-// apply across partitions.
 class ComponentExtensionContentSettingsProvider final
     : public content_settings::ObservableProvider {
  public:

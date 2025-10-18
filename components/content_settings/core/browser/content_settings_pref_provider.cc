@@ -199,7 +199,6 @@ std::unique_ptr<Rule> PrefProvider::GetRule(const GURL& primary_url,
       ->GetRule(primary_url, secondary_url, off_the_record);
 }
 
-// TODO(b/307193732): handle the PartitionKey in all relevant methods.
 bool PrefProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -417,7 +416,7 @@ ContentSettingsPref* PrefProvider::GetPref(ContentSettingsType type) const {
 void PrefProvider::Notify(const ContentSettingsPattern& primary_pattern,
                           const ContentSettingsPattern& secondary_pattern,
                           ContentSettingsType content_type) {
-  NotifyObservers(primary_pattern, secondary_pattern, content_type, nullptr);
+  NotifyObservers(primary_pattern, secondary_pattern, content_type);
 }
 
 void PrefProvider::DiscardOrMigrateObsoletePreferences() {

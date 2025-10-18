@@ -18,9 +18,6 @@ class SupervisedUserSettingsService;
 
 // SupervisedUserContentSettingsProvider that provides content-settings managed
 // by the custodian of a supervised user.
-//
-// PartitionKey is ignored by this provider because the content settings should
-// apply across partitions.
 class SupervisedUserContentSettingsProvider
     : public content_settings::ObservableProvider {
  public:

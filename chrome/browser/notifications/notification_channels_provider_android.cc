@@ -405,8 +405,7 @@ void NotificationChannelsProviderAndroid::OnChannelStateChanged(
                        weak_factory_.GetWeakPtr(),
                        ContentSettingsPattern::Wildcard(),
                        ContentSettingsPattern::Wildcard(),
-                       ContentSettingsType::NOTIFICATIONS,
-                       /*partition_key=*/nullptr));
+                       ContentSettingsType::NOTIFICATIONS));
   }
 
   EnsureUpdatedSettings(base::DoNothing());
@@ -507,8 +506,7 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
       weak_factory_.GetWeakPtr(), primary_pattern, secondary_pattern,
       content_type, setting, constraints.Clone(), channel));
   if (rule_changed) {
-    NotifyObservers(primary_pattern, secondary_pattern, content_type,
-                    /*partition_key=*/nullptr);
+    NotifyObservers(primary_pattern, secondary_pattern, content_type);
   }
 
   if (setting == CONTENT_SETTING_DEFAULT) {
@@ -608,8 +606,7 @@ void NotificationChannelsProviderAndroid::ClearAllContentSettingsRules(
 
   if (rule_changed) {
     NotifyObservers(ContentSettingsPattern::Wildcard(),
-                    ContentSettingsPattern::Wildcard(), content_type,
-                    /*partition_key=*/nullptr);
+                    ContentSettingsPattern::Wildcard(), content_type);
   }
 
   ScheduleGetChannels(
@@ -761,8 +758,7 @@ void NotificationChannelsProviderAndroid::UpdateCachedChannelsImpl(
                          weak_factory_.GetWeakPtr(),
                          ContentSettingsPattern::Wildcard(),
                          ContentSettingsPattern::Wildcard(),
-                         ContentSettingsType::NOTIFICATIONS,
-                         /*partition_key=*/nullptr));
+                         ContentSettingsType::NOTIFICATIONS));
       cached_channels_ = std::move(updated_channels_map);
     }
   }

@@ -53,9 +53,6 @@ struct NotificationChannel {
 // Android Oreo. This provider takes precedence over pref-provided content
 // settings, but defers to supervised user and policy settings - see ordering of
 // the ProviderType enum values in HostContentSettingsMap.
-//
-// PartitionKey is ignored by this provider because the content settings should
-// apply across partitions.
 class NotificationChannelsProviderAndroid
     : public content_settings::UserModifiableProvider {
  public:

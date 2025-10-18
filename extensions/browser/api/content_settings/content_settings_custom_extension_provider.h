@@ -15,9 +15,6 @@
 namespace content_settings {
 
 // A content settings provider which manages settings defined by extensions.
-//
-// PartitionKey is ignored by this provider because the content settings should
-// apply across partitions.
 class CustomExtensionProvider : public ObservableProvider,
                           public extensions::ContentSettingsStore::Observer {
  public:

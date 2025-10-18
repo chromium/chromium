@@ -46,8 +46,6 @@ OneTimePermissionProvider::~OneTimePermissionProvider() {
   base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
-// TODO(b/307193732): handle the PartitionKey in all relevant methods, including
-// when we call NotifyObservers().
 std::unique_ptr<content_settings::RuleIterator>
 OneTimePermissionProvider::GetRuleIterator(ContentSettingsType content_type,
                                            bool incognito) const {
@@ -112,8 +110,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
                              content_settings_type);
     }
 
-    NotifyObservers(primary_pattern, secondary_pattern, content_settings_type,
-                    nullptr);
+    NotifyObservers(primary_pattern, secondary_pattern, content_settings_type);
 
     permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
         content_settings_type,
@@ -156,8 +153,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
                         std::move(metadata));
   }
 
-  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type,
-                  nullptr);
+  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type);
 
   // We need to handle transitions from Allow to Allow Once gracefully.
   // In that case we add the Allow Once setting in this provider, but also
@@ -239,8 +235,7 @@ void OneTimePermissionProvider::ExpireWebsiteSetting(
   permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
       content_settings_type,
       permissions::OneTimePermissionEvent::EXPIRED_AFTER_MAXIMUM_LIFETIME);
-  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type,
-                  /*partition_key=*/nullptr);
+  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type);
 }
 
 void OneTimePermissionProvider::OnSuspend() {
@@ -342,7 +337,7 @@ void OneTimePermissionProvider::DeleteEntriesAndNotify(
 
   for (const auto& pattern : entries_to_delete) {
     NotifyObservers(pattern.primary_pattern, pattern.secondary_pattern,
-                    pattern.type, /*partition_key=*/nullptr);
+                    pattern.type);
   }
 }
 

@@ -34,8 +34,7 @@ void WebUIAllowlistProvider::NotifyContentSettingChange(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
-  NotifyObservers(primary_pattern, secondary_pattern, content_type,
-                  /*partition_key=*/nullptr);
+  NotifyObservers(primary_pattern, secondary_pattern, content_type);
 }
 
 bool WebUIAllowlistProvider::SetWebsiteSetting(

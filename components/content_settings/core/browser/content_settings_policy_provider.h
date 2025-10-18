@@ -24,9 +24,6 @@ class PrefRegistrySyncable;
 namespace content_settings {
 
 // PolicyProvider that provides managed content-settings.
-//
-// PartitionKey is ignored by this provider because the content settings should
-// apply across partitions.
 class PolicyProvider : public ObservableProvider {
  public:
   explicit PolicyProvider(PrefService* prefs);

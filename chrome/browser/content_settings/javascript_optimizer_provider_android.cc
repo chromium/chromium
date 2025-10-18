@@ -100,8 +100,7 @@ void JavascriptOptimizerProviderAndroid::OnAdvancedProtectionStatusChanged(
   is_under_advanced_protection_ = enrolled;
   NotifyObservers(ContentSettingsPattern::Wildcard(),
                   ContentSettingsPattern::Wildcard(),
-                  ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                  /*partition_key=*/nullptr);
+                  ContentSettingsType::JAVASCRIPT_OPTIMIZER);
 }
 
 void JavascriptOptimizerProviderAndroid::RecordHistogramMetrics() {

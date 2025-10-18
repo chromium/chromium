@@ -713,7 +713,7 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
                   ContentSettingsPattern::Wildcard(),
-                  ContentSettingsType::DEFAULT, /*partition_key=*/nullptr);
+                  ContentSettingsType::DEFAULT);
 }
 
 }  // namespace content_settings

@@ -15,9 +15,6 @@ class ContentSettingsPattern;
 
 // A provider that supplies HostContentSettingsMap with a list of auto-granted
 // permissions from the underlying WebUIAllowlist.
-//
-// PartitionKey is ignored by this provider because the content settings should
-// apply across partitions.
 class WebUIAllowlistProvider : public content_settings::ObservableProvider {
  public:
   explicit WebUIAllowlistProvider(scoped_refptr<WebUIAllowlist> allowlist);
