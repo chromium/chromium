@@ -391,7 +391,8 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   DCHECK(font_data);
 
   GraphicsContextStateSaver state_saver(context, /*save_and_restore=*/false);
-  const int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
+  const int ascent = font_data ? font_data->GetFontMetrics().Ascent()
+                     : font->GetFontDescription().ComputedSize() * 0.9f;
   LineRelativeOffset text_origin{physical_box.offset.left,
                                  physical_box.offset.top + ascent};
   if (text_combine) [[unlikely]] {
