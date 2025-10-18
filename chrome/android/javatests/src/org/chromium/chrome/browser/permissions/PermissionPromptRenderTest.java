@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 
-import androidx.annotation.CallSuper;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -77,7 +77,7 @@ public class PermissionPromptRenderTest {
      */
     public static class PermissionTestActivity extends ChromeTabbedActivity {
         @Override
-        @CallSuper
+        @SuppressLint("CheckResult")
         protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
             super.applyOverrides(baseContext, overrideConfig);
             overrideConfig.densityDpi = 1300;

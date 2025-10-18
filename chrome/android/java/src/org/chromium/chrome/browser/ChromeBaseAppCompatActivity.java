@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.CheckResult;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
@@ -466,6 +467,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      *     #applyOverrideConfiguration(Configuration)} if necessary.
      * @return True if any configuration overrides were applied, and false otherwise.
      */
+    @CheckResult
     @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
         boolean isSmallestScreenWidthDpOverridden = false;

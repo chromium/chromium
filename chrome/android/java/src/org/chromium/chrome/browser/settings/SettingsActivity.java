@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
@@ -315,9 +314,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     @Override
-    @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
-        super.applyOverrides(baseContext, overrideConfig);
+        boolean result = super.applyOverrides(baseContext, overrideConfig);
         if (!UiAndroidFeatureList.sRefactorMinWidthContextOverride.isEnabled()) {
 
             // We override the smallestScreenWidthDp here to ensure mIsTablet which relies on
@@ -326,7 +324,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     DisplayUtil.getCurrentSmallestScreenWidth(baseContext);
             return true;
         }
-        return false;
+        return result;
     }
 
     /**
