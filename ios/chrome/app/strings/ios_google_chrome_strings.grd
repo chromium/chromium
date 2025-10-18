@@ -420,6 +420,9 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE" desc="Title of the screen suggesting to the user to sign in. [iOS only]">
         Make Chrome your own
       </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0" desc="Variations option 1. Title of the screen suggesting to the user to sign in. [iOS only]">
+        Take your Chrome with you
+      </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED" desc="Title of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
         Sign in to Chrome
       </message>
@@ -1212,6 +1215,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE" desc="Title of the screen suggesting to the user to sign in. The user may see this screen when Chrome is opened, but only several weeks after installation.">
         Make Chrome your own
+      </message>
+       <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE_0" desc="Variations option 1. Title of the screen suggesting to the user to sign in. The user may see this screen when Chrome is opened, but only several weeks after installation.">
+        Take your Chrome with you
       </message>
       <message name="IDS_IOS_UPGRADE_AVAILABLE" desc="Text to inform the user of the presence of a new version of the application">
         Chrome just got better! A new version is available.

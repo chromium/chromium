@@ -2700,6 +2700,9 @@
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT" desc="Button on the sign in screen of the FRE to stay signed out on Chrome. [iOS only]">
         Stay signed out
       </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1" desc="Variations option 2. Title of the screen suggesting to the user to sign in. [iOS only]">
+        Pick Up Where You Left Off
+      </message>
       <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION" desc="The primary action string on the sync screen presented to the user on First Run [iOS only]">
         Turn on sync
       </message>
@@ -7687,6 +7690,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE" desc="This string is on a sign-in page, shown several weeks after the user has installed Chrome. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
         Get your bookmarks, passwords, and more on all your devices.
+      </message>
+      <message name="IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE_1" desc="Variations option 2. Title of the screen suggesting to the user to sign in. The user may see this screen when Chrome is opened, but only several weeks after installation.">
+        Pick Up Where You Left Off
       </message>
       <message name="IDS_IOS_UPGRADE_AVAILABLE_BUTTON" desc="Displayed on a button the user can use to upgrade the a more recent version of the application. [Length: 10em]">
         Update
