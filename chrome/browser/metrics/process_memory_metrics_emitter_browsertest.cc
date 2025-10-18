@@ -93,12 +93,13 @@ int GetNumRenderers(Browser* browser) {
   return static_cast<int>(render_process_hosts.size());
 }
 
-void RequestGlobalDumpCallback(base::OnceClosure quit_closure,
-                               bool success,
-                               uint64_t) {
+void RequestGlobalDumpCallback(
+    base::OnceClosure quit_closure,
+    memory_instrumentation::mojom::RequestOutcome outcome,
+    uint64_t) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(quit_closure));
-  ASSERT_TRUE(success);
+  ASSERT_EQ(memory_instrumentation::mojom::RequestOutcome::kSuccess, outcome);
 }
 
 void OnStartTracingDoneCallback(
@@ -127,11 +128,11 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
 
   void ReceivedMemoryDump(
       absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos,
-      bool success,
+      memory_instrumentation::mojom::RequestOutcome outcome,
       std::unique_ptr<GlobalMemoryDump> ptr) override {
-    EXPECT_TRUE(success);
+    EXPECT_EQ(memory_instrumentation::mojom::RequestOutcome::kSuccess, outcome);
     ProcessMemoryMetricsEmitter::ReceivedMemoryDump(std::move(process_infos),
-                                                    success, std::move(ptr));
+                                                    outcome, std::move(ptr));
     std::move(quit_closure_).Run();
   }
 

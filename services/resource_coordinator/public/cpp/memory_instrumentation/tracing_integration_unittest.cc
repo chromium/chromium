@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -10,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/test/trace_test_utils.h"
@@ -26,6 +29,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -173,32 +177,30 @@ class MemoryTracingIntegrationTest : public testing::Test {
 
   // Blocks the current thread (spinning a nested message loop) until the
   // memory dump is complete. Returns:
-  // - return value: the |success| from the RequestChromeMemoryDump() callback.
-  bool RequestChromeDumpAndWait(
+  // - return value: the |outcome| from the RequestChromeMemoryDump() callback.
+  mojom::RequestOutcome RequestChromeDumpAndWait(
       MemoryDumpType dump_type,
       MemoryDumpLevelOfDetail level_of_detail,
       std::unique_ptr<base::trace_event::ProcessMemoryDump>* result = nullptr) {
-    base::RunLoop run_loop;
-    bool success = false;
     uint64_t req_guid = ++guid_counter_;
     MemoryDumpRequestArgs request_args{req_guid, dump_type, level_of_detail};
-    ClientProcessImpl::RequestChromeMemoryDumpCallback callback =
-        base::BindOnce(
-            [](bool* curried_success, base::OnceClosure curried_quit_closure,
-               std::unique_ptr<base::trace_event::ProcessMemoryDump>*
-                   curried_result,
-               uint64_t curried_expected_guid, bool success, uint64_t dump_guid,
-               std::unique_ptr<base::trace_event::ProcessMemoryDump> result) {
-              EXPECT_EQ(curried_expected_guid, dump_guid);
-              *curried_success = success;
-              if (curried_result)
-                *curried_result = std::move(result);
-              std::move(curried_quit_closure).Run();
-            },
-            &success, run_loop.QuitClosure(), result, req_guid);
-    client_process_->RequestChromeMemoryDump(request_args, std::move(callback));
-    run_loop.Run();
-    return success;
+
+    base::test::TestFuture<
+        mojom::RequestOutcome, uint64_t,
+        std::unique_ptr<base::trace_event::ProcessMemoryDump>>
+        future;
+    client_process_->RequestChromeMemoryDump(request_args,
+                                             future.GetSequenceBoundCallback());
+    CHECK(future.Wait());
+    auto tuple = future.Take();
+    EXPECT_EQ(std::get<uint64_t>(tuple), req_guid);
+    if (result) {
+      *result = std::move(
+          std::get<std::unique_ptr<base::trace_event::ProcessMemoryDump>>(
+              tuple));
+    }
+
+    return std::get<mojom::RequestOutcome>(tuple);
   }
 
   void RequestChromeDump(MemoryDumpType dump_type,
@@ -208,10 +210,7 @@ class MemoryTracingIntegrationTest : public testing::Test {
     MemoryDumpRequestArgs request_args{req_guid, dump_type, level_of_detail,
                                        determinism};
     ClientProcessImpl::RequestChromeMemoryDumpCallback callback =
-        base::BindOnce(
-            [](bool success, uint64_t dump_guid,
-               std::unique_ptr<base::trace_event::ProcessMemoryDump> result) {
-            });
+        base::DoNothing();
     client_process_->RequestChromeMemoryDump(request_args, std::move(callback));
   }
 
@@ -265,7 +264,8 @@ void MockCoordinator::RequestGlobalMemoryDump(
     const std::vector<std::string>& allocator_dump_names,
     RequestGlobalMemoryDumpCallback callback) {
   client_->RequestChromeDump(dump_type, level_of_detail, determinism);
-  std::move(callback).Run(true, mojom::GlobalMemoryDumpPtr());
+  std::move(callback).Run(mojom::RequestOutcome::kSuccess,
+                          mojom::GlobalMemoryDumpPtr());
 }
 
 void MockCoordinator::RequestGlobalMemoryDumpAndAppendToTrace(
@@ -274,7 +274,7 @@ void MockCoordinator::RequestGlobalMemoryDumpAndAppendToTrace(
     MemoryDumpDeterminism determinism,
     RequestGlobalMemoryDumpAndAppendToTraceCallback callback) {
   client_->RequestChromeDump(dump_type, level_of_detail, determinism);
-  std::move(callback).Run(true, true);
+  std::move(callback).Run(mojom::RequestOutcome::kSuccess, true);
 }
 
 // Checks that is the ClientProcessImpl is initialized after tracing already
@@ -292,8 +292,9 @@ TEST_F(MemoryTracingIntegrationTest, InitializedAfterStartOfTracing) {
   MockMemoryDumpProvider mdp;
   RegisterDumpProvider(&mdp, nullptr, MemoryDumpProvider::Options());
   EXPECT_CALL(mdp, OnMemoryDump(_, _)).Times(1);
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
-                                       MemoryDumpLevelOfDetail::kDetailed));
+  EXPECT_EQ(mojom::RequestOutcome::kSuccess,
+            RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                     MemoryDumpLevelOfDetail::kDetailed));
   DisableTracing();
 }
 
@@ -334,12 +335,14 @@ TEST_F(MemoryTracingIntegrationTest, TestBackgroundTracingSetup) {
 
   // When requesting non-BACKGROUND dumps the MDP will be invoked.
   EXPECT_CALL(*mdp, OnMemoryDump(IsLightDump(), _));
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
-                                       MemoryDumpLevelOfDetail::kLight));
+  EXPECT_EQ(mojom::RequestOutcome::kSuccess,
+            RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                     MemoryDumpLevelOfDetail::kLight));
 
   EXPECT_CALL(*mdp, OnMemoryDump(IsDetailedDump(), _));
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
-                                       MemoryDumpLevelOfDetail::kDetailed));
+  EXPECT_EQ(mojom::RequestOutcome::kSuccess,
+            RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                     MemoryDumpLevelOfDetail::kDetailed));
 
   ASSERT_TRUE(IsPeriodicDumpingEnabled());
   DisableTracing();
@@ -467,8 +470,9 @@ TEST_F(MemoryTracingIntegrationTest, TestWhitelistingMDP) {
 
   EnableMemoryInfraTracing();
   EXPECT_FALSE(IsPeriodicDumpingEnabled());
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
-                                       MemoryDumpLevelOfDetail::kBackground));
+  EXPECT_EQ(mojom::RequestOutcome::kSuccess,
+            RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                     MemoryDumpLevelOfDetail::kBackground));
   DisableTracing();
 }
 
@@ -505,8 +509,9 @@ TEST_F(MemoryTracingIntegrationTest, GenerationChangeDoesntReenterMDM) {
           run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
-                                       MemoryDumpLevelOfDetail::kDetailed));
+  EXPECT_EQ(mojom::RequestOutcome::kSuccess,
+            RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                     MemoryDumpLevelOfDetail::kDetailed));
   DisableTracing();
 
   // Now enable tracing again with a different RECORD_ mode. This will cause
@@ -518,8 +523,9 @@ TEST_F(MemoryTracingIntegrationTest, GenerationChangeDoesntReenterMDM) {
   // after having checked that the MDP is valid and having decided to invoke it.
   TraceLog::GetInstance()->SetEnabled(TraceConfig(
       kMemoryInfraTracingOnly, base::trace_event::RECORD_CONTINUOUSLY));
-  EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
-                                       MemoryDumpLevelOfDetail::kDetailed));
+  EXPECT_EQ(mojom::RequestOutcome::kSuccess,
+            RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
+                                     MemoryDumpLevelOfDetail::kDetailed));
   DisableTracing();
 }
 

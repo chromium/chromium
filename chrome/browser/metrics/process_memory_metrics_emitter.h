@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ukm {
@@ -60,7 +61,7 @@ class ProcessMemoryMetricsEmitter
   // performance_manager for each process.
   virtual void ReceivedMemoryDump(
       absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos,
-      bool success,
+      memory_instrumentation::mojom::RequestOutcome outcome,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
 
   // Virtual for testing. Gets info about each process from performance_manager.

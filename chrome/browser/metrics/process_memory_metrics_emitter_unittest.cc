@@ -719,7 +719,8 @@ TEST_P(ProcessMemoryMetricsEmitterTest, CollectsSingleProcessUKMs) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   std::vector<MetricMap> expected_entries;
@@ -757,7 +758,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsExtensionProcessUKMs) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   std::vector<MetricMap> expected_entries;
@@ -793,7 +795,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsSingleDump) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   CheckMemoryUkmEntryMetrics(entries_metrics);
@@ -824,7 +827,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsManyDumps) {
       entries_metrics.push_back(expected_metrics);
     }
     emitter->ReceivedMemoryDump(
-        emitter->GetProcessToPageInfoMap(graph()), true,
+        emitter->GetProcessToPageInfoMap(graph()),
+        memory_instrumentation::mojom::RequestOutcome::kSuccess,
         GlobalMemoryDump::MoveFrom(std::move(global_dump)));
   }
 
@@ -843,7 +847,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, GlobalDumpFailed) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), false,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kTimeout,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Should not record any metrics since the memory dump failed, and don't
@@ -865,7 +870,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsRendererProcessUKMs) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
@@ -919,7 +925,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
       kTestRendererPid201, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
@@ -954,7 +961,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
       kTestRendererPid202, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Check that if there are two URLs, neither is emitted.
@@ -988,7 +996,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, SingleMeasurement_ProcessInfoNotFound) {
   auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
       kTestRendererPid203, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   auto entries = test_ukm_recorder_.GetEntriesByName(UkmEntry::kEntryName);
@@ -1081,7 +1090,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Check that the expected values have been emitted to histograms.
@@ -1168,7 +1178,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
       kTestRendererPid201, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Histograms should only be emitted when measuring all processes.
@@ -1192,7 +1203,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, GpuHistogramsAreRecorded) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Check that the expected values have been emitted to histograms.
@@ -1219,7 +1231,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, MainFramePMFEmitted) {
   auto emitter =
       base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   entries = test_ukm_recorder_.GetEntriesByName(
@@ -1247,7 +1260,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest,
   auto emitter = base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(
       kTestRendererPid201, test_ukm_recorder_);
   emitter->ReceivedMemoryDump(
-      emitter->GetProcessToPageInfoMap(graph()), true,
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
       GlobalMemoryDump::MoveFrom(std::move(global_dump)));
 
   // Per-tab UKM's should only be emitted when measuring all processes.

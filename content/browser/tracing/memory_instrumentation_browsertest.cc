@@ -51,10 +51,13 @@ uint64_t GetPrivateFootprintKb() {
           base::GetCurrentProcId(),
           base::BindOnce(
               [](base::OnceClosure quit_closure, uint64_t* private_footprint_kb,
-                 bool success, std::unique_ptr<GlobalMemoryDump> result) {
+                 memory_instrumentation::mojom::RequestOutcome outcome,
+                 std::unique_ptr<GlobalMemoryDump> result) {
                 // The global dump should only contain the current process
                 // (browser).
-                EXPECT_TRUE(success);
+                EXPECT_EQ(
+                    memory_instrumentation::mojom::RequestOutcome::kSuccess,
+                    outcome);
                 ASSERT_EQ(std::distance(result->process_dumps().begin(),
                                         result->process_dumps().end()),
                           1);

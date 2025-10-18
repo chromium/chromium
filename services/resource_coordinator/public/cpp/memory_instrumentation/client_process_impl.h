@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
   // Callback passed to base::MemoryDumpManager::CreateProcessDump().
   void OnChromeMemoryDumpDone(
-      bool success,
+      base::trace_event::ProcessMemoryDumpOutcome outcome,
       uint64_t dump_guid,
       std::unique_ptr<base::trace_event::ProcessMemoryDump>);
 

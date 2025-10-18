@@ -600,13 +600,13 @@ void TaskManagerImpl::OnVideoMemoryUsageStatsUpdate(
 }
 
 void TaskManagerImpl::OnReceivedMemoryDump(
-    bool success,
+    memory_instrumentation::mojom::RequestOutcome outcome,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump) {
   waiting_for_memory_dump_ = false;
-  // We can ignore the value of success as it is a coarse grained indicator
-  // of whether the global dump was successful; usually because of a missing
-  // process or OS dumps. There may still be useful information for other
-  // processes in the global dump when success is false.
+  // We can ignore `outcome` as it is a coarse grained indicator of whether the
+  // global dump was successful; usually because of a missing process or OS
+  // dumps. There may still be useful information for other processes in the
+  // global dump when `outcome` is not `kSuccess`.
   if (!dump) {
     return;
   }

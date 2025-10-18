@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_request_args.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 using base::trace_event::MemoryDumpDeterminism;
@@ -28,8 +29,10 @@ using OSMemDumpMap =
 
 // Holds data for pending requests enqueued via RequestGlobalMemoryDump().
 struct QueuedRequest {
-  using RequestGlobalMemoryDumpInternalCallback = base::OnceCallback<
-      void(bool, uint64_t, memory_instrumentation::mojom::GlobalMemoryDumpPtr)>;
+  using RequestGlobalMemoryDumpInternalCallback = base::OnceCallback<void(
+      mojom::RequestOutcome,
+      uint64_t,
+      memory_instrumentation::mojom::GlobalMemoryDumpPtr)>;
 
   struct Args {
     Args(MemoryDumpType dump_type,
@@ -109,7 +112,10 @@ struct QueuedRequest {
   // to the client disconnecting).
   std::set<PendingResponse> pending_responses;
   std::map<base::ProcessId, Response> responses;
-  int failed_memory_dump_count = 0;
+  // The request's outcome up to now. This is updated whenever an error is
+  // encountered as part of fulfilling the request. If multiple errors occur,
+  // this will only represent the last encountered error.
+  mojom::RequestOutcome outcome = mojom::RequestOutcome::kSuccess;
   bool dump_in_progress = false;
 
   // This field is set to |true| before a heap dump is requested, and set to

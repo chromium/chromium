@@ -20,6 +20,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/tracing_controller.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-forward.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
@@ -115,9 +116,10 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
                      size_t approximate_event_count);
   void OnCategoriesReceived(std::unique_ptr<GetCategoriesCallback> callback,
                             const std::set<std::string>& category_set);
-  void OnMemoryDumpFinished(std::unique_ptr<RequestMemoryDumpCallback> callback,
-                            bool success,
-                            uint64_t dump_id);
+  void OnMemoryDumpFinished(
+      std::unique_ptr<RequestMemoryDumpCallback> callback,
+      memory_instrumentation::mojom::RequestOutcome outcome,
+      uint64_t dump_id);
   void OnFrameFromVideoConsumer(scoped_refptr<media::VideoFrame> frame);
   // Assuming that the input is a potentially incomplete string representation
   // of a comma separated list of JSON objects, return the longest prefix that

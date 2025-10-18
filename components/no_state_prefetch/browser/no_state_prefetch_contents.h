@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -240,7 +241,7 @@ class NoStatePrefetchContents
 
   // Returns the ProcessMetrics for the render process, if it exists.
   void DidGetMemoryUsage(
-      bool success,
+      memory_instrumentation::mojom::RequestOutcome outcome,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
 
   // Sets PreloadingFailureReason based on status corresponding to the

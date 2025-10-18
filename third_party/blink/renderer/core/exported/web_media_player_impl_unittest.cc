@@ -2731,9 +2731,11 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
   int dump_count = 0;
 
   auto on_memory_dump_done = base::BindLambdaForTesting(
-      [&](bool success, uint64_t dump_guid,
+      [&](base::trace_event::ProcessMemoryDumpOutcome outcome,
+          uint64_t dump_guid,
           std::unique_ptr<base::trace_event::ProcessMemoryDump> pmd) {
-        ASSERT_TRUE(success);
+        ASSERT_EQ(base::trace_event::ProcessMemoryDumpOutcome::kSuccess,
+                  outcome);
         const auto& dumps = pmd->allocator_dumps();
 
         std::vector<const char*> allocations = {"audio", "video", "data_source",

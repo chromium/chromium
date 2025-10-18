@@ -49,7 +49,7 @@ class MemoryMeasurementDelegateImpl final : public MemoryMeasurementDelegate {
 
  private:
   void OnMemorySummary(base::OnceCallback<void(MemorySummaryMap)> callback,
-                       bool success,
+                       memory_instrumentation::mojom::RequestOutcome outcome,
                        std::unique_ptr<GlobalMemoryDump> memory_dump);
 
   raw_ptr<GraphImpl> graph_impl_;
@@ -76,9 +76,9 @@ void MemoryMeasurementDelegateImpl::RequestMemorySummary(
 
 void MemoryMeasurementDelegateImpl::OnMemorySummary(
     base::OnceCallback<void(MemorySummaryMap)> callback,
-    bool success,
+    memory_instrumentation::mojom::RequestOutcome outcome,
     std::unique_ptr<GlobalMemoryDump> memory_dump) {
-  if (!success) {
+  if (outcome != memory_instrumentation::mojom::RequestOutcome::kSuccess) {
     std::move(callback).Run(CreateMemorySummaryMap());
     return;
   }

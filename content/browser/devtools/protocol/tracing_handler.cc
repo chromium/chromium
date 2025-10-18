@@ -49,6 +49,7 @@
 #include "content/public/browser/tracing_service.h"
 #include "content/public/browser/web_contents.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
@@ -1030,9 +1031,11 @@ void TracingHandler::RequestMemoryDump(
 
 void TracingHandler::OnMemoryDumpFinished(
     std::unique_ptr<RequestMemoryDumpCallback> callback,
-    bool success,
+    memory_instrumentation::mojom::RequestOutcome outcome,
     uint64_t dump_id) {
-  callback->sendSuccess(base::StringPrintf("0x%" PRIx64, dump_id), success);
+  callback->sendSuccess(
+      base::StringPrintf("0x%" PRIx64, dump_id),
+      outcome == memory_instrumentation::mojom::RequestOutcome::kSuccess);
 }
 
 void TracingHandler::OnFrameFromVideoConsumer(

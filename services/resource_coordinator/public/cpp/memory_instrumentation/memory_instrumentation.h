@@ -26,10 +26,10 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   using MemoryDumpLevelOfDetail = base::trace_event::MemoryDumpLevelOfDetail;
   using MemoryDumpDeterminism = base::trace_event::MemoryDumpDeterminism;
   using RequestGlobalDumpCallback =
-      base::OnceCallback<void(bool success,
+      base::OnceCallback<void(mojom::RequestOutcome outcome,
                               std::unique_ptr<GlobalMemoryDump> dump)>;
   using RequestGlobalMemoryDumpAndAppendToTraceCallback =
-      base::OnceCallback<void(bool success, uint64_t dump_id)>;
+      base::OnceCallback<void(mojom::RequestOutcome outcome, uint64_t dump_id)>;
 
   static void CreateInstance(
       mojo::PendingRemote<memory_instrumentation::mojom::Coordinator>

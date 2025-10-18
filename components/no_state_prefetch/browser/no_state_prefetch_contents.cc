@@ -571,9 +571,9 @@ void NoStatePrefetchContents::DestroyWhenUsingTooManyResources() {
 }
 
 void NoStatePrefetchContents::DidGetMemoryUsage(
-    bool success,
+    memory_instrumentation::mojom::RequestOutcome outcome,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> global_dump) {
-  if (!success) {
+  if (outcome != memory_instrumentation::mojom::RequestOutcome::kSuccess) {
     return;
   }
 

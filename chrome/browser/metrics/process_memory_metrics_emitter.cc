@@ -1381,12 +1381,12 @@ std::optional<base::TimeDelta> ProcessMemoryMetricsEmitter::GetProcessUptime(
 
 void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
     absl::flat_hash_map<base::ProcessId, ProcessInfo> process_infos,
-    bool success,
+    memory_instrumentation::mojom::RequestOutcome outcome,
     std::unique_ptr<GlobalMemoryDump> dump) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramBoolean("Memory.MemoryDumpSuccess", success);
+  base::UmaHistogramEnumeration("Memory.MemoryDumpOutcome", outcome);
 
-  if (!success) {
+  if (outcome != memory_instrumentation::mojom::RequestOutcome::kSuccess) {
     return;
   }
 

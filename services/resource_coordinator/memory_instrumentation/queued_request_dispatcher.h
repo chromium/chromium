@@ -29,11 +29,11 @@ class QueuedRequestDispatcher {
       void(bool, uint64_t, memory_instrumentation::mojom::GlobalMemoryDumpPtr)>;
   using ChromeCallback = base::RepeatingCallback<void(
       base::ProcessId,
-      bool,
+      mojom::RequestOutcome,
       uint64_t,
       std::unique_ptr<base::trace_event::ProcessMemoryDump>)>;
-  using OsCallback =
-      base::RepeatingCallback<void(base::ProcessId, bool, OSMemDumpMap)>;
+  using OsCallback = base::RepeatingCallback<
+      void(base::ProcessId, mojom::RequestOutcome, OSMemDumpMap)>;
   using VmRegions =
       base::flat_map<base::ProcessId,
                      std::vector<memory_instrumentation::mojom::VmRegionPtr>>;

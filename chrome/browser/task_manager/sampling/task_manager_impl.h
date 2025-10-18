@@ -126,7 +126,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   void OnVideoMemoryUsageStatsUpdate(
       const gpu::VideoMemoryUsageStats& gpu_memory_stats);
   void OnReceivedMemoryDump(
-      bool success,
+      memory_instrumentation::mojom::RequestOutcome outcome,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
 
   // task_manager::TaskManagerInterface:

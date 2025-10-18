@@ -10,7 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_request_args.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
@@ -360,28 +362,25 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, MemoryTracing) {
       base::StringPrintf("omnibox/autocomplete_controller/0x%" PRIXPTR,
                          reinterpret_cast<uintptr_t>(autocomplete_controller))};
 
-  auto OnMemoryDumpDone =
-      [](const std::vector<std::string>& expected_names, base::OnceClosure quit,
-         bool success, uint64_t dump_guid,
-         std::unique_ptr<base::trace_event::ProcessMemoryDump> pmd) {
-        ASSERT_TRUE(success);
-
-        const auto& allocator_dumps = pmd->allocator_dumps();
-        for (const auto& expected_dump_name : expected_names)
-          EXPECT_TRUE(allocator_dumps.count(expected_dump_name));
-
-        std::move(quit).Run();
-      };
-
-  base::RunLoop run_loop;
   base::trace_event::MemoryDumpRequestArgs args{
       1 /* dump_guid*/, base::trace_event::MemoryDumpType::kExplicitlyTriggered,
       base::trace_event::MemoryDumpLevelOfDetail::kBackground};
 
+  base::test::TestFuture<base::trace_event::ProcessMemoryDumpOutcome, uint64_t,
+                         std::unique_ptr<base::trace_event::ProcessMemoryDump>>
+      future;
   base::trace_event::MemoryDumpManager::GetInstance()->CreateProcessDump(
-      args,
-      base::BindOnce(OnMemoryDumpDone, expected_names, run_loop.QuitClosure()));
-  run_loop.Run();
+      args, future.GetSequenceBoundCallback());
+  ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(base::trace_event::ProcessMemoryDumpOutcome::kSuccess,
+            future.Get<base::trace_event::ProcessMemoryDumpOutcome>());
+
+  const auto& allocator_dumps =
+      future.Get<std::unique_ptr<base::trace_event::ProcessMemoryDump>>()
+          ->allocator_dumps();
+  for (const auto& expected_dump_name : expected_names) {
+    EXPECT_TRUE(allocator_dumps.count(expected_dump_name));
+  }
 }
 
 }  // namespace
