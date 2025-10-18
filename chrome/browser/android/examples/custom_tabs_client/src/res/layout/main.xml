@@ -203,22 +203,27 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
+                android:layout_gravity="center_vertical"
                 android:text="@string/color"/>
 
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/color_spinner"
-                android:layout_margin="3dp"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_vertical" />
         </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/navbar_color_toolbar_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/navbar_color_toolbar_text" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -246,20 +251,17 @@
                     android:id="@+id/system_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/theme_button_system"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/theme_button_system" />
                 <Button
                     android:id="@+id/light_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/theme_button_light"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/theme_button_light" />
                 <Button
                     android:id="@+id/dark_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/theme_button_dark"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/theme_button_dark" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -289,14 +291,12 @@
                     android:id="@+id/start_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_start_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_start_text" />
                 <Button
                     android:id="@+id/end_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_end_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_end_text" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -326,20 +326,17 @@
                     android:id="@+id/x_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_X"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_X" />
                 <Button
                     android:id="@+id/back_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_back"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_back" />
                 <Button
                     android:id="@+id/check_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/close_button_check"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/close_button_check" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -370,14 +367,12 @@
                     android:id="@+id/side_sheet_start_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/side_sheet_start_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/side_sheet_start_text" />
                 <Button
                     android:id="@+id/side_sheet_end_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/side_sheet_end_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/side_sheet_end_text" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -408,20 +403,17 @@
                     android:id="@+id/decoration_type_shadow_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/decoration_type_shadow_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/decoration_type_shadow_text" />
                 <Button
                     android:id="@+id/decoration_type_divider_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/decoration_type_divider_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/decoration_type_divider_text" />
                 <Button
                     android:id="@+id/decoration_type_none_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/decoration_type_none_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/decoration_type_none_text" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -451,20 +443,17 @@
                     android:id="@+id/open_in_browser_default_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/open_in_browser_button_default_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/open_in_browser_button_default_text" />
                 <Button
                     android:id="@+id/open_in_browser_on_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/open_in_browser_button_on_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/open_in_browser_button_on_text" />
                 <Button
                     android:id="@+id/open_in_browser_off_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/open_in_browser_button_off_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/open_in_browser_button_off_text" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
@@ -495,20 +484,17 @@
                     android:id="@+id/share_state_default_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/share_state_default_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/share_state_default_text" />
                 <Button
                     android:id="@+id/share_state_on_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/share_state_on_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/share_state_on_text" />
                 <Button
                     android:id="@+id/share_state_off_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/share_state_off_text"
-                    style="?attr/materialButtonOutlinedStyle" />
+                    android:text="@string/share_state_off_text" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 

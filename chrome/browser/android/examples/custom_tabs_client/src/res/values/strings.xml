@@ -86,4 +86,5 @@
     <string name="add_extra_link_custom_menu_item_text"> Add an additional Link Contextual Menu Item </string>
     <string name="add_overflow_custom_menu_item_text"> Add an overflow Contextual Menu Item </string>
     <string name="allow_initial_navigation_to_leave">Allow initial URL to leave browser</string>
+    <string name="navbar_color_toolbar_text">Set navigation bar color to toolbar color</string>
 </resources>
