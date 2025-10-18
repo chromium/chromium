@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Notifications.Actions" enum="NotificationActionType"
     expires_after="2026-03-08">
   <owner>dewittj@chromium.org</owner>
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     The actions taken on notifications, recorded every time they happen. This
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Cros.Actions.{NotificationAction}"
     enum="NotificationTypeDetailed" expires_after="2025-12-28">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the notification type when a notification interaction occurs:
@@ -462,7 +462,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Notifications.Cros.Actions.{NotificationAction}.GroupedByCatalog"
     enum="NotificationCatalogName" expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the notification catalog name when a notification interaction
@@ -853,7 +853,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Notifications.PerNotificationActions"
     enum="NotificationActionType" expires_after="2026-03-15">
   <owner>dewittj@chromium.org</owner>
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     The actions taken on notifications, recorded once per notification, when it

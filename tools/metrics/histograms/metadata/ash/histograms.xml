@@ -5152,7 +5152,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.MagicBoost.DisclaimerView.{OptInFeatures}"
     enum="DisclaimerViewAction" expires_after="2026-03-15">
-  <owner>leandre@google.com</owner>
+  <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Tracks the actions in the magic boost disclaimer view, which is triggered by
@@ -5169,7 +5169,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Mahi.ButtonClicked" enum="PanelButton"
     expires_after="2026-02-22">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when any button in the web Mahi Penel widget is activated.
@@ -5178,7 +5178,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Mahi.Elucidation.LoadingTime" units="ms"
     expires_after="2026-03-22">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the time it takes to load the elucidation inside the Mahi panel.
@@ -5188,7 +5188,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Mahi.Feedback" enum="BooleanThumbsUp"
     expires_after="2026-03-15">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the type of feedback that a user has for the Mahi feature. Emitted
@@ -5198,7 +5198,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Mahi.QuestionAnswer.LoadingTime" units="ms"
     expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the time it takes to answer the question inside the Mahi panel.
@@ -5228,7 +5228,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Mahi.Summary.LoadingTime" units="ms"
     expires_after="2026-03-15">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the time it takes to load the summary inside the Mahi panel. Emitted
@@ -5249,7 +5249,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Mahi.UserJourneyTime" units="ms"
     expires_after="2026-02-22">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records time user spent in Mahi Panel. Starts measuring time whenever the
@@ -5314,7 +5314,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.MessageCenter.Scroll.PresentationTime" units="ms"
     expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Presentation time while scrolling through the list of notifications in
@@ -5324,7 +5324,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.MessageCenter.Scroll.PresentationTime.MaxLatency"
     units="ms" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Presentation time while scrolling through the list of notifications in
@@ -5481,7 +5481,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Notification.ClearAllStacked.AnimationSmoothness"
     units="%" expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Animation smoothness of the &quot;clear all&quot; animation in the CrOS
@@ -5493,7 +5493,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Notification.ClearAllVisible.AnimationSmoothness"
     units="%" expires_after="2026-04-05">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Animation smoothness of the &quot;clear all&quot; animation in the CrOS
@@ -5504,7 +5504,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Notification.CountOfNotificationsInOneGroup"
     units="Notifications" expires_after="2026-02-22">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     The number of notification contained in one group. Emitted when a
@@ -5514,13 +5514,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Notification.ExpandOrCollapse.AnimationSmoothness"
     units="%" expires_after="2026-02-15">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Animation smoothness of the &quot;Expand or Collapse&quot; animation in the
     CrOS message center. This occurs when the notification requests a size
     change due to being expanded or collapsed. Usually involves other layer
-    animations which are named (get name from leandre@).
+    animations which are named (get name from newcomer@).
   </summary>
 </histogram>
 
@@ -5538,7 +5538,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Notification.GroupNotificationAdded"
     enum="GroupNotificationType" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the types of group notification added to the system. The types are
@@ -5558,7 +5558,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Notification.MoveDown.AnimationSmoothness" units="%"
     expires_after="2026-02-22">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Animation smoothness of the &quot;move down&quot; animation in the CrOS
@@ -5590,7 +5590,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Notification.SwipeControl.FadeIn.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the fade in animation of the settings button inside a
@@ -5601,7 +5601,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotificationPopup.AnimationSmoothness" units="%"
     expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
   <owner>amehfooz@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
@@ -5614,7 +5613,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotificationPopup.OnTopOfSurfacesPopupCount"
     units="popups" expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the number of popups that show up on top of a UI surface. Emitted
@@ -5626,7 +5625,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotificationPopup.OnTopOfSurfacesType"
     enum="NotifierCollisionSurfaceType" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the type of UI surface that popup notifications are shown on top of.
@@ -5683,7 +5682,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.NotificationView.ConvertSingleToGroup.{Animation}.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the {Animation} in notification view when converting
@@ -5699,7 +5698,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.NotificationView.ExpandButton.BoundsChange.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the bounds change animation of the expand button
@@ -5710,7 +5709,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotificationView.ExpandButton.ClickAction"
     enum="ExpandButtonClickAction" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     The count of actions that is performed after an expand button is clicked.
@@ -5722,7 +5721,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.NotificationView.ExpandButton.ConvertSingleToGroup.{Animation}.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the {Animation} inside the expand button of the
@@ -5739,7 +5738,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.NotificationView.ImageContainerView.ScaleDown.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the scale down animation of image container view
@@ -5770,7 +5769,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotificationView.NotificationAdded.Type"
     enum="NotificationViewType" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the types of notification view added to the system. Emitted when
@@ -5780,7 +5779,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotificationView.{ChildView}.FadeIn.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the fade in animation of {ChildView} inside a
@@ -5805,7 +5804,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotificationView.{ChildView}.FadeOut.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the fade out animation of {ChildView} inside a
@@ -5829,7 +5828,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.NotificationView.{ChildView}.ScaleAndTranslate.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the scale and translate animation of {ChildView}
@@ -7031,7 +7030,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.AnimationSmoothness" units="%"
     expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Animation smoothness of the privacy indicators view animation. This occurs
@@ -7043,7 +7042,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.AppAccessUpdate.Type" enum="AppType"
     expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the type of the app that change the status of camera/microphone
@@ -7054,7 +7053,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.IndicatorShowsDuration" units="ms"
     expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the duration of showing for privacy indicators. Emitted when the
@@ -7064,7 +7063,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.LaunchSettings" enum="AppType"
     expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the type of the app that associate with the privacy indicators
@@ -7075,7 +7074,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.NumberOfAppsAccessingCamera"
     units="count" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the number of apps that access the camera at the same time. Emitted
@@ -7085,7 +7084,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone"
     units="count" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the number of apps that access the microphone at the same time.
@@ -7095,7 +7094,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.NumberOfShowsPerSession" units="shows"
     expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the number of times that the tray indicator shows in the tray per
@@ -7105,7 +7104,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.ShowType" enum="PrivacyIndicatorsType"
     expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the type of privacy indicators shown. Emitted when the privacy
@@ -7115,7 +7114,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.Source" enum="PrivacyIndicatorsSource"
     expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the source that use privacy indicators. Emitted when there's a client
@@ -7125,7 +7124,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.PrivacyIndicators.{Icon}.AnimationSmoothness" units="%"
     expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Animation smoothness of the privacy indicators {Icon} fade in animation.
@@ -8657,7 +8656,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.StatusArea.TrayBackgroundView.BounceIn" units="%"
     expires_after="2026-02-15">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the bounce in animation of tray background view. 100%
@@ -8669,7 +8668,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.StatusArea.TrayBackgroundView.FadeIn" units="%"
     expires_after="2026-02-15">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the fade in animation of tray background view. 100%
@@ -8681,7 +8680,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.StatusArea.TrayBackgroundView.Hide" units="%"
     expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the fade in animation of tray background view. 100%
@@ -8711,7 +8710,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.StatusArea.TrayItemView.Hide" units="%"
     expires_after="2026-02-15">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the hide animation of tray item view. 100% represents
@@ -8722,7 +8721,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.StatusArea.TrayItemView.Show" units="%"
     expires_after="2026-03-29">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the show animation of tray item view. 100% represents
@@ -8733,7 +8732,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.StatusAreaShowBubble.PresentationTime" units="ms"
     expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
   <owner>amehfooz@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -8904,7 +8902,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConference.NumberOfRepeatedShows" units="shows"
     expires_after="2026-07-14">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Record the number of times that the video conference tray repeatedly shows
@@ -8915,7 +8913,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConference.ReturnToApp.Click"
     enum="VideoConferenceAppType" expires_after="2025-12-14">
-  <owner>leandre@google.com</owner>
+  <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the app type of the media app that users want to return to when they
@@ -8926,7 +8924,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.VideoConference.ReturnToAppButton.FadeOut.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the fade out animation of the return to app button
@@ -8938,7 +8936,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.VideoConference.ReturnToAppPanel.BoundsChange.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the bounds change animation of the return to app
@@ -8949,7 +8947,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConference.{ViewName}.FadeIn.AnimationSmoothness"
     units="%" expires_after="2026-02-01">
-  <owner>leandre@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Relative smoothness of the fade in animation of the {ViewName} inside the
@@ -8964,7 +8962,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConferenceTray.BackgroundBlur.Click"
     enum="BackgroundBlurState" expires_after="2026-03-01">
-  <owner>leandre@google.com</owner>
+  <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the background blur state that users want to switch to when they
@@ -9005,7 +9003,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConferenceTray.StopScreenShareButton.Click"
     enum="BooleanClicked" expires_after="2026-02-01">
-  <owner>leandre@google.com</owner>
+  <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when the stop screen share button in video conference tray is
@@ -9015,7 +9013,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConferenceTray.ToggleBubbleButton.Click"
     enum="BooleanOpened" expires_after="2026-02-22">
-  <owner>leandre@google.com</owner>
+  <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when the toggle bubble button in video conference tray is clicked
@@ -9025,7 +9023,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConferenceTray.{Device}MuteButton.Click"
     enum="BooleanMuted" expires_after="2026-03-01">
-  <owner>leandre@google.com</owner>
+  <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when the {Device} mute button in video conference tray is clicked.
@@ -9040,7 +9038,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.VideoConferenceTray.{EffectName}.Click"
     enum="BooleanEnabled" expires_after="2026-03-01">
-  <owner>leandre@google.com</owner>
+  <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when the toggle button of {EffectName} in the video conference
