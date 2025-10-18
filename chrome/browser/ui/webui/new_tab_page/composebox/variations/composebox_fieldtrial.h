@@ -65,11 +65,17 @@ extern const base::FeatureParam<bool> kEnableViewportImages;
 extern const base::FeatureParam<bool> kShowToolsAndModels;
 // Whether to show the create image button in the composebox context menu.
 extern const base::FeatureParam<bool> kShowCreateImageTool;
+// Whether to force tools and models to show in the composebox context menu.
+extern const base::FeatureParam<bool> kForceToolsAndModels;
 
 // Whether to show the submit button in the composebox.
 extern const base::FeatureParam<bool> kShowSubmit;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
+
+bool IsDeepSearchEnabled(Profile* profile);
+
+bool IsCreateImagesEnabled(Profile* profile);
 
 // Helper to create a QueryControllerConfigParams object from the feature
 // params.

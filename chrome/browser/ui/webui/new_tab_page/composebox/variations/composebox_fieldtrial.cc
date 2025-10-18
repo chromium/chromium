@@ -138,6 +138,46 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
       AimEligibilityServiceFactory::GetForProfile(profile), kNtpComposebox);
 }
 
+bool IsDeepSearchEnabled(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  if (!IsNtpComposeboxEnabled(profile)) {
+    return false;
+  }
+
+  if (kShowToolsAndModels.Get() && kForceToolsAndModels.Get()) {
+    return true;
+  }
+
+  AimEligibilityService* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  return kShowToolsAndModels.Get() && aim_eligibility_service &&
+         aim_eligibility_service->IsDeepSearchEligible();
+}
+
+bool IsCreateImagesEnabled(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  if (!IsNtpComposeboxEnabled(profile)) {
+    return false;
+  }
+
+  if (kShowToolsAndModels.Get() && kShowCreateImageTool.Get() &&
+      kForceToolsAndModels.Get()) {
+    return true;
+  }
+
+  AimEligibilityService* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  return kShowToolsAndModels.Get() && kShowCreateImageTool.Get() &&
+         aim_eligibility_service &&
+         aim_eligibility_service->IsCreateImagesEligible();
+}
+
 std::unique_ptr<ComposeboxQueryController::QueryControllerConfigParams>
 CreateQueryControllerConfigParams() {
   auto config_params = std::make_unique<
@@ -216,6 +256,10 @@ const base::FeatureParam<bool> kShowCreateImageTool(&kNtpComposebox,
                                                     false);
 
 const base::FeatureParam<bool> kShowSubmit(&kNtpComposebox, "ShowSubmit", true);
+
+const base::FeatureParam<bool> kForceToolsAndModels(&kNtpComposebox,
+                                                    "ForceToolsAndModels",
+                                                    false);
 
 const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &kNtpComposebox,
