@@ -477,6 +477,8 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
     app_locale = "en-GB";
   if (app_locale == "pl-PL")
     app_locale = "pl";
+  if (app_locale == "ru-RU")
+    app_locale = "ru";
   base::FilePath locale_file_path = GetOverriddenPakPath();
   if (locale_file_path.empty())
     locale_file_path = GetLocaleFilePath(app_locale);
