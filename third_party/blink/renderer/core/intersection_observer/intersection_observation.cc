@@ -28,8 +28,9 @@ int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     ComputeIntersectionsContext& context) {
-  DCHECK(Observer());
-
+  if (!CanCompute()) {
+    return 0;
+  }
   if (compute_flags & kConsumeScrollDelta) {
     cached_rects_.min_scroll_delta_to_update -=
         accumulated_scroll_delta_since_last_update;
@@ -109,14 +110,6 @@ int64_t IntersectionObservation::ComputeIntersection(
   return geometry.DidComputeGeometry() ? 1 : 0;
 }
 
-void IntersectionObservation::ComputeIntersectionForDisconnectedTarget(
-    ComputeIntersectionsContext& context) {
-  int flags = kImplicitRootObserversNeedUpdate |
-              kExplicitRootObserversNeedUpdate | kIgnoreDelay;
-  ComputeIntersection(flags, IntersectionGeometry::kInfiniteScrollDelta,
-                      context);
-}
-
 gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
   if (cached_rects_.valid) {
     return cached_rects_.min_scroll_delta_to_update;
@@ -137,11 +130,10 @@ void IntersectionObservation::Disconnect() {
     ElementIntersectionObserverData* observer_data =
         target_->IntersectionObserverData();
     observer_data->RemoveObservation(*this);
-    if (target_->isConnected()) {
-      IntersectionObserverController* controller =
-          target_->GetDocument().GetIntersectionObserverController();
-      if (controller)
-        controller->RemoveTrackedObservation(*this);
+    IntersectionObserverController* controller =
+        target_->GetDocument().GetIntersectionObserverController();
+    if (controller) {
+      controller->RemoveTrackedObservation(*this);
     }
   }
   entries_.clear();
@@ -175,8 +167,8 @@ bool IntersectionObservation::CanUseCachedRectsForTesting(
 }
 
 bool IntersectionObservation::CanCompute() const {
-  return !!target_ && observer_->RootIsValid() &&
-         !!observer_->GetExecutionContext();
+  return !!target_ && !!observer_ && observer_->RootIsValid() &&
+         observer_->GetExecutionContext();
 }
 
 bool IntersectionObservation::ShouldCompute(unsigned flags) const {

@@ -880,6 +880,7 @@ TEST_F(IntersectionObserverTest, TrackedTargetBookkeeping) {
   EXPECT_EQ(controller.GetTrackedObserverCountForTesting(), 0u);
 
   target->remove();
+  Compositor().BeginFrame();
   EXPECT_EQ(controller.GetTrackedObservationCountForTesting(), 0u);
   GetDocument().body()->AppendChild(target);
   EXPECT_EQ(controller.GetTrackedObservationCountForTesting(), 2u);
@@ -936,6 +937,7 @@ TEST_F(IntersectionObserverTest, TrackedRootBookkeeping) {
 
   // Root should not be tracked if it's not connected.
   root->remove();
+  Compositor().BeginFrame();
   EXPECT_EQ(controller.GetTrackedObserverCountForTesting(), 0u);
   GetDocument().body()->AppendChild(root);
   EXPECT_EQ(controller.GetTrackedObserverCountForTesting(), 1u);
@@ -968,8 +970,6 @@ TEST_F(IntersectionObserverTest, TrackedRootBookkeeping) {
   target->remove();
   target = nullptr;
   target_data = nullptr;
-  // Removing the target from the DOM tree forces a notification to be
-  // queued, so flush it out.
   test::RunPendingTasks();
   observer_delegate->Clear();
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -996,6 +996,7 @@ TEST_F(IntersectionObserverTest, TrackedRootBookkeeping) {
   target->remove();
   root->remove();
   root = nullptr;
+  Compositor().BeginFrame();
   test::RunPendingTasks();
   observer_delegate->Clear();
   observer_delegate = nullptr;
@@ -1054,6 +1055,7 @@ TEST_F(IntersectionObserverTest, InaccessibleTarget) {
   target = nullptr;
   observer = nullptr;
   observer_delegate = nullptr;
+  Compositor().BeginFrame();
   test::RunPendingTasks();
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(target_weak);

@@ -1023,7 +1023,9 @@ void LocalFrameView::RunIntersectionObserverSteps() {
 
   ComputeIntersectionsContext context;
   bool has_active_observations = UpdateViewportIntersectionsForSubtree(
-      IntersectionObservation::kConsumeScrollDelta, context);
+      IntersectionObservation::kConsumeScrollDelta |
+          IntersectionObservation::kUpdateTracking,
+      context);
   if (FrameOwner* owner = frame_->Owner())
     owner->SetNeedsOcclusionTracking(context.NeedsOcclusionTracking());
   if (has_active_observations) {
@@ -4532,7 +4534,9 @@ PaintArtifactCompositor* LocalFrameView::GetPaintArtifactCompositor() const {
 
 unsigned LocalFrameView::GetIntersectionObservationFlags(
     unsigned parent_flags) const {
-  unsigned flags = parent_flags & IntersectionObservation::kConsumeScrollDelta;
+  unsigned flags =
+      parent_flags & (IntersectionObservation::kConsumeScrollDelta |
+                      IntersectionObservation::kUpdateTracking);
 
   const LocalFrame& target_frame = GetFrame();
   const Frame& root_frame = target_frame.Tree().Top();

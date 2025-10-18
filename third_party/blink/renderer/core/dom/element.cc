@@ -4071,13 +4071,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
     NodeRareData* node_data = RareData();
     node_data->InvalidateAssociatedAnimationEffects();
-    if (was_in_document) {
-      if (auto* observer_data = data->IntersectionObserverData()) {
-        observer_data->ComputeIntersectionsForDisconnectedTarget();
-        observer_data->StopTrackingWithController(
-            document.EnsureIntersectionObserverController());
-      }
-    }
 
     if (auto* context = data->GetDisplayLockContext()) {
       context->ElementDisconnected();

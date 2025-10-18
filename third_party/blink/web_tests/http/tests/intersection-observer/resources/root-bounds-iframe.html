@@ -14,14 +14,18 @@ onload = () => {
     if (event.data == "start") {
       let target = popup.document.getElementById("target");
       target.remove();
-      document.body.appendChild(target);
-      requestAnimationFrame(() => {
-	document.scrollingElement.scrollTop = 1000;
-	// We send a "continue" message here to ensure that the popup window
-	// will run a lifecycle update, which is necessary to generate and
-	// deliver IntersectionObserver notifications.
-	popup.postMessage("continue", "*");
-      });
+      // We send a "continue" message here to ensure that the popup window
+      // will run a lifecycle update, which is necessary to generate and
+      // deliver IntersectionObserver notifications.
+      popup.postMessage("continue", "*");
+      new Promise(requestAnimationFrame)
+        .then(() => new Promise(setTimeout))
+        .then(() => {
+          document.body.appendChild(target);
+          new Promise(requestAnimationFrame) })
+        .then(() => {
+          document.scrollingElement.scrollTop = 1000;
+          popup.postMessage("continue", "*") });
     } else {
       numRecords++;
       // Forward all IntersectionObserver notifications on to the embedding
