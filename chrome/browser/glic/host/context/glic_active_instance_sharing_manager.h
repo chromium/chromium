@@ -20,35 +20,20 @@ class GlicInstanceCoordinator;
 // active and its active tab is showing a GlicInstance, this sharing manager
 // behaves like the sharing manager for that instance. Otherwise it behaves like
 // an empty sharing manager (nothing is or can be shared).
-class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager {
+class GlicActiveInstanceSharingManager : public GlicDelegatingSharingManager {
  public:
-  explicit GlicActiveBrowserSharingManager(
-      Profile* profile,
+  explicit GlicActiveInstanceSharingManager(
       GlicInstanceCoordinator* instance_coordinator);
-  ~GlicActiveBrowserSharingManager() override;
+  ~GlicActiveInstanceSharingManager() override;
 
-  GlicActiveBrowserSharingManager(const GlicActiveBrowserSharingManager&) =
+  GlicActiveInstanceSharingManager(const GlicActiveInstanceSharingManager&) =
       delete;
-  GlicActiveBrowserSharingManager& operator=(
-      const GlicActiveBrowserSharingManager&) = delete;
-
-  // Callback for changes to the active tab.
-  void OnActiveTabChanged(tabs::TabInterface* active_tab);
+  GlicActiveInstanceSharingManager& operator=(
+      const GlicActiveInstanceSharingManager&) = delete;
 
  private:
   // Callback for changes to the last active GlicInstance.
   void OnActiveInstanceChanged(GlicInstance* instance);
-
-  // Updates the delegate based on current active browser state.
-  void UpdateDelegate();
-
-  // TODO(b:444463509): Refactor into a shared singleton.
-  GlicActiveTabForProfileTracker active_tab_tracker_;
-
-  // Subscription for active tab changes.
-  base::CallbackListSubscription active_tab_subscription_;
-
-  raw_ptr<Profile> profile_;
 
   // Subscription for last active instance changes.
   base::CallbackListSubscription active_instance_subscription_;

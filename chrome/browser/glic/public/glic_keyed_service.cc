@@ -33,7 +33,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
-#include "chrome/browser/glic/host/context/glic_active_browser_sharing_manager.h"
+#include "chrome/browser/glic/host/context/glic_active_instance_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_share_image_handler.h"
@@ -123,8 +123,8 @@ std::unique_ptr<GlicSharingManager> CreateSharingManager(
         metrics);
   }
 
-  return std::make_unique<GlicActiveBrowserSharingManager>(
-      profile, static_cast<GlicInstanceCoordinatorImpl*>(window_controller));
+  return std::make_unique<GlicActiveInstanceSharingManager>(
+      static_cast<GlicInstanceCoordinatorImpl*>(window_controller));
 }
 
 }  // namespace
