@@ -149,7 +149,11 @@
 #pragma mark - BookmarksEditorViewControllerDelegate
 
 - (void)moveBookmark {
-  DCHECK(!_folderChooserCoordinator);
+  if (_folderChooserCoordinator) {
+    // This can occur if the user tap on the button while the previous folder
+    // chooser is being dismissed.
+    return;
+  }
 
   std::set<const bookmarks::BookmarkNode*> hiddenNodes{[_mediator bookmark]};
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]

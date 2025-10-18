@@ -164,7 +164,11 @@
                                            (const std::set<
                                                const bookmarks::BookmarkNode*>&)
                                                hiddenNodes {
-  DCHECK(!_folderChooserCoordinator);
+  if (_folderChooserCoordinator) {
+    // This can occur if the user tap on the button while the previous folder
+    // chooser is being dismissed.
+    return;
+  }
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseNavigationController:(_baseNavigationController
                                             ? _baseNavigationController
