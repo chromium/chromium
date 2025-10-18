@@ -516,10 +516,22 @@ suite('VoiceLanguageController', () => {
 
     voiceLanguageController.onTtsEngineInstalled();
     voiceLanguageController.onVoicesChanged();
+  });
 
-    assertArrayEquals(['bn', 'hu'], installedLangs);
-    assertTrue(onAvailableVoicesChange);
-    assertFalse(voiceLanguageController.hasAvailableVoices());
+  test('onVoicesChanged after new tts engine honors page language', () => {
+    chrome.readingMode.getStoredVoice = () => '';
+    voiceLanguageController.onTtsEngineInstalled();
+    const lang = 'de';
+    chrome.readingMode.baseLanguageForSpeech = lang;
+    voiceLanguageController.onVoicesChanged();
+
+    // onVoicesChanged should request an install for the page language.
+    assertArrayEquals([lang], requestInfoLangs);
+    voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
+    assertEquals(
+        VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+        voiceLanguageController.getLocalStatus(lang));
+    assertArrayEquals([lang], installedLangs);
   });
 
   test('onVoicesChanged restores from prefs on first voices received', () => {
@@ -652,6 +664,24 @@ suite('VoiceLanguageController', () => {
 
     assertEquals(lang, voiceLanguageController.getCurrentLanguage());
   });
+
+  test(
+      'onPageLanguageChanged updates current language when natural voices unavailable',
+      () => {
+        chrome.readingMode.getStoredVoice = () => '';
+        const voice1 =
+            createSpeechSynthesisVoice({lang: 'en-us', name: 'Google English'});
+        const voice2 =
+            createSpeechSynthesisVoice({lang: 'de-de', name: 'Google German'});
+        speech.setVoices([voice1, voice2]);
+        voiceLanguageController.onVoicesChanged();
+        const lang = 'de';
+        chrome.readingMode.baseLanguageForSpeech = lang;
+
+        voiceLanguageController.onPageLanguageChanged();
+
+        assertEquals(voice2, voiceLanguageController.getCurrentVoice());
+      });
 
   test('onPageLanguageChanged installs lang if no status', () => {
     const lang = 'en-gb';
