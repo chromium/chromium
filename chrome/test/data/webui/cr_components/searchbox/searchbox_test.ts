@@ -253,11 +253,21 @@ suite('NewTabPageRealboxTest', () => {
     });
     realbox = await createAndAppendRealbox();
 
+    const faviconImage = realbox.$.icon.$.faviconImage;
+    assertTrue(!!faviconImage);
+
+    const loadPromise = eventToPromise('load', faviconImage);
+    faviconImage.dispatchEvent(new Event('load'));
+    await loadPromise;
+
     // Assert.
-    assertStyle(
-        realbox.$.icon.$.icon, 'background-image',
-        `url("chrome://resources/cr_components/searchbox/icons/google_g.svg")`);
-    assertStyle(realbox.$.icon.$.icon, '-webkit-mask-image', 'none');
+    assertTrue(isVisible(faviconImage));
+    assertEquals(
+        faviconImage.getAttribute('src'),
+        '//resources/cr_components/searchbox/icons/google_g.svg');
+
+    const realboxIcon = realbox.$.icon.$.icon;
+    assertFalse(isVisible(realboxIcon));
   });
 
   const webkitTestCases = [
@@ -2400,7 +2410,6 @@ suite('NewTabPageRealboxTest', () => {
           assertIconState(
               element, hasEntityImage, /*expectUseIconImg=*/ false,
               expectedSrc);
-          element!.$.icon.$.iconImg.dispatchEvent(new Event('load'));
 
           const iconImg = element!.$.icon.$.iconImg;
           assertTrue(!!iconImg);
@@ -2534,7 +2543,9 @@ suite('NewTabPageRealboxTest', () => {
 
   test('search aggregator people matches use fallback icons', async () => {
     realbox.$.input.value = 'hello';
+    const inputPromise = eventToPromise('input', realbox.$.input);
     realbox.$.input.dispatchEvent(new InputEvent('input'));
+    await inputPromise;
 
     const fallbackIconPath =
         '//resources/cr_components/searchbox/icons/google_agentspace_logo.svg';
@@ -2563,19 +2574,37 @@ suite('NewTabPageRealboxTest', () => {
         realbox.$.matches.shadowRoot.querySelectorAll('cr-searchbox-match');
     assertEquals(2, matchEls.length);
 
+    let faviconImage = matchEls[0]!.$.icon.$.faviconImage;
+    assertTrue(!!faviconImage);
+
+    let vectorIcon = matchEls[0]!.$.icon.$.icon;
+    assertTrue(!!vectorIcon);
+
+    let loadPromise = eventToPromise('load', faviconImage);
+    faviconImage.dispatchEvent(new Event('load'));
+    await loadPromise;
+
     // Test initial icon state for the first match: Google Agentspace logo set
-    // as background image.
-    assertStyle(
-        matchEls[0]!.$.icon.$.icon, 'background-image',
-        `url("chrome:${fallbackIconPath}")`);
-    assertStyle(matchEls[0]!.$.icon.$.icon, '-webkit-mask-image', 'none');
+    // as favicon image src.
+    assertTrue(isVisible(faviconImage));
+    assertEquals(faviconImage.getAttribute('src'), fallbackIconPath);
+    assertFalse(isVisible(vectorIcon));
+
+    faviconImage = matchEls[1]!.$.icon.$.faviconImage;
+    assertTrue(!!faviconImage);
+
+    vectorIcon = matchEls[1]!.$.icon.$.icon;
+    assertTrue(!!vectorIcon);
+
+    loadPromise = eventToPromise('load', faviconImage);
+    faviconImage.dispatchEvent(new Event('load'));
+    await loadPromise;
 
     // Test initial icon state for the second match: Google Agentspace logo set
-    // as background image.
-    assertStyle(
-        matchEls[1]!.$.icon.$.icon, 'background-image',
-        `url("chrome:${fallbackIconPath}")`);
-    assertStyle(matchEls[1]!.$.icon.$.icon, '-webkit-mask-image', 'none');
+    // as favicon image src.
+    assertTrue(isVisible(faviconImage));
+    assertEquals(faviconImage.getAttribute('src'), fallbackIconPath);
+    assertFalse(isVisible(vectorIcon));
 
     // Select the first match.
     let arrowDownEvent = arrowDown(realbox);
@@ -2586,13 +2615,20 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     // Input is updated.
     assertEquals('https://helloworld.com', realbox.$.input.value);
+
+    const realboxIcon = realbox.$.icon;
+    assertTrue(!!realboxIcon);
+
+    loadPromise = eventToPromise('load', realboxIcon.$.faviconImage);
+    realboxIcon.$.faviconImage.dispatchEvent(new Event('load'));
+    await loadPromise;
+
     // Realbox icon is updated.
-    assertStyle(
-        realbox.$.icon.$.icon, 'background-image',
-        `url("chrome:${fallbackIconPath}")`);
-    assertStyle(realbox.$.icon.$.icon, '-webkit-mask-image', 'none');
-    assertFalse(realbox.$.icon.$.icon.hidden);
-    assertTrue(realbox.$.icon.$.iconImg.hidden);
+    assertTrue(isVisible(realboxIcon.$.faviconImage));
+    assertEquals(
+        realboxIcon.$.faviconImage.getAttribute('src'), fallbackIconPath);
+    assertFalse(isVisible(realboxIcon.$.icon));
+    assertFalse(isVisible(realboxIcon.$.iconImg));
 
     // Select the second match.
     arrowDownEvent = arrowDown(realbox);
@@ -2603,20 +2639,28 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
     // Input is updated.
     assertEquals('https://helloworld-2.com', realbox.$.input.value);
+
+    loadPromise = eventToPromise('load', realboxIcon.$.faviconImage);
+    realboxIcon.$.faviconImage.dispatchEvent(new Event('load'));
+    await loadPromise;
+
     // Realbox icon is updated.
-    assertStyle(
-        realbox.$.icon.$.icon, 'background-image',
-        `url("chrome:${fallbackIconPath}")`);
-    assertStyle(realbox.$.icon.$.icon, '-webkit-mask-image', 'none');
-    assertFalse(realbox.$.icon.$.icon.hidden);
-    assertTrue(realbox.$.icon.$.iconImg.hidden);
+    assertTrue(isVisible(realboxIcon.$.faviconImage));
+    assertEquals(
+        realboxIcon.$.faviconImage.getAttribute('src'), fallbackIconPath);
+    assertFalse(isVisible(realboxIcon.$.icon));
+    assertFalse(isVisible(realboxIcon.$.iconImg));
 
     // Mock icon image finishing loading for the the realbox
-    // itself. The icon image should be used and the logo should be hidden.
-    realbox.$.icon.$.iconImg.dispatchEvent(new Event('load'));
-    await microtasksFinished();
-    assertTrue(realbox.$.icon.$.icon.hidden);
-    assertFalse(realbox.$.icon.$.iconImg.hidden);
+    // itself.
+    loadPromise = eventToPromise('load', realboxIcon.$.iconImg);
+    realboxIcon.$.iconImg.dispatchEvent(new Event('load'));
+    await loadPromise;
+
+    // The icon image should be used and the logo should be hidden.
+    assertFalse(isVisible(realboxIcon.$.faviconImage));
+    assertFalse(isVisible(realboxIcon.$.icon));
+    assertTrue(isVisible(realboxIcon.$.iconImg));
   });
 
   test('lens searchboxes always use default icons in searchbox', async () => {

@@ -8,6 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --cr-searchbox-results-search-icon-size: 16px;
   --cr-searchbox-icon-container-size: 28px;
   --cr-searchbox-match-icon-container-background-fallback: var(--color-omnibox-results-background-hovered);
   --cr-searchbox-match-padding: 6px;

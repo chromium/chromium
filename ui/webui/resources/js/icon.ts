@@ -120,6 +120,89 @@ export function getFavicon(url: string): string {
   return getImageSet(faviconUrl.toString());
 }
 
+/** The list of optional parameters that can be passed to `getFaviconUrl()`. */
+export interface GetFaviconUrlParams {
+  // Should be set to true only if the caller is an UI aimed at displaying user
+  // history, and the requested url is known to be present in Chrome sync data.
+  isSyncedUrlForHistoryUi?: boolean;
+  // In case the entry is contained in sync data, we can pass the associated
+  // icon url.
+  remoteIconUrlForUma?: string;
+  // The favicon size.
+  size?: number;
+  // Flag to force the service to show the light mode version of the default
+  // favicon.
+  forceLightMode?: boolean;
+  // To allow for disabling the best match fallback behavior.
+  fallbackToHost?: boolean;
+  // To add the timestamp as a search param to the URL in order to bypass
+  // caching. Useful for surfaces that expect the favicon source to change
+  // during their lifetime (e.g. omnibox).
+  ignoreCache?: boolean;
+  // Flag to force the service to return an empty image as the default favicon.
+  forceEmptyDefaultFavicon?: boolean;
+  // The scale factor for the requested favicon (e.g. '2x').
+  scaleFactor?: string;
+}
+
+function getDefaultFaviconUrlParams(): Required<GetFaviconUrlParams> {
+  return {
+    isSyncedUrlForHistoryUi: false,
+    remoteIconUrlForUma: '',
+    size: 16,
+    forceLightMode: false,
+    fallbackToHost: true,
+    ignoreCache: false,
+    forceEmptyDefaultFavicon: false,
+    scaleFactor: '',
+  };
+}
+
+/**
+ * Creates a favicon request URL based on the given parameters.
+ *
+ * @param url URL of the original page
+ * @param optionalParams Options object that specifies additional parameters to
+ *     configure the favicon request URL that's constructed by this function.
+ *
+ * @return URL for the favicon request.
+ */
+export function getFaviconUrl(
+    url: string, optionalParams?: GetFaviconUrlParams): string {
+  const params = Object.assign(getDefaultFaviconUrlParams(), optionalParams) as
+      Required<GetFaviconUrlParams>;
+
+  // Note: URL param keys used below must match those in the description of
+  // chrome://favicon2 format in components/favicon_base/favicon_url_parser.h.
+  const faviconUrl = getBaseFaviconUrl();
+  faviconUrl.searchParams.set('pageUrl', url);
+  faviconUrl.searchParams.set('size', params.size.toString());
+  // TODO(dbeam): use the presence of 'allowGoogleServerFallback' to
+  // indicate true, otherwise false.
+  const fallback = params.isSyncedUrlForHistoryUi ? '1' : '0';
+  faviconUrl.searchParams.set('allowGoogleServerFallback', fallback);
+  if (params.isSyncedUrlForHistoryUi) {
+    faviconUrl.searchParams.set('iconUrl', params.remoteIconUrlForUma);
+  }
+  if (params.forceLightMode) {
+    faviconUrl.searchParams.set('forceLightMode', 'true');
+  }
+  if (!params.fallbackToHost) {
+    faviconUrl.searchParams.set('fallbackToHost', '0');
+  }
+  if (params.ignoreCache) {
+    faviconUrl.searchParams.set('cacheBypass', String(Date.now()));
+  }
+  if (params.forceEmptyDefaultFavicon) {
+    faviconUrl.searchParams.set('forceEmptyDefaultFavicon', '1');
+  }
+  if (params.scaleFactor) {
+    faviconUrl.searchParams.set('scaleFactor', params.scaleFactor);
+  }
+
+  return faviconUrl.toString();
+}
+
 /**
  * Creates a CSS image-set for a favicon request based on a page URL.
  *
@@ -137,34 +220,26 @@ export function getFavicon(url: string): string {
  * @param ignoreCache To add the timestamp as a search param to the URL in order
  *     to bypass caching. Useful for surfaces that expect the favicon source to
  *     change during their lifetime (e.g. omnibox).
+ * @param forceEmptyDefaultFavicon Flag to force the service to return an empty
+ *     image as the default favicon.
+ * @param scaleFactor The scale factor for the requested favicon (e.g. '2x').
+ *
  * @return image-set for the favicon.
  */
 export function getFaviconForPageURL(
     url: string, isSyncedUrlForHistoryUi: boolean,
     remoteIconUrlForUma: string = '', size: number = 16,
     forceLightMode: boolean = false, fallbackToHost: boolean = true,
-    ignoreCache = false): string {
-  // Note: URL param keys used below must match those in the description of
-  // chrome://favicon2 format in components/favicon_base/favicon_url_parser.h.
-  const faviconUrl = getBaseFaviconUrl();
-  faviconUrl.searchParams.set('size', size.toString());
-  faviconUrl.searchParams.set('pageUrl', url);
-  // TODO(dbeam): use the presence of 'allowGoogleServerFallback' to
-  // indicate true, otherwise false.
-  const fallback = isSyncedUrlForHistoryUi ? '1' : '0';
-  faviconUrl.searchParams.set('allowGoogleServerFallback', fallback);
-  if (isSyncedUrlForHistoryUi) {
-    faviconUrl.searchParams.set('iconUrl', remoteIconUrlForUma);
-  }
-  if (forceLightMode) {
-    faviconUrl.searchParams.set('forceLightMode', 'true');
-  }
-  if (!fallbackToHost) {
-    faviconUrl.searchParams.set('fallbackToHost', '0');
-  }
-  if (ignoreCache) {
-    faviconUrl.searchParams.set('cacheBypass', String(Date.now()));
-  }
-
-  return getImageSet(faviconUrl.toString());
+    ignoreCache: boolean = false, forceEmptyDefaultFavicon: boolean = false,
+    scaleFactor: string = ''): string {
+  return getImageSet(getFaviconUrl(url, {
+    isSyncedUrlForHistoryUi,
+    remoteIconUrlForUma,
+    size,
+    forceLightMode,
+    fallbackToHost,
+    ignoreCache,
+    forceEmptyDefaultFavicon,
+    scaleFactor,
+  }));
 }

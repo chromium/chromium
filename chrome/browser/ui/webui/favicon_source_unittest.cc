@@ -271,6 +271,39 @@ TEST_P(FaviconSourceTestWithFavicon2Format, LightOverride) {
       test_web_contents_getter(), base::DoNothing());
 }
 
+TEST_P(FaviconSourceTestWithFavicon2Format, ForceEmptyDefaultFaviconIsTrue) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(source(), LoadIconBytes(_, _)).Times(0);
+  source().StartDataRequest(
+      GURL(base::StrCat({kDummyPrefix,
+                         "?pageUrl=https%3A%2F%2Fwww.google.com&"
+                         "forceEmptyDefaultFavicon=1"})),
+      test_web_contents_getter(),
+      base::BindLambdaForTesting(
+          [&](scoped_refptr<base::RefCountedMemory> data) {
+            EXPECT_EQ(nullptr, data);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_P(FaviconSourceTestWithFavicon2Format, ForceEmptyDefaultFaviconIsFalse) {
+  EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
+  source().StartDataRequest(
+      GURL(base::StrCat({kDummyPrefix,
+                         "?pageUrl=https%3A%2F%2Fwww.google.com&"
+                         "forceEmptyDefaultFavicon=0"})),
+      test_web_contents_getter(), base::DoNothing());
+}
+
+TEST_P(FaviconSourceTestWithFavicon2Format, ForceEmptyDefaultFaviconIsOmitted) {
+  EXPECT_CALL(source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
+  source().StartDataRequest(
+      GURL(base::StrCat(
+          {kDummyPrefix, "?pageUrl=https%3A%2F%2Fwww.google.com"})),
+      test_web_contents_getter(), base::DoNothing());
+}
+
 TEST_P(FaviconSourceTestWithFavicon2Format,
        ShouldNotQueryHistoryUiFaviconRequestHandlerIfNotAllowed) {
   content::WebContentsTester::For(test_web_contents())
