@@ -320,8 +320,25 @@ NavigationSimulatorImpl::CreateFromPendingInFrame(
   // It is possible to not have a NavigationRequest in the frame tree node if
   // it did not go to the network (such as about:blank). In that case it is
   // already in the RenderFrameHost.
-  if (!request)
+  if (!request) {
+    // Make a best effort to find the NavigationRequest the test is expecting.
+    // There may be multiple candidates in complex scenarios.
     request = test_frame_host->navigation_requests().begin()->second.get();
+  }
+  // It is also possible to not have a NavigationRequest in the
+  // `test_frame_host` if the navigation is cross-RenderFrameHost and did not go
+  // to the network (such as about:blank). In that case, speculative_frame_host
+  // owns NavigationRequest.
+  if (!request) {
+    // Make a best effort to find the NavigationRequest the test is expecting.
+    // There may be multiple candidates in complex scenarios.
+    request = static_cast<TestRenderFrameHost*>(
+                  frame_tree_node->GetRenderFrameHostManager()
+                      .speculative_frame_host())
+                  ->navigation_requests()
+                  .begin()
+                  ->second.get();
+  }
   CHECK(request);
 
   // Simulate the BeforeUnload completion callback if needed.
