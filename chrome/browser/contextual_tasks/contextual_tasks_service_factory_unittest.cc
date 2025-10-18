@@ -44,7 +44,7 @@ TEST_F(ContextualTasksServiceFactoryTest, ReturnsNullIfFeatureDisabled) {
   EXPECT_EQ(nullptr, service);
 }
 
-TEST_F(ContextualTasksServiceFactoryTest, UsesNullInIncognito) {
+TEST_F(ContextualTasksServiceFactoryTest, UsesRealServiceInIncognito) {
   feature_list_.InitAndEnableFeature(kContextualTasks);
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
 
@@ -52,7 +52,7 @@ TEST_F(ContextualTasksServiceFactoryTest, UsesNullInIncognito) {
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
   ContextualTasksService* service =
       ContextualTasksServiceFactory::GetForProfile(otr_profile);
-  EXPECT_EQ(nullptr, service);
+  EXPECT_NE(nullptr, service);
 }
 
 }  // namespace contextual_tasks

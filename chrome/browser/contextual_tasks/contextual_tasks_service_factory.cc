@@ -43,7 +43,7 @@ ContextualTasksServiceFactory::ContextualTasksServiceFactory()
     : ProfileKeyedServiceFactory(
           "ContextualTasksService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(AimEligibilityServiceFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
@@ -78,7 +78,7 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
           Profile::FromBrowserContext(context))
           ->GetStoreFactory(),
       CreateCompositeContextDecorator(favicon_service, history_service),
-      aim_eligibility_service, identity_manager);
+      aim_eligibility_service, identity_manager, profile->IsOffTheRecord());
 }
 
 }  // namespace contextual_tasks

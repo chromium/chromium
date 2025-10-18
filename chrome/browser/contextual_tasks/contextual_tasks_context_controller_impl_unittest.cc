@@ -29,8 +29,7 @@ using ::testing::Return;
 
 class MockContextualTasksService : public ContextualTasksService {
  public:
-  MOCK_METHOD(ContextualTask, CreatePersistentTask, (), (override));
-  MOCK_METHOD(ContextualTask, CreateEphemeralTask, (), (override));
+  MOCK_METHOD(ContextualTask, CreateTask, (), (override));
   MOCK_METHOD(ContextualTask, CreateTaskFromUrl, (const GURL& url), (override));
   MOCK_METHOD(
       void,

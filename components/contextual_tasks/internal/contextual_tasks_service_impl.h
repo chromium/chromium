@@ -47,7 +47,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
       std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
       AimEligibilityService* aim_eligibility_service,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      bool supports_ephemeral_only);
   ~ContextualTasksServiceImpl() override;
 
   ContextualTasksServiceImpl(const ContextualTasksServiceImpl&) = delete;
@@ -57,8 +58,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   // ContextualTasksService implementation.
   FeatureEligibility GetFeatureEligibility() override;
   bool IsInitialized() override;
-  ContextualTask CreatePersistentTask() override;
-  ContextualTask CreateEphemeralTask() override;
+  ContextualTask CreateTask() override;
   ContextualTask CreateTaskFromUrl(const GURL& url) override;
   void GetTaskById(const base::Uuid& task_id,
                    base::OnceCallback<void(std::optional<ContextualTask>)>
@@ -155,6 +155,9 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
 
   raw_ptr<AimEligibilityService> aim_eligibility_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Whether the service only supports ephemeral tasks.
+  const bool supports_ephemeral_only_;
 
   base::WeakPtrFactory<ContextualTasksServiceImpl> weak_ptr_factory_{this};
 };

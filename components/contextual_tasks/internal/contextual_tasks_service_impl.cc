@@ -32,10 +32,12 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
     std::unique_ptr<CompositeContextDecorator> composite_context_decorator,
     AimEligibilityService* aim_eligibility_service,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    bool supports_ephemeral_only)
     : composite_context_decorator_(std::move(composite_context_decorator)),
       aim_eligibility_service_(aim_eligibility_service),
-      identity_manager_(identity_manager) {
+      identity_manager_(identity_manager),
+      supports_ephemeral_only_(supports_ephemeral_only) {
   const base::RepeatingClosure& dump_stack =
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel);
   auto ai_thread_processor =
@@ -71,22 +73,17 @@ bool ContextualTasksServiceImpl::IsInitialized() {
   return is_initialized_;
 }
 
-ContextualTask ContextualTasksServiceImpl::CreatePersistentTask() {
+ContextualTask ContextualTasksServiceImpl::CreateTask() {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  ContextualTask task(task_id, /*is_ephemeral=*/false);
-  return AddTaskAndNotify(std::move(task));
-}
-
-ContextualTask ContextualTasksServiceImpl::CreateEphemeralTask() {
-  base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  ContextualTask task(task_id, /*is_ephemeral=*/true);
+  ContextualTask task(task_id, supports_ephemeral_only_);
   return AddTaskAndNotify(std::move(task));
 }
 
 ContextualTask ContextualTasksServiceImpl::CreateTaskFromUrl(const GURL& url) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  ContextualTask task(task_id, /*is_ephemeral=*/!IsUrlForPrimaryAccount(
-                          identity_manager_, url));
+  bool is_ephemeral = supports_ephemeral_only_ ||
+                      !IsUrlForPrimaryAccount(identity_manager_, url);
+  ContextualTask task(task_id, is_ephemeral);
   return AddTaskAndNotify(std::move(task));
 }
 
@@ -123,7 +120,10 @@ void ContextualTasksServiceImpl::AddThreadToTask(const base::Uuid& task_id,
   bool is_new_task = (it == tasks_.end());
   if (is_new_task) {
     // Task not found, but we have a task ID. Create the task on the fly.
-    it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
+    it =
+        tasks_
+            .emplace(task_id, ContextualTask(task_id, supports_ephemeral_only_))
+            .first;
   }
 
   it->second.AddThread(thread);
@@ -152,7 +152,10 @@ void ContextualTasksServiceImpl::UpdateThreadTurnId(
   auto it = tasks_.find(task_id);
   bool is_new_task = (it == tasks_.end());
   if (is_new_task) {
-    it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
+    it =
+        tasks_
+            .emplace(task_id, ContextualTask(task_id, supports_ephemeral_only_))
+            .first;
   }
 
   std::optional<Thread> thread = it->second.GetThread();

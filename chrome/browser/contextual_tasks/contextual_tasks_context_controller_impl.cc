@@ -32,12 +32,8 @@ bool ContextualTasksContextControllerImpl::IsInitialized() {
   return service_->IsInitialized();
 }
 
-ContextualTask ContextualTasksContextControllerImpl::CreatePersistentTask() {
-  return service_->CreatePersistentTask();
-}
-
-ContextualTask ContextualTasksContextControllerImpl::CreateEphemeralTask() {
-  return service_->CreateEphemeralTask();
+ContextualTask ContextualTasksContextControllerImpl::CreateTask() {
+  return service_->CreateTask();
 }
 
 ContextualTask ContextualTasksContextControllerImpl::CreateTaskFromUrl(
