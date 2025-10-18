@@ -7,8 +7,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "cc/paint/paint_canvas.h"
-#include "cc/paint/paint_flags.h"
+#include "cc/layers/solid_color_layer.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -19,7 +18,6 @@
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8-local-handle.h"
 
 namespace secure_embed {
@@ -53,6 +51,12 @@ SecureEmbedWebPlugin::~SecureEmbedWebPlugin() = default;
 bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   container_ = container;
 
+  // Create a solid color layer for compositing
+  layer_ = cc::SolidColorLayer::Create();
+  layer_->SetBackgroundColor(SkColors::kRed);
+  layer_->SetIsDrawable(true);
+  container_->SetCcLayer(layer_.get());
+
   if (host_) {
     mojo::PendingAssociatedRemote<mojom::SecureEmbed> pending_remote =
         receiver_.BindNewEndpointAndPassRemote();
@@ -73,8 +77,14 @@ bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
 }
 
 void SecureEmbedWebPlugin::Destroy() {
+  if (container_ && layer_) {
+    container_->SetCcLayer(nullptr);
+  }
+  layer_ = nullptr;
+
   receiver_.reset();
   host_.reset();
+
   delete this;
 }
 
@@ -101,15 +111,20 @@ void SecureEmbedWebPlugin::UpdateAllLifecyclePhases(
 
 void SecureEmbedWebPlugin::Paint(cc::PaintCanvas* canvas,
                                  const gfx::Rect& rect) {
-  cc::PaintFlags flags;
-  flags.setColor(SK_ColorRED);
-  canvas->drawRect(gfx::RectToSkRect(rect), flags);
+  // No-op: rendering is now handled by the compositor layer
+  NOTREACHED();
 }
 
 void SecureEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                           const gfx::Rect& clip_rect,
                                           const gfx::Rect& unobscured_rect,
-                                          bool is_visible) {}
+                                          bool is_visible) {
+  // Note: Layer bounds are set by WebPluginContainerImpl::Paint()
+  // so we don't need to set them here for the time being.
+
+  // TODO(secure-embed): This will need updated to propagate the geometry to the
+  // embedded content.
+}
 
 void SecureEmbedWebPlugin::UpdateFocus(bool focused,
                                        blink::mojom::FocusType focus_type) {}

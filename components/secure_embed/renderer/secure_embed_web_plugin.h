@@ -6,10 +6,15 @@
 #define COMPONENTS_SECURE_EMBED_RENDERER_SECURE_EMBED_WEB_PLUGIN_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/web/web_plugin.h"
+
+namespace cc {
+class SolidColorLayer;
+}
 
 namespace blink {
 struct WebPluginParams;
@@ -67,6 +72,9 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   int contents_id_ = -1;
 
   raw_ptr<blink::WebPluginContainer> container_ = nullptr;
+  // TODO(secure-embed): This will be converted to be a SurfaceLayer or may be
+  // kept as part of placeholder rendering if supported.
+  scoped_refptr<cc::SolidColorLayer> layer_;
 
   mojo::AssociatedRemote<mojom::SecureEmbedHost> host_;
   mojo::AssociatedReceiver<mojom::SecureEmbed> receiver_{this};
