@@ -4183,6 +4183,12 @@ inline constexpr char kRefactorMinWidthContextOverrideDescription[] =
     "parent "
     "ChromeBaseAppCompatActivity";
 
+inline constexpr char kToolbarStaleCaptureBugFixName[] =
+    "Fix for stale toolbar captures";
+inline constexpr char kToolbarStaleCaptureBugFixDescription[] =
+    "When enabled, this flag fixes a bug where the toolbar capture can become "
+    "stale.";
+
 inline constexpr char kToolbarTabletResizeRefactorName[] =
     "Toolbar Tablet Resize Refactor";
 inline constexpr char kToolbarTabletResizeRefactorDescription[] =
