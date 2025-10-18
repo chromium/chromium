@@ -155,6 +155,23 @@ public class TabGroupFaviconQuarterUnitTest {
                 SemanticColorUtils.getColorSurfaceContainerHigh(mActivity));
     }
 
+    @Test
+    public void testContainmentColor() {
+        mTabGroupFaviconQuarter.setContainmentEnabled(true);
+        mTabGroupFaviconQuarter.setImage(mDrawable);
+        assertEquals(
+                filterColor(mBackground), SemanticColorUtils.getColorSurfaceContainer(mActivity));
+    }
+
+    @Test
+    public void testContainmentColorWithPlusCount() {
+        mTabGroupFaviconQuarter.setContainmentEnabled(true);
+        mTabGroupFaviconQuarter.setPlusCount(PLUS_COUNT);
+        assertEquals(
+                filterColor(mBackground),
+                SemanticColorUtils.getColorSurfaceContainerLow(mActivity));
+    }
+
     private static @ColorInt int filterColor(Drawable drawable) {
         PorterDuffColorFilter filter = (PorterDuffColorFilter) drawable.getColorFilter();
         return Shadows.shadowOf(filter).getColor();

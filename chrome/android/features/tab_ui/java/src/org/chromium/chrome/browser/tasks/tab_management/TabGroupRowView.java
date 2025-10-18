@@ -113,6 +113,7 @@ public class TabGroupRowView extends LinearLayout {
         clusterParams.setMarginStart(
                 res.getDimensionPixelSize(R.dimen.tab_group_list_first_element_margin_containment));
         mTabGroupFaviconCluster.setLayoutParams(clusterParams);
+        mTabGroupFaviconCluster.setContainmentEnabled(true);
     }
 
     void updateCornersForClusterData(ClusterData clusterData) {

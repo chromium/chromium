@@ -519,13 +519,34 @@ public class TabUiThemeProvider {
      *
      * @param context {@link Context} used to retrieve color.
      * @param showFavicon Whether the quarter is showing a favicon.
+     * @param enableContainment Whether the tile is shown in the containment list.
      * @return The color for the tab group favicon quarter.
      */
     public static @ColorInt int getTabGroupFaviconQuarterFillColor(
-            Context context, boolean showFavicon) {
+            Context context, boolean showFavicon, boolean enableContainment) {
+        if (enableContainment) {
+            return showFavicon
+                    ? SemanticColorUtils.getColorSurfaceContainer(context)
+                    : SemanticColorUtils.getColorSurfaceContainerLow(context);
+        }
         return showFavicon
                 ? SemanticColorUtils.getColorSurfaceBright(context)
-                : ContextCompat.getColor(context, R.color.tab_group_favicon_quater_empty_fill_color);
+                : ContextCompat.getColor(
+                        context, R.color.tab_group_favicon_quater_empty_fill_color);
+    }
+
+    /**
+     * Get the background color tint for the tab group cluster background.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param enableContainment Whether the cluster row is shown in the containment list.
+     * @return The color for the tab group favicon quarter.
+     */
+    public static @ColorInt int getTabGroupClusterBackgroundTint(
+            Context context, boolean enableContainment) {
+        return enableContainment
+                ? SemanticColorUtils.getColorSurfaceBright(context)
+                : SemanticColorUtils.getColorSurfaceContainer(context);
     }
 
     /**
