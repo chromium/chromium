@@ -645,8 +645,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
 #if !BUILDFLAG(IS_ANDROID)
 // Verifies dynamic scripts are properly injected in incognito.
 // Regression test for https://crbug.com/1495191.
-// TODO(crbug.com/40200835): Enable this test on Android once PRE_ steps work
-// properly on that platform.
+// TODO(crbug.com/40200835): Flaky on Android.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
                        PRE_DynamicContentScriptsInjectInIncognito) {
   // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
@@ -696,8 +695,6 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
             content::EvalJs(incognito_web_contents, kGetDivIds));
 }
 
-// TODO(crbug.com/40200835): Enable this test on Android once PRE_ steps work
-// properly on that platform.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
                        DynamicContentScriptsInjectInIncognito) {
   // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
@@ -727,6 +724,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Base test fixture for tests spanning multiple sessions where a custom arg is
 // set before the test is run.
+// Flaky on desktop Android.
 class PersistentScriptingAPITest : public ScriptingAPITest {
  public:
   PersistentScriptingAPITest() = default;
