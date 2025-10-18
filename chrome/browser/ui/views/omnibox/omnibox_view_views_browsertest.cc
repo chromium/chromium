@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -1494,8 +1495,12 @@ class OmniboxViewViewsHintTextLimitingBrowserTest
     view->OnPaint(&canvas);
   }
 
+  static base::Time GetMockTime() { return fake_time_; }
+  static void SetMockTime(base::Time time) { fake_time_ = time; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  inline static base::Time fake_time_;
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
@@ -1506,19 +1511,25 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
                        HintTextPrefsIncrementOnFirstImpression) {
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime, /* time_ticks_override */ nullptr,
+      /* thread_ticks_override */ nullptr);
+
   FocusAndPaint();
 
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 1);
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintDailyImpressionsCount), 1);
-  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+  const int today = (GetMockTime() - base::Time::UnixEpoch()).InDays();
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintLastImpressionDay), today);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
                        HintTextPrefsIncrementOnSecondImpressionSameDay) {
-  // TODO(crbug.com/452108887): Make timing deterministic.
-  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-  prefs()->SetInteger(omnibox::kAimHintLastImpressionDay, today);
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime, /* time_ticks_override */ nullptr,
+      /* thread_ticks_override */ nullptr);
 
   // First impression.
   FocusAndPaint();
@@ -1528,45 +1539,68 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
   FocusAndPaint();
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 2);
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintDailyImpressionsCount), 2);
-}
-
-IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
-                       HintTextPrefsResetDailyCountOnNewDay) {
-  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-
-  // Simulate a new day.
-  const int yesterday = today - 1;
-  prefs()->SetInteger(omnibox::kAimHintLastImpressionDay, yesterday);
-  // Daily count is high, but should be ignored because the day is old.
-  prefs()->SetInteger(omnibox::kAimHintDailyImpressionsCount, 5);
-
-  // First impression on a new day. Daily count should reset to 1.
-  FocusAndPaint();
-  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 1);
-  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintDailyImpressionsCount), 1);
+  const int today = (GetMockTime() - base::Time::UnixEpoch()).InDays();
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintLastImpressionDay), today);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
-                       HintTextPrefsRespectDailyLimit) {
-  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-  prefs()->SetInteger(omnibox::kAimHintLastImpressionDay, today);
+                       HintTextPrefsResetDailyCountOnNewDay) {
+  // Set the initial time and install the override.
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime, /* time_ticks_override */ nullptr,
+      /* thread_ticks_override */ nullptr);
 
-  // Hit the daily limit.
-  prefs()->SetInteger(omnibox::kAimHintDailyImpressionsCount, 2);
+  // First impression on the initial day.
+  FocusAndPaint();
+  const int initial_day = (GetMockTime() - base::Time::UnixEpoch()).InDays();
+  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 1);
+  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintDailyImpressionsCount), 1);
+  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintLastImpressionDay),
+            initial_day);
+
+  // Advance time by one day to simulate a new day.
+  SetMockTime(GetMockTime() + base::Days(1));
+
+  // Blur and refocus for a second impression on the new day.
+  ClickBrowserWindowCenter();
+  FocusAndPaint();
+
+  // The daily count should reset to 1, and the total should be 2.
+  const int new_day = (GetMockTime() - base::Time::UnixEpoch()).InDays();
+  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 2);
+  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintDailyImpressionsCount), 1);
+  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintLastImpressionDay), new_day);
+  EXPECT_NE(initial_day, new_day);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
+                       HintTextPrefsRespectDailyLimit) {
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime, /* time_ticks_override */ nullptr,
+      /* thread_ticks_override */ nullptr);
+
+  // Two impressions to hit the daily limit of 2.
+  FocusAndPaint();
+  ClickBrowserWindowCenter();
+  FocusAndPaint();
+  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintDailyImpressionsCount), 2);
+  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 2);
 
   // Try to record another impression. Prefs should not change.
+  ClickBrowserWindowCenter();
   FocusAndPaint();
-  // Total impressions should not increment beyond 0 since the hint was never
-  // shown due to daily limit.
-  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 0);
+  EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 2);
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintDailyImpressionsCount), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
                        HintTextPrefsRespectTotalLimit) {
-  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-  prefs()->SetInteger(omnibox::kAimHintLastImpressionDay, today);
+  SetMockTime(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetMockTime, /* time_ticks_override */ nullptr,
+      /* thread_ticks_override */ nullptr);
 
   // Hit the total limit.
   prefs()->SetInteger(omnibox::kAimHintTotalImpressions, 5);
