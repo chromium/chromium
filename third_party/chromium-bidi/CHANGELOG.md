@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.5.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.5.0...chromium-bidi-v10.5.1) (2025-10-17)
+
+
+### Bug Fixes
+
+* data collection do not influence redirect network events ([#3854](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3854)) ([c7297af](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c7297afd692b248904d1f9a672225431be535060))
+
 ## [10.5.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.4.0...chromium-bidi-v10.5.0) (2025-10-17)
 
 
