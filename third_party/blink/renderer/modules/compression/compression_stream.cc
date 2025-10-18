@@ -39,17 +39,11 @@ void CompressionStream::Trace(Visitor* visitor) const {
 CompressionStream::CompressionStream(ScriptState* script_state,
                                      const AtomicString& format,
                                      ExceptionState& exception_state) {
-  static auto* const compression_stream_created_at = AllocateCrashKeyString(
-      "compression_stream_created_at", base::debug::CrashKeySize::Size256);
-  String created_at_location = g_empty_string;
-  if (SourceLocation* source_location = CaptureSourceLocation()) {
-    created_at_location = String::Format(
-        "%s:%d:%d (%s)", source_location->Url().Utf8().c_str(),
-        source_location->LineNumber(), source_location->ColumnNumber(),
-        source_location->Function().Utf8().c_str());
-  }
-  SetCrashKeyString(compression_stream_created_at, created_at_location.Utf8());
+  CHECK(exception_state.GetIsolate());
 
+  static auto* const compression_stream_deflate_format = AllocateCrashKeyString(
+      "compression_stream_deflate_format", base::debug::CrashKeySize::Size32);
+  SetCrashKeyString(compression_stream_deflate_format, format.Utf8());
   CompressionFormat deflate_format =
       LookupCompressionFormat(format, exception_state);
   if (exception_state.HadException())
@@ -68,6 +62,17 @@ CompressionStream::CompressionStream(ScriptState* script_state,
                               exception_state);
   CHECK(transform_);
   initialized_ = true;
+  // TODO(427166012): remove once we're done with troubleshooting.
+  static auto* const compression_stream_created_at = AllocateCrashKeyString(
+      "compression_stream_created_at", base::debug::CrashKeySize::Size256);
+  String created_at_location = g_empty_string;
+  if (SourceLocation* source_location = CaptureSourceLocation()) {
+    created_at_location = String::Format(
+        "%s:%d:%d (%s)", source_location->Url().Utf8().c_str(),
+        source_location->LineNumber(), source_location->ColumnNumber(),
+        source_location->Function().Utf8().c_str());
+  }
+  SetCrashKeyString(compression_stream_created_at, created_at_location.Utf8());
 }
 
 namespace bindings {
@@ -80,9 +85,10 @@ void ReceiverValidatorForDebugging<CompressionStream>::Validate(
   if (receiver) {
     return;
   }
-
+  CHECK(!isolate->HasPendingException());
   CHECK(!object.IsEmpty());
   CHECK(!object->IsNull());
+
   static auto* const script_url =
       AllocateCrashKeyString("script_url", base::debug::CrashKeySize::Size256);
   SetCrashKeyString(script_url, CaptureCurrentScriptUrl(isolate).Utf8());
