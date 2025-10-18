@@ -6110,14 +6110,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "ios-price-tracking-notification-promo-card",
-    "owners": [
-      "davidjm@google.com",
-      "thegreenfrog@google.com"
-    ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "ios-proactive-password-generation-bottom-sheet",
     "owners": [
       "cloutierc@google.com",

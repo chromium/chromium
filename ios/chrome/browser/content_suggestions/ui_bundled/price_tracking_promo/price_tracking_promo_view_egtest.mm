@@ -54,7 +54,7 @@ void WaitForPriceTrackingPromoToDisappear() {
   config.additional_args.push_back(
       "--test-ios-module-ranker=price_tracking_promo");
   std::string enableFeatures = base::StringPrintf(
-      "--enable-features=%s,%s:%s/%s", commerce::kPriceTrackingPromo.name,
+      "--enable-features=%s:%s/%s",
       segmentation_platform::features::kSegmentationPlatformEphemeralCardRanker
           .name,
       segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,

@@ -81,10 +81,6 @@ CardSelectionInfo::ShowResult PriceTrackingNotificationPromo::ComputeCardResult(
 }
 
 bool PriceTrackingNotificationPromo::IsEnabled(int impression_count) {
-  if (!base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {
-    return false;
-  }
-
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 

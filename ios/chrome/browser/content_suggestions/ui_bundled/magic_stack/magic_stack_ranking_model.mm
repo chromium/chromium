@@ -462,22 +462,15 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   options.on_demand_execution = true;
   auto inputContext =
       base::MakeRefCounted<segmentation_platform::InputContext>();
-  // This check has to match check in HomeModulesCardRegistry::CreateAllCards()
-  // so that expected inputs match passed inputs.
-  if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo) ||
-      (IsTipsMagicStackEnabled() && _tipsManager)) {
-    inputContext->metadata_args.emplace(
-        segmentation_platform::kIsNewUser,
-        segmentation_platform::processing::ProcessedValue::FromFloat(
-            IsFirstRunRecent(set_up_list::SetUpListDurationPastFirstRun())));
-  }
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsNewUser,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          IsFirstRunRecent(set_up_list::SetUpListDurationPastFirstRun())));
 
-  if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {
-    inputContext->metadata_args.emplace(
-        segmentation_platform::kIsSynced,
-        segmentation_platform::processing::ProcessedValue::FromFloat(
-            _shoppingService->IsShoppingListEligible()));
-  }
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsSynced,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          _shoppingService->IsShoppingListEligible()));
 
   if (send_tab_to_self::
           IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {

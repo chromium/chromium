@@ -150,9 +150,6 @@ const base::FeatureParam<bool> kPriceInsightsUseCache{
 // Discount Autofill at Checkout
 BASE_FEATURE(kDiscountAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Promotion in Magic Stack for Price Tracking users from other platforms.
-BASE_FEATURE(kPriceTrackingPromo, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Shopping variations to Tab resumption.
 BASE_FEATURE(kTabResumptionShopCard, base::FEATURE_DISABLED_BY_DEFAULT);
 

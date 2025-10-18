@@ -665,8 +665,7 @@ TEST_F(MagicStackRankingModelTest, TestDisabledSegmentationRanking) {
 TEST_F(MagicStackRankingModelTest, TestEphemeralModelDidGetCardToShow) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{commerce::kPriceTrackingPromo, {}},
-       {segmentation_platform::features::
+      {{segmentation_platform::features::
             kSegmentationPlatformEphemeralCardRanker,
         {{segmentation_platform::features::
               kEphemeralCardRankerForceShowCardParam,

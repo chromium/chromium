@@ -70,8 +70,7 @@ class EphemeralHomeModuleBackendTest : public DefaultModelTestBase {
       : DefaultModelTestBase(
             std::make_unique<EphemeralHomeModuleBackend>(nullptr)) {
     feature_list_.InitWithFeatures(
-        {commerce::kPriceTrackingPromo},
-        {features::kSegmentationPlatformTipsEphemeralCard});
+        {}, {features::kSegmentationPlatformTipsEphemeralCard});
     HomeModulesCardRegistry::RegisterProfilePrefs(
         profile_pref_service_.registry());
     HomeModulesCardRegistry::RegisterLocalStatePrefs(
