@@ -99,8 +99,11 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
     details.url = script_message.request_url().value();
   }
 
-  if (base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) &&
-      log_message && stack && !is_crweb) {
+  if (log_message && stack &&
+      ((base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) &&
+        !is_crweb) ||
+       (base::FeatureList::IsEnabled(features::kLogCrWebJavaScriptErrors) &&
+        is_crweb))) {
     script_error_stack_util::FrameComponents top_stack_frame =
         script_error_stack_util::TopFrameComponentsFromStack(*stack);
 
