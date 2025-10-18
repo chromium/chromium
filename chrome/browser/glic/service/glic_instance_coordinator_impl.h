@@ -66,6 +66,7 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   // GlicInstanceImpl::InstanceCoordinatorDelegate implementation
   void OnInstanceVisibilityChanged(GlicInstance* instance,
                                    bool is_showing) override;
+  void OnInstanceActivationChanged(GlicInstance* instance, bool is_active) override;
   void SwitchConversation(
       GlicInstanceImpl& source_instance,
       const ShowOptions& options,
@@ -110,8 +111,9 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   void ShowDetachedForTesting() override;
   void SetPreviousPositionForTesting(gfx::Point position) override;
 
-  base::CallbackListSubscription RegisterLastActiveInstanceChangedCallback(
-      LastActiveInstanceChangedCallback callback) override;
+  base::CallbackListSubscription
+  AddActiveInstanceChangedCallbackAndNotifyImmediately(
+      ActiveInstanceChangedCallback callback) override;
 
   void FindInstanceFromGlicContentsAndBindToTab(
       content::WebContents* source_glic_web_contents,
@@ -138,7 +140,7 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
 
   void RemoveInstance(GlicInstance* instance) override;
 
-  void NotifyLastActiveInstanceChanged();
+  void NotifyActiveInstanceChanged();
 
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
@@ -154,9 +156,9 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
 
   std::unique_ptr<HostManager> host_manager_;
 
-  raw_ptr<GlicInstance> last_active_instance_ = nullptr;
+  raw_ptr<GlicInstance> active_instance_ = nullptr;
   base::RepeatingCallbackList<void(GlicInstance*)>
-      last_active_instance_changed_callback_list_;
+      active_instance_changed_callback_list_;
 
   bool warming_enabled_ = true;
 

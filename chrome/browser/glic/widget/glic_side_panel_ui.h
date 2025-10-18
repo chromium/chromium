@@ -25,6 +25,8 @@ namespace tabs {
 class TabInterface;
 }
 
+#include "ui/views/widget/widget_observer.h"
+
 namespace glic {
 
 class GlicView;
@@ -79,6 +81,9 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   base::WeakPtr<views::View> GetView() override;
 
  private:
+  void OnBrowserWindowActivated(BrowserWindowInterface* bwi);
+  void OnBrowserWindowDeactivated(BrowserWindowInterface* bwi);
+
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
   base::CallbackListSubscription panel_visibility_subscription_;
   std::unique_ptr<views::View> CreateView(Profile* profile);
@@ -89,6 +94,8 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   base::WeakPtr<GlicView> glic_view_;
   std::unique_ptr<LocalHotkeyManager> application_hotkey_manager_;
   std::unique_ptr<LocalHotkeyManager> glic_panel_hotkey_manager_;
+  base::CallbackListSubscription activation_subscription_;
+  base::CallbackListSubscription deactivation_subscription_;
 
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
 

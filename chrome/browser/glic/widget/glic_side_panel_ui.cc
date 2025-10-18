@@ -46,6 +46,19 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
           base::BindRepeating(&GlicSidePanelUi::SidePanelStateChanged,
                               weak_ptr_factory_.GetWeakPtr()));
 
+  // If the tab gets moved to a different browser, then this object will be
+  // destroyed and a new one will be created, so this subscription will be
+  // on the correct window for the lifetime of this object.
+  if (auto* browser_window = tab_->GetBrowserWindowInterface()) {
+    activation_subscription_ = browser_window->RegisterDidBecomeActive(
+        base::BindRepeating(&GlicSidePanelUi::OnBrowserWindowActivated,
+                            weak_ptr_factory_.GetWeakPtr()));
+    deactivation_subscription_ = browser_window->RegisterDidBecomeInactive(
+        base::BindRepeating(&GlicSidePanelUi::OnBrowserWindowDeactivated,
+                            weak_ptr_factory_.GetWeakPtr()));
+    delegate_->OnEmbedderWindowActivationChanged(browser_window->IsActive());
+  }
+
   glic_side_panel_coordinator->SetContentsView(CreateView(profile_));
   panel_state_.kind = mojom::PanelState_Kind::kAttached;
 }
@@ -214,6 +227,14 @@ void GlicSidePanelUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
 
 base::WeakPtr<views::View> GlicSidePanelUi::GetView() {
   return glic_view_;
+}
+
+void GlicSidePanelUi::OnBrowserWindowActivated(BrowserWindowInterface* bwi) {
+  delegate_->OnEmbedderWindowActivationChanged(true);
+}
+
+void GlicSidePanelUi::OnBrowserWindowDeactivated(BrowserWindowInterface* bwi) {
+  delegate_->OnEmbedderWindowActivationChanged(false);
 }
 
 GlicSidePanelCoordinator* GlicSidePanelUi::GetGlicSidePanelCoordinator() const {

@@ -20,11 +20,12 @@ GlicActiveBrowserSharingManager::GlicActiveBrowserSharingManager(
       base::BindRepeating(&GlicActiveBrowserSharingManager::OnActiveTabChanged,
                           base::Unretained(this)));
 
-  last_active_instance_subscription_ =
-      instance_coordinator->RegisterLastActiveInstanceChangedCallback(
-          base::BindRepeating(
-              &GlicActiveBrowserSharingManager::OnLastActiveInstanceChanged,
-              base::Unretained(this)));
+  active_instance_subscription_ =
+      instance_coordinator
+          ->AddActiveInstanceChangedCallbackAndNotifyImmediately(
+              base::BindRepeating(
+                  &GlicActiveBrowserSharingManager::OnActiveInstanceChanged,
+                  base::Unretained(this)));
 }
 
 GlicActiveBrowserSharingManager::~GlicActiveBrowserSharingManager() = default;
@@ -34,7 +35,7 @@ void GlicActiveBrowserSharingManager::OnActiveTabChanged(
   UpdateDelegate();
 }
 
-void GlicActiveBrowserSharingManager::OnLastActiveInstanceChanged(
+void GlicActiveBrowserSharingManager::OnActiveInstanceChanged(
     GlicInstance* instance) {
   // We listen for this to trigger when the SP is opened or closed, or when the
   // conversation switches, but we rely on UpdateDelegate to take all signals

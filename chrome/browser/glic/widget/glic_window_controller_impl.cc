@@ -1319,8 +1319,8 @@ base::CallbackListSubscription GlicWindowControllerImpl::RegisterStateChange(
 }
 
 base::CallbackListSubscription
-GlicWindowControllerImpl::RegisterLastActiveInstanceChangedCallback(
-    LastActiveInstanceChangedCallback callback) {
+GlicWindowControllerImpl::AddActiveInstanceChangedCallbackAndNotifyImmediately(
+    ActiveInstanceChangedCallback callback) {
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }

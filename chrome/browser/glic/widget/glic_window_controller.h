@@ -140,11 +140,11 @@ class GlicWindowController {
   virtual void SetPreviousPositionForTesting(gfx::Point position) = 0;
 
   // TODO: Move to GlicInstanceCoordinator.
-  using LastActiveInstanceChangedCallback =
+  using ActiveInstanceChangedCallback =
       base::RepeatingCallback<void(GlicInstance* new_instance)>;
   virtual base::CallbackListSubscription
-  RegisterLastActiveInstanceChangedCallback(
-      LastActiveInstanceChangedCallback callback) = 0;
+  AddActiveInstanceChangedCallbackAndNotifyImmediately(
+      ActiveInstanceChangedCallback callback) = 0;
 
   // Helper function to get the always detached flag.
   static bool AlwaysDetached() {

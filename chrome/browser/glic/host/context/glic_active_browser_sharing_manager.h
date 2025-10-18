@@ -37,7 +37,7 @@ class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager {
 
  private:
   // Callback for changes to the last active GlicInstance.
-  void OnLastActiveInstanceChanged(GlicInstance* instance);
+  void OnActiveInstanceChanged(GlicInstance* instance);
 
   // Updates the delegate based on current active browser state.
   void UpdateDelegate();
@@ -51,7 +51,7 @@ class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager {
   raw_ptr<Profile> profile_;
 
   // Subscription for last active instance changes.
-  base::CallbackListSubscription last_active_instance_subscription_;
+  base::CallbackListSubscription active_instance_subscription_;
 };
 
 }  // namespace glic

@@ -27,6 +27,7 @@ class GlicUiEmbedder {
   class Delegate {
    public:
     virtual ~Delegate() = default;
+    virtual void OnEmbedderWindowActivationChanged(bool has_focus) = 0;
     virtual void SwitchConversation(
         const ShowOptions& options,
         glic::mojom::ConversationInfoPtr info,

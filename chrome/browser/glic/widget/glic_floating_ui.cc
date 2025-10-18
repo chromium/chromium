@@ -86,7 +86,7 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
   glic_widget_ = GlicWidget::Create(profile_, initial_bounds,
                                     glic_panel_hotkey_manager_->GetWeakPtr(),
                                     user_resizable_);
-  // TODO: Setup Hotkeys and AccessibilityText.
+  // TODO: Setup AccessibilityText.
 
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 #if BUILDFLAG(IS_MAC)
@@ -101,6 +101,7 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
                           weak_ptr_factory_.GetWeakPtr()));
   window_event_observer_ = std::make_unique<GlicWindowEventObserver>(
       glic_widget_->GetWeakPtr(), this);
+  glic_widget_observation_.Observe(GetGlicWidget());
 }
 
 void GlicFloatingUi::Resize(const gfx::Size& size,
@@ -226,7 +227,6 @@ void GlicFloatingUi::Show() {
   glic_panel_hotkey_manager_->InitializeAccelerators();
   // TODO: Set up manual resize.
   window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
-  glic_widget_observation_.Observe(GetGlicWidget());
   // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
   // enterprise users) via constrained_window APIs.
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
@@ -268,7 +268,7 @@ void GlicFloatingUi::Focus() {
 
 void GlicFloatingUi::OnWidgetActivationChanged(views::Widget* widget,
                                                bool active) {
-  NOTIMPLEMENTED();
+  delegate_->OnEmbedderWindowActivationChanged(active);
 }
 
 void GlicFloatingUi::OnWidgetDestroyed(views::Widget* widget) {

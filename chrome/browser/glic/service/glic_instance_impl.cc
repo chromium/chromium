@@ -654,6 +654,10 @@ void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
   }
 }
 
+void GlicInstanceImpl::OnEmbedderWindowActivationChanged(bool has_focus) {
+  coordinator_delegate_->OnInstanceActivationChanged(this, has_focus);
+}
+
 void GlicInstanceImpl::NotifyPanelStateChanged() {
   state_observers_.Notify(
       &PanelStateObserver::PanelStateChanged, GetPanelState(),
@@ -685,6 +689,9 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
       }
     }
   }
+
+  // If no embedder is showing, then the instance is inactive.
+  coordinator_delegate_->OnInstanceActivationChanged(this, false);
 }
 
 void GlicInstanceImpl::OnTabAddedToTask(

@@ -180,8 +180,9 @@ class GlicWindowControllerImpl
   const InstanceId& id() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
-  base::CallbackListSubscription RegisterLastActiveInstanceChangedCallback(
-      LastActiveInstanceChangedCallback callback) override;
+  base::CallbackListSubscription
+  AddActiveInstanceChangedCallbackAndNotifyImmediately(
+      ActiveInstanceChangedCallback callback) override;
 
   // Testing functionality.
   GlicWindowAnimator* GetWindowAnimatorForTesting();

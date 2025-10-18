@@ -59,6 +59,8 @@ class GlicInstanceImpl : public GlicInstance,
     // Called by an instance when its visibility state changes.
     virtual void OnInstanceVisibilityChanged(GlicInstance* instance,
                                              bool is_showing) = 0;
+    virtual void OnInstanceActivationChanged(GlicInstance* instance,
+                                             bool is_active) = 0;
     virtual void SwitchConversation(
         GlicInstanceImpl& source_instance,
         const ShowOptions& options,
@@ -151,6 +153,7 @@ class GlicInstanceImpl : public GlicInstance,
   void PrepareForOpen() override;
 
   // GlicUiEmbedder::Delegate:
+  void OnEmbedderWindowActivationChanged(bool has_focus) override;
   void SwitchConversation(
       const ShowOptions& options,
       glic::mojom::ConversationInfoPtr info,

@@ -73,30 +73,34 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
   // Delete all instances before destruction. Destroying web contents can result
   // in various calls to dependencies.
+  active_instance_ = nullptr;
   auto instances = std::exchange(instances_, {});
   instances.clear();
   warmed_instance_.reset();
 }
 
+void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
+    GlicInstance* instance,
+    bool is_active) {
+  if (is_active && active_instance_ != instance) {
+    active_instance_ = instance;
+  } else if (!is_active && active_instance_ == instance) {
+    active_instance_ = nullptr;
+  } else {
+    return;
+  }
+  NotifyActiveInstanceChanged();
+}
+
 void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
     GlicInstance* instance,
     bool is_showing) {
-  const bool becoming_active =
-      is_showing && (instance != last_active_instance_);
-  const bool becoming_inactive =
-      !is_showing && (instance == last_active_instance_);
-
-  if (becoming_active) {
-    last_active_instance_ = instance;
-    NotifyLastActiveInstanceChanged();
-  } else if (becoming_inactive) {
-    last_active_instance_ = nullptr;
-    NotifyLastActiveInstanceChanged();
-  }
+  // TODO(crbug.com/452963408): We think this will be useful, but if we find
+  // that we're not using it, we should remove it.
 }
 
-void GlicInstanceCoordinatorImpl::NotifyLastActiveInstanceChanged() {
-  last_active_instance_changed_callback_list_.Notify(last_active_instance_);
+void GlicInstanceCoordinatorImpl::NotifyActiveInstanceChanged() {
+  active_instance_changed_callback_list_.Notify(active_instance_);
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
@@ -299,13 +303,13 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
   NOTIMPLEMENTED();
 }
 
-base::CallbackListSubscription
-GlicInstanceCoordinatorImpl::RegisterLastActiveInstanceChangedCallback(
-    LastActiveInstanceChangedCallback callback) {
-  auto subscription =
-      last_active_instance_changed_callback_list_.Add(std::move(callback));
+base::CallbackListSubscription GlicInstanceCoordinatorImpl::
+    AddActiveInstanceChangedCallbackAndNotifyImmediately(
+        ActiveInstanceChangedCallback callback) {
   // Fire immediately to give subscribers an initial value.
-  NotifyLastActiveInstanceChanged();
+  callback.Run(active_instance_);
+  auto subscription =
+      active_instance_changed_callback_list_.Add(std::move(callback));
   return subscription;
 }
 
@@ -377,10 +381,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
-  if (instance == last_active_instance_) {
-    last_active_instance_ = nullptr;
-    NotifyLastActiveInstanceChanged();
-  }
+  OnInstanceActivationChanged(instance, false);
   // Remove the instance first, and then delete. This way, GetInstances() will
   // not return the instance being deleted while it's being deleted.
   InstanceId id = instance->id();

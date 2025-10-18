@@ -84,8 +84,8 @@ class MockGlicWindowController
               (StateChangeCallback callback),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterLastActiveInstanceChangedCallback,
-              (LastActiveInstanceChangedCallback callback),
+              AddActiveInstanceChangedCallbackAndNotifyImmediately,
+              (ActiveInstanceChangedCallback callback),
               (override));
   MOCK_METHOD(void, SidePanelShown, (BrowserWindowInterface*), (override));
   MOCK_METHOD(Host&, host, (), (override));
