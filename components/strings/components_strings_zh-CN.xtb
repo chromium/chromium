@@ -2288,6 +2288,7 @@
 <translation id="4758311279753947758">添加联系信息</translation>
 <translation id="4761326898079498987">查看更多详情</translation>
 <translation id="4761869838909035636">运行 Chrome 安全检查</translation>
+<translation id="4762097990764616058">继续通过<ph name="BNPL_ISSUER_NAME" />付款？</translation>
 <translation id="4763196677855776703"><ph name="URL" /> 的条款及条件</translation>
 <translation id="4764680219299728632">炉子、灶台和烤箱</translation>
 <translation id="4764776831041365478">网址为 <ph name="URL" /> 的网页可能暂时无法连接，或者它已永久性地移动到了新网址。</translation>
@@ -3429,6 +3430,7 @@
 <translation id="6649510485211003056">195 x 270 毫米</translation>
 <translation id="6651270836885078973">管理者：</translation>
 <translation id="6652101503459149953">使用 Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" />将检查您是否符合资格要求（这不会影响您的信用评分）。如果您符合资格条件，<ph name="BNPL_ISSUER_NAME" />将提供潜在的付款方案，以便您完成购买交易。</translation>
 <translation id="6654224358955673568">使用正式语气</translation>
 <translation id="6654244995031366386">玻璃（有纹理）</translation>
 <translation id="6657585470893396449">密码</translation>
@@ -3592,6 +3594,7 @@
 <translation id="6925267999184670015">北美洲 B+</translation>
 <translation id="6926216138694948720">人体艺术</translation>
 <translation id="692638818576287323">商用车</translation>
+<translation id="6927057753277044239">查看订单后，您必须登录或创建<ph name="BNPL_ISSUER_NAME" />账号。此账号将自动与您的 Google 账号关联。</translation>
 <translation id="6930607614725241390">在侧边栏中搜索</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />默认搜索引擎让您可在网络中搜索信息，并支持 Chrome 功能<ph name="END_BOLD" />，例如通过地址栏和运用网页上的图片进行搜索。如果您所用的搜索引擎不支持某项功能，您可能无法使用该功能。</translation>
 <translation id="6934672428414710184">此名称来自您的 Google 账号</translation>

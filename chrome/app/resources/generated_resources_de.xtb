@@ -1232,6 +1232,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1829192082282182671">Ver&amp;kleinern</translation>
 <translation id="1830550083491357902">Nicht angemeldet</translation>
 <translation id="1831848493690504725">Wir können Google über das verbundene Netzwerk nicht erreichen. Versuche es mit einem anderen Netzwerk oder überprüfe dein Netzwerk- oder Proxyeinstellungen (falls du einen Proxy verwendest).</translation>
+<translation id="1832414451155700364">Festlegen, ob Verlauf und Tabs synchronisiert werden sollen</translation>
 <translation id="1832459821645506983">Ok</translation>
 <translation id="1832511806131704864">Änderung übernommen</translation>
 <translation id="1832848789136765277">Bestätige deine Identität, damit du jederzeit auf deine synchronisierten Daten zugreifen kannst</translation>
@@ -8774,6 +8775,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7088960765736518739">Schalterzugriff</translation>
 <translation id="7089253021944603172">Tab wieder aktiv</translation>
 <translation id="7090714929377281710">Hotspot automatisch deaktivieren</translation>
+<translation id="7092452922791061650">Klicke mit der rechten Maustaste auf diesen Tab und wähle „Neue geteilte Ansicht mit dem aktuellen Tab“ aus</translation>
 <translation id="7092504544229909737">Kann nicht mit Android-Apps verwendet werden</translation>
 <translation id="7093220653036489319">Schnellinfo</translation>
 <translation id="7093866338626856921">Daten mit den Geräten mit folgenden Namen austauschen: <ph name="HOSTNAMES" /></translation>

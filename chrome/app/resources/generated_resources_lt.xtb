@@ -1247,6 +1247,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1829192082282182671">Tolin&amp;ti</translation>
 <translation id="1830550083491357902">Neprisijungta</translation>
 <translation id="1831848493690504725">Nepavyksta pasiekti „Google“ naudojant prijungtą tinklą. Pabandykite pasirinkti kitą tinklą arba patikrinti tinklo ar tarpinio serverio nustatymus (jei naudojate tarpinį serverį).</translation>
+<translation id="1832414451155700364">Pasirinkite, ar sinchronizuoti istoriją ir skirtukus</translation>
 <translation id="1832459821645506983">Taip, sutinku</translation>
 <translation id="1832511806131704864">Telefono pakeitimas atnaujintas</translation>
 <translation id="1832848789136765277">Kad užtikrintumėte galimybę visada pasiekti sinchronizuojamus duomenis, patvirtinkite savo tapatybę</translation>
@@ -8807,6 +8808,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7088960765736518739">Prieiga jungikliu</translation>
 <translation id="7089253021944603172">Skirtukas vėl aktyvus</translation>
 <translation id="7090714929377281710">Automatiškai išjungti viešosios interneto prieigos tašką</translation>
+<translation id="7092452922791061650">Dešiniuoju klavišu spustelėkite šį skirtuką ir pasirinkite „Naujas išskaidytas rodinys su dabartiniu skirtuku“</translation>
 <translation id="7092504544229909737">Negalima naudoti su „Android“ programomis</translation>
 <translation id="7093220653036489319">Spartieji atsakymai</translation>
 <translation id="7093866338626856921">Keistis duomenimis su įrenginiais, kurių pavadinimai: <ph name="HOSTNAMES" /></translation>

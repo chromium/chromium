@@ -94,6 +94,7 @@
 <translation id="4371591986692297148">neaktīva</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Atjaunot vienumu}zero{Atjaunot vienumus}one{Atjaunot vienumus}other{Atjaunot vienumus}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Atjaunināta pirms <ph name="NUM_DAYS_ONE" /> dienas}zero{Atjaunināta pirms <ph name="NUM_DAYS_MANY" /> dienām}one{Atjaunināta pirms <ph name="NUM_DAYS_MANY" /> dienas}other{Atjaunināta pirms <ph name="NUM_DAYS_MANY" /> dienām}}</translation>
+<translation id="4496868141611329150">Pārvietot ciļņu grupu pa kreisi</translation>
 <translation id="4653140634010630594">{TAB_COUNT,plural, =1{Nerādīt vietni}zero{Nerādīt vietnes}one{Nerādīt vietnes}other{Nerādīt vietnes}}</translation>
 <translation id="4686942373615810936">Izveidota tikko</translation>
 <translation id="4783638485675352219">Kopīgot šajā ierīcē atvērto ciļņu nosaukumus un vietrāžus URL ar operētājsistēmu</translation>
@@ -168,6 +169,7 @@
 <translation id="7369451074646620503">Ciļņu grupa “<ph name="TAB_GROUP_NAME" />” vairs nav pieejama.</translation>
 <translation id="7452985128687107478">Ciļņu grupas tiek automātiski saglabātas un atjauninātas visās jūsu ierīcēs.</translation>
 <translation id="747459581954555080">Atjaunot visu</translation>
+<translation id="7489558427602531799">Pārvietot ciļņu grupu pa labi</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vienums}zero{<ph name="TABS_COUNT_MANY" /> vienumu}one{<ph name="TABS_COUNT_MANY" /> vienums}other{<ph name="TABS_COUNT_MANY" /> vienumi}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{Atjaunot <ph name="TABS_COUNT_ONE" /> atlasīto vienumu}zero{Atjaunot <ph name="TABS_COUNT_MANY" /> atlasītos vienumus}one{Atjaunot <ph name="TABS_COUNT_MANY" /> atlasīto vienumu}other{Atjaunot <ph name="TABS_COUNT_MANY" /> atlasītos vienumus}}</translation>
 <translation id="753732157349120914">Ciļņu pārslēdzējs</translation>

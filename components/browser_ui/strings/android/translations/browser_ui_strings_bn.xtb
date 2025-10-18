@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2379925928934107488">যখনই সম্ভব, Chrome-এ ডার্ক থিম ব্যবহার করার সময় সাইটে ডার্ক থিম প্রয়োগ করুন</translation>
 <translation id="2390272837142897736">জুম বাড়ান</translation>
+<translation id="2397689164757137845">অনুমতি দেওয়া হয়েছে • সুনির্দিষ্ট</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> এমবি</translation>
 <translation id="2403474027143565107">সুনির্দিষ্ট</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা ব্যবহারের অনুমতি দেওয়া হয়েছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা ব্যবহারের অনুমতি দেওয়া হয়েছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা ব্যবহারের অনুমতি দেওয়া হয়েছে}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">সহায়তা ও প্রতিবার্তা</translation>
 <translation id="2501278716633472235">ফিরে যান</translation>
 <translation id="2533138527374486328">চালু থাকলে, আপনার স্থানীয় নেটওয়ার্কে যেকোনও ডিভাইসে কানেক্ট করার জন্য সাইট বলতে পারে। বন্ধ থাকলে, আপনার স্থানীয় নেটওয়ার্কে ডিভাইসে সাইট কানেক্ট করতে পারছে না।</translation>
+<translation id="2536779053640817375">এইবার অনুমতি দেওয়া হয়েছে • সুনির্দিষ্ট</translation>
 <translation id="2544997614631598250">থিম কালার ডার্ক</translation>
 <translation id="2546283357679194313">কুকিজ ও সাইট ডেটা</translation>
 <translation id="2570922361219980984">এই ডিভাইসেও লোকেশন অ্যাক্সেস বন্ধ আছে। চালু করতে <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> যান।</translation>

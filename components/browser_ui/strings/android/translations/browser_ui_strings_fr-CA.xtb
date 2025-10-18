@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2379925928934107488">Si possible, appliquer le thème sombre aux sites lorsque Chrome l'utilise</translation>
 <translation id="2390272837142897736">Augmenter le zoom</translation>
+<translation id="2397689164757137845">Autorisée • Précise</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Mo</translation>
 <translation id="2403474027143565107">Exacte</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre accordées}one{Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre accordées}other{Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autres accordées}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Aide et commentaires</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2533138527374486328">Lorsque cette option est activée, les sites peuvent demander à se connecter à n'importe quel appareil de votre réseau local. Lorsqu'elle est désactivée, les sites ne peuvent pas se connecter aux appareils de votre réseau local.</translation>
+<translation id="2536779053640817375">Autorisée cette fois • Précise</translation>
 <translation id="2544997614631598250">Couleur de thème : foncé</translation>
 <translation id="2546283357679194313">Témoins et données des sites</translation>
 <translation id="2570922361219980984">L'accès à la localisation est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>

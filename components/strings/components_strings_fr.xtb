@@ -2292,6 +2292,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4758311279753947758">Ajouter des coordonnées</translation>
 <translation id="4761326898079498987">Consulter les détails</translation>
 <translation id="4761869838909035636">Effectuer un contrôle de sécurité de Chrome</translation>
+<translation id="4762097990764616058">Continuer à payer avec <ph name="BNPL_ISSUER_NAME" /> ?</translation>
 <translation id="4763196677855776703">Conditions d'utilisation fournies par <ph name="URL" /></translation>
 <translation id="4764680219299728632">Cuisinières, tables de cuisson et fours</translation>
 <translation id="4764776831041365478">Il se peut que la page Web à l'adresse <ph name="URL" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une autre adresse Web.</translation>
@@ -3434,6 +3435,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Gérées par :</translation>
 <translation id="6652101503459149953">Utiliser Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> vérifiera votre éligibilité (cela n'affectera pas votre cote de crédit). Si vous remplissez les critères d'éligibilité, <ph name="BNPL_ISSUER_NAME" /> vous proposera un ou plusieurs forfaits pour finaliser votre achat.</translation>
 <translation id="6654224358955673568">Rendre plus formel</translation>
 <translation id="6654244995031366386">Verre (texturé)</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
@@ -3597,6 +3599,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6925267999184670015">B+ nord-américain</translation>
 <translation id="6926216138694948720">Tatouages/Piercings</translation>
 <translation id="692638818576287323">Véhicules commerciaux</translation>
+<translation id="6927057753277044239">Après avoir vérifié votre commande, vous devez vous connecter à votre compte <ph name="BNPL_ISSUER_NAME" /> ou en créer un. Ce compte sera automatiquement associé à votre compte Google.</translation>
 <translation id="6930607614725241390">Rechercher dans le panneau latéral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et alimente des fonctionnalités Chrome<ph name="END_BOLD" /> telles que la recherche à partir de la barre d'adresse et d'images issues de pages Web. Une fonctionnalité peut ne pas être disponible si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>

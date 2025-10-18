@@ -1244,6 +1244,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1829192082282182671">Per&amp;kecil</translation>
 <translation id="1830550083491357902">Belum masuk</translation>
 <translation id="1831848493690504725">Kami tidak dapat menjangkau Google melalui jaringan yang terhubung. Coba pilih jaringan lain atau periksa setelan jaringan atau setelan proxy Anda (jika Anda menggunakan proxy).</translation>
+<translation id="1832414451155700364">Pilih apakah akan menyinkronkan histori dan tab</translation>
 <translation id="1832459821645506983">Ya, saya setuju</translation>
 <translation id="1832511806131704864">Perubahan ponsel diperbarui</translation>
 <translation id="1832848789136765277">Untuk memastikan Anda selalu dapat mengakses data yang disinkronkan, verifikasi diri Anda</translation>
@@ -8625,7 +8626,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6970480684834282392">Tipe rintisan</translation>
 <translation id="6970543303783413625">Tidak dapat mengimpor sandi. Anda hanya dapat mengimpor maksimal <ph name="COUNT" /> sandi dalam satu waktu.</translation>
 <translation id="6970856801391541997">Cetak Halaman Khusus</translation>
-<translation id="6970861306198150268">Pastikan Anda menyimpan sandi saat ini untuk situs ini</translation>
+<translation id="6970861306198150268">Pastikan Anda menyimpan sandi yang terbaru untuk situs ini</translation>
 <translation id="6971184043765343932">Gambar yang Anda upload</translation>
 <translation id="6971570759801670426">Edit <ph name="CREDENTIAL_TYPE" /> untuk nama pengguna: <ph name="USER_EMAIL" /></translation>
 <translation id="6972754398087986839">Mulai</translation>
@@ -8797,6 +8798,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7088960765736518739">Tombol Akses</translation>
 <translation id="7089253021944603172">Tab Aktif Lagi</translation>
 <translation id="7090714929377281710">Otomatis nonaktifkan hotspot</translation>
+<translation id="7092452922791061650">Klik kanan tab ini dan pilih “Tampilan terpisah baru dengan tab saat ini”</translation>
 <translation id="7092504544229909737">Tidak dapat digunakan dengan aplikasi Android</translation>
 <translation id="7093220653036489319">Jawaban instan</translation>
 <translation id="7093866338626856921">Menukar data dengan perangkat yang bernama: <ph name="HOSTNAMES" /></translation>

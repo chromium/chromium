@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">계속</translation>
 <translation id="2379925928934107488">가능하면 Chrome에서 어두운 테마를 사용할 때 사이트에도 어두운 테마를 적용합니다.</translation>
 <translation id="2390272837142897736">확대</translation>
+<translation id="2397689164757137845">허용됨 • 정확한 위치</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" />MB</translation>
 <translation id="2403474027143565107">정확한 위치</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">고객센터</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
 <translation id="2533138527374486328">사용 설정하면 사이트에서 로컬 네트워크의 모든 기기에 연결하도록 요청할 수 있습니다. 사용 중지하면 사이트에서 로컬 네트워크의 기기에 연결할 수 없습니다.</translation>
+<translation id="2536779053640817375">현재 허용됨 • 정확한 위치</translation>
 <translation id="2544997614631598250">어두운 테마 색상</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2570922361219980984">이 기기의 위치 정보 액세스도 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>

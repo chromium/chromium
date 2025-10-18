@@ -1244,6 +1244,7 @@
 <translation id="1829192082282182671">축소(&amp;O)</translation>
 <translation id="1830550083491357902">로그인하지 않음</translation>
 <translation id="1831848493690504725">연결된 네트워크를 통해 Google에 연결할 수 없습니다. 다른 네트워크를 선택하거나 네트워크 설정 또는 프록시 설정(프록시 사용 시)을 확인해 보세요.</translation>
+<translation id="1832414451155700364">방문 기록 및 탭 동기화 여부 선택</translation>
 <translation id="1832459821645506983">예</translation>
 <translation id="1832511806131704864">휴대전화 변경사항이 업데이트됨</translation>
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
@@ -8798,6 +8799,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7088960765736518739">스위치 제어</translation>
 <translation id="7089253021944603172">탭이 다시 활성화됨</translation>
 <translation id="7090714929377281710">핫스팟 자동 사용 중지</translation>
+<translation id="7092452922791061650">이 탭을 마우스 오른쪽 버튼으로 클릭하고 '현재 탭이 포함된 새 분할 보기'를 선택합니다.</translation>
 <translation id="7092504544229909737">Android 앱에서 사용할 수 없음</translation>
 <translation id="7093220653036489319">빠른 답변</translation>
 <translation id="7093866338626856921">이름이 <ph name="HOSTNAMES" />인 기기와 데이터 교환</translation>

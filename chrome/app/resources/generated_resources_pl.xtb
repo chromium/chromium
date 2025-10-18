@@ -1237,6 +1237,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1829192082282182671">Po&amp;mniejsz</translation>
 <translation id="1830550083491357902">Niezalogowany</translation>
 <translation id="1831848493690504725">Nie możemy uzyskać dostępu do serwerów Google przez połączoną sieć. Wybierz inną sieć albo sprawdź ustawienia sieci lub serwera proxy (jeśli z niego korzystasz).</translation>
+<translation id="1832414451155700364">Wybierz, czy chcesz synchronizować historię i karty</translation>
 <translation id="1832459821645506983">Tak, zgadzam się</translation>
 <translation id="1832511806131704864">Zmiana telefonu została zapisana</translation>
 <translation id="1832848789136765277">Aby zapewnić sobie stały dostęp do zsynchronizowanych danych, potwierdź swoją tożsamość</translation>
@@ -8763,6 +8764,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Karta jest ponownie aktywna</translation>
 <translation id="7090714929377281710">Automatyczne wyłączanie hotspota</translation>
+<translation id="7092452922791061650">Kliknij tę kartę prawym przyciskiem i wybierz „Nowy widok dzielony z bieżącą kartą”</translation>
 <translation id="7092504544229909737">Nie można używać w aplikacjach na Androida</translation>
 <translation id="7093220653036489319">Szybkie podpowiedzi</translation>
 <translation id="7093866338626856921">Wymiana danych z urządzeniami o nazwach: <ph name="HOSTNAMES" /></translation>

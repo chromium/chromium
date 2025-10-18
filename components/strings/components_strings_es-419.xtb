@@ -2293,6 +2293,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4758311279753947758">Agregar información de contacto</translation>
 <translation id="4761326898079498987">Revisa las acciones para obtener más detalles</translation>
 <translation id="4761869838909035636">Ejecutar la Verificación de seguridad de Chrome</translation>
+<translation id="4762097990764616058">¿Quieres seguir pagando con <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Términos y condiciones proporcionados por <ph name="URL" /></translation>
 <translation id="4764680219299728632">Cocinas, cocinas encimeras y hornos</translation>
 <translation id="4764776831041365478">Es posible que la página web en <ph name="URL" /> no funcione temporalmente o se haya trasladado de manera permanente a una nueva dirección web.</translation>
@@ -3435,6 +3436,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6649510485211003056">195 × 270 mm</translation>
 <translation id="6651270836885078973">Administrado por:</translation>
 <translation id="6652101503459149953">Usar Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> verificará si cumples con los requisitos (esto no afectará tu calificación crediticia). Si cumples con los criterios de elegibilidad, <ph name="BNPL_ISSUER_NAME" /> te proporcionará posibles planes de pagos para completar tu compra.</translation>
 <translation id="6654224358955673568">Usar un tono más formal</translation>
 <translation id="6654244995031366386">Vidrio (texturado)</translation>
 <translation id="6657585470893396449">Contraseña</translation>
@@ -3598,6 +3600,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6925267999184670015">B+ norteamericano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Vehículos comerciales</translation>
+<translation id="6927057753277044239">Después de revisar tu pedido, debes acceder a tu cuenta o crear una con <ph name="BNPL_ISSUER_NAME" />. Esta cuenta se vinculará automáticamente a tu Cuenta de Google.</translation>
 <translation id="6930607614725241390">Buscar en el panel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Tu motor de búsqueda predeterminado te permite buscar en la Web y potencia las funciones de Chrome<ph name="END_BOLD" />, como la búsqueda desde la barra de direcciones o desde imágenes de páginas web. Es posible que una función no esté disponible si tu motor de búsqueda no la admite.</translation>
 <translation id="6934672428414710184">Este nombre es de tu Cuenta de Google</translation>

@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2379925928934107488">Kur është e mundur, zbato temën e errët për sajtet kur Chrome përdor temën e errët</translation>
 <translation id="2390272837142897736">Rrit zmadhimin</translation>
+<translation id="2397689164757137845">Lejohet • E saktë</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">E saktë</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e lejuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të lejuara}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Ndihmë dhe komente</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="2533138527374486328">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të lidhen me çdo pajisje në rrjetin tënde lokal. Kur cilësimi është joaktiv, sajtet nuk mund të lidhen me pajisjet në rrjetin tënd lokal.</translation>
+<translation id="2536779053640817375">Lejohet këtë herë • E saktë</translation>
 <translation id="2544997614631598250">Ngjyra e temës e errët</translation>
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
 <translation id="2570922361219980984">Qasja te vendndodhja është po ashtu joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>

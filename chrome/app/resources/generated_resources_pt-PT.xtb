@@ -104,6 +104,7 @@
 <translation id="1061904396131502319">Está quase na altura de fazer uma pausa</translation>
 <translation id="10619348099955377">Copiar nome a apresentar</translation>
 <translation id="1062407476771304334">Substituir</translation>
+<translation id="1064236804542808595">Restaurar atalhos da organização</translation>
 <translation id="1065369186007547872">O Chrome considera que não quer receber notificações deste site. Por isso, os pedidos são ocultados para reduzir as interrupções.</translation>
 <translation id="1066964438793906105">Analisar quanto à existência de software malicioso</translation>
 <translation id="1067661089446014701">Para maior segurança, pode encriptar as palavras-passe no seu dispositivo antes de serem guardadas na sua Conta Google</translation>
@@ -1051,6 +1052,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1700517974991662022">Visitado</translation>
 <translation id="1703331064825191675">Nunca mais se preocupe com as suas palavras-passe</translation>
 <translation id="1703666494654169921">Não permitir que os sites utilizem dados ou dispositivos de realidade virtual</translation>
+<translation id="1703849276368677471">Ferramentas</translation>
 <translation id="1704097193565924901">Letra maiúscula</translation>
 <translation id="1704230497453185209">Não permitir que os sites reproduzam som</translation>
 <translation id="1706586824377653884">Adicionado pelo gestor</translation>
@@ -1178,6 +1180,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1796460466266263589">Para continuar a usar o Gemini, valide a sua identidade</translation>
 <translation id="1796588414813960292">As funcionalidades que necessitam de som não funcionarão</translation>
 <translation id="1797117170091578105">Jogue com o teclado do Chromebook. Pode personalizar as teclas para ações específicas.</translation>
+<translation id="1798726622311813209">Cartões de crédito e débito</translation>
 <translation id="1799852120691957794">Não é possível restaurar as janelas da sua sessão anterior</translation>
 <translation id="180203835522132923">Pesquisa + O e, em seguida, W</translation>
 <translation id="1802624026913571222">Suspender quando a tampa for fechada</translation>
@@ -1463,6 +1466,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1984683754853869253">Quer criar um novo perfil para a escola?</translation>
 <translation id="198507684520034826">Ajuda</translation>
+<translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Definições de localização avançadas</translation>
 <translation id="1987317783729300807">Contas</translation>
 <translation id="1987574314042117472">Selecionar e instalar apps populares</translation>
@@ -3117,6 +3121,7 @@ Quer pará-lo?</translation>
 <translation id="3122883569442693641">Mais detalhes</translation>
 <translation id="3124111068741548686">Identificadores de UTILIZADOR</translation>
 <translation id="3124332159330678621">Personalize o Chrome para dar um novo aspeto ao seu navegador</translation>
+<translation id="3124950826511066429">Definições que afetam o funcionamento do preenchimento automático em diferentes tipos de informações</translation>
 <translation id="3125361247594231799">Fixe-a para a próxima vez</translation>
 <translation id="3125816458150005808">Pode desafixá-la e abri-la no menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -5367,6 +5372,7 @@ Quer pará-lo?</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Cartão de crédito/débito</translation>
 <translation id="4679018849559620189">Isto ajuda a aceder às suas chaves de acesso guardadas em qualquer dispositivo</translation>
+<translation id="467907880657121641">iPhone</translation>
 <translation id="4680105648806843642">O som foi desativado nesta página.</translation>
 <translation id="4680112532510845139">Largue uma imagem aqui</translation>
 <translation id="4681453295291708042">Desativar a funcionalidade Partilhar na proximidade</translation>
@@ -5912,6 +5918,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5068553687099139861">mostrar palavras-passe</translation>
 <translation id="506886127401228110">Ativar apps Web isoladas</translation>
 <translation id="5068919226082848014">Piza</translation>
+<translation id="5070630163913211970">O separador atual é partilhado com o Gemini quando inicia um novo chat. <ph name="LINK_BEGIN" />Saiba mais sobre a IA e a privacidade<ph name="LINK_END" /></translation>
 <translation id="5071295820492622726">Voltar às transferências recentes</translation>
 <translation id="5071892329440114717">Mostrar detalhes de proteção padrão</translation>
 <translation id="5072500507106264618">Apenas os serviços do sistema podem usar a sua localização</translation>
@@ -6375,6 +6382,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
 <translation id="5398572795982417028">A referência da página está fora dos limites; o limite é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Ajuda a escrever texto de formato curto para itens na Web, como críticas</translation>
+<translation id="5400068721524309244">Quando os separadores são partilhados, os respetivos conteúdos das páginas e URLs são enviados para a Google</translation>
 <translation id="5400196580536813396">Sem autorização para procurar ou usar impressoras acessíveis ao seu dispositivo</translation>
 <translation id="5400836586163650660">Cinzento</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -7710,6 +7718,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> desativou a depuração do ADB. Esta ação vai repor o seu dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Faça uma cópia de segurança dos ficheiros que quer manter.</translation>
 <translation id="6336194758029258346">Idioma da app</translation>
 <translation id="6337543438445391085">Algumas informações pessoais ainda podem ser incluídas nos dados. Certifique-se de que revê os ficheiros exportados.</translation>
+<translation id="6338554362382763574">Pode simplesmente fazer perguntas ao Gemini sobre os separadores que está a partilhar enquanto navega</translation>
 <translation id="6338968693068997776">Adicione um dispositivo USB</translation>
 <translation id="6339668969738228384">Criar um novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -8054,6 +8063,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6586451623538375658">Trocar botão principal do rato</translation>
 <translation id="6588043302623806746">Usar o DNS seguro</translation>
 <translation id="6589760925779188068">Panacota</translation>
+<translation id="6589769062042696460">O separador atual é partilhado com o Gemini quando inicia um novo chat. Os seus dados não são usados para melhorar os modelos de IA generativa. <ph name="LINK_BEGIN" />Saiba mais sobre a IA e a privacidade<ph name="LINK_END" /></translation>
 <translation id="6590458744723262880">Mudar o nome da pasta</translation>
 <translation id="6592267180249644460">Registo de WebRTC capturado <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">A sua impressão digital foi capturada.</translation>
@@ -8329,6 +8339,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
     <ph name="BEGIN_PARAGRAPH2" />Pode desativar este serviço nas Definições.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Cópia de segurança do Linux cancelada</translation>
 <translation id="6782067259631821405">PIN inválido</translation>
+<translation id="6782219876520622071">As conversas sobre separadores partilhados podem ser vistas por revisores humanos para melhorar o Gemini</translation>
 <translation id="6783036716881942511">Esquecer este dispositivo?</translation>
 <translation id="6783667414610055871">Definições do Microsoft OneDrive</translation>
 <translation id="6784523122863989144">O perfil é suportado</translation>
@@ -8459,6 +8470,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6852290167968069627">O ChromeOS não consegue retomar a sessão anterior devido a um problema de rede. Ligue-se a uma rede estável e tente novamente.</translation>
 <translation id="6852529053326738838">Peça à organização ou inscreva-se com o seu email profissional para verificar se a conta é elegível.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> instalada a partir de <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
+<translation id="6853118789186721762">Lembrete enviado para o seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629">Ano: <ph name="DROPDOWN_NAME" /></translation>
 <translation id="68541483639528434">Fechar os outros separadores</translation>
 <translation id="6855892664589459354">Cópia de segurança e restauro do Crostini</translation>
@@ -8760,6 +8772,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7066572364168923329">Escolha a configuração do seu dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7067396782363924830">Cores ambiente</translation>
 <translation id="7067725467529581407">Não voltar a mostrar.</translation>
+<translation id="7067779359472606732">Lembrete enviado para o seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">Inicie sessão para ver os separadores de outros dispositivos</translation>
 <translation id="7068591156533195518"><ph name="APP_NAME" /> e mais algumas apps estão bloqueadas no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="706949303827219454">Abre a página de definições de segurança num novo separador</translation>
@@ -11245,6 +11258,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="876161309768861172">Não foi possível iniciar sessão. Tente novamente</translation>
 <translation id="8761945298804995673">Este utilizador já existe.</translation>
 <translation id="8762886931014513155">O seu <ph name="DEVICE_TYPE" /> precisa de ser atualizado</translation>
+<translation id="8763170551806710928">Mostrar chips</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostrar todas as pesquisas de <ph name="QUERY_CLUSTER_NAME" /></translation>
@@ -11575,6 +11589,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8988539543012086784">Esta página foi guardada em <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989034257029389285">Pode perguntar "OK Google, que música é esta?"</translation>
 <translation id="8989359959810288806">Atualizar estado da ligação (à Internet) via telemóvel</translation>
+<translation id="8989779557457435460">Partilhar separador atual por predefinição</translation>
 <translation id="8990243615717080992">Inicie sessão com uma palavra-passe ou outro método de recuperação</translation>
 <translation id="8991520179165052608">O site pode utilizar o microfone.</translation>
 <translation id="8991694323904646277">Nenhuma câmara</translation>

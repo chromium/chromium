@@ -2293,6 +2293,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4758311279753947758">Tambahkan maklumat hubungan</translation>
 <translation id="4761326898079498987">Semak untuk mendapatkan butiran lanjut</translation>
 <translation id="4761869838909035636">Jalankan Semakan Keselamatan Chrome</translation>
+<translation id="4762097990764616058">Teruskan pembayaran dengan <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Terma dan syarat disediakan oleh <ph name="URL" /></translation>
 <translation id="4764680219299728632">Dapur, Tempat Masak &amp; Ketuhar</translation>
 <translation id="4764776831041365478">Laman web di <ph name="URL" /> mungkin tergendala buat sementara waktu atau ia mungkin dpindahkan secara kekal ke alamat web baharu.</translation>
@@ -3435,6 +3436,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Diurus oleh:</translation>
 <translation id="6652101503459149953">Gunakan Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> akan menyemak kelayakan anda (hal ini tidak akan menjejaskan skor kredit anda). Jika anda memenuhi kriteria kelayakan, <ph name="BNPL_ISSUER_NAME" /> akan memberikan pelan pembayaran yang berpotensi untuk melengkapkan pembelian anda.</translation>
 <translation id="6654224358955673568">Jadikan bahasa baku</translation>
 <translation id="6654244995031366386">Kaca (Bertekstur)</translation>
 <translation id="6657585470893396449">Kata laluan</translation>
@@ -3598,6 +3600,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6925267999184670015">Amerika Utara B+</translation>
 <translation id="6926216138694948720">Seni Badan</translation>
 <translation id="692638818576287323">Kenderaan Komersil</translation>
+<translation id="6927057753277044239">Selepas anda menyemak pesanan anda, anda mestilah log masuk atau membuat akaun dengan <ph name="BNPL_ISSUER_NAME" />. Akaun ini akan dipautkan kepada Google Account anda secara automatik.</translation>
 <translation id="6930607614725241390">Cari dalam panel sisi</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Enjin carian lalai anda membolehkan anda membuat carian pada web dan menguasakan ciri Chrome<ph name="END_BOLD" /> seperti membuat carian daripada bar alamat dan imej pada halaman web. Ciri mungkin tidak tersedia jika enjin carian anda tidak menyokong ciri tersebut.</translation>
 <translation id="6934672428414710184">Nama ini daripada Google Account anda</translation>

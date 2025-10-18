@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2379925928934107488">Якщо у веб-перекладачі Chrome активовано темну тему, вона використовуватиметься для сайтів, коли це можливо.</translation>
 <translation id="2390272837142897736">Збільшити масштаб</translation>
+<translation id="2397689164757137845">Дозволено • Точне</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2403474027143565107">Точне</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{Дозволено: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Довідка й відгуки</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2533138527374486328">Якщо цей перемикач увімкнено, сайти можуть запитувати дозвіл на підключення до пристроїв у вашій локальній мережі. Якщо його вимкнено, сайти не можуть підключатися до пристроїв у вашій локальній мережі.</translation>
+<translation id="2536779053640817375">Надано разовий доступ • Точне</translation>
 <translation id="2544997614631598250">Колір теми: темний</translation>
 <translation id="2546283357679194313">Файли cookie й дані сайтів</translation>
 <translation id="2570922361219980984">На цьому пристрої також вимкнено доступ до геоданих. Увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>

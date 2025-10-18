@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2379925928934107488">Chrome'до караңгы тема колдонулуп жатканда, сайттарга караңгы теманы колдонуу (мүмкүн болгондо)</translation>
 <translation id="2390272837142897736">Масштабды чоңойтуу</translation>
+<translation id="2397689164757137845">Уруксат берилген • Так</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Мб</translation>
 <translation id="2403474027143565107">Так</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Жардам/пикир билдирүү</translation>
 <translation id="2501278716633472235">Артка кайтуу</translation>
 <translation id="2533138527374486328">Бул күйгүзүлсө, сайттар жергиликтүү тармактагы түзмөккө туташууга уруксат сурай алышат. Бул өчүрүлсө, сайттар жергиликтүү тармактагы түзмөктөргө туташа алышпайт.</translation>
+<translation id="2536779053640817375">Бул жолу уруксат берилген • Так</translation>
 <translation id="2544997614631598250">Теманын түсү: күңүрт</translation>
 <translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
 <translation id="2570922361219980984">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android параметрлерине<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>

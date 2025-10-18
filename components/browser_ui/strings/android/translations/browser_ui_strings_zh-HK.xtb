@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2379925928934107488">當 Chrome 採用深色主題背景時，盡可能對網站套用深色主題背景</translation>
 <translation id="2390272837142897736">放大</translation>
+<translation id="2397689164757137845">已允許 • 精確位置</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">精確位置</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">說明和意見反映</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2533138527374486328">開咗之後，網站可以要求連線至區域網絡上嘅任何裝置。閂咗之後，網站就唔可以連線至區域網絡上嘅裝置。</translation>
+<translation id="2536779053640817375">這次允許 • 精確位置</translation>
 <translation id="2544997614631598250">主題顏色深色</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2570922361219980984">此裝置的位置資訊存取權亦已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>

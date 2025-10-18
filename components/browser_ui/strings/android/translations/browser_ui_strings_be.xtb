@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2379925928934107488">Калі Chrome выкарыстоўвае цёмную тэму, прымяняць яе да сайтаў (калі гэта магчыма)</translation>
 <translation id="2390272837142897736">Павялічыць маштаб</translation>
+<translation id="2397689164757137845">Дазволена • Дакладнае</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2403474027143565107">Дакладнае</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Даведка і водгукі</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2533138527374486328">Калі гэта налада ўключана, сайты могуць запытваць дазвол на падключэнне да прылад у вашай лакальнай сетцы. Калі выключана, сайты не могуць падключацца да прылад у лакальнай сетцы.</translation>
+<translation id="2536779053640817375">Дазволена гэтым разам • Дакладнае</translation>
 <translation id="2544997614631598250">Колер тэмы: цёмны</translation>
 <translation id="2546283357679194313">Файлы сookie і даныя сайтаў</translation>
 <translation id="2570922361219980984">Доступ да месцазнаходжання для гэтай прылады таксама выключаны. Уключыце яго ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>

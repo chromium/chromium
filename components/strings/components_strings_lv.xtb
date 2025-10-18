@@ -2290,6 +2290,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4758311279753947758">Pievienot kontaktinformāciju</translation>
 <translation id="4761326898079498987">Skatiet plašāku informāciju</translation>
 <translation id="4761869838909035636">Veikt Chrome drošības pārbaudi</translation>
+<translation id="4762097990764616058">Vai turpināt maksājumu veikšanu, izmantojot <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Pakalpojumu sniegšanas noteikumus nodrošina <ph name="URL" /></translation>
 <translation id="4764680219299728632">Plītis, plīts virsmas un cepeškrāsnis</translation>
 <translation id="4764776831041365478">Tīmekļa lapa vietnē <ph name="URL" /> var īslaicīgi nebūt pieejama, vai tā var būt pārvietota uz jaunu tīmekļa adresi.</translation>
@@ -3432,6 +3433,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Pārvalda:</translation>
 <translation id="6652101503459149953">Izmantot Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> pārbaudīs jūsu piemērotību (tas neietekmēs jūsu kredīta rādītājus). Ja atbildīsiet piemērotības kritērijiem, <ph name="BNPL_ISSUER_NAME" /> nodrošinās jūsu maksājumu plānu(-us) un pabeigs pirkumu.</translation>
 <translation id="6654224358955673568">Padarīt oficiālāku</translation>
 <translation id="6654244995031366386">Stikls (teksturēts)</translation>
 <translation id="6657585470893396449">Parole</translation>
@@ -3595,6 +3597,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6925267999184670015">B+ (Ziemeļamerika)</translation>
 <translation id="6926216138694948720">Ķermeņa apgleznošana</translation>
 <translation id="692638818576287323">Komerciāli transportlīdzekļi</translation>
+<translation id="6927057753277044239">Pēc pasūtījuma pārskatīšanas jums ir jāpierakstās <ph name="BNPL_ISSUER_NAME" /> kontā vai jāizveido šāds konts. Šis konts tiks automātiski saistīts ar jūsu Google kontu.</translation>
 <translation id="6930607614725241390">Meklēt sānu panelī</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Jūsu noklusējuma meklētājprogramma ļauj veikt meklēšanu tīmeklī un nodrošina Chrome funkcijas<ph name="END_BOLD" />, piemēram, meklēšanu adreses joslā un pēc attēliem tīmekļa lapās. Ja jūsu meklētājprogramma neatbalsta kādu funkciju, iespējams, šī funkcija nebūs pieejama.</translation>
 <translation id="6934672428414710184">Šis vārds ir no jūsu Google konta</translation>

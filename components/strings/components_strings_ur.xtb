@@ -2293,6 +2293,7 @@
 <translation id="4758311279753947758">رابطے کی معلومات شامل کریں</translation>
 <translation id="4761326898079498987">مزید تفصیلات کے لیے جائزہ لیں</translation>
 <translation id="4761869838909035636">‏Chrome کا سیفٹی چیک چلائیں</translation>
+<translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" /> کے ساتھ ادائیگی جاری رکھیں؟</translation>
 <translation id="4763196677855776703"><ph name="URL" /> کی طرف سے فراہم کردہ شرائط و ضوابط</translation>
 <translation id="4764680219299728632">رینجز، کک ٹاپس اور اوونز</translation>
 <translation id="4764776831041365478"><ph name="URL" /> پر موجود ویب صفحہ عارضی طور پر سست ہو سکتا ہے یا اسے مستقل طور پر ایک نئے ویب پتے پر منتقل کیا گیا ہو سکتا ہے۔</translation>
@@ -3436,6 +3437,7 @@
 <translation id="6649510485211003056">‏‎195 x 270 ملی میٹر</translation>
 <translation id="6651270836885078973">کے زیر انتظام ہے:</translation>
 <translation id="6652101503459149953">‏Windows Hello کا استعمال کریں</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> آپ کی اہلیت کی جانچ کرے گا (اس سے آپ کے کریڈٹ اسکور پر کوئی اثر نہیں پڑے گا)۔ اگر آپ اہلیت کے معیار پر پورا اترتے ہیں تو آپ کی خریداری کو مکمل کرنے کیلئے <ph name="BNPL_ISSUER_NAME" /> آپ کی ممکنہ ادائیگی کا پلان (پلانز) فراہم کرے گا۔</translation>
 <translation id="6654224358955673568">رسمی بنائیں</translation>
 <translation id="6654244995031366386">شیشہ (ٹیکسچرڈ)</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
@@ -3599,6 +3601,7 @@
 <translation id="6925267999184670015">‏شمالی امریکی B+</translation>
 <translation id="6926216138694948720">باڈی آرٹ</translation>
 <translation id="692638818576287323">تجارتی گاڑیاں</translation>
+<translation id="6927057753277044239">‏اپنے آرڈر کا جائزہ لینے کے بعد، آپ کو <ph name="BNPL_ISSUER_NAME" /> کے ساتھ اکاؤنٹ میں سائن ان کرنا ہوگا یا نیا تخلیق کرنا ہوگا۔ یہ اکاؤنٹ خودکار طور پر آپ کے Google اکاؤنٹ سے لنک ہو جائے گا۔</translation>
 <translation id="6930607614725241390">سائیڈ پینل میں تلاش کریں</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />آپ کا ڈیفالٹ سرچ انجن آپ کو ویب پر تلاش کرنے دیتا ہے اور Chrome کی خصوصیات کو طاقت دیتا ہے<ph name="END_BOLD" /> جیسے ایڈریس بار اور ویب صفحات پر موجود تصاویر سے تلاش کرنا۔ اگر آپ کا سرچ انجن کسی خصوصیت کو سپورٹ نہیں کرتا ہے تو ممکن ہے کہ یہ خصوصیت دستیاب نہ ہو۔</translation>
 <translation id="6934672428414710184">‏یہ نام آپ کے Google اکاؤنٹ سے ہے</translation>

@@ -2292,6 +2292,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4758311279753947758">Lisage kontaktteave</translation>
 <translation id="4761326898079498987">Lisateabe saamiseks vaadake üle</translation>
 <translation id="4761869838909035636">Käita Chrome'i ohutuskontroll</translation>
+<translation id="4762097990764616058">Kas soovite maksta teenusega <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Müüja <ph name="URL" /> esitatud nõuded ja tingimused</translation>
 <translation id="4764680219299728632">Pliidid, küpsetuspinnad ja ahjud</translation>
 <translation id="4764776831041365478">Veebileht aadressil <ph name="URL" /> võib olla ajutiselt maas või jäädavalt uuele veebiaadressile teisaldatud.</translation>
@@ -3434,6 +3435,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6649510485211003056">195 × 270 mm</translation>
 <translation id="6651270836885078973">Haldab:</translation>
 <translation id="6652101503459149953">Kasuta Windows Hello autentimist</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> kontrollib teie sobilikkust (see ei mõjuta teie krediidiskoori). Kui vastate sobilikkuse kriteeriumidele, pakub <ph name="BNPL_ISSUER_NAME" /> teile ostu lõpuleviimiseks potentsiaalse(d) makseplaani(d).</translation>
 <translation id="6654224358955673568">Kirjuta ümber ametlikus stiilis</translation>
 <translation id="6654244995031366386">Klaas (reljeefne)</translation>
 <translation id="6657585470893396449">Parool</translation>
@@ -3597,6 +3599,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6925267999184670015">Põhja-Ameerika B+</translation>
 <translation id="6926216138694948720">Kehamaalingud</translation>
 <translation id="692638818576287323">Tarbesõidukid</translation>
+<translation id="6927057753277044239">Kui olete tellimuse üle vaadanud, peate teenuse <ph name="BNPL_ISSUER_NAME" /> kontole sisse logima või konto looma. See konto lingitakse automaatselt teie Google'i kontoga.</translation>
 <translation id="6930607614725241390">Otsimine külgpaneelilt</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Teie vaikeotsingumootor võimaldab teil veebist otsida ja toetab Chrome'i funktsioone<ph name="END_BOLD" />, nagu otsimine aadressiribalt ja veebilehtedel olevatelt piltidelt. Funktsioon ei pruugi olla saadaval, kui teie otsingumootor seda ei toeta.</translation>
 <translation id="6934672428414710184">Nimi pärineb teie Google'i kontolt</translation>

@@ -2289,6 +2289,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4758311279753947758">Engeza imininingwane yokuxhumana</translation>
 <translation id="4761326898079498987">Buyekeza ukuze uthole imininingwane eyengeziwe</translation>
 <translation id="4761869838909035636">Yenza Ukuhlola kokuphepha kwe-Chrome</translation>
+<translation id="4762097990764616058">Qhubeka ukhokha nge-<ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Imigomo nemibandela ehlinzekwe yi-<ph name="URL" /></translation>
 <translation id="4764680219299728632">Ama-range, Izitofu Nohhavini</translation>
 <translation id="4764776831041365478">Ikhasi lewebhu ku-<ph name="URL" /> kungenzeka ukuthi liphansi okwesikhashana noma lihanjiswe unaphakade kukheli elisha lewebhu.</translation>
@@ -3431,6 +3432,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6649510485211003056">U-195 x 270 mm</translation>
 <translation id="6651270836885078973">Iphethwe i-:</translation>
 <translation id="6652101503459149953">Sebenzisa i-Windows Hello</translation>
+<translation id="6653684225271066234">I-<ph name="BNPL_ISSUER_NAME" /> izohlola ukufaneleka kwakho (lokhu ngeke kuthinte umphumela wakho wenhlolozikweletu). Uma uhlangabezana nendlela yokufaneleka, i-<ph name="BNPL_ISSUER_NAME" /> izokunikeza uhlelo lokukhokha ongase ukwazi ukulusebenzisa ukuze uqedele ukuthenga.</translation>
 <translation id="6654224358955673568">Yenza ngokusemthethweni</translation>
 <translation id="6654244995031366386">Ingilazi (Ifanisiwe)</translation>
 <translation id="6657585470893396449">Igama lokungena</translation>
@@ -3594,6 +3596,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Ubuciko bomzimba</translation>
 <translation id="692638818576287323">Izimoto Zezokuthengisa</translation>
+<translation id="6927057753277044239">Ngemva kokubuyekeza i-oda lakho, kufanele ungene ngemvume noma uvule i-akhawunti ye-<ph name="BNPL_ISSUER_NAME" />. Le akhawunti izolinkwa ngokuzenzekela kuGoogle account yakho.</translation>
 <translation id="6930607614725241390">Sesha kuphaneli eseceleni</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Injini yokusesha okuzenzakalelayo yakho ikuvumela ukuthi useshe iwebhu namandla i-Chrome ewahlanganisayo<ph name="END_BOLD" /> njengokusesha kubha yekheli kanye nasezithombeni kumakhasi ewebhu. Isakhi kungenzeka singatholakali uma injini yokusesha yakho ingasisekeli.</translation>
 <translation id="6934672428414710184">Leli gama lisuka ku-akhawunti yakho ye-Google</translation>

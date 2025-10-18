@@ -2292,6 +2292,7 @@
 <translation id="4758311279753947758">Додати контактну інформацію</translation>
 <translation id="4761326898079498987">Переглянути деталі</translation>
 <translation id="4761869838909035636">Виконати перевірку безпеки Chrome</translation>
+<translation id="4762097990764616058">Продовжити оплату через <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Умови використання, надані продавцем (<ph name="URL" />)</translation>
 <translation id="4764680219299728632">Кухонні плити, варильні поверхні й духові печі</translation>
 <translation id="4764776831041365478">Вебсторінка за адресою <ph name="URL" /> може бути тимчасово недоступною або її назавжди переміщено на нову вебадресу.</translation>
@@ -3434,6 +3435,7 @@
 <translation id="6649510485211003056">195 x 270 мм</translation>
 <translation id="6651270836885078973">Керує:</translation>
 <translation id="6652101503459149953">Використовувати Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> перевірить, чи відповідаєте ви вимогам (це не вплине на ваш кредитний рейтинг). Якщо так, <ph name="BNPL_ISSUER_NAME" /> запропонує вам платіжні плани, щоб ви могли завершити купівлю.</translation>
 <translation id="6654224358955673568">Описати у формальнішому стилі</translation>
 <translation id="6654244995031366386">Скло (текстуроване)</translation>
 <translation id="6657585470893396449">Пароль</translation>
@@ -3597,6 +3599,7 @@
 <translation id="6925267999184670015">B+ (Північна Америка)</translation>
 <translation id="6926216138694948720">Боді-арт</translation>
 <translation id="692638818576287323">Комерційні транспортні засоби</translation>
+<translation id="6927057753277044239">Переглянувши замовлення, увійдіть в обліковий запис <ph name="BNPL_ISSUER_NAME" /> або створіть новий. Його буде автоматично зв’язано з вашим обліковим записом Google.</translation>
 <translation id="6930607614725241390">Пошук на бічній панелі</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Пошукова система за умовчанням дає змогу здійснювати пошук в Інтернеті й підтримує такі функції Chrome,<ph name="END_BOLD" /> як пошук з адресного рядка й за зображеннями на веб-сторінках. Функція може бути недоступна, якщо ваша пошукова система її не підтримує.</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>

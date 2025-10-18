@@ -2292,6 +2292,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4758311279753947758">Engadir información de contacto</translation>
 <translation id="4761326898079498987">Obtén máis detalles</translation>
 <translation id="4761869838909035636">Executar Comprobación de seguranza de Chrome</translation>
+<translation id="4762097990764616058">Queres seguir pagando con <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Termos e condicións ofrecidos por <ph name="URL" /></translation>
 <translation id="4764680219299728632">Fogóns, placas de cociña e fornos</translation>
 <translation id="4764776831041365478">É posible que a páxina web de <ph name="URL" /> estea temporalmente inactiva ou que se trasladase definitivamente a outro enderezo web.</translation>
@@ -3434,6 +3435,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Xestionadas por:</translation>
 <translation id="6652101503459149953">Usar Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> comprobará se cumpres os requisitos necesarios (este proceso non lle afectará á túa cualificación crediticia). Se é así, <ph name="BNPL_ISSUER_NAME" /> facilitarache os posibles plans de pago para completar a compra.</translation>
 <translation id="6654224358955673568">Formalizar</translation>
 <translation id="6654244995031366386">Cristal (con textura)</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
@@ -3597,6 +3599,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6925267999184670015">Norteamericano B+</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Vehículos comerciais</translation>
+<translation id="6927057753277044239">Unha vez que revises o pedido, debes iniciar sesión ou crear unha conta de <ph name="BNPL_ISSUER_NAME" />, que se vinculará automaticamente á túa Conta de Google.</translation>
 <translation id="6930607614725241390">Fai buscas no panel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O teu buscador predeterminado permíteche procurar información na Web e potencia as funcións de Chrome<ph name="END_BOLD" />, como a busca desde a barra de enderezos e desde imaxes de páxinas web. Pode que algunha función non estea dispoñible se o buscador non a admite.</translation>
 <translation id="6934672428414710184">Este nome procede da túa Conta de Google</translation>

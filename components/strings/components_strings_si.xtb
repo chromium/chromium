@@ -2292,6 +2292,7 @@
 <translation id="4758311279753947758">සම්බන්ධතා තතු එක් කරන්න</translation>
 <translation id="4761326898079498987">වැඩිදුර විස්තර සඳහා සමාලෝචනය කරන්න</translation>
 <translation id="4761869838909035636">Chrome ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න</translation>
+<translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" /> සමග ගෙවීම දිගටම කරගෙන යන්න ද?</translation>
 <translation id="4763196677855776703"><ph name="URL" /> විසින් සපයනු ලබන නියමයන් සහ කොන්දේසි</translation>
 <translation id="4764680219299728632">රේන්ජර්ස්, කුක් ටොප්ස් සහ අවන්</translation>
 <translation id="4764776831041365478"><ph name="URL" /> හි වෙබ් පිටුව තාවකාලිකව ක්‍රියා නොකරයි නැතහොත් එය ස්ථිරවම වෙනත් වෙබ් ලිපිනයක් වෙත ගෙනගොස් ඇත.</translation>
@@ -3434,6 +3435,7 @@
 <translation id="6649510485211003056">මිමි 195 x 270</translation>
 <translation id="6651270836885078973">කළමනාකරණය කරන්නේ:</translation>
 <translation id="6652101503459149953">Windows Hello භාවිත කරන්න</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ඔබේ සුදුසුකම් පරීක්ෂා කරනු ඇත (මෙය ඔබේ ණය ලකුණු වලට බලපාන්නේ නැත). ඔබ සුදුසුකම් නිර්ණායක සපුරාලන්නේ නම්, <ph name="BNPL_ISSUER_NAME" /> ඔබේ මිල දී ගැනීම සම්පූර්ණ කිරීම සඳහා විභව ගෙවීම් සැලසු(ම්) ලබා දෙනු ඇත.</translation>
 <translation id="6654224358955673568">විධිමත් කරන්න</translation>
 <translation id="6654244995031366386">වීදුරු (වයනය සහිත)</translation>
 <translation id="6657585470893396449">මුරපදය</translation>
@@ -3597,6 +3599,7 @@
 <translation id="6925267999184670015">උතුරු ඇමරිකානු B+</translation>
 <translation id="6926216138694948720">ශරීර පින්තාරු කලාව</translation>
 <translation id="692638818576287323">වාණිජ වාහන</translation>
+<translation id="6927057753277044239">ඔබේ ඇණවුම සමාලෝචනය කිරීමෙන් පසු, ඔබ <ph name="BNPL_ISSUER_NAME" /> සමග පුරනය විය යුතු හෝ ගිණුමක් නිර්මාණය කළ යුතු යි. මෙම ගිණුම ඔබේ Google ගිණුමට ස්වයංක්‍රීයව සම්බන්ධ වනු ඇත.</translation>
 <translation id="6930607614725241390">පැති පැනලයේ සොයන්න</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />ඔබේ පෙරනිමි සෙවීම් යන්ත්‍රය ඔබට වෙබය සෙවීමට ඉඩ දෙන අතර<ph name="END_BOLD" /> ලිපින තීරුවෙන් සහ වෙබ් පිටුවල රූපවලින් සෙවීම වැනි Chrome විශේෂාංග බලගන්වයි. ඔබේ සෙවීම් යන්ත්‍රය එයට සහාය නොදක්වන්නේ නම් විශේෂාංගයක් නොතිබිය හැක.</translation>
 <translation id="6934672428414710184">මෙම නම ඔබගේ Google ගිණුමෙනි</translation>

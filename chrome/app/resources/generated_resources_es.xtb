@@ -1029,7 +1029,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1686785653877010442">Los sitios suelen enviar notificaciones para informarte sobre las últimas noticias o mensajes de chat.</translation>
 <translation id="168715261339224929">Activa la sincronización para ver tus marcadores en todos tus dispositivos.</translation>
 <translation id="1688935057616748272">Escribe una letra</translation>
-<translation id="1689333818294560261">Apodo</translation>
+<translation id="1689333818294560261">Sobrenombre</translation>
 <translation id="168991973552362966">Añadir una impresora cercana</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
 <translation id="1690068335127678634">Configuración de pantalla dividida</translation>
@@ -1235,6 +1235,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1829192082282182671">&amp;Reducir zoom</translation>
 <translation id="1830550083491357902">No has iniciado sesión.</translation>
 <translation id="1831848493690504725">No podemos acceder a Google a través de la red conectada. Prueba a seleccionar otra red o comprueba la configuración de red. Si estás usando un proxy, comprueba su configuración.</translation>
+<translation id="1832414451155700364">Elige si quieres sincronizar el historial y las pestañas</translation>
 <translation id="1832459821645506983">Sí, acepto</translation>
 <translation id="1832511806131704864">Cambio de teléfono actualizado</translation>
 <translation id="1832848789136765277">Verifica tu identidad para asegurarte de que siempre puedas acceder a tus datos sincronizados</translation>
@@ -8782,6 +8783,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7088960765736518739">Accesibilidad con interruptores</translation>
 <translation id="7089253021944603172">Pestaña activa de nuevo</translation>
 <translation id="7090714929377281710">Desactivar punto de acceso automáticamente</translation>
+<translation id="7092452922791061650">Haz clic con el botón derecho en esta pestaña y selecciona Nueva vista dividida con la pestaña actual</translation>
 <translation id="7092504544229909737">No se puede usar con aplicaciones Android</translation>
 <translation id="7093220653036489319">Respuestas rápidas</translation>
 <translation id="7093866338626856921">Intercambiar datos con los dispositivos denominados <ph name="HOSTNAMES" /></translation>

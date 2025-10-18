@@ -2292,6 +2292,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4758311279753947758">Dodaj dane kontaktowe</translation>
 <translation id="4761326898079498987">Sprawdź, aby uzyskać więcej informacji</translation>
 <translation id="4761869838909035636">Uruchom kontrolę zabezpieczeń Chrome</translation>
+<translation id="4762097990764616058">Chcesz nadal płacić za pomocą <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Warunki korzystania z usługi udostępnione przez <ph name="URL" /></translation>
 <translation id="4764680219299728632">Kuchenki, płyty grzewcze i piekarniki</translation>
 <translation id="4764776831041365478">Strona internetowa pod adresem <ph name="URL" /> może być tymczasowo niedostępna lub została na stałe przeniesiona pod nowy adres internetowy.</translation>
@@ -3434,6 +3435,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Zarządzane przez:</translation>
 <translation id="6652101503459149953">Używaj Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> sprawdzi, czy spełniasz wymagania (nie wpłynie to na Twój scoring kredytowy). Jeśli spełniasz kryteria kwalifikacji, <ph name="BNPL_ISSUER_NAME" /> udostępni Ci potencjalne abonamenty, aby umożliwić Ci dokończenie zakupu.</translation>
 <translation id="6654224358955673568">Zastosuj bardziej oficjalny ton</translation>
 <translation id="6654244995031366386">Szkło (teksturowane)</translation>
 <translation id="6657585470893396449">Hasło</translation>
@@ -3597,6 +3599,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6925267999184670015">B+ (Ameryka Północna)</translation>
 <translation id="6926216138694948720">Zdobienie ciała</translation>
 <translation id="692638818576287323">Samochody dla firm</translation>
+<translation id="6927057753277044239">Po sprawdzeniu zamówienia musisz zalogować się na konto <ph name="BNPL_ISSUER_NAME" /> lub je utworzyć. To konto zostanie automatycznie połączone z Twoim kontem Google.</translation>
 <translation id="6930607614725241390">Szukaj w panelu bocznym</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Domyślna wyszukiwarka umożliwia wyszukiwanie w internecie i obsługuje funkcje Chrome<ph name="END_BOLD" />, takie jak wyszukiwanie na pasku adresu i wyszukiwanie za pomocą obrazów na stronach internetowych. Funkcja może być niedostępna, jeśli Twoja wyszukiwarka jej nie obsługuje.</translation>
 <translation id="6934672428414710184">To imię i nazwisko pochodzi z Twojego konta Google</translation>

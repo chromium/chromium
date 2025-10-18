@@ -1243,6 +1243,7 @@
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
 <translation id="1830550083491357902">未登入</translation>
 <translation id="1831848493690504725">我們無法透過已連線的網絡連接 Google。請嘗試選取其他網絡，或檢查網絡設定或 Proxy 設定 (如有使用 Proxy)。</translation>
+<translation id="1832414451155700364">選擇是否同步記錄和分頁</translation>
 <translation id="1832459821645506983">是，我同意使用</translation>
 <translation id="1832511806131704864">手機變更內容已更新</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
@@ -8786,6 +8787,7 @@
 <translation id="7088960765736518739">按鈕控制</translation>
 <translation id="7089253021944603172">讓分頁恢復「使用中」狀態</translation>
 <translation id="7090714929377281710">自動關閉熱點</translation>
+<translation id="7092452922791061650">在此分頁按一下右鍵，然後選取 [使用目前分頁建立新的分割檢視畫面]</translation>
 <translation id="7092504544229909737">無法配合 Android 應用程式使用</translation>
 <translation id="7093220653036489319">快速解答</translation>
 <translation id="7093866338626856921">與名稱為「<ph name="HOSTNAMES" />」的裝置交換數據</translation>

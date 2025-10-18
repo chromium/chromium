@@ -2292,6 +2292,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4758311279753947758">Adicionar dados de contato</translation>
 <translation id="4761326898079498987">Revise para conferir mais detalhes</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
+<translation id="4762097990764616058">Continuar o pagamento com <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Termos e Condições fornecidos por <ph name="URL" /></translation>
 <translation id="4764680219299728632">Fogões, cooktops e fornos</translation>
 <translation id="4764776831041365478">A página <ph name="URL" /> pode estar temporariamente indisponível ou pode ter sido movida permanentemente para um novo endereço da Web.</translation>
@@ -3434,6 +3435,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Gerenciamento por:</translation>
 <translation id="6652101503459149953">Usar Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> vai verificar sua qualificação. Isso não afeta seu score de crédito. Caso você atenda aos critérios, <ph name="BNPL_ISSUER_NAME" /> vai oferecer os planos de pagamento e concluir a compra.</translation>
 <translation id="6654224358955673568">Usar um tom formal</translation>
 <translation id="6654244995031366386">Vidro (texturizado)</translation>
 <translation id="6657585470893396449">Senha</translation>
@@ -3597,6 +3599,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6925267999184670015">B+ (América do Norte)</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
+<translation id="6927057753277044239">Depois de analisar o pedido, faça login ou crie uma conta do <ph name="BNPL_ISSUER_NAME" />. Ela será vinculada automaticamente à sua Conta do Google.</translation>
 <translation id="6930607614725241390">Pesquise no painel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O mecanismo de pesquisa padrão é o que vai ser usado para pesquisas na Internet, além de usar recursos do Chrome<ph name="END_BOLD" />, como a pesquisa na barra de endereço e em imagens de páginas da Web. Alguns recursos podem ficar indisponíveis se o mecanismo de pesquisa escolhido não tiver suporte para ele.</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>

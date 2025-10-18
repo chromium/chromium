@@ -1234,6 +1234,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1829192082282182671">A&amp;fastar</translation>
 <translation id="1830550083491357902">Sesión non iniciada</translation>
 <translation id="1831848493690504725">Non se puido acceder a Google a través da rede conectada. Proba a escoller unha rede diferente ou a comprobar a súa configuración ou a do proxy (se é que estás utilizando un).</translation>
+<translation id="1832414451155700364">Indica se queres sincronizar o historial e as pestanas</translation>
 <translation id="1832459821645506983">Si, acepto</translation>
 <translation id="1832511806131704864">Cambio de teléfono actualizado</translation>
 <translation id="1832848789136765277">Para asegurarte de poder acceder sempre aos teus datos sincronizados, verifica a túa identidade</translation>
@@ -8782,6 +8783,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7088960765736518739">Acceso con interruptores</translation>
 <translation id="7089253021944603172">Pestana activa de novo</translation>
 <translation id="7090714929377281710">Desactivar zona wifi automaticamente</translation>
+<translation id="7092452922791061650">Fai clic co botón dereito nesta pestana e selecciona Nova vista dividida coa pestana actual</translation>
 <translation id="7092504544229909737">Non se pode usar coas aplicacións para Android</translation>
 <translation id="7093220653036489319">Respostas rápidas</translation>
 <translation id="7093866338626856921">Intercambiar datos cos dispositivos denominados: <ph name="HOSTNAMES" /></translation>

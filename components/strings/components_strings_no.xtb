@@ -2292,6 +2292,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4758311279753947758">Legg til kontaktinformasjon</translation>
 <translation id="4761326898079498987">Gjennomgå for å få mer informasjon</translation>
 <translation id="4761869838909035636">Kjør Chrome-sikkerhetssjekk</translation>
+<translation id="4762097990764616058">Vil du fortsette å betale med <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Vilkårene er levert av <ph name="URL" /></translation>
 <translation id="4764680219299728632">Komfyrer, platetopper og ovner</translation>
 <translation id="4764776831041365478">Det kan hende at nettsiden på <ph name="URL" /> er midlertidig nede eller flyttet permanent til en ny nettadresse.</translation>
@@ -3434,6 +3435,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Administreres av:</translation>
 <translation id="6652101503459149953">Bruk Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> sjekker om du er kvalifisert (dette påvirker ikke kredittvurderingen din). Hvis du oppfyller kvalifikasjonskriteriene, sender <ph name="BNPL_ISSUER_NAME" /> deg betalingsavtalen(e) du kan velge for å fullføre kjøpet.</translation>
 <translation id="6654224358955673568">Formaliser</translation>
 <translation id="6654244995031366386">Glass (teksturert)</translation>
 <translation id="6657585470893396449">Passord</translation>
@@ -3597,6 +3599,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Kroppsutsmykning</translation>
 <translation id="692638818576287323">Kommersielle kjøretøy</translation>
+<translation id="6927057753277044239">Når du har gjennomgått bestillingen, må du logge på eller opprette en konto med <ph name="BNPL_ISSUER_NAME" />. Denne kontoen knyttes automatisk til Google-kontoen din.</translation>
 <translation id="6930607614725241390">Søk i sidepanelet</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Med standardsøkemotoren din kan du søke på nettet og dra nytte av Chrome-funksjoner<ph name="END_BOLD" /> som søk i adressefeltet og via bilder på nettsider. Det kan hende at enkelte funksjoner ikke er tilgjengelige hvis søkemotoren din ikke støtter dem.</translation>
 <translation id="6934672428414710184">Dette navnet er fra Google-kontoen din</translation>
@@ -3648,6 +3651,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6997288673234694149">Baseball- og softballutstyr</translation>
 <translation id="6998512609912910179">Fyll ut skjemaer raskere</translation>
 <translation id="6999480632062519056">Treningsinstruktører og personlig trening</translation>
+<translation id="7002897669829306463">Hjemmeadresse, <ph name="ADDRESS" /></translation>
 <translation id="7003278537452757231">Ryer og tepper</translation>
 <translation id="7003322000677139268">Bildeler og tilbehør</translation>
 <translation id="7004499039102548441">Nylige faner</translation>
@@ -4214,6 +4218,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="791698251820376781">Organisasjonen din tillater ikke at du logger på</translation>
 <translation id="7926503317156566022">Flybransjen</translation>
 <translation id="7930282586031445870">Skjermen med vilkår for bruk av Kjøp nå, betal senere er lukket.</translation>
+<translation id="7932035970207573919">Jobbadresse, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Vil du oppdatere adressen?</translation>
 <translation id="7932579305932748336">Belegg</translation>
 <translation id="79338296614623784">Angi et gyldig telefonnummer</translation>

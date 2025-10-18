@@ -1472,6 +1472,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7425832472614771259">Modelo de transcrição <ph name="LANGUAGE_NAME" />: <ph name="PROGRESS_PERCENTAGE" />% transferido</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Não é possível desativar nem remover este APN. Certifique-se de que os APNs <ph name="ATTACH" /> ativados foram desativados ou removidos.</translation>
+<translation id="7458359366992324037">Visualização remota</translation>
 <translation id="7458970041932198923">Ligue-se a uma rede e atualize a página para ver e definir avatares.</translation>
 <translation id="7469648432129124067">Portal detetado</translation>
 <translation id="7481312909269577407">Avançar</translation>

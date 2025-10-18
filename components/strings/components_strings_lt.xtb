@@ -2293,6 +2293,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4758311279753947758">Pridėti kontaktinę informaciją</translation>
 <translation id="4761326898079498987">Peržiūrėkite, jei reikia išsamesnės informacijos</translation>
 <translation id="4761869838909035636">Paleisti „Chrome“ Saugos patikrą</translation>
+<translation id="4762097990764616058">Tęsti mokėjimą naudojant „<ph name="BNPL_ISSUER_NAME" />“?</translation>
 <translation id="4763196677855776703">Taisykles ir nuostatas pateikė <ph name="URL" /></translation>
 <translation id="4764680219299728632">Viryklės, kaitlentės ir orkaitės</translation>
 <translation id="4764776831041365478">Tinklalapis šiuo adresu <ph name="URL" /> gali laikinai neveikti arba visam laikui būti perkeltas kitu žiniatinklio adresu.</translation>
@@ -3435,6 +3436,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Valdo:</translation>
 <translation id="6652101503459149953">Naudoti „Windows Hello“</translation>
+<translation id="6653684225271066234">„<ph name="BNPL_ISSUER_NAME" />“ patikrins, ar atitinkate reikalavimus (tai neturės įtakos jūsų kreditingumo balui). Jei atitinkate tinkamumo kriterijus, „<ph name="BNPL_ISSUER_NAME" />“ pateiks galimą (-us) mokėjimo planą (-us), kad galėtumėte užbaigti pirkimą.</translation>
 <translation id="6654224358955673568">Padaryti oficialesnį</translation>
 <translation id="6654244995031366386">Stiklas (tekstūruotas)</translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
@@ -3598,6 +3600,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6925267999184670015">Šiaurės Amerikos B+</translation>
 <translation id="6926216138694948720">Kūno menas</translation>
 <translation id="692638818576287323">Komerciniai automobiliai</translation>
+<translation id="6927057753277044239">Peržiūrėję užsakymą turite prisijungti prie „<ph name="BNPL_ISSUER_NAME" />“ paskyros arba ją sukurti. Ši paskyra bus automatiškai susieta su jūsų „Google“ paskyra.</translation>
 <translation id="6930607614725241390">Paieška šoniniame skydelyje</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Naudodami numatytąjį paieškos variklį galite ieškoti žiniatinklyje ir naudoti „Chrome“ funkcijas<ph name="END_BOLD" />, pvz., paiešką iš adreso juostos ir vaizdų tinklalapiuose. Funkcija gali būti nepasiekiama, jei paieškos variklis jos nepalaiko.</translation>
 <translation id="6934672428414710184">Šis vardas yra iš jūsų „Google“ paskyros</translation>

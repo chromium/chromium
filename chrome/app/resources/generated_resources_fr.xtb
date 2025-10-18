@@ -1236,6 +1236,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1829192082282182671">Z&amp;oom arrière</translation>
 <translation id="1830550083491357902">Non connecté</translation>
 <translation id="1831848493690504725">Impossible de joindre Google via le réseau connecté. Choisissez un autre réseau ou vérifiez vos paramètres réseau ou vos paramètres proxy (si vous utilisez un proxy).</translation>
+<translation id="1832414451155700364">Choisissez de synchroniser ou non l'historique et les onglets</translation>
 <translation id="1832459821645506983">Oui, j'accepte</translation>
 <translation id="1832511806131704864">Changement de téléphone mis à jour</translation>
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
@@ -8784,6 +8785,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Onglet de nouveau actif</translation>
 <translation id="7090714929377281710">Désactiver le point d'accès automatiquement</translation>
+<translation id="7092452922791061650">Effectuez un clic droit sur cet onglet et sélectionnez "Nouvelle vue fractionnée avec l'onglet actuel"</translation>
 <translation id="7092504544229909737">Ne peut pas être utilisé avec les applis Android</translation>
 <translation id="7093220653036489319">Réponses rapides</translation>
 <translation id="7093866338626856921">Échanger des données avec les appareils suivants : "<ph name="HOSTNAMES" />"</translation>

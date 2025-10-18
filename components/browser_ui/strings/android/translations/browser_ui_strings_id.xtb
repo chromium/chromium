@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2379925928934107488">Terapkan tema gelap ke situs saat Chrome menggunakan tema gelap, jika mungkin</translation>
 <translation id="2390272837142897736">Tambah zoom</translation>
+<translation id="2397689164757137845">Diizinkan • Presisi</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Presisi</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diizinkan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diizinkan}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Bantuan &amp; masukan</translation>
 <translation id="2501278716633472235">Kembali</translation>
 <translation id="2533138527374486328">Jika diaktifkan, situs dapat meminta untuk terhubung ke perangkat apa pun di jaringan lokal Anda. Jika dinonaktifkan, situs tidak dapat terhubung ke perangkat di jaringan lokal Anda.</translation>
+<translation id="2536779053640817375">Diizinkan kali ini • Presisi</translation>
 <translation id="2544997614631598250">Warna tema gelap</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
 <translation id="2570922361219980984">Akses lokasi juga dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>

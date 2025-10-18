@@ -1237,6 +1237,7 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1829192082282182671">&amp;Oddialiť</translation>
 <translation id="1830550083491357902">Neprihlásený/-á</translation>
 <translation id="1831848493690504725">Cez pripojenú sieť nie je možné s Googlom nadviazať spojenie. Skúste vybrať inú sieť alebo skontrolovať nastavenia siete či proxy servera (ak proxy server používate).</translation>
+<translation id="1832414451155700364">Vyberte, či chcete synchronizovať históriu a karty</translation>
 <translation id="1832459821645506983">Áno, súhlasím</translation>
 <translation id="1832511806131704864">Zmena telefónu bola aktualizovaná</translation>
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
@@ -8788,6 +8789,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7088960765736518739">Ovládanie prepínačmi</translation>
 <translation id="7089253021944603172">Karta je znova aktívna</translation>
 <translation id="7090714929377281710">Automaticky vypínať hotspot</translation>
+<translation id="7092452922791061650">Kliknite pravým tlačidlom na túto kartu a vyberte Nové rozdelené zobrazenie s aktuálnou kartou</translation>
 <translation id="7092504544229909737">Nedá sa používať s aplikáciami pre Android</translation>
 <translation id="7093220653036489319">Rýchle odpovede</translation>
 <translation id="7093866338626856921">Vymieňať údaje so zariadeniami s nasledujúcimi názvami: <ph name="HOSTNAMES" /></translation>

@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2379925928934107488">เมื่อทำได้ ให้ใช้ธีมมืดกับเว็บไซต์เมื่อ Chrome ใช้ธีมมืด</translation>
 <translation id="2390272837142897736">เพิ่มการซูม</translation>
+<translation id="2397689164757137845">อนุญาต • แน่นอน</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">แน่นอน</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}other{อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">ความช่วยเหลือและความคิดเห็น</translation>
 <translation id="2501278716633472235">ย้อนกลับ</translation>
 <translation id="2533138527374486328">เมื่อเปิด เว็บไซต์จะขอเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณได้ เมื่อปิด เว็บไซต์จะเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณไม่ได้</translation>
+<translation id="2536779053640817375">อนุญาตในครั้งนี้ • แน่นอน</translation>
 <translation id="2544997614631598250">ธีมสีมืด</translation>
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="2570922361219980984">การเข้าถึงตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดการเข้าถึงได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>

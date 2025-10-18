@@ -1246,6 +1246,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1829192082282182671">Zoom &amp;ud</translation>
 <translation id="1830550083491357902">Ikke logget ind</translation>
 <translation id="1831848493690504725">Vi kan ikke få forbindelse til Google via det forbundne netværk. Prøv at vælge et andet netværk eller tjekke dine netværksindstillinger eller proxyindstillinger (hvis du bruger en proxy).</translation>
+<translation id="1832414451155700364">Vælg, om historik og faner skal synkroniseres</translation>
 <translation id="1832459821645506983">Ja tak</translation>
 <translation id="1832511806131704864">Telefonændring opdateret</translation>
 <translation id="1832848789136765277">Verificer din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
@@ -8801,6 +8802,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7088960765736518739">Kontaktadgang</translation>
 <translation id="7089253021944603172">Fanen er aktiv igen</translation>
 <translation id="7090714929377281710">Deaktiver hotspot automatisk</translation>
+<translation id="7092452922791061650">Højreklik på denne fane, og vælg "Ny opdelt visning med den aktuelle fane"</translation>
 <translation id="7092504544229909737">Kan ikke bruges sammen med Android-apps</translation>
 <translation id="7093220653036489319">Hurtig info</translation>
 <translation id="7093866338626856921">Udveksle data med enhederne ved navn: <ph name="HOSTNAMES" /></translation>

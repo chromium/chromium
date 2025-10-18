@@ -2292,6 +2292,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4758311279753947758">Voeg kontakinligting by</translation>
 <translation id="4761326898079498987">Gaan na vir meer besonderhede</translation>
 <translation id="4761869838909035636">Doen Chrome-veiligheidskontrole</translation>
+<translation id="4762097990764616058">Gaan voort om te betaal met <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Bepalings en voorwaardes verskaf deur <ph name="URL" /></translation>
 <translation id="4764680219299728632">Stowe, stoofblaaie en oonde</translation>
 <translation id="4764776831041365478">Die webbladsy by <ph name="URL" /> kan dalk tydelik af wees of dit kon permanent na 'n nuwe webadres geskuif het.</translation>
@@ -3434,6 +3435,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6649510485211003056">195x270 mm</translation>
 <translation id="6651270836885078973">Bestuur deur:</translation>
 <translation id="6652101503459149953">Gebruik Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> sal kyk of jy kwalifiseer (dit sal nie jou krediettelling beïnvloed nie). As jy aan die geskiktheidskriteria voldoen, sal <ph name="BNPL_ISSUER_NAME" /> potensiële betaalplan(ne) verskaf om jou aankoop te voltooi.</translation>
 <translation id="6654224358955673568">Formaliseer</translation>
 <translation id="6654244995031366386">Glas (getekstureerd)</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
@@ -3597,6 +3599,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6925267999184670015">Noord-Amerikaanse B+</translation>
 <translation id="6926216138694948720">Liggaamkuns</translation>
 <translation id="692638818576287323">Kommersiële voertuie</translation>
+<translation id="6927057753277044239">Jy moet aanmeld by <ph name="BNPL_ISSUER_NAME" /> of ’n rekening by hulle skep nadat jy jou bestelling nagegaan het. Hierdie rekening sal outomaties aan jou Google-rekening gekoppel word.</translation>
 <translation id="6930607614725241390">Deursoek die kantpaneel</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Jou versteksoekenjin laat jou op die web deursoek en dryf Chrome-kenmerke aan<ph name="END_BOLD" />, soos om vanaf die adresbalk en vanaf prente op webblaaie te soek. ’n Kenmerk is dalk nie beskikbaar as jou soekenjin dit nie ondersteun nie.</translation>
 <translation id="6934672428414710184">Hierdie naam is van jou Google-rekening af</translation>

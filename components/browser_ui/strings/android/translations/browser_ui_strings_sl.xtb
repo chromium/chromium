@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2379925928934107488">Uporaba temne teme (ko je to mogoče) na spletnih mestih, če Chrome uporablja temno temo.</translation>
 <translation id="2390272837142897736">Povečanje povečave/pomanjšave</translation>
+<translation id="2397689164757137845">Dovoljeno • Natančna</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Natančna</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}one{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}two{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}few{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}other{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Pomoč in povratne inform.</translation>
 <translation id="2501278716633472235">Nazaj</translation>
 <translation id="2533138527374486328">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo vzpostavitev povezave s katero koli napravo v lokalnem omrežju. Če je ta možnost izklopljena, spletna mesta ne smejo vzpostavljati povezav z napravami v lokalnem omrežju.</translation>
+<translation id="2536779053640817375">Tokrat dovoljeno • Natančna</translation>
 <translation id="2544997614631598250">Barva teme – temna</translation>
 <translation id="2546283357679194313">Piškotki in podatki spletnih mest</translation>
 <translation id="2570922361219980984">Dostop do lokacije je tudi izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>

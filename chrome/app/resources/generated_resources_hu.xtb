@@ -1244,6 +1244,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1829192082282182671">Kics&amp;inyítés</translation>
 <translation id="1830550083491357902">Nem jelentkezett be</translation>
 <translation id="1831848493690504725">A csatlakoztatott hálózaton keresztül nem sikerült elérni a Google-t. Válasszon másik hálózatot, vagy ellenőrizze a hálózati vagy proxybeállításokat (ha proxyt használ).</translation>
+<translation id="1832414451155700364">Válassza ki, hogy szeretné-e szinkronizálni az előzményeket és a lapokat</translation>
 <translation id="1832459821645506983">Benne vagyok!</translation>
 <translation id="1832511806131704864">Telefonmódosítás frissítve</translation>
 <translation id="1832848789136765277">Igazolja személyazonosságát, hogy mindig hozzáférhessen szinkronizált adataihoz</translation>
@@ -8796,6 +8797,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7088960765736518739">Kapcsolóalapú hozzáférés</translation>
 <translation id="7089253021944603172">A lap újra aktív</translation>
 <translation id="7090714929377281710">Hotspot automatikus kikapcsolása</translation>
+<translation id="7092452922791061650">Kattintson jobb egérgombbal erre a lapra, és válassza az „Új osztott nézet az aktuális lappal” lehetőséget.</translation>
 <translation id="7092504544229909737">Nem használható Android-alkalmazásokkal</translation>
 <translation id="7093220653036489319">Gyors válaszok</translation>
 <translation id="7093866338626856921">Adatok cseréje a(z) <ph name="HOSTNAMES" /> nevű eszközökkel</translation>

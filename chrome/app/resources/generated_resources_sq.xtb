@@ -1232,6 +1232,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1829192082282182671">&amp;Zvogëlo</translation>
 <translation id="1830550083491357902">I pa identifikuar</translation>
 <translation id="1831848493690504725">Nuk mund të lidhemi me Google nëpërmjet rrjetit të lidhur. Provo të zgjedhësh një rrjet tjetër ose të kontrollosh cilësimet e rrjetit ose cilësimet e proxy-it (nëse po përdor një proxy).</translation>
+<translation id="1832414451155700364">Zgjidh nëse do të sinkronizosh historikun dhe skedat</translation>
 <translation id="1832459821645506983">Po, jam dakord</translation>
 <translation id="1832511806131704864">Ndryshimi i telefonit u përditësua</translation>
 <translation id="1832848789136765277">Për t'u siguruar që mund të qasesh gjithmonë te të dhënat e tua të sinkronizuara, verifiko që je ti</translation>
@@ -8777,6 +8778,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7088960765736518739">Qasja me çelës</translation>
 <translation id="7089253021944603172">Skeda është përsëri aktive</translation>
 <translation id="7090714929377281710">Çaktivizo automatikisht zonën e qasjes për internet</translation>
+<translation id="7092452922791061650">Kliko me butonin djathtas në këtë skedë dhe zgjidh “Pamje e re e ndarë me skedën aktuale”</translation>
 <translation id="7092504544229909737">Nuk mund të përdoret me aplikacionet për Android</translation>
 <translation id="7093220653036489319">Përgjigjet e shpejta</translation>
 <translation id="7093866338626856921">Shkëmbe të dhëna me pajisjet me emrin: <ph name="HOSTNAMES" /></translation>

@@ -2290,6 +2290,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4758311279753947758">Kontaktdaten hinzufügen</translation>
 <translation id="4761326898079498987">Weitere Informationen erhältst du hier</translation>
 <translation id="4761869838909035636">Chrome-Sicherheitscheck ausführen</translation>
+<translation id="4762097990764616058">Weiterhin mit <ph name="BNPL_ISSUER_NAME" /> bezahlen?</translation>
 <translation id="4763196677855776703">Nutzungsbedingungen von <ph name="URL" /></translation>
 <translation id="4764680219299728632">Herde, Kochfelder und Öfen</translation>
 <translation id="4764776831041365478">Die Webseite unter <ph name="URL" /> ist eventuell vorübergehend nicht verfügbar oder wurde dauerhaft an eine neue Webadresse verschoben.</translation>
@@ -3432,6 +3433,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6649510485211003056">195 × 270 mm</translation>
 <translation id="6651270836885078973">Verwaltet von:</translation>
 <translation id="6652101503459149953">Windows Hello verwenden</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> prüft, ob du die Voraussetzungen erfüllst. Das hat keinen Einfluss auf deinen Kreditscore. Wenn du die Voraussetzungen erfüllst, erhältst du von <ph name="BNPL_ISSUER_NAME" /> mögliche Abrechnungsmodelle, um den Kauf abzuschließen.</translation>
 <translation id="6654224358955673568">Formeller ausdrücken</translation>
 <translation id="6654244995031366386">Glas (texturiert)</translation>
 <translation id="6657585470893396449">Passwort</translation>
@@ -3595,6 +3597,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6925267999184670015">B+ (Nordamerika)</translation>
 <translation id="6926216138694948720">Körperschmuck und -kunst</translation>
 <translation id="692638818576287323">Gewerbefahrzeuge</translation>
+<translation id="6927057753277044239">Nachdem du deine Bestellung geprüft hast, musst du dich mit <ph name="BNPL_ISSUER_NAME" /> in deinem Konto anmelden oder ein neues erstellen. Dieses Konto wird automatisch mit deinem Google-Konto verknüpft.</translation>
 <translation id="6930607614725241390">In der Seitenleiste suchen</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mit der Standardsuchmaschine hast du die Möglichkeit, im Web zu suchen und Chrome-Funktionen zu nutzen.<ph name="END_BOLD" /> Du kannst beispielsweise über die Adressleiste oder über Bilder auf Webseiten suchen. Eine Funktion ist möglicherweise nicht verfügbar, wenn sie nicht von deiner Suchmaschine unterstützt wird.</translation>
 <translation id="6934672428414710184">Dieser Name stammt aus deinem Google-Konto</translation>

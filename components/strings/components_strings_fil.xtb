@@ -2292,6 +2292,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4758311279753947758">Magdagdag ng impormasyon sa pakikipag-ugnayan</translation>
 <translation id="4761326898079498987">Suriin para sa higit pang detalye</translation>
 <translation id="4761869838909035636">Magpatakbo ng Pag-check sa Kaligtasan sa Chrome</translation>
+<translation id="4762097990764616058">Magpatuloy sa pagbabayad gamit ang <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Inihatid ang mga tuntunin at kundisyon ng <ph name="URL" /></translation>
 <translation id="4764680219299728632">Mga Range, Cooktop, at Oven</translation>
 <translation id="4764776831041365478">Ang webpage sa <ph name="URL" /> ay maaaring pansamantalang hindi gumagana o maaaring permanente itong inilipat sa isang bagong web address.</translation>
@@ -3434,6 +3435,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Pinapamahalaan ng:</translation>
 <translation id="6652101503459149953">Gamitin ang Windows Hello</translation>
+<translation id="6653684225271066234">Titingnan ng <ph name="BNPL_ISSUER_NAME" /> ang pagiging kwalipikado mo (hindi ito makakaapekto sa iyong credit score). Kung matutugunan mo ang mga pamantayan sa pagiging kwalipikado, ibibigay ng <ph name="BNPL_ISSUER_NAME" /> ang iyong (mga) potensyal na plan sa pagbabayad para makumpleto ang pagbili mo.</translation>
 <translation id="6654224358955673568">Gawing pormal</translation>
 <translation id="6654244995031366386">Glass (May Texture)</translation>
 <translation id="6657585470893396449">Password</translation>
@@ -3597,6 +3599,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Body Art</translation>
 <translation id="692638818576287323">Mga Sasakyang Pang-negosyo</translation>
+<translation id="6927057753277044239">Kapag nasuri mo na ang iyong order, dapat kang mag-sign in o gumawa ng account sa <ph name="BNPL_ISSUER_NAME" />. Awtomatikong ili-link ang account na ito sa iyong Google account.</translation>
 <translation id="6930607614725241390">Maghanap sa panel sa gilid</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Magbibigay-daan ang iyong default na search engine para makapaghanap ka sa web at pagaganahin nito ang mga feature ng Chrome<ph name="END_BOLD" /> gaya ng paghahanap mula sa address bar at mula sa mga larawan sa mga web page. Posibleng hindi maging available ang isang feature kung hindi ito sinusuportahan ng iyong search engine.</translation>
 <translation id="6934672428414710184">Nagmula ang pangalang ito sa iyong Google Account</translation>

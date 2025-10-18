@@ -1236,6 +1236,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1829192082282182671">&amp;Vähenda</translation>
 <translation id="1830550083491357902">Pole sisse logitud</translation>
 <translation id="1831848493690504725">Me ei saa Google'iga ühendatud võrgu kaudu ühendust. Valige teine võrk või kontrollige oma võrgu või puhverserveri seadeid (kui kasutate puhverserverit).</translation>
+<translation id="1832414451155700364">Valige, kas soovite ajaloo ja vahelehed sünkroonida</translation>
 <translation id="1832459821645506983">Jah, sobib</translation>
 <translation id="1832511806131704864">Telefoni muutmist värskendati</translation>
 <translation id="1832848789136765277">Selleks, et pääseksite alati oma sünkroonitud andmetele juurde, kinnitage oma isik</translation>
@@ -8788,6 +8789,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7088960765736518739">Lülitiga juurdepääs</translation>
 <translation id="7089253021944603172">Vaheleht on jälle aktiivne</translation>
 <translation id="7090714929377281710">Lülita kuumkoht automaatselt välja</translation>
+<translation id="7092452922791061650">Paremklõpsake sellel vahelehel ja tehke valik „Uus poolitatud vaade praeguse vahelehega“.</translation>
 <translation id="7092504544229909737">Ei saa Androidi rakendustega kasutada</translation>
 <translation id="7093220653036489319">Kiired vastused</translation>
 <translation id="7093866338626856921">Vaheta andmeid seadmetega <ph name="HOSTNAMES" /></translation>

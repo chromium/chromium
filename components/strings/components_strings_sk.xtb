@@ -2288,6 +2288,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4758311279753947758">Pridať kontaktné údaje</translation>
 <translation id="4761326898079498987">Prezrite si ďalšie podrobnosti</translation>
 <translation id="4761869838909035636">Spustiť kontrolu bezpečnosti Chromu</translation>
+<translation id="4762097990764616058">Chcete naďalej platiť spôsobom <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Zmluvné podmienky poskytuje <ph name="URL" /></translation>
 <translation id="4764680219299728632">Sporáky, varné dosky a rúry</translation>
 <translation id="4764776831041365478">Stránka <ph name="URL" /> je možno dočasne nedostupná, možno bola natrvalo presunutá na novú webovú adresu.</translation>
@@ -3429,6 +3430,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6649510485211003056">195 × 270 mm</translation>
 <translation id="6651270836885078973">Spravuje:</translation>
 <translation id="6652101503459149953">Použiť Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> skontroluje, či spĺňate podmienky (vaše úverové skóre to neovplyvní). Ak spĺňate podmienky oprávnenosti, <ph name="BNPL_ISSUER_NAME" /> vám poskytne možné platobné tarify na dokončenie nákupu.</translation>
 <translation id="6654224358955673568">Formalizovať</translation>
 <translation id="6654244995031366386">Sklo (textúrované)</translation>
 <translation id="6657585470893396449">Heslo</translation>
@@ -3592,6 +3594,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6925267999184670015">Severoamerický formát B+</translation>
 <translation id="6926216138694948720">Kreslenie na telo</translation>
 <translation id="692638818576287323">Komerčné vozidlá</translation>
+<translation id="6927057753277044239">Po kontrole objednávky sa musíte prihlásiť do účtu <ph name="BNPL_ISSUER_NAME" /> alebo si ho vytvoriť. Tento účet sa automaticky prepojí s vaším účtom Google.</translation>
 <translation id="6930607614725241390">Vyhľadávanie na bočnom paneli</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Predvolený vyhľadávač vám umožňuje vyhľadávať na internete a využívať funkcie Chromu<ph name="END_BOLD" />, ako je vyhľadávanie z panela s adresou alebo z obrázkov na webových stránkach. Funkcie, ktoré vyhľadávač nepodporuje, nebudú k dispozícii.</translation>
 <translation id="6934672428414710184">Meno pochádza z vášho účtu Google</translation>

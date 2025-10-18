@@ -2292,6 +2292,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4758311279753947758">Bæta við samskiptaupplýsingum</translation>
 <translation id="4761326898079498987">Skoðaðu þetta til að fá frekari upplýsingar</translation>
 <translation id="4761869838909035636">Keyra öryggisathugun í Chrome</translation>
+<translation id="4762097990764616058">Halda áfram að greiða með <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Skilmálar frá <ph name="URL" /></translation>
 <translation id="4764680219299728632">Eldavélar, helluborð og ofnar</translation>
 <translation id="4764776831041365478">Vefsíðan á <ph name="URL" /> gæti legið niðri tímabundið eða gæti hafa verið flutt varanlega á annað veffang.</translation>
@@ -3434,6 +3435,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Stjórnað af:</translation>
 <translation id="6652101503459149953">Nota Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> mun athuga gjaldgengi þitt (þetta mun ekki hafa áhrif á lánshæfiseinkunnina þína). Ef gjaldgengi er staðfest mun <ph name="BNPL_ISSUER_NAME" /> gefa þér upp hugsanlega(r) greiðsluleið(ir) til að ganga frá kaupunum.</translation>
 <translation id="6654224358955673568">Gera formlegri</translation>
 <translation id="6654244995031366386">Gler (með áferð)</translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
@@ -3597,6 +3599,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6925267999184670015">B+ fyrir Norður Ameríku</translation>
 <translation id="6926216138694948720">Líkamsskreyting</translation>
 <translation id="692638818576287323">Flutningabifreiðir</translation>
+<translation id="6927057753277044239">Þegar þú hefur farið yfir pöntunina þína þarftu að skrá þig inn á eða stofna reikning hjá <ph name="BNPL_ISSUER_NAME" />. Þessi reikningur verður sjálfkrafa tengdur við Google-reikninginn þinn.</translation>
 <translation id="6930607614725241390">Leit í hliðarglugga</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Sjálfgefin leitarvél gerir þér kleift að leita á netinu og knýr Chrome-eiginleika<ph name="END_BOLD" /> á borð við að leita frá veffangastikunni og út frá myndum á vefsíðum. Eiginleiki er hugsanlega ekki í boði ef leitarvélin styður hann ekki.</translation>
 <translation id="6934672428414710184">Þetta nafn kemur af Google reikningnum þínum</translation>

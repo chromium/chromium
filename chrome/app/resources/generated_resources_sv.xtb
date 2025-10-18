@@ -1244,6 +1244,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1829192082282182671">Zooma ut</translation>
 <translation id="1830550083491357902">Inte inloggad</translation>
 <translation id="1831848493690504725">Det går inte att nå Google via det anslutna nätverket. Testa att välja ett annat nätverk eller kontrollera nätverks- eller proxyinställningarna (om du använder en proxy).</translation>
+<translation id="1832414451155700364">Välj om historik och flikar ska synkroniseras</translation>
 <translation id="1832459821645506983">Ja</translation>
 <translation id="1832511806131704864">Mobiländringen har uppdaterats</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
@@ -8797,6 +8798,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7088960765736518739">Brytarstyrning</translation>
 <translation id="7089253021944603172">Fliken är aktiv igen</translation>
 <translation id="7090714929377281710">Inaktivera surfzon automatiskt</translation>
+<translation id="7092452922791061650">Högerklicka på den här fliken och välj Ny delad vy med aktuell flik</translation>
 <translation id="7092504544229909737">Kan inte användas med Android-appar</translation>
 <translation id="7093220653036489319">Snabbinfo</translation>
 <translation id="7093866338626856921">Utväxla data med enheterna <ph name="HOSTNAMES" /></translation>

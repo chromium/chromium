@@ -186,6 +186,7 @@
 <translation id="3047590466164881923">Lukk dialogboksen for tilbakemeldinger</translation>
 <translation id="306179102415443347">Bruk snarveien for å åpne Google Passordlagring raskt. Du kan flytte snarveien til startskjermen eller appoversikten på datamaskinen.</translation>
 <translation id="3065168410429928842">Chrome-fane</translation>
+<translation id="3073571714401714450">Slå av/på Gemini i Chrome Dev</translation>
 <translation id="3080151273017101988">Fortsett kjøringen av bakgrunnsprogrammer når Google Chrome er lukket</translation>
 <translation id="308397506772922478">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="3100998948628680988">Gi navn til Chrome-profilen din</translation>
@@ -373,6 +374,7 @@
 <translation id="5368118228313795342">Ekstrakode: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Den styrer også hvilken side som vises når du starter Chrome eller søker fra multifunksjonsfeltet.</translation>
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
+<translation id="5402307365844630024">Slå av/på Gemini i Chrome Beta</translation>
 <translation id="5430073640787465221">Innstillingsfilen er skadet eller ugyldig. Google Chrome kan ikke gjenopprette innstillingene dine.</translation>
 <translation id="5468572406162360320">For å bidra til å forbedre disse funksjonene sender Chrome informasjon om hvordan du samhandler med dem, til Google. Disse dataene kan bli lest, behandlet og annotert av menneskelige evaluerere.</translation>
 <translation id="5510398294750420479">Last ned Chrome på telefonen for å legge til et ekstra lag med beskyttelse når du er på farten</translation>
@@ -422,6 +424,7 @@
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941830788786076944">Gjør Google Chrome til standardleser</translation>
 <translation id="5947104538377036631">Chrome-snarvei</translation>
+<translation id="5960071705175224773">Innstillingene dine er endret av en ukjent app</translation>
 <translation id="5968400720580217226">AI-modus</translation>
 <translation id="5980111191913430208">Utvidelser, apper og temaer fra ukjente kilder kan skade enheten din. Chrome anbefaler at du kun installerer dem fra <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Laster ned … <ph name="HOURS" /> time(r) igjen</translation>
@@ -645,6 +648,7 @@
 <translation id="8362914115861174987">Oversett til</translation>
 <translation id="8366770919198174997">Reduserer ytelsen, men gjør Chrome mer motstandsdyktig mot angrep</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
+<translation id="8377158135256176353">Slå av/på Gemini i Chrome Canary</translation>
 <translation id="8387459386171870978">Fortsett å bruke Chrome</translation>
 <translation id="8394720698884623075">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder</translation>
 <translation id="8403038600646341038">Chrome-logo på en dataskjerm.</translation>
@@ -693,12 +697,14 @@
 <translation id="8914504000324227558">Start Chrome på nytt</translation>
 <translation id="8922193594870374009">For å sende numre fra <ph name="ORIGIN" /> til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
 <translation id="8922998289262614701">Fjern data for disse appene fra Chrome</translation>
+<translation id="8936233353620149764">Slå av/på Gemini i Chrome</translation>
 <translation id="8948460679427074738">Denne utvidelsen har ikke publisert retningslinjer for personvern, for eksempel hvordan den samler inn og bruker data. Chrome anbefaler at du fjerner den.</translation>
 <translation id="8958307504142971576">Nå har du flere funksjoner tilgjengelig i Chrome</translation>
 <translation id="8991530961471831170">Åpne Gemini i Chrome</translation>
 <translation id="8992769679401294069">Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chrome-data i Google-kontoen din.</translation>
 <translation id="8999117580775242387">Når HTTPS ikke er tilgjengelig, bruker Chrome usikre tilkoblinger uten å advare deg</translation>
 <translation id="8999208279178790196">{0,plural, =0{En Chrome-oppdatering er tilgjengelig}=1{En Chrome-oppdatering er tilgjengelig}other{En Chrome-oppdatering har vært tilgjengelig i # dager}}</translation>
+<translation id="9010418943148193727">Standardsøkemotoren din er endret utenfor Chrome. For å beskytte deg har Chrome tilbakestilt den.</translation>
 <translation id="9014771989710951291">Flere organisasjoner administrerer Chrome</translation>
 <translation id="9024318700713112071">Angi Chrome som standard</translation>
 <translation id="9066987883552592250">Lukk Gemini i Chrome Canary</translation>

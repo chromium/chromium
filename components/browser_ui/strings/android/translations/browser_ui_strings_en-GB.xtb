@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2379925928934107488">Apply Dark theme to sites when Chrome uses Dark theme, when possible</translation>
 <translation id="2390272837142897736">Increase zoom</translation>
+<translation id="2397689164757137845">Allowed • Precise</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Precise</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Help and feedback</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2533138527374486328">When on, sites can ask to connect to any device on your local network. When off, sites can't connect to devices on your local network.</translation>
+<translation id="2536779053640817375">Allowed this time • Precise</translation>
 <translation id="2544997614631598250">Theme colour dark</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>

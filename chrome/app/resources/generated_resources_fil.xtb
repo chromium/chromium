@@ -1245,6 +1245,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1829192082282182671">Mag-zoom &amp;Out</translation>
 <translation id="1830550083491357902">Hindi naka-sign in</translation>
 <translation id="1831848493690504725">Hindi namin maabot ang Google sa pamamagitan ng nakakonektang network. Subukang pumili ng ibang network o tingnan ang iyong mga setting ng network o setting ng proxy (kung gumagamit ka ng proxy).</translation>
+<translation id="1832414451155700364">Piliin kung isi-sync ang history at mga tab</translation>
 <translation id="1832459821645506983">Oo, payag ako</translation>
 <translation id="1832511806131704864">Na-update na ang pagbabago sa telepono</translation>
 <translation id="1832848789136765277">Para matiyak na maa-access mo anumang oras ang iyong naka-sync na data, i-verify na ikaw ito</translation>
@@ -8800,6 +8801,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Aktibo Ulit ang Tab</translation>
 <translation id="7090714929377281710">Awtomatikong i-off ang hotspot</translation>
+<translation id="7092452922791061650">Mag-right click sa tab na ito at piliin ang “Bagong split view sa kasalukuyang tab”</translation>
 <translation id="7092504544229909737">Hindi magagamit sa mga Android app</translation>
 <translation id="7093220653036489319">Instant na impormasyon</translation>
 <translation id="7093866338626856921">Makipagpalit ng data sa mga device na pinangalanang: <ph name="HOSTNAMES" /></translation>

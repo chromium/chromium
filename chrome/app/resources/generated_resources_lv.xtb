@@ -1237,6 +1237,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1829192082282182671">Tālināt</translation>
 <translation id="1830550083491357902">Nav pierakstījies</translation>
 <translation id="1831848493690504725">Mēs nevaram izveidot savienojumu ar Google, izmantojot pievienoto tīklu. Izvēlieties citu tīklu vai pārbaudiet sava tīkla iestatījumus vai starpniekservera iestatījumus (ja izmantojat starpniekserveri).</translation>
+<translation id="1832414451155700364">Izvēlieties, vai sinhronizēt vēsturi un cilnes</translation>
 <translation id="1832459821645506983">Jā, labi</translation>
 <translation id="1832511806131704864">Tālruņa iestatījumu izmaiņas atjauninātas</translation>
 <translation id="1832848789136765277">Lai vienmēr varētu piekļūt saviem sinhronizētajiem datiem, apstipriniet savu identitāti.</translation>
@@ -8784,6 +8785,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7088960765736518739">Slēdžu piekļuve</translation>
 <translation id="7089253021944603172">Cilne atkal ir aktīva</translation>
 <translation id="7090714929377281710">Automātiski izslēgt tīklāju</translation>
+<translation id="7092452922791061650">Noklikšķiniet ar peles labo pogu uz šīs cilnes un atlasiet vienumu “Jauns dalītais skats ar pašreizējo cilni”.</translation>
 <translation id="7092504544229909737">Nevar izmantot ar Android lietotnēm.</translation>
 <translation id="7093220653036489319">Ātrās atbildes</translation>
 <translation id="7093866338626856921">apmainīties datiem ar šādām ierīcēm: <ph name="HOSTNAMES" /></translation>

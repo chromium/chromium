@@ -1235,6 +1235,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1829192082282182671">U&amp;zaklaştır</translation>
 <translation id="1830550083491357902">Oturum açılmadı</translation>
 <translation id="1831848493690504725">Bağlı ağ üzerinden Google'a ulaşılamıyor. Farklı bir ağ seçmeyi veya ağ ayarlarınızı ya da proxy ayarlarınızı (proxy kullanıyorsanız) kontrol etmeyi deneyin.</translation>
+<translation id="1832414451155700364">Geçmişin ve sekmelerin senkronize edilip edilmeyeceğini seçin</translation>
 <translation id="1832459821645506983">Evet, kabul ediyorum</translation>
 <translation id="1832511806131704864">Telefon değişikliği güncellendi</translation>
 <translation id="1832848789136765277">Senkronize edilen verilerinize her zaman erişebileceğinizden emin olmak için kimliğinizi doğrulayın</translation>
@@ -8780,6 +8781,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7088960765736518739">Anahtar Erişimi</translation>
 <translation id="7089253021944603172">Sekme yeniden etkin</translation>
 <translation id="7090714929377281710">Hotspot'u otomatik olarak kapat</translation>
+<translation id="7092452922791061650">Bu sekmeyi sağ tıklayıp "Mevcut sekmeyle yeni bölünmüş görünüm"ü seçin</translation>
 <translation id="7092504544229909737">Android uygulamalarıyla kullanılamaz</translation>
 <translation id="7093220653036489319">Hızlı yanıtlar</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" /> adlı cihazlarla veri alışverişi</translation>

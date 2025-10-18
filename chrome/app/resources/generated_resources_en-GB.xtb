@@ -1244,6 +1244,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1829192082282182671">Zoom &amp;Out</translation>
 <translation id="1830550083491357902">Not signed in</translation>
 <translation id="1831848493690504725">We can't reach Google through the connected network. Try choosing a different network or checking your network settings or proxy settings (if you are using a proxy).</translation>
+<translation id="1832414451155700364">Choose whether to sync history and tabs</translation>
 <translation id="1832459821645506983">Yes, I’m in</translation>
 <translation id="1832511806131704864">Phone change updated</translation>
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
@@ -8797,6 +8798,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Tab active again</translation>
 <translation id="7090714929377281710">Automatically turn off hotspot</translation>
+<translation id="7092452922791061650">Right-click on this tab and select 'New split view with current tab'</translation>
 <translation id="7092504544229909737">Can't be used with Android apps</translation>
 <translation id="7093220653036489319">Quick Answers</translation>
 <translation id="7093866338626856921">Exchange data with the devices named: <ph name="HOSTNAMES" /></translation>

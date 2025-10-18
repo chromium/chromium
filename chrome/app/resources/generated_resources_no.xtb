@@ -1239,6 +1239,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1829192082282182671">Zoom &amp;ut</translation>
 <translation id="1830550083491357902">Ikke pålogget</translation>
 <translation id="1831848493690504725">Vi får ikke kontakt med Google via det tilkoblede nettverket. Prøv å velge et annet nettverk, eller sjekk nettverksinnstillingene eller proxy-innstillingene (hvis du bruker en proxy-tjener).</translation>
+<translation id="1832414451155700364">Velg om loggen og fanene skal synkroniseres</translation>
 <translation id="1832459821645506983">Ja, den er grei</translation>
 <translation id="1832511806131704864">Telefonendring oppdatert</translation>
 <translation id="1832848789136765277">For å sikre at du alltid har tilgang til de synkroniserte dataene dine, må du bekrefte at det er deg</translation>
@@ -8786,6 +8787,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7088960765736518739">Brytertilgang</translation>
 <translation id="7089253021944603172">Fanen er aktiv igjen</translation>
 <translation id="7090714929377281710">Slå av wifi-sone automatisk</translation>
+<translation id="7092452922791061650">Høyreklikk på denne fanen, og velg «Ny delt visning med den aktive fanen»</translation>
 <translation id="7092504544229909737">Kan ikke brukes med Android-apper</translation>
 <translation id="7093220653036489319">Hurtigsvar</translation>
 <translation id="7093866338626856921">Utveksle data med enhetene <ph name="HOSTNAMES" /></translation>

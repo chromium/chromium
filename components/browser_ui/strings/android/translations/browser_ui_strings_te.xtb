@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2379925928934107488">Chrome ముదురు రంగు రూపాన్ని ఉపయోగించినప్పుడు, వీలైతే, సైట్‌లకు ముదురు రంగు రూపాన్ని వర్తింపజేయండి</translation>
 <translation id="2390272837142897736">జూమ్ స్థాయిని పెంచండి</translation>
+<translation id="2397689164757137845">అనుమతించబడుతుంది • ఖచ్చితమైనది</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">ఖచ్చితమైన లొకేషన్</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">సహాయం &amp; అభిప్రాయం</translation>
 <translation id="2501278716633472235">వెనుకకు వెళ్ళు</translation>
 <translation id="2533138527374486328">ఆన్‌లో ఉన్నప్పుడు, సైట్‌లు మీ లోకల్ నెట్‌వర్క్‌లోని ఏ డివైజ్‌కు అయినా కనెక్ట్ అవ్వడానికి అడగవచ్చు. ఆఫ్‌లో ఉన్నప్పుడు, సైట్‌లు మీ లోకల్ నెట్‌వర్క్‌లోని డివైజ్‌లకు కనెక్ట్ కాలేవు.</translation>
+<translation id="2536779053640817375">ఈసారి అనుమతించబడుతుంది • ఖచ్చితమైనది</translation>
 <translation id="2544997614631598250">ముదురు థీమ్ రంగు</translation>
 <translation id="2546283357679194313">కుక్కీలు మరియు సైట్ డేటా</translation>
 <translation id="2570922361219980984">ఈ పరికరానికి స్థానం యాక్సెస్ కూడా ఆఫ్ చేయబడింది. దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో తిరిగి ఆన్ చేయండి.</translation>

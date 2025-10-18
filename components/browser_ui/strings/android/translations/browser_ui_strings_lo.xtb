@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2379925928934107488">ນຳໃຊ້ຮູບແບບສີສັນມືດໃສ່ເວັບໄຊເມື່ອ Chrome ໃຊ້ຮູບແບບສີສັນມືດ, ເມື່ອເປັນໄປໄດ້.</translation>
 <translation id="2390272837142897736">ເພີ່ມການຊູມ</translation>
+<translation id="2397689164757137845">ອະນຸຍາດ • ແບບລະອຽດ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">ແບບລະອຽດ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{ອະນຸຍາດ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການແລ້ວ}other{ອະນຸຍາດ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການແລ້ວ}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">ຊ່ວຍເຫຼືອ ​ແລະ ຄໍາ​ຄິດ​ເຫັນຕິ​ຊົມ</translation>
 <translation id="2501278716633472235">ກັບ​ຄືນ​ໄປ</translation>
 <translation id="2533138527374486328">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນໃດກໍຕາມໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານໄດ້. ເມື່ອປິດ, ເວັບໄຊຈະບໍ່ສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານໄດ້.</translation>
+<translation id="2536779053640817375">ອະນຸຍາດໃນເທື່ອນີ້ • ແບບລະອຽດ</translation>
 <translation id="2544997614631598250">ຮູບແບບສີສັນສີມືດ</translation>
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
 <translation id="2570922361219980984">ການເຂົ້າເຖິງສະຖານທີ່ປິດຢູ່ສຳລັບອຸປະກອນນີ້ນຳອີກ. ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>

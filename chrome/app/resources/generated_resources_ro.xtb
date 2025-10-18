@@ -1236,6 +1236,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1829192082282182671">Mi&amp;cșorează</translation>
 <translation id="1830550083491357902">Neconectat</translation>
 <translation id="1831848493690504725">Nu putem accesa Google prin rețeaua conectată. Încearcă să alegi altă rețea sau să verifici setările de rețea ori setările proxy (dacă folosești un proxy).</translation>
+<translation id="1832414451155700364">Alege dacă sincronizezi istoricul și filele</translation>
 <translation id="1832459821645506983">Da, accept</translation>
 <translation id="1832511806131704864">Schimbare a telefonului actualizată</translation>
 <translation id="1832848789136765277">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la datele sincronizate</translation>
@@ -8784,6 +8785,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7088960765736518739">Acces prin comutare</translation>
 <translation id="7089253021944603172">Fila este din nou activă</translation>
 <translation id="7090714929377281710">Dezactivează automat hotspotul</translation>
+<translation id="7092452922791061650">Dă clic dreapta pe această filă și selectează Noua afișare împărțită cu fila actuală</translation>
 <translation id="7092504544229909737">Nu se poate folosi cu aplicații pentru Android</translation>
 <translation id="7093220653036489319">Răspunsuri rapide</translation>
 <translation id="7093866338626856921">Fă schimb de date cu dispozitivele numite: <ph name="HOSTNAMES" /></translation>

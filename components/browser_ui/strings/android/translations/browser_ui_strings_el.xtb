@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2379925928934107488">Εφαρμογή σκούρου θέματος σε ιστοτόπους όταν το Chrome χρησιμοποιεί σκούρο θέμα, όταν υπάρχει αυτή η δυνατότητα</translation>
 <translation id="2390272837142897736">Μεγέθυνση</translation>
+<translation id="2397689164757137845">Επιτρέπεται • Ακριβής</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Ακριβής</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Βοήθεια και σχόλια</translation>
 <translation id="2501278716633472235">Επιστροφή</translation>
 <translation id="2533138527374486328">Όταν είναι ενεργοποιημένη αυτή η επιλογή, οι ιστότοποι μπορούν να ζητήσουν να συνδεθούν σε οποιαδήποτε συσκευή στο τοπικό σας δίκτυο. Όταν είναι απενεργοποιημένη αυτή η επιλογή, οι ιστότοποι δεν μπορούν να συνδεθούν σε συσκευές στο τοπικό σας δίκτυο.</translation>
+<translation id="2536779053640817375">Επιτράπηκε για αυτή τη φορά • Ακριβής</translation>
 <translation id="2544997614631598250">Χρώμα θέματος Σκούρο</translation>
 <translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
 <translation id="2570922361219980984">Η πρόσβαση στην Τοποθεσία είναι απενεργοποιημένη επίσης γι' αυτήν τη συσκευή. Ενεργοποιήστε τη στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>

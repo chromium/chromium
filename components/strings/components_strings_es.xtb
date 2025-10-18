@@ -420,7 +420,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1682696192498422849">Borde corto primero</translation>
 <translation id="168693727862418163">No se ha podido validar el valor de esta política con su esquema y se ignorará.</translation>
 <translation id="168841957122794586">El certificado del servidor contiene una clave criptográfica no segura.</translation>
-<translation id="1689333818294560261">Apodo</translation>
+<translation id="1689333818294560261">Sobrenombre</translation>
 <translation id="1692622044604477956">Carteleras y horarios de cines</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los temas que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, los temas pueden volver a aparecer en la lista. Además, puedes bloquear los temas que no quieras que Chrome comparta con los sitios, así como desactivar los temas de anuncios en cualquier momento desde la configuración de Chrome.</translation>
 <translation id="1699651774646344471">Ya puedes usar direcciones de tu cuenta de Google</translation>
@@ -2292,6 +2292,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4758311279753947758">Añadir información de contacto</translation>
 <translation id="4761326898079498987">Consultar más información</translation>
 <translation id="4761869838909035636">Realizar comprobación de seguridad de Chrome</translation>
+<translation id="4762097990764616058">¿Continuar para pagar con <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Términos y condiciones proporcionados por <ph name="URL" /></translation>
 <translation id="4764680219299728632">Cocinas, vitrocerámicas y hornos</translation>
 <translation id="4764776831041365478">Es posible que la página web <ph name="URL" /> esté temporalmente inactiva o que se haya trasladado definitivamente a otra dirección.</translation>
@@ -3434,6 +3435,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6649510485211003056">195x270 mm</translation>
 <translation id="6651270836885078973">Gestionado por:</translation>
 <translation id="6652101503459149953">Usar Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> comprobará si cumples los requisitos (esto no afectará a tu calificación crediticia). Si los cumples, <ph name="BNPL_ISSUER_NAME" /> te ofrecerá posibles planes de pagos para completar tu compra.</translation>
 <translation id="6654224358955673568">Formalizar</translation>
 <translation id="6654244995031366386">Cristal (texturizado)</translation>
 <translation id="6657585470893396449">Contraseña</translation>
@@ -3597,6 +3599,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6925267999184670015">B+ norteamericano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Vehículos comerciales</translation>
+<translation id="6927057753277044239">Después de revisar tu pedido, debes iniciar sesión o crear una cuenta de <ph name="BNPL_ISSUER_NAME" />. Esta cuenta se vinculará automáticamente a tu cuenta de Google.</translation>
 <translation id="6930607614725241390">Busca en el panel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Tu buscador predeterminado te permite hacer búsquedas en la Web y te ofrece funciones de Chrome,<ph name="END_BOLD" /> como hacer búsquedas desde la barra de direcciones y desde imágenes de páginas web. Es posible que una función no esté disponible si tu buscador no la admite.</translation>
 <translation id="6934672428414710184">Este nombre proviene de tu cuenta de Google</translation>

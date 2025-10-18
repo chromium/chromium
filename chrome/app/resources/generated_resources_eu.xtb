@@ -1235,6 +1235,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1829192082282182671">&amp;Txikiagotu</translation>
 <translation id="1830550083491357902">Saioa hasi gabe</translation>
 <translation id="1831848493690504725">Ezin gara konektatu Google-ra sare honen bidez. Aukeratu beste sare bat, edo begiratu sarearen edo proxyaren ezarpenetan (proxy bat erabiltzen ari bazara).</translation>
+<translation id="1832414451155700364">Aukeratu historia eta fitxak sinkronizatu nahi dituzun</translation>
 <translation id="1832459821645506983">Ados</translation>
 <translation id="1832511806131704864">Eguneratu da telefono-aldaketa</translation>
 <translation id="1832848789136765277">Sinkronizatutako datuak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
@@ -8776,6 +8777,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7088960765736518739">Erabilerraztasun-osagarria</translation>
 <translation id="7089253021944603172">Fitxa aktibo dago berriro</translation>
 <translation id="7090714929377281710">Desaktibatu automatikoki wifi-gunea</translation>
+<translation id="7092452922791061650">Egin klik eskuineko botoiarekin fitxa honetan eta hautatu "Ikuspegi zatitu berria, oraingo fitxarekin"</translation>
 <translation id="7092504544229909737">Ezin da erabili Android-erako aplikazioekin</translation>
 <translation id="7093220653036489319">Erantzun bizkorrak</translation>
 <translation id="7093866338626856921">Izen hauek dituzten gailuekin datuak partekatu: <ph name="HOSTNAMES" />.</translation>

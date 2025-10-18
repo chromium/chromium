@@ -2288,6 +2288,7 @@
 <translation id="4758311279753947758">Kontakt məlumatı əlavə edin</translation>
 <translation id="4761326898079498987">Əlavə detallar üçün nəzərdən keçirin</translation>
 <translation id="4761869838909035636">Chrome Təhlükəsizlik Yoxlanışı icra edin</translation>
+<translation id="4762097990764616058"><ph name="BNPL_ISSUER_NAME" /> ilə ödəməyə davam etmək istəyirsiniz?</translation>
 <translation id="4763196677855776703">Şərt və qaydaları <ph name="URL" /> təqdim edir</translation>
 <translation id="4764680219299728632">Mətbəx sobası, ocaq və peçlər</translation>
 <translation id="4764776831041365478"><ph name="URL" /> ünvanındakı səhifə müvəqqəti olaraq deaktiv ola və ya həmişəlik olaraq yeni ünvana köçə bilər.</translation>
@@ -3430,6 +3431,7 @@
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">İdarə edən:</translation>
 <translation id="6652101503459149953">Windows Hello işlədin</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> uyğunluğunuzu yoxlayacaq (bu, kredit balınıza təsir etməyəcək). Uyğunluq kriteriyasına cavab versəniz, alışı tamamlamaq üçün <ph name="BNPL_ISSUER_NAME" /> potensial ödəniş planı təqdim edəcək.</translation>
 <translation id="6654224358955673568">Rəsmiləşdirin</translation>
 <translation id="6654244995031366386">Şüşə (teksturalı)</translation>
 <translation id="6657585470893396449">Parol</translation>
@@ -3593,6 +3595,7 @@
 <translation id="6925267999184670015">Şimali Amerika B+</translation>
 <translation id="6926216138694948720">Bədənin Bəzədilməsi</translation>
 <translation id="692638818576287323">Ticari nəqliyyat vasitələri</translation>
+<translation id="6927057753277044239">Sifarişinizi nəzərdən keçirdikdən sonra hesabınıza daxil olmalı və ya <ph name="BNPL_ISSUER_NAME" /> ilə yeni hesab yaratmalısınız. Bu hesab avtomatik olaraq Google hesabınızla əlaqələndiriləcək.</translation>
 <translation id="6930607614725241390">Yan paneldə axtarış edin</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Defolt axtarış mexanizmi vebdə axtarış imkanı verir və Chrome funksiyalarını dəstəkləyir<ph name="END_BOLD" /> (ünvan panelindən və veb-səhifələrdəki şəkillərdən axtarmaq kimi). Axtarış mexanizmi dəstəkləməsə, funksiya əlçatan olmaya bilər.</translation>
 <translation id="6934672428414710184">Bu ad Sizin Google Hesabınızdandır.</translation>

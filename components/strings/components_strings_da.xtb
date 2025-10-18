@@ -2292,6 +2292,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4758311279753947758">Tilføj kontaktoplysninger</translation>
 <translation id="4761326898079498987">Gennemgå for at få flere oplysninger</translation>
 <translation id="4761869838909035636">Kør Chrome-sikkerhedstjekket</translation>
+<translation id="4762097990764616058">Vil du fortsætte med at betale med <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Vilkårene og betingelserne er leveret af <ph name="URL" /></translation>
 <translation id="4764680219299728632">Komfurer, kogeplader og ovne</translation>
 <translation id="4764776831041365478">Websiden på <ph name="URL" /> kan være midlertidigt nede, eller også er den permanent flyttet til en ny webadresse.</translation>
@@ -3434,6 +3435,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Administreres af:</translation>
 <translation id="6652101503459149953">Brug Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> tjekker, om du er kvalificeret (dette påvirker ikke din kreditvurdering). Hvis du opfylder kriterierne for kvalifikation, leverer <ph name="BNPL_ISSUER_NAME" /> mulige betalingsplaner, så du kan gennemføre dit køb.</translation>
 <translation id="6654224358955673568">Gør formel</translation>
 <translation id="6654244995031366386">Glas (struktureret)</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
@@ -3597,6 +3599,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6925267999184670015">Nordamerika B+</translation>
 <translation id="6926216138694948720">Kropskunst</translation>
 <translation id="692638818576287323">Erhvervskøretøjer</translation>
+<translation id="6927057753277044239">Når du har gennemgået din ordre, skal du logge ind på eller oprette en konto med <ph name="BNPL_ISSUER_NAME" />. Denne konto knyttes automatisk til din Google-konto.</translation>
 <translation id="6930607614725241390">Søg i sidepanel</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Din standardsøgemaskine giver dig mulighed for at søge på nettet og understøtter Chrome-funktioner<ph name="END_BOLD" /> som f.eks. søgning via adresselinjen og billeder på websider. En funktion er muligvis ikke tilgængelig, hvis din søgemaskine ikke understøtter den.</translation>
 <translation id="6934672428414710184">Dette navn er fra din Google-konto</translation>

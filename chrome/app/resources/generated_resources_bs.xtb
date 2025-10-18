@@ -1243,6 +1243,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1829192082282182671">&amp;Umanji</translation>
 <translation id="1830550083491357902">Niste prijavljeni</translation>
 <translation id="1831848493690504725">Putem povezane mreže nije moguće uspostaviti vezu s Googleom. Pokušajte odabrati drugu mrežu ili provjerite postavke mreže ili proksija (ako koristite proksi server).</translation>
+<translation id="1832414451155700364">Odaberite želite li sinhronizirati historiju i kartice</translation>
 <translation id="1832459821645506983">Pristajem</translation>
 <translation id="1832511806131704864">Promjena telefona je ažurirana</translation>
 <translation id="1832848789136765277">Potvrdite svoj identitet da uvijek možete pristupati sinhroniziranim podacima</translation>
@@ -8800,6 +8801,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7088960765736518739">Pristup pomoću prekidača</translation>
 <translation id="7089253021944603172">Kartica je ponovo aktivna</translation>
 <translation id="7090714929377281710">Automatski isključi pristupnu tačku</translation>
+<translation id="7092452922791061650">Kliknite desnim klikom na ovu karticu i odaberite "Novi podijeljeni prikaz s trenutnom karticom"</translation>
 <translation id="7092504544229909737">Nije moguće koristiti s Android aplikacijama</translation>
 <translation id="7093220653036489319">Brzi odgovori</translation>
 <translation id="7093866338626856921">Razmjena podataka s uređajima pod nazivom: <ph name="HOSTNAMES" /></translation>

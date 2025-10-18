@@ -94,6 +94,7 @@
 <translation id="4371591986692297148">არააქტიური</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{ერთეულის აღდგენა}other{ერთეულების აღდგენა}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{განახლდა <ph name="NUM_DAYS_ONE" /> დღის წინ}other{განახლდა <ph name="NUM_DAYS_MANY" /> დღის წინ}}</translation>
+<translation id="4496868141611329150">ჩანართების ჯგუფის მარცხნივ გადატანა</translation>
 <translation id="4653140634010630594">{TAB_COUNT,plural, =1{საიტის დადუმება}other{საიტების დადუმება}}</translation>
 <translation id="4686942373615810936">შეიქმნა ახლახან</translation>
 <translation id="4783638485675352219">ამ მოწყობილობაში არსებული ღია ჩანართების სათაურებისა და URL-ების გაზიარება ოპერაციულ სისტემასთან</translation>
@@ -168,6 +169,7 @@
 <translation id="7369451074646620503">ჩანართების ჯგუფი „<ph name="TAB_GROUP_NAME" />“ აღარაა ხელმისაწვდომი</translation>
 <translation id="7452985128687107478">ჩანართების ჯგუფები ავტომატურად შეინახება და განახლდება თქვენს ყველა მოწყობილობაში</translation>
 <translation id="747459581954555080">ყველას აღდგენა</translation>
+<translation id="7489558427602531799">ჩანართების ჯგუფის მარჯვნივ გადატანა</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ერთეული}other{<ph name="TABS_COUNT_MANY" /> ერთეული}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ერთეულის აღდგენა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ერთეულის აღდგენა}}</translation>
 <translation id="753732157349120914">ჩანართების გადამრთველი</translation>

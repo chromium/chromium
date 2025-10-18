@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2379925928934107488">Ако е можно, примени темна тема на сајтовите кога Chrome користи темна тема</translation>
 <translation id="2390272837142897736">Зумирај</translation>
+<translation id="2397689164757137845">Дозволено • Прецизно</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Прецизна</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Помош и повратни информации</translation>
 <translation id="2501278716633472235">Врати се</translation>
 <translation id="2533138527374486328">Кога е вклучено, сајтовите може да бараат да се поврзуваат со кој било уред во вашата локална мрежа. Кога е исклучено, сајтовите не може да поврзуваат со уредите во вашата локална мрежа.</translation>
+<translation id="2536779053640817375">Дозволено овој пат • Прецизно</translation>
 <translation id="2544997614631598250">Боја на темата: Темна</translation>
 <translation id="2546283357679194313">Колачиња и податоци од сајтот</translation>
 <translation id="2570922361219980984">Пристапот до локацијата е исклучен и за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>

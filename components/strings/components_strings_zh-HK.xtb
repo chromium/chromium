@@ -2291,6 +2291,7 @@
 <translation id="4758311279753947758">新增聯絡人資訊</translation>
 <translation id="4761326898079498987">查看以瞭解詳情</translation>
 <translation id="4761869838909035636">執行 Chrome 安全檢查</translation>
+<translation id="4762097990764616058">要繼續使用 <ph name="BNPL_ISSUER_NAME" /> 付款嗎？</translation>
 <translation id="4763196677855776703"><ph name="URL" /> 提供的條款及細則</translation>
 <translation id="4764680219299728632">爐灶、電磁爐和焗爐</translation>
 <translation id="4764776831041365478"><ph name="URL" /> 的網頁可能暫時無法使用或被永久移至新網址。</translation>
@@ -3433,6 +3434,7 @@
 <translation id="6649510485211003056">195 x 270 毫米</translation>
 <translation id="6651270836885078973">管理員：</translation>
 <translation id="6652101503459149953">使用 Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> 會確認你的資格 (這不會影響你的信貸評分)。如果你符合使用資格，<ph name="BNPL_ISSUER_NAME" /> 會提供可行的付款計劃以完成購買程序。</translation>
 <translation id="6654224358955673568">使用正式語氣</translation>
 <translation id="6654244995031366386">玻璃 (紋理)</translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -3596,6 +3598,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">人體藝術</translation>
 <translation id="692638818576287323">商用汽車</translation>
+<translation id="6927057753277044239">檢查訂單後，你必須登入或建立 <ph name="BNPL_ISSUER_NAME" /> 帳戶。此帳戶會自動連結你的 Google 帳戶。</translation>
 <translation id="6930607614725241390">在側面板中搜尋</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />預設搜尋引擎可方便你搜尋網站並支援 Chrome 功能<ph name="END_BOLD" />，例如讓你在網址列搜尋，以及在網頁使用圖片搜尋。搜尋引擎不支援的功能將無法使用。</translation>
 <translation id="6934672428414710184">此名稱來自您的 Google 賬戶</translation>

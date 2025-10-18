@@ -1232,6 +1232,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1829192082282182671">Alejar</translation>
 <translation id="1830550083491357902">No has accedido</translation>
 <translation id="1831848493690504725">No podemos comunicarnos con Google a través de la red conectada. Prueba elegir otra red o revisa tu configuración de red o proxy (si usas un proxy).</translation>
+<translation id="1832414451155700364">Elige si quieres sincronizar el historial y las pestañas</translation>
 <translation id="1832459821645506983">Sí, acepto</translation>
 <translation id="1832511806131704864">Cambio de teléfono actualizado</translation>
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
@@ -8781,6 +8782,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7088960765736518739">Accesibilidad con interruptores</translation>
 <translation id="7089253021944603172">Se volvió a activar la pestaña</translation>
 <translation id="7090714929377281710">Desactiva el hotspot automáticamente</translation>
+<translation id="7092452922791061650">Haz clic con el botón derecho en esta pestaña y selecciona “Nueva vista dividida con la pestaña actual”</translation>
 <translation id="7092504544229909737">No se puede usar con apps para Android</translation>
 <translation id="7093220653036489319">Respuestas rápidas</translation>
 <translation id="7093866338626856921">Intercambiar datos con los siguientes dispositivos: <ph name="HOSTNAMES" /></translation>

@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2379925928934107488">Primijeni tamnu temu na web-lokacije kad Chrome koristi tamnu temu, kad je moguće</translation>
 <translation id="2390272837142897736">Povećajte zumiranje</translation>
+<translation id="2397689164757137845">Dopušteno • Precizno</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2403474027143565107">Precizno</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">Pomoć i povratne informacije</translation>
 <translation id="2501278716633472235">Natrag</translation>
 <translation id="2533138527374486328">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za povezivanje s bilo kojim uređajem na vašoj lokalnoj mreži. Kad je ta postavka isključena, web-lokacije ne mogu se povezati s uređajima na vašoj lokalnoj mreži.</translation>
+<translation id="2536779053640817375">Dopušteno ovaj put • Precizno</translation>
 <translation id="2544997614631598250">Boja teme: tamna</translation>
 <translation id="2546283357679194313">Kolačići i podaci o web-lokacijama</translation>
 <translation id="2570922361219980984">Pristup lokaciji isključen je i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>

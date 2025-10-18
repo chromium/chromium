@@ -2292,6 +2292,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4758311279753947758">Dodaj informacije o kontaktu</translation>
 <translation id="4761326898079498987">Pregledajte da vidite dodatne detalje</translation>
 <translation id="4761869838909035636">Pokrenite Sigurnosnu provjeru Chromea</translation>
+<translation id="4762097990764616058">Nastaviti da platite putem usluge <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Uslove i odredbe pruža prodavac <ph name="URL" /></translation>
 <translation id="4764680219299728632">Šporeti, ploče za kuhanje i rerne</translation>
 <translation id="4764776831041365478">Web stranica na <ph name="URL" /> je možda privremeno ugašena ili je trajno prebačena na novu web adresu.</translation>
@@ -3434,6 +3435,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Upravlja:</translation>
 <translation id="6652101503459149953">Koristi Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> će provjeriti ispunjavate li uslove (ovo neće uticati na vaš kreditni rejting). Ako ispunjavate kriterije podobnosti, <ph name="BNPL_ISSUER_NAME" /> će vam ponuditi potencijalne planove plaćanja da izvršite kupovinu.</translation>
 <translation id="6654224358955673568">Formaliziraj</translation>
 <translation id="6654244995031366386">Staklo (teksturirano)</translation>
 <translation id="6657585470893396449">Lozinka</translation>
@@ -3597,6 +3599,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Body art</translation>
 <translation id="692638818576287323">Komercijalna vozila</translation>
+<translation id="6927057753277044239">Nakon što pregledate narudžbu, morate se prijaviti na <ph name="BNPL_ISSUER_NAME" /> račun ili ga kreirati. Račun će se automatski povezati s Google računom.</translation>
 <translation id="6930607614725241390">Pretraživanje na bočnoj ploči</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Zadani pretraživač vam omogućava da pretražujete web i omogućava funkcije Chromea<ph name="END_BOLD" /> kao što je pretraživanje iz trake za adresu i sa slika na web stranicama. Funkcije koje pretraživač ne podržava možda neće biti dostupne.</translation>
 <translation id="6934672428414710184">Ovaj naziv je s vašeg Google računa</translation>

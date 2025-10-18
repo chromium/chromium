@@ -2292,6 +2292,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4758311279753947758">Lägg till kontaktuppgifter</translation>
 <translation id="4761326898079498987">Granska för mer information</translation>
 <translation id="4761869838909035636">Kör säkerhetskontroll i Chrome</translation>
+<translation id="4762097990764616058">Vill du fortsätta betala med <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Användarvillkoren tillhandahålls av <ph name="URL" /></translation>
 <translation id="4764680219299728632">Spishällar, gasspisar och ugnar</translation>
 <translation id="4764776831041365478">Webbsidan på <ph name="URL" /> kan ligga nere för tillfället eller kan ha flyttats permanent till en ny webbadress.</translation>
@@ -3434,6 +3435,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Hanteras av:</translation>
 <translation id="6652101503459149953">Använd Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> kontrollerar om du uppfyller kraven (detta påverkar inte din kreditvärdighet). Om du uppfyller kvalifikationskriterierna tillhandahåller <ph name="BNPL_ISSUER_NAME" /> potentiella betalningsplaner för att slutföra köpet.</translation>
 <translation id="6654224358955673568">Gör formell</translation>
 <translation id="6654244995031366386">Glas (strukturerat)</translation>
 <translation id="6657585470893396449">Lösenord</translation>
@@ -3597,6 +3599,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6925267999184670015">Nordamerikansk B+</translation>
 <translation id="6926216138694948720">Kroppskonst</translation>
 <translation id="692638818576287323">Yrkesfordon</translation>
+<translation id="6927057753277044239">När du har granskat beställningen måste du logga in på eller skapa ett konto hos <ph name="BNPL_ISSUER_NAME" />. Det här kontot länkas automatiskt till ditt Google-konto.</translation>
 <translation id="6930607614725241390">Sök i sidopanelen</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Med standardsökmotorn kan du söka på webben och få tillgång till Chrome-funktioner<ph name="END_BOLD" />, som att söka i adressfältet och från bilder på webbsidor. Vissa funktioner kanske inte är tillgängliga om sökmotorn inte har stöd för dem.</translation>
 <translation id="6934672428414710184">Det här namnet har hämtats från Google-kontot</translation>

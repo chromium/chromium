@@ -2291,6 +2291,7 @@
 <translation id="4758311279753947758">เพิ่มข้อมูลติดต่อ</translation>
 <translation id="4761326898079498987">ตรวจสอบเพื่อดูรายละเอียดเพิ่มเติม</translation>
 <translation id="4761869838909035636">เรียกใช้การตรวจสอบความปลอดภัยของ Chrome</translation>
+<translation id="4762097990764616058">ชำระเงินด้วย <ph name="BNPL_ISSUER_NAME" /> ต่อไปไหม</translation>
 <translation id="4763196677855776703">ข้อกำหนดและเงื่อนไขจาก <ph name="URL" /></translation>
 <translation id="4764680219299728632">เตาแก๊ส เตาหุงต้ม และเตาอบ</translation>
 <translation id="4764776831041365478">หน้าเว็บใน <ph name="URL" /> อาจหยุดให้บริการชั่วคราวหรืออาจถูกย้ายไปยังที่อยู่เว็บใหม่อย่างถาวร</translation>
@@ -3433,6 +3434,7 @@
 <translation id="6649510485211003056">195 x 270 มม.</translation>
 <translation id="6651270836885078973">จัดการโดย:</translation>
 <translation id="6652101503459149953">ใช้ Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> จะตรวจสอบสิทธิ์ของคุณ (การดำเนินการนี้จะไม่ส่งผลต่อคะแนนเครดิต) หากคุณมีคุณสมบัติตรงตามเกณฑ์การมีสิทธิ์ <ph name="BNPL_ISSUER_NAME" /> จะเสนอแพ็กเกจการชำระเงินให้คุณเพื่อดำเนินการซื้อให้เสร็จสมบูรณ์</translation>
 <translation id="6654224358955673568">เพิ่มความเป็นทางการ</translation>
 <translation id="6654244995031366386">กระจก (ขรุขระ)</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
@@ -3596,6 +3598,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">รอยสัก</translation>
 <translation id="692638818576287323">ยานพาหนะเพื่อการพาณิชย์</translation>
+<translation id="6927057753277044239">หลังจากที่ตรวจสอบคำสั่งซื้อแล้ว คุณต้องลงชื่อเข้าใช้หรือสร้างบัญชีกับ <ph name="BNPL_ISSUER_NAME" /> ระบบจะลิงก์บัญชีนี้กับบัญชี Google ของคุณโดยอัตโนมัติ</translation>
 <translation id="6930607614725241390">ค้นหาในแผงด้านข้าง</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />เครื่องมือค้นหาเริ่มต้นจะให้คุณค้นหาเว็บและใช้งานฟีเจอร์ต่างๆ ของ Chrome<ph name="END_BOLD" /> เช่น การค้นหาจากแถบที่อยู่และภาพบนหน้าเว็บ ฟีเจอร์อาจไม่พร้อมใช้งาน หากเครื่องมือค้นหาของคุณไม่รองรับ</translation>
 <translation id="6934672428414710184">ชื่อนี้มาจากบัญชี Google ของคุณ</translation>

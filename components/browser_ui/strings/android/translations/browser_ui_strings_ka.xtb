@@ -121,6 +121,7 @@
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2379925928934107488">საიტებზე მუქი თემის გამოყენება, როცა Chrome მუქ თემას იყენებს (შეძლებისდაგვარად)</translation>
 <translation id="2390272837142897736">მასშტაბის გაზრდა</translation>
+<translation id="2397689164757137845">დაშვებულია • ზუსტი</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> მბაიტი</translation>
 <translation id="2403474027143565107">ზუსტი</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}}</translation>
@@ -140,6 +141,7 @@
 <translation id="2498359688066513246">დახმარება და უკუკავშირი</translation>
 <translation id="2501278716633472235">უკან დაბრუნება</translation>
 <translation id="2533138527374486328">როცა ჩართულია, საიტებმა შეიძლება მოგთხოვოთ თქვენს ლოკალურ ქსელში ჩართულ ნებისმიერ მოწყობილობასთან დაკავშირება. როცა გამორთულია, საიტები ვერ მოგთხოვთ თქვენს ლოკალურ ქსელში ჩართულ ნებისმიერ მოწყობილობასთან დაკავშირებას.</translation>
+<translation id="2536779053640817375">ამჯერად დაშვებულია • ზუსტი</translation>
 <translation id="2544997614631598250">თემის ფერი მუქია</translation>
 <translation id="2546283357679194313">ქუქი-ფაილები და საიტის მონაცემები</translation>
 <translation id="2570922361219980984">მდებარეობაზე წვდომა გამორთულია ამ მოწყობილობისთვისაც. ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
