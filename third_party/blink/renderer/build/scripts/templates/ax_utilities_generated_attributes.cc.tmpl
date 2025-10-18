@@ -1,0 +1,187 @@
+{% from "templates/macros.tmpl" import license, source_files_for_generated_file %}
+{{ license(2025) }}
+
+{{ source_files_for_generated_file(template_file, input_files) }}
+
+#include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
+
+#include <algorithm>
+#include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "ui/accessibility/ax_enums.mojom-blink.h"
+
+namespace blink {
+
+// All ARIA attributes.
+Vector<const QualifiedName*> GetAriaAttributes() {
+  static const QualifiedName* const kAriaAttributes[] = {
+    {% for type_info in attributes_by_type.values() %}
+    {% for attr in type_info.attributes %}
+    &html_names::k{{ attr.base_name }}Attr,
+    {% endfor %}
+    {% endfor %}
+  };
+  return Vector<const QualifiedName*>(kAriaAttributes);
+}
+
+// ARIA attributes grouped by type.
+{% for type_info in attributes_by_type.values()|sort(attribute='type_name') %}
+Vector<const QualifiedName*> GetAria{{ type_info.type_name }}Attributes() {
+  static const QualifiedName* const kAria{{ type_info.type_name }}Attributes[] = {
+    {% for attr in type_info.attributes %}
+    &html_names::k{{ attr.base_name }}Attr,
+    {% endfor %}
+  };
+  return Vector<const QualifiedName*>(kAria{{ type_info.type_name }}Attributes);
+}
+{% endfor %}
+
+// ARIA attribute type classification functions.
+{% for type_info in attributes_by_type.values()|sort(attribute='type_name') %}
+bool IsAria{{ type_info.type_name }}Attribute(const QualifiedName& attribute) {
+  const auto& attributes = GetAria{{ type_info.type_name }}Attributes();
+  return std::find(attributes.begin(), attributes.end(), &attribute) != attributes.end();
+}
+{% endfor %}
+
+// ARIA attribute enum value accessors.
+{% for type_info in attributes_by_type.values() %}
+{% for attr in type_info.attributes %}
+{% if attr.enum_values %}
+Vector<AtomicString> Get{{ attr.base_name }}Values() {
+  return Vector<AtomicString>({
+    {% for value in attr.enum_values %}
+    AtomicString("{{ value }}"){{ "," if not loop.last }}
+    {% endfor %}
+  });
+}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+// ARIA attribute default/implicit value functions.
+{% for type_info in attributes_by_type.values() %}
+{% for attr in type_info.attributes %}
+{% if attr.default_value or attr.has_role_specific_values %}
+const AtomicString& GetImplicit{{ attr.base_name }}(ax::mojom::blink::Role internal_role) {
+  {% set value_to_roles = {} %}
+  {% set emitted = [] %}
+  {% for role in current_roles + additional_internal_role_mappings %}
+  {% if attr.name in role.implicitValues and role.internalRole not in emitted %}
+    {% set value = role.implicitValues[attr.name] %}
+    {% if value not in value_to_roles %}
+      {% set _ = value_to_roles.update({value: []}) %}
+    {% endif %}
+    {% set _ = value_to_roles[value].append(role.internalRole) %}
+    {% set _ = emitted.append(role.internalRole) %}
+  {% endif %}
+  {% endfor %}
+  {% if value_to_roles %}
+  switch (internal_role) {
+  {% for value, roles in value_to_roles.items() %}
+  {% for role in roles %}
+    case ax::mojom::blink::Role::{{ role }}:
+  {% endfor %}
+      {
+        DEFINE_STATIC_LOCAL(AtomicString, kValue, ("{{ value }}"));
+        return kValue;
+      }
+  {% endfor %}
+    default:
+      break;
+  }
+  {% endif %}
+  {% if attr.default_value %}
+  DEFINE_STATIC_LOCAL(AtomicString, kDefaultValue, ("{{ attr.default_value }}"));
+  return kDefaultValue;
+  {% else %}
+  return g_empty_atom;
+  {% endif %}
+}
+
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+// General lookup function to get valid enum values for any ARIA attribute.
+Vector<AtomicString> GetValidValuesForAriaAttribute(const QualifiedName& attribute) {
+{% for type_info in attributes_by_type.values() %}
+{% for attr in type_info.attributes %}
+{% if attr.enum_values %}
+  if (&attribute == &html_names::k{{ attr.base_name }}Attr) {
+    return Get{{ attr.base_name }}Values();
+  }
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+  return Vector<AtomicString>();
+}
+
+// Consolidated role support checking for all ARIA attributes.
+bool RoleSupportsAriaAttribute(ax::mojom::blink::Role internal_role,
+                                const QualifiedName& attribute) {
+{% set all_attrs = [] %}
+{% for type_info in attributes_by_type.values() %}
+{% for attr in type_info.attributes %}
+{% if attr.supported_roles or attr.prevented_roles or attr.is_global %}
+{% set _ = all_attrs.append(attr) %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% for attr in all_attrs|sort(attribute='base_name') %}
+  if (&attribute == &html_names::k{{ attr.base_name }}Attr) {
+{% if attr.is_global %}
+{% if attr.prevented_roles %}
+    // Global attribute with prevented roles.
+    switch (internal_role) {
+    {% set emitted = [] %}
+    {% for role in current_roles %}
+    {% if role.ariaRole in attr.prevented_roles and role.internalRole not in emitted %}
+      case ax::mojom::blink::Role::{{ role.internalRole }}:
+        {% set _ = emitted.append(role.internalRole) %}
+    {% endif %}
+    {% endfor %}
+    {% for role in additional_internal_role_mappings %}
+    {% if role.ariaRole in attr.prevented_roles and role.internalRole not in emitted %}
+      case ax::mojom::blink::Role::{{ role.internalRole }}:
+        {% set _ = emitted.append(role.internalRole) %}
+    {% endif %}
+    {% endfor %}
+        return false;
+      default:
+        return true;
+    }
+{% else %}
+    // Global attribute with no prevented roles.
+    return true;
+{% endif %}
+{% else %}
+    // Non-global attribute with specific supported roles.
+    switch (internal_role) {
+    {% set emitted = [] %}
+    {% for role in current_roles %}
+    {% if role.ariaRole in attr.supported_roles and role.internalRole not in emitted %}
+      case ax::mojom::blink::Role::{{ role.internalRole }}:
+        {% set _ = emitted.append(role.internalRole) %}
+    {% endif %}
+    {% endfor %}
+    {% for role in additional_internal_role_mappings %}
+    {% if role.ariaRole in attr.supported_roles and role.internalRole not in emitted %}
+      case ax::mojom::blink::Role::{{ role.internalRole }}:
+        {% set _ = emitted.append(role.internalRole) %}
+    {% endif %}
+    {% endfor %}
+        return true;
+      default:
+        return false;
+    }
+{% endif %}
+  }
+{% endfor %}
+
+  // Attribute not recognized or not tracked in aria_properties.json5.
+  return false;
+}
+
+}  // namespace blink

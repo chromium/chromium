@@ -1,0 +1,75 @@
+{% from "templates/macros.tmpl" import license, source_files_for_generated_file %}
+{{ license(2025) }}
+
+{{ source_files_for_generated_file(template_file, input_files) }}
+
+#include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
+
+#include "ui/accessibility/ax_enums.mojom-blink.h"
+
+namespace blink {
+
+bool RoleIsNameProhibited(ax::mojom::blink::Role internal_role) {
+  switch (internal_role) {
+{% set emitted = [] %}
+{% for role in current_roles + deprecated_roles %}
+{% if role.nameFrom == ["prohibited"] and role.internalRole not in emitted %}
+    case ax::mojom::blink::Role::{{ role.internalRole }}:
+      {% set _ = emitted.append(role.internalRole) %}
+{% endif %}
+{% endfor %}
+{% for role in additional_internal_role_mappings %}
+{% if role.nameFrom == ["prohibited"] and role.internalRole not in emitted %}
+    case ax::mojom::blink::Role::{{ role.internalRole }}:
+      {% set _ = emitted.append(role.internalRole) %}
+{% endif %}
+{% endfor %}
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool RoleSupportsNameFromContents(ax::mojom::blink::Role internal_role) {
+  switch (internal_role) {
+{% set emitted = [] %}
+{% for role in current_roles + deprecated_roles %}
+{% if "contents" in role.nameFrom and role.internalRole not in emitted %}
+    case ax::mojom::blink::Role::{{ role.internalRole }}:
+      {% set _ = emitted.append(role.internalRole) %}
+{% endif %}
+{% endfor %}
+{% for role in additional_internal_role_mappings %}
+{% if "contents" in role.nameFrom and role.internalRole not in emitted %}
+    case ax::mojom::blink::Role::{{ role.internalRole }}:
+      {% set _ = emitted.append(role.internalRole) %}
+{% endif %}
+{% endfor %}
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool RoleSupportsNameFromAuthor(ax::mojom::blink::Role internal_role) {
+  switch (internal_role) {
+{% set emitted = [] %}
+{% for role in current_roles + deprecated_roles %}
+{% if "author" in role.nameFrom and role.internalRole not in emitted %}
+    case ax::mojom::blink::Role::{{ role.internalRole }}:
+      {% set _ = emitted.append(role.internalRole) %}
+{% endif %}
+{% endfor %}
+{% for role in additional_internal_role_mappings %}
+{% if "author" in role.nameFrom and role.internalRole not in emitted %}
+    case ax::mojom::blink::Role::{{ role.internalRole }}:
+      {% set _ = emitted.append(role.internalRole) %}
+{% endif %}
+{% endfor %}
+      return true;
+    default:
+      return false;
+  }
+}
+
+}  // namespace blink
