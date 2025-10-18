@@ -432,4 +432,6 @@ bool IsHandleIMESpanChangesOnUpdateCompositionEnabled() {
 
 BASE_FEATURE(kUseSystemDefaultAccentColors, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kStringWidthCache, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

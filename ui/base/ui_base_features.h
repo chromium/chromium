@@ -264,6 +264,9 @@ bool IsHandleIMESpanChangesOnUpdateCompositionEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kUseSystemDefaultAccentColors);
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kStringWidthCache);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_
