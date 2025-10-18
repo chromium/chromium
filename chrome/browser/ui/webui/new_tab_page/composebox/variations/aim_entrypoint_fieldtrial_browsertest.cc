@@ -65,25 +65,34 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
 
 class NtpComposeboxFieldTrialEntrypointBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<
-          std::tuple<std::string, std::string, bool, bool, bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<std::string,
+                                                      std::string,
+                                                      bool,
+                                                      bool,
+                                                      bool,
+                                                      bool,
+                                                      bool,
+                                                      bool>> {
  public:
   NtpComposeboxFieldTrialEntrypointBrowserTest() = default;
   ~NtpComposeboxFieldTrialEntrypointBrowserTest() override = default;
 
  protected:
   void SetUp() override {
-    auto entrypoint_feature = std::get<5>(GetParam());
-    auto entrypoint_english_us_feature = std::get<6>(GetParam());
+    auto override_entrypoint_feature = std::get<5>(GetParam());
+    auto entrypoint_feature = std::get<6>(GetParam());
+    auto entrypoint_english_us_feature = std::get<7>(GetParam());
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (entrypoint_feature) {
-      enabled_features.push_back(
-          ntp_composebox::kNtpSearchboxComposeEntrypoint);
-    } else {
-      disabled_features.push_back(
-          ntp_composebox::kNtpSearchboxComposeEntrypoint);
+    if (override_entrypoint_feature) {
+      if (entrypoint_feature) {
+        enabled_features.push_back(
+            ntp_composebox::kNtpSearchboxComposeEntrypoint);
+      } else {
+        disabled_features.push_back(
+            ntp_composebox::kNtpSearchboxComposeEntrypoint);
+      }
     }
 
     if (entrypoint_english_us_feature) {
@@ -147,6 +156,9 @@ INSTANTIATE_TEST_SUITE_P(,
                              ::testing::Values(true, false),
                              // Values for server eligibility enabled.
                              ::testing::Values(true, false),
+                             // Values whether to override the generic
+                             // entrypoint feature.
+                             ::testing::Values(true, false),
                              // Values for the generic entrypoint feature.
                              ::testing::Values(true, false),
                              // Values for the English US entrypoint feature.
@@ -154,15 +166,16 @@ INSTANTIATE_TEST_SUITE_P(,
 
 IN_PROC_BROWSER_TEST_P(NtpComposeboxFieldTrialEntrypointBrowserTest, Test) {
   auto [locale, country, is_locally_eligible, is_server_eligible,
-        server_eligibility_enabled, entrypoint_feature,
-        entrypoint_english_us_feature] = GetParam();
+        server_eligibility_enabled, override_entrypoint_feature,
+        entrypoint_feature, entrypoint_english_us_feature] = GetParam();
 
   bool expected_enabled = false;
 
   // Implementation logic mirrors IsNtpSearchboxComposeEntrypointEnabled:
-  // 1. If generic entrypoint feature is overridden to false, return false.
-  if (!entrypoint_feature) {
-    expected_enabled = false;
+  // 1. If generic entrypoint feature is overridden, it should take
+  // precedence.
+  if (override_entrypoint_feature) {
+    expected_enabled = entrypoint_feature;
   } else {
     // Get the service to check server eligibility (this is now handled by the
     // mock).
@@ -177,14 +190,19 @@ IN_PROC_BROWSER_TEST_P(NtpComposeboxFieldTrialEntrypointBrowserTest, Test) {
       if (!is_locally_eligible) {
         expected_enabled = false;
       } else {
+        // If the generic feature is not explicitly overridden, check if it is
+        // enabled by default.
+        const bool generic_default_state =
+            ntp_composebox::kNtpSearchboxComposeEntrypoint.default_state ==
+            base::FEATURE_ENABLED_BY_DEFAULT;
         // 4. For English locales in the US, check either the EnglishUS or
         // generic features.
         if (locale == "en-US" && country == "us") {
           expected_enabled =
-              entrypoint_english_us_feature || entrypoint_feature;
+              entrypoint_english_us_feature || generic_default_state;
         } else {
-          // 5. Otherwise, check the generic entrypoint feature.
-          expected_enabled = entrypoint_feature;
+          // 5. Otherwise, check the generic entrypoint feature default state.
+          expected_enabled = generic_default_state;
         }
       }
     }

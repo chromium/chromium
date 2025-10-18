@@ -157,11 +157,10 @@ bool AimEligibilityService::GenericKillSwitchFeatureCheck(
     const base::Feature& feature,
     const std::optional<std::reference_wrapper<const base::Feature>>
         feature_en_us) {
-  // If the generic feature is overridden to be false, return false.
+  // If the generic feature is overridden, it takes precedence.
   auto* feature_list = base::FeatureList::GetInstance();
-  if (feature_list && feature_list->IsFeatureOverridden(feature.name) &&
-      !base::FeatureList::IsEnabled(feature)) {
-    return false;
+  if (feature_list && feature_list->IsFeatureOverridden(feature.name)) {
+    return base::FeatureList::IsEnabled(feature);
   }
 
   if (!aim_eligibility_service) {
@@ -180,7 +179,7 @@ bool AimEligibilityService::GenericKillSwitchFeatureCheck(
     return false;
   }
 
-  // Otherwise, check the generic entrypoint feature.
+  // Otherwise, check the generic entrypoint feature default value.
   return base::FeatureList::IsEnabled(feature) ||
          (feature_en_us &&
           base::FeatureList::IsEnabled(feature_en_us.value()) &&

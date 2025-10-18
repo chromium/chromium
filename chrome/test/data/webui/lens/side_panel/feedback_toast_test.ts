@@ -48,8 +48,8 @@ suite('FeedbackToast', () => {
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
 
     // Enable the new feedback feature.
-    loadTimeData.overrideValues({'newFeedbackEnabled': true});
-
+    loadTimeData.overrideValues(
+        {'newFeedbackEnabled': true, 'updatedFeedbackEnabled': false});
 
     // Override setTimeout, and only alter behavior for the text received
     // timeout. Using MockTimer did not work here, as it interfered with many
