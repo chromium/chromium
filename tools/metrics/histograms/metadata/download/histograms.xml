@@ -372,7 +372,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Download.DownloadDangerPrompt.{DownloadDangerTypeString}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2025-10-26">
+    enum="SBClientDownloadExtensions" expires_after="2026-10-26">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
