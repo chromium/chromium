@@ -225,7 +225,8 @@ public class AutoPictureInPictureTabHelperTest {
                         assertNotEquals(
                                 "Hide action should not be present for manual PiP.",
                                 action.getTitle(),
-                                mActivity.getString(R.string.accessibility_go_to_background));
+                                mActivity.getString(
+                                        R.string.accessibility_listen_in_the_background));
                     });
         }
     }

@@ -289,7 +289,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                             requestCode++,
                             MediaSessionAction.EXIT_PICTURE_IN_PICTURE,
                             R.drawable.ic_headphones_24dp,
-                            R.string.accessibility_go_to_background,
+                            R.string.accessibility_listen_in_the_background,
                             /* controlState= */ null);
             mMicrophone =
                     new ToggleRemoteAction(
