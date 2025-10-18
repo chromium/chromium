@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/webauthn/model/credential_exporter.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/webauthn/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/webauthn/model/credential_exchange_password.h"
 #import "ios/chrome/browser/webauthn/model/credential_export_manager_swift.h"
@@ -52,8 +54,21 @@
   return self;
 }
 
+#pragma mark - Public
+
 // TODO(crbug.com/449859205): Add a unit test for this method.
 - (void)startExport API_AVAILABLE(ios(26.0)) {
+  [_credentialExportManager
+      startExportWithPasswords:[self fetchAllExportablePasswords]
+                      passkeys:[self fetchAllExportablePasskeys]
+                        window:_window];
+}
+
+#pragma mark - Private
+
+// Fetches all saved passwords from the password presenter and converts them
+// into objects suitable for export.
+- (NSArray<CredentialExchangePassword*>*)fetchAllExportablePasswords {
   std::vector<password_manager::CredentialUIEntry> credentials =
       _savedPasswordsPresenter->GetSavedPasswords();
 
@@ -74,7 +89,12 @@
                                                    note:note];
     [exportedPasswords addObject:exportedPassword];
   }
+  return exportedPasswords;
+}
 
+// Fetches all non-hidden passkeys from the passkey model, decrypts them, and
+// converts them into objects suitable for export.
+- (NSArray<CredentialExchangePasskey*>*)fetchAllExportablePasskeys {
   NSMutableArray<CredentialExchangePasskey*>* exportedPasskeys =
       [NSMutableArray array];
 
@@ -84,15 +104,8 @@
       continue;
     }
 
-    // TODO(crbug.com/449150840): Get the decrypted private key.
-    NSData* encryptedBlob = nil;
-    if (!passkey.private_key().empty()) {
-      encryptedBlob = [NSData dataWithBytes:passkey.private_key().data()
-                                     length:passkey.private_key().size()];
-    } else if (!passkey.encrypted().empty()) {
-      encryptedBlob = [NSData dataWithBytes:passkey.encrypted().data()
-                                     length:passkey.encrypted().size()];
-    } else {
+    NSData* privateKey = [self decryptPrivateKeyForPasskey:passkey];
+    if (!privateKey) {
       continue;
     }
 
@@ -112,13 +125,26 @@
                                                        userName:userName
                                                 userDisplayName:userDisplayName
                                                          userId:userId
-                                                     privateKey:encryptedBlob];
+                                                     privateKey:privateKey];
     [exportedPasskeys addObject:exportedPasskey];
   }
+  return exportedPasskeys;
+}
 
-  [_credentialExportManager startExportWithPasswords:exportedPasswords
-                                            passkeys:exportedPasskeys
-                                              window:_window];
+// Attempts to decrypt the private key for a given passkey using the available
+// security domain secrets.
+- (NSData*)decryptPrivateKeyForPasskey:
+    (const sync_pb::WebauthnCredentialSpecifics&)passkey {
+  sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted_data;
+  for (NSData* securityDomainSecret in _securityDomainSecrets) {
+    if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+            base::apple::NSDataToSpan(securityDomainSecret), passkey,
+            &decrypted_data)) {
+      return [NSData dataWithBytes:decrypted_data.private_key().data()
+                            length:decrypted_data.private_key().size()];
+    }
+  }
+  return nil;
 }
 
 @end
