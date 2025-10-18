@@ -23,6 +23,7 @@
 @protocol MTLDevice;
 
 namespace gl {
+class GLFenceEGL;
 class ScopedEGLSurfaceIOSurface;
 }  // namespace gl
 
@@ -155,14 +156,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 
   bool InitializePixels(base::span<const uint8_t> pixel_data);
-
-  void AddWGPUDeviceWithPendingCommands(wgpu::Device device)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  void AddEGLDisplayWithPendingCommands(gl::GLDisplayEGL* display)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void ClearEGLDisplaysWithPendingCommands(gl::GLDisplayEGL* display_to_keep)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Wait for commands to be scheduled on every WGPUDevice or EGLDisplay that's
   // pending a flush except those using the same MTLDevice as `waiting_device`.
@@ -298,7 +291,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   base::flat_map<WGPUTexture, int> wgpu_texture_ongoing_accesses_
       GUARDED_BY(lock_);
 
-  // Tracks the devices to invoke waitUntilScheduled.
+  // Tracks devices with pending commands scheduled futures.
   // TODO(dawn:2453): The below comparator should be implemented in
   // wgpu::Device itself.
   struct WGPUDeviceCompare {
@@ -306,8 +299,8 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       return lhs.Get() < rhs.Get();
     }
   };
-  base::flat_set<wgpu::Device, WGPUDeviceCompare> wgpu_devices_pending_flush_
-      GUARDED_BY(lock_);
+  base::flat_map<wgpu::Device, wgpu::Future, WGPUDeviceCompare>
+      wgpu_commands_scheduled_futures_ GUARDED_BY(lock_);
 
   // Returns the number of ongoing accesses that were already present on this
   // texture prior to beginning this access.
@@ -347,9 +340,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   scoped_refptr<IOSurfaceBackingEGLState> egl_state_for_skia_gl_context_
       GUARDED_BY(lock_);
 
-  // Tracks the displays to invoke eglWaitUntilWorkScheduledANGLE().
-  base::flat_set<gl::GLDisplayEGL*> egl_displays_pending_flush_
-      GUARDED_BY(lock_);
+  // Tracks displays with pending commands scheduled fences.
+  base::flat_map<EGLDisplay, std::unique_ptr<gl::GLFenceEGL>>
+      egl_commands_scheduled_fences_ GUARDED_BY(lock_);
 
   using ScopedSharedEvent = base::apple::scoped_nsprotocol<id<MTLSharedEvent>>;
   struct SharedEventCompare {

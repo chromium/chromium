@@ -14,6 +14,7 @@
 #import <Metal/Metal.h>
 #include <dawn/native/MetalBackend.h>
 #include <dawn/webgpu_cpp.h>
+#include <dawn/webgpu_cpp_print.h>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsobject.h"
@@ -46,7 +47,7 @@
 #include "ui/gl/egl_surface_io_surface.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
-#include "ui/gl/gl_fence.h"
+#include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
@@ -195,11 +196,11 @@ std::vector<scoped_refptr<GraphiteTextureHolder>> CreateGraphiteMetalTextures(
 }
 #endif
 
-id<MTLDevice> QueryMetalDeviceFromANGLE(gl::GLDisplayEGL* display) {
+id<MTLDevice> QueryMetalDeviceFromANGLE(EGLDisplay display) {
   id<MTLDevice> metal_device = nil;
   if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     EGLAttrib angle_device_attrib = 0;
-    if (eglQueryDisplayAttribEXT(display->GetDisplay(), EGL_DEVICE_EXT,
+    if (eglQueryDisplayAttribEXT(display, EGL_DEVICE_EXT,
                                  &angle_device_attrib)) {
       EGLDeviceEXT angle_device =
           reinterpret_cast<EGLDeviceEXT>(angle_device_attrib);
@@ -1068,21 +1069,23 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
     return;
   }
 
-  wgpu::SharedTextureMemoryEndAccessState end_access_desc;
-  CHECK_EQ(shared_texture_memory_.EndAccess(texture_, &end_access_desc),
+  wgpu::SharedTextureMemoryEndAccessState end_access_state = {};
+  wgpu::SharedTextureMemoryMetalEndAccessState metal_end_access_state = {};
+  end_access_state.nextInChain = &metal_end_access_state;
+
+  CHECK_EQ(shared_texture_memory_.EndAccess(texture_, &end_access_state),
            wgpu::Status::Success);
 
-  if (end_access_desc.initialized) {
+  if (end_access_state.initialized) {
     iosurface_backing->SetClearedInternal();
   }
 
   // Dawn's Metal backend has enqueued MTLSharedEvents which consumers of the
-  // IOSurface must wait upon before attempting to use that IOSurface on
-  // another MTLDevice. Store these events in the underlying
-  // SharedImageBacking.
-  for (size_t i = 0; i < end_access_desc.fenceCount; i++) {
-    auto fence = end_access_desc.fences[i];
-    auto signaled_value = end_access_desc.signaledValues[i];
+  // IOSurface must wait upon before attempting to use that IOSurface on another
+  // command queue. Store these events in the underlying IOSurfaceImageBacking.
+  for (size_t i = 0; i < end_access_state.fenceCount; i++) {
+    auto fence = end_access_state.fences[i];
+    auto signaled_value = end_access_state.signaledValues[i];
 
     wgpu::SharedFenceExportInfo fence_export_info;
     wgpu::SharedFenceMTLSharedEventExportInfo fence_mtl_export_info;
@@ -1094,23 +1097,15 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
                                                   readonly);
   }
 
+  // TODO(crbug.com/328411251): Investigate whether this is needed for readonly
+  // access.
+  if (metal_end_access_state.commandsScheduledFuture.id != 0) {
+    iosurface_backing->wgpu_commands_scheduled_futures_.emplace(
+        device_, metal_end_access_state.commandsScheduledFuture);
+  }
+
   iosurface_backing->GetDawnTextureCache()->DestroyWGPUTextureIfNotCached(
       device_, texture_);
-
-  if (end_access_desc.fenceCount > 0) {
-    // For write access, we would need to WaitForCommandsToBeScheduled
-    // before the image is used by CoreAnimation or WebGL later.
-    // However, when it's not thread safe (DrDC is disabled), we defer the wait
-    // on this device until CoreAnimation or WebGL actually needs to access the
-    // image. This could avoid repeated and unnecessary waits.
-    // TODO(b/328411251): Investigate whether this is needed if the access
-    // is readonly.
-    if (iosurface_backing->is_thread_safe()) {
-      dawn::native::metal::WaitForCommandsToBeScheduled(device_.Get());
-    } else {
-      iosurface_backing->AddWGPUDeviceWithPendingCommands(device_);
-    }
-  }
 
   texture_ = nullptr;
   usage_ = internal_usage_ = wgpu::TextureUsage::None;
@@ -1489,59 +1484,39 @@ IOSurfaceImageBacking::GetDawnTextureCache() {
   return dawn_texture_cache_;
 }
 
-void IOSurfaceImageBacking::AddWGPUDeviceWithPendingCommands(
-    wgpu::Device device) {
-  AssertLockAcquired();
-  wgpu_devices_pending_flush_.insert(std::move(device));
-}
-
 void IOSurfaceImageBacking::WaitForCommandsToBeScheduled(
     id<MTLDevice> waiting_device) {
   AssertLockAcquired();
   TRACE_EVENT0("gpu", "IOSurfaceImageBacking::WaitForCommandsToBeScheduled");
 
-  std::vector<wgpu::Device> wgpu_devices_to_keep;
-  for (const auto& device : wgpu_devices_pending_flush_) {
-    // Only Metal backed devices are added to `wgpu_devices_pending_flush_`.
+  base::flat_map<wgpu::Device, wgpu::Future, WGPUDeviceCompare> futures_to_keep;
+  for (const auto& [device, future] : wgpu_commands_scheduled_futures_) {
     id<MTLDevice> mtl_device = dawn::native::metal::GetMTLDevice(device.Get());
-    if (mtl_device && mtl_device == waiting_device) {
-      wgpu_devices_to_keep.push_back(device);
+    if (mtl_device == waiting_device) {
+      futures_to_keep.emplace(device, future);
       continue;
     }
     TRACE_EVENT0("gpu",
                  "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::Dawn");
-    dawn::native::metal::WaitForCommandsToBeScheduled(device.Get());
+    wgpu::WaitStatus status =
+        device.GetAdapter().GetInstance().WaitAny(future, UINT64_MAX);
+    if (status != wgpu::WaitStatus::Success) {
+      LOG(ERROR) << "WaitAny on commandsScheduledFuture failed with " << status;
+    }
   }
-  wgpu_devices_pending_flush_ = std::move(wgpu_devices_to_keep);
+  wgpu_commands_scheduled_futures_ = std::move(futures_to_keep);
 
-  std::vector<gl::GLDisplayEGL*> egl_displays_to_keep;
-  for (auto* display : egl_displays_pending_flush_) {
-    // Always flush work for any ANGLE-OpenGL EGLDisplays.
-    if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
-        QueryMetalDeviceFromANGLE(display) == waiting_device) {
-      egl_displays_to_keep.push_back(display);
+  base::flat_map<EGLDisplay, std::unique_ptr<gl::GLFenceEGL>> fences_to_keep;
+  for (auto& [display, fence] : egl_commands_scheduled_fences_) {
+    if (QueryMetalDeviceFromANGLE(display) == waiting_device) {
+      fences_to_keep.emplace(display, std::move(fence));
       continue;
     }
     TRACE_EVENT0("gpu",
                  "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::ANGLE");
-    eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
+    fence->ClientWait();
   }
-  egl_displays_pending_flush_ = std::move(egl_displays_to_keep);
-}
-
-void IOSurfaceImageBacking::AddEGLDisplayWithPendingCommands(
-    gl::GLDisplayEGL* display) {
-  AssertLockAcquired();
-  egl_displays_pending_flush_.insert(display);
-}
-
-void IOSurfaceImageBacking::ClearEGLDisplaysWithPendingCommands(
-    gl::GLDisplayEGL* display_to_keep) {
-  AssertLockAcquired();
-
-  if (std::move(egl_displays_pending_flush_).contains(display_to_keep)) {
-    egl_displays_pending_flush_.insert(display_to_keep);
-  }
+  egl_commands_scheduled_fences_ = std::move(fences_to_keep);
 }
 
 IOSurfaceRef IOSurfaceImageBacking::GetIOSurface() {
@@ -1900,17 +1875,21 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
 
   gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
   CHECK(display);
-  CHECK_EQ(display->GetDisplay(), egl_state->egl_display_);
 
-  // Note that we don't need to call WaitForCommandsToBeScheduled for other
+  EGLDisplay egl_display = display->GetDisplay();
+  CHECK_EQ(egl_display, egl_state->egl_display_);
+
+  // Note that we don't need to wait for commands to be scheduled for other
   // EGLDisplays because it is already done when the previous GL context is made
-  // uncurrent. We can simply remove the other EGLDisplays from the list.
-  ClearEGLDisplaysWithPendingCommands(/*display_to_keep=*/display);
+  // uncurrent. We can simply remove fences for the other EGLDisplays.
+  base::EraseIf(egl_commands_scheduled_fences_, [egl_display](const auto& kv) {
+    return kv.first != egl_display;
+  });
 
   // IOSurface might be written on a different queue. So we have to wait for the
   // previous Dawn and ANGLE commands to be scheduled first so that the kernel
   // knows about the pending update to the IOSurface.
-  WaitForCommandsToBeScheduled(QueryMetalDeviceFromANGLE(display));
+  WaitForCommandsToBeScheduled(QueryMetalDeviceFromANGLE(egl_display));
 
   if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     // If this image could potentially be shared with another Metal device,
@@ -2011,7 +1990,9 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
 
   gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
   CHECK(display);
-  CHECK_EQ(display->GetDisplay(), egl_state->egl_display_);
+
+  EGLDisplay egl_display = display->GetDisplay();
+  CHECK_EQ(egl_display, egl_state->egl_display_);
 
   const bool is_angle_metal =
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal;
@@ -2023,20 +2004,6 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
     } else {
       LOG(DFATAL) << "Failed to create Metal shared event";
     }
-  }
-
-  // We have to call eglWaitUntilWorkScheduledANGLE for IOSurface
-  // synchronization by the kernel e.g. using waitUntilScheduled on Metal or
-  // glFlush on OpenGL. Defer the call until CoreAnimation, Dawn, or another
-  // ANGLE EGLDisplay needs to access to avoid unnecessary overhead. This also
-  // ensures that the Metal shared event enqueued above is eventually flushed.
-  if (is_thread_safe()) {
-    // With DrDC and Graphite enabled, don't call
-    // AddEGLDisplayWithPendingCommands to avoid the GL context flush on
-    // the Viz thread.
-    eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
-  } else {
-    AddEGLDisplayWithPendingCommands(display);
   }
 
   // When SwANGLE is used as the GL implementation, it holds an internal
@@ -2055,14 +2022,11 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   // triggers a release and copy). By design, IOSurfaceImageBackingFactory
   // enforces this property for this use case.
   //
-  // For ANGLE Metal, we need to rebind the texture for two reasons:
-  // 1) ReleaseTexImage flushes the command buffer which contains the shared
-  //    event signal above, otherwise the shared event might never be signaled
-  //    since we skip calling eglWaitUntilWorkScheduledANGLE in single GPU case.
-  // 2) BindTexImage adds a synchronization dependency on the command buffer
-  //    which contains the shared event wait before the next ANGLE access.
-  //    Otherwise, ANGLE might skip waiting on the command buffer and hence the
-  //    shared event and do a CPU readback from the IOSurface in some cases.
+  // For ANGLE Metal, we need to rebind the texture so that the BindTexImage
+  // adds a synchronization dependency on the command buffer which contains the
+  // shared event wait before the next ANGLE access. Otherwise, ANGLE might skip
+  // waiting on the command buffer and hence the shared event and do a CPU
+  // readback from the IOSurface in some cases without synchronization.
   const bool is_swangle =
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
   if ((is_swangle || is_angle_metal) && egl_state->num_ongoing_accesses_ == 0) {
@@ -2078,6 +2042,25 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
       egl_state->egl_surfaces_[plane_index]->ReleaseTexImage();
     }
     egl_state->set_bind_pending();
+  }
+
+  // We have to wait for pending work to be scheduled on the GPU for IOSurface
+  // synchronization by the kernel e.g. using waitUntilScheduled on Metal or
+  // glFlush on OpenGL.
+  if (is_angle_metal) {
+    // Defer the wait until CoreAnimation, Dawn, or another ANGLE EGLDisplay
+    // needs to access to avoid unnecessary overhead. This also ensures that the
+    // Metal shared event signal which is enqueued above is flushed.
+    auto fence = gl::GLFenceEGL::Create(EGL_SYNC_METAL_COMMANDS_SCHEDULED_ANGLE,
+                                        nullptr);
+    if (fence) {
+      egl_commands_scheduled_fences_.emplace(egl_display, std::move(fence));
+    } else {
+      LOG(ERROR)
+          << "Failed to create EGL_SYNC_METAL_COMMANDS_SCHEDULED_ANGLE fence";
+    }
+  } else {
+    eglWaitUntilWorkScheduledANGLE(egl_display);
   }
 }
 
