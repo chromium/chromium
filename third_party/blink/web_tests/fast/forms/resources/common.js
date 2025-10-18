@@ -242,3 +242,62 @@ function sendString(str) {
     }
 }
 
+function createInput(type, min, max, step, value) {
+    const input = document.createElement('input');
+    input.type = type;
+    if (min) {
+        input.min = min;
+    }
+    if (max) {
+        input.max = max;
+    }
+    if (step) {
+        input.step = step;
+    }
+    if (value) {
+        input.value = value;
+    }
+    return input;
+}
+
+function isDisabledField(input, pseudo) {
+    const node = internals.shadowRoot(input).querySelector(`*[pseudo="${pseudo}"]`);
+    assert_true(!!node);
+    return node.hasAttribute('disabled');
+}
+
+function isYearFieldDisabled(input) {
+    return isDisabledField(input, '-webkit-datetime-edit-year-field');
+}
+
+function isMonthFieldDisabled(input) {
+    return isDisabledField(input, '-webkit-datetime-edit-month-field');
+}
+
+function isWeekFieldDisabled(input) {
+    return isDisabledField(input, '-webkit-datetime-edit-week-field');
+}
+
+function isDayFieldDisabled(input) {
+    return isDisabledField(input, '-webkit-datetime-edit-day-field');
+}
+
+function isHourFieldDisabled(input) {
+    return isDisabledField(input, '-webkit-datetime-edit-hour-field');
+}
+
+function isMinuteFieldDisabled(input) {
+    return isDisabledField(input, '-webkit-datetime-edit-minute-field');
+}
+
+function isAMPMFieldDisabled(input) {
+    return isDisabledField(input, '-webkit-datetime-edit-ampm-field');
+}
+
+function isSecondFieldDisabled(input) {
+    return isDisabledField(input, '-webkit-datetime-edit-second-field');
+}
+
+function isMillisecondFieldDisabled(input) {
+    return isDisabledField(input, '-webkit-datetime-edit-millisecond-field');
+}

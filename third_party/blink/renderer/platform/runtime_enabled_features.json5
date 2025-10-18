@@ -4679,6 +4679,13 @@
       status: "experimental",
     },
     {
+      // Skip field disabled checks in DateTimeEditElement.
+      // This will be shipped in M143, and it can be removed in M145.
+      // See https://issues.chromium.org/issues/442293382.
+      name: "SkipDateTimeFieldDisableChecks",
+      status: "stable",
+    },
+    {
       name: "SkipOofItemForBreakCandidate",
       status: "stable",
     },
