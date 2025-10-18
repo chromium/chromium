@@ -1905,28 +1905,28 @@ void RunOverwriteReplaceTest(TextfieldModel* model) {
 TEST_F(TextfieldModelTest, UndoRedo_ReplaceTest) {
   {
     SCOPED_TRACE("Select forwards and insert.");
-    TextfieldModel model(nullptr);
+    TextfieldModel model(this);
     model.SetText(u"abcd", 4);
     model.SelectRange(gfx::Range(1, 3));
     RunInsertReplaceTest(&model);
   }
   {
     SCOPED_TRACE("Select reversed and insert.");
-    TextfieldModel model(nullptr);
+    TextfieldModel model(this);
     model.SetText(u"abcd", 4);
     model.SelectRange(gfx::Range(3, 1));
     RunInsertReplaceTest(&model);
   }
   {
     SCOPED_TRACE("Select forwards and overwrite.");
-    TextfieldModel model(nullptr);
+    TextfieldModel model(this);
     model.SetText(u"abcd", 4);
     model.SelectRange(gfx::Range(1, 3));
     RunOverwriteReplaceTest(&model);
   }
   {
     SCOPED_TRACE("Select reversed and overwrite.");
-    TextfieldModel model(nullptr);
+    TextfieldModel model(this);
     model.SetText(u"abcd", 4);
     model.SelectRange(gfx::Range(3, 1));
     RunOverwriteReplaceTest(&model);
@@ -2573,38 +2573,6 @@ TEST_F(TextfieldModelTest, SetCompositionFromExistingText_OutOfBounds) {
   model.SetText(u"abc", 0);
   model.SetCompositionFromExistingText(gfx::Range(1, 4));
   EXPECT_FALSE(model.HasCompositionText());
-}
-
-TEST_F(TextfieldModelTest, NullDelegate) {
-  TextfieldModel model(nullptr);
-  model.Append(u"HELLO");
-  EXPECT_EQ(u"HELLO", model.text());
-  model.SelectAll(false);
-  EXPECT_EQ(u"HELLO", model.GetSelectedText());
-  // Cut/Copy/Paste should not crash.
-  EXPECT_FALSE(model.Cut());
-  // Cut does not work without a delegate, but should not crash.
-  EXPECT_EQ(u"HELLO", model.text());
-  model.Append(u"HELLO");
-  model.SelectAll(false);
-
-  EXPECT_FALSE(model.Copy());
-  EXPECT_FALSE(model.Paste());
-
-  // Composition text methods should not crash.
-  ui::CompositionText composition;
-  composition.text = u"123";
-  model.SetCompositionText(composition);
-  EXPECT_EQ(u"123", model.text());
-  model.ConfirmCompositionText();
-  EXPECT_EQ(u"123", model.text());
-  model.SetCompositionText(composition);
-  model.CancelCompositionText();
-  EXPECT_EQ(u"123", model.text());
-
-  // SetText should not crash.
-  model.SetText(u"WORLD", 0);
-  EXPECT_EQ(u"WORLD", model.text());
 }
 
 }  // namespace views
