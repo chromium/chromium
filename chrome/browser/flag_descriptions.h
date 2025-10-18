@@ -1177,10 +1177,6 @@ inline constexpr char kSeparateLocalAndAccountThemesDescription[] =
     "sync is turned off, only the account theme is removed and the "
     "pre-existing local theme is restored.";
 
-inline constexpr char kCameraMicEffectsName[] = "Camera and Mic Effects";
-inline constexpr char kCameraMicEffectsDescription[] =
-    "Enables effects for camera and mic streams.";
-
 inline constexpr char kGetDisplayMediaConfersActivationName[] =
     "getDisplayMedia() confers transient activation.";
 inline constexpr char kGetDisplayMediaConfersActivationDescription[] =
