@@ -1,6 +1,6 @@
 {
-  "version": "72.8",
-  "log_list_timestamp": "2025-10-17T12:54:01Z",
+  "version": "73.1",
+  "log_list_timestamp": "2025-10-18T12:53:22Z",
   "operators": [
     {
       "name": "Google",
@@ -57,6 +57,22 @@
           }
         },
         {
+          "description": "Google 'Argon2027h1'",
+          "log_id": "1tWNqdAXU/NqSqDHV0kCr+vH3CzTjNn3ZMgMiRkenwI=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEKHRm0H/zUaFA6Idz5cGvGO3tCPQyfGMgJmVBOPyKAP6mGM1IiNXi4CLomOUyYj0YN74p+eGVApFMsM4h/jzCsA==",
+          "url": "https://ct.googleapis.com/logs/us1/argon2027h1/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-10-18T00:30:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
           "description": "Google 'Xenon2025h2' log",
           "log_id": "3dzKNJXX4RYF55Uy+sef+D0cUN/bADoUEnYKLKy7yCo=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEa+Cv7QZ8Pe/ZDuRYSwTYKkeZkIl6uTaldcgEuMviqiu1aJ2IKaKlz84rmhWboD6dlByyt0ryUexA7WJHpANJhg==",
@@ -102,6 +118,22 @@
           "temporal_interval": {
             "start_inclusive": "2026-07-01T00:00:00Z",
             "end_exclusive": "2027-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Google 'Xenon2027h1'",
+          "log_id": "RMK9DOkUDmSlyUoBkwpaobs1lw4A7hEWiWgqHETXtWY=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/6WcA4VRSljIfTdY48+pFRLLtLrmTb88cGDdl8Gv3E2LduG4jgJ3AK5iNMFGhpbRRLi5B3rPlBaXVywuR5IFDg==",
+          "url": "https://ct.googleapis.com/logs/eu1/xenon2027h1/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-10-18T00:30:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
           }
         }
       ],
@@ -950,6 +982,22 @@
           "temporal_interval": {
             "start_inclusive": "2025-12-24T00:00:00Z",
             "end_exclusive": "2027-01-08T00:00:00Z"
+          }
+        },
+        {
+          "description": "TrustAsia 'HETU2027'",
+          "log_id": "7drrgVxjITRJtHvlB3kFq9DZMUfCesUUazvFjkPptsc=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE14jG8D9suqIVWPtTNOL33uXKZ4mUnnOMrIwOWeZU7GtoDRCWIXfy/9/SC8lTAbtP2NOP4wjIufAk6f64sY4DWg==",
+          "url": "https://hetu2027.trustasia.com/hetu2027/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-10-18T00:30:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-12-25T00:00:00Z",
+            "end_exclusive": "2028-01-08T00:00:00Z"
           }
         }
       ],
