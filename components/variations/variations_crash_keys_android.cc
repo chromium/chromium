@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "components/crash/android/anr_build_id_provider.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

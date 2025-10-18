@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/uuid.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"

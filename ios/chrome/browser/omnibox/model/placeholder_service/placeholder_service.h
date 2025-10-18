@@ -7,10 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <map>
+
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
-#import "base/task/cancelable_task_tracker.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/search_engines/template_url_id.h"

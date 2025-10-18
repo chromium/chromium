@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_service.h"
