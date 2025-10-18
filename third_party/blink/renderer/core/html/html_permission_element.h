@@ -152,6 +152,10 @@ class CORE_EXPORT HTMLPermissionElement
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
+  bool HasPendingPermissionRequest() const {
+    return pending_request_created_.has_value();
+  }
+
  private:
   // TODO(crbug.com/1315595): remove this friend class once migration
   // to blink_unittests_v2 completes.
