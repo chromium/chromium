@@ -187,9 +187,12 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
-  gfx::NativeWindow window =
-      menu_delegate_.browser()->window()->GetNativeWindow();
-  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window)) {
+  auto* const browser = menu_delegate_.browser();
+  gfx::NativeWindow window = browser->window()->GetNativeWindow();
+  // Do not show the move to desks menu if the app is locked for OnTask. Only
+  // relevant for non-web browser scenarios.
+  if (browser->IsLockedForOnTask() ||
+      !chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window)) {
     return;
   }
 

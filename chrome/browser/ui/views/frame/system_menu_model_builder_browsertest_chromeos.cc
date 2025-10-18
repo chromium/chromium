@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/autotest_desks_api.h"
 #include "base/containers/contains.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "components/webapps/common/web_app_id.h"
@@ -61,6 +63,9 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   app_browser->SetLockedForOnTask(false);
 
+  // Create a new desk so we can verify desk menu options visibility.
+  ASSERT_TRUE(ash::AutotestDesksApi().CreateNewDesk());
+
   // Retrieve system menu.
   const BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
@@ -71,6 +76,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_FORWARD, menu));
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_RELOAD, menu));
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_TASK_MANAGER, menu));
+  EXPECT_TRUE(ContainsCommandIdInMenu(
+      chromeos::MoveToDesksMenuModel::kMenuCommandId, menu));
 }
 
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
@@ -80,6 +87,9 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
   Browser* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   app_browser->SetLockedForOnTask(true);
+
+  // Create a new desk so we can verify desk menu options visibility.
+  ASSERT_TRUE(ash::AutotestDesksApi().CreateNewDesk());
 
   // Retrieve system menu.
   const BrowserView* const browser_view =
@@ -91,6 +101,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_FORWARD, menu));
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_RELOAD, menu));
   EXPECT_FALSE(ContainsCommandIdInMenu(IDC_TASK_MANAGER, menu));
+  EXPECT_FALSE(ContainsCommandIdInMenu(
+      chromeos::MoveToDesksMenuModel::kMenuCommandId, menu));
 }
 
 class SystemMenuModelBuilderMultiUserTest : public ash::LoginManagerTest {
