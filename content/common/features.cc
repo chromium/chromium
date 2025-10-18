@@ -43,8 +43,15 @@ BASE_FEATURE(kAndroidDragDropOopif, base::FEATURE_ENABLED_BY_DEFAULT);
 //
 // There are several modes that are described in the
 // AvoidUnnecessaryBeforeUnloadCheckSyncMode enum in the header file.
+//
+// The eventual state is to utilize kWithoutSendBeforeUnload mode, as it offers
+// the highest performance. However, kWithoutSendBeforeUnload mode causes a
+// metrics skew due to the current inaccurate measurement timing of navigation
+// start (refer to crbug.com/385170155). Therefore, kWithSendBeforeUnload mode
+// is the current default. We would like to update to use
+// kWithoutSendBeforeUnload mode once crbug.com/385170155 is resolved.
 BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<AvoidUnnecessaryBeforeUnloadCheckSyncMode>::Option
     kAvoidUnnecessaryBeforeUnloadCheckSyncModeOption[] = {
@@ -61,7 +68,7 @@ BASE_FEATURE_ENUM_PARAM(
     kAvoidUnnecessaryBeforeUnloadCheckSyncMode,
     &kAvoidUnnecessaryBeforeUnloadCheckSync,
     "AvoidUnnecessaryBeforeUnloadCheckSyncMode",
-    AvoidUnnecessaryBeforeUnloadCheckSyncMode::kDumpWithoutCrashing,
+    AvoidUnnecessaryBeforeUnloadCheckSyncMode::kWithSendBeforeUnload,
     &kAvoidUnnecessaryBeforeUnloadCheckSyncModeOption);
 
 // Enables controlling the time to live for pages in the BackForwardCache.
