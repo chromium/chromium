@@ -1901,4 +1901,58 @@ TEST_F(ExtensionAdminPolicyTest, MustRemainEnabled) {
   EXPECT_TRUE(error.empty());
 }
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+class ExtensionManagementDesktopAndroidTest : public testing::Test {
+ public:
+  ExtensionManagementDesktopAndroidTest() = default;
+  ExtensionManagementDesktopAndroidTest(
+      const ExtensionManagementDesktopAndroidTest&) = delete;
+  ExtensionManagementDesktopAndroidTest& operator=(
+      const ExtensionManagementDesktopAndroidTest&) = delete;
+  ~ExtensionManagementDesktopAndroidTest() override = default;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+// Tests that kEnableExtensionsForCorpDesktopAndroid enables extensions for corp
+// accounts.
+TEST_F(ExtensionManagementDesktopAndroidTest, FeatureFlagOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kEnableExtensionsForCorpDesktopAndroid);
+
+  // Build a profile for a corp dogfood user.
+  TestingProfile::Builder builder;
+  builder.SetProfileName("sundar@google.com");
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  // Use that profile to initialize an ExtensionManagement instance.
+  ExtensionManagement management(profile.get());
+
+  // Extensions should be allowed because of the feature flag.
+  EXPECT_TRUE(management.ExtensionsEnabledForDesktopAndroid());
+}
+
+// Tests that with kEnableExtensionsForCorpDesktopAndroid off, extensions are
+// still disabled for corp accounts.
+TEST_F(ExtensionManagementDesktopAndroidTest, FeatureFlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kEnableExtensionsForCorpDesktopAndroid);
+
+  // Build a profile for a corp dogfood user.
+  TestingProfile::Builder builder;
+  builder.SetProfileName("sundar@google.com");
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  // Use that profile to initialize an ExtensionManagement instance.
+  ExtensionManagement management(profile.get());
+
+  // Extensions are blocked because this is a corp dogfood user.
+  EXPECT_FALSE(management.ExtensionsEnabledForDesktopAndroid());
+}
+
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+
 }  // namespace extensions
