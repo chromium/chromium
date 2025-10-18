@@ -13,19 +13,28 @@
   border-radius: inherit;
   color: var(--color-new-tab-page-composebox-error-scrim-foreground);
   display: flex;
-  font-size: 16px;
-  flex-direction: var(--error-scrim-flex-direction, column);
-  gap: 12px;
+  flex-direction: column;
+  font-size: 13px;
+  font-weight: 500;
+  gap: 18px;
   justify-content: center;
   height: 100%;
   position: absolute;
-  opacity: 0.90;
   width: 100%;
   z-index: 101;
 }
 
+:host([compact-mode]) #errorScrim {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 #errorScrim > p {
   margin: 0;
+}
+
+:host([compact-mode]) #errorScrim > p {
+  margin: 24px;
 }
 
 #dismissErrorButton {
@@ -38,8 +47,12 @@
   --cr-icon-button-hover-background-color:
       var(--color-new-tab-page-composebox-error-scrim-button-background-hover);
   border: none;
-  font-size: 14px;
+  font-size: 13px;
   gap: 4px;
-  height: 44px;
-  width: 122px;
+  height: 36px;
+  width: 79px;
+}
+
+:host([compact-mode]) #dismissErrorButton {
+  margin-right: 10px;
 }

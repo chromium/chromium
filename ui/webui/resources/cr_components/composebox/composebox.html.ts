@@ -14,7 +14,11 @@ export function getHtml(this: ComposeboxElement) {
   <div class="gradient gradient-outer-glow"></div>
   <div class="gradient"></div>
   <div class="background"></div>
-  <ntp-error-scrim id="errorScrim"></ntp-error-scrim>
+  <ntp-error-scrim id="errorScrim"
+    ?compact-mode="${this.realboxLayoutMode === 'Compact' &&
+                     this.contextFilesSize_ === 0}"
+    @error-scrim-visibility-changed="${this.onErrorScrimVisibilityChanged_}">
+  </ntp-error-scrim>
   <div id="composebox" @keydown="${this.onKeydown_}"
       @focusin=${this.handleComposeboxFocusIn_}
       @focusout=${this.handleComposeboxFocusOut_}>
