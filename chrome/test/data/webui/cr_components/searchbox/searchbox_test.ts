@@ -2339,7 +2339,7 @@ suite('NewTabPageRealboxTest', () => {
         // background color.
         matchEls[1]!.$.icon.$.image.dispatchEvent(new Event('load'));
         await microtasksFinished();
-        assertStyle(containerEl, 'background-color', 'rgb(255, 255, 255)');
+        assertStyle(containerEl, 'background-color', 'rgba(0, 0, 0, 0)');
         // Realbox icon is not updated as the input does not feature images.
         assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
         assertTrue(window.getComputedStyle(realbox.$.icon).display !== 'none');
