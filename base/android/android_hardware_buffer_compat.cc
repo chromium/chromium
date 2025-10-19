@@ -8,6 +8,7 @@
 
 #include "base/android/android_info.h"
 #include "base/check.h"
+#include "base/logging.h"
 
 namespace base {
 
@@ -21,7 +22,13 @@ AndroidHardwareBufferCompat::AndroidHardwareBufferCompat() {
   // foreseeable future, so just unconditionally use dynamic loading.
 
   // cf. base/android/linker/linker_jni.cc
-  void* main_dl_handle = dlopen(nullptr, RTLD_NOW);
+  void* main_dl_handle = dlopen("libandroid.so", RTLD_NOW);
+  DCHECK(main_dl_handle);
+
+  if (!main_dl_handle) {
+    LOG(ERROR) << "Could not load libandroid.so";
+    return;
+  }
 
   *reinterpret_cast<void**>(&allocate_) =
       dlsym(main_dl_handle, "AHardwareBuffer_allocate");
@@ -54,6 +61,10 @@ AndroidHardwareBufferCompat::AndroidHardwareBufferCompat() {
   *reinterpret_cast<void**>(&unlock_) =
       dlsym(main_dl_handle, "AHardwareBuffer_unlock");
   DCHECK(unlock_);
+
+  *reinterpret_cast<void**>(&from_hardware_buffer_) =
+      dlsym(main_dl_handle, "AHardwareBuffer_fromHardwareBuffer");
+  DCHECK(from_hardware_buffer_);
 }
 
 // static
@@ -122,6 +133,13 @@ int AndroidHardwareBufferCompat::Unlock(AHardwareBuffer* buffer,
                                         int32_t* fence) {
   DCHECK(IsSupportAvailable());
   return unlock_(buffer, fence);
+}
+
+AHardwareBuffer* AndroidHardwareBufferCompat::FromHardwareBuffer(
+    JNIEnv* env,
+    jobject hardwareBufferObj) {
+  DCHECK(IsSupportAvailable());
+  return from_hardware_buffer_(env, hardwareBufferObj);
 }
 
 }  // namespace base

@@ -7,6 +7,7 @@
 
 #include <android/hardware_buffer.h>
 #include <android/sensor.h>
+#include <jni.h>
 
 #include "base/base_export.h"
 #include "base/no_destructor.h"
@@ -29,6 +30,8 @@ using PFAHardwareBuffer_sendHandleToUnixSocket =
     int (*)(const AHardwareBuffer* buffer, int socketFd);
 using PFAHardwareBuffer_unlock = int (*)(AHardwareBuffer* buffer,
                                          int32_t* fence);
+using PFAHardwareBuffer_fromHardwareBuffer =
+    AHardwareBuffer* (*)(JNIEnv * env, jobject hardwareBufferObj);
 }
 
 namespace base {
@@ -57,6 +60,7 @@ class BASE_EXPORT AndroidHardwareBufferCompat {
   void Release(AHardwareBuffer* buffer);
   int SendHandleToUnixSocket(const AHardwareBuffer* buffer, int socketFd);
   int Unlock(AHardwareBuffer* buffer, int32_t* fence);
+  AHardwareBuffer* FromHardwareBuffer(JNIEnv* env, jobject hardwareBufferObj);
 
  private:
   friend class NoDestructor<AndroidHardwareBufferCompat>;
@@ -70,6 +74,7 @@ class BASE_EXPORT AndroidHardwareBufferCompat {
   PFAHardwareBuffer_release release_;
   PFAHardwareBuffer_sendHandleToUnixSocket send_handle_;
   PFAHardwareBuffer_unlock unlock_;
+  PFAHardwareBuffer_fromHardwareBuffer from_hardware_buffer_;
 };
 
 }  // namespace base
