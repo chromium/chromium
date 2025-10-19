@@ -68,13 +68,6 @@ BrowserList* BrowserList::instance_ = nullptr;
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserList, public:
 
-Browser* BrowserList::GetLastActive() const {
-  if (!browsers_ordered_by_activation_.empty()) {
-    return *(browsers_ordered_by_activation_.rbegin());
-  }
-  return nullptr;
-}
-
 // static
 BrowserList* BrowserList::GetInstance() {
   BrowserList** list = &instance_;

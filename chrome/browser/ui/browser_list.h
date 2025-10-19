@@ -47,10 +47,6 @@ class BrowserList {
   BrowserList(const BrowserList&) = delete;
   BrowserList& operator=(const BrowserList&) = delete;
 
-  // TODO(crbug.com/431671448): Prefer `GetLastActiveBrowserWindowInterface()`,
-  // this method is being deprecated.
-  Browser* GetLastActive() const;
-
   const_iterator begin() const { return browsers_.begin(); }
   const_iterator end() const { return browsers_.end(); }
 
