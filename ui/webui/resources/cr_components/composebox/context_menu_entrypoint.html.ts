@@ -33,6 +33,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         <div class="suggestion-container">
           <button class="dropdown-item"
               title="${tab.title}" data-index="${index}"
+              ?disabled="${this.inCreateImageMode}"
               @pointerenter="${this.onTabPointerenter_}"
               @click="${this.addTabContext_}">
             <composebox-tab-favicon .url="${tab.url.url}">
