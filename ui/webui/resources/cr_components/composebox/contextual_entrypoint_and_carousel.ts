@@ -73,6 +73,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       attachmentFileTypes_: {type: String},
       contextMenuEnabled_: {type: Boolean},
       files_: {type: Object},
+      addedTabsIds_: {type: Object},
       imageFileTypes_: {type: String},
       inputsDisabled_: {
         reflect: true,
@@ -105,6 +106,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor contextMenuEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
+  protected accessor addedTabsIds_: Set<number> = new Set();
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
   protected accessor inputsDisabled_: boolean = false;
@@ -154,6 +156,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
            FileUploadStatus.kUploadFailed,
            FileUploadStatus.kUploadExpired].includes(status)) {
         this.files_.delete(token);
+        if (file.tabId) {
+          this.addedTabsIds_.delete(file.tabId);
+        }
 
         switch (status) {
           case FileUploadStatus.kValidationFailed:
@@ -182,6 +187,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   resetContextFiles(): ComposeboxFile[] {
     const existingFiles = Array.from(this.files_.values());
     this.files_ = new Map();
+    this.addedTabsIds_ = new Set();
     this.showFileCarousel_ = false;
     return existingFiles;
   }
@@ -216,6 +222,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected onDeleteFile_(e: CustomEvent) {
     if (!e.detail.uuid || !this.files_.has(e.detail.uuid)) {
       return;
+    }
+
+    const file = this.files_.get(e.detail.uuid);
+    if (file?.tabId) {
+      this.addedTabsIds_.delete(file.tabId);
     }
 
     this.files_ = new Map([...this.files_.entries()].filter(
@@ -282,6 +293,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       url: e.detail.url,
       onContextAdded: (file: ComposeboxFile) => {
         this.files_ = new Map([...this.files_.entries(), [file.uuid, file]]);
+        this.addedTabsIds_.add(e.detail.id);
       },
     });
   }
