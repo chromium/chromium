@@ -15,6 +15,8 @@
 
 namespace base {
 
+// DEPRECATED: use ByteSize for unsigned values and ByteSizeDelta for signed.
+//
 // Represents an integral number of bytes. Supports arithmetic operations and
 // conversions to/from KiB, MiB, GiB, TiB, PiB, and EiB. Any operation that
 // overflows will result in a crash and thus this should only be used for
@@ -161,6 +163,11 @@ class BASE_EXPORT ByteCount {
   int64_t bytes_ = 0;
 };
 
+// DEPRECATED: use KiBU, etc, for unsigned values and KiBS, etc, for signed.
+//
+// TODO(crbug.com/448661443): After all uses are migrated to explicit signed/
+// unsigned, delete these and rename KiBU to KiB.
+//
 // Templated functions to construct from various types. Note that integers must
 // be converted to CheckedNumeric<int64_t> BEFORE multiplying to detect
 // overflows, while floats must be converted AFTER multiplying to avoid
