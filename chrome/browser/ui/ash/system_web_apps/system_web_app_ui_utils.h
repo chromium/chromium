@@ -129,6 +129,9 @@ BrowserDelegate* FindSystemWebAppBrowser(Profile* profile,
                                          BrowserType browser_type,
                                          const GURL& url = GURL());
 
+// Returns a count of the `app_type` SWA Browser instances for `profile`.
+int CountSystemWebAppBrowsers(Profile* profile, SystemWebAppType app_type);
+
 // Returns true if the |browser| is dedicated (see above) to hosting a system
 // web app.
 bool IsSystemWebApp(Browser* browser);

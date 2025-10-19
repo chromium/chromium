@@ -325,10 +325,11 @@ BocaAppHandler::~BocaAppHandler() {
     GetSessionManager()->NotifySessionCaptionProducerEvents(caption_config);
   }
   GetSessionManager()->RemoveObserver(this);
-  if (!is_producer_ || BocaAppClient::Get()->HasApp()) {
+  if (!is_producer_ || (BocaAppClient::Get()->GetAppInstanceCount() > 1)) {
     // Always try end session when handler destructed, but do not proceed if
-    // there is still app instance. Find App won't return the window is already
-    // scheduled to close.
+    // there are other app instances open. The total instance count will not be
+    // decremented until all the app instance's tabs (including the one hosting
+    // this) are closed and the Browser instance is scheduled for deletion.
     return;
   }
   GetSessionManager()->CleanupPresenters();

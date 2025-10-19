@@ -41,9 +41,8 @@ class BocaAppClient : public signin::IdentityManager::Observer {
   // Launch Boca App.
   virtual void LaunchApp();
 
-  // Find if there is any open app. Will return not if the app is already
-  // scheduled to be closed.
-  virtual bool HasApp();
+  // Returns the number of open app instances.
+  virtual int GetAppInstanceCount();
 
   // Add `BocaSessionManager` instance for the current profile.
   virtual void AddSessionManager(BocaSessionManager* session_manager);

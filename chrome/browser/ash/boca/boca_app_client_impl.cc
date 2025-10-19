@@ -53,11 +53,9 @@ void BocaAppClientImpl::LaunchApp() {
                                SystemWebAppType::BOCA);
 }
 
-bool BocaAppClientImpl::HasApp() {
-  auto* const browser_delegate =
-      ash::FindSystemWebAppBrowser(ProfileManager::GetActiveUserProfile(),
-                                   SystemWebAppType::BOCA, BrowserType::kApp);
-  return browser_delegate && !browser_delegate->IsClosing();
+int BocaAppClientImpl::GetAppInstanceCount() {
+  return ash::CountSystemWebAppBrowsers(ProfileManager::GetActiveUserProfile(),
+                                        SystemWebAppType::BOCA);
 }
 
 void BocaAppClientImpl::OpenFeedbackDialog() {

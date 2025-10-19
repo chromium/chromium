@@ -34,7 +34,7 @@ class BocaAppClientImpl : public BocaAppClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   std::string GetDeviceId() override;
   void LaunchApp() override;
-  bool HasApp() override;
+  int GetAppInstanceCount() override;
   void OpenFeedbackDialog() override;
   std::unique_ptr<SharedCrdSessionWrapper> CreateSharedCrdSessionWrapper()
       override;

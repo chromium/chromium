@@ -42,8 +42,8 @@ BocaAppClient::~BocaAppClient() {
 
 void BocaAppClient::LaunchApp() {}
 
-bool BocaAppClient::HasApp() {
-  return false;
+int BocaAppClient::GetAppInstanceCount() {
+  return 0;
 }
 
 void BocaAppClient::AddSessionManager(BocaSessionManager* session_manager) {
