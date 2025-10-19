@@ -272,7 +272,7 @@ suite('NewTabPageComposeboxTest', () => {
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.pdf', {type: 'application/pdf'}));
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessing, null);
+        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
     await microtasksFinished();
 
     // Autocomplete should be stopped (with matches cleared) and then
@@ -316,7 +316,7 @@ suite('NewTabPageComposeboxTest', () => {
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessing, null);
+        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
     await microtasksFinished();
 
     // Autocomplete should not be queried again since the uploaded file is an
@@ -336,7 +336,7 @@ suite('NewTabPageComposeboxTest', () => {
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessing, null);
+        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
     await microtasksFinished();
 
     // Autocomplete should be stopped (with matches cleared) and then
@@ -950,6 +950,42 @@ suite('NewTabPageComposeboxTest', () => {
     assertFalse(arrowDownEvent.defaultPrevented);
   });
 
+  test('dropdown does not show with multiple context files', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add zps input.
+    composeboxElement.$.input.value = '';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    const composeboxDropdown =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+    assertTrue(!!composeboxDropdown);
+
+    // Add matches and verify dropdown shows.
+    const matches = [
+      createSearchMatch(),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          matches: matches,
+        }));
+    await microtasksFinished();
+    assertFalse(composeboxDropdown.hidden);
+
+    // If multiple context files are added, the dropdown should hide.
+    composeboxElement.$.context.dispatchEvent(
+      new CustomEvent('on-context-files-changed', {
+        detail: {files: 2},
+      }));
+    await microtasksFinished();
+    assertTrue(composeboxDropdown.hidden);
+  });
+
   test('arrow keys work for typed suggest', async () => {
     loadTimeData.overrideValues(
         {composeboxShowZps: true, composeboxShowTypedSuggest: true});
@@ -1089,7 +1125,7 @@ suite('NewTabPageComposeboxTest', () => {
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessing, null);
+        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
     await microtasksFinished();
 
     // TODO(crbug.com/452957831): Create test browser proxy for the composebox
@@ -1460,7 +1496,7 @@ suite('NewTabPageComposeboxTest', () => {
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessing, null);
+        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
 
     // Matches should not show when image is present.
     assertFalse(await areMatchesShowing());

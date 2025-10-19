@@ -34,7 +34,8 @@ import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import type {FileUploadErrorType} from './composebox_query.mojom-webui.js';
 import {FileUploadStatus} from './composebox_query.mojom-webui.js';
-import type {ComposeboxMode, ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
+import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
+import {ComposeboxMode} from './contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from './error_scrim.js';
 
 export interface ComposeboxElement {
@@ -227,12 +228,20 @@ export class ComposeboxElement extends I18nMixinLit
           this.submitEnabled_ = this.contextFilesSize_ > 0;
         });
     this.$.input.focus();
-    if (this.showZps) {
+    // For realbox next, the zps autocomplete query is triggered after
+    // the state has been initialized.
+    if (this.showZps && !this.ntpRealboxNextEnabled) {
       this.queryAutocomplete(/* clearMatches= */ false);
     }
 
     this.searchboxHandler_.notifySessionStarted();
     this.refreshTabSuggestions_();
+
+    if (this.ntpRealboxNextEnabled) {
+      this.fire('composebox-initialized', {
+        initializeComposeboxState: this.initializeState_.bind(this),
+      });
+    }
   }
 
   override disconnectedCallback() {
@@ -314,20 +323,12 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  setContext(files: ComposeboxFile[]) {
-    this.$.context.setContextFiles(files);
-  }
-
   getText() {
     return this.input_;
   }
 
   setText(text: string) {
     this.input_ = text;
-  }
-
-  setInitialMode(mode: ComposeboxMode) {
-    this.$.context.setInitialMode(mode);
   }
 
   resetModes() {
@@ -340,6 +341,23 @@ export class ComposeboxElement extends I18nMixinLit
 
   getSmartComposeForTesting() {
     return this.smartComposeInlineHint_;
+  }
+
+  protected initializeState_(text: string = '', files: ComposeboxFile[] = [],
+                             mode: ComposeboxMode = ComposeboxMode.DEFAULT) {
+    if (text) {
+      this.input_ = text;
+      this.lastQueriedInput_ = text;
+    }
+    if (this.showZps && files.length === 0) {
+      this.queryAutocomplete(/* clearMatches= */ false);
+    }
+    if (files.length > 0) {
+      this.$.context.setContextFiles(files);
+    }
+    if (mode !== ComposeboxMode.DEFAULT) {
+      this.$.context.setInitialMode(mode);
+    }
   }
 
   protected computeCancelButtonTitle_() {
@@ -806,13 +824,14 @@ export class ComposeboxElement extends I18nMixinLit
     if (errorMessage) {
       this.$.errorScrim.setErrorMessage(errorMessage);
     } else if (file) {
-      if (status === FileUploadStatus.kProcessing && this.showZps &&
+      if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
+          this.showZps &&
           !file.type.includes('image')) {
         // Query autocomplete to get contextual suggestions for files.
         this.queryAutocomplete(/* clearMatches= */ true);
       }
 
-      if (status === FileUploadStatus.kProcessing &&
+      if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
           file.type.includes('image')) {
         // If we're in create image mode, update the aim tool mode.
         if (this.inCreateImageMode_) {
