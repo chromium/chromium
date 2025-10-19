@@ -2292,6 +2292,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4758311279753947758">Thêm thông tin liên hệ</translation>
 <translation id="4761326898079498987">Xem để biết thêm chi tiết</translation>
 <translation id="4761869838909035636">Chạy quy trình Kiểm tra an toàn trên Chrome</translation>
+<translation id="4762097990764616058">Tiếp tục thanh toán bằng <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">Điều khoản và điều kiện do <ph name="URL" /> cung cấp</translation>
 <translation id="4764680219299728632">Lò bếp, lò đứng và lò</translation>
 <translation id="4764776831041365478">Trang web tại <ph name="URL" /> có thể tạm thời không hoạt động hay được chuyển vĩnh viễn sang địa chỉ web mới.</translation>
@@ -3434,6 +3435,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Người quản lý:</translation>
 <translation id="6652101503459149953">Sử dụng Windows Hello</translation>
+<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> sẽ kiểm tra xem bạn có đủ điều kiện hay không (điều này sẽ không ảnh hưởng đến điểm tín dụng của bạn). Nếu bạn đáp ứng các điều kiện, <ph name="BNPL_ISSUER_NAME" /> sẽ cung cấp (các) gói thanh toán bạn có thể dùng để hoàn tất giao dịch mua.</translation>
 <translation id="6654224358955673568">Làm cho trang trọng hơn</translation>
 <translation id="6654244995031366386">Thuỷ tinh (Có hoạ tiết)</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
@@ -3597,6 +3599,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6925267999184670015">B+ Bắc Mỹ</translation>
 <translation id="6926216138694948720">Nghệ thuật vẽ trên cơ thể</translation>
 <translation id="692638818576287323">Xe thương mại</translation>
+<translation id="6927057753277044239">Sau khi xem lại đơn đặt hàng, bạn phải đăng nhập hoặc tạo một tài khoản <ph name="BNPL_ISSUER_NAME" />. Tài khoản này sẽ tự động được liên kết với Tài khoản Google của bạn.</translation>
 <translation id="6930607614725241390">Tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Công cụ tìm kiếm mặc định cho phép bạn tìm kiếm trên web và hỗ trợ các tính năng của Chrome<ph name="END_BOLD" /> như tìm kiếm trên thanh địa chỉ và tìm kiếm nội dung trên hình ảnh của các trang web. Nếu công cụ tìm kiếm của bạn không hỗ trợ một tính năng nào đó thì có thể bạn sẽ không dùng được tính năng đó.</translation>
 <translation id="6934672428414710184">Tên này lấy từ Tài khoản Google của bạn</translation>

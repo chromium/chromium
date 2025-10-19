@@ -1244,6 +1244,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1829192082282182671">Thu &amp;nhỏ</translation>
 <translation id="1830550083491357902">Chưa đăng nhập</translation>
 <translation id="1831848493690504725">Chúng tôi không thể kết nối với Google thông qua mạng được kết nối. Hãy thử chọn một mạng khác hoặc kiểm tra chế độ cài đặt mạng hoặc chế độ cài đặt proxy của bạn (nếu bạn đang sử dụng proxy).</translation>
+<translation id="1832414451155700364">Chọn có đồng bộ hoá nhật ký và thẻ hay không</translation>
 <translation id="1832459821645506983">Có, tôi đồng ý</translation>
 <translation id="1832511806131704864">Đã cập nhật thay đổi điện thoại</translation>
 <translation id="1832848789136765277">Hãy xác minh danh tính để đảm bảo bạn luôn có thể truy cập vào dữ liệu đã đồng bộ</translation>
@@ -8799,6 +8800,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7088960765736518739">Tiếp cận bằng công tắc</translation>
 <translation id="7089253021944603172">Thẻ hoạt động trở lại</translation>
 <translation id="7090714929377281710">Tự động tắt điểm phát sóng</translation>
+<translation id="7092452922791061650">Nhấp chuột phải vào thẻ này rồi chọn "Chế độ xem phân tách mới với thẻ hiện tại"</translation>
 <translation id="7092504544229909737">Không dùng được với ứng dụng Android</translation>
 <translation id="7093220653036489319">Thông tin nhanh</translation>
 <translation id="7093866338626856921">Trao đổi dữ liệu với thiết bị có tên: <ph name="HOSTNAMES" /></translation>

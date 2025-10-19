@@ -756,6 +756,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ta rasm</translation>
 <translation id="4300272766492248925">Ilovani ochish</translation>
 <translation id="430786093962686457">shifon</translation>
+<translation id="4309762678330556039">Transkripsiyalarni avtomatik yaratish va audio ichidan qidirish. Ovozli yozuvlarni hatto internetsiz yarating.</translation>
 <translation id="4310735698903592804">Google AI yaratgan oxirgi fon rasmlari</translation>
 <translation id="4320904097188876154">neonli pushti</translation>
 <translation id="432961742358282111">Tavsiflar, tarjimalarni olish yoki birliklarni oʻgirish uchun oʻng klikni bosing yoki ustiga bosib turing. Bu funksiya chapga va oʻngga strelkalar orqali boshqariladi.</translation>
@@ -1472,6 +1473,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> transkripsiya modeli <ph name="PROGRESS_PERCENTAGE" />% yuklab olindi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Bu APN faolsizlantirilmadi yoki olib tashlanmadi. <ph name="ATTACH" /> APN nuqtalari faolsizlantirilishi yoki olib tashlanishi kerak</translation>
+<translation id="7458359366992324037">Masofaviy displey</translation>
 <translation id="7458970041932198923">Avatarlarni koʻrish va sozlash uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="7469648432129124067">Portal aniqlandi</translation>
 <translation id="7481312909269577407">Oldinga</translation>

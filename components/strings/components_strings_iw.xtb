@@ -2292,6 +2292,7 @@
 <translation id="4758311279753947758">הוספת פרטים ליצירת קשר</translation>
 <translation id="4761326898079498987">ניתן לפתוח כדי לבדוק פרטים נוספים</translation>
 <translation id="4761869838909035636">‏הרצה של בדיקת אבטחה ב-Chrome</translation>
+<translation id="4762097990764616058">להמשיך לשלם באמצעות <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="4763196677855776703">התנאים וההגבלות סופקו על ידי <ph name="URL" /></translation>
 <translation id="4764680219299728632">תנורים וכיריים</translation>
 <translation id="4764776831041365478">ייתכן שדף האינטרנט בכתובת <ph name="URL" /> אינו פעיל זמנית, או שהועבר לכתובת אינטרנט חדשה לצמיתות.</translation>
@@ -3439,6 +3440,7 @@ Del</translation>
 <translation id="6649510485211003056">‏195x270 מ"מ</translation>
 <translation id="6651270836885078973">בניהול של:</translation>
 <translation id="6652101503459149953">‏שימוש ב-Windows Hello</translation>
+<translation id="6653684225271066234">החברה <ph name="BNPL_ISSUER_NAME" /> תבדוק את הזכאות שלך (זה לא משפיע על דירוג האשראי שלך). אם החשבון שלך עומד בקריטריונים לזכאות, <ph name="BNPL_ISSUER_NAME" /> תציג תוכניות אפשריות לתשלום כדי להשלים את הרכישה.</translation>
 <translation id="6654224358955673568">יצירת סגנון רשמי</translation>
 <translation id="6654244995031366386">Glass (Textured)</translation>
 <translation id="6657585470893396449">סיסמה</translation>
@@ -3602,6 +3604,7 @@ Del</translation>
 <translation id="6925267999184670015">‏13x19 אינץ' (B+‎ – צפון אמריקה)</translation>
 <translation id="6926216138694948720">אומנות גוף</translation>
 <translation id="692638818576287323">רכבים מסחריים</translation>
+<translation id="6927057753277044239">‏אחרי שבודקים את ההזמנה, צריך להיכנס לחשבון <ph name="BNPL_ISSUER_NAME" /> או ליצור חשבון חדש אצל הספק הזה. החשבון הזה יקושר באופן אוטומטי לחשבון שלך ב-Google.</translation>
 <translation id="6930607614725241390">חיפוש בחלונית הצדדית</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />מנוע החיפוש שמוגדר כברירת המחדל מאפשר לך לבצע חיפושים באינטרנט ומפעיל תכונות של Chrome<ph name="END_BOLD" />, כמו חיפוש מסרגל הכתובות ומתמונות בדפי אינטרנט. יכול להיות שתכונה מסוימת לא תהיה זמינה אם מנוע החיפוש לא תומך בה.</translation>
 <translation id="6934672428414710184">‏השם הזה הוא מחשבון Google שלך</translation>

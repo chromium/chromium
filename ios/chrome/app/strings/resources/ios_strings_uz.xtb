@@ -1791,6 +1791,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7851858861565204677">Boshqa qurilmalar</translation>
 <translation id="7853202427316060426">Harakat</translation>
 <translation id="7854006015462979438">Umumiy sozlamalarni oching</translation>
+<translation id="7855678267851972597">Audiolar</translation>
 <translation id="7859988229622350291">Hech qachon tarjima qilinmasin</translation>
 <translation id="7863211248337747225">Ilovani yuklab olish</translation>
 <translation id="7865127013871431856">Tarjima parametrlari</translation>
@@ -1971,6 +1972,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> tablar soni <ph name="FIRST_VISIBLE_TAB" /> va <ph name="LAST_VISIBLE_TAB" /> orasida, jami <ph name="NUMBER_OF_OPEN_TABS" /> ta</translation>
 <translation id="8528009254289981965">Boshqa ilovalardan havolalarni Inkognito rejimida ochish</translation>
 <translation id="8529767659511976195">Yangi</translation>
+<translation id="8531572740963685410">PDF fayllar</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Saytlarni xavfsiz kezish rejimi yoniq</translation>
 <translation id="8534481786647257214">Google+’ga joylandi.</translation>
@@ -2177,6 +2179,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="945522503751344254">Fikr-mulohaza</translation>
 <translation id="94870150074703282">Guruh oʻchirilsinmi?</translation>
 <translation id="952704832371081537">Bekor qilish</translation>
+<translation id="95332591904104970">Ulangan ilovalar</translation>
 <translation id="954667170699278022">Saqlangan sahifalar</translation>
 <translation id="956218893102219091">Taxminiy yoki IP manzil asosidagi sozlamalar oʻrniga Gemini natijalarida aniq joylashuv ishlatilsin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Brauzer maʼlumotlarini oʻchirish</translation>

@@ -19,6 +19,7 @@
 <translation id="110877069173485804">Bu Chrome sizniki</translation>
 <translation id="1125124144982679672">Chromeni kim ochdi?</translation>
 <translation id="1142745911746664600">Chromeni yangilab bo‘lmadi</translation>
+<translation id="1148360048981192980">Keyingi safar <ph name="DEVICE_TYPE" /> qurilmangizda Chrome ilovasini ochganingizda Google Parollar menejeridan foydalanish taklifi chiqadi.</translation>
 <translation id="1152920704813762236">ChromeOS haqida</translation>
 <translation id="1154147086299354128">Chrome brauzerida &amp;ochish</translation>
 <translation id="1157985233335035034">Oxirgi tillar</translation>
@@ -147,6 +148,7 @@
 <translation id="2681444469812712297">Chromeda yangi varaqda ochish: <ph name="URL" /></translation>
 <translation id="2699790011615497488">Chrome Beta ichida Gemini ochish</translation>
 <translation id="2712141162840347885">Google Lens bilan qidirish uchun istalgan obyektni tanlang yoki Google Lens panelidan chiqish uchun Escape tugmasini bosing</translation>
+<translation id="2723860029395667894">Google AI rejimi tezkor tugmasini doim chiqarish</translation>
 <translation id="2738871930057338499">Internetga ulanmadi. HTTP 403, taqiqlangan. Proksi konfiguratsiyasini tekshiring.</translation>
 <translation id="2742320827292110288">Diqqat: Google Chrome kengaytmalar kezish tarixini yozib olishiga to‘sqinlik qilolmaydi. Bu kengaytmani inkognito rejimida o‘chirish uchun ushbu parametrdan belgini olib tashlang.</translation>
 <translation id="2753623023919742414">Qidirish uchun bosing</translation>
@@ -479,6 +481,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6412673304250309937">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Chrome 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}other{Chrome # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}}</translation>
 <translation id="6418662306461808273">Mavjud Chrome profiliga almashilsinmi?</translation>
+<translation id="6426623519983252346">Keyingi safar Chrome iOS ilovasini ochganingizda <ph name="FEATURE_NAME" /> sinash taklifi chiqadi.</translation>
 <translation id="6473905796280459355">Chrome haqida sahifasini oching</translation>
 <translation id="6481963882741794338">Chrome va boshqa Google xizmatlarini moslashtirish kabi maqsadlarda ulang</translation>
 <translation id="648319183876919572">Saytlarni kuchaytirilgan rejimda xavfsiz kezish yordamida zararli saytlar va yuklanmalardan himoyalanish mumkin</translation>
@@ -677,6 +680,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8641606876632989680">Google hisobingizga kirsangiz, Chrome oshkor qilingan parollar haqida xabar qiladi</translation>
 <translation id="8656634243791296665">Chrome Dev ichida Gemini ochish</translation>
 <translation id="8669527147644353129">Google Chrome yordamchisi</translation>
+<translation id="8677922833187616101">Google AI rejimi tezkor tugmasini doim chiqarish</translation>
 <translation id="8679801911857917785">Bundan tashqari, kengaytma Chrome bosh sahifasini o‘zgarib qo‘ydi.</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8712767363896337380">Deyarli yangilandi! Yangilash tugashi uchun Chrome brauzerini qayta ishga tushiring.</translation>
