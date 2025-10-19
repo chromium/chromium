@@ -300,6 +300,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory",

@@ -415,11 +415,7 @@ TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
 
 // Tests that the right status will be returned when there is no form with fill
 // data matching the queried form.
-TEST_F(AccountSelectFillDataTest,
-       GetFillData_WhenStateless_NoResult_BecauseNoForm) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kIOSStatelessFillDataFlow};
-
+TEST_F(AccountSelectFillDataTest, GetFillData_NoResult_BecauseNoForm) {
   AccountSelectFillData account_select_fill_data;
 
   // GetFillData() when in stateless mode doesn't need to call
@@ -436,11 +432,7 @@ TEST_F(AccountSelectFillDataTest,
 
 // Tests that the right status will be returned when there is no field matching
 // the queried field.
-TEST_F(AccountSelectFillDataTest,
-       GetFillData_WhenStateless_NoResult_BecauseNoField) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kIOSStatelessFillDataFlow};
-
+TEST_F(AccountSelectFillDataTest, GetFillData_NoResult_BecauseNoField) {
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data_[0], /*always_populate_realm=*/false);
 
@@ -562,7 +554,11 @@ TEST_P(AccountSelectFillDataFieldTypeTest, RetrieveSuggestionsOneForm) {
                         Field(&UsernameAndRealm::realm, std::string()))));
 }
 
-TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData) {
+TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData_WhenNotStateless) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSStatelessFillDataFlow);
+
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data_[0],
                                /*always_populate_realm=*/false);
@@ -603,10 +599,7 @@ TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData) {
 
 // Tests that the GetFillData() interface to be used when in stateless mode
 // works correctly.
-TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData_WhenStateless) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kIOSStatelessFillDataFlow};
-
+TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData) {
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data_[0],
                                /*always_populate_realm=*/false);

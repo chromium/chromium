@@ -6,5 +6,5 @@
 
 namespace password_manager::features {
 
-BASE_FEATURE(kIOSStatelessFillDataFlow, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSStatelessFillDataFlow, base::FEATURE_ENABLED_BY_DEFAULT);
 }

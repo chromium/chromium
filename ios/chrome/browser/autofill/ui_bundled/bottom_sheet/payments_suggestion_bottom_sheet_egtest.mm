@@ -125,7 +125,6 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
                  isRunningTest:@selector
                  (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
     config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
-    config.features_enabled.push_back(kStatelessFormSuggestionController);
   }
 
   if ([self shouldUseNewBlur]) {

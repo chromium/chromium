@@ -238,11 +238,6 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
 
-  if ([self isRunningTest:@selector
-            (testOpenPasswordBottomSheetUsePassword_StatelessFillDataFlow)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSStatelessFillDataFlow);
-  }
 
   if ([self isRunningTest:@selector(testUseBackupPassword)] ||
       [self isRunningTest:@selector

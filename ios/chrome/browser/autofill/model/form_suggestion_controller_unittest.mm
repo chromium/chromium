@@ -260,8 +260,9 @@ class FormSuggestionControllerTest
   void SetUp() override {
     PlatformTest::SetUp();
 
-    if (IsStateless()) {
-      scoped_feature_list_.InitAndEnableFeature(
+    if (!IsStateless()) {
+      scoped_feature_list_.InitAndDisableFeature(
+
           kStatelessFormSuggestionController);
     }
 
@@ -650,6 +651,69 @@ TEST_P(FormSuggestionControllerTest,
 TEST_P(
     FormSuggestionControllerTest,
     FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView_Concurrency) {
+  autofill::FormActivityParams params;
+  params.form_name = "form";
+  params.field_identifier = "field_id";
+  params.field_type = "text";
+  params.type = "type";
+  params.value = "value";
+  params.input_missing = false;
+
+  AsyncTestSuggestionProvider* provider =
+      [[AsyncTestSuggestionProvider alloc] initWithSuggestions:@[]];
+
+  NSArray* suggestions = @[ [FormSuggestion
+              copy:[FormSuggestion
+                       suggestionWithValue:@"foo"
+                        displayDescription:nil
+                                      icon:nil
+                                      type:autofill::SuggestionType::
+                                               kAutocompleteEntry
+                                   payload:autofill::Suggestion::Payload()
+                            requiresReauth:NO]
+      andSetParams:params
+          provider:provider] ];
+  [provider setSuggestions:suggestions];
+
+  SetUpController(@[ provider ]);
+  GURL url("http://foo.com");
+  fake_web_state_.SetCurrentURL(url);
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
+
+  // Start 2 concurrent suggestions retrieval requests.
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
+                                                        params);
+  ASSERT_EQ(2, provider.pendingRequestsCount);
+
+  // Run the async requests that were dispatched.
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(0, provider.pendingRequestsCount);
+  ASSERT_EQ(1u, received_suggestions_.count);
+
+  // Verify that only the latest concurrent request is
+  // handled, so one request.
+  EXPECT_EQ(1, provider.askForSuggestionsCount);
+
+  // Briefly verify that the returned suggestion corresponds to what the
+  // provider provides.
+  FormSuggestion* suggestion = [received_suggestions_ objectAtIndex:0];
+  EXPECT_NSEQ(@"foo", suggestion.value);
+}
+
+// TODO(crbug.com/396159046): Make a variant of this test for the KA mediator
+// which also has its own logic for handling concurrent requests.
+// Tests that with dedupping disabled, concurrent requests can be handled when
+// suggestions are offered.
+TEST_P(
+    FormSuggestionControllerTest,
+    FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView_Concurrency_WithoutDedupping) {
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitAndDisableFeature(
+      kStatelessFormSuggestionControllerWithRequestDeduping);
+
   autofill::FormActivityParams params;
   params.form_name = "form";
   params.field_identifier = "field_id";

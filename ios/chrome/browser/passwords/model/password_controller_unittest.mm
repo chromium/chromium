@@ -53,6 +53,7 @@
 #import "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -235,6 +236,29 @@ struct TestPasswordFormData {
 
 @synthesize suggestions = _suggestions;
 
+- (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
+                          webState:(web::WebState*)webState
+          accessoryViewUpdateBlock:
+              (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
+  __weak __typeof(self) weakSelf = self;
+  FormSuggestionsReadyCompletion wrappedBlock =
+      ^(NSArray<FormSuggestion*>* suggestions,
+        id<FormInputSuggestionsProvider> provider) {
+        // Capture the suggestions here for the test to verify.
+        weakSelf.suggestions = suggestions;
+
+        // Call the original completion block.
+        if (accessoryViewUpdateBlock) {
+          accessoryViewUpdateBlock(suggestions, provider);
+        }
+      };
+
+  [super retrieveSuggestionsForForm:params
+                           webState:webState
+           accessoryViewUpdateBlock:wrappedBlock];
+}
+
+// This method is kept for the stateful path.
 - (void)updateKeyboardWithSuggestions:(NSArray*)suggestions {
   self.suggestions = suggestions;
 }
@@ -622,6 +646,19 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
                      type:autofill::SuggestionType::kAutocompleteEntry
                   payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
+
+  if (base::FeatureList::IsEnabled(kStatelessFormSuggestionController)) {
+    autofill::FormActivityParams params;
+    params.form_name = test_data.form_name;
+    params.form_renderer_id = FormRendererId(test_data.form_renderer_id);
+    params.field_identifier = test_data.username_element;
+    params.field_renderer_id = FieldRendererId(test_data.username_renderer_id);
+    params.frame_id = frame->GetFrameId();
+    suggestion =
+        [FormSuggestion copy:suggestion
+                andSetParams:params
+                    provider:passwordController_.sharedPasswordController];
+  }
 
   SuggestionHandledCompletion completion = ^{
     block_was_called = YES;

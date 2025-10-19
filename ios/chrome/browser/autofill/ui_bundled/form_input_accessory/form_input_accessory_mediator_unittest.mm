@@ -188,7 +188,10 @@ TEST_F(FormInputAccessoryMediatorTest, TextDoesNotReset) {
 }
 
 // Tests that suggestions are updated and shown.
-TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
+TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_NotStateless) {
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitAndDisableFeature(kStatelessFormSuggestionController);
+
   id providerMock = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
   [mediator_ injectProvider:providerMock];
 
@@ -231,10 +234,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
 }
 
 // Tests showing suggestions when Stateless is enabled.
-TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WhenStateless) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      kStatelessFormSuggestionController};
-
+TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
   id providerMock = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
   [mediator_ injectProvider:providerMock];
 
@@ -355,8 +355,6 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
 // Tests that selecting a suggestion when Stateless is enabled is correctly
 // handled when no reauthentication is needed.
 TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      kStatelessFormSuggestionController};
 
   base::HistogramTester histogram_tester;
 
