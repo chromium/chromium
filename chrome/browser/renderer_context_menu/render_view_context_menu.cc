@@ -4335,8 +4335,11 @@ void RenderViewContextMenu::ExecSaveAs() {
 
 void RenderViewContextMenu::ExecGlicShareImage() {
 #if BUILDFLAG(ENABLE_GLIC)
-  CHECK(glic::GlicEnabling::IsEnabledForProfile(GetProfile()) &&
-        base::FeatureList::IsEnabled(features::kGlicShareImage));
+  if (!glic::GlicEnabling::IsEnabledForProfile(GetProfile()) ||
+      !base::FeatureList::IsEnabled(features::kGlicShareImage)) {
+    // If this has changed since the context menu was summoned, bail early.
+    return;
+  }
   if (auto* glic_service = glic::GlicKeyedService::Get(browser_context_)) {
     glic_service->ShareContextImage(
         tabs::TabInterface::MaybeGetFromContents(source_web_contents_),
