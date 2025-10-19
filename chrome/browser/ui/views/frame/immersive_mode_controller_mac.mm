@@ -344,7 +344,8 @@ void ImmersiveModeControllerMac::OnContentFullscreenChanged(
 void ImmersiveModeControllerMac::OnDidChangeFocus(views::View* focused_before,
                                                   views::View* focused_now) {
   if (browser_view_->top_container()->Contains(focused_now) ||
-      browser_view_->tab_overlay_view()->Contains(focused_now)) {
+      (browser_view_->tab_overlay_view() &&
+       browser_view_->tab_overlay_view()->Contains(focused_now))) {
     if (!focus_lock_) {
       focus_lock_ = GetRevealedLock(ANIMATE_REVEAL_NO);
     }
