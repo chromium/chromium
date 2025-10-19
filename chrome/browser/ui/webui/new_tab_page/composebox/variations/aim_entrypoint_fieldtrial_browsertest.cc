@@ -171,37 +171,38 @@ IN_PROC_BROWSER_TEST_P(NtpComposeboxFieldTrialEntrypointBrowserTest, Test) {
 
   bool expected_enabled = false;
 
-  // Implementation logic mirrors IsNtpSearchboxComposeEntrypointEnabled:
-  // 1. If generic entrypoint feature is overridden, it should take
-  // precedence.
-  if (override_entrypoint_feature) {
-    expected_enabled = entrypoint_feature;
-  } else {
-    // Get the service to check server eligibility (this is now handled by the
-    // mock).
-    auto* service =
-        AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+  // Get the service to check server eligibility (this is now handled by the
+  // mock).
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
 
-    // 2. If server response is enabled, return overall eligibility alone.
-    if (service->IsServerEligibilityEnabled()) {
-      expected_enabled = service->IsAimEligible();
+  // If service or local eligibility check fails, return false.
+  if (!service || !service->IsAimLocallyEligible()) {
+    expected_enabled = false;
+  } else {
+    // If the generic entrypoint feature is overridden, it should take
+    // precedence.
+    if (override_entrypoint_feature) {
+      expected_enabled = entrypoint_feature;
     } else {
-      // 3. If not locally eligible, return false.
-      if (!is_locally_eligible) {
-        expected_enabled = false;
+      // If server response is enabled, return overall eligibility alone.
+      // The service will control locale rollout so there's no need to check
+      // locale or the state of kMyFeature below.
+      if (service->IsServerEligibilityEnabled()) {
+        expected_enabled = service->IsAimEligible();
       } else {
         // If the generic feature is not explicitly overridden, check if it is
         // enabled by default.
         const bool generic_default_state =
             ntp_composebox::kNtpSearchboxComposeEntrypoint.default_state ==
             base::FEATURE_ENABLED_BY_DEFAULT;
-        // 4. For English locales in the US, check either the EnglishUS or
+        // For English locales in the US, check either the EnglishUS or
         // generic features.
         if (locale == "en-US" && country == "us") {
           expected_enabled =
               entrypoint_english_us_feature || generic_default_state;
         } else {
-          // 5. Otherwise, check the generic entrypoint feature default state.
+          // Otherwise, check the generic entrypoint feature default state.
           expected_enabled = generic_default_state;
         }
       }

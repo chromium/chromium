@@ -3720,6 +3720,11 @@ TEST_F(AutocompleteResultTest, AttachAimAction) {
   EXPECT_TRUE(result.match_at(1)->actions.empty());
 
   FakeAutocompleteProviderClient client;
+  MockAimEligibilityService* mock_aim_eligibility_service =
+      static_cast<MockAimEligibilityService*>(
+          client.GetAimEligibilityService());
+  EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
+      .WillRepeatedly(testing::Return(true));
   result.AttachAimAction(&template_url_service(), &client);
 
   ui::DeviceFormFactor factor = ui::GetDeviceFormFactor();

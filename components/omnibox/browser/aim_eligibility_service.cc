@@ -157,14 +157,19 @@ bool AimEligibilityService::GenericKillSwitchFeatureCheck(
     const base::Feature& feature,
     const std::optional<std::reference_wrapper<const base::Feature>>
         feature_en_us) {
+  if (!aim_eligibility_service) {
+    return false;
+  }
+
+  // If not locally eligible, return false.
+  if (!aim_eligibility_service->IsAimLocallyEligible()) {
+    return false;
+  }
+
   // If the generic feature is overridden, it takes precedence.
   auto* feature_list = base::FeatureList::GetInstance();
   if (feature_list && feature_list->IsFeatureOverridden(feature.name)) {
     return base::FeatureList::IsEnabled(feature);
-  }
-
-  if (!aim_eligibility_service) {
-    return false;
   }
 
   // If the server eligibility is enabled, check overall eligibility alone.
@@ -172,11 +177,6 @@ bool AimEligibilityService::GenericKillSwitchFeatureCheck(
   // or the state of kMyFeature below.
   if (aim_eligibility_service->IsServerEligibilityEnabled()) {
     return aim_eligibility_service->IsAimEligible();
-  }
-
-  // If not locally eligible, return false.
-  if (!aim_eligibility_service->IsAimLocallyEligible()) {
-    return false;
   }
 
   // Otherwise, check the generic entrypoint feature default value.
