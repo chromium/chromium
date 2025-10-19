@@ -6,7 +6,6 @@
 #define BASE_STRINGS_STRING_TOKENIZER_H_
 
 #include <algorithm>
-#include <iterator>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -238,7 +237,7 @@ class StringTokenizerT {
   // policy.
   void SkipWhitespace() {
     while (token_end_ != end_ && ShouldSkip(*token_end_)) {
-      token_end_ = std::next(token_end_);
+      UNSAFE_TODO(++token_end_);
     }
   }
 
@@ -253,7 +252,7 @@ class StringTokenizerT {
         token_is_delim_ = true;
         return false;
       }
-      token_end_ = std::next(token_end_);
+      UNSAFE_TODO(++token_end_);
       if (delims_.find(*token_begin_) == str::npos &&
           !ShouldSkip(*token_begin_)) {
         break;
@@ -262,7 +261,7 @@ class StringTokenizerT {
     }
     while (token_end_ != end_ && delims_.find(*token_end_) == str::npos &&
            !ShouldSkip(*token_end_)) {
-      token_end_ = std::next(token_end_);
+      UNSAFE_TODO(++token_end_);
     }
     return true;
   }
@@ -279,9 +278,9 @@ class StringTokenizerT {
         //    ... D T T T T D ...
         //        ^ ^
         //        | |
-        //        | |token_end_| : The next character to look at or |end_|
+        //        | |token_end_| : The next character to look at or |end_|.
         //        |
-        //        |token_begin_| : Points to delimiter or |token_end_|
+        //        |token_begin_| : Points to delimiter or |token_end_|.
         //
         // The next token is always a non-delimiting token. It could be empty,
         // however.
@@ -290,7 +289,7 @@ class StringTokenizerT {
 
         // Slurp all non-delimiter characters into the token.
         while (token_end_ != end_ && AdvanceOne(&state, *token_end_)) {
-          token_end_ = std::next(token_end_);
+          UNSAFE_TODO(++token_end_);
         }
 
         // If it's non-empty, or empty tokens were requested, return the token.
@@ -322,7 +321,7 @@ class StringTokenizerT {
       }
 
       // Look at the delimiter.
-      token_end_ = std::next(token_end_);
+      UNSAFE_TODO(++token_end_);
       if (options_ & RETURN_DELIMS) {
         return true;
       }
