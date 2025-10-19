@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_ios) {
+  # Used to access target_environment and target_platform.
+  import("//build/config/apple/mobile_config.gni")
+}
+
 static_library("open_from_clipboard") {
   sources = [
     "clipboard_recent_content.cc",
@@ -25,7 +30,7 @@ static_library("open_from_clipboard") {
       "clipboard_recent_content_generic.h",
     ]
     deps += [ "//ui/base/clipboard" ]
-  } else {
+  } else if (target_platform == "iphoneos") {
     sources += [
       "clipboard_recent_content_ios.h",
       "clipboard_recent_content_ios.mm",
@@ -47,7 +52,7 @@ source_set("open_from_clipboard_impl") {
   sources = []
   deps = [ "//base" ]
   assert_no_deps = [ "//base:i18n" ]
-  if (is_ios) {
+  if (is_ios && target_platform == "iphoneos") {
     sources += [
       "clipboard_async_wrapper_ios.h",
       "clipboard_async_wrapper_ios.mm",
