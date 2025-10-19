@@ -256,6 +256,9 @@ void OSCryptImpl::RegisterLocalPrefs(PrefRegistrySimple* registry) {
 
 bool OSCryptImpl::Init(PrefService* local_state) {
   // Try to pull the key from the local state.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-encryption")) {
+    use_legacy_ = true;
+  }
   switch (InitWithExistingKey(local_state)) {
     case OSCrypt::kSuccess:
       return true;
