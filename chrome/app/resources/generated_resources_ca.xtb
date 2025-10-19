@@ -7153,7 +7153,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6011193465932186973">Empremta digital</translation>
 <translation id="6011308810877101166">Millora els suggeriments de cerca</translation>
 <translation id="6011908034087870826">S'està enviant l'enllaç a <ph name="DEVICE_NAME" /></translation>
-<translation id="6013027779243312217">Obtén subtítols per als teus àudios i vídeos</translation>
+<translation id="6013027779243312217">Subtitula els teus àudios i vídeos</translation>
 <translation id="6014293228235665243">No llegits</translation>
 <translation id="6015776718598175635">Estrelles</translation>
 <translation id="6015796118275082299">Any</translation>
@@ -10224,7 +10224,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8157849462797352650">El dispositiu obté les actualitzacions més recents de seguretat, estabilitat i rendiment</translation>
 <translation id="8158117992543756526">Aquest dispositiu va deixar de rebre actualitzacions automàtiques de programari i seguretat a partir de: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Rep una vibració de confirmació per a accions com ara dividir la pantalla i canviar d'escriptori. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
-<translation id="8160775796528709999">Activa Subtítols instantanis a la configuració per obtenir subtítols per als teus àudios i vídeos</translation>
+<translation id="8160775796528709999">Activa Subtítols instantanis a la configuració per subtitular els teus àudios i vídeos</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Reprèn la navegació</translation>
 <translation id="8161604891089629425">Font perfilada</translation>
