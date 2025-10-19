@@ -20,7 +20,7 @@ namespace net {
 
 namespace {
 
-size_t AddVectorHeaderIfNonEmpty(const char* name,
+size_t AddVectorHeaderIfNonEmpty(std::string_view name,
                                  const std::vector<std::string>& value,
                                  HttpRequestHeaders* headers) {
   if (value.empty()) {
@@ -36,7 +36,7 @@ size_t AddVectorHeaderIfNonEmpty(const char* name,
 
 // static
 std::string WebSocketHandshakeStreamBase::MultipleHeaderValuesMessage(
-    const std::string& header_name) {
+    std::string_view header_name) {
   return base::StrCat(
       {"'", header_name,
        "' header must not appear more than once in a response"});

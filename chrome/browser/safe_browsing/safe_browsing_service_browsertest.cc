@@ -91,6 +91,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/websockets/websocket_handshake_challenge.h"
 #include "net/websockets/websocket_handshake_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -140,8 +141,7 @@ class QuasiWebSocketHttpResponse : public net::test_server::HttpResponse {
     const auto it = request.headers.find("Sec-WebSocket-Key");
     const std::string key =
         it == request.headers.end() ? std::string() : it->second;
-    accept_hash_ = base::Base64Encode(
-        base::SHA1HashString(key + net::websockets::kWebSocketGuid));
+    accept_hash_ = net::ComputeSecWebSocketAccept(key);
   }
   ~QuasiWebSocketHttpResponse() override = default;
 

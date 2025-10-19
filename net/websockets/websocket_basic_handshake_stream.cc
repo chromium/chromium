@@ -73,7 +73,7 @@ enum GetHeaderResult {
   GET_HEADER_MULTIPLE,
 };
 
-std::string MissingHeaderMessage(const std::string& header_name) {
+std::string MissingHeaderMessage(std::string_view header_name) {
   return base::StrCat({"'", header_name, "' header is missing"});
 }
 
@@ -100,7 +100,7 @@ GetHeaderResult GetSingleHeaderValue(const HttpResponseHeaders* headers,
 }
 
 bool ValidateHeaderHasSingleValue(GetHeaderResult result,
-                                  const std::string& header_name,
+                                  std::string_view header_name,
                                   std::string* failure_message) {
   if (result == GET_HEADER_MISSING) {
     *failure_message = MissingHeaderMessage(header_name);

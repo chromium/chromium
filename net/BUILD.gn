@@ -1742,7 +1742,6 @@ component("net") {
       "websockets/websocket_frame_parser.h",
       "websockets/websocket_handshake_challenge.cc",
       "websockets/websocket_handshake_challenge.h",
-      "websockets/websocket_handshake_constants.cc",
       "websockets/websocket_handshake_constants.h",
       "websockets/websocket_handshake_request_info.cc",
       "websockets/websocket_handshake_request_info.h",

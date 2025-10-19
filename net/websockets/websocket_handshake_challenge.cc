@@ -6,12 +6,14 @@
 
 #include "base/base64.h"
 #include "base/hash/sha1.h"
+#include "base/strings/strcat.h"
 #include "net/websockets/websocket_handshake_constants.h"
 
 namespace net {
 
-std::string ComputeSecWebSocketAccept(const std::string& key) {
-  std::string hash = base::SHA1HashString(key + websockets::kWebSocketGuid);
+std::string ComputeSecWebSocketAccept(std::string_view key) {
+  std::string hash =
+      base::SHA1HashString(base::StrCat({key, websockets::kWebSocketGuid}));
   return base::Base64Encode(hash);
 }
 
