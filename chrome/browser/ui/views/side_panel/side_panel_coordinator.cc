@@ -85,6 +85,13 @@ void SidePanelCoordinator::Toggle(
   }
 }
 
+void SidePanelCoordinator::ShowFrom(SidePanelEntryKey entry_key,
+                                    gfx::Rect starting_bounds) {
+  // TODO(crbug.com/445453126): Trigger an animation to show from the provided
+  // starting_bounds.
+  SidePanelUI::Show(entry_key);
+}
+
 content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
     SidePanelEntryId id) {
   if (auto* entry = GetEntryForKey(SidePanelEntryKey(id))) {

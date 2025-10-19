@@ -47,6 +47,8 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void Close() override;
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
+  void ShowFrom(SidePanelEntryKey entry_key,
+                gfx::Rect starting_bounds) override;
 
   // SidePanelUIBase:
   using SidePanelUIBase::Show;

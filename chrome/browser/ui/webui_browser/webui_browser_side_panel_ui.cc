@@ -59,6 +59,13 @@ content::WebContents* WebUIBrowserSidePanelUI::GetWebContentsForTest(
   return nullptr;
 }
 
+void WebUIBrowserSidePanelUI::ShowFrom(SidePanelEntryKey entry_key,
+                                       gfx::Rect starting_bounds) {
+  // Show animation from starting_bounds is not supported for webui side panel,
+  // instead trigger to show normally.
+  SidePanelUI::Show(entry_key);
+}
+
 void WebUIBrowserSidePanelUI::DisableAnimationsForTesting() {}
 
 void WebUIBrowserSidePanelUI::SetNoDelaysForTesting(
