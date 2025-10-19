@@ -164,7 +164,18 @@ void SetLayoutConstantsFallback() {
   layout_constant_values[TAB_TITLE_Y_OFFSET] = 0;
 }
 
+bool g_layout_constants_initialized = false;
+
 void SetLayoutConstants() {
+  /*
+     Due to poor performance reported by some users, the ability to update user metrics "live"
+     will be disabled by default. One update close to launch should be sufficient.
+  */
+  if (g_layout_constants_initialized &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch("enable-advanced-customization"))
+      return;
+
+  g_layout_constants_initialized = true;
   SetLayoutConstantsFallback();
 
   base::FilePath userdir;
