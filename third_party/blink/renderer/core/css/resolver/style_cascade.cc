@@ -1656,6 +1656,10 @@ bool StyleCascade::ResolveInheritInto(CSSParserTokenStream& stream,
     DCHECK_EQ(stream.Peek().GetType(), kCommaToken);
   }
   CustomProperty property(var_name, state_.GetDocument());
+  if (!property.IsInherited()) {
+    state_.StyleBuilder().SetHasExplicitInheritance();
+    state_.ParentStyle()->SetChildHasExplicitInheritance();
+  }
   CSSVariableData* data = GetInheritedVariableData(property);
   return AppendDataWithFallback(data, stream, tree_scope, env_bindings,
                                 resolver, context, /*function_context=*/nullptr,
