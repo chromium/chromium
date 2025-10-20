@@ -23,6 +23,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
+#include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
@@ -176,20 +177,22 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
 
   gaia_auth_fetcher_ = partition_delegate_->CreateGaiaAuthFetcherForPartition(
       this, gaia_source_);
-  bool enable_oaml_cookie_binding = false;
+  gaia::MultiloginCookieBindingMode cookie_binding_mode =
+      gaia::MultiloginCookieBindingMode::kDisabled;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Send the additional parameter to Gaia only if both
-  // `EnableOAuthMultiloginCookiesBinding` and
-  // `EnableOAuthMultiloginCookiesBindingServerExperiment` are enabled.
-  enable_oaml_cookie_binding =
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           switches::kEnableOAuthMultiloginCookiesBinding) &&
       base::FeatureList::IsEnabled(
-          switches::kEnableOAuthMultiloginCookiesBindingServerExperiment);
+          switches::kEnableOAuthMultiloginCookiesBindingServerExperiment)) {
+    cookie_binding_mode =
+        switches::kOAuthMultiloginCookieBindingEnforced.Get()
+            ? gaia::MultiloginCookieBindingMode::kEnabledEnforced
+            : gaia::MultiloginCookieBindingMode::kEnabledUnenforced;
+  }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   gaia_auth_fetcher_->StartOAuthMultilogin(
       mode_, multilogin_credentials, external_cc_result_, std::move(decryptor),
-      enable_oaml_cookie_binding);
+      cookie_binding_mode);
 }
 
 void OAuthMultiloginHelper::OnOAuthMultiloginFinished(

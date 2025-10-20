@@ -278,6 +278,13 @@ class FakeProfileOAuth2TokenServiceDelegateDesktop
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+struct MultiloginCookieBindingTestParam {
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  std::string expected_url_param;
+  std::string test_suffix;
+};
+
 class MockBoundSessionOAuthMultiLoginDelegate
     : public ::testing::StrictMock<BoundSessionOAuthMultiLoginDelegate> {
  public:
@@ -604,13 +611,15 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST_F(OAuthMultiloginHelperTest, CorrectRequestWhenOamlCookieBindingEnabled) {
+class OAuthMultiloginHelperCookieBindingTest
+    : public OAuthMultiloginHelperTest,
+      public testing::WithParamInterface<MultiloginCookieBindingTestParam> {};
+
+TEST_P(OAuthMultiloginHelperCookieBindingTest, RequestUrlParameter) {
+  const MultiloginCookieBindingTestParam& param = GetParam();
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {switches::kEnableOAuthMultiloginCookiesBinding,
-       switches::kEnableOAuthMultiloginCookiesBindingServerExperiment},
-      /*disabled_features=*/{});
+  feature_list.InitWithFeaturesAndParameters(param.enabled_features,
+                                             param.disabled_features);
 
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
@@ -621,9 +630,48 @@ TEST_F(OAuthMultiloginHelperTest, CorrectRequestWhenOamlCookieBindingEnabled) {
   token_service()->IssueAllTokensForAccount(kAccountId, success_response);
 
   EXPECT_TRUE(
-      url_loader()->IsPending(multilogin_url() + "&oaml_cookie_binding=1",
+      url_loader()->IsPending(multilogin_url() + param.expected_url_param,
                               /*request_out=*/nullptr));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    OAuthMultiloginHelperCookieBindingTest,
+    testing::Values(
+        MultiloginCookieBindingTestParam{
+            /*enabled_features=*/
+            {{switches::kEnableOAuthMultiloginCookiesBinding, {}},
+             {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
+              {{"enforced", "false"}}}},
+            /*disabled_features=*/{},
+            /*expected_url_param=*/"&cookie_binding=1",
+            /*test_suffix=*/"Unenforced"},
+        MultiloginCookieBindingTestParam{
+            /*enabled_features=*/
+            {{switches::kEnableOAuthMultiloginCookiesBinding, {}},
+             {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
+              {{"enforced", "true"}}}},
+            /*disabled_features=*/{},
+            /*expected_url_param=*/"&cookie_binding=2",
+            /*test_suffix=*/"Enforced"},
+        MultiloginCookieBindingTestParam{
+            /*enabled_features=*/
+            {{switches::kEnableOAuthMultiloginCookiesBinding, {}},
+             {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
+              {}}},
+            /*disabled_features=*/{},
+            /*expected_url_param=*/"&cookie_binding=2",
+            /*test_suffix=*/"Default"},
+        MultiloginCookieBindingTestParam{
+            /*enabled_features=*/
+            {{switches::kEnableOAuthMultiloginCookiesBinding, {}}},
+            /*disabled_features=*/
+            {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment},
+            /*expected_url_param=*/"",
+            /*test_suffix=*/"Disabled"}),
+    [](const testing::TestParamInfo<MultiloginCookieBindingTestParam>& info) {
+      return info.param.test_suffix;
+    });
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Failure to get the access token.

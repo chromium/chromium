@@ -393,7 +393,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
             request1.url.GetQuery());
 }
 
-TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBinding) {
+TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBindingUnenforced) {
   MockGaiaConsumer consumer;
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   const std::vector<gaia::MultiloginAccountAuthCredentials> accounts = {
@@ -402,7 +402,8 @@ TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBinding) {
 
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
-      "cc_result", base::NullCallback(), /*enable_oaml_cookie_binding=*/true);
+      "cc_result", base::NullCallback(),
+      gaia::MultiloginCookieBindingMode::kEnabledUnenforced);
 
   ASSERT_THAT(received_requests_, SizeIs(1));
   const network::ResourceRequest& request = received_requests_.at(0);
@@ -410,8 +411,31 @@ TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBinding) {
   EXPECT_THAT(request.headers.GetHeader("Authorization"),
               Optional(std::string("MultiBearer token:id")));
   EXPECT_EQ(
-      "source=ChromiumBrowser&reuseCookies=0&externalCcResult=cc_result&oaml_"
-      "cookie_binding=1",
+      "source=ChromiumBrowser&reuseCookies=0&externalCcResult=cc_result&cookie_"
+      "binding=1",
+      request.url.GetQuery());
+}
+
+TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBindingEnforced) {
+  MockGaiaConsumer consumer;
+  TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
+  const std::vector<gaia::MultiloginAccountAuthCredentials> accounts = {
+      {GaiaId("id"), "token", ""},
+  };
+
+  auth.StartOAuthMultilogin(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
+      "cc_result", base::NullCallback(),
+      gaia::MultiloginCookieBindingMode::kEnabledEnforced);
+
+  ASSERT_THAT(received_requests_, SizeIs(1));
+  const network::ResourceRequest& request = received_requests_.at(0);
+  EXPECT_EQ("POST", request.method);
+  EXPECT_THAT(request.headers.GetHeader("Authorization"),
+              Optional(std::string("MultiBearer token:id")));
+  EXPECT_EQ(
+      "source=ChromiumBrowser&reuseCookies=0&externalCcResult=cc_result&cookie_"
+      "binding=2",
       request.url.GetQuery());
 }
 

@@ -4953,6 +4953,19 @@ const FeatureEntry::FeatureVariation
          kPolicyDisclaimerRegistrationRetryDelay24h,
          std::size(kPolicyDisclaimerRegistrationRetryDelay24h), nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kOAuthMultiloginCookieBindingWithoutEnforcement[] = {{"enforced", "false"}};
+const FeatureEntry::FeatureParam
+    kOAuthMultiloginCookieBindingWithEnforcement[] = {{"enforced", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kOAuthMultiloginCookieBindingEnforcementVariations[] = {
+        {"without enforcement", kOAuthMultiloginCookieBindingWithoutEnforcement,
+         std::size(kOAuthMultiloginCookieBindingWithoutEnforcement), nullptr},
+        {"with enforcement", kOAuthMultiloginCookieBindingWithEnforcement,
+         std::size(kOAuthMultiloginCookieBindingWithEnforcement), nullptr},
+};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -11815,8 +11828,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kEnableOAuthMultiloginCookiesBindingServerExperimentDescription,
      kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(
-         switches::kEnableOAuthMultiloginCookiesBindingServerExperiment)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
+         kOAuthMultiloginCookieBindingEnforcementVariations,
+         "EnableOAuthMultiloginCookiesBindingServerExperiment")},
 
     {"enable-chrome-refresh-token-binding",
      flag_descriptions::kEnableChromeRefreshTokenBindingName,

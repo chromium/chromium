@@ -215,6 +215,11 @@ BASE_FEATURE(kEnableOAuthMultiloginCookiesBinding,
 // `kEnableOAuthMultiloginCookiesBinding` flag.
 BASE_FEATURE(kEnableOAuthMultiloginCookiesBindingServerExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kOAuthMultiloginCookieBindingEnforced,
+                   &kEnableOAuthMultiloginCookiesBindingServerExperiment,
+                   "enforced",
+                   true);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,
