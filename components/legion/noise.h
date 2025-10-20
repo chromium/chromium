@@ -19,7 +19,7 @@ namespace legion {
 
 // Noise implements a small subset of the Noise Protocol Framework [1].
 //
-// http://www.noiseprotocol.org/noise.html#the-handshakestate-object
+// https://www.noiseprotocol.org/noise.html#the-handshakestate-object
 class Noise {
  public:
   // HandshakeType enumerates the supported handshake patterns.
