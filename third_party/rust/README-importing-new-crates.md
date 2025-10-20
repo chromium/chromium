@@ -24,14 +24,6 @@ See
 [`//docs/adding_to_third_party.md`](../../docs/adding_to_third_party.md)
 for instructions.
 
-New Rust crates need to also go through a lightweight FYI process.
-Please see go/chrome-rust for instructions
-(this link is Google-internal,
-please reach out to chrome-rust@google.com if you are considering
-importing a new crate into Chromium and you are not a Googler).
-Past FYI emails can be found at
-[`rust-fyi@chromium.org`](https://groups.google.com/a/chromium.org/g/rust-fyi).
-
 ## Importing a crate from crates.io
 
 Third-party crates (from [crates.io](https://crates.io))

@@ -94,10 +94,10 @@ questions.
 Rust is allowed for third party libraries. Unlike C++ libraries, Rust third
 party libraries are [regularly rolled to updated versions by a
 rotation](https://chromium.googlesource.com/chromium/src/tools/+/HEAD/crates/create_update_cl.md)
-and can be audited for unsafety. The process for adding a Googler adding new Rust third-party
-dependencies is documented at go/chrome-rust. External contributors adding a new
-third party Rust dependency will be shepherded through the process as part of
-their ATL review.
+and can be audited for unsafety.
+The process for importing a new Rust third-party dependency is documented at
+[`//third_party/rust/README-importing-new-crates.md`](../third_party/rust/README-importing-new-crates.md)
+(Googlers can also find additional considerations at go/chrome-rust).
 
 Email rust-dev@chromium.org with any questions about the Rust toolchain.
 
