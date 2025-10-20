@@ -50,7 +50,7 @@ void OneTimeTokenServiceImpl::RetrieveSmsOtpIfNeeded() {
 }
 
 void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
-    const one_time_tokens::OtpFetchReply& reply) {
+    const OtpFetchReply& reply) {
   sms_.has_pending_request = false;
   if (!reply.request_complete || !reply.otp_value.has_value()) {
     // TODO(crbug.com/415273270) Do proper error handling:

@@ -13,16 +13,13 @@
 
 namespace one_time_tokens {
 
-// TODO(crbug.com/415273270) Remove one_time_tokens:: namespace below.
-// Do this later to help git recognize the move operation.
 struct OtpFetchReply {
-  OtpFetchReply(std::optional<one_time_tokens::OneTimeToken> otp_value,
-                bool request_complete);
+  OtpFetchReply(std::optional<OneTimeToken> otp_value, bool request_complete);
   OtpFetchReply(const OtpFetchReply& rhs);
   OtpFetchReply& operator=(const OtpFetchReply& rhs);
   ~OtpFetchReply();
 
-  std::optional<one_time_tokens::OneTimeToken> otp_value;
+  std::optional<OneTimeToken> otp_value;
   // True if the request completed successfully. True if OTP value could be
   // fetched, or if the OTP value was not found within teh allowed timeframe.
   // False if the request is not complete (e.g. due to fetching backend API
@@ -37,8 +34,7 @@ class SmsOtpBackend {
 
   // Queries the backend for recently received OTPs.
   virtual void RetrieveSmsOtp(
-      base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
-          callback) = 0;
+      base::OnceCallback<void(const OtpFetchReply&)> callback) = 0;
 };
 
 }  // namespace one_time_tokens

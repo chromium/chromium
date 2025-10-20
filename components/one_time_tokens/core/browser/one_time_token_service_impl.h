@@ -44,7 +44,7 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService,
   // Retrieves SMS OTPs from `sms_.backend` if any subscriber is interested.
   // Results are posted to `OnResponseFromSmsOtpBackend`.
   void RetrieveSmsOtpIfNeeded();
-  void OnResponseFromSmsOtpBackend(const one_time_tokens::OtpFetchReply&);
+  void OnResponseFromSmsOtpBackend(const OtpFetchReply& reply);
 
   // Handles subscriptions to the `OneTimeTokenService`.
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;
