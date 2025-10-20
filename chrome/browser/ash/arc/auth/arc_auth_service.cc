@@ -88,6 +88,20 @@ class ArcAuthServiceFactory
   ~ArcAuthServiceFactory() override = default;
 };
 
+class ArcAuthServiceDelegateImpl : public ArcAuthService::Delegate {
+ public:
+  explicit ArcAuthServiceDelegateImpl(user_manager::User* user)
+      : user_(CHECK_DEREF(user)) {}
+
+  void OpenSettingsAppWithPeopleSection() override {
+    ash::SettingsAppManager::Get()->Open(
+        *user_, {.sub_page = chromeos::settings::mojom::kPeopleSectionPath});
+  }
+
+ private:
+  const raw_ref<user_manager::User> user_;
+};
+
 mojom::ChromeAccountType GetAccountType(const Profile* profile) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   DCHECK(command_line);
@@ -234,7 +248,10 @@ ArcAuthService* ArcAuthService::GetForBrowserContext(
 
 ArcAuthService::ArcAuthService(content::BrowserContext* browser_context,
                                ArcBridgeService* arc_bridge_service)
-    : profile_(Profile::FromBrowserContext(browser_context)),
+    : delegate_(std::make_unique<ArcAuthServiceDelegateImpl>(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+              browser_context))),
+      profile_(Profile::FromBrowserContext(browser_context)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)),
       arc_bridge_service_(arc_bridge_service),
       url_loader_factory_(profile_->GetDefaultStoragePartition()
@@ -508,7 +525,6 @@ void ArcAuthService::IsAccountManagerAvailable(
 
 void ArcAuthService::HandleAddAccountRequest() {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
-
   ash::AccountManagerFactory::Get()
       ->GetAccountManagerFacade(profile_->GetPath().value())
       ->ShowAddAccountDialog(
@@ -517,11 +533,7 @@ void ArcAuthService::HandleAddAccountRequest() {
 
 void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
-
-  ash::SettingsAppManager::Get()->Open(
-      CHECK_DEREF(
-          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_)),
-      {.sub_page = chromeos::settings::mojom::kPeopleSectionPath});
+  delegate_->OpenSettingsAppWithPeopleSection();
 }
 
 void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
@@ -532,6 +544,10 @@ void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
       ->ShowReauthAccountDialog(
           account_manager::AccountManagerFacade::AccountAdditionSource::kArc,
           email, base::DoNothing());
+}
+
+void ArcAuthService::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
+  delegate_ = std::move(delegate);
 }
 
 void ArcAuthService::OnRefreshTokenUpdatedForAccount(

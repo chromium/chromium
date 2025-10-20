@@ -58,6 +58,14 @@ class ArcAuthService : public KeyedService,
   using GetGoogleAccountsInArcCallback =
       base::OnceCallback<void(std::vector<mojom::ArcAccountInfoPtr>)>;
 
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Opens the settings app for Arc auth.
+    virtual void OpenSettingsAppWithPeopleSection() = 0;
+  };
+
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcAuthService* GetForBrowserContext(content::BrowserContext* context);
@@ -103,6 +111,9 @@ class ArcAuthService : public KeyedService,
   void HandleUpdateCredentialsRequest(const std::string& email) override;
 
   static void EnsureFactoryBuilt();
+
+  // Overrides the Delegate behavior for testing.
+  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
  private:
   friend class ArcAuthServiceTest;
@@ -211,6 +222,8 @@ class ArcAuthService : public KeyedService,
 
   // Response for |mojom::GetMainAccountResolutionStatus|.
   void OnMainAccountResolutionStatus(mojom::MainAccountResolutionStatus status);
+
+  std::unique_ptr<Delegate> delegate_;
 
   // Non-owning pointers.
   const raw_ptr<Profile> profile_;
