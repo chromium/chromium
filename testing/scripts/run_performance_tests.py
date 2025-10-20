@@ -927,9 +927,6 @@ class CrossbenchTest(object):
 
   def _get_default_args(self):
     default_args = ['--no-symlinks']
-    if self.is_chrome:
-      # Required until crbug.com/41491492 and crbug.com/346323630 are fixed.
-      default_args.append('--enable-features=DisablePrivacySandboxPrompts')
     if self.is_chrome and not self.is_android:
       if self.cb_options.disable_field_trial_config:
         default_args.append('--disable-field-trial-config')
