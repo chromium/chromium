@@ -361,10 +361,9 @@ public class StripLayoutHelper
 
                     StripLayoutGroupTitle groupTitle = findGroupTitle(oldTabGroupId);
                     // TODO(crbug.com/443337907) If we're closing for a close button click, we don't
-                    // want to
-                    //  clobber the existing animations. This check can be removed once we update
-                    // the tab strip
-                    //  close button clicks to immediately remove from the model.
+                    // want to clobber the existing animations. This check can be removed once we
+                    // update the tab strip close button clicks to immediately remove from the
+                    // model.
                     if (!mCloseAnimationsRequested || groupTitle == null || groupTitle.isDying()) {
                         clearClosingGroupTitleState(oldTabGroupId);
                     } else {
@@ -557,8 +556,8 @@ public class StripLayoutHelper
     private final float mFixedEndPadding;
     private float mReservedEndMargin;
 
-    // 3-dots menu button with tab strip end padding
     private final boolean mIncognito;
+    private boolean mSelected;
     private boolean mIsFirstLayoutPass;
     // Whether tab strip scrolling is in progress
     private boolean mIsStripScrollInProgress;
@@ -1583,10 +1582,12 @@ public class StripLayoutHelper
      *     with.
      */
     public void tabModelSelected(boolean selected) {
+        mSelected = selected;
         if (selected) {
             bringSelectedTabToVisibleArea(0, false);
         } else {
             clearLastHoveredTab();
+            finishCloseAnimations();
             mCloseButtonMenu.dismiss();
         }
     }
@@ -3603,13 +3604,20 @@ public class StripLayoutHelper
     }
 
     private void requestCloseAnimations() {
+        if (!mSelected) {
+            finishCloseAnimations();
+            return;
+        }
         finishAnimations();
         mCloseAnimationsRequested = true;
         mUpdateHost.requestUpdate();
     }
 
     private void queueCloseAnimationsIfAny() {
-        if (!mCloseAnimationsRequested) return;
+        if (mCloseAnimationsRequested) queueCloseAnimations();
+    }
+
+    private void queueCloseAnimations() {
         mCloseAnimationsRequested = false;
 
         // TODO(crbug.com/450076798): Unify closing tabs + closing group titles logic.
@@ -3650,6 +3658,11 @@ public class StripLayoutHelper
         clearPendingMouseTabClosureState();
         mClosingTabs.clear();
         mClosingGroupTitles.clear();
+    }
+
+    private void finishCloseAnimations() {
+        queueCloseAnimations();
+        finishAnimations();
     }
 
     private AnimatorSet getAnimatorSet(

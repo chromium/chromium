@@ -887,6 +887,50 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testQueueAnimationsForNonStripClosures_Unselected() {
+        // Disable testing mode so we can queue animations. Initialize and group first two tabs.
+        CompositorAnimationHandler.setTestingMode(/* enabled= */ false);
+        initializeTest(false, false, 0);
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        mStripLayoutHelper.tabModelSelected(/* selected= */ false);
+
+        // Notify tab closures and verify state.
+        List<Tab> closingTabs = new ArrayList<>();
+        closingTabs.add(mModel.getTabAt(0));
+        closingTabs.add(mModel.getTabAt(1));
+        mModel.closeTabs(TabClosureParams.closeTabs(closingTabs).build());
+        mStripLayoutHelper.multipleTabsClosed(closingTabs);
+        int numClosingTabs = mStripLayoutHelper.getClosingTabsForTesting().size();
+        assertEquals("Should have no closing tabs.", 0, numClosingTabs);
+
+        // Notify group removal and verify state.
+        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
+        mStripLayoutHelper
+                .getTabGroupModelFilterObserverForTesting()
+                .didRemoveTabGroup(
+                        Tab.INVALID_TAB_ID, TAB_GROUP_ID_1, DidRemoveTabGroupReason.CLOSE);
+        int numClosingGroupTitles = mStripLayoutHelper.getClosingGroupTitlesForTesting().size();
+        assertEquals("Should have no closing group titles.", 0, numClosingGroupTitles);
+
+        // Verify no animations have started.
+        assertNull(
+                "Animations should not yet be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+
+        // Update layout. Verify the queued animations have still not started, since this model is
+        // not showing.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.rebuildStripViews();
+        assertNull(
+                "Animations should still not yet be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+        assertEquals(
+                "Closed views should be removed already.",
+                3,
+                mStripLayoutHelper.getStripLayoutViewsForTesting().length);
+    }
+
+    @Test
     @Feature("Pinned Tabs")
     public void testTabSelected_Pinned_HideCloseBtn() {
         initializeTest(false, true, 3);
@@ -4490,6 +4534,7 @@ public class StripLayoutHelperTest {
             }
         }
         mModel.setIndex(tabIndex);
+        mStripLayoutHelper.tabModelSelected(/* selected= */ true);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         mStripLayoutHelper.setTabStripIphControllerForTesting(mController);
         when(mController.wouldTriggerIph(anyInt())).thenReturn(true);
