@@ -114,6 +114,7 @@ void GlicSidePanelUi::Detach() {
   if (!tab_) {
     return;
   }
+  // NOTE: `this` will be destroyed after this call.
   delegate_->Detach(tab_.get());
 }
 
@@ -140,6 +141,7 @@ void GlicSidePanelUi::SidePanelStateChanged(
   // Showing only happens through glic entrypoint, hiding can also be triggered
   // by side panel coordinator when replacing glic with another entry.
   if (state != GlicSidePanelCoordinator::State::kShown && tab_) {
+    // NOTE: `this` will be destroyed after this call.
     delegate_->WillCloseFor(tab_.get());
   }
 }
@@ -147,6 +149,7 @@ void GlicSidePanelUi::SidePanelStateChanged(
 void GlicSidePanelUi::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
+  // NOTE: `this` may be destroyed after this call.
   delegate_->SwitchConversation(ShowOptions::ForSidePanel(*tab_),
                                 std::move(info), std::move(callback));
 }
@@ -187,6 +190,7 @@ void GlicSidePanelUi::Close() {
   }
   panel_state_.kind = mojom::PanelState_Kind::kHidden;
   delegate_->NotifyPanelStateChanged();
+  // NOTE: `this` will be destroyed after this call.
   glic_side_panel_coordinator->Close();
 }
 

@@ -253,6 +253,7 @@ void GlicFloatingUi::Close() {
   glic_widget_observation_.Reset();
   glic_widget_.reset();
   user_resizable_ = false;
+  // NOTE: `this` will be destroyed after this call.
   delegate_->WillCloseFor(FloatingEmbedderKey{});
 }
 
@@ -359,6 +360,7 @@ base::WeakPtr<views::View> GlicFloatingUi::GetView() {
 void GlicFloatingUi::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
+  // NOTE: `this` may be destroyed after this call.
   delegate_->SwitchConversation(
       ShowOptions::ForFloating(GetGlicWidget()->GetWindowBoundsInScreen()),
       std::move(info), std::move(callback));

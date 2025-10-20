@@ -73,6 +73,7 @@ GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
 // tab.
 void GlicInactiveSidePanelUi::OnViewFocused(views::View* observed_view) {
   if (tab_) {
+    // NOTE: `this` will be destroyed after this call.
     delegate_->Show(ShowOptions::ForSidePanel(*tab_));
   }
 }
