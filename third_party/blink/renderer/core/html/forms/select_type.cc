@@ -472,13 +472,15 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
         // TODO(lanwei): Will check if we need to add
         // InputDeviceCapabilities here when select menu list gets
         // focus, see https://crbug.com/476530.
-        if (PickerIsPopover() && !mouse_event->FromTouch()) {
-          // If the popover is shown before pointerup, then popover light
-          // dismiss will close the popover when the user releases/lifts the
-          // pointer unless we change the pointerdown target like this.
-          // pointerup is fired before mousedown on touch, so this is only
-          // needed when the event is not from touch.
-          select_->GetDocument().SetPopoverPointerdownTarget(popover_);
+        if (PickerIsPopover()) {
+          if (!mouse_event->FromTouch()) {
+            // If the popover is shown before pointerup, then popover light
+            // dismiss will close the popover when the user releases/lifts the
+            // pointer unless we change the pointerdown target like this.
+            // pointerup is fired before mousedown on touch, so this is only
+            // needed when the event is not from touch.
+            select_->GetDocument().SetPopoverPointerdownTarget(popover_);
+          }
 
           // Keep track of the mouse pixel location, so that when the mouseup
           // happens, we can see whether there was a mouse drag to pick an
