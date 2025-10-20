@@ -1595,7 +1595,6 @@ void PermissionRequestManager::LogWarningToConsole(const char* message) {
 }
 
 void PermissionRequestManager::DoAutoResponseForTesting() {
-  SetPromptOptions(auto_response_prompt_options_for_test_);
   // The macOS prompt has its own mechanism of auto responding.
   if (current_request_prompt_disposition_ ==
       PermissionPromptDisposition::MAC_OS_PROMPT) {
