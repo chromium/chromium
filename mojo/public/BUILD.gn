@@ -25,7 +25,7 @@ group("sdk") {
   deps = [
     "c/system",
     "cpp/bindings",
-    "rust:mojo_c_system_api",
+    "rust:mojo_rust_system_api",
   ]
 }
 

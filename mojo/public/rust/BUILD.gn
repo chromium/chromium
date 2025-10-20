@@ -2,17 +2,45 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_executable.gni")
+import("//build/rust/rust_static_library.gni")
 
 group("all") {
   # Meta target, don't depend on it from production code
   testonly = true
   deps = [
-    ":mojo_c_system_api",
+    ":mojo_c_system_bindings",
     "mojom_parser",
   ]
 }
 
-rust_bindgen("mojo_c_system_api") {
+rust_bindgen("mojo_c_system_bindings") {
   header = "//mojo/public/c/system/thunks.h"
   deps = [ "//mojo/public/c/system" ]
+}
+
+rust_static_library("mojo_ffi") {
+  crate_root = "system/ffi.rs"
+  sources = [ "system/ffi.rs" ]
+  deps = [ ":mojo_c_system_bindings" ]
+}
+
+rust_static_library("mojo_rust_system_api") {
+  crate_root = "system/lib.rs"
+  sources = [
+    "system/lib.rs",
+    "system/mojo_types.rs",
+  ]
+  deps = [ ":mojo_ffi" ]
+}
+
+# TODO: Delete this once we've hooked up proper tests.
+# This is just a convenience executable for quicker iteration in the meantime.
+rust_executable("exe_using_system_api") {
+  crate_root = "test_exe/main.rs"
+  sources = [ "test_exe/main.rs" ]
+  deps = [
+    ":mojo_rust_system_api",
+    "//base",
+  ]
 }
