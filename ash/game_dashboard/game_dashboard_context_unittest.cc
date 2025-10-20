@@ -2003,6 +2003,21 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
   ASSERT_FALSE(button_widget->IsVisible());
 }
 
+// Verifies that destroying the game window while in fullscreen mode does not
+// cause a crash. This is a regression test for crbug.com/449107622.
+TEST_F(GameDashboardContextTest, NoCrashOnWindowDestroyInFullscreen) {
+  // Create an ARC game window and put it in fullscreen.
+  CreateAnArcAppInFullscreen();
+
+  // Verify that the reveal controller is created.
+  ASSERT_TRUE(test_api_->GetGameDashboardButtonRevealController());
+
+  // Destroy the window. If the test completes without crashing, it's a success.
+  CloseGameWindow();
+
+  SUCCEED() << "Window destroyed in fullscreen without crashing.";
+}
+
 TEST_F(GameDashboardContextTest,
        GameDashboardOverviewModeStaticWidgetPosition_ZoomEvent) {
   CreateGameWindow(/*is_arc_window=*/true);
