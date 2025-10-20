@@ -1511,6 +1511,11 @@ IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, BucketDurabilityOverride) {
              shell_);
 }
 
+IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, DatabaseOutlivesConnection) {
+  SimpleTest(GetTestUrl("indexeddb", "database_outlives_connection.html"),
+             shell_);
+}
+
 constexpr auto GetBackingStoreTestCaseName =
     [](const testing::TestParamInfo<bool>& info) {
       return info.param ? "WithSqlite" : "WithLevelDb";

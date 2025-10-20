@@ -254,6 +254,8 @@ class CONTENT_EXPORT DatabaseConnection {
 
   DatabaseConnection(base::FilePath path, BackingStoreImpl& backing_store);
 
+  bool in_memory() const { return path_.empty(); }
+
   // All startup/initialization tasks that can error are performed here. Will
   // return Status::OK() on success. `name` must be provided if the database is
   // new. If the database is pre-existing, `name` may not be provided, but if it
@@ -298,8 +300,9 @@ class CONTENT_EXPORT DatabaseConnection {
 
   // The connection needs to be held open when there are active blobs or an
   // active BackingStore::Database referencing it. This will return false if
-  // that's the case.
-  bool CanBeDestroyed() const;
+  // that's the case. Even when this is false, `this` may be destroyed if the
+  // `BucketContext` is force-closed.
+  bool CanSelfDestruct() const;
 
   // Attempts to read metadata from the SQLite DB for storing in memory (in
   // `metadata_`).

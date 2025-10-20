@@ -760,7 +760,8 @@ bool BucketContext::CanClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(open_handles_, 0);
 
-  if (backing_store_ && !backing_store_->CanOpportunisticallyClose()) {
+  if (backing_store_ && !skip_closing_sequence_ &&
+      !backing_store_->CanOpportunisticallyClose()) {
     return false;
   }
 

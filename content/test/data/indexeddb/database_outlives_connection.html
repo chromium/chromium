@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<head>
+<title>Tests that a database still exists even if the connection is closed. In
+  particular for incognito, the database must live in memory until the browsing
+  context is destroyed.
+</title>
+<script type="text/javascript" src="common.js"></script>
+<script>
+
+async function test() {
+  indexedDBTest(prepareDatabase, dropConnectionAndVerifyDatabaseExists);
+}
+
+function prepareDatabase() {
+  db = event.target.result;
+}
+
+function dropConnectionAndVerifyDatabaseExists() {
+  db.close();
+  indexedDB.databases().then((dbs) => {
+    window.dbs = dbs;
+    shouldBeTrue("dbs.length === 1");
+    done();
+  });
+}
+
+</script>
+</head>
+<body onLoad="test()">
+<div id="status">Starting...</div>
+</body>
+</html>

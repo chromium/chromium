@@ -783,7 +783,7 @@ void DatabaseConnection::Release(base::WeakPtr<DatabaseConnection> db) {
   // in case the page reopens the same database soon.
   DatabaseConnection* db_ptr = db.get();
   db.reset();
-  if (db_ptr->CanBeDestroyed()) {
+  if (db_ptr->CanSelfDestruct()) {
     db_ptr->backing_store_->DestroyConnection(db_ptr->metadata_.name);
   }
 }
@@ -797,7 +797,7 @@ DatabaseConnection::~DatabaseConnection() {
   // as when the backing store is being force-closed, blobs may still be active.
   active_blobs_.clear();
 
-  if (!db_ || path_.empty()) {
+  if (!db_ || in_memory()) {
     return;
   }
 
@@ -840,14 +840,14 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
 
   constexpr sql::Database::Tag kSqlTag = "IndexedDB";
   constexpr sql::Database::Tag kSqlTagInMemory = "IndexedDBEphemeral";
-  db_ = std::make_unique<sql::Database>(
-      sql::DatabaseOptions()
-          .set_exclusive_locking(true)
-          .set_wal_mode(true)
-          .set_enable_triggers(true),
-      path_.empty() ? kSqlTagInMemory : kSqlTag);
+  db_ =
+      std::make_unique<sql::Database>(sql::DatabaseOptions()
+                                          .set_exclusive_locking(true)
+                                          .set_wal_mode(true)
+                                          .set_enable_triggers(true),
+                                      in_memory() ? kSqlTagInMemory : kSqlTag);
 
-  if (path_.empty()) {
+  if (in_memory()) {
     RETURN_STATUS_ON_ERROR(db_->OpenInMemory());
   } else {
     RETURN_STATUS_ON_ERROR(db_->Open(path_));
@@ -942,7 +942,7 @@ int64_t DatabaseConnection::GetCommittedVersion() const {
 }
 
 uint64_t DatabaseConnection::GetInMemorySize() const {
-  CHECK(path_.empty());
+  CHECK(in_memory());
   // TODO(crbug.com/419203257): For consistency, consider using this logic while
   // reporting usage of on-disk databases too.
   //
@@ -1875,7 +1875,7 @@ void DatabaseConnection::DeleteIdbDatabase(
   interface_wrapper_weak_factory_.InvalidateWeakPtrs();
   CHECK(!blob_writers_weak_factory_.HasWeakPtrs());
 
-  if (CanBeDestroyed()) {
+  if (CanSelfDestruct()) {
     // Fast path: skip explicitly deleting data as the whole database will be
     // dropped.
     backing_store_->DestroyConnection(metadata_.name);
@@ -1927,7 +1927,7 @@ void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number) {
     }
   }
 
-  if (CanBeDestroyed()) {
+  if (CanSelfDestruct()) {
     backing_store_->DestroyConnection(metadata_.name);
     // `this` is deleted.
     return;
@@ -1945,7 +1945,13 @@ bool DatabaseConnection::AddActiveBlobReference(int64_t blob_number) {
   return statement.Run();
 }
 
-bool DatabaseConnection::CanBeDestroyed() const {
+bool DatabaseConnection::CanSelfDestruct() const {
+  // In-memory databases must remain alive until the BrowserContext is destroyed
+  // (which destroys the BackingStore).
+  if (in_memory() && !marked_for_permanent_deletion_) {
+    return false;
+  }
+
   return active_blobs_.empty() &&
          !interface_wrapper_weak_factory_.HasWeakPtrs();
 }
@@ -2108,7 +2114,7 @@ DatabaseConnection::GenerateIndexedDbMetadata() {
 }
 
 void DatabaseConnection::LogEvent(SpecificEvent event) const {
-  if (path_.empty()) {
+  if (in_memory()) {
     base::UmaHistogramEnumeration("IndexedDB.SQLite.SpecificEvent.InMemory",
                                   event);
   } else {

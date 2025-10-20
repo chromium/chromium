@@ -7688,6 +7688,7 @@ data/indexeddb/cursor_test.html
 data/indexeddb/cursor_test.js
 data/indexeddb/database_callbacks_first.html
 data/indexeddb/database_callbacks_second.html
+data/indexeddb/database_outlives_connection.html
 data/indexeddb/database_test.html
 data/indexeddb/database_test.js
 data/indexeddb/delete_compact.html
