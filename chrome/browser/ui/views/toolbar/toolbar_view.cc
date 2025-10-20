@@ -610,13 +610,6 @@ void ToolbarView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
 
 void ToolbarView::UpdateForWebUITabStrip() {
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  TabSearchToolbarButtonController* tab_search_toolbar_button_controller =
-      browser_->browser_window_features()
-          ->tab_search_toolbar_button_controller();
-  if (tab_search_toolbar_button_controller) {
-    tab_search_toolbar_button_controller->UpdateForWebUITabStrip();
-  }
-
   if (!new_tab_button_) {
     return;
   }

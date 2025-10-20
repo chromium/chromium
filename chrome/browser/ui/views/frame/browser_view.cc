@@ -4354,6 +4354,26 @@ BookmarkBar::State BrowserView::bookmark_bar_state() const {
   return BookmarkBarController::From(browser_.get())->bookmark_bar_state();
 }
 
+void BrowserView::UpdateTabSearchBubbleHost() {
+  if (!GetIsNormalType()) {
+    return;
+  }
+
+  if (features::HasTabSearchToolbarButton()) {
+    tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
+        toolbar_->tab_search_button(), browser_.get());
+    if (auto* controller = browser_->browser_window_features()
+                               ->tab_search_toolbar_button_controller()) {
+      controller->UpdateBubbleHost(tab_search_bubble_host_.get());
+    }
+  } else {
+    tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
+        BrowserElementsViews::From(browser_.get())
+            ->GetViewAs<TabSearchButton>(kTabSearchButtonElementId),
+        browser_.get());
+  }
+}
+
 void BrowserView::ShowSplitView(bool focus_active_view) {
   CHECK(multi_contents_view_);
   const int active_index = browser_->tab_strip_model()->active_index();
@@ -4932,17 +4952,7 @@ void BrowserView::AddedToWidget() {
 
   toolbar_->Init();
 
-  if (GetIsNormalType()) {
-    if (features::HasTabSearchToolbarButton()) {
-      tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
-          toolbar_->tab_search_button(), browser_.get());
-    } else {
-      tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
-          BrowserElementsViews::From(browser_.get())
-              ->GetViewAs<TabSearchButton>(kTabSearchButtonElementId),
-          browser_.get());
-    }
-  }
+  UpdateTabSearchBubbleHost();
 
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems
@@ -5181,6 +5191,13 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
   GetBrowserViewLayout()->set_loading_bar(loading_bar_);
   if (toolbar_) {
     toolbar_->UpdateForWebUITabStrip();
+
+    // Do not show Tab Search bubble host when web ui tab strip is enabled.
+    if (auto* tab_search_toolbar_button_controller =
+            browser_->browser_window_features()
+                ->tab_search_toolbar_button_controller()) {
+      tab_search_toolbar_button_controller->UpdateBubbleHost(nullptr);
+    }
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }

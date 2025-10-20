@@ -901,6 +901,9 @@ class BrowserView : public BrowserWindow,
   // Returns the state of the bookmark bar.
   BookmarkBar::State bookmark_bar_state() const;
 
+  // Setter for the BrowserView's TabSearchBubbleHost instance.
+  void UpdateTabSearchBubbleHost();
+
   // Display the current active split view as a series of multiple side-by-side
   // web contents.
   void ShowSplitView(bool focus_active_view);

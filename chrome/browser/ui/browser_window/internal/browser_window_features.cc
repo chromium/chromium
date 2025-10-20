@@ -511,8 +511,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       // BrowserWithTestWindowTest; these should eventually be refactored.
       if (browser_view) {
         tab_search_toolbar_button_controller_ =
-            std::make_unique<TabSearchToolbarButtonController>(
-                browser_view, browser_view->GetTabSearchBubbleHost());
+            std::make_unique<TabSearchToolbarButtonController>(browser_view);
       }
     }
 
