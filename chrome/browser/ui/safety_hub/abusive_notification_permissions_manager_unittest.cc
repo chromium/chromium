@@ -24,6 +24,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/notifications_engagement_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
@@ -1268,6 +1270,27 @@ TEST_F(SuspiciousNotificationRevocationTest,
           .is_none());
   EXPECT_EQ(GetNotificationSettingValue(url1),
             ContentSetting::CONTENT_SETTING_ASK);
+}
+
+TEST_F(SuspiciousNotificationRevocationTest,
+       MaybeRevokeSuspiciousNotificationPermission_NotificationPolicyManaged) {
+  content_settings::TestUtils::OverrideProvider(
+      hcsm(), std::make_unique<content_settings::MockProvider>(),
+      content_settings::ProviderType::kPolicyProvider);
+  SetNotificationPermission(GURL(url1), ContentSetting::CONTENT_SETTING_ALLOW);
+  RecordSuspiciousNotifications(GURL(url1), kTestMinSuspiciousCount);
+  SetSiteEngagementScore(GURL(url1), kTestSiteEngagementCutOff - 1.0);
+
+  ASSERT_FALSE(
+      AbusiveNotificationPermissionsManager::
+          MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
+
+  ASSERT_TRUE(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
+          hcsm(), GURL(url1))
+          .is_none());
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(SuspiciousNotificationRevocationTest,

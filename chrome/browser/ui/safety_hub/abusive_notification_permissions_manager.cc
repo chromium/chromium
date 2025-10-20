@@ -132,8 +132,10 @@ bool ShouldCheckSuspiciousContentRevocationThreshold(
     GURL url) {
   DCHECK(hcsm);
   DCHECK(url.is_valid());
-  // Notification permission for the site is not enabled.
-  if (hcsm->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS) !=
+  // Notification permission for the site is not enabled or is not controlled by
+  // the user (e.g. policy and extensions).
+  if (hcsm->GetUserModifiableContentSetting(
+          url, url, ContentSettingsType::NOTIFICATIONS) !=
       ContentSetting::CONTENT_SETTING_ALLOW) {
     return false;
   }
