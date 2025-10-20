@@ -49,6 +49,7 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
 #import "ios/chrome/app/profile/session_metrics_profile_agent.h"
+#import "ios/chrome/app/profile/synced_set_up_profile_agent.h"
 #import "ios/chrome/app/profile/welcome_back_screen_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -686,6 +687,10 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
   if (IsWelcomeBackInFirstRunEnabled()) {
     [_state addAgent:[[WelcomeBackScreenProfileAgent alloc] init]];
+  }
+
+  if (IsSyncedSetUpEnabled()) {
+    [_state addAgent:[[SyncedSetUpProfileAgent alloc] init]];
   }
 }
 

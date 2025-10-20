@@ -11,7 +11,7 @@ source_set("coordinator") {
 
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
 
-  deps = []
+  deps = [ "//ios/chrome/app" ]
 
   frameworks = [ "Foundation.framework" ]
 }
