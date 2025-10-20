@@ -59,8 +59,6 @@ source_set("vaapi") {
     "vaapi_video_encode_accelerator.h",
     "vaapi_video_encoder_delegate.cc",
     "vaapi_video_encoder_delegate.h",
-    "vaapi_webp_decoder.cc",
-    "vaapi_webp_decoder.h",
     "vp8_vaapi_video_decoder_delegate.cc",
     "vp8_vaapi_video_decoder_delegate.h",
     "vp8_vaapi_video_encoder_delegate.cc",
@@ -249,24 +247,6 @@ if (is_chromeos) {
       "//ui/gfx/geometry",
     ]
   }
-
-  source_set("webp_decoder_unit_test") {
-    testonly = true
-    sources = [ "vaapi_webp_decoder_unittest.cc" ]
-    deps = [
-      ":common",
-      ":vaapi",
-      ":vaapi_image_decoder_test_common",
-      ":vaapi_test_utils",
-      "//base",
-      "//components/viz/common/resources:shared_image_format",
-      "//media/gpu/test:local_gpu_memory_buffer_manager",
-      "//testing/gtest",
-      "//third_party/libwebp",
-      "//ui/gfx:memory_buffer",
-      "//ui/gfx/geometry",
-    ]
-  }
 }
 
 source_set("vaapi_utils_unittest") {
@@ -302,10 +282,7 @@ test("vaapi_unittest") {
 
   # TODO(crbug.com/40115082): remove is_chromeos.
   if (is_chromeos) {
-    deps += [
-      ":jpeg_decoder_unit_test",
-      ":webp_decoder_unit_test",
-    ]
+    deps += [ ":jpeg_decoder_unit_test" ]
   }
 }
 
