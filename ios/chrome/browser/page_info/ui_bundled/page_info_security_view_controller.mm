@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -92,7 +93,7 @@ enum ItemIdentifier {
            }];
 
   RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
-  RegisterTableViewCell<TableViewTextCell>(self.tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:self.tableView];
 
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
@@ -178,12 +179,15 @@ enum ItemIdentifier {
       return securityHeaderCell;
     }
     case ItemIdentifierLearnMoreRow: {
-      TableViewTextCell* learnMoreCell =
-          DequeueTableViewCell<TableViewTextCell>(tableView);
-      learnMoreCell.textLabel.text = l10n_util::GetNSString(IDS_LEARN_MORE);
-      learnMoreCell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
+      TableViewCellContentConfiguration* configuration =
+          [[TableViewCellContentConfiguration alloc] init];
+      configuration.title = l10n_util::GetNSString(IDS_LEARN_MORE);
+      configuration.titleColor = [UIColor colorNamed:kBlueColor];
+
+      UITableViewCell* learnMoreCell =
+          [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+      learnMoreCell.contentConfiguration = configuration;
       learnMoreCell.isAccessibilityElement = YES;
-      learnMoreCell.accessibilityLabel = learnMoreCell.textLabel.text;
       learnMoreCell.accessibilityTraits = UIAccessibilityTraitButton;
 
       return learnMoreCell;

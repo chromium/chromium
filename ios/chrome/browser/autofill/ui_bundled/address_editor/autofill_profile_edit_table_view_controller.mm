@@ -552,16 +552,14 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 // Returns the footer element for the save/update prompts.
-- (TableViewTextItem*)footerItemForModalViewIfSaveOrUpdate:(BOOL)update {
+- (TableViewItem*)footerItemForModalViewIfSaveOrUpdate:(BOOL)update {
   CHECK(_addressContext != SaveAddressContext::kEditingSavedAddress);
-  TableViewTextItem* item = [[TableViewTextItem alloc]
+  TableViewMultiDetailTextItem* item = [[TableViewMultiDetailTextItem alloc]
       initWithType:AutofillProfileDetailsItemTypeFooter];
-  item.text = l10n_util::GetNSStringF(
+  item.leadingDetailText = l10n_util::GetNSStringF(
       update ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
              : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
       base::SysNSStringToUTF16(_userEmail));
-  item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;
 }
 

@@ -10,23 +10,18 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
-// TableViewTextItem contains the model data for a TableViewTextCell.
+// TableViewTextItem contains the model data for a cell displaying a text.
 @interface TableViewTextItem : TableViewItem
 
-// Text Alignment for the cell's textLabel. Default is NSTextAlignmentNatural.
-@property(nonatomic, assign) NSTextAlignment textAlignment;
-
 // UIColor for the cell's textLabel. Default is
-// [UIColor colorNamed:kTextPrimaryColor]. ChromeTableViewStyler's
-// `cellTitleColor` takes precedence over the default color, but not over
-// `textColor`.
+// [UIColor colorNamed:kTextPrimaryColor].
 @property(nonatomic, strong) UIColor* textColor;
 
 @property(nonatomic, copy) NSString* text;
 
-// Sets the font for the `text`. Default preferredFontForTextStyle is
-// `UIFontTextStyleBody`.
-@property(nonatomic, strong) UIFont* textFont;
+// Changes the font to use "headline". This is a workaround to mimic headers and
+// should not be used. Default is NO.
+@property(nonatomic, assign) BOOL useHeadlineFont;
 
 // If set to YES, `text` will be shown as "••••••" with fixed length.
 @property(nonatomic, assign) BOOL masked;
@@ -36,17 +31,6 @@
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
 
 // Sets the `checked` property in the cell.
-@property(nonatomic, assign) BOOL checked;
-
-@end
-
-// LegacyTableViewCell that displays a text label.
-@interface TableViewTextCell : LegacyTableViewCell
-
-// The text to display.
-@property(nonatomic, readonly, strong) UILabel* textLabel;
-
-// Whether to show the checkmark accessory view.
 @property(nonatomic, assign) BOOL checked;
 
 @end

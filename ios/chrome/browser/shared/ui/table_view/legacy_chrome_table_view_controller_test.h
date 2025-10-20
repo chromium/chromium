@@ -84,6 +84,12 @@ class LegacyChromeTableViewControllerTest : public BlockCleanupTest {
   // which matches the l10n string for `expected_text_id`.
   void CheckTextCellTextWithId(int expected_text_id, int section, int item);
 
+  // Verifies that the text cell at `item` in `section` has an leadingDetailText
+  // property matching `expected_text`.
+  void CheckTextCellLeadingDetailText(NSString* expected_text,
+                                      int section,
+                                      int item);
+
   // Verifies that the text cell at `item` in `section` has a text and
   // detailText properties which match strings for `expected_text` and
   // `expected_detail_text`, respectively.

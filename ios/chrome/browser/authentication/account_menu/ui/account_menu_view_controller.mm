@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -131,28 +132,26 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   self.tableView =
       [[UITableView alloc] initWithFrame:CGRectZero
                                    style:UITableViewStyleInsetGrouped];
-  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:self.tableView];
+  UITableView* tableView = self.tableView;
+  tableView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:tableView];
   [NSLayoutConstraint activateConstraints:@[
-    [self.view.topAnchor constraintEqualToAnchor:self.tableView.topAnchor],
-    [self.view.bottomAnchor
-        constraintEqualToAnchor:self.tableView.bottomAnchor],
-    [self.view.trailingAnchor
-        constraintEqualToAnchor:self.tableView.trailingAnchor],
-    [self.view.leadingAnchor
-        constraintEqualToAnchor:self.tableView.leadingAnchor],
+    [self.view.topAnchor constraintEqualToAnchor:tableView.topAnchor],
+    [self.view.bottomAnchor constraintEqualToAnchor:tableView.bottomAnchor],
+    [self.view.trailingAnchor constraintEqualToAnchor:tableView.trailingAnchor],
+    [self.view.leadingAnchor constraintEqualToAnchor:tableView.leadingAnchor],
   ]];
-  self.tableView.delegate = self;
-  self.tableView.accessibilityIdentifier = kAccountMenuTableViewId;
-  self.tableView.backgroundColor =
+  tableView.delegate = self;
+  tableView.accessibilityIdentifier = kAccountMenuTableViewId;
+  tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-  RegisterTableViewCell<TableViewAccountCell>(self.tableView);
-  RegisterTableViewCell<SettingsImageDetailTextCell>(self.tableView);
-  RegisterTableViewCell<TableViewTextCell>(self.tableView);
+  RegisterTableViewCell<TableViewAccountCell>(tableView);
+  RegisterTableViewCell<SettingsImageDetailTextCell>(tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:tableView];
   [self setUpTopButtons];
   [self setUpTableContent];
   [self updatePrimaryAccount];
-  self.tableView.tableFooterView = [[UIView alloc]
+  tableView.tableFooterView = [[UIView alloc]
       initWithFrame:CGRectMake(0, 0, CGFLOAT_EPSILON, CGFLOAT_EPSILON)];
 }
 
@@ -388,13 +387,18 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   }
   // If the function has not returned yet. This cell contains only text.
 
-  TableViewTextCell* cell = DequeueTableViewCell<TableViewTextCell>(tableView);
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = label;
+  configuration.titleColor = [UIColor colorNamed:kBlueColor];
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+
+  cell.contentConfiguration = configuration;
   cell.accessibilityTraits = UIAccessibilityTraitButton;
   cell.isAccessibilityElement = YES;
-  cell.textLabel.text = label;
   cell.accessibilityLabel = accessibilityLabel ? accessibilityLabel : label;
-  cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  cell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
   cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = accessibilityIdentifier;
 

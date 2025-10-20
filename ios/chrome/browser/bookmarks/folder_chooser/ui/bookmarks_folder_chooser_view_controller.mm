@@ -393,7 +393,6 @@ using bookmarks::BookmarkNode;
   if (folders.empty()) {
     TableViewTextItem* item =
         [[TableViewTextItem alloc] initWithType:ItemTypeMessage];
-    item.textAlignment = NSTextAlignmentNatural;
     item.textColor = [UIColor colorNamed:kTextPrimaryColor];
     item.text = l10n_util::GetNSString(IDS_HISTORY_NO_SEARCH_RESULTS);
     [self.tableViewModel addItem:item toSectionWithIdentifier:sectionID];

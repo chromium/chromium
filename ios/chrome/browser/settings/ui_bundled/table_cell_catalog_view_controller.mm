@@ -157,7 +157,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewTextItem* textItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeText];
   textItem.text = @"Simple Text Cell";
-  textItem.textAlignment = NSTextAlignmentCenter;
   textItem.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [model addItem:textItem toSectionWithIdentifier:SectionIdentifierText];
 

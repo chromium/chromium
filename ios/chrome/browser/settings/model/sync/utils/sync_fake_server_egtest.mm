@@ -439,9 +439,11 @@ void ClearRelevantData() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
-  [[[EarlGrey selectElementWithMatcher:
-                  grey_accessibilityLabel(l10n_util::GetNSString(
-                      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+  [[[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                         IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM)),
+                     grey_userInteractionEnabled(), nil)]
          usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
       onElementWithMatcher:grey_accessibilityID(
                                kManageSyncTableViewAccessibilityIdentifier)]

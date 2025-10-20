@@ -102,8 +102,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL))]
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL)),
+                            grey_userInteractionEnabled(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -442,18 +443,15 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   TableViewTextItem* titleItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeUpdateModalTitle];
   titleItem.text = text;
-  titleItem.textFont =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  titleItem.useHeadlineFont = YES;
   return titleItem;
 }
 
-- (TableViewTextItem*)updateModalDescriptionItem {
-  TableViewTextItem* descriptionItem =
-      [[TableViewTextItem alloc] initWithType:ItemTypeUpdateModalDescription];
-  descriptionItem.text = self.updateModalDescription;
-  descriptionItem.textFont =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  descriptionItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+- (TableViewItem*)updateModalDescriptionItem {
+  TableViewMultiDetailTextItem* descriptionItem =
+      [[TableViewMultiDetailTextItem alloc]
+          initWithType:ItemTypeUpdateModalDescription];
+  descriptionItem.leadingDetailText = self.updateModalDescription;
   return descriptionItem;
 }
 
@@ -544,23 +542,21 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   return detailItem;
 }
 
-- (TableViewTextItem*)saveFooterItem {
-  TableViewTextItem* item =
-      [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
+- (TableViewItem*)saveFooterItem {
+  TableViewMultiDetailTextItem* item =
+      [[TableViewMultiDetailTextItem alloc] initWithType:ItemTypeFooter];
   int footerTextId = self.currentAddressProfileSaved
                          ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
                          : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER;
   CHECK([self.userEmail length] > 0);
-  item.text = l10n_util::GetNSStringF(footerTextId,
-                                      base::SysNSStringToUTF16(self.userEmail));
-  item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  item.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  item.leadingDetailText = l10n_util::GetNSStringF(
+      footerTextId, base::SysNSStringToUTF16(self.userEmail));
   return item;
 }
 
-- (TableViewTextItem*)updateFooterItem {
-  TableViewTextItem* item =
-      [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
+- (TableViewItem*)updateFooterItem {
+  TableViewMultiDetailTextItem* item =
+      [[TableViewMultiDetailTextItem alloc] initWithType:ItemTypeFooter];
   CHECK([self.userEmail length] > 0);
   int footerTextId =
       self.homeProfile
@@ -568,24 +564,20 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
           : (self.workProfile
                  ? IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE
                  : IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT);
-  item.text = l10n_util::GetNSStringF(footerTextId,
-                                      base::SysNSStringToUTF16(self.userEmail));
-  item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  item.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  item.leadingDetailText = l10n_util::GetNSStringF(
+      footerTextId, base::SysNSStringToUTF16(self.userEmail));
   return item;
 }
 
-- (TableViewTextItem*)migrationPromptFooterItem {
-  TableViewTextItem* item =
-      [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
+- (TableViewItem*)migrationPromptFooterItem {
+  TableViewMultiDetailTextItem* item =
+      [[TableViewMultiDetailTextItem alloc] initWithType:ItemTypeFooter];
   int footerTextId = self.currentAddressProfileSaved
                          ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
                          : IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER;
   CHECK([self.userEmail length] > 0);
-  item.text = l10n_util::GetNSStringF(footerTextId,
-                                      base::SysNSStringToUTF16(self.userEmail));
-  item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  item.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  item.leadingDetailText = l10n_util::GetNSStringF(
+      footerTextId, base::SysNSStringToUTF16(self.userEmail));
   return item;
 }
 

@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
@@ -153,6 +154,15 @@ void LegacyChromeTableViewControllerTest::CheckTextCellTextWithId(
     int section,
     int item) {
   CheckTextCellText(l10n_util::GetNSString(expected_text_id), section, item);
+}
+
+void LegacyChromeTableViewControllerTest::CheckTextCellLeadingDetailText(
+    NSString* expected_text,
+    int section,
+    int item) {
+  id cell = GetTableViewItem(section, item);
+  ASSERT_TRUE([cell respondsToSelector:@selector(leadingDetailText)]);
+  EXPECT_NSEQ(expected_text, [cell leadingDetailText]);
 }
 
 void LegacyChromeTableViewControllerTest::CheckTextCellTextAndDetailText(

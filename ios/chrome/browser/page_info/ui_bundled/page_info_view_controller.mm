@@ -180,7 +180,6 @@ const char kTrackingProtectionSettingsURL[] =
 
   [TableViewCellContentConfiguration registerCellForTableView:tableView];
   RegisterTableViewCell<TableViewDetailIconCell>(tableView);
-  RegisterTableViewCell<TableViewTextCell>(tableView);
   RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(tableView);
   RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(tableView);
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(

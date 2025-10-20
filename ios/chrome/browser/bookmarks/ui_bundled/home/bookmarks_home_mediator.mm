@@ -337,7 +337,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   // Add "no result" item.
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:BookmarksHomeItemTypeMessage];
-  item.textAlignment = NSTextAlignmentLeft;
   item.textColor = [UIColor colorNamed:kTextPrimaryColor];
   item.text = noResults;
   [self.consumer.tableViewModel addItem:item

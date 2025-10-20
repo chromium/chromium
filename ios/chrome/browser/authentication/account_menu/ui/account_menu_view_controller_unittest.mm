@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -196,18 +197,18 @@ class AccountMenuViewControllerTest : public PlatformTest,
                        cellForRowAtIndexPath:path];
   }
 
-  // Expects that the cell at `path` is a `TableViewTextCell` whose label’s text
-  // is `text`.
+  // Expects that the cell at `path` has `text` as title.
   void ExpectTextAtPath(NSString* text, NSIndexPath* path) {
-    UITableViewCell* add_account_cell_ = GetCell(path);
-    EXPECT_TRUE([add_account_cell_ isKindOfClass:[TableViewTextCell class]]);
-    TableViewTextCell* add_account_cell =
-        static_cast<TableViewTextCell*>(add_account_cell_);
-    EXPECT_NSEQ(add_account_cell.textLabel.text, text);
+    UITableViewCell* add_account_cell = GetCell(path);
+    EXPECT_TRUE([add_account_cell.contentConfiguration
+        isKindOfClass:[TableViewCellContentConfiguration class]]);
+    TableViewCellContentConfiguration* content_configuration =
+        static_cast<TableViewCellContentConfiguration*>(
+            add_account_cell.contentConfiguration);
+    EXPECT_NSEQ(content_configuration.title, text);
   }
 
-  // Expects that the cell at `path` is a `TableViewTextCell` whose label’s text
-  // is `text`.
+  // Selects the cell at `path`.
   void SelectCell(NSIndexPath* path) {
     [TableView().delegate tableView:TableView() didSelectRowAtIndexPath:path];
   }

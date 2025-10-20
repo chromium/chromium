@@ -117,6 +117,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/url_formatter",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
@@ -126,5 +127,6 @@ source_set("unit_tests") {
     "//net",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }

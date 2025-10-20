@@ -853,7 +853,9 @@ void TestResponseProvider::GetLanguageResponse(
                      kTranslateInfobarModalTranslateTargetLanguageItemAXId)]
       performAction:grey_tap()];
   // Select "Dutch" from the table view.
-  [[[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Dutch")]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Dutch"),
+                                          grey_userInteractionEnabled(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 300)
       onElementWithMatcher:grey_accessibilityID(
                                kTranslateInfobarLanguageSelectionTableViewAXId)]
@@ -1159,6 +1161,7 @@ void TestResponseProvider::GetLanguageResponse(
   // Select "Dutch" from the table view.
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Dutch"),
+                                          grey_userInteractionEnabled(),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 300)
       onElementWithMatcher:grey_accessibilityID(
@@ -1173,7 +1176,9 @@ void TestResponseProvider::GetLanguageResponse(
                      kTranslateInfobarModalTranslateSourceLanguageItemAXId)]
       performAction:grey_tap()];
   // Select "English" from the table view.
-  [[[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"English")]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"English"),
+                                          grey_userInteractionEnabled(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 320)
       onElementWithMatcher:grey_accessibilityID(
                                kTranslateInfobarLanguageSelectionTableViewAXId)]
