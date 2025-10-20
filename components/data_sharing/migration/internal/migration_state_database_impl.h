@@ -47,9 +47,6 @@ class MigrationStateDatabaseImpl : public MigrationStateDatabase {
  private:
   void OnInitialized(InitCallback callback, bool success);
 
-  // In-memory cache of the migration state.
-  std::map<ContextId, data_sharing_pb::MigrationState> cache_;
-
   // The file path of the profile directory.
   const base::FilePath profile_path_;
 

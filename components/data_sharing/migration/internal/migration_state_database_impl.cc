@@ -111,21 +111,26 @@ MigrationStateDatabaseImpl::GetMigrationState(
     const ContextId& context_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_initialized_);
-  // TODO(haileywang): Implement this.
-  return std::nullopt;
+  data_sharing_pb::MigrationState state;
+  if (!migration_state_data_->TryGetData(context_id.value(), &state)) {
+    return std::nullopt;
+  }
+  return state;
 }
 
 void MigrationStateDatabaseImpl::UpdateMigrationState(
     const ContextId& context_id,
     const data_sharing_pb::MigrationState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(haileywang): Implement this.
+  CHECK(is_initialized_);
+  migration_state_data_->UpdateData(context_id.value(), state);
 }
 
 void MigrationStateDatabaseImpl::DeleteMigrationState(
     const ContextId& context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(haileywang): Implement this.
+  CHECK(is_initialized_);
+  migration_state_data_->DeleteData({context_id.value()});
 }
 
 void MigrationStateDatabaseImpl::OnInitialized(InitCallback callback,

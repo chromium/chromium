@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/data_sharing/migration/internal/protocol/migration_state.pb.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,6 +40,34 @@ TEST_F(MigrationStateDatabaseImplTest, TestInitialization) {
   base::test::TestFuture<bool> future;
   migration_state_db->Init(future.GetCallback());
   EXPECT_TRUE(future.Get());
+}
+
+TEST_F(MigrationStateDatabaseImplTest, TestUpdateGetDelete) {
+  auto migration_state_db = std::make_unique<MigrationStateDatabaseImpl>(
+      temp_dir_.GetPath(),
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+
+  base::test::TestFuture<bool> future;
+  migration_state_db->Init(future.GetCallback());
+  ASSERT_TRUE(future.Get());
+
+  const ContextId kContextId("test_context_id");
+  data_sharing_pb::MigrationState state;
+  state.set_state(data_sharing_pb::MigrationState::UNSPECIFIED);
+
+  // Test Get on an empty DB.
+  EXPECT_EQ(migration_state_db->GetMigrationState(kContextId), std::nullopt);
+
+  // Test Update and Get.
+  migration_state_db->UpdateMigrationState(kContextId, state);
+  std::optional<data_sharing_pb::MigrationState> result =
+      migration_state_db->GetMigrationState(kContextId);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->state(), state.state());
+
+  // Test Delete.
+  migration_state_db->DeleteMigrationState(kContextId);
+  EXPECT_EQ(migration_state_db->GetMigrationState(kContextId), std::nullopt);
 }
 
 }  // namespace data_sharing

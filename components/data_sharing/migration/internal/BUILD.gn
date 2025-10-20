@@ -37,6 +37,7 @@ source_set("unit_tests") {
   sources = [ "migration_state_database_impl_unittest.cc" ]
   deps = [
     ":internal",
+    ":migration_state_proto",
     "//base",
     "//base/test:test_support",
     "//components/data_sharing/public",
