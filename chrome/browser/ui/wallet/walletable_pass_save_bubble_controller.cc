@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 
 #include "base/check.h"
+#include "chrome/browser/ui/wallet/walletable_pass_bubble_view_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
@@ -24,7 +25,8 @@ autofill::BubbleType WalletablePassSaveBubbleController::GetBubbleType() const {
 }
 
 void WalletablePassSaveBubbleController::ShowBubble() {
-  // TODO(crbug.com/451833977): Create and set the actual bubble view here.
+  SetBubbleView(*WalletablePassBubbleViewFactory::CreateSaveBubbleView(
+      web_contents(), this));
 }
 
 void WalletablePassSaveBubbleController::SetUpAndShowSaveBubble(

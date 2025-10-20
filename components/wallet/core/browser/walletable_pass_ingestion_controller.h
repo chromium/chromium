@@ -80,6 +80,9 @@ class WalletablePassIngestionController {
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
+  void OnGetSaveBubbleResult(
+      WalletablePassClient::WalletablePassBubbleResult result);
+
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
   const raw_ref<WalletablePassClient> client_;

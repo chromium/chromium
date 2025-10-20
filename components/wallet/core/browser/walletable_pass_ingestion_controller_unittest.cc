@@ -6,20 +6,25 @@
 
 #include <memory>
 
+#include "base/test/protobuf_matchers.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_pass_ingestion_controller_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using base::test::EqualsProto;
 using optimization_guide::ModelBasedCapabilityKey::kWalletablePassExtraction;
 using optimization_guide::OptimizationGuideDecision::kFalse;
 using optimization_guide::OptimizationGuideDecision::kTrue;
 using optimization_guide::proto::WALLETABLE_PASS_DETECTION_ALLOWLIST;
 using testing::_;
 using testing::Return;
+using testing::WithArgs;
 
 namespace wallet {
 namespace {
@@ -85,6 +90,7 @@ class WalletablePassIngestionControllerTest : public testing::Test {
   mock_model_executor() {
     return mock_model_executor_;
   }
+  MockWalletablePassClient& mock_client() { return mock_client_; }
 
  private:
   testing::NiceMock<optimization_guide::MockOptimizationGuideDecider>
@@ -163,7 +169,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   // Expect GetAnnotatedPageContent to be called, and simulate a successful
   // response.
   EXPECT_CALL(*controller(), GetAnnotatedPageContent(_))
-      .WillOnce(testing::WithArgs<0>(
+      .WillOnce(WithArgs<0>(
           [](MockWalletablePassIngestionController::AnnotatedPageContentCallback
                  callback) {
             optimization_guide::proto::AnnotatedPageContent content;
@@ -176,6 +182,42 @@ TEST_F(WalletablePassIngestionControllerTest,
               ExecuteModel(kWalletablePassExtraction, _, _, _));
 
   test_api(controller()).StartWalletablePassDetectionFlow(url);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ShowSaveBubble_ModelExecutionSucceeds_BubbleShown) {
+  GURL url("https://example.com");
+  optimization_guide::proto::AnnotatedPageContent content;
+  content.set_tab_id(123);
+
+  optimization_guide::proto::WalletablePass walletable_pass;
+  walletable_pass.mutable_loyalty_card()->set_member_id("test_pass_id");
+
+  EXPECT_CALL(*controller(), GetPageTitle()).WillOnce(Return("title"));
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(kWalletablePassExtraction, _, _, _))
+      .WillOnce(WithArgs<3>(
+          [&walletable_pass](
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            // Create the response object
+            optimization_guide::proto::WalletablePassExtractionResponse
+                response;
+            *response.add_walletable_pass() = walletable_pass;
+            auto execution_result =
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    optimization_guide::AnyWrapProto(response),
+                    /*execution_info=*/nullptr);
+
+            std::move(callback).Run(std::move(execution_result),
+                                    /*log_entry=*/nullptr);
+          }));
+
+  EXPECT_CALL(mock_client(),
+              ShowWalletablePassSaveBubble(EqualsProto(walletable_pass), _));
+
+  test_api(controller()).ExtractWalletablePass(url, content);
 }
 
 }  // namespace

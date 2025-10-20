@@ -8,6 +8,8 @@ source_set("wallet") {
     "walletable_pass_bubble_controller_base.h",
     "walletable_pass_bubble_view_base.cc",
     "walletable_pass_bubble_view_base.h",
+    "walletable_pass_bubble_view_factory.cc",
+    "walletable_pass_bubble_view_factory.h",
     "walletable_pass_consent_bubble_controller.cc",
     "walletable_pass_consent_bubble_controller.h",
     "walletable_pass_consent_bubble_view.cc",
@@ -26,4 +28,6 @@ source_set("wallet") {
     "//content/public/browser",
     "//ui/views",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

@@ -107,7 +107,15 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
     return;
   }
 
-  // TODO(crbug.com/441830204): Get the first walletable pass and show in UI.
+  client_->ShowWalletablePassSaveBubble(
+      parsed_response->walletable_pass(0),
+      base::BindOnce(&WalletablePassIngestionController::OnGetSaveBubbleResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WalletablePassIngestionController::OnGetSaveBubbleResult(
+    WalletablePassClient::WalletablePassBubbleResult result) {
+  // TODO(crbug.com/452579752): Save pass to Wallet.
 }
 
 }  // namespace wallet

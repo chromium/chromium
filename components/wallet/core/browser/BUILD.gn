@@ -41,6 +41,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//testing/gmock",
     "//testing/gtest",

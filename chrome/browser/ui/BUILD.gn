@@ -2852,6 +2852,8 @@ static_library("ui") {
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//third_party/omnibox_proto",
     ]
+
+    allow_circular_includes_from += [ "//chrome/browser/ui/wallet" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {

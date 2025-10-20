@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_base.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace wallet {
 namespace {
@@ -84,7 +83,8 @@ void WalletablePassBubbleControllerBase::SetCallback(
 void WalletablePassBubbleControllerBase::QueueOrShowBubble(bool force_show) {
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    if (auto* manager = autofill::BubbleManager::GetForTab(&tab())) {
+    if (autofill::BubbleManager* manager =
+            autofill::BubbleManager::GetForTab(&tab())) {
       manager->RequestShowController(*this, force_show);
     }
     return;
@@ -98,7 +98,8 @@ void WalletablePassBubbleControllerBase::
   if (IsShowingBubble() &&
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    if (auto* manager = autofill::BubbleManager::GetForTab(&tab())) {
+    if (autofill::BubbleManager* manager =
+            autofill::BubbleManager::GetForTab(&tab())) {
       manager->OnBubbleHiddenByController(*this, /*show_next_bubble=*/true);
     }
   }
