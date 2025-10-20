@@ -1026,9 +1026,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
     return;
   }
 
-  // TODO(crbug.com/40604984): The following call chain ultimately just
-  // dismisses the keyboard, but involves many layers of plumbing, and should be
-  // refactored.
   if (self.forwardsScrollEvents) {
     [self.mutator onScroll];
   }
