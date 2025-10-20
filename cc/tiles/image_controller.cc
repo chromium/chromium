@@ -271,17 +271,6 @@ void ImageController::ConvertImagesToTasks(
         image_cache_client_id_, *it, tracing_info);
     *has_at_raster_images |= result.is_at_raster_decode;
 
-    ImageType image_type =
-        it->paint_image().GetImageHeaderMetadata()
-            ? it->paint_image().GetImageHeaderMetadata()->image_type
-            : ImageType::kInvalid;
-    *has_hardware_accelerated_jpeg_candidates |=
-        (result.can_do_hardware_accelerated_decode &&
-         image_type == ImageType::kJPEG);
-    *has_hardware_accelerated_webp_candidates |=
-        (result.can_do_hardware_accelerated_decode &&
-         image_type == ImageType::kWEBP);
-
     if (result.task) {
       if (scoped_refptr<TileTask>& dependent =
               result.task->external_dependent()) {

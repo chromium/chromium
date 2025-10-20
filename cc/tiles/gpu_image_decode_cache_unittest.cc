@@ -3927,7 +3927,6 @@ TEST_P(GpuImageDecodeCacheTest, OutOfRasterDecodeForBitmaps) {
   EXPECT_TRUE(result.need_unref);
   EXPECT_FALSE(result.task);
   EXPECT_FALSE(result.is_at_raster_decode);
-  EXPECT_FALSE(result.can_do_hardware_accelerated_decode);
   cache->UnrefImage(draw_image);
 }
 
