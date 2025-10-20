@@ -5544,6 +5544,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_INSTANCE_SWITCHER_HEADER" desc="The header of multi-instance switcher dialog.">
         Manage windows
       </message>
+      <message name="IDS_INSTANCE_SWITCHER_TITLE_INCOGNITO_WINDOW" desc="Title of an instance entry that has incognito tabs in it.">
+        Incognito window
+      </message>
       <message name="IDS_INSTANCE_SWITCHER_TABS_ACTIVE" desc="The title of the active instances tab header on the multi-instance switcher dialog.">
         Active (<ph name="ITEM_COUNT">%1$s<ex>2</ex></ph>)
       </message>

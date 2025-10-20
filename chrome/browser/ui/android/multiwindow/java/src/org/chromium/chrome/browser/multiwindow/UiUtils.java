@@ -44,7 +44,11 @@ class UiUtils {
         Resources res = context.getResources();
         mMinIconSizeDp = (int) res.getDimension(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = res.getDimensionPixelSize(R.dimen.default_favicon_size);
-        mIncognitoFavicon = getTintedIcon(R.drawable.incognito_simple);
+        mIncognitoFavicon =
+                isIncognitoAsWindowEnabled()
+                        ? mContext.getResources()
+                                .getDrawable(R.drawable.ic_incognito_24dp, mContext.getTheme())
+                        : getTintedIcon(R.drawable.incognito_simple);
         mGlobeFavicon = getTintedIcon(R.drawable.ic_globe_24dp);
         mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
     }
@@ -68,11 +72,14 @@ class UiUtils {
         // TODO (crbug.com/441312171): Add "Incognito - " prefix for incognito instances.
         if (!TextUtils.isEmpty(item.customTitle)) {
             title = item.customTitle;
-        } else if (totalTabCount == 0 || isBeforeFirstTabLoad(item, totalTabCount)) {
+        } else if (totalTabCount == 0 || isInitialNonIncognitoWindow(item, totalTabCount)) {
             title = res.getString(R.string.instance_switcher_entry_empty_window);
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
             // Show 'incognito tab' only when we have any restorable incognito tabs.
-            title = res.getString(R.string.notification_incognito_tab);
+            title =
+                    isIncognitoAsWindowEnabled()
+                            ? res.getString(R.string.instance_switcher_title_incognito_window)
+                            : res.getString(R.string.notification_incognito_tab);
         } else {
             title = item.title;
         }
@@ -95,7 +102,13 @@ class UiUtils {
         } else if (totalTabCount == 0) { // <ex>No tabs</ex>
             desc = res.getString(R.string.instance_switcher_tab_count_zero);
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
-            if (item.tabCount == 0) { // <ex>2 incognito tabs</ex>
+            if (isIncognitoAsWindowEnabled()) { // <ex>2 tabs</ex>
+                desc =
+                        res.getQuantityString(
+                                R.plurals.instance_switcher_tab_count_nonzero,
+                                item.incognitoTabCount,
+                                item.incognitoTabCount);
+            } else if (item.tabCount == 0) { // <ex>2 incognito tabs</ex>
                 desc =
                         res.getQuantityString(
                                 R.plurals.instance_switcher_desc_incognito,
@@ -195,7 +208,7 @@ class UiUtils {
             InstanceInfo item) {
         int incognitoTabCount = recoverableIncognitoTabCount(item);
         int totalTabCount = totalTabCount(item);
-        if (totalTabCount == 0 || isBeforeFirstTabLoad(item, totalTabCount)) {
+        if (totalTabCount == 0 || isInitialNonIncognitoWindow(item, totalTabCount)) {
             model.set(faviconKey, mGlobeFavicon);
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
             model.set(faviconKey, mIncognitoFavicon);
@@ -232,7 +245,13 @@ class UiUtils {
     /**
      * @return Whether a new Chrome instance has not yet started loading a URL on its tab.
      */
-    private boolean isBeforeFirstTabLoad(InstanceInfo item, int totalTabCount) {
+    private boolean isInitialNonIncognitoWindow(InstanceInfo item, int totalTabCount) {
+        if (isIncognitoAsWindowEnabled()) {
+            return !item.isIncognitoSelected
+                    && totalTabCount == 1
+                    && TextUtils.isEmpty(item.url)
+                    && TextUtils.isEmpty(item.title);
+        }
         return totalTabCount == 1 && TextUtils.isEmpty(item.url) && TextUtils.isEmpty(item.title);
     }
 
@@ -264,5 +283,21 @@ class UiUtils {
      */
     public static boolean isRobustWindowManagementEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT);
+    }
+
+    /**
+     * Checks whether the Android Open Incognito As Window feature is enabled.
+     *
+     * @deprecated Use {@link
+     *     org.chromium.chrome.browser.incognito.IncognitoUtils#isIncognitoAsWindowEnabled()}
+     *     instead.
+     * @return {@code true} if the Android Open Incognito As Window feature is enabled, {@code
+     *     false} otherwise.
+     */
+    // TODO(crbug.com/448671285): Shift away from isIncognitoAsWindowEnabled() to calling
+    // IncognitoUtils function
+    @Deprecated
+    public static boolean isIncognitoAsWindowEnabled() {
+        return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled();
     }
 }
