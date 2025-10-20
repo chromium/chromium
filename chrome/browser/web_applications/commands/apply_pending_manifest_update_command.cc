@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/time/clock.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -207,11 +206,6 @@ void ApplyPendingManifestUpdateCommand::ApplyPendingUpdateInfoToWebApp(
       app_to_update->SetTrustedIcons(
           ConvertSyncProtoIconsToAppIconInfos(pending_update.trusted_icons()));
 
-      // The icons are generated only if icon downloads fail, in which case
-      // there would be no pending update info stored in the app and this
-      // command wouldn't have existed.
-      app_to_update->SetIsGeneratedIcon(/*is_generated_icon=*/false);
-
       for (const auto& downloaded_info :
            pending_update.downloaded_trusted_icons()) {
         // MONOCHROME trusted icons are not supported and will crash if called
@@ -241,9 +235,6 @@ void ApplyPendingManifestUpdateCommand::ApplyPendingUpdateInfoToWebApp(
           &ApplyPendingManifestUpdateCommand::DeletePendingIconsFromDisk,
           AsWeakPtr());
     }
-
-    // Measure the time when the app was updated.
-    app_to_update->SetManifestUpdateTime(lock_->clock().Now());
   }
   SetStage(ApplyPendingManifestUpdateCommandStage::kSynchronizingOS);
   lock_->os_integration_manager().Synchronize(app_id_,
