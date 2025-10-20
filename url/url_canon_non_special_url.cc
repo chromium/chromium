@@ -90,8 +90,9 @@ bool DoCanonicalizeNonSpecialURL(const URLComponentSource<CHAR>& source,
     // - https://url.spec.whatwg.org/#cannot-have-a-username-password-port
     // - https://url.spec.whatwg.org/#dom-url-port
     if (parsed.host.is_nonempty()) {
-      success &= CanonicalizePort(source.port, parsed.port, PORT_UNSPECIFIED,
-                                  &output, &new_parsed.port);
+      success &=
+          CanonicalizePort(parsed.port.maybe_as_string_view_on(source.port),
+                           PORT_UNSPECIFIED, &output, &new_parsed.port);
     } else {
       new_parsed.port.reset();
     }

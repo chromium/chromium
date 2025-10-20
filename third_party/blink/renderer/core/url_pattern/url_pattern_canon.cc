@@ -189,8 +189,8 @@ String CanonicalizePort(const String& input,
   StringUtf8Adaptor utf8(input);
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
-  if (!url::CanonicalizePort(utf8.data(), url::Component(0, utf8.size()),
-                             default_port, &canon_output, &component)) {
+  if (!url::CanonicalizePort(utf8.AsStringView(), default_port, &canon_output,
+                             &component)) {
     exception_state.ThrowTypeError("Invalid port '" + input + "'.");
     return String();
   }

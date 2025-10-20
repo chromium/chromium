@@ -608,14 +608,12 @@ void CanonicalizeIPv6Address(std::string_view host_view,
 //
 // The 8-bit version requires UTF-8 encoding.
 COMPONENT_EXPORT(URL)
-bool CanonicalizePort(const char* spec,
-                      const Component& port,
+bool CanonicalizePort(std::optional<std::string_view> port_view,
                       int default_port_for_scheme,
                       CanonOutput* output,
                       Component* out_port);
 COMPONENT_EXPORT(URL)
-bool CanonicalizePort(const char16_t* spec,
-                      const Component& port,
+bool CanonicalizePort(std::optional<std::u16string_view> port_view,
                       int default_port_for_scheme,
                       CanonOutput* output,
                       Component* out_port);

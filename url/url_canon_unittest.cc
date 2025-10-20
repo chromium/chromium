@@ -1338,13 +1338,11 @@ TEST_F(URLCanonTest, Port) {
   };
 
   for (const auto& port_case : port_cases) {
-    int url_len = static_cast<int>(strlen(port_case.input));
-    Component in_comp(0, url_len);
     Component out_comp;
     std::string out_str;
     StdStringCanonOutput output1(&out_str);
-    bool success = CanonicalizePort(
-        port_case.input, in_comp, port_case.default_port, &output1, &out_comp);
+    bool success = CanonicalizePort(port_case.input, port_case.default_port,
+                                    &output1, &out_comp);
     output1.Complete();
 
     EXPECT_EQ(port_case.expected_success, success);
@@ -1356,8 +1354,8 @@ TEST_F(URLCanonTest, Port) {
     out_str.clear();
     StdStringCanonOutput output2(&out_str);
     std::u16string wide_input(base::UTF8ToUTF16(port_case.input));
-    success = CanonicalizePort(wide_input.c_str(), in_comp,
-                               port_case.default_port, &output2, &out_comp);
+    success = CanonicalizePort(wide_input, port_case.default_port, &output2,
+                               &out_comp);
     output2.Complete();
 
     EXPECT_EQ(port_case.expected_success, success);

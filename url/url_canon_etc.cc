@@ -221,12 +221,16 @@ inline void WritePortInt(char* output, int output_len, int port) {
 
 // This function will prepend the colon if there will be a port.
 template <typename CHAR, typename UCHAR>
-bool DoPort(const CHAR* spec,
-            const Component& port,
+bool DoPort(std::optional<std::basic_string_view<CHAR>> port_view,
             int default_port_for_scheme,
             CanonOutput* output,
             Component* out_port) {
-  int port_num = ParsePort(spec, port);
+  if (!port_view) {
+    *out_port = Component();
+    return true;  // Leave port empty.
+  }
+  int port_num = ParsePort(port_view->data(),
+                           {0, base::checked_cast<int>(port_view->length())});
   if (port_num == PORT_UNSPECIFIED || port_num == default_port_for_scheme) {
     *out_port = Component();
     return true;  // Leave port empty.
@@ -237,8 +241,7 @@ bool DoPort(const CHAR* spec,
     // what the error was, and mark the URL as invalid by returning false.
     output->push_back(':');
     out_port->begin = output->length();
-    AppendInvalidNarrowString(spec, static_cast<size_t>(port.begin),
-                              static_cast<size_t>(port.end()), output);
+    AppendInvalidNarrowString(*port_view, output);
     out_port->len = output->length() - out_port->begin;
     return false;
   }
@@ -377,21 +380,19 @@ bool CanonicalizeUserInfo(std::optional<std::u16string_view> username,
                                         out_username, out_password);
 }
 
-bool CanonicalizePort(const char* spec,
-                      const Component& port,
+bool CanonicalizePort(std::optional<std::string_view> port_view,
                       int default_port_for_scheme,
                       CanonOutput* output,
                       Component* out_port) {
-  return DoPort<char, unsigned char>(spec, port, default_port_for_scheme,
-                                     output, out_port);
+  return DoPort<char, unsigned char>(port_view, default_port_for_scheme, output,
+                                     out_port);
 }
 
-bool CanonicalizePort(const char16_t* spec,
-                      const Component& port,
+bool CanonicalizePort(std::optional<std::u16string_view> port_view,
                       int default_port_for_scheme,
                       CanonOutput* output,
                       Component* out_port) {
-  return DoPort<char16_t, char16_t>(spec, port, default_port_for_scheme, output,
+  return DoPort<char16_t, char16_t>(port_view, default_port_for_scheme, output,
                                     out_port);
 }
 

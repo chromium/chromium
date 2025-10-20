@@ -295,16 +295,16 @@ bool DoSimpleHost(std::basic_string_view<INCHAR> host,
 // Canonicalizes a host that requires IDN conversion. Returns true on success
 template <CanonMode canon_mode>
 bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
+  std::u16string_view host_view(src, src_len);
   int original_output_len = output->length();  // So we can rewind below.
 
   // We need to escape URL before doing IDN conversion, since punicode strings
   // cannot be escaped after they are created.
   RawCanonOutputW<kTempHostBufferLen> url_escaped_host;
   bool has_non_ascii;
-  DoSimpleHost<canon_mode>(std::u16string_view(src, src_len), &url_escaped_host,
-                           &has_non_ascii);
+  DoSimpleHost<canon_mode>(host_view, &url_escaped_host, &has_non_ascii);
   if (url_escaped_host.length() > kMaxHostBufferLength) {
-    AppendInvalidNarrowString(src, 0, src_len, output);
+    AppendInvalidNarrowString(host_view, output);
     return false;
   }
 
@@ -312,7 +312,7 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
   if (!IDNToASCII(url_escaped_host.view(), &wide_output)) {
     // Some error, give up. This will write some reasonable looking
     // representation of the string to the output.
-    AppendInvalidNarrowString(src, 0, src_len, output);
+    AppendInvalidNarrowString(host_view, output);
     return false;
   }
 
@@ -337,8 +337,7 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
     // ASCII isn't strictly necessary, but DoSimpleHost handles this case
     // anyway so we handle it/
     output->set_length(original_output_len);
-    AppendInvalidNarrowString(wide_output.data(), 0, wide_output.length(),
-                              output);
+    AppendInvalidNarrowString(wide_output.view(), output);
     return false;
   }
   return success;
@@ -401,7 +400,7 @@ bool DoComplexHost(std::string_view host,
       utf8.push_back(utf8_source[i]);
     }
     output->set_length(begin_length);
-    AppendInvalidNarrowString(utf8.data(), 0, utf8.length(), output);
+    AppendInvalidNarrowString(utf8.view(), output);
     return false;
   }
   output->set_length(begin_length);
@@ -431,7 +430,7 @@ bool DoComplexHost(std::u16string_view host,
     // fast to do the conversion anyway.
     StackBuffer utf8;
     if (!ConvertUTF16ToUTF8(host, &utf8)) {
-      AppendInvalidNarrowString(host.data(), 0, host.length(), output);
+      AppendInvalidNarrowString(host, output);
       return false;
     }
 

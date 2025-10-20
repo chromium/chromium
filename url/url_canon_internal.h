@@ -450,21 +450,15 @@ inline bool DecodeEscaped(const CHAR* spec,
   return true;
 }
 
-// Appends the given substring to the output, escaping "some" characters that
+// Appends the given string to the output, escaping "some" characters that
 // it feels may not be safe. It assumes the input values are all contained in
 // 8-bit although it allows any type.
 //
 // This is used in error cases to append invalid output so that it looks
 // approximately correct. Non-error cases should not call this function since
 // the escaping rules are not guaranteed!
-void AppendInvalidNarrowString(const char* spec,
-                               size_t begin,
-                               size_t end,
-                               CanonOutput* output);
-void AppendInvalidNarrowString(const char16_t* spec,
-                               size_t begin,
-                               size_t end,
-                               CanonOutput* output);
+void AppendInvalidNarrowString(std::string_view input, CanonOutput* output);
+void AppendInvalidNarrowString(std::u16string_view input, CanonOutput* output);
 
 // Misc canonicalization helpers ----------------------------------------------
 

@@ -73,8 +73,9 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
       int default_port = DefaultPortForScheme(std::string_view(
           &UNSAFE_TODO(output->data()[new_parsed->scheme.begin]),
           new_parsed->scheme.len));
-      success &= CanonicalizePort(source.port, parsed.port, default_port,
-                                  output, &new_parsed->port);
+      success &=
+          CanonicalizePort(parsed.port.maybe_as_string_view_on(source.port),
+                           default_port, output, &new_parsed->port);
     } else {
       new_parsed->port.reset();
     }

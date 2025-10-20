@@ -108,16 +108,15 @@ void DoAppendStringOfType(std::basic_string_view<CHAR> source,
 // This function assumes the input values are all contained in 8-bit,
 // although it allows any type. Returns true if input is valid, false if not.
 template <typename CHAR, typename UCHAR>
-void DoAppendInvalidNarrowString(const CHAR* spec,
-                                 size_t begin,
-                                 size_t end,
+void DoAppendInvalidNarrowString(std::basic_string_view<CHAR> input,
                                  CanonOutput* output) {
-  for (size_t i = begin; i < end; i++) {
-    UCHAR uch = static_cast<UCHAR>(spec[i]);
+  size_t end = input.length();
+  for (size_t i = 0; i < end; ++i) {
+    UCHAR uch = static_cast<UCHAR>(input[i]);
     if (uch >= 0x80) {
       // Handle UTF-8/16 encodings. This call will correctly handle the error
       // case by appending the invalid character.
-      AppendUTF8EscapedChar(spec, &i, end, output);
+      AppendUTF8EscapedChar(input.data(), &i, end, output);
     } else if (uch <= ' ' || uch == 0x7f) {
       // This function is for error handling, so we escape all control
       // characters and spaces, but not anything else since we lack
@@ -226,18 +225,12 @@ bool ReadUTFCharLossy(const char16_t* str,
   return true;
 }
 
-void AppendInvalidNarrowString(const char* spec,
-                               size_t begin,
-                               size_t end,
-                               CanonOutput* output) {
-  DoAppendInvalidNarrowString<char, unsigned char>(spec, begin, end, output);
+void AppendInvalidNarrowString(std::string_view input, CanonOutput* output) {
+  DoAppendInvalidNarrowString<char, unsigned char>(input, output);
 }
 
-void AppendInvalidNarrowString(const char16_t* spec,
-                               size_t begin,
-                               size_t end,
-                               CanonOutput* output) {
-  DoAppendInvalidNarrowString<char16_t, char16_t>(spec, begin, end, output);
+void AppendInvalidNarrowString(std::u16string_view input, CanonOutput* output) {
+  DoAppendInvalidNarrowString<char16_t, char16_t>(input, output);
 }
 
 bool ConvertUTF16ToUTF8(std::u16string_view input, CanonOutput* output) {
