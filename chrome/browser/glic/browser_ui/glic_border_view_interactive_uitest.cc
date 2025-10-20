@@ -897,7 +897,20 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
   EXPECT_EQ(effect_time_before_tab_switching, effect_time_after_tab_switching);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
+class GlicBorderViewWithActorGlowUiTest : public GlicBorderViewUiTest {
+ public:
+  GlicBorderViewWithActorGlowUiTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        features::kGlicActorUi,
+        {{features::kGlicActorUiStandaloneBorderGlow.name, "false"}});
+  }
+  ~GlicBorderViewWithActorGlowUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicBorderViewWithActorGlowUiTest,
                        ActorGlowShowsBorderWhenIndicatorIsOff) {
   auto* border = browser()
                      ->window()

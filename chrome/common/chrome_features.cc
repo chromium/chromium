@@ -342,7 +342,7 @@ const base::FeatureParam<bool> kGlicActorUiBorderGlow{
 // Controls whether the actor border glow uses a standalone implementation or a
 // shared implementation with context sharing glow.
 const base::FeatureParam<bool> kGlicActorUiStandaloneBorderGlow{
-    &kGlicActorUi, kGlicActorUiStandaloneBorderGlowName, false};
+    &kGlicActorUi, kGlicActorUiStandaloneBorderGlowName, true};
 // Controls the expiry delay for completed tasks in the actor ui.
 const base::FeatureParam<int> kGlicActorUiCompletedTaskExpiryDelaySeconds{
     &kGlicActorUi, kGlicActorUiCompletedTaskExpiryDelaySecondsName, 10};
