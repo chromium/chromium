@@ -194,6 +194,15 @@ class WebState : public base::SupportsUserData {
     std::map<std::string, Callback> callbacks_;
   };
 
+  class ScopedWebContentCoverer {
+   public:
+    explicit ScopedWebContentCoverer(WebState* web_state);
+    ~ScopedWebContentCoverer();
+
+   private:
+    base::WeakPtr<WebState> web_state_;
+  };
+
   // Creates a new WebState.
   static std::unique_ptr<WebState> Create(const CreateParams& params);
 

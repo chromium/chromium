@@ -56,8 +56,16 @@ CardUnmaskPromptControllerImpl::CardUnmaskPromptControllerImpl(
       delegate_(delegate) {}
 
 CardUnmaskPromptControllerImpl::~CardUnmaskPromptControllerImpl() {
-  if (card_unmask_view_)
-    card_unmask_view_->ControllerGone();
+  if (card_unmask_view_) {
+    // The order of operations below is critical to prevent a use-after-free
+    // crash. If card_unmask_view_ is not nulled out before the call to
+    // ControllerGone(), the raw_ptr's safety checks will trigger a crash when
+    // card_unmask_view_ is later destructed (at the end of this destructor) or
+    // even reassigned, as it would be pointing to deallocated memory.
+    CardUnmaskPromptView* temp_view = card_unmask_view_.get();
+    card_unmask_view_ = nullptr;
+    temp_view->ControllerGone();
+  }
 }
 
 void CardUnmaskPromptControllerImpl::ShowPrompt(

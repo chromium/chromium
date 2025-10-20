@@ -638,6 +638,9 @@ bool IsStateless() {
 }
 
 - (void)updateSuggestionsIfNeeded {
+  if (!_webState || !_webState->IsVisible()) {
+    return;
+  }
   if (_hasLastSeenParams && _webState && IsSuggestionRefreshAllowed()) {
     [self retrieveSuggestionsForForm:_lastSeenParams webState:_webState];
   }

@@ -58,6 +58,20 @@ WebState::InterfaceBinder::InterfaceBinder(WebState* web_state)
 
 WebState::InterfaceBinder::~InterfaceBinder() = default;
 
+WebState::ScopedWebContentCoverer::ScopedWebContentCoverer(
+    WebState* web_state) {
+  if (web_state) {
+    web_state_ = web_state->GetWeakPtr();
+    web_state->DidCoverWebContent();
+  }
+}
+
+WebState::ScopedWebContentCoverer::~ScopedWebContentCoverer() {
+  if (web_state_) {
+    web_state_->DidRevealWebContent();
+  }
+}
+
 void WebState::InterfaceBinder::AddInterface(std::string_view interface_name,
                                              Callback callback) {
   callbacks_.emplace(std::string(interface_name), std::move(callback));
