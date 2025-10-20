@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "base/logging.h"
@@ -886,7 +887,7 @@ void PaintController::BeginFrame(const void* frame) {
 
 FrameFirstPaint PaintController::EndFrame(const void* frame) {
   FrameFirstPaint result = frame_first_paints_.back();
-  DCHECK(result.frame == frame);
+  DCHECK(result.frame == reinterpret_cast<uintptr_t>(frame));
   frame_first_paints_.pop_back();
   return result;
 }
