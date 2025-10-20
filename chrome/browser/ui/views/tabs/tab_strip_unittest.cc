@@ -473,7 +473,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
   const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
   while (tab_strip_->GetTabCount() == 0 ||
          tab_strip_->tab_at(0)->width() != min_inactive_width) {
-    controller_->CreateNewTab();
+    controller_->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
     CompleteAnimationAndLayout();
   }
 
@@ -510,7 +510,7 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
   while (tab_strip_->GetTabCount() == 0 ||
          tab_strip_->tab_at(0)->width() >=
              (min_inactive_width + min_active_width) / 2) {
-    controller_->CreateNewTab();
+    controller_->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
     CompleteAnimationAndLayout();
   }
 
@@ -539,7 +539,7 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
   const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
   while (tab_strip_->GetTabCount() == 0 ||
          tab_strip_->tab_at(0)->width() != min_inactive_width) {
-    controller_->CreateNewTab();
+    controller_->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
     CompleteAnimationAndLayout();
   }
 
@@ -793,7 +793,7 @@ TEST_P(TabStripTest, RelayoutAfterDraggedTabBoundsUpdate) {
   SetMaxTabStripWidth(400);
 
   // Creates a single tab.
-  controller_->CreateNewTab();
+  controller_->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   CompleteAnimationAndLayout();
 
   int dragged_tab_index = tab_strip_->GetActiveIndex().value();

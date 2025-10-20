@@ -907,10 +907,8 @@ void ToolbarView::ActiveStateChanged() {
 }
 
 void ToolbarView::NewTabButtonPressed(const ui::Event& event) {
-  chrome::ExecuteCommand(browser_view_->browser(), IDC_NEW_TAB);
-  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab",
-                            NewTabTypes::NEW_TAB_BUTTON_IN_TOOLBAR_FOR_TOUCH,
-                            NewTabTypes::NEW_TAB_ENUM_COUNT);
+  chrome::NewTab(browser_view_->browser(),
+                 NewTabTypes::NEW_TAB_BUTTON_IN_TOOLBAR_FOR_TOUCH);
 }
 
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {

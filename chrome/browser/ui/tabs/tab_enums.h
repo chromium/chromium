@@ -81,8 +81,14 @@ enum NewTabTypes {
   // strip.
   NEW_TAB_BUTTON_IN_WEBUI_TAB_STRIP = 4,
 
+  // Value for opening tabs without specifying a user action. We may use this
+  // in situations where we implicitly make a new tab for the user. For
+  // example, when the user deletes a tab group and there are no other tabs
+  // in the browser to keep it running.
+  NO_USER_ACTION = 5,
+
   // Number of enum entries, used for UMA histogram reporting macros.
-  NEW_TAB_ENUM_COUNT = 5,
+  NEW_TAB_ENUM_COUNT = 6,
 };
 
 // Enumerates different types of tab activation. Mainly used for

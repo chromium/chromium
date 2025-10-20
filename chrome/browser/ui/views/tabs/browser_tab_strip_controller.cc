@@ -632,8 +632,8 @@ void BrowserTabStripController::OnDropIndexUpdate(
   }
 }
 
-void BrowserTabStripController::CreateNewTab() {
-  chrome::NewTab(GetBrowser());
+void BrowserTabStripController::CreateNewTab(NewTabTypes context) {
+  chrome::NewTab(GetBrowser(), context);
 }
 
 void BrowserTabStripController::CreateNewTabWithLocation(

@@ -178,9 +178,9 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
 
 IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
                        NewTabButtonNewTabInMostRecentGroup) {
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(tab_strip_model->count(), 4);

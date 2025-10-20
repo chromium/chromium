@@ -99,7 +99,9 @@
 
     Browser* browser = Browser::Create(
         Browser::CreateParams(aProfile, /*user_gesture=*/false));
-    chrome::NewTab(browser);
+    // TODO(crbug.com/452431839): Make a new NewTabTypes enum value
+    // for new tabs made with AppleScript requests.
+    chrome::NewTab(browser, NewTabTypes::NEW_TAB_COMMAND);
     browser->window()->Show();
 
     _browser = browser->AsWeakPtr();

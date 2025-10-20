@@ -98,7 +98,7 @@ class BrowserTabStripController : public TabStripController,
                              ui::mojom::MenuSourceType source_type) override;
   int HasAvailableDragActions() const override;
   void OnDropIndexUpdate(std::optional<int> index, bool drop_before) override;
-  void CreateNewTab() override;
+  void CreateNewTab(NewTabTypes context) override;
   void CreateNewTabWithLocation(const std::u16string& loc) override;
   void OnStartedDragging(bool dragging_window) override;
   void OnStoppedDragging() override;

@@ -600,7 +600,10 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   // Create a new tab if the created window is still empty. Don't create a new
   // tab when it is intended to create an empty popup.
   if (!tab && urls.empty() && window_type == Browser::TYPE_NORMAL) {
-    chrome::NewTab(new_window->GetBrowserForMigrationOnly());
+    // TODO(crbug.com/452431839) Make a new NewTabTypes value for
+    // when new tabs are made because of an empty window.
+    chrome::NewTab(new_window->GetBrowserForMigrationOnly(),
+                   NewTabTypes::NEW_TAB_COMMAND);
   }
   chrome::SelectNumberedTab(
       new_window->GetBrowserForMigrationOnly(), 0,

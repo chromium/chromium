@@ -96,9 +96,9 @@ class BrowserTabStripControllerTestAddTabActiveGroupDisabled
 
 IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupEnabled,
                        AddTabsWithActiveTabGroup) {
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   EXPECT_EQ(tab_strip_model()->count(), 4);
 
   tab_groups::TabGroupId group_id = tab_strip_model()->AddToNewGroup({1, 2});
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupEnabled,
 
   // Select a tab in the group.
   controller()->SelectTab(1, dummy_event_);
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
 
   // Create a new tab, it should be at position 3 because
   // there is an active tab group
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupEnabled,
   // tab, make sure it is at the end of the tab strip and it is not in the
   // group.
   controller()->SelectTab(0, dummy_event_);
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
 
   EXPECT_EQ(tab_strip_model()->count(), 6);
   EXPECT_EQ(std::nullopt, tab_strip_model()->GetTabGroupForTab(0));
@@ -136,9 +136,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupEnabled,
 
 IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupDisabled,
                        AddTabsWithActiveTabGroupFeatureDisabled) {
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   EXPECT_EQ(tab_strip_model()->count(), 4);
 
   tab_groups::TabGroupId group_id = tab_strip_model()->AddToNewGroup({1, 2});
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupDisabled,
   // Select a tab in the group.
   controller()->SelectTab(1, dummy_event_);
   ASSERT_TRUE(tabstrip()->tab_at(1)->IsActive());
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
 
   // Create a new tab, it should not have been added to the group even
   // though a tab in the group is selected.
@@ -165,21 +165,21 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupDisabled,
   base::HistogramTester histogram_tester;
 
   // Make a tab, put it in group A
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   tab_groups::TabGroupId group_a = tab_strip_model()->AddToNewGroup({1});
 
   // Select the tab in group A and then make two tabs. Of these two tabs,
   // group the first one to A
   controller()->SelectTab(1, dummy_event_);
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   controller()->SelectTab(1, dummy_event_);
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   controller()->AddTabToGroup(2, group_a);
 
   // Select the ungrouped tab and make a new tab. Put the new tab in
   // a new group B. Place the ungrouped tab in B.
   controller()->SelectTab(3, dummy_event_);
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   tab_groups::TabGroupId group_b = tab_strip_model()->AddToNewGroup({4});
   controller()->AddTabToGroup(3, group_b);
 
@@ -211,12 +211,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupDisabled,
                        VerifyTabMetricsFeatureDisabled2) {
   base::HistogramTester histogram_tester;
 
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   tab_groups::TabGroupId group_a = tab_strip_model()->AddToNewGroup({2});
 
   controller()->SelectTab(2, dummy_event_);
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
 
   FastForwardPastDelay();
   histogram_tester.ExpectBucketCount(
@@ -246,11 +246,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupEnabled,
   base::HistogramTester histogram_tester;
 
   // Make 5 tabs
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
 
   // Add first, third, and fourth to groups
   tab_groups::TabGroupId group_a = tab_strip_model()->AddToNewGroup({1});
@@ -259,13 +259,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupEnabled,
 
   // For each tab group, select the tab in it and make a tab
   controller()->SelectTab(1, dummy_event_);
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   // group B
   controller()->SelectTab(4, dummy_event_);
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   // group C
   controller()->SelectTab(6, dummy_event_);
-  controller()->CreateNewTab();
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
 
   // The ungrouped tab to the right of A, group it to A.
   controller()->AddTabToGroup(3, group_a);
@@ -318,8 +318,8 @@ IN_PROC_BROWSER_TEST_F(
     CollapseWithActiveTabInGroupAndNextAvailable) {
   // Create tabs and a group
   ASSERT_EQ(tab_strip_model()->count(), 1);  // 0
-  controller()->CreateNewTab();              // 1
-  controller()->CreateNewTab();              // 2
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);  // 1
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);  // 2
   // Tabs [0, 1] in group
   const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
   // Active tab in group
@@ -364,8 +364,8 @@ IN_PROC_BROWSER_TEST_F(
     BrowserTabStripControllerTestToggleTabGroupCollapsedState,
     CollapseWithActiveTabOutsideGroup) {
   // Create tabs and a group
-  ASSERT_EQ(tab_strip_model()->count(), 1);  // 0
-  controller()->CreateNewTab();              // 1
+  ASSERT_EQ(tab_strip_model()->count(), 1);
+  controller()->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
   // Tab 0 in group
   const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0});
   // Active tab outside group

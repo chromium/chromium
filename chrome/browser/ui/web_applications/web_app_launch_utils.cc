@@ -135,7 +135,7 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
   // Avoid causing an existing non-app browser window to close if this is the
   // last tab remaining.
   if (source_browser->tab_strip_model()->count() == 1) {
-    chrome::NewTab(source_browser);
+    chrome::NewTab(source_browser, NewTabTypes::NO_USER_ACTION);
   }
 
   ReparentWebContentsIntoBrowserImpl(
@@ -457,7 +457,7 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
   // Picker was clicked) goes away without its containing browser closing.
   Browser* foreground_browser = chrome::FindBrowserWithTab(contents);
   if (foreground_browser->tab_strip_model()->count() == 1) {
-    chrome::NewTab(foreground_browser);
+    chrome::NewTab(foreground_browser, NewTabTypes::NEW_TAB_COMMAND);
   }
 
   contents->Close();

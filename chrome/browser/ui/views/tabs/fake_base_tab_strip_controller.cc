@@ -269,7 +269,7 @@ int FakeBaseTabStripController::HasAvailableDragActions() const {
 void FakeBaseTabStripController::OnDropIndexUpdate(std::optional<int> index,
                                                    bool drop_before) {}
 
-void FakeBaseTabStripController::CreateNewTab() {
+void FakeBaseTabStripController::CreateNewTab(NewTabTypes context) {
   AddTab(num_tabs_, TabActive::kActive);
 }
 

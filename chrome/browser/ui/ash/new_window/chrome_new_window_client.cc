@@ -231,7 +231,7 @@ ChromeNewWindowClient* ChromeNewWindowClient::Get() {
 void ChromeNewWindowClient::NewTab() {
   Browser* browser = chrome::FindBrowserWithActiveWindow();
   if (browser && browser->is_type_normal()) {
-    chrome::NewTab(browser);
+    chrome::NewTab(browser, NewTabTypes::NEW_TAB_COMMAND);
     return;
   }
 
@@ -247,7 +247,7 @@ void ChromeNewWindowClient::NewTab() {
     }
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     browser = displayer.browser();
-    chrome::NewTab(browser);
+    chrome::NewTab(browser, NewTabTypes::NEW_TAB_COMMAND);
   }
 
   browser->SetFocusToLocationBar();

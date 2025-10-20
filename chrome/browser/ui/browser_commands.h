@@ -15,6 +15,7 @@
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "components/tabs/public/split_tab_id.h"
@@ -106,7 +107,9 @@ void Stop(Browser* browser);
 void NewWindow(BrowserWindowInterface* browser);
 void NewIncognitoWindow(Profile* profile);
 void CloseWindow(BrowserWindowInterface* browser);
-content::WebContents& NewTab(Browser* browser);
+content::WebContents& NewTab(
+    Browser* browser,
+    NewTabTypes context = NewTabTypes::NEW_TAB_COMMAND);
 void NewTabToRight(Browser* browser);
 void CloseTab(BrowserWindowInterface* browser);
 bool CanZoomIn(content::WebContents* contents);

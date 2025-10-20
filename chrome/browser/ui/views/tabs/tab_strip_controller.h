@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -151,7 +152,7 @@ class TabStripController {
                                  bool drop_before) = 0;
 
   // Creates the new tab.
-  virtual void CreateNewTab() = 0;
+  virtual void CreateNewTab(NewTabTypes context) = 0;
 
   // Creates a new tab, and loads `location` in the tab. If `location` is a
   // valid URL, then simply loads the URL, otherwise this can open a

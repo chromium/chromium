@@ -192,6 +192,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Tab strip menu option"/>
   <int value="3" label="New tab button in toolbar for touch"/>
   <int value="4" label="New tab button in the WebUI tab strip"/>
+  <int value="5" label="No user action taken"/>
 </enum>
 
 <enum name="PullDownGestureAction">
