@@ -55,6 +55,7 @@ bool AutofillSyncMetadataTable::SupportsMetadataForDataType(
   return data_type == syncer::AUTOFILL ||
          data_type == syncer::AUTOFILL_PROFILE ||
          data_type == syncer::AUTOFILL_VALUABLE ||
+         data_type == syncer::AUTOFILL_VALUABLE_METADATA ||
          data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
          data_type == syncer::AUTOFILL_WALLET_DATA ||
          data_type == syncer::AUTOFILL_WALLET_METADATA ||
