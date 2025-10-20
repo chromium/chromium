@@ -37,8 +37,14 @@ interface AnchorElementInteractionHost {
     OnPointerHoverModerate(url.mojom.Url target,
                            AnchorElementPointerData mouse_data);
 
-    // The renderer calls OnViewportHeuristicTriggered for selected anchor
+    // The renderer calls OnModerateViewportHeuristicTriggered for selected
+    // anchor elements that are part of the HTTP family, in the viewport, and
+    // meet certain other criteria used by the heuristic.
+    OnModerateViewportHeuristicTriggered(url.mojom.Url target);
+
+    // The renderer calls OnEagerViewportHeuristicTriggered for selected anchor
     // elements that are part of the HTTP family, in the viewport, and meet
-    // certain other criteria used by the heuristic.
-    OnViewportHeuristicTriggered(url.mojom.Url target);
+    // certain other criteria used by the heuristic. This function accepts
+    // multiple target URLs at once to reduce the number of IPC calls.
+    OnEagerViewportHeuristicTriggered(array<url.mojom.Url> targets);
 };

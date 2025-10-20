@@ -85,8 +85,13 @@ class MockAnchorElementInteractionHost
                       .mouse_velocity = mouse_data->mouse_velocity,
                       .is_eager = false});
   }
-  void OnViewportHeuristicTriggered(const KURL& target) override {
+  void OnModerateViewportHeuristicTriggered(const KURL& target) override {
     calls_.push_back({.url = target, .type = PointerEventType::kNone});
+  }
+  void OnEagerViewportHeuristicTriggered(const Vector<KURL>& targets) override {
+    for (const KURL& url : targets) {
+      calls_.push_back({.url = url, .type = PointerEventType::kNone});
+    }
   }
 
  private:

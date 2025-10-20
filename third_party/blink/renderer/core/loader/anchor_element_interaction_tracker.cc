@@ -616,7 +616,7 @@ void AnchorElementInteractionTracker::ViewportHeuristicTimerFired(
     return;
   }
 
-  interaction_host_->OnViewportHeuristicTriggered(
+  interaction_host_->OnModerateViewportHeuristicTriggered(
       largest_anchor_element_in_viewport_->Url());
 }
 
