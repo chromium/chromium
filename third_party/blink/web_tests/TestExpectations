@@ -3068,7 +3068,6 @@ crbug.com/451655444 external/wpt/webdriver/tests/bidi/network/get_data/persisten
 crbug.com/451655444 external/wpt/webdriver/tests/bidi/network/set_extra_headers/invalid.py [ Failure ]
 crbug.com/450776558 external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-003.html [ Failure ]
 crbug.com/450555241 [ Win ] external/wpt/compression/decompression-extra-input.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
-crbug.com/450532078 external/wpt/css/css-overflow/overflow-clip-margin-border-radius.html [ Failure ]
 crbug.com/450513406 external/wpt/css/css-writing-modes/text-shadow-sideways-001.html [ Failure ]
 crbug.com/450555241 [ Win ] external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect [ Pass Timeout ]
 crbug.com/450555241 external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect3 [ Skip Timeout ]
