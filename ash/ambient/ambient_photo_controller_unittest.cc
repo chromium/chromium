@@ -45,7 +45,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "cc/paint/skottie_resource_metadata.h"
-#include "crypto/hash.h"
+#include "crypto/obsolete/sha1.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -711,7 +711,8 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
 
   // Should contain hash of downloaded data.
   EXPECT_TRUE(photo_controller()->ambient_backend_model()->IsHashDuplicate(
-      std::string(base::as_string_view(crypto::hash::Sha1(image_data)))));
+      std::string(base::as_string_view(crypto::obsolete::Sha1::HashForTesting(
+          base::as_byte_span(image_data))))));
   // Only one image should have been loaded.
   EXPECT_FALSE(photo_controller()->ambient_backend_model()->ImagesReady());
 
@@ -723,7 +724,8 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
 
   // Second image should have been loaded.
   EXPECT_TRUE(photo_controller()->ambient_backend_model()->IsHashDuplicate(
-      std::string(base::as_string_view(crypto::hash::Sha1(image_data_2)))));
+      std::string(base::as_string_view(crypto::obsolete::Sha1::HashForTesting(
+          base::as_byte_span(image_data_2))))));
   EXPECT_TRUE(photo_controller()->ambient_backend_model()->ImagesReady());
 }
 

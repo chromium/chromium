@@ -8,6 +8,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -36,13 +37,20 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "crypto/hash.h"
+#include "crypto/obsolete/sha1.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ash {
+
+namespace ambient {
+// Not placed in namespace {} so it can be friended from //crypto.
+std::string GetCachedImageHash(std::string_view image) {
+  return std::string(base::as_string_view(crypto::obsolete::Sha1::Hash(image)));
+}
+}  // namespace ambient
 
 namespace {
 
@@ -374,11 +382,11 @@ void AmbientPhotoController::OnAllPhotoRawDataAvailable(bool from_downloading) {
 
   auto on_done = base::BarrierClosure(
       num_callbacks,
-      base::BindOnce(&AmbientPhotoController::OnAllPhotoDecoded,
-                     weak_factory_.GetWeakPtr(), from_downloading,
-                     /*hash=*/
-                     std::string(base::as_string_view(crypto::hash::Sha1(
-                         cache_entry_.primary_photo().image())))));
+      base::BindOnce(
+          &AmbientPhotoController::OnAllPhotoDecoded,
+          weak_factory_.GetWeakPtr(), from_downloading,
+          /*hash=*/
+          ambient::GetCachedImageHash(cache_entry_.primary_photo().image())));
 
   DecodePhotoRawData(from_downloading,
                      /*is_related_image=*/false, on_done,

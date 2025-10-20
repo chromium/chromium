@@ -31,7 +31,7 @@
 #include "base/test/test_future.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
-#include "crypto/hash.h"
+#include "crypto/obsolete/sha1.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -231,7 +231,7 @@ class ScreensaverImagesPolicyHandlerForAnySessionTest
   void ResetScreensaverImagesPolicyHandler() { policy_handler_.reset(); }
 
   base::FilePath GetExpectedFilePath(const std::string& url) {
-    auto hash = crypto::hash::Sha1(url);
+    auto hash = crypto::obsolete::Sha1::HashForTesting(base::as_byte_span(url));
     return temp_dir_.GetPath()
         .AppendASCII(GetParam().base_directory)
         .AppendASCII(base::HexEncode(hash) + kCacheFileExt);

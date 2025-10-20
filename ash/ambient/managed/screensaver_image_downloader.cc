@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "base/containers/flat_set.h"
@@ -16,13 +17,20 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "crypto/hash.h"
+#include "crypto/obsolete/sha1.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace ash {
+
+namespace ambient {
+// Not placed in namespace {} so it can be friended from //crypto.
+std::string Sha1UrlAsHexEncodeForFilename(std::string_view url) {
+  return base::HexEncode(crypto::obsolete::Sha1::Hash(url));
+}
+}  // namespace ambient
 
 namespace {
 
@@ -116,7 +124,7 @@ bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
 }
 
 std::string GetHashedFileNameForUrl(const std::string& url) {
-  return base::HexEncode(crypto::hash::Sha1(url)) + kCacheFileExt;
+  return ambient::Sha1UrlAsHexEncodeForFilename(url) + kCacheFileExt;
 }
 
 std::vector<std::string> GetImageUrlsToProcess(
