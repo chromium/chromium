@@ -604,43 +604,73 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
       const auto space = CreateConstraintSpaceForMeasure(item_data);
       const ComputedStyle& item_style = item_node.Style();
 
-      bool is_parallel = IsParallelWritingMode(
-          item_style.GetWritingMode(), GetConstraintSpace().GetWritingMode());
-      bool use_item_inline_contribution =
-          is_for_columns ? is_parallel : !is_parallel;
+      const bool is_parallel_with_track_direction =
+          is_for_columns == item_data.is_parallel_with_root_grid;
+
       // TODO(almaher): Subgrids have extra margin to handle unique gap sizes.
       // This requires access to the subgrid track collection, where that extra
       // margin is accumulated.
       const BoxStrut margins =
           ComputeMarginsFor(space, item_style, GetConstraintSpace());
-      const LayoutUnit margins_sum =
+      const LayoutUnit margin_sum =
           is_for_columns ? margins.InlineSum() : margins.BlockSum();
 
-      if (use_item_inline_contribution) {
-        MinMaxSizes min_max_sizes =
+      MinMaxSizes min_max_contribution;
+      if (is_parallel_with_track_direction) {
+        min_max_contribution =
             ComputeMinAndMaxContentContributionForSelf(item_node, space).sizes;
-        min_max_sizes += margins_sum;
-
-        // We have a repeat() track definition with an intrinsic sized track(s).
-        // The current track sizing pass is used to find the track size to apply
-        // to the intrinsic sized track(s). If the current item spans more than
-        // one track, treat it as if it spans one track per the intrinsic
-        // tracks and repeat algorithm [1].
-        //
-        // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
-        if (needs_intrinsic_track_size && span_size > 1) {
-          LayoutUnit total_gap_spanned = grid_axis_gap * (span_size - 1);
-          min_max_sizes -= total_gap_spanned;
-          min_max_sizes /= LayoutUnit(span_size);
-        }
-
-        virtual_item->EncompassContributionSize(min_max_sizes);
       } else {
-        LayoutUnit block_contribution =
-            ComputeMasonryItemBlockContribution(
-                grid_axis_direction, sizing_constraint, space, &item_data,
-                needs_intrinsic_track_size) +
-            margins_sum;
+        LayoutUnit block_contribution = ComputeMasonryItemBlockContribution(
+            grid_axis_direction, sizing_constraint, space, &item_data,
+            needs_intrinsic_track_size);
+        min_max_contribution =
+            MinMaxSizes(block_contribution, block_contribution);
+      }
+
+      // Keep track of special item contributions for intrinsic minimums. This
+      // logic can depend on the tracks the item spans, so store three different
+      // contributions - one assuming that the items are spanning such tracks,
+      // and two assuming they aren't (one that may need to be clamped and one
+      // that doesn't), so that later we can choose one or the other depending
+      // on the tracks the virtual item spans. If a contribution may need to be
+      // clamped, `maybe_clamp` will be set to true. See
+      // https://drafts.csswg.org/css-grid/#min-size-auto for more details.
+      //
+      // TODO(almaher): Pass in the correct baseline shim.
+      //
+      // TODO(almaher): pass in `subgrid_minmax_sizes` when we support
+      // subgrid.
+      bool maybe_clamp = false;
+      LayoutUnit contribution_assuming_tracks =
+          CalculateIntrinsicMinimumContribution(
+              is_parallel_with_track_direction,
+              /*special_spanning_criteria=*/true, min_max_contribution.min_size,
+              min_max_contribution.max_size, space,
+              /*subgrid_minmax_sizes=*/MinMaxSizesResult(), &item_data,
+              maybe_clamp);
+      // If we assume we are spanning tracks that force us to use the automatic
+      // min size, we will never need to clamp the value returned here. As such,
+      // `maybe_clamp` should never be true if `special_spanning_criteria` is
+      // true.
+      CHECK(!maybe_clamp);
+
+      // It is ok to use the same `maybe_clamp` var here since the previous call
+      // will never produce clamping, and the next call is the one we care about
+      // potentially clamping.
+      LayoutUnit contribution_ignoring_tracks =
+          CalculateIntrinsicMinimumContribution(
+              is_parallel_with_track_direction,
+              /*special_spanning_criteria=*/false,
+              min_max_contribution.min_size, min_max_contribution.max_size,
+              space, /*subgrid_minmax_sizes=*/MinMaxSizesResult(), &item_data,
+              maybe_clamp);
+
+      // Add the margin sum to all contribution sizes, and adjust each
+      // if we are running an initial track sizing pass for intrinsic
+      // auto repeats.
+      const LayoutUnit total_gap_spanned = grid_axis_gap * (span_size - 1);
+      auto AdjustItemContribution = [&](LayoutUnit& contribution_size) {
+        contribution_size += margin_sum;
 
         // We have a repeat() track definition with an intrinsic sized track(s).
         // The current track sizing pass is used to find the track size to apply
@@ -650,12 +680,35 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
         //
         // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
         if (needs_intrinsic_track_size && span_size > 1) {
-          LayoutUnit total_gap_spanned = grid_axis_gap * (span_size - 1);
-          block_contribution -= total_gap_spanned;
-          block_contribution /= span_size;
+          contribution_size -= total_gap_spanned;
+          contribution_size /= LayoutUnit(span_size);
         }
+      };
+      AdjustItemContribution(min_max_contribution.min_size);
+      AdjustItemContribution(min_max_contribution.max_size);
+      AdjustItemContribution(contribution_ignoring_tracks);
+      AdjustItemContribution(contribution_assuming_tracks);
 
-        virtual_item->EncompassContributionSize(block_contribution);
+      // Store the different contribution sizes on the virtual item to be used
+      // later during track sizing.
+      virtual_item->EncompassContributionSize(min_max_contribution);
+      virtual_item->EncompassIntrinsicMinAssumingTrackPlacement(
+          contribution_assuming_tracks);
+      if (maybe_clamp) {
+        virtual_item->EncompassIntrinsicMinIgnoringTrackPlacement(
+            contribution_ignoring_tracks);
+
+        const auto border_padding = ComputeBorders(space, item_node) +
+                                    ComputePadding(space, item_style);
+        const auto border_padding_sum = is_parallel_with_track_direction
+                                            ? border_padding.InlineSum()
+                                            : border_padding.BlockSum();
+
+        // TODO(almaher): The min clamp size should include baseline shim.
+        virtual_item->EncompassMinClampSize(margin_sum + border_padding_sum);
+      } else {
+        virtual_item->EncompassIntrinsicMinIgnoringTrackPlacementUnclamped(
+            contribution_ignoring_tracks);
       }
     }
 
@@ -710,34 +763,71 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
   return virtual_items;
 }
 
-namespace {
-
-// TODO(almaher): Eventually look into consolidating repeated code with
-// GridLayoutAlgorithm::ContributionSizeForGridItem().
-LayoutUnit ContributionSizeForVirtualItem(
+LayoutUnit MasonryLayoutAlgorithm::ContributionSizeForVirtualItem(
+    const GridLayoutTrackCollection& track_collection,
     GridItemContributionType contribution_type,
-    GridItemData* virtual_item) {
+    GridItemData* virtual_item) const {
   DCHECK(virtual_item);
   DCHECK(virtual_item->contribution_sizes);
 
   switch (contribution_type) {
-    // TODO(almaher): Do we need to do something special for
-    // kForIntrinsicMinimums (see
-    // GridLayoutAlgorithm::ContributionSizeForGridItem())?
     case GridItemContributionType::kForContentBasedMinimums:
     case GridItemContributionType::kForIntrinsicMaximums:
-    case GridItemContributionType::kForIntrinsicMinimums:
-      return virtual_item->contribution_sizes->min_size;
+      return virtual_item->contribution_sizes->min_max_contribution.min_size;
+    case GridItemContributionType::kForIntrinsicMinimums: {
+      const GridTrackSizingDirection track_direction =
+          track_collection.Direction();
+
+      // See https://drafts.csswg.org/css-grid/#min-size-auto for more details
+      // on the special logic applied for intrinsic minimums.
+      if (!virtual_item->IsSpanningAutoMinimumTrack(track_direction) ||
+          (virtual_item->IsSpanningFlexibleTrack(track_direction) &&
+           virtual_item->SpanSize(track_direction) > 1)) {
+        // Per the spec, we apply the automatic min when:
+        // - it spans at least one track in that axis whose min track sizing
+        // function is auto.
+        // - if it spans more than one track in that axis, none of those tracks
+        // are flexible.
+        return virtual_item->contribution_sizes
+            ->intrinsic_min_assuming_track_placement;
+      } else {
+        // When we aren't spanning tracks that force all items to their
+        // automatic minimum, we end up with some items that use the automatic
+        // min, and some that use the content minimum. Those that use a content
+        // min need to be further clamped by the total track sizes it spans, if
+        // those tracks are definite. After clamping, use the max of these two
+        // values as the final contribution size.
+        const LayoutUnit contribution_unclamped =
+            virtual_item->contribution_sizes
+                ->intrinsic_min_ignoring_track_placement_unclamped;
+
+        LayoutUnit contribution_to_clamp =
+            virtual_item->contribution_sizes
+                ->intrinsic_min_ignoring_track_placement;
+
+        const auto& [begin_set_index, end_set_index] =
+            virtual_item->SetIndices(track_direction);
+        auto spanned_tracks_definite_max_size =
+            track_collection.CalculateSetSpanSize(begin_set_index,
+                                                  end_set_index);
+        if (spanned_tracks_definite_max_size != kIndefiniteSize) {
+          contribution_to_clamp = ClampIntrinsicMinSize(
+              contribution_to_clamp,
+              virtual_item->contribution_sizes->min_clamp_size,
+              spanned_tracks_definite_max_size);
+        }
+
+        return max(contribution_to_clamp, contribution_unclamped);
+      }
+    }
     case GridItemContributionType::kForMaxContentMaximums:
     case GridItemContributionType::kForMaxContentMinimums:
-      return virtual_item->contribution_sizes->max_size;
+      return virtual_item->contribution_sizes->min_max_contribution.max_size;
     case GridItemContributionType::kForFreeSpace:
       NOTREACHED() << "`kForFreeSpace` should only be used to distribute extra "
                       "space in maximize tracks and stretch auto tracks steps.";
   }
 }
-
-}  // namespace
 
 // TODO(almaher): Eventually look into consolidating repeated code with
 // GridLayoutAlgorithm::ContributionSizeForGridItem().
@@ -879,9 +969,20 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
         style, masonry_available_size_, masonry_min_available_size_,
         sizing_constraint);
 
+    track_collection.CacheInitializedSetsGeometry(
+        (grid_axis_direction == kForColumns)
+            ? BorderScrollbarPadding().inline_start
+            : BorderScrollbarPadding().block_start);
+
+    // TODO(almaher): Once we introduce the sizing subtree for subgrid,
+    // we can use that to get the track collection, similar to grid.
     track_sizing_algorithm.ComputeUsedTrackSizes(
-        ContributionSizeForVirtualItem, &track_collection, &virtual_items,
-        needs_intrinsic_track_size);
+        [&](GridItemContributionType contribution_type,
+            GridItemData* virtual_item) {
+          return ContributionSizeForVirtualItem(
+              track_collection, contribution_type, virtual_item);
+        },
+        &track_collection, &virtual_items, needs_intrinsic_track_size);
   }
 
   auto first_set_geometry = GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
@@ -890,6 +991,7 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
 
   track_collection.FinalizeSetsGeometry(first_set_geometry.start_offset,
                                         first_set_geometry.gutter_size);
+
   return track_collection;
 }
 

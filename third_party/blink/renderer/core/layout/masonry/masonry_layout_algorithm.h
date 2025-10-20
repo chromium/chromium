@@ -18,6 +18,7 @@ class GridLayoutData;
 class GridLineResolver;
 class GridSizingTrackCollection;
 class MasonryRunningPositions;
+enum class GridItemContributionType;
 enum class SizingConstraint;
 struct BoxStrut;
 struct GridItemData;
@@ -166,6 +167,11 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       const GridItemData& masonry_item,
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
       bool is_for_min_max_sizing = false) const;
+
+  LayoutUnit ContributionSizeForVirtualItem(
+      const GridLayoutTrackCollection& track_collection,
+      GridItemContributionType contribution_type,
+      GridItemData* virtual_item) const;
 
   LayoutUnit intrinsic_block_size_;
 

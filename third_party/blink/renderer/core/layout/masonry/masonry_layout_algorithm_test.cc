@@ -85,11 +85,13 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   LayoutUnit MaxContentContribution(wtf_size_t index) {
-    return VirtualItemData(index).contribution_sizes.max_size;
+    return VirtualItemData(index)
+        .contribution_sizes.min_max_contribution.max_size;
   }
 
   LayoutUnit MinContentContribution(wtf_size_t index) {
-    return VirtualItemData(index).contribution_sizes.min_size;
+    return VirtualItemData(index)
+        .contribution_sizes.min_max_contribution.min_size;
   }
 
   const GridSpan& VirtualItemSpan(wtf_size_t index) {
@@ -121,7 +123,7 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
  private:
   struct MasonryItemCachedData {
-    MinMaxSizes contribution_sizes;
+    GridItemData::VirtualItemContributions contribution_sizes;
     GridSpan resolved_span{GridSpan::IndefiniteGridSpan()};
   };
 
