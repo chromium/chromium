@@ -118,6 +118,9 @@ source_set("impl") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_list_interface",
+      "//components/tabs:public",
       "//components/vector_icons",
     ]
 
