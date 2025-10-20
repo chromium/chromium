@@ -8,23 +8,6 @@
 
 namespace privacy_sandbox {
 
-BASE_FEATURE(kPrivacySandboxActSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta> kPrivacySandboxActSurveyDelay{
-    &kPrivacySandboxActSurvey, "delay", base::Seconds(0)};
-
-const base::FeatureParam<bool> kPrivacySandboxActSurveyDelayRandomize{
-    &kPrivacySandboxActSurvey, "delay_randomize", false};
-
-const base::FeatureParam<base::TimeDelta> kPrivacySandboxActSurveyDelayMin{
-    &kPrivacySandboxActSurvey, "delay_min", base::Seconds(0)};
-
-const base::FeatureParam<base::TimeDelta> kPrivacySandboxActSurveyDelayMax{
-    &kPrivacySandboxActSurvey, "delay_max", base::Seconds(0)};
-
-const base::FeatureParam<bool> kPrivacySandboxActSurveyCustomInvitation{
-    &kPrivacySandboxActSurvey, "custom_invitation", true};
-
 BASE_FEATURE(kPrivacySandboxActWhatsNew, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivacySandboxWhatsNewSurvey, base::FEATURE_DISABLED_BY_DEFAULT);

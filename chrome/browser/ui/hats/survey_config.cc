@@ -208,8 +208,6 @@ constexpr char
         "plus-address-filled-plus-address-via-manual-fallback";
 constexpr char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[] =
     "privacy-sandbox-sentiment-survey";
-constexpr char kHatsSurveyTriggerPrivacySandboxActSurvey[] =
-    "privacy-sandbox-act-survey";
 constexpr char kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey[] =
     "merchant-trust-evaluation-control-survey";
 constexpr char kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey[] =
@@ -283,20 +281,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{"Channel"},
       /*log_responses_to_uma=*/true,
       /*log_responses_to_ukm=*/true);
-
-  // Privacy sandbox ACT survey
-  survey_configs.emplace_back(  //
-      &privacy_sandbox::kPrivacySandboxActSurvey,
-      kHatsSurveyTriggerPrivacySandboxActSurvey,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/
-      std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{"Survey Trigger Delay"},
-      /*log_responses_to_uma=*/false,
-      /*log_responses_to_ukm=*/false,
-      /*requested_browser_type=*/
-      hats::SurveyConfig::RequestedBrowserType::kIncognito);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Dev tools surveys.

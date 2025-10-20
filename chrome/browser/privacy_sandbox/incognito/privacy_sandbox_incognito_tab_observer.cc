@@ -8,8 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_handle.h"
-#include "privacy_sandbox_incognito_survey_service.h"
-#include "privacy_sandbox_incognito_survey_service_factory.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "privacy_sandbox_whats_new_survey_service.h"
@@ -28,18 +26,6 @@ PrivacySandboxIncognitoTabObserver::~PrivacySandboxIncognitoTabObserver() =
 void PrivacySandboxIncognitoTabObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (render_frame_host->IsInPrimaryMainFrame() &&
-      IsNewTabPage(validated_url)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    auto* survey_service =
-        PrivacySandboxIncognitoSurveyServiceFactory::GetForProfile(profile);
-    if (survey_service) {
-      survey_service->MaybeShowActSurvey(web_contents());
-    }
-    return;
-  }
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // What's new page is fully contained within a single iframe for all the
   // contents. The survey on the "What's New" page should only appear when the
