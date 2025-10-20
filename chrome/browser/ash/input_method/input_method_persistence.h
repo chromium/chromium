@@ -31,16 +31,18 @@ class InputMethodPersistence : public InputMethodManager::Observer {
 
   ~InputMethodPersistence() override;
 
+  // This method does not instantiate the object. It must be called after
+  // ash::input_method::Initialize();
+  static InputMethodPersistence* GetInstance();
+
   // InputMethodManager::Observer overrides.
   void InputMethodChanged(InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
 
   // Update user last input method ID for login screen.
-  static void SetUserLastLoginInputMethodId(
-      const std::string& input_method_id,
-      const InputMethodManager* const manager,
-      Profile* profile);
+  void SetUserLastLoginInputMethodId(const std::string& input_method_id,
+                                     Profile* profile);
 
  private:
   void PersistUserInputMethod(const std::string& input_method_id,

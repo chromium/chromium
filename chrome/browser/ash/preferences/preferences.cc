@@ -812,9 +812,8 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   if (user_is_primary_ && !login_input_method_id_used.empty()) {
     // Persist input method when transitioning from Login screen into the
     // session.
-    input_method::InputMethodPersistence::SetUserLastLoginInputMethodId(
-        login_input_method_id_used, input_method::InputMethodManager::Get(),
-        profile);
+    input_method::InputMethodPersistence::GetInstance()
+        ->SetUserLastLoginInputMethodId(login_input_method_id_used, profile);
   }
 
   // Note that |ime_state_| was modified by ApplyPreferences(), and

@@ -25,6 +25,8 @@
 namespace ash::input_method {
 namespace {
 
+InputMethodPersistence* g_input_method_persistence = nullptr;
+
 void PersistSystemInputMethod(const std::string& input_method) {
   PrefService* const local_state = g_browser_process->local_state();
   CHECK(local_state);
@@ -54,14 +56,26 @@ static void SetUserLastInputMethodPreference(
 
 }  // namespace
 
+// static
+InputMethodPersistence* InputMethodPersistence::GetInstance() {
+  CHECK(g_input_method_persistence);
+  return g_input_method_persistence;
+}
+
 InputMethodPersistence::InputMethodPersistence(
     InputMethodManager* input_method_manager)
     : input_method_manager_(input_method_manager) {
+  CHECK(!g_input_method_persistence);
+  g_input_method_persistence = this;
+
   input_method_manager_->AddObserver(this);
 }
 
 InputMethodPersistence::~InputMethodPersistence() {
   input_method_manager_->RemoveObserver(this);
+
+  CHECK_EQ(g_input_method_persistence, this);
+  g_input_method_persistence = nullptr;
 }
 
 void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
@@ -99,10 +113,8 @@ void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
   NOTREACHED();
 }
 
-// static
 void InputMethodPersistence::SetUserLastLoginInputMethodId(
     const std::string& input_method_id,
-    const InputMethodManager* const manager,
     Profile* profile) {
   if (!profile) {
     return;
@@ -110,7 +122,7 @@ void InputMethodPersistence::SetUserLastLoginInputMethodId(
 
   // Skip if it's not a keyboard layout. Drop input methods including
   // extension ones.
-  if (!manager->IsLoginKeyboard(input_method_id)) {
+  if (!input_method_manager_->IsLoginKeyboard(input_method_id)) {
     return;
   }
 
@@ -134,8 +146,7 @@ void InputMethodPersistence::PersistUserInputMethod(
     return;
   }
 
-  SetUserLastLoginInputMethodId(input_method_id, input_method_manager_,
-                                profile);
+  SetUserLastLoginInputMethodId(input_method_id, profile);
 
   const std::string current_input_method_id_on_pref =
       user_prefs->GetString(::prefs::kLanguageCurrentInputMethod);
