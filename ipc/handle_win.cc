@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/win/windows_handle_util.h"
 #include "ipc/handle_attachment_win.h"
-#include "ipc/ipc_message.h"
+#include "ipc/ipc_message_attachment.h"
 
 namespace IPC {
 

@@ -53,7 +53,6 @@
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "ipc/ipc_message.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_test.test-mojom.h"

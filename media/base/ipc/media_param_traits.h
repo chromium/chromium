@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_IPC_MEDIA_PARAM_TRAITS_H_
 #define MEDIA_BASE_IPC_MEDIA_PARAM_TRAITS_H_
 
-#include "ipc/ipc_message.h"
+#include "base/pickle.h"
 #include "ipc/param_traits.h"
 #include "media/base/ipc/media_param_traits_macros.h"
 

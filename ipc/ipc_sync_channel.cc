@@ -22,7 +22,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_factory.h"
-#include "ipc/ipc_message.h"
 #include "ipc/param_traits_macros.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 
@@ -106,12 +105,6 @@ class SyncChannel::ReceivedSyncMsgQueue :
   ~ReceivedSyncMsgQueue() = default;
 
   void OnDispatchEventReady() {}
-
-  // Holds information about a queued synchronous message or reply.
-  struct QueuedMessage {
-    std::unique_ptr<Message> message;
-    scoped_refptr<SyncChannel::SyncContext> context;
-  };
 
   // Signaled when we get a synchronous message that we must respond to, as the
   // sender needs its reply before it can reply to our original synchronous

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ipc/ipc_message.h"
+#include "base/pickle.h"
 #include "ipc/param_traits.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -81,8 +81,10 @@ template <>
 struct ParamTraits<mojo::test::TestNativeStructWithAttachments> {
   using param_type = mojo::test::TestNativeStructWithAttachments;
 
-  static void Write(Message* m, const param_type& p);
-  static bool Read(const Message* m, base::PickleIterator* iter, param_type* r);
+  static void Write(base::Pickle* m, const param_type& p);
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r);
 };
 
 }  // namespace IPC

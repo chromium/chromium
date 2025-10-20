@@ -9,7 +9,6 @@
 
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
-#include "ipc/ipc_message.h"
 
 namespace content {
 

@@ -27,7 +27,6 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

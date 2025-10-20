@@ -7,8 +7,8 @@
 #include <initializer_list>
 
 #include "base/compiler_specific.h"
+#include "base/pickle.h"
 #include "build/build_config.h"
-#include "ipc/ipc_message.h"
 #include "ipc/param_traits_utils.h"
 #include "ipc/test_proto.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

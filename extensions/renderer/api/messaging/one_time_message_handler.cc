@@ -43,7 +43,6 @@
 #include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
-#include "ipc/ipc_message.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"

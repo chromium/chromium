@@ -62,7 +62,7 @@ bool ParamTraits<mojo::test::TestNativeStruct>::Read(const base::Pickle* m,
 
 // static
 void ParamTraits<mojo::test::TestNativeStructWithAttachments>::Write(
-    Message* m,
+    base::Pickle* m,
     const param_type& p) {
   m->WriteString(p.message());
   IPC::MojoMessageHelper::WriteMessagePipeTo(m, p.PassPipe());
@@ -70,7 +70,7 @@ void ParamTraits<mojo::test::TestNativeStructWithAttachments>::Write(
 
 // static
 bool ParamTraits<mojo::test::TestNativeStructWithAttachments>::Read(
-    const Message* m,
+    const base::Pickle* m,
     base::PickleIterator* iter,
     param_type* r) {
   std::string message;
