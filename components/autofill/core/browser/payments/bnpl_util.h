@@ -66,7 +66,10 @@ struct TextWithLink {
 // A struct containing a BNPL ToS info to be shown on the bottomsheet screen.
 struct BnplIssuerTosDetail {
  public:
-  BnplIssuerTosDetail(std::u16string review_text,
+  BnplIssuerTosDetail(int header_icon_id,
+                      int header_icon_id_dark,
+                      std::u16string title,
+                      std::u16string review_text,
                       std::u16string approve_text,
                       TextWithLink link_text,
                       std::vector<LegalMessageLine> legal_message_lines);
@@ -75,6 +78,15 @@ struct BnplIssuerTosDetail {
   BnplIssuerTosDetail& operator=(const BnplIssuerTosDetail& other);
   BnplIssuerTosDetail& operator=(BnplIssuerTosDetail&&);
   ~BnplIssuerTosDetail();
+
+  // Icon shown in the screen title.
+  int header_icon_id;
+
+  // Icon shown in the screen title in dark mode.
+  int header_icon_id_dark;
+
+  // Text shown in the screen title.
+  std::u16string title;
 
   // Sign-in/create account message.
   std::u16string review_text;

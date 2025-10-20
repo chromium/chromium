@@ -458,6 +458,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
     private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
             new BnplIssuerTosDetail(
+                    /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* title= */ "title for affirm",
                     /* reviewText= */ "Review text for affirm",
                     /* approveText= */ "Approve text for affirm",
                     /* linkText= */ new SpannableString("Link text for affirm"),
@@ -1086,6 +1089,11 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+
+        List<PropertyModel> headerModel = getModelsOfType(itemList, HEADER);
+        assertThat(headerModel.size(), is(1));
+        assertThat(headerModel.get(0).get(TITLE_STRING), is(BNPL_ISSUER_TOS_DETAIL.getTitle()));
+        assertThat(headerModel.get(0).get(IMAGE_DRAWABLE_ID), is(R.drawable.bnpl_icon_generic));
 
         List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
         assertThat(bnplTosItemModel.size(), is(3));

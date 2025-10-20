@@ -112,7 +112,7 @@ class MockTouchToFillPaymentMethodController
               OnBnplIssuerSuggestionSelected,
               (JNIEnv*, const std::string&),
               (override));
-  MOCK_METHOD(int, GetJavaResourceId, (int), (override));
+  MOCK_METHOD(int, GetJavaResourceId, (int), (const, override));
   MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
               GetJavaObject,
               (),

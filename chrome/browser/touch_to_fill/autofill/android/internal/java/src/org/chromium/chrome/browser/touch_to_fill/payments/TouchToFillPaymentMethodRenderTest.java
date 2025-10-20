@@ -459,6 +459,9 @@ public class TouchToFillPaymentMethodRenderTest {
     private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
     private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
             new BnplIssuerTosDetail(
+                    /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
+                    /* title= */ "Title for affirm",
                     /* reviewText= */ "Review text for affirm",
                     /* approveText= */ "Approve text for affirm",
                     /* linkText= */ new SpannableString("Link text for affirm"),

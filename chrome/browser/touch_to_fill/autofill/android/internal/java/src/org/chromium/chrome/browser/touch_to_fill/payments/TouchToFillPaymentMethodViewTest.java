@@ -70,6 +70,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ErrorDescriptionProperties.ERROR_DESCRIPTION_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.NON_TRANSFORMING_IBAN_KEYS;
@@ -493,7 +494,7 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
-    public void testHeaderItem() {
+    public void testHeaderItemWithStringId() {
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -513,6 +514,28 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(
                 title.getText().toString(),
                 is(getString(R.string.autofill_loyalty_card_bottom_sheet_title)));
+    }
+
+    @Test
+    @MediumTest
+    public void testHeaderItemWithString() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(HEADER, createHeaderModelWithString()));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ImageView brandingIcon =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.branding_icon);
+        assertThat(brandingIcon.isShown(), is(true));
+        TextView title =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.touch_to_fill_sheet_title);
+        assertThat(title.getText().toString(), is(TITLE_TEXT));
     }
 
     @Test
@@ -1935,6 +1958,13 @@ public class TouchToFillPaymentMethodViewTest {
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                 .with(IMAGE_DRAWABLE_ID, R.drawable.ic_globe_24dp)
                 .with(TITLE_ID, R.string.autofill_loyalty_card_bottom_sheet_title)
+                .build();
+    }
+
+    private static PropertyModel createHeaderModelWithString() {
+        return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                .with(IMAGE_DRAWABLE_ID, R.drawable.ic_globe_24dp)
+                .with(TITLE_STRING, TITLE_TEXT)
                 .build();
     }
 

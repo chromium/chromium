@@ -42,11 +42,18 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAreArray;
 using ::testing::Field;
+using ::testing::Ref;
 using ::testing::Return;
 
 testing::Matcher<const payments::BnplIssuerTosDetail&> EqualBnplIssuerTosDetail(
     const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
-  return AllOf(Field(&payments::BnplIssuerTosDetail::review_text,
+  return AllOf(Field(&payments::BnplIssuerTosDetail::header_icon_id,
+                     bnpl_issuer_tos_detail.header_icon_id),
+               Field(&payments::BnplIssuerTosDetail::header_icon_id_dark,
+                     bnpl_issuer_tos_detail.header_icon_id_dark),
+               Field(&payments::BnplIssuerTosDetail::title,
+                     bnpl_issuer_tos_detail.title),
+               Field(&payments::BnplIssuerTosDetail::review_text,
                      bnpl_issuer_tos_detail.review_text),
                Field(&payments::BnplIssuerTosDetail::approve_text,
                      bnpl_issuer_tos_detail.approve_text),
@@ -103,7 +110,8 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
                const std::u16string& description));
   MOCK_METHOD(bool,
               ShowBnplIssuerTos,
-              (const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail));
+              (const TouchToFillPaymentMethodViewController& controller,
+               const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail));
   MOCK_METHOD(void, Hide, ());
 };
 
@@ -492,6 +500,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowBnplIssuerTosPassesTextsAndIconsToTheView) {
+  const std::u16string title = u"test BNPL issuer ToS title";
   const std::u16string review_text = u"test BNPL issuer ToS review text";
   const std::u16string approve_text = u"test BNPL issuer ToS approve text";
   payments::TextWithLink link_text;
@@ -502,12 +511,14 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   const LegalMessageLines legal_message = {
       TestLegalMessageLine("This is the entire message.")};
   const payments::BnplIssuerTosDetail bnpl_issuer_tos_detail(
-      review_text, approve_text, link_text, legal_message);
+      /*header_icon_id=*/1, /*header_icon_id_dark=*/2, title, review_text,
+      approve_text, link_text, legal_message);
 
   // Test that the BNPL issuer ToS info have propagated to the view.
   EXPECT_CALL(
       *mock_view_,
-      ShowBnplIssuerTos(EqualBnplIssuerTosDetail(bnpl_issuer_tos_detail)));
+      ShowBnplIssuerTos(Ref(payment_method_controller()),
+                        EqualBnplIssuerTosDetail(bnpl_issuer_tos_detail)));
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(

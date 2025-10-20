@@ -101,6 +101,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
+import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
@@ -642,6 +643,12 @@ class TouchToFillPaymentMethodMediator {
         ModelList sheetItems = new ModelList();
 
         sheetItems.add(
+                buildHeaderForBnplIssuerTos(
+                        GlobalNightModeStateProviderHolder.getInstance().isInNightMode()
+                                ? bnplIssuerTosDetail.getHeaderIconDarkDrawableId()
+                                : bnplIssuerTosDetail.getHeaderIconDrawableId(),
+                        bnplIssuerTosDetail.getTitle()));
+        sheetItems.add(
                 new ListItem(
                         BNPL_TOS_TEXT,
                         createBnplIssuerTosTextItemModel(
@@ -1055,6 +1062,15 @@ class TouchToFillPaymentMethodMediator {
                                 () -> this.showHomeScreen());
         return new ListItem(
                 BNPL_SELECTION_PROGRESS_HEADER, bnplSelectionProgressHeaderBuilder.build());
+    }
+
+    private ListItem buildHeaderForBnplIssuerTos(int issuerImageId, String title) {
+        return new ListItem(
+                HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(IMAGE_DRAWABLE_ID, issuerImageId)
+                        .with(TITLE_STRING, title)
+                        .build());
     }
 
     private ListItem buildFooterForCreditCard(boolean hasScanCardButton) {

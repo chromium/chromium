@@ -330,6 +330,8 @@ android_library("payments_autofill_java") {
 }
 
 robolectric_library("payments_autofill_junit_tests") {
+  resources_package = "org.chromium.components.autofill"
+
   sources = [
     "javatests/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfoTest.java",
     "javatests/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfoTest.java",
@@ -342,6 +344,7 @@ robolectric_library("payments_autofill_junit_tests") {
     "javatests/src/org/chromium/components/autofill/payments/PaymentInstrumentTest.java",
   ]
   deps = [
+    ":autofill_payments_java_resources",
     ":payments_autofill_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

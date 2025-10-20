@@ -218,7 +218,7 @@ bool TouchToFillPaymentMethodControllerImpl::ShowErrorScreen(
 
 bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuerTos(
     const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
-  if (!view_ || !view_->ShowBnplIssuerTos(bnpl_issuer_tos_detail)) {
+  if (!view_ || !view_->ShowBnplIssuerTos(*this, bnpl_issuer_tos_detail)) {
     ResetJavaObject();
     return false;
   }
@@ -345,7 +345,7 @@ void TouchToFillPaymentMethodControllerImpl::OnBnplIssuerSuggestionSelected(
 }
 
 int TouchToFillPaymentMethodControllerImpl::GetJavaResourceId(
-    int native_resource_id) {
+    int native_resource_id) const {
   return ResourceMapper::MapToJavaDrawableId(native_resource_id);
 }
 

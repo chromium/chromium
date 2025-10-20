@@ -18,6 +18,7 @@ android_library("java") {
     "//chrome/browser/touch_to_fill/autofill/android:public_java",
     "//chrome/browser/touch_to_fill/common/android:java",
     "//chrome/browser/touch_to_fill/common/android:java_resources",
+    "//chrome/browser/ui/android/night_mode:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/payments/content/android:minimal_java_resources",
     "//components/payments/content/android/ui:java",

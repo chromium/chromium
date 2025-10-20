@@ -6,6 +6,8 @@ package org.chromium.components.autofill.payments;
 
 import android.text.SpannableString;
 
+import androidx.annotation.DrawableRes;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
@@ -37,6 +39,15 @@ public class BnplIssuerTosDetail {
         }
     }
 
+    /** Icon id for the screen title. */
+    private final @DrawableRes int mHeaderIconDrawableId;
+
+    /** Drak theme icon id for the screen title. */
+    private final @DrawableRes int mHeaderIconDarkDrawableId;
+
+    /** Title text for the BNPL ToS screen. */
+    private final String mTitle;
+
     /** Sign-in/create account message. */
     private final String mReviewText;
 
@@ -52,6 +63,9 @@ public class BnplIssuerTosDetail {
     /**
      * Creates a new instance of the detailed card information.
      *
+     * @param headerIconDrawableId Icon id for the screen title.
+     * @param headerIconDarkDrawableId Drak theme icon id for the screen title.
+     * @param title Title text for the BNPL ToS screen.
      * @param reviewText String for sign-in/create account message.
      * @param approveText String for eligibility check message.
      * @param linkText String for account link/unlink message.
@@ -59,14 +73,32 @@ public class BnplIssuerTosDetail {
      */
     @CalledByNative
     public BnplIssuerTosDetail(
+            @DrawableRes int headerIconDrawableId,
+            @DrawableRes int headerIconDarkDrawableId,
+            String title,
             String reviewText,
             String approveText,
             SpannableString linkText,
             LegalMessages legalMessages) {
+        mHeaderIconDrawableId = headerIconDrawableId;
+        mHeaderIconDarkDrawableId = headerIconDarkDrawableId;
+        mTitle = title;
         mReviewText = reviewText;
         mApproveText = approveText;
         mLinkText = linkText;
         mLegalMessages = legalMessages;
+    }
+
+    public @DrawableRes int getHeaderIconDrawableId() {
+        return mHeaderIconDrawableId;
+    }
+
+    public @DrawableRes int getHeaderIconDarkDrawableId() {
+        return mHeaderIconDarkDrawableId;
+    }
+
+    public String getTitle() {
+        return mTitle;
     }
 
     public String getReviewText() {
