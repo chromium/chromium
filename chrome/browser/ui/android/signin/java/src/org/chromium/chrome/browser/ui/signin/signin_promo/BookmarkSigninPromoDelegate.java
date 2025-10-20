@@ -91,7 +91,7 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    String getDescription() {
+    String getDescription(@Nullable String accountEmail) {
         switch (mPromoState) {
             case PromoState.SIGNIN:
                 return mContext.getString(R.string.signin_promo_description_bookmarks);

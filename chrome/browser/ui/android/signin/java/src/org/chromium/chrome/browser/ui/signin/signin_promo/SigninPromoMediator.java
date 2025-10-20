@@ -211,7 +211,10 @@ final class SigninPromoMediator
                 SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED,
                 (unusedView) -> onDismissButtonClicked());
         mModel.set(SigninPromoProperties.TITLE_TEXT, mDelegate.getTitle());
-        mModel.set(SigninPromoProperties.DESCRIPTION_TEXT, mDelegate.getDescription());
+        mModel.set(
+                SigninPromoProperties.DESCRIPTION_TEXT,
+                mDelegate.getDescription(
+                        profileData == null ? null : profileData.getAccountEmail()));
         mModel.set(
                 SigninPromoProperties.PRIMARY_BUTTON_TEXT,
                 mDelegate.getTextForPrimaryButton(profileData));

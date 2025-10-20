@@ -67,7 +67,7 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    String getDescription() {
+    String getDescription(@Nullable String accountEmail) {
         return mContext.getString(R.string.signin_promo_description_recent_tabs);
     }
 

@@ -9,8 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
 
 import androidx.annotation.Nullable;
@@ -27,10 +29,12 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -111,16 +115,38 @@ public class SigninPromoDelegateTest {
         assertEquals(
                 mDelegate.getTitle(), mContext.getString(R.string.signin_promo_title_bookmarks));
         assertEquals(
-                mDelegate.getDescription(),
+                mDelegate.getDescription(null),
                 mContext.getString(R.string.signin_promo_description_bookmarks));
     }
 
     @Test
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/twoButtons"
+                + "/seamless-signin-string-type/continueButton"
+    })
     public void testNtpPromoShown() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
+        DisplayableProfileData profileData =
+                new DisplayableProfileData(
+                        "testemail@gmail.com",
+                        mock(Drawable.class),
+                        "TestName LastName",
+                        "TestName",
+                        true);
 
         assertTrue(mDelegate.canShowPromo());
+        assertEquals(
+                mDelegate.getTitle(),
+                mContext.getString(R.string.signin_account_picker_bottom_sheet_title));
+        assertEquals(
+                mDelegate.getDescription(profileData.getAccountEmail()),
+                mContext.getString(
+                        R.string.signin_promo_description_ntp_group1, "testemail@gmail.com"));
+        assertEquals(
+                mDelegate.getTextForPrimaryButton(profileData),
+                mContext.getString(R.string.sync_promo_continue_as, "TestName"));
     }
 
     @Test
@@ -132,7 +158,7 @@ public class SigninPromoDelegateTest {
         assertTrue(mDelegate.canShowPromo());
         assertEquals(mDelegate.getTitle(), mContext.getString(R.string.sync_promo_title_bookmarks));
         assertEquals(
-                mDelegate.getDescription(),
+                mDelegate.getDescription(null),
                 mContext.getString(R.string.account_settings_promo_description_bookmarks));
     }
 

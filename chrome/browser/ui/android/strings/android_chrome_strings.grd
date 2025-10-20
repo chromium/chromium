@@ -3654,6 +3654,30 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_PROMO_CHOOSE_ACCOUNT" desc="Button that the user can press if they are not the profile that Chrome found (opposite of 'Continue as Joe Doe').">
         Not <ph name="EMAIL">%1$s<ex>john.doe@example.com</ex></ph>?
       </message>
+
+      <!-- Strings for Seamless Sign-in -->
+      <message name="IDS_SIGNIN_PROMO_TITLE_NTP_SIGN_IN_AS_BUTTON" desc="This string is the headline of a card that appears when the user visits Chrome's new tab page; the user isn't signed in to Chrome. The line below this string is ether 'To get your passwords and more on all your devices, sign in to Chrome' or 'To get your passwords and more on all your devices, sign in to Chrome as john.doe@example.com'.">
+        Your Chrome, everywhere
+      </message>
+      <message name="IDS_SIGNIN_PROMO_DESCRIPTION_NTP_GROUP1" desc="This string is the body of a message promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to passwords, etc.). We want users to understand why signing in is beneficial, and click 'Continue as John' to sign in to their Google Account. The tone should be informative and lightweight.">
+        To get your passwords and more on all your devices, sign in as <ph name="EMAIL">%1$s<ex>john.doe@example.com</ex></ph>
+      </message>
+      <message name="IDS_SIGNIN_PROMO_DESCRIPTION_NTP_GROUP2" desc="This string is the body of a message promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to passwords, etc.). We want users to understand why signing in is beneficial, and click 'Continue as John' to sign in to their Google Account. The tone should be informative and lightweight.">
+        Get your passwords and more on all your devices
+      </message>
+      <message name="IDS_SIGNIN_PROMO_DESCRIPTION_NTP_GROUP3" desc="This string is the body of a message promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to passwords, etc.). We want users to understand why signing in is beneficial, and click 'Sign in as John' to sign in to their Google Account. The tone should be informative and lightweight.">
+        To get your passwords and more on all your devices, sign in to Chrome as <ph name="EMAIL">%1$s<ex>john.doe@example.com</ex></ph>
+      </message>
+      <message name="IDS_SIGNIN_PROMO_DESCRIPTION_NTP_GROUP4" desc="This string is the body of a message promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to passwords, etc.). We want users to understand why signing in is beneficial, and click 'Sign in as John' to sign in to their Google Account. The tone should be informative and lightweight.">
+        To get your passwords and more on all your devices, sign in to Chrome
+      </message>
+      <message name="IDS_SIGNIN_PROMO_SIGN_IN_AS" desc="Button to sign into Chrome with the displayed account and without having to reenter a password. ‘John’ is replaced with the user’s given name, or the user’s full name if the given name is not available.">
+        Sign in as <ph name="USER_FULL_NAME">%1$s<ex>John</ex></ph>
+      </message>
+      <message name="IDS_SIGNIN_PROMO_SIGN_IN" desc="Button to sign into Chrome, similar to IDS_SIGNIN_PROMO_SIGN_IN_AS. Used when the user's display names are not available.">
+        Sign in
+      </message>
+
       <!-- Strings for signin promos when Unified Consent is enabled. -->
       <message name="IDS_SYNC_PROMO_TITLE_BOOKMARKS" desc="This string is the headline of a card that appears when the user opens Chrome's bookmarks; the user may be signed in to Chrome, but isn't syncing their Chrome data. The line below this string is 'Sync to get your bookmarks from your other devices'. [CHAR_LIMIT=70]" meaning="This headline means that the user can get the bookmarks from their computer on their phone, and their phone's bookmarks on their computer. We want users to read this card and tap the 'Continue' button and turn on sync. The tone should be inviting.">
         Get all your bookmarks

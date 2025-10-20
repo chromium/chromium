@@ -125,7 +125,7 @@ public class SigninPromoMediatorTest {
         doReturn(true).when(mDelegate).refreshPromoState(any());
         doReturn(true).when(mDelegate).shouldHideDismissButton();
         doReturn(newTitle).when(mDelegate).getTitle();
-        doReturn(newDescription).when(mDelegate).getDescription();
+        doReturn(newDescription).when(mDelegate).getDescription(any());
         doReturn(newPrimaryButtonText).when(mDelegate).getTextForPrimaryButton(any());
         doReturn(newSecondaryButtonText).when(mDelegate).getTextForSecondaryButton();
         // Remove the default account to trigger a promo content refresh.

@@ -81,7 +81,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    String getDescription() {
+    String getDescription(@Nullable String accountEmail) {
         return mContext.getString(R.string.signin_promo_description_history_page);
     }
 
