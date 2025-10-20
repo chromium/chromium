@@ -54,7 +54,7 @@ public class TabGroupSuggestionMessageViewModel {
                 .with(IS_CLOSE_BUTTON_VISIBLE, true)
                 .with(ACTION_BUTTON_VISIBLE, true)
                 .with(IS_ICON_VISIBLE, false)
-                .with(IS_INCOGNITO, true)
+                .with(IS_INCOGNITO, false)
                 .with(CARD_TYPE, ModelType.MESSAGE)
                 .with(CARD_ALPHA, 1f)
                 .build();
