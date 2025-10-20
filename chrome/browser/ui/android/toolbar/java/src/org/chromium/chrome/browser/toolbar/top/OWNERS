@@ -4,3 +4,6 @@ skym@chromium.org
 
 per-file IncognitoSwitch*=file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
 per-file TabSwitcher*=file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
+per-file ToolbarChild*=clhager@google.com
+per-file ToolbarTablet*=clhager@google.com
+per-file ToolbarUtils.java=clhager@google.com
