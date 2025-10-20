@@ -21,9 +21,11 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "chromeos/ash/components/boca/spotlight/remoting_client_io_proxy.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_audio_stream_consumer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_oauth_token_fetcher.h"
+#include "remoting/proto/audio.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -87,10 +89,13 @@ class SpotlightRemotingClientManagerImplTest : public testing::Test {
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
       SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
+      SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
+          audio_packet_received_callback,
       SpotlightCrdStateUpdatedCallback status_updated_callback) {
     auto mock_proxy = std::make_unique<NiceMock<MockRemotingClientIOProxy>>();
     remoting_client_io_proxy_ = mock_proxy.get();
     frame_received_callback_ = std::move(frame_received_callback);
+    audio_packet_received_callback_ = std::move(audio_packet_received_callback);
     status_updated_callback_ = std::move(status_updated_callback);
     return mock_proxy;
   }
@@ -103,6 +108,8 @@ class SpotlightRemotingClientManagerImplTest : public testing::Test {
   raw_ptr<NiceMock<MockRemotingClientIOProxy>> remoting_client_io_proxy_ =
       nullptr;
   SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback_;
+  SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
+      audio_packet_received_callback_;
   SpotlightCrdStateUpdatedCallback status_updated_callback_;
 };
 
@@ -112,7 +119,7 @@ TEST_F(SpotlightRemotingClientManagerImplTest,
   EXPECT_CALL(*token_fetcher_, Start).Times(0);
   manager_->StartCrdClient(std::string(kInvalidConnectionCode),
                            base::DoNothing(), base::DoNothing(),
-                           status_future.GetCallback());
+                           base::DoNothing(), status_future.GetCallback());
   EXPECT_EQ(status_future.Take(), CrdConnectionState::kFailed);
 }
 
@@ -124,7 +131,8 @@ TEST_F(SpotlightRemotingClientManagerImplTest, StartCrdClientFailsToGetToken) {
             std::move(oauth_callback).Run(std::nullopt);
           });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
-                           base::DoNothing(), status_future.GetCallback());
+                           base::DoNothing(), base::DoNothing(),
+                           status_future.GetCallback());
   EXPECT_EQ(status_future.Take(), CrdConnectionState::kFailed);
 }
 
@@ -141,14 +149,16 @@ TEST_F(SpotlightRemotingClientManagerImplTest, StartCrdClientSuccess) {
                              std::string(kTestRobotEmail), _))
       .WillOnce([&run_loop]() { run_loop.Quit(); });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
-                           base::DoNothing(), base::DoNothing());
+                           base::DoNothing(), base::DoNothing(),
+                           base::DoNothing());
   run_loop.Run();
 }
 
 TEST_F(SpotlightRemotingClientManagerImplTest, StopCrdClient) {
   base::test::TestFuture<void> stop_future;
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
-                           base::DoNothing(), base::DoNothing());
+                           base::DoNothing(), base::DoNothing(),
+                           base::DoNothing());
   EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient)
       .WillOnce([](base::OnceClosure cb) { std::move(cb).Run(); });
   manager_->StopCrdClient(stop_future.GetCallback());
@@ -173,9 +183,9 @@ TEST_F(SpotlightRemotingClientManagerImplTest, HandleCrdSessionEnded) {
                    base::OnceClosure crd_session_ended_callback) {
         std::move(crd_session_ended_callback).Run();
       });
-  manager_->StartCrdClient(std::string(kValidConnectionCode),
-                           session_ended_future.GetCallback(),
-                           base::DoNothing(), base::DoNothing());
+  manager_->StartCrdClient(
+      std::string(kValidConnectionCode), session_ended_future.GetCallback(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(session_ended_future.Wait());
 }
 
@@ -190,7 +200,7 @@ TEST_F(SpotlightRemotingClientManagerImplTest, StatusUpdated) {
   EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
       .WillOnce([&run_loop]() { run_loop.Quit(); });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
-                           base::DoNothing(),
+                           base::DoNothing(), base::DoNothing(),
                            status_updated_future.GetCallback());
   run_loop.Run();
   status_updated_callback_.Run(CrdConnectionState::kConnected);
@@ -211,7 +221,7 @@ TEST_F(SpotlightRemotingClientManagerImplTest, FrameReceived) {
       .WillOnce([&run_loop]() { run_loop.Quit(); });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
                            frame_received_future.GetCallback(),
-                           base::DoNothing());
+                           base::DoNothing(), base::DoNothing());
   run_loop.Run();
   frame_received_callback_.Run(SkBitmap(), nullptr);
   EXPECT_TRUE(frame_received_future.Wait());
@@ -233,6 +243,7 @@ TEST_F(SpotlightRemotingClientManagerImplTest, FrameReceivedTimeout) {
       .WillOnce([&start_run_loop]() { start_run_loop.Quit(); });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
                            frame_received_future.GetCallback(),
+                           base::DoNothing(),
                            status_updated_future.GetCallback());
   start_run_loop.Run();
   frame_received_callback_.Run(SkBitmap(), nullptr);
@@ -253,7 +264,7 @@ TEST_F(SpotlightRemotingClientManagerImplTest, CallStopCrdClientOnTimeout) {
   std::optional<CrdConnectionState> updated_state;
   manager_->StartCrdClient(
       std::string(kValidConnectionCode), base::DoNothing(),
-      frame_received_future.GetCallback(),
+      frame_received_future.GetCallback(), base::DoNothing(),
       base::BindLambdaForTesting(
           [this, &stop_future, &updated_state](CrdConnectionState state) {
             manager_->StopCrdClient(stop_future.GetCallback());
@@ -284,7 +295,7 @@ TEST_F(SpotlightRemotingClientManagerImplTest,
       .WillOnce([&run_loop]() { run_loop.Quit(); });
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
                            frame_received_future.GetCallback(),
-                           base::DoNothing());
+                           base::DoNothing(), base::DoNothing());
   run_loop.Run();
   task_environment_.FastForwardBy(base::Seconds(3));
   frame_received_callback_.Run(SkBitmap(), nullptr);
@@ -293,6 +304,25 @@ TEST_F(SpotlightRemotingClientManagerImplTest,
   EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient).Times(0);
   task_environment_.FastForwardBy(base::Seconds(4));
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(SpotlightRemotingClientManagerImplTest, AudioPacketReceived) {
+  base::RunLoop run_loop;
+  base::test::RepeatingTestFuture<std::unique_ptr<remoting::AudioPacket>>
+      audio_packet_received_future;
+  EXPECT_CALL(*token_fetcher_, Start)
+      .WillOnce(
+          [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
+            std::move(oauth_callback).Run(std::string(kTestOAuthToken));
+          });
+  EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  manager_->StartCrdClient(
+      std::string(kValidConnectionCode), base::DoNothing(), base::DoNothing(),
+      audio_packet_received_future.GetCallback(), base::DoNothing());
+  run_loop.Run();
+  audio_packet_received_callback_.Run(nullptr);
+  EXPECT_TRUE(audio_packet_received_future.Wait());
 }
 
 }  // namespace ash::boca

@@ -31,6 +31,7 @@
 #include "google_apis/common/request_sender.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/proto/audio.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
@@ -284,6 +285,9 @@ void BocaReceiverUntrustedPageHandler::MaybeStartConnection(
       base::BindRepeating(&BocaReceiverUntrustedPageHandler::OnCrdFrameReceived,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
+          &BocaReceiverUntrustedPageHandler::OnCrdAudioPacketReceived,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
           &BocaReceiverUntrustedPageHandler::OnCrdConnectionStateUpdated,
           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -327,6 +331,11 @@ void BocaReceiverUntrustedPageHandler::OnCrdFrameReceived(
       ::boca::ReceiverConnectionState::CONNECTED);
   UpdateConnection(connection_info_->connection_id(),
                    ::boca::ReceiverConnectionState::CONNECTED);
+}
+
+void BocaReceiverUntrustedPageHandler::OnCrdAudioPacketReceived(
+    std::unique_ptr<remoting::AudioPacket> packet) {
+  // TODO(crbug.com/450986461): Transform packet and pass it to UI through mojo.
 }
 
 void BocaReceiverUntrustedPageHandler::OnCrdConnectionStateUpdated(

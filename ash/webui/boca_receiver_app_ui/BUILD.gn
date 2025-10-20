@@ -37,6 +37,7 @@ static_library("boca_receiver_app_ui") {
     "//content/public/common",
     "//google_apis/common",
     "//net/traffic_annotation",
+    "//remoting/proto",
     "//ui/webui",
   ]
 }

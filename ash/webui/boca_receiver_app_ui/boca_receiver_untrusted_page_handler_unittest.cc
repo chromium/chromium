@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/boca/receiver/receiver_handler_delegate.h"
 #include "chromeos/ash/components/boca/receiver/register_receiver_request.h"
 #include "chromeos/ash/components/boca/receiver/update_kiosk_receiver_state_request.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_audio_stream_consumer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
 #include "chromeos/ash/components/boca/util.h"
 #include "google_apis/common/dummy_auth_service.h"
@@ -163,6 +164,8 @@ class MockSpotlightRemotingClientManager
                base::OnceClosure crd_session_ended_callback,
                boca::SpotlightFrameConsumer::FrameReceivedCallback
                    frame_received_callback,
+               boca::SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
+                   audio_packet_received_callback,
                boca::SpotlightCrdStateUpdatedCallback status_updated_callback),
               (override));
 
@@ -354,7 +357,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StartRequestedNoCodeThenWithCode) {
   auto remoting_client =
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
   EXPECT_CALL(*remoting_client,
-              StartCrdClient(std::string(kConnectionCode), _, _, _))
+              StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .Times(1);
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
@@ -385,7 +388,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
   auto remoting_client =
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
   EXPECT_CALL(*remoting_client,
-              StartCrdClient(std::string(kConnectionCode), _, _, _))
+              StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .Times(1);
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
@@ -407,11 +410,11 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, FrameReceived) {
   auto remoting_client =
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
   EXPECT_CALL(*remoting_client,
-              StartCrdClient(std::string(kConnectionCode), _, _, _))
-      .WillOnce(
-          [&frame_received_cb](auto, auto, auto frame_received_cb_param, auto) {
-            frame_received_cb = std::move(frame_received_cb_param);
-          });
+              StartCrdClient(std::string(kConnectionCode), _, _, _, _))
+      .WillOnce([&frame_received_cb](auto, auto, auto frame_received_cb_param,
+                                     auto, auto) {
+        frame_received_cb = std::move(frame_received_cb_param);
+      });
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
   WaitForTokenUpload();
@@ -461,10 +464,10 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdSessionEnded) {
   auto remoting_client =
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
   EXPECT_CALL(*remoting_client,
-              StartCrdClient(std::string(kConnectionCode), _, _, _))
+              StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .WillOnce([&session_ended_cb](auto,
                                     base::OnceClosure session_ended_cb_param,
-                                    auto, auto) {
+                                    auto, auto, auto) {
         session_ended_cb = std::move(session_ended_cb_param);
       });
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
@@ -691,11 +694,11 @@ TEST_P(BocaReceiverUntrustedPageHandlerCrdStateTest,
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
   auto* remoting_client_ptr = remoting_client.get();
   EXPECT_CALL(*remoting_client,
-              StartCrdClient(std::string(kConnectionCode), _, _, _))
-      .WillOnce(
-          [&state_updated_cb](auto, auto, auto, auto state_updated_cb_param) {
-            state_updated_cb = std::move(state_updated_cb_param);
-          });
+              StartCrdClient(std::string(kConnectionCode), _, _, _, _))
+      .WillOnce([&state_updated_cb](auto, auto, auto, auto,
+                                    auto state_updated_cb_param) {
+        state_updated_cb = std::move(state_updated_cb_param);
+      });
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
   WaitForTokenUpload();

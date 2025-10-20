@@ -46,6 +46,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
+#include "remoting/proto/audio.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -422,7 +423,9 @@ void BocaSessionManager::StartCrdClient(
 
   remoting_client_manager_->StartCrdClient(
       crd_connection_code, std::move(done_callback),
-      std::move(frame_received_callback), std::move(crd_state_callback));
+      std::move(frame_received_callback),
+      /* audio_packet_received_callback= */ base::DoNothing(),
+      std::move(crd_state_callback));
 }
 
 void BocaSessionManager::EndSpotlightSession(

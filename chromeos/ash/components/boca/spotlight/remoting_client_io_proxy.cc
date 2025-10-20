@@ -28,9 +28,13 @@ RemotingClientIOProxyImpl::RemotingClientIOProxyImpl(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
     SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
+    SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
+        audio_packet_received_callback,
     SpotlightCrdStateUpdatedCallback status_updated_callback)
     : pending_url_loader_factory_(std::move(pending_url_loader_factory)),
       frame_received_callback_(std::move(frame_received_callback)),
+      audio_packet_received_callback_(
+          std::move(audio_packet_received_callback)),
       status_updated_callback_(std::move(status_updated_callback)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -138,7 +142,7 @@ void RemotingClientIOProxyImpl::OnFrameReceived(
 void RemotingClientIOProxyImpl::OnAudioPacketReceived(
     std::unique_ptr<remoting::AudioPacket> packet) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/450986461): Send `packet` to a callback.
+  audio_packet_received_callback_.Run(std::move(packet));
 }
 
 void RemotingClientIOProxyImpl::ResetRemotingClient(

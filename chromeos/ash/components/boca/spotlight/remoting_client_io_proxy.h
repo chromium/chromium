@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_audio_stream_consumer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
 #include "remoting/client/common/client_status_observer.h"
@@ -63,6 +64,8 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
       SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
+      SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
+          audio_packet_received_callback,
       SpotlightCrdStateUpdatedCallback status_updated_callback);
   RemotingClientIOProxyImpl(const RemotingClientIOProxyImpl&) = delete;
   RemotingClientIOProxyImpl& operator=(const RemotingClientIOProxyImpl&) =
@@ -113,6 +116,8 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
   base::OnceClosure crd_session_ended_callback_;
   // Callback for receiving a completed frame from `SpotlightFrameConsumer`.
   SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback_;
+  SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
+      audio_packet_received_callback_;
   // Callback for `CrdConnectionState` updates.
   SpotlightCrdStateUpdatedCallback status_updated_callback_;
   std::unique_ptr<SpotlightFrameConsumer> frame_consumer_;

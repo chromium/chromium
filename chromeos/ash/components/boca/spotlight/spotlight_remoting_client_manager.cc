@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/boca/spotlight/remoting_client_io_proxy.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_oauth_token_fetcher.h"
+#include "remoting/proto/audio.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -52,6 +53,9 @@ SpotlightRemotingClientManagerImpl::SpotlightRemotingClientManagerImpl(
               &SpotlightRemotingClientManagerImpl::HandleFrameReceived,
               weak_factory_.GetWeakPtr())),
           base::BindPostTaskToCurrentDefault(base::BindRepeating(
+              &SpotlightRemotingClientManagerImpl::HandleAudioPacketReceived,
+              weak_factory_.GetWeakPtr())),
+          base::BindPostTaskToCurrentDefault(base::BindRepeating(
               &SpotlightRemotingClientManagerImpl::UpdateState,
               weak_factory_.GetWeakPtr()))));
 }
@@ -69,6 +73,8 @@ void SpotlightRemotingClientManagerImpl::StartCrdClient(
     std::string crd_connection_code,
     base::OnceClosure crd_session_ended_callback,
     SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
+    SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
+        audio_packet_received_callback,
     SpotlightCrdStateUpdatedCallback status_updated_callback) {
   CHECK(ash::features::IsBocaSpotlightRobotRequesterEnabled());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -91,6 +97,7 @@ void SpotlightRemotingClientManagerImpl::StartCrdClient(
 
   crd_session_ended_callback_ = std::move(crd_session_ended_callback);
   frame_received_callback_ = std::move(frame_received_callback);
+  audio_packet_received_callback_ = std::move(audio_packet_received_callback);
   status_updated_callback_ = std::move(status_updated_callback);
 
   token_fetcher_->Start((base::BindOnce(
@@ -122,9 +129,12 @@ SpotlightRemotingClientManagerImpl::CreateRemotingIOProxy(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
     SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
+    SpotlightAudioStreamConsumer::AudioPacketReceivedCallback
+        audio_packet_received_callback,
     SpotlightCrdStateUpdatedCallback status_updated_callback) {
   return std::make_unique<RemotingClientIOProxyImpl>(
       std::move(pending_url_loader_factory), std::move(frame_received_callback),
+      std::move(audio_packet_received_callback),
       std::move(status_updated_callback));
 }
 
@@ -183,10 +193,20 @@ void SpotlightRemotingClientManagerImpl::HandleFrameReceived(
   frame_received_callback_.Run(std::move(bitmap), std::move(frame));
 }
 
+void SpotlightRemotingClientManagerImpl::HandleAudioPacketReceived(
+    std::unique_ptr<remoting::AudioPacket> packet) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!audio_packet_received_callback_) {
+    return;
+  }
+  audio_packet_received_callback_.Run(std::move(packet));
+}
+
 void SpotlightRemotingClientManagerImpl::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   crd_session_ended_callback_.Reset();
   frame_received_callback_.Reset();
+  audio_packet_received_callback_.Reset();
   status_updated_callback_.Reset();
   frame_timeout_timer_.Stop();
   session_in_progress_ = false;

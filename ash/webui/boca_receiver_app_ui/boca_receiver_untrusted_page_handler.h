@@ -39,6 +39,10 @@ namespace net {
 struct NetworkTrafficAnnotationTag;
 }  // namespace net
 
+namespace remoting {
+class AudioPacket;
+}  // namespace remoting
+
 namespace webrtc {
 class DesktopFrame;
 }  // namespace webrtc
@@ -104,6 +108,7 @@ class BocaReceiverUntrustedPageHandler
   void OnCrdSessionEnded();
   void OnCrdFrameReceived(SkBitmap bitmap,
                           std::unique_ptr<webrtc::DesktopFrame>);
+  void OnCrdAudioPacketReceived(std::unique_ptr<remoting::AudioPacket> packet);
   void OnCrdConnectionStateUpdated(boca::CrdConnectionState state);
 
   mojo::Remote<mojom::UntrustedPage> page_;
