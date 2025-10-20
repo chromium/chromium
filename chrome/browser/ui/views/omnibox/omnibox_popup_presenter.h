@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "content/public/browser/render_frame_host.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
@@ -18,6 +19,7 @@
 
 class LocationBarView;
 class OmniboxController;
+class OmniboxPopupWebUIContent;
 
 // An assistant class for OmniboxPopupViewWebUI, this manages a WebView and a
 // Widget to present WebUI suggestions.  This class is an implementation detail
@@ -25,11 +27,7 @@ class OmniboxController;
 // of this class is presentation only, i.e. Views and Widgets.  For omnibox
 // logic concerns and communication between native omnibox code and the WebUI
 // code, work with OmniboxPopupViewWebUI directly.
-class OmniboxPopupPresenter : public views::WebView,
-                              public views::WidgetObserver,
-                              public views::ViewObserver {
-  METADATA_HEADER(OmniboxPopupPresenter, views::WebView)
-
+class OmniboxPopupPresenter : public views::ViewObserver {
  public:
   OmniboxPopupPresenter(LocationBarView* location_bar_view,
                         OmniboxController* controller);
@@ -48,37 +46,39 @@ class OmniboxPopupPresenter : public views::WebView,
   // Returns nullptr if handler is not ready.
   WebuiOmniboxHandler* GetHandler();
 
-  // views::View:
-  void AddedToWidget() override;
-
-  // views::WidgetObserver:
-  void OnWidgetDestroyed(views::Widget* widget) override;
-
   // views::ViewObserver:
-  void OnViewBoundsChanged(View* observed_view) override;
-
-  // content::WebContentsDelegate:
-  void ResizeDueToAutoResize(content::WebContents* source,
-                             const gfx::Size& new_size) override;
+  void OnViewBoundsChanged(views::View* observed_view) override;
 
   void SetWidgetContentHeight(int content_height);
 
  private:
   friend class OmniboxPopupViewWebUITest;
 
+  void OnWidgetClosed(views::Widget::ClosedReason closed_reason);
+
   // Tells whether the WebUI handler is loaded and ready to receive calls.
   bool IsHandlerReady();
 
   // Remove observation and reset widget, optionally requesting it to close.
-  void ReleaseWidget(bool close);
+  void ReleaseWidget();
+
+  // Returns the webui content, either from the owned pointer or from the
+  // content of the widget_.
+  OmniboxPopupWebUIContent* GetOmniboxPopupWebUIContent();
 
   // The location bar view that owns `this`.
   const raw_ptr<LocationBarView> location_bar_view_;
 
+  // The Omnibox WebUI popup contents. It is held here when the widget_ isn't
+  // being shown.
+  std::unique_ptr<OmniboxPopupWebUIContent> owned_omnibox_popup_webui_content_;
+
+  // The controller for the Omnibox.
+  raw_ptr<OmniboxController> controller_ = nullptr;
+
   // The popup widget that contains this WebView. Created and closed by `this`;
   // owned and destroyed by the OS.
-  // TODO(crbug.com/40232479): Migrate this to CLIENT_OWNS_WIDGET.
-  raw_ptr<views::Widget> widget_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
 
   // Whether any call to `GetHandler` has been made.
   bool requested_handler_ = false;

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -306,6 +309,15 @@ gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
 // static
 gfx::Insets RoundedOmniboxResultsFrame::GetShadowInsets() {
   return views::BubbleBorder::GetBorderAndShadowInsets(kElevation);
+}
+
+std::unique_ptr<views::View> RoundedOmniboxResultsFrame::ExtractContents() {
+  auto contents = std::exchange(contents_, nullptr);
+  return contents_host_->RemoveChildViewT<views::View>(contents);
+}
+
+views::View* RoundedOmniboxResultsFrame::GetContents() {
+  return contents_;
 }
 
 void RoundedOmniboxResultsFrame::Layout(PassKey) {
