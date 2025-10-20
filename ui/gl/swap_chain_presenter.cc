@@ -1692,9 +1692,6 @@ bool SwapChainPresenter::SetupPresentToSwapChain(
       ReleaseSwapChainResources();
       return false;
     }
-    content_ = swap_chain_.Get();
-    swap_chain_size_ = swap_chain_size;
-    content_size_ = swap_chain_size;
   }
 
   if (input_texture) {
@@ -2542,6 +2539,9 @@ bool SwapChainPresenter::ReallocateSwapChain(
 
   LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
 
+  content_ = swap_chain_.Get();
+  content_size_ = swap_chain_size;
+  swap_chain_size_ = swap_chain_size;
   swap_chain_format_ = swap_chain_format;
   SetSwapChainPresentDuration();
 
@@ -2622,7 +2622,6 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
     ReleaseSwapChainResources();
     return false;
   }
-  content_ = swap_chain_.Get();
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_buffer;
   swap_chain_->GetBuffer(0, IID_PPV_ARGS(&swap_chain_buffer));
