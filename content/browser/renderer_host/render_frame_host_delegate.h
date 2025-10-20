@@ -317,6 +317,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Get the accessibility mode for the WebContents that owns this frame.
   virtual ui::AXMode GetAccessibilityMode();
 
+  // Asks whether the page is in a state of ignoring accessibility input events.
+  // This means if accessibility actions (other than hit testing) should be
+  // blocked. This is active while a ScopedIgnoreInputEvents token exists. See
+  // WebContents::IgnoreInputEvents for more information.
+  virtual bool ShouldIgnoreA11yInputEvents();
+
   // Called whenever the AXTreeID for the topmost RenderFrameHost has changed.
   virtual void AXTreeIDForMainFrameHasChanged() {}
 

@@ -1559,9 +1559,21 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // alives.
   using WebInputEventAuditCallback =
       base::RepeatingCallback<bool(const blink::WebInputEvent&)>;
+  [[nodiscard]] inline ScopedIgnoreInputEvents IgnoreInputEvents(
+      std::optional<WebInputEventAuditCallback> audit_callback) {
+    return IgnoreInputEvents(std::move(audit_callback),
+                             /*should_ignore_a11y_input=*/false);
+  }
+  // If `should_ignore_a11y_input` is true, this also blocks all
+  // accessibility actions from interacting with the WebContents, other than the
+  // hit test.
+  // TODO(crbug.com/452693512): Consider ignoring a11y input events as the
+  // default behavior for ignoring input events in general.
   [[nodiscard]] virtual ScopedIgnoreInputEvents IgnoreInputEvents(
-      std::optional<WebInputEventAuditCallback> audit_callback) = 0;
+      std::optional<WebInputEventAuditCallback> audit_callback,
+      bool should_ignore_a11y_input) = 0;
   virtual bool ShouldIgnoreInputEventsForTesting() = 0;
+  virtual bool ShouldIgnoreA11yInputEventsForTesting() = 0;
 
   // Returns the group id for all audio streams that correspond to a single
   // WebContents. This can be used to determine if a AudioOutputStream was

@@ -3794,6 +3794,13 @@ void RenderFrameHostImpl::AccessibilityPerformAction(
                          action_data.request_id, {});
     return;
   }
+
+  // Don't perform the action if the WebContents is set to ignore accessibility
+  // input events. See WebContents::IgnoreInputEvents for more information.
+  if (delegate()->ShouldIgnoreA11yInputEvents()) {
+    return;
+  }
+
   // Set the input modality in RenderWidgetHostViewAura to touch so the
   // VK shows up.
   if (action_data.action == ax::mojom::Action::kFocus) {

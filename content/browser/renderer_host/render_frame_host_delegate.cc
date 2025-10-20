@@ -77,6 +77,10 @@ ui::AXMode RenderFrameHostDelegate::GetAccessibilityMode() {
   return ui::AXMode();
 }
 
+bool RenderFrameHostDelegate::ShouldIgnoreA11yInputEvents() {
+  return false;
+}
+
 device::mojom::GeolocationContext*
 RenderFrameHostDelegate::GetGeolocationContext() {
   return nullptr;

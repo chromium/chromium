@@ -3481,6 +3481,38 @@ TEST_F(WebContentsImplTest, IgnoreInputEvents) {
   EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
 }
 
+TEST_F(WebContentsImplTest, IgnoreInputEvents_IgnoreA11yInputEvents) {
+  // By default, input and a11y input events should not be ignored.
+  EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
+  EXPECT_FALSE(contents()->ShouldIgnoreA11yInputEvents());
+
+  // Create two requests with different a11y input settings.
+  std::optional<WebContents::ScopedIgnoreInputEvents> ignore_input_only =
+      contents()->IgnoreInputEvents(std::nullopt);
+  std::optional<WebContents::ScopedIgnoreInputEvents>
+      ignore_input_and_a11y_input = contents()->IgnoreInputEvents(
+          std::nullopt, /*should_ignore_a11y_input=*/true);
+
+  // With both requests active, both input and a11y input should be ignored.
+  EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
+  EXPECT_TRUE(contents()->ShouldIgnoreA11yInputEvents());
+
+  // Manually release the request that was ignoring a11y input events.
+  ignore_input_and_a11y_input.reset();
+
+  // Verify the state reverted: general input is still ignored by the first
+  // request, but a11y input events are now allowed.
+  EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
+  EXPECT_FALSE(contents()->ShouldIgnoreA11yInputEvents());
+
+  // Manually release the ignore input only request.
+  ignore_input_only.reset();
+
+  // Verify everything is back to the default state.
+  EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
+  EXPECT_FALSE(contents()->ShouldIgnoreA11yInputEvents());
+}
+
 TEST_F(WebContentsImplTest, OnColorProviderChangedTriggersPageBroadcast) {
   TestColorProviderSource color_provider_source;
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> broadcast_remote;
