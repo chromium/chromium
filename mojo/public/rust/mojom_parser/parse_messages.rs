@@ -20,7 +20,7 @@ use anyhow::{bail, Result};
 // now, just handle the different possible header versions manually.
 fn parse_header(data: &mut ParserData) -> Result<()> {
     use crate::parse_primitives::*;
-    let size_in_bytes = parse_u32(data)?;
+    let size_in_bytes: usize = parse_u32(data)?.try_into()?;
     let version_number = parse_u32(data)?;
     let _interface_id = parse_u32(data)?;
     let _msg_name = parse_u32(data)?;
@@ -55,17 +55,20 @@ fn parse_header(data: &mut ParserData) -> Result<()> {
     bail!("Bad version number")
 }
 
-/// Parse an entire mojom message, given the type of the encoded data
+/// Parse an entire mojom message, given the format of the encoded data
 // FOR_RELEASE: We'll need to handle associated interface IDs after the message,
 // even if we just ignore them. We'll also need to take in more information
 // about the message, so we know e.g. the possible message IDs that can appear
 // in the header.
-pub fn parse_message(data_slice: &[u8], ty: &MojomType) -> Result<MojomValue> {
+pub fn parse_message(data_slice: &[u8], ty: &MojomWireType) -> Result<MojomValue> {
     let mut data = ParserData::new(data_slice);
     let _ = parse_header(&mut data)?;
     match ty {
-        MojomType::Struct { fields } => {
-            let ret = crate::parse_values::parse_struct(&mut data, fields)?;
+        MojomWireType::Pointer {
+            nested_data_type: PackedStructuredType::Struct { packed_field_types },
+            ..
+        } => {
+            let ret = crate::parse_values::parse_struct(&mut data, packed_field_types)?;
             if data.remaining_bytes() != 0 {
                 // We don't support the interface ID struct yet
                 bail!("There were {} trailing bytes in the message", data.remaining_bytes())

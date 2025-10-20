@@ -30,7 +30,7 @@ use std::any::type_name;
 /// The input to a parser
 pub struct ParserData<'a> {
     remaining_bytes: &'a [u8],
-    bytes_parsed: u32,
+    bytes_parsed: usize,
 }
 
 // Since the primitive parsers require mutable references, encapsulate the
@@ -42,7 +42,7 @@ impl<'a> ParserData<'a> {
     }
 
     /// How many bytes have been parsed since the ParserData was created.
-    pub fn bytes_parsed(&self) -> u32 {
+    pub fn bytes_parsed(&self) -> usize {
         self.bytes_parsed
     }
 
@@ -53,7 +53,7 @@ impl<'a> ParserData<'a> {
 }
 
 /// Skips the next `bytes_to_parse` bytes, assuming they exist.
-pub fn parse_padding(data: &mut ParserData, bytes_to_parse: u32) -> Result<()> {
+pub fn parse_padding(data: &mut ParserData, bytes_to_parse: usize) -> Result<()> {
     let err_msg = || {
         anyhow!(
             "Tried to parse {} padding bytes, but only {} remained",

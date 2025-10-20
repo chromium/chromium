@@ -22,32 +22,26 @@ use crate::parse_primitives::*;
 use anyhow::{bail, Context, Result};
 
 /// Parse a type without nested data, i.e. anything but a struct or array
-fn parse_leaf_element(data: &mut ParserData, ty: &MojomType) -> Result<MojomValue> {
+fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> Result<MojomValue> {
     match ty {
-        MojomType::UInt8 => Ok(MojomValue::UInt8(parse_u8(data)?)),
-        MojomType::UInt16 => Ok(MojomValue::UInt16(parse_u16(data)?)),
-        MojomType::UInt32 => Ok(MojomValue::UInt32(parse_u32(data)?)),
-        MojomType::UInt64 => Ok(MojomValue::UInt64(parse_u64(data)?)),
-        MojomType::Int8 => Ok(MojomValue::Int8(parse_i8(data)?)),
-        MojomType::Int16 => Ok(MojomValue::Int16(parse_i16(data)?)),
-        MojomType::Int32 => Ok(MojomValue::Int32(parse_i32(data)?)),
-        MojomType::Int64 => Ok(MojomValue::Int64(parse_i64(data)?)),
-        MojomType::Struct { .. } | MojomType::Array { .. } | MojomType::String => {
-            bail!("parse_leaf_element: {:?} is not a leaf element", ty)
-        }
-        _ => {
-            bail!("parse_leaf_element: {:?} is not yet implemented", ty)
-        }
+        PackedLeafType::UInt8 => Ok(MojomValue::UInt8(parse_u8(data)?)),
+        PackedLeafType::UInt16 => Ok(MojomValue::UInt16(parse_u16(data)?)),
+        PackedLeafType::UInt32 => Ok(MojomValue::UInt32(parse_u32(data)?)),
+        PackedLeafType::UInt64 => Ok(MojomValue::UInt64(parse_u64(data)?)),
+        PackedLeafType::Int8 => Ok(MojomValue::Int8(parse_i8(data)?)),
+        PackedLeafType::Int16 => Ok(MojomValue::Int16(parse_i16(data)?)),
+        PackedLeafType::Int32 => Ok(MojomValue::Int32(parse_i32(data)?)),
+        PackedLeafType::Int64 => Ok(MojomValue::Int64(parse_i64(data)?)),
     }
 }
 
 /// Parse and ignore the contents of as many bytes as necessary to meet the
-/// alignment requirement of the given type.
+/// given alignment requirement.
 ///
 /// Does not validate that the skipped bytes were 0, since it's possible that
 /// we're parsing a message with a version greater than our mojom file knows
 /// about.
-fn skip_to_alignment(data: &mut ParserData, alignment: u32) -> Result<()> {
+fn skip_to_alignment(data: &mut ParserData, alignment: usize) -> Result<()> {
     let mismatch = data.bytes_parsed() % alignment;
     if mismatch == 0 {
         Ok(())
@@ -65,47 +59,58 @@ fn skip_to_alignment(data: &mut ParserData, alignment: u32) -> Result<()> {
 
 /// Information about a nested struct/array, which we expect to see later.
 struct NestedDataInfo<'a> {
-    ty: &'a MojomType,
+    ty: &'a PackedStructuredType,
     field_name: String,
+    ordinal: Ordinal,
     /// The expected location of the nested data, as an offset in bytes from the
     /// start of the enclosing struct
-    expected_offset: u32,
+    expected_offset: usize,
 }
 
 pub fn parse_struct(
     data: &mut ParserData,
-    fields: &Vec<(String, MojomType)>,
+    fields: &Vec<(String, MojomWireType)>,
 ) -> Result<Vec<(String, MojomValue)>> {
     let initial_bytes_parsed = data.bytes_parsed();
 
     // Parse the struct header
-    let size_in_bytes = parse_u32(data)?;
+    let size_in_bytes: usize = parse_u32(data)?.try_into()?;
     let _version_number = parse_u32(data)?; // We're ignoring versioning for now
 
     let mut nested_data_list: Vec<NestedDataInfo> = vec![];
-    let mut ret: Vec<(String, MojomValue)> = vec![];
-    for (name, mojom_type) in fields {
-        // Make sure we're at the right alignment for this field
-        skip_to_alignment(data, get_size_and_alignment(&mojom_type))?;
 
-        match mojom_type {
+    // Pre-allocate space for the parsed values, so we can write directly into them by
+    // index. We have to provide dummy values since rust won't allow uninitialized memory.
+    let mut ret: Vec<(String, MojomValue)> =
+        fields.into_iter().map(|_| (String::new(), MojomValue::Int8(0))).collect();
+    for (name, mojom_wire_type) in fields {
+        // Make sure we're at the right alignment for this field
+        skip_to_alignment(data, mojom_wire_type.alignment())?;
+
+        match mojom_wire_type {
             // Nested structured data, record for later
-            MojomType::Struct { .. } | MojomType::Array { .. } => {
+            MojomWireType::Pointer { ordinal, nested_data_type } => {
                 let pointer_value = parse_u64(data)?;
                 let nested_info = NestedDataInfo {
-                    ty: mojom_type,
+                    ty: nested_data_type,
+                    ordinal: *ordinal,
                     field_name: name.clone(),
                     expected_offset: data.bytes_parsed() - initial_bytes_parsed
                         - 8 // Don't count the bytes we just parsed
-                        + u32::try_from(pointer_value)
-                            .context("Pointer value {pointer_value} doesn't fit into 32 bits?!")?,
+                        + usize::try_from(pointer_value)
+                            .context("Pointer value {pointer_value} doesn't fit into usize?!")?,
                 };
                 nested_data_list.push(nested_info);
             }
             // Nested leaf data, just parse it
-            _ => {
-                let parsed_value = parse_leaf_element(data, mojom_type)?;
-                ret.push((name.clone(), parsed_value));
+            MojomWireType::Leaf { ordinal, leaf_type } => {
+                let parsed_value = parse_leaf_element(data, leaf_type)?;
+                ret[*ordinal] = (name.clone(), parsed_value);
+            }
+            MojomWireType::Bitfield { ordinals } => {
+                let _ = ordinals;
+                // FOR_RELEASE: Go through each bit and make a bool out of it
+                bail!("Bitfields not yet implemented");
             }
         };
     }
@@ -131,24 +136,21 @@ pub fn parse_struct(
             bail!(
                 "Nested field {} was at {} bytes from the beginning of the struct, \
                  but expected to be at {} bytes",
-                &nested_data.field_name,
+                nested_data.field_name,
                 bytes_parsed_so_far,
                 nested_data.expected_offset
             );
         }
-        match nested_data.ty {
-            MojomType::Struct { fields } => {
-                let parsed_fields = parse_struct(data, fields)?;
-                ret.push((nested_data.field_name, MojomValue::Struct(parsed_fields)));
+        let parsed_data = match nested_data.ty {
+            PackedStructuredType::Struct { packed_field_types } => {
+                let parsed_fields = parse_struct(data, packed_field_types)?;
+                MojomValue::Struct(parsed_fields)
             }
-            MojomType::Array { .. } => {
+            PackedStructuredType::Array { .. } => {
                 bail!("Arrays are not yet implemented");
             }
-            _ => {
-                // We created each array entry earlier, and only used these constructors
-                unreachable!()
-            }
         };
+        ret[nested_data.ordinal] = (nested_data.field_name, parsed_data);
     }
     Ok(ret)
 }

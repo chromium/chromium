@@ -41,7 +41,7 @@ pub enum MojomType {
     Struct { fields: Vec<(String, MojomType)> },
     // Mojom has separate sized/unsized array types; we could have two variants here, but
     // rust's type system can't enforce that the length is correct so there's little point.
-    Array { element_type: Box<MojomType>, num_elements: Option<u32> },
+    Array { element_type: Box<MojomType>, num_elements: Option<usize> },
 }
 
 /// Representation of a value of a MojomType. These are what get encoded/decoded
@@ -66,17 +66,88 @@ pub enum MojomValue {
     Array(Vec<MojomValue>),
 }
 
-/// Returns the size (in bytes) of a Mojom type, when stored as a struct field.
-/// This is also the alignment requirement for that type.
-pub fn get_size_and_alignment(ty: &MojomType) -> u32 {
-    match ty {
-        MojomType::Int8 | MojomType::UInt8 => 1,
-        MojomType::Int16 | MojomType::UInt16 => 2,
-        MojomType::Int32 | MojomType::UInt32 => 4,
-        MojomType::Int64 | MojomType::UInt64 => 8,
-        // Structs and arrays are stored as 64-bit pointers
-        // Strings are encoded as arrays
-        MojomType::Struct { .. } | MojomType::Array { .. } | MojomType::String => 8,
-        MojomType::Bool => todo!("Packing is weird"),
+/******************************************************************************
+ * All the following types relate to how Mojom values are laid out when
+ * serialized to be sent in a message.
+ ******************************************************************************/
+
+/// Represents a field of a Mojom struct by its index in the struct's definition,
+/// i.e. "the nth field"
+pub type Ordinal = usize;
+
+#[derive(Debug, Clone, PartialEq)]
+/// Representation of a Mojom type that has been packed into the wire format. It contains
+/// enough information to both parse and deparse the associated type.
+///
+/// Every value in a message corresponds to a member of some struct. To map values to their
+/// associated struct field, the wire type for that value tracks that field's ordinal. The
+/// ordinal is used as an index into the vector of fields during parsing and deparsing.
+///
+/// Bitfields are a special case; since they can contain values from multiple fields of the
+/// struct, each bit of the field is associated with an ordinal.
+pub enum MojomWireType {
+    Leaf {
+        ordinal: Ordinal,
+        leaf_type: PackedLeafType,
+    },
+    /// Up to 8 booleans packed into a single byte.
+    Bitfield {
+        ordinals: [Option<Ordinal>; 8],
+        // The associated data is always a single byte
+    },
+    Pointer {
+        ordinal: Ordinal,
+        nested_data_type: PackedStructuredType,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+/// A type which is simply encoded as itself
+pub enum PackedLeafType {
+    Int8,
+    UInt8,
+    Int16,
+    UInt16,
+    Int32,
+    UInt32,
+    Int64,
+    UInt64,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum PackedStructuredType {
+    Struct { packed_field_types: Vec<(String, MojomWireType)> },
+    Array { element_type: Box<MojomWireType>, array_type: PackedArrayType },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+/// An array on the wire may originate from one of three Mojom types:
+/// An unsized array, A size N array, or a string.
+/// FOR_RELEASE: Arrays of nullables may also be their own category?
+pub enum PackedArrayType {
+    UnsizedArray,
+    SizedArray(usize),
+    String,
+}
+
+impl MojomWireType {
+    /// Returns the size (in bytes) of a wire type, when stored as a struct field.
+    pub fn size(&self) -> usize {
+        match self {
+            MojomWireType::Leaf { leaf_type, .. } => match leaf_type {
+                PackedLeafType::Int8 | PackedLeafType::UInt8 => 1,
+                PackedLeafType::Int16 | PackedLeafType::UInt16 => 2,
+                PackedLeafType::Int32 | PackedLeafType::UInt32 => 4,
+                PackedLeafType::Int64 | PackedLeafType::UInt64 => 8,
+            },
+            MojomWireType::Bitfield { .. } => 1,
+            // Structs and arrays are stored as 64-bit pointers
+            MojomWireType::Pointer { .. } => 8,
+        }
+    }
+
+    /// The alignment requirement for each type is equal to its size in bytes.
+    pub fn alignment(&self) -> usize {
+        return self.size();
     }
 }
