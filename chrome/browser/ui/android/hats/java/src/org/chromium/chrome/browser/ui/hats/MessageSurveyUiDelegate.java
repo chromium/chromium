@@ -99,7 +99,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
     private final PropertyModel mMessageModel;
     private final MessageDispatcher mMessageDispatcher;
     private final TabModelSelector mTabModelSelector;
-    private final Supplier<Boolean> mCrashUploadPermissionSupplier;
+    private final Supplier<@Nullable Boolean> mCrashUploadPermissionSupplier;
 
     private @State int mState;
 
@@ -122,18 +122,18 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      * Create a survey UI delegate that presents the survey with a message on the current tab.
      *
      * @param customModel Custom model to provide survey message Id, title, icon, etc. Note that the
-     *         primary and dismissal action will be wrapped around survey callbacks in order for
-     *         accepting survey to work properly.
+     *     primary and dismissal action will be wrapped around survey callbacks in order for
+     *     accepting survey to work properly.
      * @param messageDispatcher Dispatcher used to enqueue survey messages. Usually from {@link
-     *         MessageDispatcherProvider#from(WindowAndroid)}
+     *     MessageDispatcherProvider#from(WindowAndroid)}
      * @param modelSelector TabModel selector used to retrieve tab information. Used to decide if
-     *         current tab is fully loaded and not in incognito.
+     *     current tab is fully loaded and not in incognito.
      */
     public MessageSurveyUiDelegate(
             PropertyModel customModel,
             MessageDispatcher messageDispatcher,
             TabModelSelector modelSelector,
-            Supplier<Boolean> crashUploadPermissionSupplier) {
+            Supplier<@Nullable Boolean> crashUploadPermissionSupplier) {
         mMessageModel = customModel;
         mTabModelSelector = modelSelector;
         mMessageDispatcher = messageDispatcher;

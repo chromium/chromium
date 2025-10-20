@@ -48,6 +48,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Class that controls and manages when and if surveys should be shown. */
 @NullMarked
@@ -149,12 +150,17 @@ public class PrivacySandboxSurveyController {
             emitInvalidSurveyConfigHistogram(survey);
             return null;
         }
+
+        // TODO(crbug.com/453007852): When ObservableSupplier<E> extends Supplier<@Nullable E>,
+        // remove cast to Supplier<@Nullable Boolean>,
         MessageSurveyUiDelegate messageDelegate =
                 new MessageSurveyUiDelegate(
                         mMessage,
                         mMessageDispatcher,
                         mTabModelSelector,
-                        SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
+                        (Supplier<@Nullable Boolean>)
+                                SurveyClientFactory.getInstance()
+                                        .getCrashUploadPermissionSupplier());
         SurveyClient surveyClient =
                 SurveyClientFactory.getInstance()
                         .createClient(surveyConfig, messageDelegate, mProfile, mTabModelSelector);
