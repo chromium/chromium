@@ -259,6 +259,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="selectAll"/>
 </enum>
 
+<!-- LINT.IfChange(PDFSaveToDriveBubbleAction) -->
+
+<enum name="PDFSaveToDriveBubbleAction">
+<!-- This must be kept current with SaveToDriveBubbleAction in
+     chrome/browser/resources/pdf/save_to_drive_metrics.ts. -->
+
+  <int value="0" label="Action"/>
+  <int value="1" label="Cancel upload"/>
+  <int value="2" label="Manage storage"/>
+  <int value="3" label="Open in Drive"/>
+  <int value="4" label="Retry"/>
+  <int value="5" label="Close"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/pdf/save_to_drive_metrics.ts:PDFSaveToDriveBubbleAction) -->
+
 <!-- LINT.IfChange(PDFSaveToDriveBubbleState) -->
 
 <enum name="PDFSaveToDriveBubbleState">

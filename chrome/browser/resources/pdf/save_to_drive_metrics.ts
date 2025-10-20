@@ -4,10 +4,29 @@
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {SaveToDriveState} from './constants.js';
+import {SaveToDriveBubbleRequestType, SaveToDriveState} from './constants.js';
 import {record, recordEnumeration, UserAction} from './metrics.js';
 
 const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
+type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
+
+/**
+ * `SaveToDriveBubbleAction` is used for metrics. Entries should not be
+ * renumbered, removed or reused.
+ */
+export enum SaveToDriveBubbleAction {
+  // LINT.IfChange(PDFSaveToDriveBubbleAction)
+  ACTION = 0,
+  CANCEL_UPLOAD = 1,
+  MANAGE_STORAGE = 2,
+  OPEN_IN_DRIVE = 3,
+  RETRY = 4,
+  CLOSE = 5,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFSaveToDriveBubbleAction)
+
+  // Must be the last one.
+  COUNT = 6,
+}
 
 /**
  * `SaveToDriveBubbleState` is used for metrics. Entries should not be
@@ -46,11 +65,29 @@ export enum SaveToDriveSaveType {
 }
 
 /**
+ * Records when a Save to Drive bubble action is performed.
+ */
+function recordSaveToDriveBubbleAction(action: SaveToDriveBubbleAction) {
+  recordEnumeration(
+      'PDF.SaveToDrive.BubbleAction', action, SaveToDriveBubbleAction.COUNT);
+}
+
+/**
  * Records when the Save to Drive bubble is shown in a certain state.
  */
 function recordSaveToDriveBubbleState(bubbleState: SaveToDriveBubbleState) {
   recordEnumeration(
       'PDF.SaveToDrive.BubbleState', bubbleState, SaveToDriveBubbleState.COUNT);
+}
+
+/**
+ * Records when a Save to Drive retry action is performed.
+ */
+function recordSaveToDriveRetrySaveType(
+    retrySaveType: SaveToDriveSaveType) {
+  recordEnumeration(
+      'PDF.SaveToDrive.RetrySaveType', retrySaveType,
+      SaveToDriveSaveType.COUNT);
 }
 
 /**
@@ -60,6 +97,53 @@ function recordSaveToDriveSaveType(saveToDriveSaveType: SaveToDriveSaveType) {
   recordEnumeration(
       'PDF.SaveToDrive.SaveType', saveToDriveSaveType,
       SaveToDriveSaveType.COUNT);
+}
+
+export function recordSaveToDriveBubbleActionMetrics(
+    requestType: SaveToDriveBubbleRequestType) {
+  recordSaveToDriveBubbleAction(SaveToDriveBubbleAction.ACTION);
+  switch (requestType) {
+    case SaveToDriveBubbleRequestType.CANCEL_UPLOAD:
+      recordSaveToDriveBubbleAction(SaveToDriveBubbleAction.CANCEL_UPLOAD);
+      break;
+    case SaveToDriveBubbleRequestType.MANAGE_STORAGE:
+      recordSaveToDriveBubbleAction(SaveToDriveBubbleAction.MANAGE_STORAGE);
+      break;
+    case SaveToDriveBubbleRequestType.OPEN_IN_DRIVE:
+      recordSaveToDriveBubbleAction(SaveToDriveBubbleAction.OPEN_IN_DRIVE);
+      break;
+    case SaveToDriveBubbleRequestType.RETRY:
+      recordSaveToDriveBubbleAction(SaveToDriveBubbleAction.RETRY);
+      break;
+    case SaveToDriveBubbleRequestType.DIALOG_CLOSED:
+      recordSaveToDriveBubbleAction(SaveToDriveBubbleAction.CLOSE);
+      break;
+    default:
+      assertNotReached('Unknown save to Drive bubble action: ' + requestType);
+  }
+}
+
+export function recordSaveToDriveBubbleRetryMetrics(
+    requestType: SaveRequestType, hasCommittedEdits: boolean) {
+  // The general retry action is recorded in
+  // `recordSaveToDriveBubbleActionMetrics()`.
+  switch (requestType) {
+    case SaveRequestType.ANNOTATION:
+      recordSaveToDriveRetrySaveType(
+          SaveToDriveSaveType.SAVE_WITH_ANNOTATION);
+      break;
+    case SaveRequestType.ORIGINAL:
+      recordSaveToDriveRetrySaveType(
+          hasCommittedEdits ? SaveToDriveSaveType.SAVE_ORIGINAL :
+                              SaveToDriveSaveType.SAVE_ORIGINAL_ONLY);
+      break;
+    case SaveRequestType.EDITED:
+      recordSaveToDriveRetrySaveType(SaveToDriveSaveType.SAVE_EDITED);
+      break;
+    default:
+      assertNotReached(
+          'Unknown save request type for Save to Drive: ' + requestType);
+  }
 }
 
 export function recordShowSaveToDriveBubbleMetrics(
@@ -98,7 +182,7 @@ export function recordShowSaveToDriveBubbleMetrics(
 }
 
 export function recordSaveToDriveMetrics(
-    requestType: chrome.pdfViewerPrivate.SaveRequestType, hasEdits: boolean,
+    requestType: SaveRequestType, hasCommittedEdits: boolean,
     pdfInk2Enabled: boolean) {
   recordSaveToDriveSaveType(SaveToDriveSaveType.SAVE);
   switch (requestType) {
@@ -110,8 +194,8 @@ export function recordSaveToDriveMetrics(
       break;
     case SaveRequestType.ORIGINAL:
       recordSaveToDriveSaveType(
-          hasEdits ? SaveToDriveSaveType.SAVE_ORIGINAL :
-                     SaveToDriveSaveType.SAVE_ORIGINAL_ONLY);
+          hasCommittedEdits ? SaveToDriveSaveType.SAVE_ORIGINAL :
+                              SaveToDriveSaveType.SAVE_ORIGINAL_ONLY);
       break;
     case SaveRequestType.EDITED:
       recordSaveToDriveSaveType(SaveToDriveSaveType.SAVE_EDITED);
