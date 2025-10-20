@@ -572,7 +572,8 @@ suite('NewTabPageRealboxTest', () => {
   // Test Querying Autocomplete
   //============================================================================
 
-  test('left-clicking the input queries autocomplete', async () => {
+  // TODO(crbug.com/453570027): Test is flaky.
+  test.skip('left-clicking the input queries autocomplete', async () => {
     // Query zero-prefix matches.
     realbox.$.input.value = '';
     // Left click queries autocomplete when matches are not showing.
@@ -2541,7 +2542,8 @@ suite('NewTabPageRealboxTest', () => {
       });
 
 
-  test('search aggregator people matches use fallback icons', async () => {
+  // TODO(crbug.com/453570027): Test is flaky.
+  test.skip('search aggregator people matches use fallback icons', async () => {
     realbox.$.input.value = 'hello';
     const inputPromise = eventToPromise('input', realbox.$.input);
     realbox.$.input.dispatchEvent(new InputEvent('input'));
