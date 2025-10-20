@@ -9,13 +9,14 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
+#import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_action_delegate.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_consumer.h"
-#import "ios/chrome/browser/download/ui/download_list/download_list_filter_view.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_group_item.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_grouping_util.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_mutator.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_table_view_header.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -24,14 +25,13 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_illustrated_empty_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-constexpr CGFloat kFilterViewHeight = 48.0;
-
 /// Size for the file icon image in the download list cells.
 constexpr CGFloat kFileIconImageSize = 44.0;
 /// Constants for cancel button styling.
@@ -39,6 +39,22 @@ static const CGFloat kCancelButtonIconSize = 30;
 
 NSString* const kCancelButtonPrimaryActionIdentifier =
     @"kCancelButtonPrimaryActionIdentifier";
+
+// Helper function to create the attributed string with a link.
+NSAttributedString* GetAttributedString(NSString* message) {
+  NSDictionary* textAttributes =
+      [TableViewIllustratedEmptyView defaultTextAttributesForSubtitle];
+  NSDictionary* linkAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
+    NSLinkAttributeName : GetFilesAppUrl().absoluteString,
+  };
+
+  return AttributedStringFromStringWithLink(message, textAttributes,
+                                            linkAttributes);
+}
 
 }  // namespace
 
@@ -49,8 +65,9 @@ typedef UITableViewDiffableDataSource<DownloadListGroupItem*, DownloadListItem*>
 typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
     DownloadListSnapshot;
 
-@interface DownloadListTableViewController ()
-@property(nonatomic, strong) DownloadListFilterView* filterHeaderView;
+@interface DownloadListTableViewController () <
+    TableViewIllustratedEmptyViewDelegate>
+@property(nonatomic, strong) DownloadListTableViewHeader* filterHeaderView;
 @end
 
 @implementation DownloadListTableViewController {
@@ -86,10 +103,38 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 #pragma mark - Private
 
 - (void)setupFilterHeaderView {
-  self.filterHeaderView = [[DownloadListFilterView alloc]
-      initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width,
-                               kFilterViewHeight)];
+  self.filterHeaderView = [[DownloadListTableViewHeader alloc] init];
   self.filterHeaderView.mutator = self.mutator;
+  [self updateTableHeaderViewFrame];
+}
+
+- (void)updateTableHeaderViewFrame {
+  if (!self.filterHeaderView) {
+    return;
+  }
+
+  [self.filterHeaderView setNeedsLayout];
+  [self.filterHeaderView layoutIfNeeded];
+
+  CGFloat width = self.tableView.bounds.size.width;
+  CGSize fittingSize = [self.filterHeaderView
+      systemLayoutSizeFittingSize:CGSizeMake(
+                                      width,
+                                      UILayoutFittingCompressedSize.height)];
+
+  CGRect newFrame = CGRectMake(0, 0, width, fittingSize.height);
+  if (!CGRectEqualToRect(self.filterHeaderView.frame, newFrame)) {
+    self.filterHeaderView.frame = newFrame;
+    // Reassign to trigger table view layout update
+    if (self.tableView.tableHeaderView == self.filterHeaderView) {
+      self.tableView.tableHeaderView = self.filterHeaderView;
+    }
+  }
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [self updateTableHeaderViewFrame];
 }
 
 #pragma mark - Mutator setter override
@@ -322,14 +367,14 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
         UINavigationItemLargeTitleDisplayModeNever;
     if (!self.tableView.backgroundView) {
       UIImage* emptyImage = [UIImage imageNamed:@"download_list_empty"];
-      TableViewIllustratedEmptyView* emptyView =
-          [[TableViewIllustratedEmptyView alloc]
-              initWithFrame:self.view.bounds
-                      image:emptyImage
-                      title:l10n_util::GetNSString(
-                                IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_TITLE)
-                   subtitle:l10n_util::GetNSString(
-                                IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_MESSAGE)];
+      TableViewIllustratedEmptyView* emptyView = [[TableViewIllustratedEmptyView
+          alloc] initWithFrame:self.view.bounds
+                         image:emptyImage
+                         title:l10n_util::GetNSString(
+                                   IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_TITLE)
+            attributedSubtitle:GetAttributedString(l10n_util::GetNSString(
+                                   IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_MESSAGE))];
+      emptyView.delegate = self;
       self.tableView.backgroundView = emptyView;
     }
   } else {
@@ -338,9 +383,12 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
         UINavigationItemLargeTitleDisplayModeAlways;
     self.tableView.backgroundView = nil;
   }
+  if (self.filterHeaderView && self.filterHeaderView.isHidden == NO) {
+    [self.filterHeaderView setAttributionTextShown:!empty];
+  }
 }
 
-- (void)setFilterViewShown:(BOOL)shown {
+- (void)setDownloadListHeaderShown:(BOOL)shown {
   if (shown) {
     // Show the filter view if it's not already set.
     if (self.tableView.tableHeaderView != self.filterHeaderView) {
@@ -358,6 +406,18 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 - (void)presentationControllerWillDismiss:
     (UIPresentationController*)presentationController {
   [self.downloadListHandler hideDownloadList];
+}
+#pragma mark - TableViewIllustratedEmptyViewDelegate
+
+// Invoked when a link in `view`'s subtitle is tapped.
+- (void)tableViewIllustratedEmptyView:(TableViewIllustratedEmptyView*)view
+                   didTapSubtitleLink:(NSURL*)URL {
+  if (!URL) {
+    return;
+  }
+  [[UIApplication sharedApplication] openURL:URL
+                                     options:@{}
+                           completionHandler:nil];
 }
 
 @end

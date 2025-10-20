@@ -8,8 +8,6 @@ source_set("download_list") {
     "download_filter_cell.mm",
     "download_list_action_delegate.h",
     "download_list_consumer.h",
-    "download_list_filter_view.h",
-    "download_list_filter_view.mm",
     "download_list_group_item.h",
     "download_list_group_item.mm",
     "download_list_grouping_util.h",
@@ -19,6 +17,8 @@ source_set("download_list") {
     "download_list_mutator.h",
     "download_list_table_view_controller.h",
     "download_list_table_view_controller.mm",
+    "download_list_table_view_header.h",
+    "download_list_table_view_header.mm",
   ]
   deps = [
     "//base",
@@ -33,6 +33,7 @@ source_set("download_list") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",

@@ -2094,10 +2094,13 @@
           Cancel download
       </message>
       <message name="IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_MESSAGE" desc="Message shown on the Download List screen when there are no entries, explaining the purpose of the Download List screen.">
-          You can access your downloaded files here when available
+          To see files you’ve downloaded before, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Files<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_TITLE" desc="Title shown on the Download List screen when there are no entries.">
           You'll find your downloads here
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_LIST_OPEN_FILES_APP_TIPS" desc="Section header shown on the Download List screen for prompting user open Files App">
+          You can view your earlier downloads in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Files<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_DOWNLOAD_LIST_TITLE" desc="Title for the Downloads list [iOS only]">
         Downloads

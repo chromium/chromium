@@ -438,7 +438,7 @@ using CategorizationResult =
   // Hide filter view when there are no records at all.
   // Check if allRecords is empty, which means no records exist.
   BOOL hasAnyRecords = !self.allRecords.empty();
-  [self.consumer setFilterViewShown:hasAnyRecords];
+  [self.consumer setDownloadListHeaderShown:hasAnyRecords];
 }
 
 // Normalizes the search keyword by trimming whitespace and collapsing multiple
