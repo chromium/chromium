@@ -18,9 +18,12 @@
 @property(nonatomic, weak) id<SafariDataImportImportStageTransitionHandler>
     importStageTransitionHandler;
 
-/// Designated Initializer.
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+/// Designated Initializer. `itemCount` specifies how many cells should be in
+/// the table view.
+- (instancetype)initWithItemCount:(NSInteger)itemCount
+    NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame
                         style:UITableViewStyle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;

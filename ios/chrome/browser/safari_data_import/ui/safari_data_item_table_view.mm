@@ -24,9 +24,6 @@
 
 namespace {
 
-/// Number of expected items in the table.
-constexpr int kExpectedItemsCount = 4;
-
 /// Size of the leading image for each item.
 constexpr NSInteger kLeadingSymbolImagePointSize = 20;
 
@@ -174,11 +171,14 @@ UIView* GetCheckmark() {
   /// Whether the required time for the user to be in the `importing` state has
   /// passed.
   BOOL _minimumImportingTimePassed;
+  /// Number of items in the table.
+  NSInteger _itemCount;
 }
 
-- (instancetype)init {
+- (instancetype)initWithItemCount:(NSInteger)itemCount {
   self = [super initWithFrame:CGRectZero style:ChromeTableViewStyle()];
   if (self) {
+    _itemCount = itemCount;
     self.accessibilityIdentifier =
         GetSafariDataItemTableViewAccessibilityIdentifier();
     self.translatesAutoresizingMaskIntoConstraints = NO;
@@ -252,8 +252,8 @@ UIView* GetCheckmark() {
     case SafariDataItemImportStatus::kReady:
       _itemDictionary[itemType] = item;
       _pendingImportCount++;
-      CHECK_LE(_pendingImportCount, kExpectedItemsCount);
-      if (_pendingImportCount == kExpectedItemsCount) {
+      CHECK_LE(_pendingImportCount, _itemCount);
+      if (_pendingImportCount == _itemCount) {
         [self importPreparationDidComplete];
       }
       return;
@@ -262,7 +262,7 @@ UIView* GetCheckmark() {
           << "Transition to importing state is handled by -notifyImportStart";
     case SafariDataItemImportStatus::kImported:
       _importedCount++;
-      CHECK_LE(_importedCount, kExpectedItemsCount);
+      CHECK_LE(_importedCount, _itemCount);
       if (previousItem) {
         /// Do not update the item if this item has previously been deleted.
         _itemDictionary[itemType] = item;
@@ -416,7 +416,7 @@ UIView* GetCheckmark() {
       [_dataSource snapshot];
   [snapshot reconfigureItemsWithIdentifiers:identifiers];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
-  if (_importedCount == kExpectedItemsCount) {
+  if (_importedCount == _itemCount) {
     [self.importStageTransitionHandler transitionToNextImportStage];
   }
 }
