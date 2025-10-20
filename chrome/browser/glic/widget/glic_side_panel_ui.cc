@@ -60,7 +60,7 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
   }
 
   glic_side_panel_coordinator->SetContentsView(CreateView(profile_));
-  panel_state_.kind = mojom::PanelState_Kind::kAttached;
+  panel_state_.kind = mojom::PanelStateKind::kAttached;
 }
 
 std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
@@ -173,7 +173,7 @@ void GlicSidePanelUi::Show() {
   if (!glic_side_panel_coordinator) {
     return;
   }
-  panel_state_.kind = mojom::PanelState_Kind::kAttached;
+  panel_state_.kind = mojom::PanelStateKind::kAttached;
   delegate_->NotifyPanelStateChanged();
   application_hotkey_manager_->InitializeAccelerators();
   glic_panel_hotkey_manager_->InitializeAccelerators();
@@ -188,7 +188,7 @@ void GlicSidePanelUi::Close() {
   if (!glic_side_panel_coordinator || !IsShowing()) {
     return;
   }
-  panel_state_.kind = mojom::PanelState_Kind::kHidden;
+  panel_state_.kind = mojom::PanelStateKind::kHidden;
   delegate_->NotifyPanelStateChanged();
   // NOTE: `this` will be destroyed after this call.
   glic_side_panel_coordinator->Close();

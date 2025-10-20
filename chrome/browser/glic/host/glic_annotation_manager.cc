@@ -520,7 +520,7 @@ void GlicAnnotationManager::AnnotationTask::PrimaryPageChanged(
 void GlicAnnotationManager::AnnotationTask::PanelStateChanged(
     const mojom::PanelState& panel_state,
     const GlicWindowController::PanelStateContext& context) {
-  if (panel_state.kind != mojom::PanelState_Kind::kHidden) {
+  if (panel_state.kind != mojom::PanelStateKind::kHidden) {
     return;
   }
   FailTaskOrDropAnnotation(

@@ -72,7 +72,7 @@ type CheckEnumCompatibility<MojoEnum, TsEnum> = AnnotateError<
 
 // Ignore FLOATING and DOCKED in the api, as they're just deprecated aliases.
 assertNever<CheckEnumCompatibility<
-    typeof mojom.PanelState_Kind,
+    typeof mojom.PanelStateKind,
     Omit<typeof api.PanelStateKind, 'FLOATING'|'DOCKED'>>>();
 // kUnknown isn't in the public API because this is a closed enum, and will not
 // be expanded.

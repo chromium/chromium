@@ -867,21 +867,20 @@ struct PanelOpeningData {
   string? conversation_id;
 };
 
+// @generate glic_api
+// The panel can be in one of these three states.
+enum PanelStateKind {
+  // The panel is hidden.
+  kHidden = 0,
+  // The panel is a floating window, detached from any browser window.
+  kDetached = 1,
+  // The panel is a side panel, attached to a browser window.
+  kAttached = 2,
+};
+
 // State of the glic panel.
 struct PanelState {
-  // The panel can be in one of these three states.
-  // WARNING: These enum values should match
-  // chrome/browser/resources/glic/glic_api/glic_api.ts.
-  enum Kind {
-    // The panel is hidden.
-    kHidden = 0,
-    // The panel is a floating window, detached from any browser window.
-    kDetached = 1,
-    // The panel is a side panel, attached to a browser window.
-    kAttached = 2,
-  };
-
-  Kind kind;
+  PanelStateKind kind;
   // Present when attached, indicates to which window the panel is attached.
   int32? window_id;
 };

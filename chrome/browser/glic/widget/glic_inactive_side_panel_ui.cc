@@ -122,7 +122,7 @@ void GlicInactiveSidePanelUi::Focus() {
 
 mojom::PanelState GlicInactiveSidePanelUi::GetPanelState() const {
   mojom::PanelState state;
-  state.kind = glic::mojom::PanelState::Kind::kHidden;
+  state.kind = glic::mojom::PanelStateKind::kHidden;
   return state;
 }
 

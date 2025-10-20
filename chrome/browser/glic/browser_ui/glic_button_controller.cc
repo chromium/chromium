@@ -54,7 +54,7 @@ void GlicButtonController::PanelStateChanged(
   if (GlicWindowController::AlwaysDetached()) {
     UpdateShowState(true);
   } else {
-    const bool detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
+    const bool detached = panel_state.kind == mojom::PanelStateKind::kDetached;
     glic_controller_delegate_->SetGlicDetached(detached);
     UpdateShowState(detached);
   }
@@ -63,7 +63,7 @@ void GlicButtonController::PanelStateChanged(
 void GlicButtonController::OnPrefsChanged() {
   UpdateShowState(
       glic_keyed_service_->window_controller().GetGlobalPanelState().kind ==
-      mojom::PanelState_Kind::kDetached);
+      mojom::PanelStateKind::kDetached);
 }
 
 void GlicButtonController::UpdateShowState(bool detached) {

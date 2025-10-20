@@ -96,12 +96,12 @@ mojom::PanelState CreatePanelState(bool widget_visible,
                                    Browser* attached_browser) {
   mojom::PanelState panel_state;
   if (!widget_visible) {
-    panel_state.kind = mojom::PanelState_Kind::kHidden;
+    panel_state.kind = mojom::PanelStateKind::kHidden;
   } else if (attached_browser) {
-    panel_state.kind = mojom::PanelState_Kind::kAttached;
+    panel_state.kind = mojom::PanelStateKind::kAttached;
     panel_state.window_id = attached_browser->session_id().id();
   } else {
-    panel_state.kind = mojom::PanelState_Kind::kDetached;
+    panel_state.kind = mojom::PanelStateKind::kDetached;
   }
   return panel_state;
 }

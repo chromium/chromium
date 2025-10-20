@@ -1002,18 +1002,6 @@ export declare interface OpenPanelInfo {
 }
 
 /**
- * The panel can be in one of these three states.
- */
-export enum PanelStateKind {
-  /** The panel is hidden. */
-  HIDDEN = 0,
-  /** The panel is a floating window, detached from any browser window. */
-  DETACHED = 1,
-  /** The panel is a side panel, attached to a browser window. */
-  ATTACHED = 2,
-}
-
-/**
  * Information of how the panel is being presented/configured.
  */
 export declare interface PanelState {
@@ -1997,6 +1985,18 @@ export enum RegisterConversationErrorReason {
   UNKNOWN = 0,
   // The instance already has a conversation ID.
   INSTANCE_ALREADY_HAS_CONVERSATION_ID = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// The panel can be in one of these three states.
+export enum PanelStateKind {
+  // The panel is hidden.
+  HIDDEN = 0,
+  // The panel is a floating window, detached from any browser window.
+  DETACHED = 1,
+  // The panel is a side panel, attached to a browser window.
+  ATTACHED = 2,
 }
 
 ///////////////////////////////////////////////

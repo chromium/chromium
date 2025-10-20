@@ -215,7 +215,7 @@ class ActiveStateCalculator : public PanelStateObserver {
   }
 
   bool Calculate() {
-    if (panel_state_kind_ == glic::mojom::PanelState::Kind::kHidden) {
+    if (panel_state_kind_ == glic::mojom::PanelStateKind::kHidden) {
       return false;
     }
     // TODO(b:444463509): Implement better calculation.
@@ -238,7 +238,7 @@ class ActiveStateCalculator : public PanelStateObserver {
 
   raw_ptr<Host> host_;
   base::ObserverList<Observer> observers_;
-  glic::mojom::PanelState::Kind panel_state_kind_;
+  glic::mojom::PanelStateKind panel_state_kind_;
   bool is_active_ = false;
   raw_ptr<BrowserWindowInterface> attached_browser_ = nullptr;
 };

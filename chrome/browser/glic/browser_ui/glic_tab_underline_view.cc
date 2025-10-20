@@ -208,7 +208,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
   void PanelStateChanged(const glic::mojom::PanelState& panel_state,
                          const PanelStateContext& context) override {
     UpdateUnderlineView(
-        panel_state.kind == mojom::PanelState::Kind::kHidden
+        panel_state.kind == mojom::PanelStateKind::kHidden
             ? UpdateUnderlineReason::kPanelStateChanged_PanelHidden
             : UpdateUnderlineReason::kPanelStateChanged_PanelShowing);
   }

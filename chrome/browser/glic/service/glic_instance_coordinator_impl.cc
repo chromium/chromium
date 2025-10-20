@@ -438,7 +438,7 @@ void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceWithFloaty() const {
   for (const auto& [unused, instance] : instances_) {
-    if (instance->GetPanelState().kind == mojom::PanelState_Kind::kDetached) {
+    if (instance->GetPanelState().kind == mojom::PanelStateKind::kDetached) {
       return instance.get();
     }
   }

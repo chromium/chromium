@@ -131,7 +131,7 @@ GlicInstanceImpl::GlicInstanceImpl(
           std::make_unique<GlicPinnedTabManager>(profile, this, metrics),
           profile,
           metrics),
-      last_non_hidden_panel_state_kind_(mojom::PanelState_Kind::kAttached),
+      last_non_hidden_panel_state_kind_(mojom::PanelStateKind::kAttached),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
               &sharing_manager_,
@@ -160,7 +160,7 @@ bool GlicInstanceImpl::IsShowing() const {
 }
 
 bool GlicInstanceImpl::IsAttached() {
-  return GetPanelState().kind == mojom::PanelState_Kind::kAttached;
+  return GetPanelState().kind == mojom::PanelStateKind::kAttached;
 }
 
 gfx::Size GlicInstanceImpl::GetPanelSize() {
@@ -529,7 +529,7 @@ void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
     std::optional<EmbedderKey> new_key) {
   active_embedder_key_ = new_key;
   if (last_non_hidden_panel_state_kind_ != GetPanelState().kind &&
-      GetPanelState().kind != mojom::PanelState_Kind::kHidden) {
+      GetPanelState().kind != mojom::PanelStateKind::kHidden) {
     last_non_hidden_panel_state_kind_ = GetPanelState().kind;
   }
   NotifyStateChange();
@@ -680,7 +680,7 @@ mojom::PanelState GlicInstanceImpl::GetPanelState() {
     return embedder->GetPanelState();
   }
   mojom::PanelState panel_state;
-  panel_state.kind = mojom::PanelState_Kind::kHidden;
+  panel_state.kind = mojom::PanelStateKind::kHidden;
   return panel_state;
 }
 

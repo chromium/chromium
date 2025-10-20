@@ -42,7 +42,7 @@ void GlicOcclusionNotifier::PanelStateChanged(
     return;
   }
 
-  if (panel_state.kind == mojom::PanelState_Kind::kDetached) {
+  if (panel_state.kind == mojom::PanelStateKind::kDetached) {
     tracker->OnPictureInPictureWidgetOpened(context.glic_widget);
   } else {
     tracker->RemovePictureInPictureWidget(context.glic_widget);

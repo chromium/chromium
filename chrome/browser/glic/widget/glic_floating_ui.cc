@@ -44,7 +44,7 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
   glic_panel_hotkey_manager_ =
       MakeGlicWindowHotkeyManager(weak_ptr_factory_.GetWeakPtr());
   CreateAndSetupWidget(initial_bounds);
-  panel_state_.kind = mojom::PanelState_Kind::kDetached;
+  panel_state_.kind = mojom::PanelStateKind::kDetached;
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
   tracker->OnPictureInPictureWidgetOpened(glic_widget_.get());

@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testThereCanOnlyBeOneFloaty) {
   GlicInstanceImpl* tab0_instance = GetGlicInstanceImpl();
   // Execute test on the first tab instance.
   ExecuteJsTest({.params = base::Value("first")});
-  ASSERT_EQ(mojom::PanelState_Kind::kDetached,
+  ASSERT_EQ(mojom::PanelStateKind::kDetached,
             tab0_instance->GetPanelState().kind);
 
   // Select the second tab, open Floaty, and execute the test on the second
@@ -950,9 +950,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testThereCanOnlyBeOneFloaty) {
   // Continue on the first tab. Verify there's only one Floaty.
   TrackGlicInstanceWithTabIndex(0);
   ContinueJsTest();
-  ASSERT_EQ(mojom::PanelState_Kind::kDetached,
+  ASSERT_EQ(mojom::PanelStateKind::kDetached,
             tab1_instance->GetPanelState().kind);
-  ASSERT_EQ(mojom::PanelState_Kind::kHidden,
+  ASSERT_EQ(mojom::PanelStateKind::kHidden,
             tab0_instance->GetPanelState().kind);
 }
 

@@ -405,7 +405,7 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
 
  private:
   mojom::PanelState panel_state_ =
-      mojom::PanelState(mojom::PanelState_Kind::kDetached, std::nullopt);
+      mojom::PanelState(mojom::PanelStateKind::kDetached, std::nullopt);
 };
 
 // Manages hosts. Note, this is a stopgap that will be replaced by something
