@@ -224,8 +224,6 @@ class KeyboardAccessoryView extends LinearLayout {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
             LinearLayout barContents = findViewById(R.id.accessory_bar_contents);
-            // TODO: crbug.com/385172647 - Figure out if the height needs to be increased even if
-            // there are no suggestions displayed.
             barContents.setMinimumHeight(
                     getResources()
                             .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign));
