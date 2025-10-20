@@ -142,6 +142,14 @@ chromium-metrics-reviews@google.com.
   <variant name="MF_MEDIA_ENGINE_ERR_SRC_NOT_SUPPORTED"/>
 </variants>
 
+<variants name="RenderedVideoFrameDetectionResultReason">
+  <variant name="Detected"/>
+  <variant name="NotDetected"/>
+  <variant name="UnknownByPlaybackEnd"/>
+  <variant name="UnknownByPlaybackError"/>
+  <variant name="UnknownByShutdown"/>
+</variants>
+
 <variants name="RendererType">
   <variant name="MediaFoundationRenderer"/>
   <variant name="RendererImpl"/>
@@ -5005,6 +5013,19 @@ chromium-metrics-reviews@google.com.
     Recorded when the MediaFoundationRenderer detects one or more rendered video
     frame within the given time. Only reported once per playback.
   </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaFoundationRenderer.RenderedVideoFrameDetectionResult.TimeTo.{ResultReason}"
+    units="ms" expires_after="2026-03-22">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Time in milliseconds from when MediaFoundationRenderer reports the result
+    whether one or more rendered video frame within the given time for
+    {ResultReason}. Only reported once per playback.
+  </summary>
+  <token key="ResultReason" variants="RenderedVideoFrameDetectionResultReason"/>
 </histogram>
 
 <histogram name="Media.MediaHistory.DatabaseExists" enum="Boolean"

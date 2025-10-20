@@ -76,11 +76,14 @@ class MEDIA_EXPORT MediaFoundationRenderer
   //
   // LINT.IfChange(RenderedVideoFrameDetectionResult)
   enum class RenderedVideoFrameDetectionResult {
-    kUnknown = 0,      // Unknown or video playback ended too early.
+    // kUnknown = 0,      // Deprecated.
     kDetected = 1,     // Rendered video frames detected within the given time.
     kNotDetected = 2,  // Rendered video frames NOT detected.
+    kUnknownByPlaybackError = 3,  // Unknown due to a playback error.
+    kUnknownByPlaybackEnd = 4,    // Unknown due to an early playback end.
+    kUnknownByShutdown = 5,       // Unknown due to an early shutdown.
     // Add new values here and update `kMaxValue`. Never reuse existing values.
-    kMaxValue = kNotDetected,
+    kMaxValue = kUnknownByShutdown,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/media/enums.xml:MediaFoundationRendererRenderedVideoFrameDetectionResult)
 
@@ -117,6 +120,14 @@ class MEDIA_EXPORT MediaFoundationRenderer
   void SetGpuProcessAdapterLuid(LUID gpu_process_adapter_luid);
 
  private:
+  enum class StopSendingStatisticsReason {
+    kPlaybackEnded = 0,          // Playback ended
+    kPlaybackPauseInternal = 1,  // Playback internal pause
+    kPlaybackError = 2,          // Playback error occurred
+    kShutdown = 3,               // Shutdown (destructor)
+    kMaxValue = kShutdown,
+  };
+
   HRESULT CreateMediaEngine(MediaResource* media_resource);
   HRESULT InitializeDXGIDeviceManager();
   HRESULT InitializeVirtualVideoWindow();
@@ -125,8 +136,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   HRESULT PopulateStatistics(PipelineStatistics& statistics);
   void SendStatistics();
   void StartSendingStatistics();
-  void StopSendingStatistics(
-      bool conclude_rendered_video_frame_detection = true);
+  void StopSendingStatistics(StopSendingStatisticsReason reason);
   bool NeedRenderedVideoFrameDetection();
   void CheckRenderedVideoFrame(const PipelineStatistics& stats);
   void RestartRenderedVideoFrameDetectionTimerInNotReported();

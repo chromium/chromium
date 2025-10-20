@@ -1379,9 +1379,12 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(MediaFoundationRendererRenderedVideoFrameDetectionResult) -->
 
 <enum name="MediaFoundationRendererRenderedVideoFrameDetectionResult">
-  <int value="0" label="kUnknown"/>
+  <int value="0" label="kUnknown (deprecated)"/>
   <int value="1" label="kDetected"/>
   <int value="2" label="kNotDetected"/>
+  <int value="3" label="kUnknownByPlaybackError"/>
+  <int value="4" label="kUnknownByPlaybackEnd"/>
+  <int value="5" label="kUnknownByShutdown"/>
 </enum>
 
 <!-- LINT.ThenChange(/media/renderers/win/media_foundation_renderer.h:RenderedVideoFrameDetectionResult) -->
