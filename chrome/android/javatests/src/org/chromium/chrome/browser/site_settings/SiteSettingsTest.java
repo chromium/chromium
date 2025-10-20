@@ -44,7 +44,6 @@ import static org.chromium.ui.test.util.ViewUtils.waitForViewCheckingState;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -3537,16 +3536,17 @@ public class SiteSettingsTest {
                 });
     }
 
+    // Due to bug DefaultPassthroughCommandDecoder feature needs to be on whenever
+    // BaseSwitches.ENABLE_LOW_END_DEVICE_MODE feature is on to avoid crash.
+    // See https://issues.chromium.org/448715624
     @Test
     @SmallTest
     @Feature({"Preferences"})
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
-    @DisableIf.Build(
-            sdk_equals = Build.VERSION_CODES.Q,
-            message =
-                    "https://crbug.com/448715624: Test is crashing with"
-                            + " --disable-field-trial-config")
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        "DefaultPassthroughCommandDecoder"
+    })
     public void testAddingJavascriptOptimizerExceptionsBlockedIfNotEnoughRam() {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
