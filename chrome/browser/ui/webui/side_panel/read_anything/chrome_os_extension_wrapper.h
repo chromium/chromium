@@ -9,6 +9,7 @@
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/extensions/extension_service.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 using ash::language_packs::GetPackStateCallback;
 using ash::language_packs::LanguagePackManager;
@@ -17,20 +18,22 @@ using ash::language_packs::OnInstallCompleteCallback;
 
 class ChromeOsExtensionWrapper {
  public:
-  ChromeOsExtensionWrapper() = default;
-  virtual ~ChromeOsExtensionWrapper() = default;
+  ChromeOsExtensionWrapper();
+  virtual ~ChromeOsExtensionWrapper();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Returns true if the engine is already awake and does not invoke the
-  // callback. Returns false if the engine is not yet awake and invokes the
-  // callback when the wake attempt returns, successfully or unsuccessfuly.
-  virtual bool WakeEngine(Profile* profile,
-                          base::OnceCallback<void(bool)> callback);
-
+  virtual void ActivateSpeechEngine(Profile* profile);
+  virtual void ReleaseSpeechEngine(Profile* profile);
   virtual void RequestLanguageInfo(const std::string& language,
                                    GetPackStateCallback callback);
   virtual void RequestLanguageInstall(const std::string& language,
                                       OnInstallCompleteCallback callback);
+
+ private:
+  void UpdateSpeechEngineKeepaliveCount(Profile* profile, bool increment);
+
+  std::map<extensions::WorkerId, base::Uuid> keepalive_uuids_;
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

@@ -125,9 +125,8 @@ class MockChromeOsExtensionWrapper : public ChromeOsExtensionWrapper {
   MockChromeOsExtensionWrapper() = default;
   ~MockChromeOsExtensionWrapper() override = default;
 
-  MOCK_METHOD(bool,
-              WakeEngine,
-              (Profile * profile, base::OnceCallback<void(bool)> callback));
+  MOCK_METHOD(void, ActivateSpeechEngine, (Profile * profile));
+  MOCK_METHOD(void, ReleaseSpeechEngine, (Profile * profile));
   MOCK_METHOD(void,
               RequestLanguageInfo,
               (const std::string& language, GetPackStateCallback callback));
@@ -141,6 +140,18 @@ class MockChromeOsExtensionWrapper : public ChromeOsExtensionWrapper {
 class TestReadAnythingUntrustedPageHandler
     : public ReadAnythingUntrustedPageHandler {
  public:
+#if BUILDFLAG(IS_CHROMEOS)
+  explicit TestReadAnythingUntrustedPageHandler(
+      mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
+      content::WebUI* test_web_ui,
+      std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper)
+      : ReadAnythingUntrustedPageHandler(
+            std::move(page),
+            mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>(),
+            test_web_ui,
+            /*use_screen_ai_service=*/false,
+            std::move(extension_wrapper)) {}
+#else
   explicit TestReadAnythingUntrustedPageHandler(
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
       content::WebUI* test_web_ui)
@@ -149,7 +160,7 @@ class TestReadAnythingUntrustedPageHandler
             mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>(),
             test_web_ui,
             /*use_screen_ai_service=*/false) {}
-
+#endif
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             const ui::AXNodeID& target_node_id) override {
     OnImageDataDownloaded(target_tree_id, target_node_id, /*id=*/0,
@@ -253,6 +264,21 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
     test_web_ui_.reset();
     web_contents_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  std::unique_ptr<TestReadAnythingUntrustedPageHandler> CreateHandler() {
+#if BUILDFLAG(IS_CHROMEOS)
+    std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_mock =
+        std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
+    extension_wrapper_ptr_ = static_cast<MockChromeOsExtensionWrapper*>(
+        extension_wrapper_mock.get());
+    return std::make_unique<TestReadAnythingUntrustedPageHandler>(
+        page_.BindAndGetRemote(), test_web_ui_.get(),
+        std::move(extension_wrapper_mock));
+#else
+    return std::make_unique<TestReadAnythingUntrustedPageHandler>(
+        page_.BindAndGetRemote(), test_web_ui_.get());
+#endif
   }
 
   ReadAnythingSidePanelController* side_panel_controller() {
@@ -428,8 +454,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
           testing::IsEmpty(), expected_highlight_granularity))
       .Times(1);
 
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -438,8 +463,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       read_anything::mojom::LineSpacing::kLoose;
   const read_anything::mojom::LineSpacing kSpacing2 =
       read_anything::mojom::LineSpacing::kStandard;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnLineSpaceChange(kSpacing1);
   int spacing1 = browser()->profile()->GetPrefs()->GetInteger(
@@ -458,8 +482,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       read_anything::mojom::LetterSpacing::kVeryWide;
   const read_anything::mojom::LetterSpacing kSpacing2 =
       read_anything::mojom::LetterSpacing::kStandard;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnLetterSpaceChange(kSpacing1);
   const int spacing1 = browser()->profile()->GetPrefs()->GetInteger(
@@ -477,8 +500,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, OnColorChange) {
       read_anything::mojom::Colors::kBlue;
   const read_anything::mojom::Colors kColor2 =
       read_anything::mojom::Colors::kDark;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnColorChange(kColor1);
   const int spacing1 = browser()->profile()->GetPrefs()->GetInteger(
@@ -497,8 +519,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       read_anything::mojom::HighlightGranularity::kPhrase;
   const read_anything::mojom::HighlightGranularity kGranularity2 =
       read_anything::mojom::HighlightGranularity::kOff;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnHighlightGranularityChanged(kGranularity1);
   const int granularity1 = browser()->profile()->GetPrefs()->GetInteger(
@@ -514,8 +535,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, OnFontChange) {
   const char kFont1[] = "Atkinson Hyperlegible Next";
   const char kFont2[] = "Arial";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnFontChange(kFont1);
   const std::string font1 = browser()->profile()->GetPrefs()->GetString(
@@ -531,8 +551,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, OnFontChange) {
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, OnFontSizeChange) {
   const double kFontSize1 = 2;
   const double kFontSize2 = .5;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnFontSizeChange(kFontSize1);
   const double fontSize1 = browser()->profile()->GetPrefs()->GetDouble(
@@ -547,8 +566,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, OnFontSizeChange) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnLinksEnabledChanged) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnLinksEnabledChanged(true);
   const double fontSize1 = browser()->profile()->GetPrefs()->GetBoolean(
@@ -563,8 +581,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnImagesEnabledChanged) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnImagesEnabledChanged(true);
   const double fontSize1 = browser()->profile()->GetPrefs()->GetBoolean(
@@ -581,8 +598,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnSpeechRateChange) {
   const double kRate1 = 1.5;
   const double kRate2 = .8;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnSpeechRateChange(kRate1);
   const double rate1 = browser()->profile()->GetPrefs()->GetDouble(
@@ -600,8 +616,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang1[] = "en-au";
   const char kLang2[] = "en-gb";
   const char kDisabledLang[] = "en-us";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnLanguagePrefChange(kLang1, true);
   OnLanguagePrefChange(kLang2, true);
@@ -617,8 +632,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnLanguagePrefChange_SameLang_StoresLatestInPrefs) {
   const char kLang[] = "bn";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
   PrefService* prefs = browser()->profile()->GetPrefs();
 
   OnLanguagePrefChange(kLang, true);
@@ -639,8 +653,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnLanguagePrefChange_SameLang_StoresOnce) {
   const char kLang[] = "bn";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
   PrefService* prefs = browser()->profile()->GetPrefs();
 
   OnLanguagePrefChange(kLang, true);
@@ -703,8 +716,7 @@ IN_PROC_BROWSER_TEST_F(
             EXPECT_EQ(langs[2].GetString(), kLang3);
           }));
 
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -713,8 +725,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang2[] = "ja";
   const char kVoice1[] = "Ariel";
   const char kVoice2[] = "Sebastian";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnVoiceChange(kVoice1, kLang1);
   OnVoiceChange(kVoice2, kLang2);
@@ -733,8 +744,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang[] = "es-es";
   const char kVoice1[] = "Simba";
   const char kVoice2[] = "Nala";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnVoiceChange(kVoice1, kLang);
   OnVoiceChange(kVoice2, kLang);
@@ -751,8 +761,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang1[] = "pt-pt";
   const char kLang2[] = "pt-br";
   const char kVoice[] = "Peter Parker";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnVoiceChange(kVoice, kLang1);
   OnVoiceChange(kVoice, kLang2);
@@ -766,9 +775,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, BadImageData) {
-  auto test_handler_u_ptr =
-      std::make_unique<TestReadAnythingUntrustedPageHandler>(
-          page_.BindAndGetRemote(), test_web_ui_.get());
+  auto test_handler_u_ptr = CreateHandler();
   auto* test_handler = test_handler_u_ptr.get();
   handler_ = std::move(test_handler_u_ptr);
   auto tree_id = ui::AXTreeID::CreateNewAXTreeID();
@@ -783,8 +790,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnLanguageDetermined_SendsCodeToPage) {
   const char kLang1[] = "id-id";
   const char kLang2[] = "es-us";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
   EXPECT_CALL(page_, SetLanguageCode("en")).Times(1);
 
   OnLanguageDetermined(kLang1);
@@ -797,8 +803,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnLanguageDetermined_SameCodeOnlySentOnce) {
   const char kLang1[] = "id-id";
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
   EXPECT_CALL(page_, SetLanguageCode("en")).Times(1);
 
   OnLanguageDetermined(kLang1);
@@ -810,8 +815,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnLanguageDetermined_UnknownLanguageSendsEmpty) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
   EXPECT_CALL(page_, SetLanguageCode).Times(1);
 
   OnLanguageDetermined(language_detection::kUnknownLanguageCode);
@@ -822,8 +826,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(
     ReadAnythingUntrustedPageHandlerTest,
     OnLanguageDetermined_UnknownLanguageSendsEmptyEveryTime) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
   EXPECT_CALL(page_, SetLanguageCode).Times(1);
 
   OnLanguageDetermined(language_detection::kUnknownLanguageCode);
@@ -839,8 +842,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   details.events = {};
   details.updates = {};
   details.ax_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   AccessibilityEventReceived(details);
 
@@ -850,8 +852,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnActiveAXTreeIDChanged) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnActiveAXTreeIDChanged();
 
@@ -864,8 +865,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang[] = "pt-br";
   SetTranslateSourceLanguage(kLang);
 
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   // Sets the default language code.
   EXPECT_CALL(page_, SetLanguageCode).Times(1);
@@ -875,8 +875,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnActiveAXTreeIDChanged_SendsNewLanguageCode) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
   // The default language code.
   EXPECT_CALL(page_, SetLanguageCode).Times(1);
   const char kLang1[] = "pt-br";
@@ -901,8 +900,7 @@ IN_PROC_BROWSER_TEST_F(
   const char kLang1[] = "pt-br";
   const char kLang2[] = "es-es";
   SetTranslateSourceLanguage(kLang1);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
   EXPECT_CALL(page_, SetLanguageCode).Times(1);
   EXPECT_CALL(page_, SetLanguageCode(kLang1)).Times(1);
 
@@ -919,8 +917,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, GetVoicePackInfo) {
   const char kLang2[] = "en-gb";
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   GetVoicePackInfo(kLang1);
   ASSERT_EQ(kLang1, engine_delegate_.last_requested_status());
@@ -934,8 +931,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, InstallVoicePack) {
   const char kLang2[] = "en-us";
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   InstallVoicePack(kLang1);
   ASSERT_EQ(kLang1, engine_delegate_.last_requested_install());
@@ -949,8 +945,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, UninstallVoice) {
   const char kLang2[] = "en-au";
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   UninstallVoice(kLang1);
   ASSERT_EQ(kLang1, engine_delegate_.last_requested_uninstall());
@@ -964,8 +959,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang[] = "it-it";
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
       GetProfile(), kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
@@ -984,8 +978,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang[] = "it-it";
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
       GetProfile(), kLang, content::LanguageInstallStatus::INSTALLING, "");
@@ -1004,8 +997,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang[] = "it-it";
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
       GetProfile(), kLang, content::LanguageInstallStatus::INSTALLED, "");
@@ -1024,8 +1016,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang[] = "it-it";
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
       GetProfile(), kLang, content::LanguageInstallStatus::FAILED, "");
@@ -1044,8 +1035,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   const char kLang[] = "it-it";
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
       GetProfile(), kLang, content::LanguageInstallStatus::UNKNOWN, "");
@@ -1068,8 +1058,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   Profile* profile3 = InProcessBrowserTest::CreateGuestBrowser()->GetProfile();
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
       profile1, kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
@@ -1106,8 +1095,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                                ->read_anything_side_panel_controller());
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
       profile1, kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
@@ -1148,8 +1136,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                                ->read_anything_side_panel_controller());
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       &engine_delegate_);
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   content::TtsController::GetInstance()->UpdateLanguageStatus(
       profile1, kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
@@ -1166,27 +1153,40 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
           }));
 }
 #else
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       Constructor_ActivatesSpeechEngine) {
+  auto extension_wrapper_mock =
+      std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
+
+  extension_wrapper_ptr_ =
+      static_cast<MockChromeOsExtensionWrapper*>(extension_wrapper_mock.get());
+
+  EXPECT_CALL(*extension_wrapper_ptr_, ActivateSpeechEngine).Times(1);
+
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get(),
+      std::move(extension_wrapper_mock));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       Destructor_ReleasesSpeechEngine) {
+  handler_ = CreateHandler();
+
+  EXPECT_CALL(*extension_wrapper_ptr_, ReleaseSpeechEngine).Times(1);
+  extension_wrapper_ptr_ = nullptr;
+  handler_.reset();
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, GetVoicePackInfo) {
   const char kLang[] = "en-us";
   PackResult result;
   result.pack_state = PackResult::StatusCode::kInProgress;
   result.operation_error = PackResult::ErrorCode::kNone;
   result.language_code = kLang;
-  std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_mock =
-      std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
-  extension_wrapper_ptr_ =
-      static_cast<MockChromeOsExtensionWrapper*>(extension_wrapper_mock.get());
-  ON_CALL(*extension_wrapper_ptr_, WakeEngine)
-      .WillByDefault(testing::Return(true));
 
   base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      std::move(extension_wrapper_mock));
+  handler_ = CreateHandler();
 
-  // GetVoicePackInfo should wake the engine and request info.
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine);
   EXPECT_CALL(*extension_wrapper_ptr_, RequestLanguageInfo)
       .WillOnce(
           [&](const std::string& language, GetPackStateCallback callback) {
@@ -1212,64 +1212,19 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   result.pack_state = PackResult::StatusCode::kUnknown;
   result.operation_error = PackResult::ErrorCode::kWrongId;
   result.language_code = kLang;
-  std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_mock =
-      std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
-  extension_wrapper_ptr_ =
-      static_cast<MockChromeOsExtensionWrapper*>(extension_wrapper_mock.get());
-  ON_CALL(*extension_wrapper_ptr_, WakeEngine)
-      .WillByDefault(testing::Return(true));
+
+  base::RunLoop run_loop;
+  handler_ = CreateHandler();
+
   ON_CALL(*extension_wrapper_ptr_, RequestLanguageInfo)
       .WillByDefault(
           [&](const std::string& language, GetPackStateCallback callback) {
             std::move(callback).Run(result);
           });
-
-  base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      std::move(extension_wrapper_mock));
-
-  // GetVoicePackInfo should wake the engine and request info.
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine);
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
       .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
         EXPECT_EQ(kLang, info->language);
         EXPECT_EQ(read_anything::mojom::ErrorCode::kWrongId,
-                  info->pack_state->get_error_code());
-        run_loop.Quit();
-      });
-
-  GetVoicePackInfo(kLang);
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       GetVoicePackInfo_EngineFailsToWake_SendsErrorResult) {
-  const char kLang[] = "en-us";
-  std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_mock =
-      std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
-  extension_wrapper_ptr_ =
-      static_cast<MockChromeOsExtensionWrapper*>(extension_wrapper_mock.get());
-  ON_CALL(*extension_wrapper_ptr_, WakeEngine)
-      .WillByDefault(
-          [&](Profile* profile, base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(false);
-            return false;
-          });
-
-  base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      std::move(extension_wrapper_mock));
-
-  // GetVoicePackInfo should wake the engine and request info.
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine);
-  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ("", info->language);
-        EXPECT_EQ(read_anything::mojom::ErrorCode::kNotReached,
                   info->pack_state->get_error_code());
         run_loop.Quit();
       });
@@ -1284,21 +1239,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, InstallVoicePack) {
   result.pack_state = PackResult::StatusCode::kInstalled;
   result.operation_error = PackResult::ErrorCode::kNone;
   result.language_code = kLang;
-  std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_mock =
-      std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
-  extension_wrapper_ptr_ =
-      static_cast<MockChromeOsExtensionWrapper*>(extension_wrapper_mock.get());
-  ON_CALL(*extension_wrapper_ptr_, WakeEngine)
-      .WillByDefault(testing::Return(true));
 
   base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      std::move(extension_wrapper_mock));
+  handler_ = CreateHandler();
 
-  // InstallVoicePack should wake the engine and request installation.
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine).Times(2);
   EXPECT_CALL(*extension_wrapper_ptr_, RequestLanguageInstall)
       .WillOnce(
           [&](const std::string& language, OnInstallCompleteCallback callback) {
@@ -1330,25 +1274,15 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   result.pack_state = PackResult::StatusCode::kUnknown;
   result.operation_error = PackResult::ErrorCode::kWrongId;
   result.language_code = kLang;
-  std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_mock =
-      std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
-  extension_wrapper_ptr_ =
-      static_cast<MockChromeOsExtensionWrapper*>(extension_wrapper_mock.get());
-  ON_CALL(*extension_wrapper_ptr_, WakeEngine)
-      .WillByDefault(testing::Return(true));
+
+  base::RunLoop run_loop;
+  handler_ = CreateHandler();
+
   ON_CALL(*extension_wrapper_ptr_, RequestLanguageInstall)
       .WillByDefault(
           [&](const std::string& language, OnInstallCompleteCallback callback) {
             std::move(callback).Run(result);
           });
-
-  base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      std::move(extension_wrapper_mock));
-
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine);
   EXPECT_CALL(page_, OnGetVoicePackInfo)
       .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
         EXPECT_EQ(kLang, info->language);
@@ -1374,20 +1308,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   result2.pack_state = PackResult::StatusCode::kNotInstalled;
   result2.operation_error = PackResult::ErrorCode::kNone;
   result2.language_code = kLang2;
-  std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_mock =
-      std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
-  extension_wrapper_ptr_ =
-      static_cast<MockChromeOsExtensionWrapper*>(extension_wrapper_mock.get());
-  ON_CALL(*extension_wrapper_ptr_, WakeEngine)
-      .WillByDefault(testing::Return(true));
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      std::move(extension_wrapper_mock));
+  handler_ = CreateHandler();
 
   // Send two info requests. Only the first should be processed.
   GetPackStateCallback callback1;
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine).Times(1);
   EXPECT_CALL(*extension_wrapper_ptr_, RequestLanguageInfo)
       .WillOnce(
           [&](const std::string& language, GetPackStateCallback callback) {
@@ -1399,7 +1323,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   // After we get the result from the first request, then send the second one.
   GetPackStateCallback callback2;
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine).Times(1);
   EXPECT_CALL(*extension_wrapper_ptr_, RequestLanguageInfo)
       .WillOnce(
           [&](const std::string& language, GetPackStateCallback callback) {
@@ -1438,21 +1361,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   result2.pack_state = PackResult::StatusCode::kNotInstalled;
   result2.operation_error = PackResult::ErrorCode::kNone;
   result2.language_code = kLang2;
-  std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_mock =
-      std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
-  extension_wrapper_ptr_ =
-      static_cast<MockChromeOsExtensionWrapper*>(extension_wrapper_mock.get());
-  ON_CALL(*extension_wrapper_ptr_, WakeEngine)
-      .WillByDefault(testing::Return(true));
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      std::move(extension_wrapper_mock));
+  handler_ = CreateHandler();
 
   // Send two requests. Only the first install request should be processed.
   OnInstallCompleteCallback installCallback;
   GetPackStateCallback infoCallback;
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine).Times(1);
   EXPECT_CALL(*extension_wrapper_ptr_, RequestLanguageInstall)
       .WillOnce(
           [&](const std::string& language, OnInstallCompleteCallback callback) {
@@ -1464,7 +1377,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   // After getting the install callback, we first request info for that
   // language, and that request should go through right away.
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine).Times(1);
   EXPECT_CALL(*extension_wrapper_ptr_, RequestLanguageInfo)
       .WillOnce(
           [&](const std::string& language, GetPackStateCallback callback) {
@@ -1474,7 +1386,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   std::move(installCallback).Run(result1);
 
   // After getting the info callback, move to the next language in the queue.
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine).Times(1);
   EXPECT_CALL(*extension_wrapper_ptr_, RequestLanguageInstall)
       .WillOnce(
           [&](const std::string& language, OnInstallCompleteCallback callback) {
@@ -1485,7 +1396,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   // After receiving the install callback for lang2, we should request the
   // status for that.
-  EXPECT_CALL(*extension_wrapper_ptr_, WakeEngine).Times(1);
   EXPECT_CALL(*extension_wrapper_ptr_, RequestLanguageInfo)
       .WillOnce(
           [&](const std::string& language, GetPackStateCallback callback) {
@@ -1513,8 +1423,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, OnTabWillDetach) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnTabWillDetach();
   EXPECT_CALL(page_, OnTabWillDetach).Times(1);
@@ -1523,8 +1432,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, OnTabWillDetach) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnTabWillDetach_SendsOnce) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   OnTabWillDetach();
   OnTabWillDetach();
@@ -1534,8 +1442,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 }
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnTabWillDetach_ResetsAudio) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
   handler_->OnReadAloudAudioStateChange(true);
 
   OnTabWillDetach();
@@ -1546,8 +1453,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        Activate_OnDeactivateTab_NotifiesPage) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   Activate(false);
   EXPECT_CALL(page_, OnReadingModeHidden).Times(1);
@@ -1555,8 +1461,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        Activate_OnActivateTab_DoesNotNotifyPage) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   Activate(true);
   EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
@@ -1564,8 +1469,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        DidUpdateAudioMutingState) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   handler_->DidUpdateAudioMutingState(true);
   EXPECT_CALL(page_, OnTabMuteStateChange(true)).Times(1);
@@ -1575,8 +1479,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnReadAloudAudioStateChange) {
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
+  handler_ = CreateHandler();
 
   ASSERT_FALSE(HasAudio());
   handler_->OnReadAloudAudioStateChange(true);
