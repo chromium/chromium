@@ -381,6 +381,7 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   if (logs_uploader_) {
     logs_uploader_->SetFlowInterrupted();
   }
+  login_state_checker_.reset();
   navigation_observer_.reset();
   submission_verifier_.reset();
   form_finder_.reset();
