@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/download/ui/download_manager_constants.h"
 #import "ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -26,7 +27,8 @@ void ConfirmDownloadReplacingRequest::CreateAuxiliaryData(
   alert_overlays::AlertRequest::CreateForUserData(
       user_data, GetNSString(IDS_IOS_DOWNLOAD_MANAGER_REPLACE_CONFIRMATION),
       GetNSString(IDS_IOS_DOWNLOAD_MANAGER_REPLACE_CONFIRMATION_MESSAGE),
-      /*accessibility_identifier=*/nil,
+      /*accessibility_identifier=*/
+      kDownloadManagerDownloadReplacingOverlayAccessibilityIdentifier,
       /*text_fields=*/nil, buttons,
       GetConfirmationResponseConverter(/*confirm_button_row_index=*/0));
 }

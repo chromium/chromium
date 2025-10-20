@@ -15,6 +15,8 @@ extern NSString* const kDownloadManagerOpenInDriveAccessibilityIdentifier;
 extern NSString* const kDownloadManagerInstallAppAccessibilityIdentifier;
 extern NSString* const kDownloadManagerTryAgainAccessibilityIdentifier;
 extern NSString* const kDownloadManagerCloseButtonAccessibilityIdentifier;
+extern NSString* const
+    kDownloadManagerDownloadReplacingOverlayAccessibilityIdentifier;
 
 // Duration for all animations used in Download Manager.
 extern const NSTimeInterval kDownloadManagerAnimationDuration;

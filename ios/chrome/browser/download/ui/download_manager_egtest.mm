@@ -5,6 +5,7 @@
 #import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/download/model/download_app_interface.h"
 #import "ios/chrome/browser/download/ui/download_egtest_util.h"
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
@@ -98,6 +99,34 @@ void ScrollToTop() {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+
+  GREYAssert(WaitForDownloadButton(/*loading*/ true),
+             @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+}
+
+// Tests successful download, after tapping the download button in the web page
+// twice, up to the point where "Open in..." button is presented. EarlGrey does
+// not allow testing "Open in..." dialog, because it is run in a separate
+// process.
+- (void)testSuccessfulDownloadAfterTappingPageDownloadButtonTwice {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+
+  GREYAssert(WaitForDownloadButton(/*loading*/ true),
+             @"Download button did not show up");
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(
+              kDownloadManagerDownloadReplacingOverlayAccessibilityIdentifier)];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_OK)] performAction:grey_tap()];
 
   GREYAssert(WaitForDownloadButton(/*loading*/ true),
              @"Download button did not show up");
