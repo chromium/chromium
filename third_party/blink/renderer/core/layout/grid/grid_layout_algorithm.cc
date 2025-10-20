@@ -998,120 +998,66 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
                                                       : BlockContributionSize();
       break;
     case GridItemContributionType::kForIntrinsicMinimums: {
-      // TODO(ikilpatrick): All of the below is incorrect for replaced elements.
-      const auto& main_length = is_parallel_with_track_direction
-                                    ? item_style.LogicalWidth()
-                                    : item_style.LogicalHeight();
-      const auto& min_length = is_parallel_with_track_direction
-                                   ? item_style.LogicalMinWidth()
-                                   : item_style.LogicalMinHeight();
+      // See https://drafts.csswg.org/css-grid/#min-size-auto for more details
+      // on the special logic applied for intrinsic minimums.
+      //
+      // Per the spec link above, we apply the automatic min when:
+      // - it spans at least one track in that axis whose min track sizing
+      // function is auto.
+      // - if it spans more than one track in that axis, none of those tracks
+      // are flexible.
+      const bool special_spanning_criteria =
+          !grid_item->IsSpanningAutoMinimumTrack(track_direction) ||
+          (grid_item->IsSpanningFlexibleTrack(track_direction) &&
+           grid_item->SpanSize(track_direction) > 1);
 
-      // We could be clever is and make this an if-stmt, but each type has
-      // subtle consequences. This forces us in the future when we add a new
-      // length type to consider what the best thing is for grid.
-      switch (main_length.GetType()) {
-        case Length::kAuto:
-        case Length::kFitContent:
-        case Length::kStretch:
-        case Length::kPercent:
-        case Length::kCalculated: {
-          const auto border_padding =
-              ComputeBorders(space, node) + ComputePadding(space, item_style);
+      const LayoutUnit min_content_contribution =
+          is_parallel_with_track_direction ? MinContentSize()
+                                           : BlockContributionSize();
+      const LayoutUnit max_content_contribution =
+          is_parallel_with_track_direction ? MaxContentSize()
+                                           : min_content_contribution;
 
-          // All of the above lengths are considered 'auto' if we are querying a
-          // minimum contribution. They all require definite track sizes to
-          // determine their final size.
-          //
-          // From https://drafts.csswg.org/css-grid/#min-size-auto:
-          //   To provide a more reasonable default minimum size for grid items,
-          //   the used value of its automatic minimum size in a given axis is
-          //   the content-based minimum size if all of the following are true:
-          //     - it is not a scroll container
-          //     - it spans at least one track in that axis whose min track
-          //     sizing function is 'auto'
-          //     - if it spans more than one track in that axis, none of those
-          //     tracks are flexible
-          //   Otherwise, the automatic minimum size is zero, as usual.
-          //
-          // Start by resolving the cases where |min_length| is non-auto or its
-          // automatic minimum size should be zero.
-          if (!min_length.HasAuto() || item_style.IsScrollContainer() ||
-              !grid_item->IsSpanningAutoMinimumTrack(track_direction) ||
-              (grid_item->IsSpanningFlexibleTrack(track_direction) &&
-               grid_item->SpanSize(track_direction) > 1)) {
-            // TODO(ikilpatrick): This block needs to respect the aspect-ratio,
-            // and apply the transferred min/max sizes when appropriate. We do
-            // this sometimes elsewhere so should unify and simplify this code.
-            if (is_parallel_with_track_direction) {
-              contribution =
-                  ResolveMinInlineLength(space, item_style, border_padding,
-                                         MinMaxSizesFunc, min_length);
-            } else {
-              contribution = ResolveInitialMinBlockLength(
-                  space, item_style, border_padding, min_length);
-            }
-            break;
-          }
-
-          // Resolve the content-based minimum size.
-          contribution = is_parallel_with_track_direction
-                             ? MinContentSize()
-                             : BlockContributionSize();
-
-          auto spanned_tracks_definite_max_size =
-              track_collection.CalculateSetSpanSize(begin_set_index,
-                                                    end_set_index);
-
-          if (spanned_tracks_definite_max_size != kIndefiniteSize) {
-            // Further clamp the minimum size to less than or equal to the
-            // stretch fit into the grid area’s maximum size in that dimension,
-            // as represented by the sum of those grid tracks’ max track sizing
-            // functions plus any intervening fixed gutters.
-            const auto border_padding_sum = is_parallel_with_track_direction
-                                                ? border_padding.InlineSum()
-                                                : border_padding.BlockSum();
-            DCHECK_GE(contribution, baseline_shim + border_padding_sum);
-
-            // The stretch fit into a given size is that size, minus the box’s
-            // computed margins, border, and padding in the given dimension,
-            // flooring at zero so that the inner size is not negative.
-            spanned_tracks_definite_max_size =
-                (spanned_tracks_definite_max_size - baseline_shim - margin_sum -
-                 border_padding_sum)
-                    .ClampNegativeToZero();
-
-            // Add the baseline shim, border, and padding (margins will be added
-            // later) back to the contribution, since we don't want the outer
-            // size of the minimum size to overflow its grid area; these are
-            // already accounted for in the current value of `contribution`.
-            contribution =
-                std::min(contribution, spanned_tracks_definite_max_size +
-                                           baseline_shim + border_padding_sum);
-          }
-          break;
+      MinMaxSizesResult subgrid_minmax_sizes;
+      if (grid_item->IsSubgrid()) {
+        const GridSizingSubtree& subgrid_sizing_subtree =
+            sizing_subtree.SubgridSizingSubtree(*grid_item);
+        if (subgrid_sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(
+                kForColumns)) {
+          subgrid_minmax_sizes = To<GridNode>(node).ComputeSubgridMinMaxSizes(
+              subgrid_sizing_subtree, space);
         }
-        case Length::kMinContent:
-        case Length::kMaxContent:
-        case Length::kFixed: {
-          // All of the above lengths are "definite" (non-auto), and don't need
-          // the special min-size treatment above. (They will all end up being
-          // the specified size).
-          if (is_parallel_with_track_direction) {
-            contribution = main_length.IsMaxContent() ? MaxContentSize()
-                                                      : MinContentSize();
-          } else {
-            contribution = BlockContributionSize();
-          }
-          break;
-        }
-        case Length::kMinIntrinsic:
-        case Length::kFlex:
-        case Length::kExtendToZoom:
-        case Length::kDeviceWidth:
-        case Length::kDeviceHeight:
-        case Length::kNone:
-        case Length::kContent:
-          NOTREACHED();
+      }
+
+      bool maybe_clamp = false;
+      contribution = CalculateIntrinsicMinimumContribution(
+          is_parallel_with_track_direction, special_spanning_criteria,
+          min_content_contribution, max_content_contribution, space,
+          subgrid_minmax_sizes, grid_item, maybe_clamp);
+
+      if (!maybe_clamp) {
+        break;
+      }
+
+      // Further clamp the minimum size to less than or equal to the
+      // stretch fit into the grid area’s maximum size in that dimension,
+      // as represented by the sum of those grid tracks’ max track sizing
+      // functions plus any intervening fixed gutters.
+      auto spanned_tracks_definite_max_size =
+          track_collection.CalculateSetSpanSize(begin_set_index, end_set_index);
+      if (spanned_tracks_definite_max_size != kIndefiniteSize) {
+        contribution += margin_sum;
+        const auto border_padding =
+            ComputeBorders(space, node) + ComputePadding(space, item_style);
+        const auto border_padding_sum = is_parallel_with_track_direction
+                                            ? border_padding.InlineSum()
+                                            : border_padding.BlockSum();
+
+        contribution = ClampIntrinsicMinSize(
+            contribution,
+            /*min_clamp_size=*/margin_sum + baseline_shim + border_padding_sum,
+            spanned_tracks_definite_max_size);
+        contribution -= margin_sum;
       }
       break;
     }

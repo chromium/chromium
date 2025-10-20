@@ -22,6 +22,7 @@ struct BoxStrut;
 struct GridItemData;
 struct LogicalOffset;
 struct LogicalSize;
+struct MinMaxSizesResult;
 
 // Update the provided `available_size`, `min_available_size`, and
 // `max_available_size` to their appropriate values.
@@ -65,6 +66,45 @@ void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
                                  LogicalStaticPosition::InlineEdge* inline_edge,
                                  LogicalStaticPosition::BlockEdge* block_edge,
                                  LogicalOffset* offset);
+
+// Per the Grid spec [1] there is special logic for the contribution size to use
+// for intrinsic minimums. This method returns the contribution size of
+// `grid_item` given the provided variables.
+//
+// When `special_spanning_criteria` is true, always use the automatic minimum
+// size - this usually happens when an item spans at least one track with a min
+// track size of 'auto' or if an item spans more than one non-flexible track.
+// However, in masonry, we don't have this information when initially
+// calculating the virtual item contributions, so masonry needs this var to
+// force this to both true and false to get both potential contributions for use
+// later when more information is known about the tracks a virtual item spans.
+//
+// `min_content_contribution` and `max_content_contribution` are the content
+// based min and maximums for the provided `grid_item` respectively. If the item
+// is a subgrid, `subgrid_minmax_sizes` will be the min/max size result for the
+// subgrid.
+//
+// This method will set `maybe_clamp` to true if the content based contribution
+// was returned and should be considered for clamping. Otherwise, it will be set
+// to false.
+//
+// [1] https://drafts.csswg.org/css-grid/#min-size-auto
+LayoutUnit CalculateIntrinsicMinimumContribution(
+    bool is_parallel_with_track_direction,
+    bool special_spanning_criteria,
+    const LayoutUnit min_content_contribution,
+    const LayoutUnit max_content_contribution,
+    const ConstraintSpace& space,
+    const MinMaxSizesResult& subgrid_minmax_sizes,
+    const GridItemData* grid_item,
+    bool& maybe_clamp);
+
+// Return `min_content_contribution` clamped by
+// `spanned_tracks_definite_max_size` up to `min_clamp_size`. `min_clamp_size`
+// usually represents the sum of border/padding, margins, and the baseline shim.
+LayoutUnit ClampIntrinsicMinSize(LayoutUnit min_content_contribution,
+                                 LayoutUnit min_clamp_size,
+                                 LayoutUnit spanned_tracks_definite_max_size);
 
 }  // namespace blink
 

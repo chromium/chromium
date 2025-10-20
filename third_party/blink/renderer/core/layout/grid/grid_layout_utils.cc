@@ -435,4 +435,114 @@ void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
   }
 }
 
+LayoutUnit CalculateIntrinsicMinimumContribution(
+    bool is_parallel_with_track_direction,
+    bool special_spanning_criteria,
+    const LayoutUnit min_content_contribution,
+    const LayoutUnit max_content_contribution,
+    const ConstraintSpace& space,
+    const MinMaxSizesResult& subgrid_minmax_sizes,
+    const GridItemData* grid_item,
+    bool& maybe_clamp) {
+  CHECK(grid_item);
+  const auto& node = grid_item->node;
+  const ComputedStyle& item_style = node.Style();
+  maybe_clamp = false;
+
+  // TODO(ikilpatrick): All of the below is incorrect for replaced elements.
+  const auto& main_length = is_parallel_with_track_direction
+                                ? item_style.LogicalWidth()
+                                : item_style.LogicalHeight();
+  const auto& min_length = is_parallel_with_track_direction
+                               ? item_style.LogicalMinWidth()
+                               : item_style.LogicalMinHeight();
+
+  // We could be clever and make this an if-stmt, but each type has
+  // subtle consequences. This forces us in the future when we add a new
+  // length type to consider what the best thing is for grid.
+  switch (main_length.GetType()) {
+    case Length::kAuto:
+    case Length::kFitContent:
+    case Length::kStretch:
+    case Length::kPercent:
+    case Length::kCalculated: {
+      const auto border_padding =
+          ComputeBorders(space, node) + ComputePadding(space, item_style);
+
+      // All of the above lengths are considered 'auto' if we are querying a
+      // minimum contribution. They all require definite track sizes to
+      // determine their final size.
+      //
+      // From https://drafts.csswg.org/css-grid/#min-size-auto:
+      //   To provide a more reasonable default minimum size for grid items,
+      //   the used value of its automatic minimum size in a given axis is
+      //   the content-based minimum size if all of the following are true:
+      //     - it is not a scroll container
+      //     - it spans at least one track in that axis whose min track
+      //     sizing function is 'auto'
+      //     - if it spans more than one track in that axis, none of those
+      //     tracks are flexible
+      //   Otherwise, the automatic minimum size is zero, as usual.
+      //
+      // Start by resolving the cases where |min_length| is non-auto or its
+      // automatic minimum size should be zero.
+      if (!min_length.HasAuto() || item_style.IsScrollContainer() ||
+          special_spanning_criteria) {
+        // TODO(ikilpatrick): This block needs to respect the aspect-ratio,
+        // and apply the transferred min/max sizes when appropriate. We do
+        // this sometimes elsewhere so should unify and simplify this code.
+        if (is_parallel_with_track_direction) {
+          auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
+            if (grid_item->IsSubgrid()) {
+              return subgrid_minmax_sizes;
+            }
+            return node.ComputeMinMaxSizes(item_style.GetWritingMode(), type,
+                                           space);
+          };
+          return ResolveMinInlineLength(space, item_style, border_padding,
+                                        MinMaxSizesFunc, min_length);
+        } else {
+          return ResolveInitialMinBlockLength(space, item_style, border_padding,
+                                              min_length);
+        }
+      }
+
+      maybe_clamp = true;
+      return min_content_contribution;
+    }
+    case Length::kMinContent:
+    case Length::kMaxContent:
+    case Length::kFixed: {
+      // All of the above lengths are "definite" (non-auto), and don't need
+      // the special min-size treatment above. (They will all end up being
+      // the specified size).
+      return main_length.IsMaxContent() ? max_content_contribution
+                                        : min_content_contribution;
+    }
+    case Length::kMinIntrinsic:
+    case Length::kFlex:
+    case Length::kExtendToZoom:
+    case Length::kDeviceWidth:
+    case Length::kDeviceHeight:
+    case Length::kNone:
+    case Length::kContent:
+      NOTREACHED();
+  }
+}
+
+LayoutUnit ClampIntrinsicMinSize(LayoutUnit min_content_contribution,
+                                 LayoutUnit min_clamp_size,
+                                 LayoutUnit spanned_tracks_definite_max_size) {
+  CHECK_NE(spanned_tracks_definite_max_size, kIndefiniteSize);
+  DCHECK_GE(min_content_contribution, min_clamp_size);
+
+  // Don't clamp beyond `min_clamp_size`, which usually represents
+  // the sum of border/padding, margins, and the baseline shim for
+  // the associated item.
+  spanned_tracks_definite_max_size =
+      std::max(spanned_tracks_definite_max_size, min_clamp_size);
+
+  return std::min(min_content_contribution, spanned_tracks_definite_max_size);
+}
+
 }  // namespace blink
