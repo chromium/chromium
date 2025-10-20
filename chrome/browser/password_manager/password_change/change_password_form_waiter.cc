@@ -7,6 +7,8 @@
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -109,7 +111,12 @@ ChangePasswordFormWaiter::Builder::SetFieldsToIgnore(
 
 std::unique_ptr<ChangePasswordFormWaiter>
 ChangePasswordFormWaiter::Builder::Build() {
-  form_waiter_->Init();
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kDownloadModelForPasswordChange)) {
+    form_waiter_->WaitForLocalMLModelAvailability();
+  } else {
+    form_waiter_->Init();
+  }
   return std::move(form_waiter_);
 }
 
@@ -129,6 +136,7 @@ ChangePasswordFormWaiter::~ChangePasswordFormWaiter() {
 }
 
 void ChangePasswordFormWaiter::Init() {
+  model_loaded_subscription_ = {};
   if (PasswordFormCache* cache = GetPasswordFormCache(client_)) {
     for (const auto& manager : cache->GetFormManagers()) {
       if (!IsLikelyChangePasswordForm(manager.get())) {
@@ -154,6 +162,24 @@ void ChangePasswordFormWaiter::Init() {
   if (!web_contents()->IsLoading()) {
     DidStopLoading();
   }
+}
+
+void ChangePasswordFormWaiter::WaitForLocalMLModelAvailability() {
+  if (auto* client =
+          autofill::ContentAutofillClient::FromWebContents(web_contents())) {
+    auto* model_handler =
+        client->GetPasswordManagerFieldClassificationModelHandler();
+
+    if (model_handler && !model_handler->ModelAvailable()) {
+      model_loaded_subscription_ =
+          model_handler->RegisterModelChangeCallback(base::BindRepeating(
+              &ChangePasswordFormWaiter::Init, weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+  }
+
+  // No downloading is required. Initialize waiter immediately.
+  Init();
 }
 
 void ChangePasswordFormWaiter::OnPasswordFormParsed(

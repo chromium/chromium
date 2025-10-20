@@ -8,9 +8,16 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -24,6 +31,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/web_contents_tester.h"
@@ -58,6 +66,25 @@ class MockPasswordManagerDriver
               (override));
 };
 
+class MockFieldClassificationModelHandler
+    : public autofill::FieldClassificationModelHandler {
+ public:
+  MockFieldClassificationModelHandler(
+      optimization_guide::TestOptimizationGuideModelProvider* model_provider)
+      : FieldClassificationModelHandler(
+            model_provider,
+            optimization_guide::proto::OptimizationTarget::
+                OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION) {}
+
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterModelChangeCallback,
+              (autofill::FieldClassificationModelHandler::
+                   ModelChangeCallbackList::CallbackType),
+              (override));
+
+  MOCK_METHOD(bool, ModelAvailable, (), (override, const));
+};
+
 autofill::FormFieldData CreateNonFocusableTestFormField(
     std::string label,
     std::string name,
@@ -86,6 +113,13 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness,
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     OSCryptMocker::SetUp();
+
+    model_provider_ = std::make_unique<
+        optimization_guide::TestOptimizationGuideModelProvider>();
+
+    autofill_client()->set_password_ml_prediction_model_handler(
+        std::make_unique<MockFieldClassificationModelHandler>(
+            model_provider_.get()));
 
     ON_CALL(client_, GetProfilePasswordStore)
         .WillByDefault(Return(password_store_.get()));
@@ -117,10 +151,21 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness,
 
   password_manager::FakeFormFetcher& form_fetcher() { return form_fetcher_; }
 
+  autofill::TestContentAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
+  }
+
+  MockFieldClassificationModelHandler* model_handler() {
+    return static_cast<MockFieldClassificationModelHandler*>(
+        autofill_client()->GetPasswordManagerFieldClassificationModelHandler());
+  }
+
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
   base::test::ScopedFeatureList scoped_feature_list_;
+  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
+      autofill_client_injector_;
   MockChromePasswordManagerClient client_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_ =
       base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
@@ -128,6 +173,8 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness,
   password_manager::MockPasswordFormCache mock_cache_;
   password_manager::FakeFormFetcher form_fetcher_;
   MockPasswordManagerDriver driver_;
+  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
+      model_provider_;
 };
 
 TEST_P(ChangePasswordFormWaiterTest, PasswordChangeFormNotFound) {
@@ -620,6 +667,208 @@ TEST_P(ChangePasswordFormWaiterTest, PasswordChangeFormAlreadyParsed) {
   }
 
   EXPECT_EQ(result_future.Get(), form_managers.back().get());
+}
+
+TEST_P(ChangePasswordFormWaiterTest, FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {password_manager::features::kPasswordFormClientsideClassifier},
+      {password_manager::features::kDownloadModelForPasswordChange});
+
+  // Since the feature is disabled, the model handler should not be called.
+  // EXPECT_CALL(*model_handler(), ModelAvailable).Times(0);
+
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  completion_callback.Get())
+                    .Build();
+  ON_CALL(*model_handler(), ModelAvailable).WillByDefault(Return(true));
+  ON_CALL(*model_handler(), RegisterModelChangeCallback).WillByDefault([] {
+    return base::CallbackListSubscription();
+  });
+
+  // The rest of the test is similar to PasswordChangeFormIdentified.
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password:", /*name=*/"password",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(1));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password_1",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(2));
+  autofill::FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(std::move(fields));
+  std::vector<std::unique_ptr<password_manager::PasswordFormManager>>
+      form_managers;
+  form_managers.push_back(CreateFormManager(form));
+
+  if (GetParam()) {
+    EXPECT_CALL(cache(), GetFormManagers)
+        .WillOnce(testing::Return(base::span(form_managers)));
+    EXPECT_CALL(driver(),
+                CheckViewAreaVisible(autofill::FieldRendererId(2), testing::_))
+        .WillOnce(base::test::RunOnceCallback<1>(true));
+  }
+
+  EXPECT_CALL(completion_callback, Run(form_managers.back().get()));
+  static_cast<password_manager::PasswordFormManagerObserver*>(waiter.get())
+      ->OnPasswordFormParsed(form_managers.back().get());
+}
+
+TEST_P(ChangePasswordFormWaiterTest, FeatureEnabled_ModelAvailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {password_manager::features::kPasswordFormClientsideClassifier,
+       password_manager::features::kDownloadModelForPasswordChange},
+      {});
+
+  EXPECT_CALL(*model_handler(), ModelAvailable).WillOnce(Return(true));
+
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  completion_callback.Get())
+                    .Build();
+  ON_CALL(*model_handler(), ModelAvailable).WillByDefault(Return(true));
+  ON_CALL(*model_handler(), RegisterModelChangeCallback).WillByDefault([] {
+    return base::CallbackListSubscription();
+  });
+
+  // The rest of the test is similar to PasswordChangeFormIdentified.
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password:", /*name=*/"password",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(1));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password_1",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(2));
+  autofill::FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(std::move(fields));
+  std::vector<std::unique_ptr<password_manager::PasswordFormManager>>
+      form_managers;
+  form_managers.push_back(CreateFormManager(form));
+
+  if (GetParam()) {
+    EXPECT_CALL(cache(), GetFormManagers)
+        .WillOnce(testing::Return(base::span(form_managers)));
+    EXPECT_CALL(driver(),
+                CheckViewAreaVisible(autofill::FieldRendererId(2), testing::_))
+        .WillOnce(base::test::RunOnceCallback<1>(true));
+  }
+
+  EXPECT_CALL(completion_callback, Run(form_managers.back().get()));
+  static_cast<password_manager::PasswordFormManagerObserver*>(waiter.get())
+      ->OnPasswordFormParsed(form_managers.back().get());
+}
+
+TEST_P(ChangePasswordFormWaiterTest, FeatureEnabled_ModelBecomesAvailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {password_manager::features::kPasswordFormClientsideClassifier,
+       password_manager::features::kDownloadModelForPasswordChange},
+      {});
+
+  EXPECT_CALL(*model_handler(), ModelAvailable).WillOnce(Return(false));
+
+  base::RepeatingClosure model_changed_callback;
+  EXPECT_CALL(*model_handler(), RegisterModelChangeCallback)
+      .WillOnce([&](base::RepeatingClosure callback) {
+        model_changed_callback = callback;
+        return base::CallbackListSubscription();
+      });
+
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password:", /*name=*/"password",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(1));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password_1",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(2));
+  autofill::FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(std::move(fields));
+  std::vector<std::unique_ptr<password_manager::PasswordFormManager>>
+      form_managers;
+  form_managers.push_back(CreateFormManager(form));
+
+  EXPECT_CALL(cache(), GetFormManagers)
+      .WillRepeatedly(testing::Return(base::span(form_managers)));
+
+  base::test::TestFuture<password_manager::PasswordFormManager*> result_future;
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  result_future.GetCallback())
+                    .Build();
+
+  ON_CALL(*model_handler(), ModelAvailable).WillByDefault(Return(false));
+  ON_CALL(*model_handler(), RegisterModelChangeCallback).WillByDefault([] {
+    return base::CallbackListSubscription();
+  });
+
+  // Model is not available yet, so the callback should not be called.
+  EXPECT_FALSE(result_future.IsReady());
+
+  if (GetParam()) {
+    EXPECT_CALL(driver(),
+                CheckViewAreaVisible(autofill::FieldRendererId(2), testing::_))
+        .WillOnce(base::test::RunOnceCallback<1>(true));
+  }
+  // Simulate the model becoming available.
+  model_changed_callback.Run();
+
+  EXPECT_EQ(result_future.Get(), form_managers.back().get());
+}
+
+TEST_P(ChangePasswordFormWaiterTest, FeatureEnabled_ModelNotAvailable_Timeout) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {password_manager::features::kPasswordFormClientsideClassifier,
+       password_manager::features::kDownloadModelForPasswordChange},
+      {});
+
+  EXPECT_CALL(*model_handler(), ModelAvailable).WillOnce(Return(false));
+
+  base::RepeatingClosure model_changed_callback;
+  EXPECT_CALL(*model_handler(), RegisterModelChangeCallback)
+      .WillOnce([&](base::RepeatingClosure callback) {
+        model_changed_callback = callback;
+        return base::CallbackListSubscription();
+      });
+
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  base::MockOnceClosure timeout_callback;
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  completion_callback.Get())
+                    .SetTimeoutCallback(timeout_callback.Get())
+                    .Build();
+  ON_CALL(*model_handler(), ModelAvailable).WillByDefault(Return(false));
+  ON_CALL(*model_handler(), RegisterModelChangeCallback).WillByDefault([] {
+    return base::CallbackListSubscription();
+  });
+
+  // Model is not available yet, so the callback should not be called.
+  EXPECT_CALL(completion_callback, Run).Times(0);
+
+  // Timeout should not be triggered even if the model is not available.
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout * 2);
+
+  // Simulate the model becoming available.
+  ASSERT_TRUE(model_changed_callback);
+  model_changed_callback.Run();
+
+  static_cast<content::WebContentsObserver*>(waiter.get())->DidStopLoading();
+  EXPECT_CALL(timeout_callback, Run());
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
 }
 
 INSTANTIATE_TEST_SUITE_P(, ChangePasswordFormWaiterTest, testing::Bool());

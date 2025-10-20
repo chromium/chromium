@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_CHANGE_PASSWORD_FORM_WAITER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_CHANGE_PASSWORD_FORM_WAITER_H_
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
@@ -65,6 +66,11 @@ class ChangePasswordFormWaiter
 
   void Init();
 
+  // Delays invoking Init() until the model is fully downloaded. Model has a
+  // superior performance in classifying change password forms compared to
+  // existing password manager capabilities.
+  void WaitForLocalMLModelAvailability();
+
   // password_manager::PasswordFormManagerObserver Impl
   void OnPasswordFormParsed(
       password_manager::PasswordFormManager* form_manager) override;
@@ -97,6 +103,10 @@ class ChangePasswordFormWaiter
   // ignore. This helps avoid detecting the same change password form over and
   // over again.
   std::vector<autofill::FieldRendererId> fields_to_ignore_;
+
+  // Subscription for model updates. Should be called when model has been
+  // downloaded and available for use.
+  base::CallbackListSubscription model_loaded_subscription_;
 
   base::WeakPtrFactory<ChangePasswordFormWaiter> weak_ptr_factory_{this};
 };

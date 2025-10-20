@@ -83,6 +83,11 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 // launched.
 BASE_DECLARE_FEATURE(kDebugUiForOtps);
 
+// Updates password change flow to await for local ML model availability. The
+// model has a superior performance compared to existing password manager
+// classifications.
+BASE_DECLARE_FEATURE(kDownloadModelForPasswordChange);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Enables Actor Login permissions UI in Password Manager settings
 BASE_DECLARE_FEATURE(kEnableActorLoginPermissions);

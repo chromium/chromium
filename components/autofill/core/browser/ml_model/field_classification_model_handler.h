@@ -86,8 +86,8 @@ class FieldClassificationModelHandler
   bool ShouldApplySmallFormRules() const;
 
   // Registers a callback that is invoked when a new model is loaded.
-  [[nodiscard]] base::CallbackListSubscription RegisterModelChangeCallback(
-      ModelChangeCallbackList::CallbackType callback);
+  [[nodiscard]] virtual base::CallbackListSubscription
+  RegisterModelChangeCallback(ModelChangeCallbackList::CallbackType callback);
 
   optimization_guide::proto::OptimizationTarget optimization_target() const {
     return optimization_target_;

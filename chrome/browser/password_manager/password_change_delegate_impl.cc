@@ -22,6 +22,7 @@
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_hats.h"
+#include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
@@ -345,6 +346,16 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
             weak_ptr_factory_.GetWeakPtr()));
   } else {
     ProceedToChangePassword();
+  }
+
+  // This creates FieldClassificationModelHandler and should trigger download of
+  // a local ML model for field classification.
+  // TODO(452883239): Clean this up when model is downloaded on start-up for
+  // everybody.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kDownloadModelForPasswordChange)) {
+    PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
+        originator_->GetBrowserContext());
   }
 }
 
