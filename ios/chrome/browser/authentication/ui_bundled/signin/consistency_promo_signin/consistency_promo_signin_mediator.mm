@@ -18,6 +18,7 @@
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -50,7 +51,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 
   // List of gaia IDs added by the user with the consistency view. Used for
   // metrics.
-  NSMutableSet* _addedGaiaIDs;
+  base::flat_set<GaiaId> _addedGaiaIDs;
 
   // Identity for the sign-in in progress.
   id<SystemIdentity> _signingIdentity;
@@ -107,7 +108,6 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     _authServiceObserverBridge =
         std::make_unique<AuthenticationServiceObserverBridge>(
             authenticationService, self);
-    _addedGaiaIDs = [[NSMutableSet alloc] init];
     _identityManagerObserverBridge =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
@@ -158,7 +158,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
             signin_metrics::AccountConsistencyPromoAction::
                 SIGNED_IN_WITH_NO_DEVICE_ACCOUNT,
             _accessPoint);
-      } else if ([_addedGaiaIDs containsObject:signingIdentity.gaiaID]) {
+      } else if (_addedGaiaIDs.contains(signingIdentity.gaiaId)) {
         // Added identity.
         RecordConsistencyPromoUserAction(
             signin_metrics::AccountConsistencyPromoAction::
@@ -209,7 +209,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 }
 
 - (void)systemIdentityAdded:(id<SystemIdentity>)identity {
-  [_addedGaiaIDs addObject:identity.gaiaID];
+  _addedGaiaIDs.insert(identity.gaiaId);
 }
 
 - (void)signinWithAuthenticationFlow:(AuthenticationFlow*)authenticationFlow {
