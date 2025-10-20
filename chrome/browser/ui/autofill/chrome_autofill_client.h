@@ -50,7 +50,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace optimization_guide {
-class RemoteModelExecutor;
+class OptimizationGuideModelExecutor;
 }
 
 namespace autofill {
@@ -135,7 +135,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillAiManager* GetAutofillAiManager() final;
   AutofillAiModelCache* GetAutofillAiModelCache() final;
   AutofillAiModelExecutor* GetAutofillAiModelExecutor() final;
-  optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() final;
+  optimization_guide::OptimizationGuideModelExecutor*
+  GetOptimizationGuideModelExecutor() final;
   IdentityCredentialDelegate* GetIdentityCredentialDelegate() final;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 bool is_manual_fallback,

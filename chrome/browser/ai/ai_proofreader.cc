@@ -14,7 +14,8 @@
 
 AIProofreader::AIProofreader(
     AIContextBoundObjectSet& context_bound_object_set,
-    std::unique_ptr<optimization_guide::OnDeviceSession> session,
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        session,
     blink::mojom::AIProofreaderCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AIProofreader> receiver)
     : AIContextBoundObject(context_bound_object_set),

@@ -73,7 +73,8 @@ class OnDeviceLlmInternalsHandler : public web::WebUIIOSMessageHandler {
           result);
 
   // Retains the on-device session in memory.
-  std::unique_ptr<optimization_guide::OnDeviceSession> on_device_session_;
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      on_device_session_;
 #endif
 
   // Used to get `weak_ptr_` to self.

@@ -9,11 +9,11 @@
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
-#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
@@ -29,12 +29,12 @@ using ::testing::An;
 
 class ModelExecutionLoggingWrappersTest : public testing::Test {
  public:
-  optimization_guide::MockRemoteModelExecutor* model_executor() {
+  optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
     return &model_executor_;
   }
 
  private:
-  testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
+  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
 };
 

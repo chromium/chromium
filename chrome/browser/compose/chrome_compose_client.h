@@ -23,7 +23,6 @@
 #include "components/compose/core/browser/compose_dialog_controller.h"
 #include "components/compose/core/browser/compose_manager.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -42,7 +41,7 @@ class WebContents;
 namespace optimization_guide {
 class ModelQualityLogsUploaderService;
 class OptimizationGuideDecider;
-class RemoteModelExecutor;
+class OptimizationGuideModelExecutor;
 }  // namespace optimization_guide
 
 class ComposeEnabling;
@@ -210,7 +209,7 @@ class ChromeComposeClient
   void SetOptimizationGuideForTest(
       optimization_guide::OptimizationGuideDecider* opt_guide);
   void SetModelExecutorForTest(
-      optimization_guide::RemoteModelExecutor* model_executor);
+      optimization_guide::OptimizationGuideModelExecutor* model_executor);
   void SetModelQualityLogsUploaderServiceForTest(
       optimization_guide::ModelQualityLogsUploaderService*
           model_quality_logs_uploader_service);
@@ -224,7 +223,7 @@ class ChromeComposeClient
 
  protected:
   explicit ChromeComposeClient(content::WebContents* web_contents);
-  optimization_guide::RemoteModelExecutor* GetModelExecutor();
+  optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
   optimization_guide::ModelQualityLogsUploaderService*
   GetModelQualityLogsUploaderService();
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
@@ -304,7 +303,7 @@ class ChromeComposeClient
   // recently been navigated to.
   raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
 
-  std::optional<optimization_guide::RemoteModelExecutor*>
+  std::optional<optimization_guide::OptimizationGuideModelExecutor*>
       model_executor_for_test_;
 
   std::optional<optimization_guide::ModelQualityLogsUploaderService*>

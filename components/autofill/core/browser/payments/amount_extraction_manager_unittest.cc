@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/amount_extraction.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -77,8 +77,8 @@ class MockAutofillClient : public TestAutofillClient {
       (base::OnceCallback<void(
            std::optional<optimization_guide::proto::AnnotatedPageContent>)>),
       (override));
-  MOCK_METHOD(optimization_guide::RemoteModelExecutor*,
-              GetRemoteModelExecutor,
+  MOCK_METHOD(optimization_guide::OptimizationGuideModelExecutor*,
+              GetOptimizationGuideModelExecutor,
               (),
               (override));
 };
@@ -132,7 +132,7 @@ class AmountExtractionManagerTest
             IsUrlEligibleForBnplIssuer)
         .WillByDefault(Return(true));
 
-    ON_CALL(autofill_client(), GetRemoteModelExecutor())
+    ON_CALL(autofill_client(), GetOptimizationGuideModelExecutor())
         .WillByDefault(Return(model_executor()));
   }
 
@@ -187,7 +187,8 @@ class AmountExtractionManagerTest
         .WillByDefault(std::move(extract_action));
   }
 
-  NiceMock<optimization_guide::MockRemoteModelExecutor>* model_executor() {
+  NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>*
+  model_executor() {
     return &mock_model_executor_;
   }
 
@@ -197,7 +198,8 @@ class AmountExtractionManagerTest
   std::unique_ptr<AmountExtractionManager> amount_extraction_manager_;
   std::unique_ptr<MockAmountExtractionManager> mock_amount_extraction_manager_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
-  NiceMock<optimization_guide::MockRemoteModelExecutor> mock_model_executor_;
+  NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
+      mock_model_executor_;
 };
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -965,7 +967,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotCallExecuteModel) {
 
 // Verify that when `TriggerCheckoutAmountExtractionWithAi` is called with
 // annotated page contents present, `ExecuteModel` from
-// `RemoteModelExecutor` should be invoked.
+// `OptimizationGuideModelExecutor` should be invoked.
 TEST_F(AmountExtractionManagerTest, ShouldCallExecuteModel) {
   test_api(*amount_extraction_manager_).SetAiPageContent();
   optimization_guide::proto::AmountExtractionRequest expected_request;

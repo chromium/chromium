@@ -21,7 +21,6 @@
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -42,6 +41,7 @@ struct InnerTextResult;
 }  // namespace content_extraction
 
 namespace optimization_guide {
+class OptimizationGuideModelExecutor;
 struct OptimizationGuideModelExecutionResult;
 }  // namespace optimization_guide
 
@@ -93,7 +93,7 @@ class ComposeSession
         const compose::ComposeSessionEvents& events) = 0;
   };
   ComposeSession(content::WebContents* web_contents,
-                 optimization_guide::RemoteModelExecutor* executor,
+                 optimization_guide::OptimizationGuideModelExecutor* executor,
                  optimization_guide::ModelQualityLogsUploaderService*
                      model_quality_uploader,
                  base::Token session_id,
@@ -317,7 +317,7 @@ class ComposeSession
   base::optional_ref<ComposeState> LastResponseState();
 
   // Outlives `this`.
-  raw_ptr<optimization_guide::RemoteModelExecutor> executor_;
+  raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
 
   // Outlives `this`.
   raw_ptr<optimization_guide::ModelQualityLogsUploaderService>

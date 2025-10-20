@@ -26,7 +26,6 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
-#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
@@ -41,6 +40,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -178,7 +178,8 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
       OnDeviceModelEligibilityReason::kSuccess);
 }
 
-std::unique_ptr<OnDeviceSession> OnDeviceModelServiceController::CreateSession(
+std::unique_ptr<OptimizationGuideModelExecutor::Session>
+OnDeviceModelServiceController::CreateSession(
     ModelBasedCapabilityKey feature,
     const SessionConfigParams& config_params) {
   // Ensure an initial solution is computed to avoid giving kUnknown error.

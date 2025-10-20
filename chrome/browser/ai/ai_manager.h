@@ -153,7 +153,8 @@ class AIManager : public base::SupportsUserData::Data,
       CreateOptionsPtrType options,
       std::optional<optimization_guide::MultimodalMessage> initial_request,
       mojo::Remote<ClientRemoteInterface> client_remote,
-      std::unique_ptr<optimization_guide::OnDeviceSession> session);
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session> session);
 
   // Eagerly initializes a broad set of features.
   void MaybeTryEagerInit();

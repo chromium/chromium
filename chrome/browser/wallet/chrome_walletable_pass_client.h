@@ -11,7 +11,7 @@
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
-class RemoteModelExecutor;
+class OptimizationGuideModelExecutor;
 }  // namespace optimization_guide
 
 namespace tabs {
@@ -39,7 +39,8 @@ class ChromeWalletablePassClient : public WalletablePassClient {
   // WalleablePassClient implementation.
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuideDecider()
       override;
-  optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() override;
+  optimization_guide::OptimizationGuideModelExecutor*
+  GetOptimizationGuideModelExecutor() override;
   void ShowWalletablePassConsentBubble(
       WalletablePassBubbleResultCallback callback) override;
   void ShowWalletablePassSaveBubble(

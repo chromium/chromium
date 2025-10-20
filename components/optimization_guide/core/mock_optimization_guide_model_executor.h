@@ -1,61 +1,46 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_MOCK_ON_DEVICE_CAPABILITY_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_MOCK_ON_DEVICE_CAPABILITY_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MOCK_OPTIMIZATION_GUIDE_MODEL_EXECUTOR_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MOCK_OPTIMIZATION_GUIDE_MODEL_EXECUTOR_H_
 
-#include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
-#include "components/optimization_guide/core/model_execution/on_device_capability.h"
-#include "components/optimization_guide/proto/common_types.pb.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace optimization_guide {
 
-class MockOnDeviceCapability : public OnDeviceCapability {
+class MockOptimizationGuideModelExecutor
+    : public OptimizationGuideModelExecutor {
  public:
-  MockOnDeviceCapability();
-  MockOnDeviceCapability(const MockOnDeviceCapability&) = delete;
-  MockOnDeviceCapability& operator=(const MockOnDeviceCapability&) = delete;
-  ~MockOnDeviceCapability() override;
+  MockOptimizationGuideModelExecutor();
+  ~MockOptimizationGuideModelExecutor() override;
 
-  MOCK_METHOD(std::unique_ptr<OnDeviceSession>,
+  MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
               (ModelBasedCapabilityKey feature,
                const SessionConfigParams& config_params),
               (override));
 
-  MOCK_METHOD(OnDeviceModelEligibilityReason,
-              GetOnDeviceModelEligibility,
-              (ModelBasedCapabilityKey),
-              (override));
-
   MOCK_METHOD(void,
-              GetOnDeviceModelEligibilityAsync,
-              (ModelBasedCapabilityKey,
-               const on_device_model::Capabilities&,
-               base::OnceCallback<void(OnDeviceModelEligibilityReason)>),
-              (override));
-
-  MOCK_METHOD(std::optional<SamplingParamsConfig>,
-              GetSamplingParamsConfig,
-              (ModelBasedCapabilityKey),
-              (override));
-
-  MOCK_METHOD(std::optional<const optimization_guide::proto::Any>,
-              GetFeatureMetadata,
-              (optimization_guide::ModelBasedCapabilityKey feature),
+              ExecuteModel,
+              (ModelBasedCapabilityKey feature,
+               const google::protobuf::MessageLite& request_metadata,
+               const std::optional<base::TimeDelta>& execution_timeout,
+               OptimizationGuideModelExecutionResultCallback callback),
               (override));
 };
 
-class MockSession : public OnDeviceSession {
+class MockSession : public OptimizationGuideModelExecutor::Session {
  public:
   // Constructs an unconfigured mock.
   MockSession();
   // Constructs a MockSession that delegates to the given session.
   // The delegate should be an object that will outlive the MockSession.
-  explicit MockSession(OnDeviceSession* delegate);
+  explicit MockSession(OptimizationGuideModelExecutor::Session* delegate);
 
   ~MockSession() override;
 
@@ -68,7 +53,7 @@ class MockSession : public OnDeviceSession {
   // Configure this mock to delegate to another implementation.
   // The delegate should be an object that will outlive the MockSession.
   // This should be called *before* other ON_CALL statements.
-  void Delegate(OnDeviceSession* impl);
+  void Delegate(OptimizationGuideModelExecutor::Session* impl);
 
   MOCK_METHOD(const optimization_guide::TokenLimits&,
               GetTokenLimits,
@@ -119,7 +104,7 @@ class MockSession : public OnDeviceSession {
               GetOnDeviceFeatureMetadata,
               (),
               (const override));
-  MOCK_METHOD(std::unique_ptr<OnDeviceSession>, Clone, (), (override));
+  MOCK_METHOD(std::unique_ptr<Session>, Clone, (), (override));
   MOCK_METHOD(void,
               SetPriority,
               (on_device_model::mojom::Priority priority),
@@ -128,4 +113,4 @@ class MockSession : public OnDeviceSession {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_MOCK_ON_DEVICE_CAPABILITY_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MOCK_OPTIMIZATION_GUIDE_MODEL_EXECUTOR_H_

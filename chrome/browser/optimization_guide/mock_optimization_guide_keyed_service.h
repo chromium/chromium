@@ -53,7 +53,7 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
        std::optional<optimization_guide::proto::RequestContextMetadata>
            request_context_metadata),
       (override));
-  MOCK_METHOD(std::unique_ptr<optimization_guide::OnDeviceSession>,
+  MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
               (optimization_guide::ModelBasedCapabilityKey feature,
                const optimization_guide::SessionConfigParams& config_params));

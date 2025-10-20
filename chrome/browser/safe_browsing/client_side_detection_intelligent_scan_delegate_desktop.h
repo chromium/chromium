@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
 class PrefService;
@@ -77,7 +77,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
 
   void LogOnDeviceModelEligibilityReason();
 
-  std::unique_ptr<optimization_guide::OnDeviceSession>
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
   GetModelExecutorSession();
 
   void ModelExecutionCallback(

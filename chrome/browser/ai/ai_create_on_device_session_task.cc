@@ -11,8 +11,8 @@
 #include "chrome/browser/ai/built_in_ai_logger.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace {
@@ -61,7 +61,8 @@ CreateOnDeviceSessionTask::~CreateOnDeviceSessionTask() {
 }
 
 void CreateOnDeviceSessionTask::Finish(
-    std::unique_ptr<optimization_guide::OnDeviceSession> session) {
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        session) {
   SetState(State::kFinished);
   OnFinish(std::move(session));
 }
@@ -110,7 +111,8 @@ void CreateOnDeviceSessionTask::Cancel() {
 }
 
 void CreateOnDeviceSessionTask::OnFinish(
-    std::unique_ptr<optimization_guide::OnDeviceSession> session) {}
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        session) {}
 
 void CreateOnDeviceSessionTask::UpdateSessionConfigParams(
     optimization_guide::SessionConfigParams* config_params) {}
@@ -130,7 +132,7 @@ void CreateOnDeviceSessionTask::OnDeviceModelAvailabilityChanged(
   RemoveFromSet();
 }
 
-std::unique_ptr<optimization_guide::OnDeviceSession>
+std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 CreateOnDeviceSessionTask::StartSession() {
   OptimizationGuideKeyedService* service = GetOptimizationGuideService();
   if (!service) {

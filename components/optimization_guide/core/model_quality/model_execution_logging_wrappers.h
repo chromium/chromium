@@ -10,8 +10,8 @@
 #include <type_traits>
 
 #include "base/functional/bind.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 
@@ -34,7 +34,7 @@ using ModelExecutionCallbackWithLogging =
 // called.**
 template <class ModelExecutionProto, class RequestProto>
 void ExecuteModelWithLogging(
-    RemoteModelExecutor* executor,
+    OptimizationGuideModelExecutor* executor,
     ModelBasedCapabilityKey feature,
     const RequestProto& request,
     std::optional<base::TimeDelta> execution_timeout,

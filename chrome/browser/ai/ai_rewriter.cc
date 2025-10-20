@@ -73,7 +73,8 @@ optimization_guide::proto::WritingAssistanceApiOutputLength ToProtoLength(
 
 AIRewriter::AIRewriter(
     AIContextBoundObjectSet& context_bound_object_set,
-    std::unique_ptr<optimization_guide::OnDeviceSession> session,
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        session,
     blink::mojom::AIRewriterCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AIRewriter> receiver)
     : AIContextBoundObject(context_bound_object_set),

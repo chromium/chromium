@@ -16,8 +16,8 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "url/gurl.h"
@@ -78,7 +78,7 @@ class ModelExecutionManager final {
       optimization_guide::ModelBasedCapabilityKey feature);
 
   // Starts a new session for `feature`.
-  std::unique_ptr<OnDeviceSession> StartSession(
+  std::unique_ptr<OptimizationGuideModelExecutor::Session> StartSession(
       ModelBasedCapabilityKey feature,
       const SessionConfigParams& config_params);
 

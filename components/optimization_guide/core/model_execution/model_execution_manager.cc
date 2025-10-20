@@ -24,11 +24,11 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -230,9 +230,9 @@ void ModelExecutionManager::ExecuteModel(
                      std::move(log_ai_data_request), std::move(callback)));
 }
 
-std::unique_ptr<OnDeviceSession> ModelExecutionManager::StartSession(
-    ModelBasedCapabilityKey feature,
-    const SessionConfigParams& config_params) {
+std::unique_ptr<OptimizationGuideModelExecutor::Session>
+ModelExecutionManager::StartSession(ModelBasedCapabilityKey feature,
+                                    const SessionConfigParams& config_params) {
   if (!on_device_model_service_controller_) {
     return nullptr;
   }

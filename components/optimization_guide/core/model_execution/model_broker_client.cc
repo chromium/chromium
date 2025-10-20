@@ -10,10 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
@@ -25,9 +25,9 @@ namespace optimization_guide {
 
 namespace {
 
-std::unique_ptr<OnDeviceSession> CreateSessionWithParams(
-    const SessionConfigParams& config_params,
-    base::WeakPtr<ModelClient> client) {
+std::unique_ptr<OptimizationGuideModelExecutor::Session>
+CreateSessionWithParams(const SessionConfigParams& config_params,
+                        base::WeakPtr<ModelClient> client) {
   if (!client) {
     return nullptr;
   }
@@ -88,8 +88,8 @@ void ModelClient::StartSession(
   remote_->CreateTextSafetySession(std::move(session));
 }
 
-std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
-    const SessionConfigParams& config_params) {
+std::unique_ptr<OptimizationGuideModelExecutor::Session>
+ModelClient::CreateSession(const SessionConfigParams& config_params) {
   OnDeviceOptions opts;
   opts.model_client = std::make_unique<ModelClient::OnDeviceOptionsClient>(
       weak_ptr_factory_.GetWeakPtr());

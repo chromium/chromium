@@ -55,11 +55,11 @@
 #include "components/compose/core/browser/compose_hats_utils.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
-#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -89,6 +89,7 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
 using ComposeCallback = ::base::OnceCallback<void(const std::u16string&)>;
+using ::optimization_guide::MockSession;
 using ::optimization_guide::ModelQualityLogEntry;
 using ::optimization_guide::OptimizationGuideModelExecutionError;
 using ::optimization_guide::OptimizationGuideModelExecutionResult;
@@ -319,7 +320,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
   ChromeComposeClient& client() { return *client_; }
-  optimization_guide::MockRemoteModelExecutor& model_executor() {
+  optimization_guide::MockOptimizationGuideModelExecutor& model_executor() {
     return model_executor_;
   }
   MockInnerText& model_inner_text() { return model_inner_text_; }
@@ -446,9 +447,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
  private:
   base::ScopedMockElapsedTimersForTest test_timer_;
   raw_ptr<ChromeComposeClient> client_;
-  testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
+  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
   testing::NiceMock<MockInnerText> model_inner_text_;
+  testing::NiceMock<optimization_guide::MockSession> session_;
   testing::NiceMock<MockComposeDialog> compose_dialog_;
   autofill::FormFieldData field_data_;
   raw_ptr<content::WebContents> contents_;

@@ -191,12 +191,8 @@ source_set("core_util") {
 source_set("model_execution") {
   # TODO: crbug.com/421262905 - Should not need these without model_execution
   sources = [
-    "model_execution/on_device_capability.cc",
-    "model_execution/on_device_capability.h",
     "model_execution/optimization_guide_model_execution_error.cc",
     "model_execution/optimization_guide_model_execution_error.h",
-    "model_execution/remote_model_executor.cc",
-    "model_execution/remote_model_executor.h",
     "model_quality/model_execution_logging_wrappers.h",
     "model_quality/model_quality_log_entry.cc",
     "model_quality/model_quality_log_entry.h",
@@ -204,6 +200,9 @@ source_set("model_execution") {
     "model_quality/model_quality_logs_uploader_service.h",
     "model_quality/model_quality_util.cc",
     "model_quality/model_quality_util.h",
+    "optimization_guide_model_executor.cc",
+    "optimization_guide_model_executor.h",
+    "optimization_guide_on_device_capability_provider.h",
   ]
   deps = [
     ":core_util",
@@ -491,6 +490,8 @@ static_library("delivery_test_support") {
 static_library("model_execution_test_support") {
   testonly = true
   sources = [
+    "mock_optimization_guide_on_device_capability_provider.cc",
+    "mock_optimization_guide_on_device_capability_provider.h",
     "model_quality/test_model_quality_logs_uploader_service.cc",
     "model_quality/test_model_quality_logs_uploader_service.h",
   ]
@@ -510,6 +511,8 @@ static_library("model_execution_test_support") {
   ]
   if (build_with_model_execution) {
     sources += [
+      "mock_optimization_guide_model_executor.cc",
+      "mock_optimization_guide_model_executor.h",
       "model_execution/test/fake_model_assets.cc",
       "model_execution/test/fake_model_assets.h",
       "model_execution/test/fake_model_broker.cc",
@@ -518,10 +521,6 @@ static_library("model_execution_test_support") {
       "model_execution/test/fake_remote.h",
       "model_execution/test/feature_config_builder.cc",
       "model_execution/test/feature_config_builder.h",
-      "model_execution/test/mock_on_device_capability.cc",
-      "model_execution/test/mock_on_device_capability.h",
-      "model_execution/test/mock_remote_model_executor.cc",
-      "model_execution/test/mock_remote_model_executor.h",
       "model_execution/test/request_builder.cc",
       "model_execution/test/request_builder.h",
       "model_execution/test/response_holder.cc",

@@ -10,7 +10,7 @@
 
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_on_device_session.h"
-#include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,10 +24,12 @@
 // duplicated code.
 class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
  public:
-  AIWriter(AIContextBoundObjectSet& context_bound_object_set,
-           std::unique_ptr<optimization_guide::OnDeviceSession> session,
-           blink::mojom::AIWriterCreateOptionsPtr options,
-           mojo::PendingReceiver<blink::mojom::AIWriter> receiver);
+  AIWriter(
+      AIContextBoundObjectSet& context_bound_object_set,
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session> session,
+      blink::mojom::AIWriterCreateOptionsPtr options,
+      mojo::PendingReceiver<blink::mojom::AIWriter> receiver);
   AIWriter(const AIWriter&) = delete;
   AIWriter& operator=(const AIWriter&) = delete;
   ~AIWriter() override;

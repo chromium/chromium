@@ -1,17 +1,24 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+
+#include "base/memory/raw_ptr.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace optimization_guide {
 
-MockOnDeviceCapability::MockOnDeviceCapability() = default;
-
-MockOnDeviceCapability::~MockOnDeviceCapability() = default;
+MockOptimizationGuideModelExecutor::MockOptimizationGuideModelExecutor() =
+    default;
+MockOptimizationGuideModelExecutor::~MockOptimizationGuideModelExecutor() =
+    default;
 
 MockSession::MockSession() = default;
-MockSession::MockSession(OnDeviceSession* delegate) {
+MockSession::MockSession(OptimizationGuideModelExecutor::Session* delegate) {
   Delegate(delegate);
 }
 MockSession::~MockSession() = default;
@@ -37,7 +44,7 @@ OptimizationGuideModelStreamingExecutionResult MockSession::FailResult() {
       /*log_entry*/ nullptr);
 }
 
-void MockSession::Delegate(OnDeviceSession* impl) {
+void MockSession::Delegate(OptimizationGuideModelExecutor::Session* impl) {
   ON_CALL(*this, GetTokenLimits).WillByDefault([impl]() -> const TokenLimits& {
     return impl->GetTokenLimits();
   });

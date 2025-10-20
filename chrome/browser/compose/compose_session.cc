@@ -47,10 +47,10 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -239,7 +239,7 @@ class ComposeState {
 
 ComposeSession::ComposeSession(
     content::WebContents* web_contents,
-    optimization_guide::RemoteModelExecutor* executor,
+    optimization_guide::OptimizationGuideModelExecutor* executor,
     optimization_guide::ModelQualityLogsUploaderService* model_quality_uploader,
     base::Token session_id,
     InnerTextProvider* inner_text,
@@ -363,11 +363,13 @@ ComposeSession::~ComposeSession() {
 
   if (most_recent_error_log_) {
     // First set final status on most_recent_error_log.
-    most_recent_error_log_->log_ai_data_request()
+    most_recent_error_log_
+        ->log_ai_data_request()
         ->mutable_compose()
         ->mutable_quality()
         ->set_final_status(final_status_);
-    most_recent_error_log_->log_ai_data_request()
+    most_recent_error_log_
+        ->log_ai_data_request()
         ->mutable_compose()
         ->mutable_quality()
         ->set_final_model_status(final_model_status_);
@@ -687,10 +689,9 @@ void ComposeSession::ModelExecutionComplete(
         ->mutable_compose()
         ->mutable_quality()
         ->set_request_latency_ms(request_delta.InMilliseconds());
-    optimization_guide::proto::Int128* token = log_entry->log_ai_data_request()
-                                                   ->mutable_compose()
-                                                   ->mutable_quality()
-                                                   ->mutable_session_id();
+    optimization_guide::proto::Int128* token =
+        log_entry->log_ai_data_request()->mutable_compose()->mutable_quality()
+            ->mutable_session_id();
 
     token->set_high(session_id_.high());
     token->set_low(session_id_.low());
@@ -1333,10 +1334,9 @@ void ComposeSession::SetQualityLogEntryUponError(
         ->mutable_compose()
         ->mutable_quality()
         ->set_request_latency_ms(request_time.InMilliseconds());
-    optimization_guide::proto::Int128* token = log_entry->log_ai_data_request()
-                                                   ->mutable_compose()
-                                                   ->mutable_quality()
-                                                   ->mutable_session_id();
+    optimization_guide::proto::Int128* token =
+        log_entry->log_ai_data_request()->mutable_compose()->mutable_quality()
+            ->mutable_session_id();
 
     token->set_high(session_id_.high());
     token->set_low(session_id_.low());

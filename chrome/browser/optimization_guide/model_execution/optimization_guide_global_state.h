@@ -45,7 +45,8 @@ class OptimizationGuideGlobalState final
   ModelBrokerState& model_broker_state() { return model_broker_state_; }
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
-  // This is supporting remote fallback for the OnDeviceCapability API.
+  // This is supporting remote fallback for the OptimizationGuideModelExecutor
+  // API.
   // TODO(holte): Remove this once the remote fallback path is not needed.
   base::WeakPtr<OnDeviceModelServiceController> GetServiceControllerWeakPtr() {
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
@@ -72,7 +73,7 @@ class OptimizationGuideGlobalState final
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   }
 
-  // This is supporting availability for the OnDeviceCapability API.
+  // This is supporting availability for the OptimizationGuideModelExecutor API.
   // TODO(holte): Remove after migration to ModelBroker API.
   void EnsurePerformanceClassAvailable(base::OnceClosure complete) {
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
@@ -83,7 +84,7 @@ class OptimizationGuideGlobalState final
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   }
 
-  // This is supporting availability for the OnDeviceCapability API.
+  // This is supporting availability for the OptimizationGuideModelExecutor API.
   // TODO(holte): Remove after migration to ModelBroker API.
   on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const {
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)

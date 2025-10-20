@@ -5,7 +5,8 @@
 #include "chrome/browser/ai/ai_on_device_session.h"
 
 AIOnDeviceSession::AIOnDeviceSession(
-    std::unique_ptr<optimization_guide::OnDeviceSession> session)
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        session)
     : session_(std::move(session)) {}
 
 AIOnDeviceSession::~AIOnDeviceSession() = default;

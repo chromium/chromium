@@ -34,7 +34,6 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
-#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
@@ -52,6 +51,7 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -223,7 +223,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
-  std::unique_ptr<OnDeviceSession> CreateSession(
+  std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
       const SessionConfigParams& params) {
     return controller().CreateSession(kFeature, params);
   }
@@ -237,7 +237,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
         reason, 1);
   }
 
-  std::string GetResponse(OnDeviceSession& session, const std::string& prompt) {
+  std::string GetResponse(OptimizationGuideModelExecutor::Session& session,
+                          const std::string& prompt) {
     ResponseHolder response;
     session.ExecuteModel(PageUrlRequest(prompt),
                          response.GetStreamingCallback());
@@ -3543,8 +3544,9 @@ TEST_F(OnDeviceModelServiceControllerTest, Broker) {
 
   ModelBrokerClient broker_client(
       pending_broker.InitWithNewPipeAndPassRemote());
-
-  base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
+  base::test::TestFuture<
+      std::unique_ptr<OptimizationGuideModelExecutor::Session>>
+      session_future;
   broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kCompose,
                               SessionConfigParams{},
                               session_future.GetCallback());
@@ -3572,7 +3574,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   ModelBrokerClient broker_client(
       pending_broker.InitWithNewPipeAndPassRemote());
-  base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
+  base::test::TestFuture<
+      std::unique_ptr<OptimizationGuideModelExecutor::Session>>
+      session_future;
   broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kCompose,
                               SessionConfigParams{},
                               session_future.GetCallback());

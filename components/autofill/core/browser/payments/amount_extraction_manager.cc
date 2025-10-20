@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/amount_extraction.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -193,7 +193,7 @@ void AmountExtractionManager::TriggerCheckoutAmountExtractionWithAi() {
   *request.mutable_annotated_page_content() = std::move(*ai_page_content_);
   ai_page_content_.reset();
 
-  autofill_manager_->client().GetRemoteModelExecutor()->ExecuteModel(
+  autofill_manager_->client().GetOptimizationGuideModelExecutor()->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kAmountExtraction,
       std::move(request), kAiBasedAmountExtractionWaitTime,
       base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceivedFromAi,

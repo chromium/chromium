@@ -42,9 +42,9 @@
 #include "components/language/core/common/locale_util.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -182,7 +182,8 @@ class CreateWritingAssistanceSessionTask : public CreateOnDeviceSessionTask {
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
   using WritingAssistanceSessionTaskCallback = base::OnceCallback<void(
       mojo::Remote<ClientRemoteInterface>,
-      std::unique_ptr<optimization_guide::OnDeviceSession>)>;
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session>)>;
 
   static void CreateAndStart(
       content::BrowserContext* browser_context,
@@ -220,8 +221,9 @@ class CreateWritingAssistanceSessionTask : public CreateOnDeviceSessionTask {
   ~CreateWritingAssistanceSessionTask() override = default;
 
  protected:
-  void OnFinish(
-      std::unique_ptr<optimization_guide::OnDeviceSession> session) override {
+  void OnFinish(std::unique_ptr<
+                optimization_guide::OptimizationGuideModelExecutor::Session>
+                    session) override {
     std::move(callback_).Run(std::move(client_remote_), std::move(session));
   }
 
@@ -896,7 +898,8 @@ void AIManager::OnSessionCreated(
     CreateOptionsPtrType options,
     std::optional<optimization_guide::MultimodalMessage> initial_request,
     mojo::Remote<ClientRemoteInterface> client_remote,
-    std::unique_ptr<optimization_guide::OnDeviceSession> session) {
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        session) {
   if (!session) {
     AIUtils::AIUtils::SendClientRemoteError(
         client_remote,
@@ -914,7 +917,9 @@ void AIManager::OnSessionCreated(
             [](AIContextBoundObjectSet& context_bound_object_set,
                CreateOptionsPtrType options,
                mojo::Remote<ClientRemoteInterface> client_remote,
-               std::unique_ptr<optimization_guide::OnDeviceSession> session,
+               std::unique_ptr<
+                   optimization_guide::OptimizationGuideModelExecutor::Session>
+                   session,
                std::optional<uint32_t> result) {
               if (!result.has_value()) {
                 AIUtils::SendClientRemoteError(
