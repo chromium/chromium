@@ -28,6 +28,7 @@ namespace {
 
 using testing::Eq;
 using testing::IsEmpty;
+using testing::IsNull;
 using testing::Ne;
 using testing::NotNull;
 using testing::SizeIs;
@@ -46,6 +47,16 @@ class SecureBoxTest : public testing::Test {
   const std::vector<uint8_t> kTestHeader = StringToBytes("TEST_HEADER");
   const std::vector<uint8_t> kTestPayload = StringToBytes("TEST_PAYLOAD");
 };
+
+TEST_F(SecureBoxTest, ShouldReturnNullIfCreateByImportWithIncorrectSize) {
+  // Sizes other than `kPublicKeyLengthInBytes` should return null.
+  EXPECT_THAT(SecureBoxPublicKey::CreateByImport(std::vector<uint8_t>(64, 1)),
+              IsNull());
+  EXPECT_THAT(SecureBoxPublicKey::CreateByImport(std::vector<uint8_t>(66, 1)),
+              IsNull());
+  EXPECT_THAT(SecureBoxPublicKey::CreateByImport(std::vector<uint8_t>()),
+              IsNull());
+}
 
 TEST_F(SecureBoxTest, ShouldExportAndImportPublicKey) {
   std::unique_ptr<SecureBoxKeyPair> key_pair =
