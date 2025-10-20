@@ -266,6 +266,15 @@ class ZeroSuggestProviderTest : public testing::Test,
     return input;
   }
 
+  AutocompleteInput ZeroPrefixInputForComposebox(
+      const std::string& input_url = "https://example.com/") {
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+                            TestSchemeClassifier());
+    input.set_current_url(GURL(input_url));
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    return input;
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -626,6 +635,26 @@ TEST_F(ZeroSuggestProviderTest, SendRequestWithoutLensInteractionResponse) {
       R"(["",[],[],[],{}])");
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(provider_->done());
+}
+
+TEST_F(ZeroSuggestProviderTest, SendRequestWithAimToolMode) {
+  AutocompleteInput input = ZeroPrefixInputForComposebox();
+  input.set_aim_tool_mode(
+      omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH);
+  provider_->Start(input, false);
+
+  // Make sure the default provider's suggest endpoint was queried with the
+  // expected client and Lens Suggest signals.
+  EXPECT_FALSE(provider_->done());
+  EXPECT_EQ(1, test_loader_factory()->NumPending());
+  EXPECT_TRUE(base::EndsWith(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(), "azm=1",
+      base::CompareCase::SENSITIVE));
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      R"(["",[],[],[],{}])");
+  EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
 }
 
 TEST_F(ZeroSuggestProviderTest, SendRequestWithLensInteractionResponse) {

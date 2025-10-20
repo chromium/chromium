@@ -25,6 +25,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -230,6 +231,10 @@ class TemplateURLRef {
     // the suggest requests.
     std::optional<lens::proto::LensOverlaySuggestInputs>
         lens_overlay_suggest_inputs;
+
+    // The tool mode to be sent in query parameters in the suggest requests.
+    omnibox::ChromeAimToolsAndModels aim_tool_mode =
+        omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
 
     // Which omnibox the user used to type the prefix.
     metrics::OmniboxEventProto::PageClassification page_classification =
