@@ -336,16 +336,20 @@ void HandoffButtonController::CloseButton(views::Widget::ClosedReason reason) {
 
 void HandoffButtonController::UpdateButtonHoverStatus(bool is_hovered) {
   is_hovering_ = is_hovered;
-  GetTabController()->OnHandoffButtonHoverStatusChanged();
+  if (auto* tab_controller = GetTabController()) {
+    tab_controller->OnHandoffButtonHoverStatusChanged();
+  }
 }
 
 void HandoffButtonController::OnButtonPressed() {
   // If the Actor is currently in control, pressing the button
   // flips the state and pauses the task.
-  if (ownership_ == kActor) {
-    GetTabController()->SetActorTaskPaused();
-  } else {
-    GetTabController()->SetActorTaskResume();
+  if (auto* tab_controller = GetTabController()) {
+    if (ownership_ == kActor) {
+      tab_controller->SetActorTaskPaused();
+    } else {
+      tab_controller->SetActorTaskResume();
+    }
   }
   actor::ui::LogHandoffButtonClick(ownership_);
 }

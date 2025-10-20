@@ -48,6 +48,10 @@ class TestHandoffButtonController : public HandoffButtonController {
   }
   void TestShouldShowButton(bool& show) { ShouldShowButton(show); }
 
+  void TestUpdateButtonHoverStatus(bool is_hovered) {
+    UpdateButtonHoverStatus(is_hovered);
+  }
+
   // Override to verify the call without the side effect of widget deletion,
   // which interferes with the test's teardown procedure.
   void CloseButton(views::Widget::ClosedReason reason) override {
@@ -251,5 +255,29 @@ TEST_F(HandoffButtonControllerTest,
                             ui::EventTimeForNow(), 0, 0);
   widget_->OnMouseEvent(&exit_event);
 }
+
+TEST_F(HandoffButtonControllerTest, HandlesNullTabControllerOnPress) {
+  HandoffButtonState actor_state;
+  actor_state.is_active = true;
+  actor_state.controller = kActor;
+  controller_->UpdateState(actor_state, /*is_visible=*/true);
+  mock_actor_ui_tab_controller_.reset();
+  // Verify that pressing the button does not crash even with a null tab
+  // controller.
+  controller_->PressButton();
+  // The metric is logged outside the null check, so it should still be
+  // recorded.
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   kActorUiHandoffButtonTakeControlClickedHistogram));
+}
+
+TEST_F(HandoffButtonControllerTest, HandlesNullTabControllerOnHover) {
+  mock_actor_ui_tab_controller_.reset();
+  // Verify that when the hover status changes to true or false, it does not
+  // crash even with a null tab controller.
+  controller_->TestUpdateButtonHoverStatus(true);
+  controller_->TestUpdateButtonHoverStatus(false);
+}
+
 }  // namespace
 }  // namespace actor::ui

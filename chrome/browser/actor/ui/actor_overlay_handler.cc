@@ -26,16 +26,21 @@ void ActorOverlayHandler::OnHoverStatusChanged(bool is_hovering) {
     return;
   }
   is_hovering_ = is_hovering;
-  ActorUiTabControllerInterface::From(webui::GetTabInterface(web_contents_))
-      ->OnOverlayHoverStatusChanged(is_hovering);
+  if (auto* tab_controller = ActorUiTabControllerInterface::From(
+          webui::GetTabInterface(web_contents_))) {
+    tab_controller->OnOverlayHoverStatusChanged(is_hovering);
+  }
 }
 
 void ActorOverlayHandler::GetCurrentBorderGlowVisibility(
     GetCurrentBorderGlowVisibilityCallback callback) {
-  std::move(callback).Run(
-      ActorUiTabControllerInterface::From(webui::GetTabInterface(web_contents_))
-          ->GetCurrentUiTabState()
-          .actor_overlay.border_glow_visible);
+  if (auto* tab_controller = ActorUiTabControllerInterface::From(
+          webui::GetTabInterface(web_contents_))) {
+    std::move(callback).Run(tab_controller->GetCurrentUiTabState()
+                                .actor_overlay.border_glow_visible);
+  } else {
+    std::move(callback).Run(false);
+  }
 }
 
 void ActorOverlayHandler::SetOverlayBackground(bool is_visible) {

@@ -22,6 +22,7 @@
 namespace actor::ui {
 namespace {
 
+using ::testing::_;
 using ::testing::Return;
 
 // Fake implementation for the ActorOverlayPage interface.
@@ -149,6 +150,22 @@ TEST_F(ActorOverlayHandlerTest, SetBorderGlowVisibility) {
 
   EXPECT_FALSE(fake_page_.is_border_glow_visible());
   EXPECT_EQ(fake_page_.border_glow_call_count(), 2);
+}
+
+TEST_F(ActorOverlayHandlerTest, HandlesNullTab) {
+  // Verify that when the tab controller is null, we don't send the hover status
+  // change.
+  webui::SetTabInterface(web_contents_.get(), nullptr);
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), OnOverlayHoverStatusChanged(_))
+      .Times(0);
+  handler_->OnHoverStatusChanged(true);
+
+  // Verify that when the tab controller is null, we don't try to receive the
+  // current border glow visibility state.
+  base::test::TestFuture<bool> future;
+  EXPECT_CALL(*mock_actor_ui_tab_controller(), GetCurrentUiTabState()).Times(0);
+  handler_->GetCurrentBorderGlowVisibility(future.GetCallback());
+  EXPECT_FALSE(future.Take());
 }
 
 }  // namespace
