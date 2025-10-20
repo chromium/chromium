@@ -13,7 +13,10 @@
 
 #include "base/check.h"
 #include "base/containers/heap_array.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
@@ -31,6 +34,8 @@ namespace {
 // Value is arbitrary. The number should be small to conserve memory but large
 // enough to fit a meaningful amount of fonts.
 constexpr int kMemoryMapCacheSize = 128;
+
+BASE_FEATURE(kDumpOnOOBFontDataServiceCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
 base::SequencedTaskRunner* GetFontDataServiceTaskRunner() {
   static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
@@ -266,7 +271,13 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
         // return an invalid memory map region.
         // TODO(crbug.com/335680565): Improve cache by transitioning to LRU.
         if (stream && stream->hasLength() && (stream->getLength() > 0u) &&
-            stream->getMemoryBase() && assets_.size() < kMemoryMapCacheSize) {
+            stream->getMemoryBase()) {
+          UMA_HISTOGRAM_COUNTS_10000(
+              "Chrome.FontDataService.MemoryMapCacheSize", assets_.size());
+          if (assets_.size() >= kMemoryMapCacheSize &&
+              base::FeatureList::IsEnabled(kDumpOnOOBFontDataServiceCache)) {
+            base::debug::DumpWithoutCrashing();
+          }
           const size_t asset_index = GetOrCreateAssetIndex(std::move(stream));
           base::ReadOnlySharedMemoryRegion region =
               assets_[asset_index]->shared_memory.region.Duplicate();
