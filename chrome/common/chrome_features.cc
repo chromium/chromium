@@ -426,6 +426,11 @@ BASE_FEATURE(kGlicActorPermissionsBypass, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicActorToctouValidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the Glic's act-on-web capability is checked for managed
+// trial clients.
+BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the Glic FRE dialog is displayed in the same window as the
 // main app.
 BASE_FEATURE(kGlicUnifiedFreScreen, base::FEATURE_DISABLED_BY_DEFAULT);
