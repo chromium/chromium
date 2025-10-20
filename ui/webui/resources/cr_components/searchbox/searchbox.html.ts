@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchboxElement} from './searchbox.js';
 
@@ -12,7 +12,7 @@ export function getHtml(this: SearchboxElement) {
 ${this.ntpRealboxNextEnabled ? html`
 <ntp-error-scrim id="errorScrim"
     ?compact-mode="${this.realboxLayoutMode === 'Compact'}">
-</ntp-error-scrim>` : ''}
+</ntp-error-scrim>` : nothing}
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
     @keydown="${this.onInputWrapperKeydown_}">
   <input id="input" class="truncate" type="search" autocomplete="off"
@@ -41,31 +41,14 @@ ${this.ntpRealboxNextEnabled ? html`
           tabindex="${this.getThumbnailTabindex_()}">
       </cr-searchbox-thumbnail>
     </div>
-  ` : ''}
+  ` : nothing}
 
-  ${this.searchboxVoiceSearchEnabled_ ? html`
-    <div class="searchbox-icon-button-container voice">
-      <button id="voiceSearchButton" class="searchbox-icon-button"
-          @click="${this.onVoiceSearchClick_}"
-          title="${this.i18n('voiceSearchButtonLabel')}">
-      </button>
-    </div>
-  ` : ''}
-
-  ${this.searchboxLensSearchEnabled_ ? html`
-    <div class="searchbox-icon-button-container lens">
-      <button id="lensSearchButton" class="searchbox-icon-button lens"
-          @click="${this.onLensSearchClick_}"
-          title="${this.i18n('lensSearchButtonLabel')}">
-      </button>
-    </div>
-  ` : ''}
-
-  ${this.composeButtonEnabled ? html`
+  ${this.realboxLayoutMode.startsWith('Tall') &&
+      this.composeButtonEnabled ? html`
     <cr-searchbox-compose-button id="composeButton"
         @compose-click="${this.onComposeButtonClick_}">
     </cr-searchbox-compose-button>
-  ` : ''}
+  ` : nothing}
 
   ${this.ntpRealboxNextEnabled ? html`
     <div class="dropdownContainer">
@@ -118,6 +101,32 @@ ${this.ntpRealboxNextEnabled ? html`
     </cr-searchbox-dropdown>
   `}
 </div>
+
+  ${this.searchboxVoiceSearchEnabled_ ? html`
+    <div class="searchbox-icon-button-container voice">
+      <button id="voiceSearchButton" class="searchbox-icon-button"
+          @click="${this.onVoiceSearchClick_}"
+          title="${this.i18n('voiceSearchButtonLabel')}">
+      </button>
+    </div>
+  ` : nothing}
+
+  ${this.searchboxLensSearchEnabled_ ? html`
+    <div class="searchbox-icon-button-container lens">
+      <button id="lensSearchButton" class="searchbox-icon-button lens"
+          @click="${this.onLensSearchClick_}"
+          title="${this.i18n('lensSearchButtonLabel')}">
+      </button>
+    </div>
+  ` : nothing}
+
+  ${!this.realboxLayoutMode.startsWith('Tall') &&
+      this.composeButtonEnabled ? html`
+    <cr-searchbox-compose-button id="composeButton"
+        @compose-click="${this.onComposeButtonClick_}">
+    </cr-searchbox-compose-button>
+  ` : nothing}
+
 <!--_html_template_end_-->`;
   // clang-format on
 }
