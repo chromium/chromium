@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -316,13 +315,13 @@ public class ToolbarPhone extends ToolbarLayout
                                 R.dimen.toolbar_vertical_padding_when_bottom_focused);
         mToolbarBackgroundColorForNtp =
                 ContextCompat.getColor(getContext(), R.color.home_surface_background_color);
-        float LocationBarBackgroundColorAlphaForNtp =
+        float locationBarBackgroundColorAlphaForNtp =
                 ResourcesCompat.getFloat(
                         getResources(), R.dimen.home_surface_search_box_background_alpha);
         mLocationBarBackgroundColorForNtp =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
-                        LocationBarBackgroundColorAlphaForNtp);
+                        locationBarBackgroundColorAlphaForNtp);
     }
 
     @Override
@@ -1086,12 +1085,6 @@ public class ToolbarPhone extends ToolbarLayout
         locationBarBaseTranslationX *= 1f - mUrlExpansionFraction;
 
         boolean isLocationBarShownInNtp = isLocationBarShownInNtp();
-        Tab currentTab = getToolbarDataProvider().getTab();
-        if (currentTab != null) {
-            getToolbarDataProvider()
-                    .getNewTabPageDelegate()
-                    .setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
-        }
 
         float locationBarTranslationX;
         if (isLocationBarRtl) {
@@ -1285,6 +1278,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
+        ntpDelegate.setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
         // #getSearchBoxBounds is only valid once the NTP can actually draw itself.
         if (ntpDelegate.hasCompletedFirstLayout()) {
             ntpDelegate.getSearchBoxBounds(mNtpSearchBoxBounds, mNtpSearchBoxTranslation);
