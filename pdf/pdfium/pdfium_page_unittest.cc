@@ -848,16 +848,17 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfoAt) {
   text_run_info_result = page.GetTextRunInfoAt(1);
   ASSERT_TRUE(text_run_info_result.has_value());
   const auto& actual_text_run = text_run_info_result.value();
-  // TODO(crbug.com/452406608): Expected text run should be the same as
-  // `expected_text_runs[0]`.
-  static const AccessibilityTextRunInfo expected_text_run{
-      /*start_index=*/1,
-      /*len=*/6,
-      "",
-      gfx::RectF(38.666666f, 189.333333f, 26.666672f, 13.333344f),
-      AccessibilityTextDirection::kLeftToRight,
-      expected_style_1};
-  CompareTextRuns(expected_text_run, actual_text_run);
+  CompareTextRuns(expected_text_runs[0], actual_text_run);
+}
+
+TEST_P(PDFiumPageTextTest, GetTextRunInfoAtBlankPage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  EXPECT_FALSE(page.GetTextRunInfoAt(0).has_value());
+  EXPECT_FALSE(page.GetTextRunInfoAt(1).has_value());
 }
 
 TEST_P(PDFiumPageTextTest, HighlightTextRunInfo) {

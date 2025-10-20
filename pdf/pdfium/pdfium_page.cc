@@ -660,196 +660,6 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureSubtree(
   return tree_node;
 }
 
-std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfoAt(
-    int start_char_index) {
-  FPDF_PAGE page = GetPage();
-  FPDF_TEXTPAGE text_page = GetTextPage();
-  int chars_count = FPDFText_CountChars(text_page);
-  // Check to make sure `start_char_index` is within bounds.
-  if (start_char_index < 0 || start_char_index >= chars_count)
-    return std::nullopt;
-
-  AccessibilityTextRunInfo info;
-  info.start_index = start_char_index;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // This assumes all text on the page are either from the PDF itself, or from
-  // Searchify.
-  info.is_searchified = has_searchify_added_text_.value_or(false);
-#endif
-
-  int actual_start_char_index = GetFirstNonUnicodeWhiteSpaceCharIndex(
-      text_page, start_char_index, chars_count);
-  // Check to see if GetFirstNonUnicodeWhiteSpaceCharIndex() iterated through
-  // all the characters.
-  if (actual_start_char_index >= chars_count) {
-    // If so, `info.len` needs to take the number of characters
-    // iterated into account.
-    DCHECK_GT(actual_start_char_index, start_char_index);
-    info.len = chars_count - start_char_index;
-    return info;
-  }
-
-  // If the first character in a text run is a space, we need to start
-  // `text_run_bounds` from the space character instead of the first
-  // non-space unicode character.
-  gfx::RectF text_run_bounds =
-      actual_start_char_index > start_char_index
-          ? GetFloatCharRectInPixels(page, text_page, start_char_index)
-          : gfx::RectF();
-
-  int char_index = actual_start_char_index;
-
-  // Set text run's style info from the first character of the text run.
-  FPDF_PAGEOBJECT text_object = FPDFText_GetTextObject(text_page, char_index);
-  info.style = CalculateTextRunStyleInfo(text_object);
-
-  gfx::RectF start_char_rect =
-      GetFloatCharRectInPixels(page, text_page, char_index);
-  float text_run_font_size = info.style.font_size;
-
-  // Heuristic: Initialize the average character size to one-third of the font
-  // size to avoid having the first few characters misrepresent the average.
-  // Without it, if a text run starts with a '.', its small bounding box could
-  // lead to a break in the text run after only one space. Ex: ". Hello World"
-  // would be split in two runs: "." and "Hello World".
-  float font_size_minimum;
-  if (FPDFTextObj_GetFontSize(text_object, &font_size_minimum)) {
-    font_size_minimum /= 3.0f;
-  } else {
-    font_size_minimum = 0.0f;
-  }
-  gfx::SizeF avg_char_size(font_size_minimum, font_size_minimum);
-  int non_whitespace_chars_count = 1;
-  AddCharSizeToAverageCharSize(start_char_rect.size(), &avg_char_size,
-                               &non_whitespace_chars_count);
-
-  // Add first non-space char to text run.
-  text_run_bounds.Union(start_char_rect);
-  AccessibilityTextDirection char_direction =
-      GetDirectionFromAngle(FPDFText_GetCharAngle(text_page, char_index));
-  if (char_index < chars_count)
-    char_index++;
-
-  gfx::RectF prev_char_rect = start_char_rect;
-  float estimated_font_size =
-      std::max(start_char_rect.width(), start_char_rect.height());
-
-  // The angle of the vector starting at the first character center-point and
-  // ending at the current last character center-point.
-  float text_run_angle = 0;
-
-  CalculatePageObjectTextRunBreaks();
-  const auto breakpoint_iter =
-      std::lower_bound(page_object_text_run_breaks_.begin(),
-                       page_object_text_run_breaks_.end(), char_index);
-  int breakpoint_index = breakpoint_iter != page_object_text_run_breaks_.end()
-                             ? *breakpoint_iter
-                             : -1;
-
-  // Searchify text uses a fixed width font with sizes selected based on the
-  // height of each word block. Therefore the values are not as reliable as the
-  // non-Searchify text and bigger threshold is used.
-  float character_distance_break_threshold_ratio =
-      info.is_searchified ? 5.0f : 2.5f;
-
-  // Continue adding characters until heuristics indicate we should end the text
-  // run.
-  while (char_index < chars_count) {
-    // Split a text run when it encounters a page object like links or images.
-    if (char_index == breakpoint_index)
-      break;
-
-    unsigned int character = FPDFText_GetUnicode(text_page, char_index);
-    gfx::RectF char_rect =
-        GetFloatCharRectInPixels(page, text_page, char_index);
-
-    if (!base::IsUnicodeWhitespace(character)) {
-      // Heuristic: End the text run if the text style of the current character
-      // is different from the text run's style. The style can only be different
-      // if the FPDF_PAGEOBJECTs are different, so check the FPDF_PAGEOBJECTs
-      // first to make the comparison faster.
-      FPDF_PAGEOBJECT current_text_object =
-          FPDFText_GetTextObject(text_page, char_index);
-      if (current_text_object != text_object &&
-          !AreTextStyleEqual(current_text_object, info.style,
-                             info.is_searchified)) {
-        break;
-      }
-
-      // Heuristic: End text run if character isn't going in the same direction.
-      if (char_direction !=
-          GetDirectionFromAngle(FPDFText_GetCharAngle(text_page, char_index))) {
-        break;
-      }
-
-      // Heuristic: End the text run if the difference between the text run
-      // angle and the angle between the center-points of the previous and
-      // current characters is greater than 90 degrees.
-      float current_angle = GetAngleOfVector(char_rect.CenterPoint() -
-                                             prev_char_rect.CenterPoint());
-      if (start_char_rect != prev_char_rect) {
-        text_run_angle = GetAngleOfVector(prev_char_rect.CenterPoint() -
-                                          start_char_rect.CenterPoint());
-
-        if (GetAngleDifference(text_run_angle, current_angle) >
-            k90DegreesInRadians) {
-          break;
-        }
-      }
-
-      // Heuristic: End the text run if the center-point distance to the
-      // previous character is less than
-      // `character_distance_break_threshold_ratio` x the average character
-      // size.
-      AddCharSizeToAverageCharSize(char_rect.size(), &avg_char_size,
-                                   &non_whitespace_chars_count);
-
-      float avg_char_width = GetRotatedCharWidth(current_angle, avg_char_size);
-
-      float distance =
-          (char_rect.CenterPoint() - prev_char_rect.CenterPoint()).Length() -
-          GetRotatedCharWidth(current_angle, char_rect.size()) / 2 -
-          GetRotatedCharWidth(current_angle, prev_char_rect.size()) / 2;
-
-      if (distance >
-          character_distance_break_threshold_ratio * avg_char_width) {
-        break;
-      }
-
-      text_run_bounds.Union(char_rect);
-      prev_char_rect = char_rect;
-    }
-
-    if (!char_rect.IsEmpty()) {
-      // Update the estimated font size if needed.
-      float char_largest_side = std::max(char_rect.height(), char_rect.width());
-      estimated_font_size = std::max(char_largest_side, estimated_font_size);
-    }
-
-    char_index++;
-  }
-
-  // Some PDFs have missing or obviously bogus font sizes; substitute the
-  // font size by the width or height (whichever's the largest) of the bigger
-  // character in the current text run.
-  if (text_run_font_size <= 1 || text_run_font_size < estimated_font_size / 2 ||
-      text_run_font_size > estimated_font_size * 2) {
-    text_run_font_size = estimated_font_size;
-  }
-
-  info.len = char_index - start_char_index;
-  info.style.font_size = text_run_font_size;
-  info.bounds = text_run_bounds;
-  // Infer text direction from first and last character of the text run. We
-  // can't base our decision on the character direction, since a character of a
-  // RTL language will have an angle of 0 when not rotated, just like a
-  // character in a LTR language.
-  info.direction = char_index - actual_start_char_index > 1
-                       ? GetDirectionFromAngle(text_run_angle)
-                       : AccessibilityTextDirection::kNone;
-  return info;
-}
-
 uint32_t PDFiumPage::GetCharUnicode(int char_index) {
   // No explicit `available_` check here to return 0 when unavailable.
   // If this page is unavailable, GetTextPage() returns nullptr and
@@ -964,6 +774,29 @@ std::vector<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo() {
   }
   CalculateTextRuns();
   return text_runs_;
+}
+
+std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfoAt(
+    int char_index) {
+  if (!IsCharIndexInBounds(char_index)) {
+    return std::nullopt;
+  }
+
+  CalculateTextRuns();
+  if (text_runs_.empty()) {
+    return std::nullopt;
+  }
+
+  // Find the first text run with a start index greater than `char_index`.
+  auto it = std::ranges::upper_bound(
+      text_runs_, char_index, {},
+      [](const auto& text_run) { return text_run.start_index; });
+  // Cannot be the first text run, since the first text run should always have a
+  // start index of 0 and char index bounds have already been checked.
+  CHECK(it != text_runs_.begin());
+
+  // The previous text run will include `char_index`.
+  return *std::prev(it);
 }
 
 std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo() {
@@ -1359,7 +1192,8 @@ void PDFiumPage::CalculateTextRuns() {
       raw_char_count < 0 ? 0 : static_cast<uint32_t>(raw_char_count);
   uint32_t char_index = 0;
   while (char_index < char_count) {
-    AccessibilityTextRunInfo text_run = GetTextRunInfoAt(char_index).value();
+    AccessibilityTextRunInfo text_run =
+        CalculateTextRunInfoAt(char_index, char_count);
     CHECK_LE(char_index + text_run.len, char_count);
     text_runs_.push_back(text_run);
     if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
@@ -1376,6 +1210,194 @@ void PDFiumPage::CalculateTextRuns() {
     }
     char_index += text_run.len;
   }
+}
+
+AccessibilityTextRunInfo PDFiumPage::CalculateTextRunInfoAt(
+    int start_char_index,
+    int chars_count) {
+  AccessibilityTextRunInfo info;
+  info.start_index = start_char_index;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // This assumes all text on the page are either from the PDF itself, or from
+  // Searchify.
+  info.is_searchified = has_searchify_added_text_.value_or(false);
+#endif
+
+  FPDF_TEXTPAGE text_page = GetTextPage();
+  int actual_start_char_index = GetFirstNonUnicodeWhiteSpaceCharIndex(
+      text_page, start_char_index, chars_count);
+  // Check to see if GetFirstNonUnicodeWhiteSpaceCharIndex() iterated through
+  // all the characters.
+  if (actual_start_char_index >= chars_count) {
+    // If so, `info.len` needs to take the number of characters
+    // iterated into account.
+    DCHECK_GT(actual_start_char_index, start_char_index);
+    info.len = chars_count - start_char_index;
+    return info;
+  }
+
+  // If the first character in a text run is a space, we need to start
+  // `text_run_bounds` from the space character instead of the first
+  // non-space unicode character.
+  FPDF_PAGE page = GetPage();
+  gfx::RectF text_run_bounds =
+      actual_start_char_index > start_char_index
+          ? GetFloatCharRectInPixels(page, text_page, start_char_index)
+          : gfx::RectF();
+
+  int char_index = actual_start_char_index;
+
+  // Set text run's style info from the first character of the text run.
+  FPDF_PAGEOBJECT text_object = FPDFText_GetTextObject(text_page, char_index);
+  info.style = CalculateTextRunStyleInfo(text_object);
+
+  gfx::RectF start_char_rect =
+      GetFloatCharRectInPixels(page, text_page, char_index);
+  float text_run_font_size = info.style.font_size;
+
+  // Heuristic: Initialize the average character size to one-third of the font
+  // size to avoid having the first few characters misrepresent the average.
+  // Without it, if a text run starts with a '.', its small bounding box could
+  // lead to a break in the text run after only one space. Ex: ". Hello World"
+  // would be split in two runs: "." and "Hello World".
+  float font_size_minimum;
+  if (FPDFTextObj_GetFontSize(text_object, &font_size_minimum)) {
+    font_size_minimum /= 3.0f;
+  } else {
+    font_size_minimum = 0.0f;
+  }
+  gfx::SizeF avg_char_size(font_size_minimum, font_size_minimum);
+  int non_whitespace_chars_count = 1;
+  AddCharSizeToAverageCharSize(start_char_rect.size(), &avg_char_size,
+                               &non_whitespace_chars_count);
+
+  // Add first non-space char to text run.
+  text_run_bounds.Union(start_char_rect);
+  AccessibilityTextDirection char_direction =
+      GetDirectionFromAngle(FPDFText_GetCharAngle(text_page, char_index));
+  if (char_index < chars_count) {
+    char_index++;
+  }
+
+  gfx::RectF prev_char_rect = start_char_rect;
+  float estimated_font_size =
+      std::max(start_char_rect.width(), start_char_rect.height());
+
+  // The angle of the vector starting at the first character center-point and
+  // ending at the current last character center-point.
+  float text_run_angle = 0;
+
+  CalculatePageObjectTextRunBreaks();
+  const auto breakpoint_iter =
+      std::lower_bound(page_object_text_run_breaks_.begin(),
+                       page_object_text_run_breaks_.end(), char_index);
+  int breakpoint_index = breakpoint_iter != page_object_text_run_breaks_.end()
+                             ? *breakpoint_iter
+                             : -1;
+
+  // Searchify text uses a fixed width font with sizes selected based on the
+  // height of each word block. Therefore the values are not as reliable as the
+  // non-Searchify text and bigger threshold is used.
+  float character_distance_break_threshold_ratio =
+      info.is_searchified ? 5.0f : 2.5f;
+
+  // Continue adding characters until heuristics indicate we should end the text
+  // run.
+  while (char_index < chars_count) {
+    // Split a text run when it encounters a page object like links or images.
+    if (char_index == breakpoint_index) {
+      break;
+    }
+
+    unsigned int character = FPDFText_GetUnicode(text_page, char_index);
+    gfx::RectF char_rect =
+        GetFloatCharRectInPixels(page, text_page, char_index);
+
+    if (!base::IsUnicodeWhitespace(character)) {
+      // Heuristic: End the text run if the text style of the current character
+      // is different from the text run's style. The style can only be different
+      // if the FPDF_PAGEOBJECTs are different, so check the FPDF_PAGEOBJECTs
+      // first to make the comparison faster.
+      FPDF_PAGEOBJECT current_text_object =
+          FPDFText_GetTextObject(text_page, char_index);
+      if (current_text_object != text_object &&
+          !AreTextStyleEqual(current_text_object, info.style,
+                             info.is_searchified)) {
+        break;
+      }
+
+      // Heuristic: End text run if character isn't going in the same direction.
+      if (char_direction !=
+          GetDirectionFromAngle(FPDFText_GetCharAngle(text_page, char_index))) {
+        break;
+      }
+
+      // Heuristic: End the text run if the difference between the text run
+      // angle and the angle between the center-points of the previous and
+      // current characters is greater than 90 degrees.
+      float current_angle = GetAngleOfVector(char_rect.CenterPoint() -
+                                             prev_char_rect.CenterPoint());
+      if (start_char_rect != prev_char_rect) {
+        text_run_angle = GetAngleOfVector(prev_char_rect.CenterPoint() -
+                                          start_char_rect.CenterPoint());
+
+        if (GetAngleDifference(text_run_angle, current_angle) >
+            k90DegreesInRadians) {
+          break;
+        }
+      }
+
+      // Heuristic: End the text run if the center-point distance to the
+      // previous character is less than
+      // `character_distance_break_threshold_ratio` x the average character
+      // size.
+      AddCharSizeToAverageCharSize(char_rect.size(), &avg_char_size,
+                                   &non_whitespace_chars_count);
+
+      float avg_char_width = GetRotatedCharWidth(current_angle, avg_char_size);
+
+      float distance =
+          (char_rect.CenterPoint() - prev_char_rect.CenterPoint()).Length() -
+          GetRotatedCharWidth(current_angle, char_rect.size()) / 2 -
+          GetRotatedCharWidth(current_angle, prev_char_rect.size()) / 2;
+
+      if (distance >
+          character_distance_break_threshold_ratio * avg_char_width) {
+        break;
+      }
+
+      text_run_bounds.Union(char_rect);
+      prev_char_rect = char_rect;
+    }
+
+    if (!char_rect.IsEmpty()) {
+      // Update the estimated font size if needed.
+      float char_largest_side = std::max(char_rect.height(), char_rect.width());
+      estimated_font_size = std::max(char_largest_side, estimated_font_size);
+    }
+
+    char_index++;
+  }
+
+  // Some PDFs have missing or obviously bogus font sizes; substitute the
+  // font size by the width or height (whichever's the largest) of the bigger
+  // character in the current text run.
+  if (text_run_font_size <= 1 || text_run_font_size < estimated_font_size / 2 ||
+      text_run_font_size > estimated_font_size * 2) {
+    text_run_font_size = estimated_font_size;
+  }
+
+  info.len = char_index - start_char_index;
+  info.style.font_size = text_run_font_size;
+  info.bounds = text_run_bounds;
+  // Infer text direction from first and last character of the text run. We
+  // can't base our decision on the character direction, since a character of a
+  // RTL language will have an angle of 0 when not rotated, just like a
+  // character in a LTR language.
+  info.direction = char_index - actual_start_char_index > 1
+                       ? GetDirectionFromAngle(text_run_angle)
+                       : AccessibilityTextDirection::kNone;
+  return info;
 }
 
 int PDFiumPage::GetLink(int char_index, LinkTarget* target) {

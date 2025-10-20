@@ -98,12 +98,10 @@ class PDFiumPage {
   // Gets all the text runs from the page.
   std::vector<AccessibilityTextRunInfo> GetTextRunInfo();
 
-  // Given a start char index, find the longest continuous run of text that's
-  // in a single direction and with the same text style. Return a filled out
+  // Returns the text run that contains `char_index`. Return a filled out
   // AccessibilityTextRunInfo on success or std::nullopt on failure. e.g. When
-  // `start_char_index` is out of bounds.
-  std::optional<AccessibilityTextRunInfo> GetTextRunInfoAt(
-      int start_char_index);
+  // `char_index` is out of bounds.
+  std::optional<AccessibilityTextRunInfo> GetTextRunInfoAt(int char_index);
 
   // Get a unicode character from the page.
   uint32_t GetCharUnicode(int char_index);
@@ -475,6 +473,9 @@ class PDFiumPage {
   void CalculatePageObjectTextRunBreaks();
   // Calculate and caches all text runs and character information on the page.
   void CalculateTextRuns();
+  // Calculates and return a text run that starts exactly at `start_char_index`.
+  AccessibilityTextRunInfo CalculateTextRunInfoAt(int start_char_index,
+                                                  int chars_count);
 
   // Traverses a struct element and its sub-tree recursively and extracts the
   // text run type or the alt text from struct elements corresponding to the
@@ -511,6 +512,7 @@ class PDFiumPage {
   gfx::Rect rect_;
   bool calculated_text_runs_ = false;
   MarkedContentIdToTextRunInfoMap marked_content_id_to_text_runs_map_;
+  // Text runs are sorted by character index.
   std::vector<AccessibilityTextRunInfo> text_runs_;
   bool calculated_links_ = false;
   std::vector<Link> links_;

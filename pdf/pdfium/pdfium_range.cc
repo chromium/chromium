@@ -243,7 +243,8 @@ std::vector<PdfRect> PDFiumRange::GetRectsWithTightness(
 
     // Figure out how many characters to process in the for-loop below, and
     // determine if this while-loop iteration reached the end of the range.
-    int next_char_index = char_index + text_run_info.value().len;
+    int next_char_index =
+        text_run_info.value().start_index + text_run_info.value().len;
     reached_end = next_char_index >= end_char_index;
     if (reached_end) {
       next_char_index = end_char_index;
