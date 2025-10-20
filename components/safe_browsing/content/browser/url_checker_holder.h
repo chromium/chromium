@@ -148,7 +148,6 @@ class UrlCheckerHolder final {
   base::WeakPtr<HashRealTimeService> hash_realtime_service_;
   hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
       hash_realtime_utils::HashRealTimeSelection::kNone;
-  base::TimeTicks creation_time_;
   bool is_async_check_ = false;
   bool check_allowlist_before_hash_database_ = false;
   SessionID tab_id_;

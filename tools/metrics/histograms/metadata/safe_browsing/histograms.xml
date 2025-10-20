@@ -326,16 +326,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime" units="ms"
-    expires_after="2025-10-26">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records how long the BrowserURLLoaderThrottle::CheckerOnIO object exists
-    for. Logged when the object destructs.
-  </summary>
-</histogram>
-
 <histogram
     name="SafeBrowsing.BrowserThrottle.IntervalBetweenStartAndProcess{ResponseType}"
     units="ms" expires_after="2026-03-22">

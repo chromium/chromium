@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
@@ -80,7 +79,6 @@ UrlCheckerHolder::UrlCheckerHolder(
       url_lookup_service_(url_lookup_service),
       hash_realtime_service_(hash_realtime_service),
       hash_realtime_selection_(hash_realtime_selection),
-      creation_time_(base::TimeTicks::Now()),
       is_async_check_(is_async_check),
       check_allowlist_before_hash_database_(
           check_allowlist_before_hash_database),
@@ -89,9 +87,6 @@ UrlCheckerHolder::UrlCheckerHolder(
 
 UrlCheckerHolder::~UrlCheckerHolder() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::UmaHistogramMediumTimes(
-      "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
-      base::TimeTicks::Now() - creation_time_);
 }
 
 void UrlCheckerHolder::Start(const StartParams& params) {
