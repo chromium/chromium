@@ -65,32 +65,10 @@ class HybridSpellCheckTest
   HybridSpellCheckTest() : provider_(&embedder_provider_) {}
   ~HybridSpellCheckTest() override = default;
 
-  void SetUp() override {
-    // Don't delay initialization of the SpellcheckService on browser launch.
-    feature_list_.InitAndDisableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-  }
-
-  void RunShouldUseBrowserSpellCheckOnlyWhenNeededTest();
-
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   spellcheck::EmptyLocalInterfaceProvider embedder_provider_;
   TestingSpellCheckProvider provider_;
-};
-
-// Test fixture for testing hybrid check cases with delayed initialization of
-// the spellcheck service.
-class HybridSpellCheckTestDelayInit : public HybridSpellCheckTest {
- public:
-  HybridSpellCheckTestDelayInit() = default;
-
-  void SetUp() override {
-    // Don't initialize the SpellcheckService on browser launch.
-    feature_list_.InitAndEnableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-  }
 };
 
 // Test fixture for testing combining results from both the native spell checker
@@ -195,10 +173,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(kSpellCheckProviderHybridTestsParams));
 
 TEST_P(HybridSpellCheckTest, ShouldUseBrowserSpellCheckOnlyWhenNeeded) {
-  RunShouldUseBrowserSpellCheckOnlyWhenNeededTest();
-}
-
-void HybridSpellCheckTest::RunShouldUseBrowserSpellCheckOnlyWhenNeededTest() {
   const auto& test_case = GetParam();
 
   FakeTextCheckingResult completion;
@@ -215,20 +189,6 @@ void HybridSpellCheckTest::RunShouldUseBrowserSpellCheckOnlyWhenNeededTest() {
   EXPECT_EQ(completion.completion_count_,
             test_case.expected_text_check_requests_count > 0u ? 0u : 1u);
   EXPECT_EQ(completion.cancellation_count_, 0U);
-}
-
-// Tests that the SpellCheckProvider calls into the native spell checker only
-// when needed when the code path through
-// SpellCheckProvider::RequestTextChecking is that used when the spellcheck
-// service is initialized on demand.
-INSTANTIATE_TEST_SUITE_P(
-    SpellCheckProviderHybridTests,
-    HybridSpellCheckTestDelayInit,
-    testing::ValuesIn(kSpellCheckProviderHybridTestsParams));
-
-TEST_P(HybridSpellCheckTestDelayInit,
-       ShouldUseBrowserSpellCheckOnlyWhenNeeded) {
-  RunShouldUseBrowserSpellCheckOnlyWhenNeededTest();
 }
 
 // Tests that the SpellCheckProvider can correctly combine results from the

@@ -165,9 +165,7 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
   custom_dictionary_->Load();
 
 #if BUILDFLAG(IS_WIN)
-  if (spellcheck::UseBrowserSpellChecker() &&
-      base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
+  if (spellcheck::UseBrowserSpellChecker()) {
     // If initialization of the spellcheck service is on-demand, it is up to the
     // instantiator of the spellcheck service to call InitializeDictionaries
     // with a callback.
@@ -487,9 +485,7 @@ void SpellcheckService::LoadDictionaries() {
   }
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  if (base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit) &&
-      spellcheck::UseBrowserSpellChecker()) {
+  if (spellcheck::UseBrowserSpellChecker()) {
     // Only want to fire the callback on first call to LoadDictionaries
     // originating from InitializeDictionaries, since supported platform
     // dictionaries are cached throughout the browser session and not
@@ -517,9 +513,7 @@ bool SpellcheckService::IsSpellcheckEnabled() const {
 
   bool enable_if_uninitialized = false;
 #if BUILDFLAG(IS_WIN)
-  if (spellcheck::UseBrowserSpellChecker() &&
-      base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
+  if (spellcheck::UseBrowserSpellChecker()) {
     // If initialization of the spellcheck service is on-demand, the
     // renderer-side SpellCheck object needs to start out as enabled in order
     // for a click on editable content to initialize the spellcheck service.

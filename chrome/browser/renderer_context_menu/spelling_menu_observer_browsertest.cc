@@ -30,7 +30,7 @@ namespace {
 // accesses resources.
 class SpellingMenuObserverTest : public InProcessBrowserTest {
  public:
-  SpellingMenuObserverTest();
+  SpellingMenuObserverTest() = default;
 
   void SetUpOnMainThread() override {
     Reset(false);
@@ -53,6 +53,12 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
   std::unique_ptr<KeyedService> BuildSpellcheckService(
       content::BrowserContext* context) {
     auto spellcheck_service = std::make_unique<SpellcheckService>(context);
+
+    // With delayed initialization, we need to initialize dictionaries.
+    spellcheck_service->InitializeDictionaries(
+        base::BindOnce(&SpellingMenuObserverTest::OnSuggestionsComplete,
+                       base::Unretained(this)));
+    RunUntilCallbackReceived();
 
     // Call SetLanguage to assure that the platform spellchecker is initialized.
     spellcheck_platform::SetLanguage(
@@ -166,16 +172,6 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 };
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-SpellingMenuObserverTest::SpellingMenuObserverTest() {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
-}
-#else
-SpellingMenuObserverTest::SpellingMenuObserverTest() = default;
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 SpellingMenuObserverTest::~SpellingMenuObserverTest() = default;
 

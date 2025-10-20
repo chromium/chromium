@@ -1412,17 +1412,6 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
                        profile->GetPath()));
   }
 
-#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  // Create the spellcheck service. This will asynchronously retrieve the
-  // Windows platform spellcheck dictionary language tags used to populate the
-  // context menu for editable content.
-  if (spellcheck::UseBrowserSpellChecker() &&
-      profile->GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&
-      !base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
-    SpellcheckServiceFactory::GetForContext(profile);
-  }
-#endif
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \

@@ -186,27 +186,21 @@ void SpellCheckHostChromeImpl::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
-    // Initialize the spellcheck service if needed. Initialization must
-    // happen on UI thread.
-    SpellcheckService* spellcheck = GetSpellcheckService();
+  // Initialize the spellcheck service if needed. Initialization must
+  // happen on UI thread.
+  SpellcheckService* spellcheck = GetSpellcheckService();
 
-    if (!spellcheck) {  // Teardown.
-      std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
-                              /*enable=*/false);
-      return;
-    }
-
-    dictionaries_loaded_callback_ = std::move(callback);
-
-    spellcheck->InitializeDictionaries(
-        base::BindOnce(&SpellCheckHostChromeImpl::OnDictionariesInitialized,
-                       weak_factory_.GetWeakPtr()));
+  if (!spellcheck) {  // Teardown.
+    std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
+                            /*enable=*/false);
     return;
   }
 
-  NOTREACHED();
+  dictionaries_loaded_callback_ = std::move(callback);
+
+  spellcheck->InitializeDictionaries(
+      base::BindOnce(&SpellCheckHostChromeImpl::OnDictionariesInitialized,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SpellCheckHostChromeImpl::OnDictionariesInitialized() {
