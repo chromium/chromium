@@ -5394,7 +5394,11 @@ int BrowserView::GetClientAreaTop() {
     top_view = webui_tab_strip_;
   }
 #endif
-  return top_view->y();
+
+  gfx::Rect bounds_in_browser_view_coords = top_view->bounds();
+  views::View::ConvertRectToTarget(top_view, this,
+                                   bounds_in_browser_view_coords);
+  return bounds_in_browser_view_coords.y();
 }
 
 void BrowserView::PrepareFullscreen(bool fullscreen) {
