@@ -792,9 +792,22 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   // expected visibility state and lie to the upper layer pretending the
   // window did change its visibility and activation state.
   if (headless_mode_window_) {
-    headless_mode_window_->visibility_state =
+    const bool new_visibility_state =
         new_state != WindowVisibilityState::kHideWindow;
-    host_->OnVisibilityChanged(headless_mode_window_->visibility_state);
+    if (headless_mode_window_->visibility_state != new_visibility_state) {
+      headless_mode_window_->visibility_state = new_visibility_state;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](const base::WeakPtr<NativeWidgetNSWindowBridge>& bridge,
+                 bool visibility_state) {
+                if (bridge && bridge->host_) {
+                  bridge->host_->OnVisibilityChanged(visibility_state);
+                }
+              },
+              factory_.GetWeakPtr(), new_visibility_state));
+    }
+
     if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
