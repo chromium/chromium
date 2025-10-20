@@ -202,6 +202,8 @@ std::string GetStringNameForOptimizationType(
       return "LensOverlayEduActionChipBlocklist";
     case proto::OptimizationType::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST:
       return "LensOverlayEduActionChipAllowlist";
+    case proto::OptimizationType::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST:
+      return "WalletablePassDetectionLoyaltyAllowlist";
   }
 
   // The returned string is used to record histograms for the optimization type.
