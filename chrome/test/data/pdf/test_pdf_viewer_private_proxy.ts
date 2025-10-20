@@ -12,7 +12,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 const SaveToDriveStatus = chrome.pdfViewerPrivate.SaveToDriveStatus;
 const SaveToDriveErrorType = chrome.pdfViewerPrivate.SaveToDriveErrorType;
 
-class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
+export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
     PdfViewerPrivateProxy {
   onSaveToDriveProgress: FakeChromeEvent;
   private streamUrl_: string = '';

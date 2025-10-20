@@ -75,6 +75,9 @@ export {PdfViewerPrivateProxy, PdfViewerPrivateProxyImpl} from './pdf_viewer_pri
 export {hexToColor} from './pdf_viewer_utils.js';
 // </if>
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+// <if expr="enable_pdf_save_to_drive">
+export {SaveToDriveBubbleState, SaveToDriveSaveType} from './save_to_drive_metrics.js';
+// </if>
 export {SwipeDetector, SwipeDirection} from './swipe_detector.js';
 export {DocumentDimensions, LayoutOptions, PAGE_SHADOW, Viewport} from './viewport.js';
 export {ZoomManager} from './zoom_manager.js';

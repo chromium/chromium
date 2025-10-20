@@ -11,6 +11,9 @@ import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'c
 import type {AnnotationBrush, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, DEFAULT_TEXTBOX_WIDTH, MIN_TEXTBOX_SIZE_PX, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
+// <if expr="enable_pdf_save_to_drive">
+import {SaveToDriveBubbleState, SaveToDriveSaveType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+// </if>
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
@@ -313,6 +316,13 @@ export function createBookmarksForTest(): TestBookmarksElement {
 
 export class MockMetricsPrivate {
   actionCounter: Map<UserAction, number> = new Map();
+  // <if expr="enable_pdf_save_to_drive">
+  enumerationCounter: Map<string, Map<number, number>> = new Map();
+  metricsEnumSize = new Map<string, number>([
+    ['PDF.SaveToDrive.BubbleState', SaveToDriveBubbleState.COUNT],
+    ['PDF.SaveToDrive.SaveType', SaveToDriveSaveType.COUNT],
+  ]);
+  // </if> enable_pdf_save_to_drive
 
   recordValue(metric: chrome.metricsPrivate.MetricType, value: number) {
     chrome.test.assertEq('PDF.Actions', metric.metricName);
@@ -330,9 +340,39 @@ export class MockMetricsPrivate {
     chrome.test.assertEq(count, this.actionCounter.get(action) || 0);
   }
 
+  // <if expr="enable_pdf_save_to_drive">
+  recordEnumerationValue(metricName: string, value: number, enumSize: number) {
+    if (this.metricsEnumSize.has(metricName)) {
+      chrome.test.assertEq(this.metricsEnumSize.get(metricName), enumSize);
+    } else {
+      chrome.test.fail(`Unexpected metric name: ${metricName}`);
+    }
+
+    if (!this.enumerationCounter.has(metricName)) {
+      this.enumerationCounter.set(metricName, new Map());
+    }
+    const metricMap = this.enumerationCounter.get(metricName);
+    chrome.test.assertTrue(!!metricMap);
+    const counter = metricMap.get(value) ?? 0;
+    metricMap.set(value, counter + 1);
+  }
+
+  assertEnumerationCount(metricName: string, value: number, count: number) {
+    const metricMap = this.enumerationCounter.get(metricName);
+    if (metricMap === undefined) {
+      chrome.test.assertEq(count, 0);
+      return;
+    }
+    chrome.test.assertEq(count, metricMap.get(value) ?? 0);
+  }
+  // </if> enable_pdf_save_to_drive
+
   reset() {
     resetMetricsForTesting();
     this.actionCounter.clear();
+    // <if expr="enable_pdf_save_to_drive">
+    this.enumerationCounter.clear();
+    // </if> enable_pdf_save_to_drive
   }
 }
 
@@ -341,6 +381,10 @@ export function setupMockMetricsPrivate(): MockMetricsPrivate {
   const mockMetricsPrivate = new MockMetricsPrivate();
   chrome.metricsPrivate.recordValue =
       mockMetricsPrivate.recordValue.bind(mockMetricsPrivate);
+  // <if expr="enable_pdf_save_to_drive">
+  chrome.metricsPrivate.recordEnumerationValue =
+      mockMetricsPrivate.recordEnumerationValue.bind(mockMetricsPrivate);
+  // </if> enable_pdf_save_to_drive
   return mockMetricsPrivate;
 }
 

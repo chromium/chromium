@@ -123,6 +123,7 @@ build_webui("build") {
 
   if (enable_pdf_save_to_drive) {
     ts_files += [
+      "save_to_drive_metrics.ts",
       "elements/circular_progress_ring.html.ts",
       "elements/circular_progress_ring.ts",
       "elements/viewer_save_to_drive_bubble.html.ts",
