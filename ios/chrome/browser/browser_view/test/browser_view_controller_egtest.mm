@@ -55,6 +55,21 @@ const char kSecondURLText[] = "You've arrived";
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  if ([self isRunningTest:@selector
+            (testOpenSearchWidgetWithSignOutProfileSwitch)] ||
+      [self isRunningTest:@selector
+            (testOpenSearchWidgetWithSignInProfileSwitch)] ||
+      [self isRunningTest:@selector
+            (testOpenSearchWidgetWithUnmanagedToManagedProfileSwitch)]) {
+    config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
+  }
+
+  return config;
+}
+
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
@@ -304,15 +319,11 @@ const char kSecondURLText[] = "You've arrived";
 
 // Test that code for opening URLs from Search widgets loads the NTP with the
 // Omnibox focused and switches to the correct profile and account.
-// Disabled due to failures when field trial config is disabled.
-// See crbug.com/450574249.
-- (void)DISABLED_testOpenSearchWidgetWithProfileSwitch {
+- (void)testOpenSearchWidgetWithSignOutProfileSwitch {
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
-  // Test sign-out from managed identity.
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  // Test sign-out from managed account.
   [SigninEarlGrey
       signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   [ChromeEarlGrey
@@ -321,22 +332,34 @@ const char kSecondURLText[] = "You've arrived";
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
+}
 
-  // Test sign-in to managed identity.
+// Test that code for opening URLs from Search widgets loads the NTP with the
+// Omnibox focused and switches to the correct profile and account.
+- (void)testOpenSearchWidgetWithSignInProfileSwitch {
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeManagedIdentity];
+
+  // Test sign-in to managed account.
   [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/"
                                     "search?gaia_id=foo_google.com_GAIAID")];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
+}
 
-  // Test sign-in from managed to unmanaged identity.
-  [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/"
-                                    "search?gaia_id=foo1_gmail.com_GAIAID")];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+// Test that code for opening URLs from Search widgets loads the NTP with the
+// Omnibox focused and switches to the correct profile and account.
+- (void)testOpenSearchWidgetWithUnmanagedToManagedProfileSwitch {
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
-  // Test sign-in from unmanaged to managed identity.
+  [SigninEarlGrey addFakeIdentity:fakeManagedIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Test sign-in from unmanaged to managed account.
   [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/"
                                     "search?gaia_id=foo_google.com_GAIAID")];
   [ChromeEarlGrey
