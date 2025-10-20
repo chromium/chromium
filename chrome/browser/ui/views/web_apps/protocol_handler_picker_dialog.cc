@@ -138,6 +138,7 @@ SelectionView::SelectionView(const ProtocolHandlerPickerDialogEntries& apps,
               IDS_PROTOCOL_HANDLER_PICKER_APPLICATION_OPTIONS_ACCESSIBLE_NAME))
           .Build());
 
+  scrollable_container->GetViewAccessibility().SetSetSize(apps.size());
   if (apps.size() == 1) {
     // For the single-app case, the app is already pre-selected for the user
     // (and has no check icon).
@@ -146,12 +147,23 @@ SelectionView::SelectionView(const ProtocolHandlerPickerDialogEntries& apps,
             apps[0], *this, /*include_check_icon=*/false));
     row->SetGroup(kProtocolHandlerRowGroupID);
     row->SetSelected(true);
+
+    auto& view_ax = row->GetViewAccessibility();
+    // Must be 1-based.
+    view_ax.SetPosInSet(1);
+    view_ax.SetSetSize(1);
     selected_row_ = row;
   } else {
-    for (const auto& app : apps) {
+    for (uint32_t i = 0; i < apps.size(); i++) {
       auto* app_row = scrollable_container->AddChildView(
-          std::make_unique<ProtocolHandlerPickerSelectionRowView>(app, *this));
+          std::make_unique<ProtocolHandlerPickerSelectionRowView>(apps[i],
+                                                                  *this));
       app_row->SetGroup(kProtocolHandlerRowGroupID);
+
+      auto& view_ax = app_row->GetViewAccessibility();
+      // Must be 1-based.
+      view_ax.SetPosInSet(i + 1);
+      view_ax.SetSetSize(apps.size());
     }
   }
 
@@ -256,7 +268,7 @@ ProtocolHandlerPickerSelectionRowView::ProtocolHandlerPickerSelectionRowView(
                                    .DeriveWithWeight(gfx::Font::Weight::MEDIUM))
                   .SetLineHeight(kAppNameLabelHeight)
                   .SetProperty(views::kMarginsKey, left_gap))
-          .SetAccessibleRole(ax::mojom::Role::kListItem)
+          .SetAccessibleRole(ax::mojom::Role::kMenuItemRadio)
           .SetAccessibleName(app.app_name)
           .SetCheckedState(ax::mojom::CheckedState::kFalse)
           .SetInstallFocusRingOnFocus(false)
