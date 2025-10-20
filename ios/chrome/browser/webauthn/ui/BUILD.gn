@@ -11,6 +11,7 @@ source_set("ui") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
