@@ -43,7 +43,7 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
   void IterateOverIdentities(IdentityIteratorCallback callback) final;
   void ForgetIdentity(id<SystemIdentity> identity,
                       ForgetIdentityCallback callback) final;
-  bool IdentityRemovedByUser(NSString* gaia_id) final;
+  bool IdentityRemovedByUser(const GaiaId& gaia_id) final;
   void GetAccessToken(id<SystemIdentity> identity,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) final;
@@ -134,7 +134,8 @@ void ChromiumSystemIdentityManager::ForgetIdentity(
   NOTREACHED();
 }
 
-bool ChromiumSystemIdentityManager::IdentityRemovedByUser(NSString* gaia_id) {
+bool ChromiumSystemIdentityManager::IdentityRemovedByUser(
+    const GaiaId& gaia_id) {
   NOTREACHED();
 }
 

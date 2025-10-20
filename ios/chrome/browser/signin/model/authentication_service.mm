@@ -752,11 +752,10 @@ void AuthenticationService::HandleForgottenIdentity(
   // Sign the user out.
   SignOut(signout_source, nil);
 
-  NSString* gaia_id = account_info.gaia.ToNSString();
   // Should prompt the user if the identity was not removed by the user.
   bool should_prompt = !GetApplicationContext()
                             ->GetSystemIdentityManager()
-                            ->IdentityRemovedByUser(gaia_id);
+                            ->IdentityRemovedByUser(account_info.gaia);
   if (should_prompt && account_filtered_out) {
     FirePrimaryAccountRestricted();
   } else if (should_prompt &&

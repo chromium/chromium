@@ -21,6 +21,7 @@
 #include "ios/chrome/browser/signin/model/capabilities_types.h"
 #include "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 
+class GaiaId;
 @protocol RefreshAccessTokenError;
 @protocol SystemIdentity;
 @protocol SystemIdentityInteractionManager;
@@ -194,7 +195,10 @@ class SystemIdentityManager {
   // Returns true if the identity was removed by calling `ForgetIdentity()`.
   // Returns false If the identity was not removed or disappeared without
   // calling `ForgetIdentity()`.
-  virtual bool IdentityRemovedByUser(NSString* gaia_id) = 0;
+  // TODO(crbug.com/449195064): Remove the function taking NSString as input
+  // when ios_internal is updated.
+  virtual bool IdentityRemovedByUser(NSString* gaia_id);
+  virtual bool IdentityRemovedByUser(const GaiaId& gaia_id);
 
   // Asynchronously retrieves access tokens for `identity` with `scopes`. The
   // callback is invoked on the calling sequence when the operation completes.

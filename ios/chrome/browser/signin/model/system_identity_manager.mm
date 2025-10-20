@@ -7,6 +7,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "google_apis/gaia/gaia_id.h"
 
 namespace {
 
@@ -104,6 +105,15 @@ SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
   configuration.dismissal_completion = std::move(dismissal_completion);
   return PresentLinkedServicesSettingsDetailsController(
       std::move(configuration));
+}
+
+// The two methods below do not actually cause infinite recursive calls as
+// subclass override one of those methods.
+bool SystemIdentityManager::IdentityRemovedByUser(NSString* gaia_id) {
+  return IdentityRemovedByUser(GaiaId(gaia_id));
+}
+bool SystemIdentityManager::IdentityRemovedByUser(const GaiaId& gaia_id) {
+  return IdentityRemovedByUser(gaia_id.ToNSString());
 }
 
 void SystemIdentityManager::FireIdentityListChanged() {
