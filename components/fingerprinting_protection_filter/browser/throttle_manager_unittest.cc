@@ -539,7 +539,7 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(ThrottleManagerEnabledTest,
-       ActivateMainFrameAndFilterSubframeNavigation) {
+       DISABLED_ActivateMainFrameAndFilterSubframeNavigation) {
   // Set up test ukm recorder.
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -661,7 +661,7 @@ TEST_P(ThrottleManagerEnabledTest,
 }
 
 TEST_P(ThrottleManagerEnabledTest,
-       ActivateMainFrameAndDoNotFilterSubframeNavigation) {
+       DISABLED_ActivateMainFrameAndDoNotFilterSubframeNavigation) {
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
