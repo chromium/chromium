@@ -334,9 +334,12 @@ void Connection::Get(int64_t transaction_id,
                      blink::mojom::IDBDatabase::GetCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  TRACE_EVENT0("IndexedDB", "Connection::Get");
+
   base::expected<Transaction*, DatabaseError> transaction =
       GetTransactionAndVerifyState(transaction_id);
   if (!transaction.has_value()) {
+    TRACE_EVENT_INSTANT("IndexedDB", "Connection::Get - Error");
     std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewErrorResult(
         blink::mojom::IDBError::New(transaction.error().code(),
                                     transaction.error().message())));
@@ -706,22 +709,33 @@ Connection::GetTransactionAndVerifyState(
     int64_t transaction_id,
     std::optional<blink::mojom::IDBTransactionMode> required_mode) {
   if (!IsConnected()) {
+    TRACE_EVENT_INSTANT(
+        "IndexedDB",
+        "Connection::GetTransactionAndVerifyState - Not connected");
     return base::unexpected(DatabaseError(
         blink::mojom::IDBException::kUnknownError, "Not connected."));
   }
   Transaction* transaction = GetTransaction(transaction_id);
   if (!transaction) {
+    TRACE_EVENT_INSTANT(
+        "IndexedDB",
+        "Connection::GetTransactionAndVerifyState - Unknown transaction");
     return base::unexpected(DatabaseError(
         blink::mojom::IDBException::kUnknownError, "Unknown transaction."));
   }
 
   if (required_mode.has_value() && (transaction->mode() != *required_mode)) {
+    TRACE_EVENT_INSTANT(
+        "IndexedDB", "Connection::GetTransactionAndVerifyState - Wrong mode");
     mojo::ReportBadMessage("Called from wrong transaction type.");
     return base::unexpected(DatabaseError(
         blink::mojom::IDBException::kUnknownError, "Wrong transaction type."));
   }
 
   if (!transaction->IsAcceptingRequests()) {
+    TRACE_EVENT_INSTANT(
+        "IndexedDB",
+        "Connection::GetTransactionAndVerifyState - Not accepting requests");
     // TODO(crbug.com/40791538): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted

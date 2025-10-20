@@ -428,7 +428,11 @@ void BucketContext::CreateAllExternalObjects(
 }
 
 void BucketContext::QueueRunTasks() {
+  TRACE_EVENT0("IndexedDB", "BucketContext::QueueRunTasks");
+
   if (task_run_queued_) {
+    TRACE_EVENT_INSTANT("IndexedDB",
+                        "BucketContext::QueueRunTasks - Already queued");
     return;
   }
 

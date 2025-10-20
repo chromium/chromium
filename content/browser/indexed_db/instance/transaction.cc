@@ -212,7 +212,10 @@ void Transaction::SetCommitFlag() {
 void Transaction::ScheduleTask(blink::mojom::IDBTaskType type,
                                Operation task,
                                VerificationCallback verify) {
+  TRACE_EVENT0("IndexedDB", "Transaction::ScheduleTask");
+
   if (state_ == FINISHED) {
+    TRACE_EVENT_INSTANT("IndexedDB", "Transaction::ScheduleTask - Finished");
     return;
   }
 
@@ -227,6 +230,8 @@ void Transaction::ScheduleTask(blink::mojom::IDBTaskType type,
   }
   if (state() == STARTED) {
     bucket_context_->QueueRunTasks();
+  } else {
+    TRACE_EVENT_INSTANT("IndexedDB", "Transaction::ScheduleTask - Not started");
   }
 }
 
@@ -352,6 +357,8 @@ bool Transaction::IsTransactionBlockingOtherClients(
 }
 
 void Transaction::Start() {
+  TRACE_EVENT0("IndexedDB", "Transaction::Start");
+
   // The transaction has the potential to be aborted after the Start() task was
   // posted.
   if (state_ == FINISHED) {

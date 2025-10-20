@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
@@ -136,6 +137,9 @@ PartitionedLockManager::MaybeGrantLocksAndIterate(
 
                             return !it->second.CanBeAcquired(request.type);
                           })) {
+    TRACE_EVENT_INSTANT("IndexedDB",
+                        "PartitionedLockManager::MaybeGrantLocksAndIterate - "
+                        "locks not available");
     return ++requests_iter;
   }
 
@@ -143,6 +147,9 @@ PartitionedLockManager::MaybeGrantLocksAndIterate(
   for (auto iter = request_queue_.begin(); iter != requests_iter; ++iter) {
     if (RequestsAreOverlapping(requests_iter->lock_requests,
                                iter->lock_requests)) {
+      TRACE_EVENT_INSTANT("IndexedDB",
+                          "PartitionedLockManager::MaybeGrantLocksAndIterate - "
+                          "overlapping request ahead");
       return ++requests_iter;
     }
   }
