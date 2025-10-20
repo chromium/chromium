@@ -196,7 +196,11 @@ def _NormalizeProcessName(debug_process_name, package_name):
   return debug_process_name
 
 
-def _ResolveActivity(device, package_name, category, action):
+def _ResolveActivity(device,
+                     package_name,
+                     category,
+                     action,
+                     preferred_activity=None):
   # E.g.:
   # Activity Resolver Table:
   #   Schemes:
@@ -258,6 +262,22 @@ def _ResolveActivity(device, package_name, category, action):
   activity_names = {activity_name_from_entry(e) for e in matched_entries}
 
   if len(activity_names) > 1:
+    # If a preferred activity is specified, try to use it
+    if preferred_activity and preferred_activity in activity_names:
+      return preferred_activity
+
+    # If no preferred activity is specified, try to find the main activity
+    main_activity = None
+    for activity in activity_names:
+      # Look for the activity that ends with exactly ".Main"
+      # (not ".Main1", ".Main2", etc.)
+      if activity.endswith('.Main'):
+        main_activity = activity
+        break
+
+    if main_activity:
+      return main_activity
+
     raise Exception('Found multiple launcher activities:\n * ' +
                     '\n * '.join(sorted(activity_names)))
   return next(iter(activity_names))
@@ -313,7 +333,8 @@ def _LaunchUrl(devices,
                url=None,
                wait_for_java_debugger=False,
                debug_process_name=None,
-               nokill=None):
+               nokill=None,
+               preferred_activity=None):
   if argv and command_line_flags_file is None:
     raise Exception('This apk does not support any flags.')
 
@@ -327,7 +348,8 @@ def _LaunchUrl(devices,
     action = 'android.intent.action.VIEW'
 
   def launch(device):
-    activity = _ResolveActivity(device, package_name, category, action)
+    activity = _ResolveActivity(device, package_name, category, action,
+                                preferred_activity)
     # --persistent is required to have Settings.Global.DEBUG_APP be set, which
     # we currently use to allow reading of flags. https://crbug.com/784947
     if not nokill:
@@ -1653,6 +1675,9 @@ class _LaunchCommand(_Command):
                        help='Do not set the debug-app, nor set command-line '
                             'flags. Useful to load a URL without having the '
                              'app restart.')
+    group.add_argument('--preferred-activity',
+                       help='Preferred activity to launch when multiple '
+                            'launcher activities are available.')
     group.add_argument('url', nargs='?', help='A URL to launch with.')
 
   def Run(self):
@@ -1665,7 +1690,8 @@ class _LaunchCommand(_Command):
                url=self.args.url,
                wait_for_java_debugger=self.args.wait_for_java_debugger,
                debug_process_name=self.args.debug_process_name,
-               nokill=self.args.nokill)
+               nokill=self.args.nokill,
+               preferred_activity=self.args.preferred_activity)
 
 
 class _StopCommand(_Command):
