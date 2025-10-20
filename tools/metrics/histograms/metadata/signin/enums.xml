@@ -765,6 +765,7 @@ chromium-metrics-reviews@google.com.
   <int value="70" label="Boca School Tools Auth"/>
   <int value="71" label="Shared Data Preview"/>
   <int value="72" label="Access Code Cast Discovery"/>
+  <int value="73" label="Auth Service (Drive Api)"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

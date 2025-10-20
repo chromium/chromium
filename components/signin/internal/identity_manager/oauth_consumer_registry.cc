@@ -105,6 +105,7 @@ constexpr char kChromeOsBocaSchoolToolsAuthName[] =
     "chromeos_boca_school_tools_auth";
 constexpr char kSharedDataPreviewName[] = "shared_data_preview";
 constexpr char kAccessCodeCastDiscoveryName[] = "access_code_cast_discovery";
+constexpr char kAuthServiceDriveApiName[] = "auth_service_drive_api";
 
 }  // namespace
 
@@ -446,6 +447,12 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kAccessCodeCastDiscoveryName,
           /*scopes=*/{GaiaConstants::kDiscoveryOAuth2Scope});
+    case OAuthConsumerId::kAuthServiceDriveApi:
+      return OAuthConsumer(
+          /*name=*/kAuthServiceDriveApiName,
+          /*scopes=*/{GaiaConstants::kDriveOAuth2Scope,
+                      GaiaConstants::kDriveAppsOAuth2Scope,
+                      GaiaConstants::kDriveAppsReadonlyOAuth2Scope});
   }
   NOTREACHED();
 }

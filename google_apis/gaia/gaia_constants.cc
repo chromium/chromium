@@ -133,6 +133,10 @@ const char kCryptAuthOAuth2Scope[] =
 // OAuth2 scope for access to Drive.
 const char kDriveOAuth2Scope[] = "https://www.googleapis.com/auth/drive";
 
+// OAuth2 scope for access to Drive Apps.
+const char kDriveAppsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/drive.apps";
+
 // OAuth2 scope for access for DriveFS to access flags.
 const char kExperimentsAndConfigsOAuth2Scope[] =
     "https://www.googleapis.com/auth/experimentsandconfigs";
@@ -152,6 +156,10 @@ const char kAssistantOAuth2Scope[] =
 // OAuth2 scope for access to nearby devices (fast pair) APIs.
 const char kNearbyDevicesOAuth2Scope[] =
     "https://www.googleapis.com/auth/nearbydevices-pa";
+
+// OAuth2 scope for access to readonly Drive Apps.
+const char kDriveAppsReadonlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/drive.apps.readonly";
 
 // OAuth2 scope for access to nearby sharing.
 const char kNearbyShareOAuth2Scope[] =

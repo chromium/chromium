@@ -20,6 +20,7 @@
 #include "google_apis/common/auth_service_observer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace google_apis {
 
@@ -32,7 +33,8 @@ class AuthRequest {
               const CoreAccountId& account_id,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
               AuthStatusCallback callback,
-              const std::vector<std::string>& scopes);
+              std::variant<std::vector<std::string>, signin::OAuthConsumerId>&
+                  scopes_or_consumer_id);
   AuthRequest(const AuthRequest&) = delete;
   AuthRequest& operator=(const AuthRequest&) = delete;
   ~AuthRequest();
@@ -51,17 +53,33 @@ AuthRequest::AuthRequest(
     const CoreAccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AuthStatusCallback callback,
-    const std::vector<std::string>& scopes)
+    std::variant<std::vector<std::string>, signin::OAuthConsumerId>&
+        scopes_or_consumer_id)
     : callback_(std::move(callback)) {
   DCHECK(identity_manager);
   DCHECK(callback_);
 
-  access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
-      account_id, "auth_service", url_loader_factory,
-      signin::ScopeSet(scopes.begin(), scopes.end()),
-      base::BindOnce(&AuthRequest::OnAccessTokenFetchComplete,
-                     base::Unretained(this)),
-      signin::AccessTokenFetcher::Mode::kImmediate);
+  std::visit(
+      absl::Overload{
+          [&](const std::vector<std::string>& scopes) {
+            access_token_fetcher_ =
+                identity_manager->CreateAccessTokenFetcherForAccount(
+                    account_id, "auth_service", url_loader_factory,
+                    signin::ScopeSet(scopes.begin(), scopes.end()),
+                    base::BindOnce(&AuthRequest::OnAccessTokenFetchComplete,
+                                   base::Unretained(this)),
+                    signin::AccessTokenFetcher::Mode::kImmediate);
+          },
+          [&](signin::OAuthConsumerId oauth_consumer_id) {
+            access_token_fetcher_ =
+                identity_manager->CreateAccessTokenFetcherForAccount(
+                    account_id, oauth_consumer_id, url_loader_factory,
+                    base::BindOnce(&AuthRequest::OnAccessTokenFetchComplete,
+                                   base::Unretained(this)),
+                    signin::AccessTokenFetcher::Mode::kImmediate);
+          },
+      },
+      scopes_or_consumer_id);
 }
 
 AuthRequest::~AuthRequest() {}
@@ -133,13 +151,14 @@ AuthService::AuthService(
     signin::IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::vector<std::string>& scopes)
+    std::variant<std::vector<std::string>, signin::OAuthConsumerId>
+        scopes_or_consumer_id)
     : identity_manager_(identity_manager),
       identity_manager_observer_(
           std::make_unique<IdentityManagerObserver>(this)),
       account_id_(account_id),
       url_loader_factory_(url_loader_factory),
-      scopes_(scopes) {
+      scopes_or_consumer_id_(scopes_or_consumer_id) {
   DCHECK(identity_manager_);
 
   has_refresh_token_ =
@@ -162,11 +181,7 @@ void AuthService::StartAuthentication(AuthStatusCallback callback) {
         identity_manager_, account_id_, url_loader_factory_,
         base::BindOnce(&AuthService::OnAuthCompleted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        scopes_);
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), NOT_READY, std::string()));
+        scopes_or_consumer_id_);
   }
 }
 
