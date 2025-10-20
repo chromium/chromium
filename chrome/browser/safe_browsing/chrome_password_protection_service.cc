@@ -1606,6 +1606,10 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
         PASSWORD_PROTECTION_OFF) {
       return false;
     }
+    // Don't send a ping if in password alert mode.
+    if (IsInPasswordAlertMode(password_type)) {
+      return false;
+    }
     // If the account type is UNKNOWN (i.e. AccountInfo fields could not be
     // retrieved from server), pings should be gated by SBER.
     if (password_type.account_type() == ReusedPasswordAccountType::UNKNOWN) {
