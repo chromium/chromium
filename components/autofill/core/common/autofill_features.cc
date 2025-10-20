@@ -847,12 +847,6 @@ BASE_FEATURE(kAutofillDeepLinkAutofillOptions,
 BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipRedesign,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls if Chrome Keyboard Accessory limits the width of the first chip or
-// the first 2 chips to display a part of the next one on the screen.
-// TODO: crbug.com/385172647 - Clean up after the feature is launched.
-BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipWidthAdjustment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.
 BASE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid,

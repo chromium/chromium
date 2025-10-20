@@ -261,8 +261,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableFlatRateCardBenefitsFromCurinos";
     public static final String AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN =
             "AutofillEnableKeyboardAccessoryChipRedesign";
-    public static final String AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_WIDTH_ADJUSTMENT =
-            "AutofillEnableKeyboardAccessoryChipWidthAdjustment";
     public static final String AUTOFILL_ENABLE_LOCAL_IBAN = "AutofillEnableLocalIban";
     public static final String AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING =
             "AutofillEnableLoyaltyCardsFilling";
