@@ -398,6 +398,8 @@ class AppBannerManager : public content::WebContentsObserver,
   void SendBannerPromptRequest();
 
   // content::WebContentsObserver overrides.
+  // TODO(https://crbug.com/452053908): Use PageManifestManager with
+  // PrimaryPageChanged instead of this and DidUpdateWebManifestURL.
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void DidUpdateWebManifestURL(content::RenderFrameHost* target_frame,
                                const GURL& manifest_url) override;

@@ -85,6 +85,8 @@ ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting::
 // TODO(crbug.com/40272003): Also handle DidFinishNavigation() and
 // do not start the ManifestUpdateCheckCommand if different origin
 // navigation happens.
+// TODO(https://crbug.com/452053908): Replace this completely with
+// content::PageManifestManager usage in the command.
 class ManifestUpdateManager::PreUpdateWebContentsObserver
     : public content::WebContentsObserver {
  public:

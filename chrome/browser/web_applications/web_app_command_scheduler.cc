@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_update_command.h"
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
@@ -755,6 +756,17 @@ void WebAppCommandScheduler::InstallAppFromUrl(
       std::make_unique<WebInstallFromUrlCommand>(
           profile_.get(), install_url, manifest_id, web_contents,
           std::move(dialog_callback), std::move(installed_callback)),
+      location);
+}
+
+void WebAppCommandScheduler::FetchManifestAndUpdate(
+    const GURL& install_url,
+    const webapps::ManifestId& manifest_id,
+    base::OnceCallback<void(FetchManifestAndUpdateResult)> callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<FetchManifestAndUpdateCommand>(install_url, manifest_id,
+                                                      std::move(callback)),
       location);
 }
 

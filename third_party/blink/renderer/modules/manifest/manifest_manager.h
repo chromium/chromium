@@ -65,6 +65,7 @@ class MODULES_EXPORT ManifestManager
 
   // mojom::blink::ManifestManager implementation.
   void RequestManifest(RequestManifestCallback callback) override;
+  void RequestManifestAndErrors(RequestManifestAndErrorsCallback) override;
   void RequestManifestDebugInfo(
       RequestManifestDebugInfoCallback callback) override;
   void ParseManifestFromString(

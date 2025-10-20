@@ -30,12 +30,14 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
@@ -182,6 +184,15 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
       params.value(),
       base::BindOnce(&WebAppDataRetriever::OnDidPerformInstallableCheck,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+base::CallbackListSubscription
+WebAppDataRetriever::GetPrimaryPageFirstSpecifiedManifest(
+    content::WebContents& web_contents,
+    GetManifestOnceCallbackList::CallbackType callback) {
+  content::PageManifestManager* manifest_manager =
+      content::PageManifestManager::GetOrCreate(web_contents.GetPrimaryPage());
+  return manifest_manager->GetSpecifiedManifest(std::move(callback));
 }
 
 void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,

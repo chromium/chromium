@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -21,7 +22,9 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-data-view.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/url_constants.h"
@@ -262,6 +265,34 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
         base::BindOnce(std::move(callback), std::move(install_info)));
   }
 
+  blink::mojom::ManifestPtr ResolveManifest(
+      FakeWebContentsManager::FakePageState& page,
+      const GURL& url) {
+    // Apply the 'default' values in the manifest spec algorithm.
+    blink::mojom::ManifestPtr manifest =
+        page.manifest_before_default_processing
+            ? page.manifest_before_default_processing->Clone()
+            : blink::mojom::Manifest::New();
+    manifest->manifest_url = page.manifest_url;
+    if (manifest->start_url.is_empty()) {
+      manifest->start_url = url;
+      manifest->has_valid_specified_start_url = false;
+    } else {
+      manifest->has_valid_specified_start_url = true;
+    }
+    if (manifest->id.is_empty()) {
+      manifest->id = manifest->start_url.GetWithoutRef();
+      manifest->has_custom_id = false;
+    } else {
+      manifest->has_custom_id = true;
+    }
+    if (manifest->scope.is_empty()) {
+      manifest->scope = manifest->start_url.GetWithoutFilename();
+    }
+    CHECK(manifest->scope.ExtractFileName().empty());
+    return manifest;
+  }
+
   void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
       CheckInstallabilityCallback callback,
@@ -290,34 +321,54 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     if (page.on_manifest_fetch) {
       std::move(page.on_manifest_fetch).Run();
     }
-
-    // Apply the 'default' values in the manifest spec algorithm.
-    blink::mojom::ManifestPtr manifest =
-        page.manifest_before_default_processing
-            ? page.manifest_before_default_processing->Clone()
-            : blink::mojom::Manifest::New();
-    manifest->manifest_url = page.manifest_url;
-    if (manifest->start_url.is_empty()) {
-      manifest->start_url = url;
-      manifest->has_valid_specified_start_url = false;
-    } else {
-      manifest->has_valid_specified_start_url = true;
-    }
-    if (manifest->id.is_empty()) {
-      manifest->id = manifest->start_url.GetWithoutRef();
-      manifest->has_custom_id = false;
-    } else {
-      manifest->has_custom_id = true;
-    }
-    if (manifest->scope.is_empty()) {
-      manifest->scope = manifest->start_url.GetWithoutFilename();
-    }
-    CHECK(manifest->scope.ExtractFileName().empty());
+    auto manifest = ResolveManifest(page, url);
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::move(manifest),
                        page.valid_manifest_for_web_app, page.error_code));
+  }
+
+  base::CallbackListSubscription GetPrimaryPageFirstSpecifiedManifest(
+      content::WebContents& web_contents,
+      GetManifestOnceCallbackList::CallbackType callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    CHECK(manager_);
+    GURL url = manager_->loaded_urls_[&web_contents];
+    DVLOG(1) << "FakeWebContentsManager::FakeWebAppDataRetriever::"
+                "GetPrimaryPageFirstSpecifiedManifest "
+             << url.possibly_invalid_spec();
+    CHECK(url.is_valid() || url.is_empty())
+        << "Invalid URL: " << url.possibly_invalid_spec();
+    auto page_it = manager_->page_state_.find(url);
+    if (page_it == manager_->page_state_.end()) {
+      // This might be intentional, but if not, log a warning.
+      DLOG(WARNING) << "Note: This fake requires manifest & url information to "
+                       "be populated "
+                       "before it is called by the system: "
+                    << url.possibly_invalid_spec();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              std::move(callback),
+              base::unexpected<blink::mojom::RequestManifestErrorPtr>(
+                  blink::mojom::RequestManifestError::New(
+                      blink::mojom::ManifestRequestResult::
+                          kManifestFailedToFetch,
+                      std::vector<blink::mojom::ManifestErrorPtr>()))));
+      return base::CallbackListSubscription();
+    }
+    FakeWebContentsManager::FakePageState& page = page_it->second;
+    if (page.on_manifest_fetch) {
+      std::move(page.on_manifest_fetch).Run();
+    }
+    auto manifest = ResolveManifest(page, url);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), base::ok(std::move(manifest))));
+    return base::CallbackListSubscription();
   }
 
   void GetIcons(content::WebContents* web_contents,
@@ -436,7 +487,7 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
       blink::mojom::Manifest::New();
   blink::mojom::Manifest& manifest =
       *install_page_state.manifest_before_default_processing;
-  manifest.id = start_url.GetWithoutRef();
+  manifest.id = GenerateManifestIdFromStartUrlOnly(start_url);
   manifest.start_url = start_url;
   manifest.display = blink::mojom::DisplayMode::kStandalone;
   manifest.name = name;

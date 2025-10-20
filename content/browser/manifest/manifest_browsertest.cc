@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -48,13 +49,11 @@
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 
 namespace content {
-
 namespace {
 
 using ::testing::Contains;
 using ::testing::HasSubstr;
 
-}  // namespace
 
 class ManifestBrowserTest;
 
@@ -554,6 +553,80 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, Navigation) {
   }
 }
 
+// This is required as the CallbackList uses const ref, and TestFuture requires
+// copying or move support. This manually clones from the const ref so the
+// result can be moved into the TestFuture.
+base::expected<blink::mojom::ManifestPtr, blink::mojom::RequestManifestErrorPtr>
+CopyMojoExpectedConstRef(
+    const base::expected<blink::mojom::ManifestPtr,
+                         blink::mojom::RequestManifestErrorPtr>&
+        const_ref_result) {
+  if (const_ref_result.has_value()) {
+    return base::ok(const_ref_result->Clone());
+  } else {
+    return base::unexpected(const_ref_result.error()->Clone());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ManifestSubscription) {
+  GURL test_url =
+      embedded_test_server()->GetURL("/manifest/dynamic-manifest.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  // The subscription should resolve after the manifest is added.
+  {
+    base::test::TestFuture<base::expected<
+        blink::mojom::ManifestPtr, blink::mojom::RequestManifestErrorPtr>>
+        manifest_future;
+    PageManifestManager* manifest_manager = PageManifestManager::GetOrCreate(
+        shell()->web_contents()->GetPrimaryPage());
+    auto subscription = manifest_manager->GetSpecifiedManifest(
+        base::BindOnce(&CopyMojoExpectedConstRef)
+            .Then(manifest_future.GetCallback()));
+
+    std::string manifest_link =
+        embedded_test_server()->GetURL("/manifest/sample-manifest.json").spec();
+    ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
+
+    ASSERT_TRUE(manifest_future.Wait());
+    ASSERT_TRUE(manifest_future.Get().has_value());
+    blink::mojom::Manifest& manifest = *manifest_future.Get().value();
+    EXPECT_FALSE(blink::IsEmptyManifest(manifest));
+    EXPECT_FALSE(blink::IsDefaultManifest(manifest, test_url));
+    EXPECT_FALSE(manifest.manifest_url.is_empty());
+  }
+
+  // Navigate away and back to have a different 'page', so we aren't getting the
+  // old cached manifest.
+  GURL no_manifest_url =
+      embedded_test_server()->GetURL("/manifest/no-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), no_manifest_url));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  {
+    base::test::TestFuture<base::expected<
+        blink::mojom::ManifestPtr, blink::mojom::RequestManifestErrorPtr>>
+        manifest_future;
+    PageManifestManager* manifest_manager = PageManifestManager::GetOrCreate(
+        shell()->web_contents()->GetPrimaryPage());
+    auto subscription = manifest_manager->GetSpecifiedManifest(
+        base::BindOnce(&CopyMojoExpectedConstRef)
+            .Then(manifest_future.GetCallback()));
+
+    std::string manifest_link =
+        embedded_test_server()->GetURL("/manifest/nomanifesthere.json").spec();
+    ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
+
+    ASSERT_TRUE(manifest_future.Wait());
+    ASSERT_FALSE(manifest_future.Get().has_value())
+        << manifest_future.Get().value()->start_url.spec();
+    blink::mojom::RequestManifestError& error = *manifest_future.Get().error();
+    EXPECT_EQ(blink::mojom::ManifestRequestResult::kManifestFailedToFetch,
+              error.error);
+  }
+}
+
 // If a page has a manifest and the page is navigated using pushState (ie. same
 // page), it should keep its manifest state.
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, PushStateNavigation) {
@@ -668,8 +741,6 @@ IN_PROC_BROWSER_TEST_F(ManifestIconDownloaderBrowserTest, CorrectIcon) {
                            ManifestIconDownloader::Result::kSuccess, 1);
 }
 
-namespace {
-
 std::unique_ptr<net::test_server::HttpResponse> CustomHandleRequestForCookies(
     const net::test_server::HttpRequest& request) {
   if (request.relative_url == "/index.html") {
@@ -699,8 +770,6 @@ std::unique_ptr<net::test_server::HttpResponse> CustomHandleRequestForCookies(
 
   return std::move(http_response);
 }
-
-}  // anonymous namespace
 
 // This tests that when fetching a Manifest with 'use-credentials' set, the
 // cookies associated with it are passed along the request.
@@ -732,8 +801,6 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UseCredentialsSendCookies) {
   EXPECT_EQ(u"foobar", manifest().name);
 }
 
-namespace {
-
 std::unique_ptr<net::test_server::HttpResponse> CustomHandleRequestForNoCookies(
     const net::test_server::HttpRequest& request) {
   if (request.relative_url == "/index.html") {
@@ -760,8 +827,6 @@ std::unique_ptr<net::test_server::HttpResponse> CustomHandleRequestForNoCookies(
 
   return std::move(http_response);
 }
-
-}  // anonymous namespace
 
 // This tests that when fetching a Manifest without 'use-credentials' set, the
 // cookies associated with it are not passed along the request.
@@ -993,4 +1058,5 @@ IN_PROC_BROWSER_TEST_F(ManifestFencedFrameBrowserTest,
       *manifest_future.Get<blink::mojom::ManifestPtr>()));
 }
 
+}  // namespace
 }  // namespace content

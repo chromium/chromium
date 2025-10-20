@@ -294,6 +294,7 @@ source_set("browser_sources") {
     "overlay_window.h",
     "overscroll_configuration.h",
     "page.h",
+    "page_manifest_manager.h",
     "page_navigator.cc",
     "page_navigator.h",
     "page_user_data.h",

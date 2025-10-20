@@ -84,6 +84,7 @@ struct SynchronizeOsOptions;
 struct WebAppIconDiagnosticResult;
 struct WebAppInstallInfo;
 struct ManifestSilentUpdateCompletionInfo;
+enum class FetchManifestAndUpdateResult;
 
 #if BUILDFLAG(IS_CHROMEOS)
 class CleanupBundleCacheSuccess;
@@ -672,6 +673,16 @@ class WebAppCommandScheduler {
                          WebAppInstallDialogCallback dialog_callback,
                          WebInstallFromUrlCommandCallback installed_callback,
                          const base::Location& location = FROM_HERE);
+
+  // If an app with the given `manifest_id` is installed, feches the
+  // install_url, validates that an installable manifest with a manifest id
+  // exists, and updates the app. This assumes it is a trusted update, so
+  // trusted icons are copied from all manifest icons.
+  void FetchManifestAndUpdate(
+      const GURL& install_url,
+      const webapps::ManifestId& manifest_id,
+      base::OnceCallback<void(FetchManifestAndUpdateResult)> callback,
+      const base::Location& location = FROM_HERE);
 
   base::WeakPtr<WebAppCommandScheduler> GetWeakPtr();
 

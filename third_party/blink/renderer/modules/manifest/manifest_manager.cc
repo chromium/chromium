@@ -7,6 +7,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/types/expected.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
+#include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -86,6 +90,29 @@ void ManifestManager::RequestManifest(RequestManifestCallback callback) {
       [](RequestManifestCallback callback, const Result& result) {
         std::move(callback).Run(result.result(), result.manifest_url(),
                                 result.manifest().Clone());
+      },
+      std::move(callback)));
+}
+
+void ManifestManager::RequestManifestAndErrors(
+    RequestManifestAndErrorsCallback callback) {
+  RequestManifestImpl(blink::BindOnce(
+      [](RequestManifestAndErrorsCallback callback, const Result& result) {
+        switch (result.result()) {
+          case mojom::blink::ManifestRequestResult::kManifestFailedToFetch:
+          case mojom::blink::ManifestRequestResult::kManifestFailedToParse:
+          case mojom::blink::ManifestRequestResult::kUnexpectedFailure:
+          case mojom::blink::ManifestRequestResult::kNoManifestAllowed:
+            std::move(callback).Run(
+                base::unexpected(mojom::blink::RequestManifestError::New(
+                    result.result(),
+                    std::move(result.debug_info().Clone()->errors))));
+            return;
+          case mojom::blink::ManifestRequestResult::kNoManifestSpecified:
+          case mojom::blink::ManifestRequestResult::kSuccess:
+            std::move(callback).Run(result.manifest().Clone());
+            return;
+        }
       },
       std::move(callback)));
 }

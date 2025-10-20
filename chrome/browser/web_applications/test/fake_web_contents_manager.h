@@ -55,10 +55,6 @@ class FakeWebContentsManager : public WebContentsManager {
     FakePageState(FakePageState&&);
     FakePageState& operator=(FakePageState&&);
 
-    webapps::AppId PopulateWithBasicManifest(GURL install_url,
-                                             GURL manifest_url,
-                                             GURL start_url);
-
     // `WebAppUrlLoader::LoadUrl`:
     // If this is populated, then a redirection is always assumed. If the
     // redirection is allowed by the `LoadUrlComparison`, then `url_load_result`
