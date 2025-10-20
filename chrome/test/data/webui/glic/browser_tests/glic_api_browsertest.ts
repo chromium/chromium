@@ -1167,9 +1167,9 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.getPinnedTabs);
 
     const tabId = this.testParams.tabId;
-    const focusedTabId = this.getFocusedTabId();
+    const activeTabId = this.getActiveTabId();
 
-    assertTrue(await this.host.pinTabs([focusedTabId, tabId]));
+    assertTrue(await this.host.pinTabs([activeTabId, tabId]));
     const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
 
@@ -1189,9 +1189,9 @@ class ApiTests extends ApiTestFixtureBase {
       assertDefined(this.host.getPinnedTabs);
 
       const tabId = this.testParams.tabId;
-      const focusedTabId = this.getFocusedTabId();
+      const activeTabId = this.getActiveTabId();
 
-      assertTrue(await this.host.pinTabs([focusedTabId, tabId]));
+      assertTrue(await this.host.pinTabs([activeTabId, tabId]));
       const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
       await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
     } else {
@@ -1215,7 +1215,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.unpinTabs);
 
     const tabId = this.testParams.tabId;
-    const tabId2 = this.getFocusedTabId();
+    const tabId2 = this.getActiveTabId();
     // Pin both tabs.
     assertTrue(await this.host.pinTabs([tabId2, tabId]));
 
@@ -1237,7 +1237,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.unpinAllTabs);
 
     const tabId = this.testParams.tabId;
-    const tabId2 = this.getFocusedTabId();
+    const tabId2 = this.getActiveTabId();
 
     // Pin both tabs.
     assertTrue(await this.host.pinTabs([tabId2, tabId]));
@@ -1313,7 +1313,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.pinTabs);
 
     const tabId = this.testParams.tabId;
-    assertNotEquals(tabId, this.getFocusedTabId());
+    assertNotEquals(tabId, this.getActiveTabId());
 
     await this.host.pinTabs([tabId]);
     const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
@@ -1324,7 +1324,7 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
 
     // Make sure that the pinned tab is not focused.
-    assertNotEquals(tabId, this.getFocusedTabId());
+    assertNotEquals(tabId, this.getActiveTabId());
     await pinnedTabsUpdates.waitFor(
         (tabs) =>
             tabs.some(t => t.tabId === tabId && t.url.includes('changed')));
@@ -1335,7 +1335,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.pinTabs);
 
     const tabId = this.testParams.tabId;
-    assertNotEquals(tabId, this.getFocusedTabId());
+    assertNotEquals(tabId, this.getActiveTabId());
 
     await this.host.pinTabs([tabId]);
     const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());

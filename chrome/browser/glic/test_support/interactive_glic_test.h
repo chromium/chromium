@@ -77,8 +77,16 @@ template <typename T>
 class InteractiveGlicTestMixin : public T {
  public:
   // Determines whether this is an attached or detached Glic window.
+  // WARNING: This is no longer very meaningful, and should be replaced. These
+  // do not provide the ability to open glic as a floating window when in
+  // multi-instance mode. See the comments just below.
   enum GlicWindowMode {
+    // Opens glic by pressing the Glic button on the browser.
+    // In multi-instance, this means it will open glic as a side panel.
+    // Otherwise, glic is opened as a floating window.
     kAttached,
+    // Opens glic by calling ShowDetachedForTesting() on the window controller.
+    // There may not be a good reason for using this.
     kDetached,
   };
 

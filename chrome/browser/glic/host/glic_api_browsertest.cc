@@ -1906,9 +1906,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
                        testPinTabsStatePersistWhenClosePanelAndReopen) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
@@ -1916,14 +1917,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
                      "tabId", base::NumberToString(tab_id)))});
 
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlicFloatingWindow());
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testPinTabsStatePersistWhenClientRestarts) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsStatePersistWhenClientRestarts) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
@@ -1944,8 +1944,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  NavigateTabAndOpenGlicFloating();
 
   // Open a new incognito window.
   auto* incognito = CreateIncognitoBrowser();
@@ -1961,8 +1960,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
            "incognitoTabId", base::NumberToString(incognito_tab_id)))});
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testUnpinTabsFailsWhenNotPinned) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsFailsWhenNotPinned) {
+  // TODO(bryantchandler): This segfauts on multi-instance. Fix and re-enable.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
+  NavigateTabAndOpenGlicFloating();
   // Unpinning a tab that is not pinned should fail.
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
@@ -1972,8 +1973,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testUnpinTabsFailsWhenNotPinned) {
                      "tabId", base::NumberToString(tab_id)))});
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testUnpinAllTabs) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinAllTabs) {
+  // TODO(bryantchandler): This has a UAF on multi-instance. Fix and re-enable.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
+  NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
@@ -1984,7 +1987,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testUnpinAllTabs) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testPinTabsHaveNoEffectOnFocusedTab) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // In multi-instance, pinned tabs do have an effect on the focused tab.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
@@ -2028,9 +2032,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testTabDataUpdateOnUrlChangeForPinnedTab) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testTabDataUpdateOnUrlChangeForPinnedTab) {
+  NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
@@ -2046,9 +2049,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
                        testTabDataUpdateOnFaviconChangeForPinnedTab) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  NavigateTabAndOpenGlicFloating();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
