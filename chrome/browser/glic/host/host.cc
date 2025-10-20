@@ -77,6 +77,7 @@ void Host::SetDelegate(EmbedderDelegate* new_delegate) {
 }
 
 void Host::Shutdown() {
+  handler_info_.reset();
   contents_.reset();
 }
 
@@ -275,7 +276,7 @@ void Host::NotifyWindowIntentToShow() {
 }
 
 void Host::UnsetWebClient(GlicWebClientAccess* web_client) {
-  if (handler_info_ && handler_info_->web_client != web_client) {
+  if (!handler_info_ || handler_info_->web_client != web_client) {
     return;
   }
 
