@@ -10,4 +10,4 @@ android.webkit.WebView focusable focused
 ++++++++android.widget.Button clickable disabled name='enter full screen'
 ++++++++android.widget.Button role_description='menu pop up button' clickable disabled name='show more media controls' hint='more options'
 ++++++++++android.widget.TextView
-++++++android.widget.SeekBar role_description='slider' clickable disabled range name='elapsed time: 0:00, video time scrubber' hint='total time: 0:00' range_max=100
+++++++android.widget.SeekBar clickable disabled range name='elapsed time: 0:00, video time scrubber' hint='total time: 0:00' range_max=100

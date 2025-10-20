@@ -2,7 +2,7 @@ android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.view.View focusable
 ++++++android.widget.Button clickable focusable name='play'
-++++++android.widget.SeekBar role_description='slider' clickable focusable range name='elapsed time: 0:00, audio time scrubber' hint='total time: 0:00'
+++++++android.widget.SeekBar clickable focusable range name='elapsed time: 0:00, audio time scrubber' hint='total time: 0:00'
 ++++++android.view.View
 ++++++++android.widget.TextView
 ++++++++android.widget.Button clickable focusable name='mute'
