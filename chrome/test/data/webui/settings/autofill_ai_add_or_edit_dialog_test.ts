@@ -36,6 +36,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         addEntityTypeString: 'Add vehicle',
         editEntityTypeString: 'Edit vehicle',
         deleteEntityTypeString: 'Delete vehicle',
+        supportsWalletStorage: false,
       },
       attributeInstances: [
         {
@@ -333,6 +334,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         addEntityTypeString: 'Add passport',
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: false,
       },
       attributeInstances: [],
       guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',

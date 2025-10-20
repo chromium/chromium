@@ -375,6 +375,10 @@ namespace autofillPrivate {
     // dynamically, because the "<entity type>" string might need declension in
     // some languages.
     DOMString deleteEntityTypeString;
+    // Whether the entity type can be stored on Google Wallet servers.
+    // Note that an entity type might support Wallet and local storage
+    // as well. (e.g. Vehicle).
+    boolean supportsWalletStorage;
   };
 
   // Contains date information: month, day and year.

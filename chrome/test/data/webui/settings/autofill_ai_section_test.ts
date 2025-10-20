@@ -46,6 +46,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
           addEntityTypeString: 'Add car',
           editEntityTypeString: 'Edit car',
           deleteEntityTypeString: 'Delete car',
+          supportsWalletStorage: false,
         },
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
@@ -59,6 +60,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
           addEntityTypeString: 'Add passport',
           editEntityTypeString: 'Edit passport',
           deleteEntityTypeString: 'Delete passport',
+          supportsWalletStorage: false,
         },
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Passport',
@@ -158,6 +160,7 @@ suite('AutofillAiSectionUiTest', function() {
         addEntityTypeString: 'Add driver\'s license',
         editEntityTypeString: 'Edit driver\'s license',
         deleteEntityTypeString: 'Delete driver\'s license',
+        supportsWalletStorage: false,
       },
       attributeInstances: [
         {
@@ -189,6 +192,7 @@ suite('AutofillAiSectionUiTest', function() {
         addEntityTypeString: 'Add passport',
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: false,
       },
       {
         typeName: 2,
@@ -196,6 +200,7 @@ suite('AutofillAiSectionUiTest', function() {
         addEntityTypeString: 'Add car',
         editEntityTypeString: 'Edit car',
         deleteEntityTypeString: 'Delete car',
+        supportsWalletStorage: false,
       },
     ];
     // Initially not sorted alphabetically. The production code should sort them

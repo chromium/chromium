@@ -47,6 +47,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
           addEntityTypeString: 'Add car',
           editEntityTypeString: 'Edit car',
           deleteEntityTypeString: 'Delete car',
+          supportsWalletStorage: false,
         },
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
@@ -60,6 +61,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
           addEntityTypeString: 'Add passport',
           editEntityTypeString: 'Edit passport',
           deleteEntityTypeString: 'Delete passport',
+          supportsWalletStorage: false,
         },
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Passport',
@@ -171,6 +173,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         addEntityTypeString: 'Add driver\'s license',
         editEntityTypeString: 'Edit driver\'s license',
         deleteEntityTypeString: 'Delete driver\'s license',
+        supportsWalletStorage: false,
       },
       attributeInstances: [
         {
@@ -202,6 +205,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         addEntityTypeString: 'Add passport',
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: false,
       },
       {
         typeName: 2,
@@ -209,6 +213,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         addEntityTypeString: 'Add car',
         editEntityTypeString: 'Edit car',
         deleteEntityTypeString: 'Delete car',
+        supportsWalletStorage: false,
       },
     ];
     // Initially not sorted alphabetically. The production code should sort them
@@ -584,6 +589,7 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
           addEntityTypeString: 'Add car',
           editEntityTypeString: 'Edit car',
           deleteEntityTypeString: 'Delete car',
+          supportsWalletStorage: false,
         },
         entityInstanceLabel: 'A label'.repeat(100),
         entityInstanceSubLabel: 'Car',
@@ -597,6 +603,7 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
           addEntityTypeString: 'Add passport',
           editEntityTypeString: 'Edit passport',
           deleteEntityTypeString: 'Delete passport',
+          supportsWalletStorage: false,
         },
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Sublabel'.repeat(100),
@@ -610,6 +617,7 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
           addEntityTypeString: 'Add passport',
           editEntityTypeString: 'Edit passport',
           deleteEntityTypeString: 'Delete passport',
+          supportsWalletStorage: false,
         },
         entityInstanceLabel: 'Mark Donald',
         entityInstanceSubLabel: 'Passport',

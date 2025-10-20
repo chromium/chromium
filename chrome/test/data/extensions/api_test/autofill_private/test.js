@@ -41,6 +41,7 @@ var ENTITY_INSTANCE = {
     addEntityTypeString: 'Add driver\'s license',
     editEntityTypeString: 'Edit driver\'s license',
     deleteEntityTypeString: 'Delete driver\'s license',
+    supportsWalletStorage: false,
   },
   attributeInstances: [
     {
@@ -925,6 +926,7 @@ var availableTests = [
             addEntityTypeString: 'Add driver\'s license',
             editEntityTypeString: 'Edit driver\'s license',
             deleteEntityTypeString: 'Delete driver\'s license',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -974,6 +976,7 @@ var availableTests = [
             addEntityTypeString: 'Add passport',
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1014,6 +1017,7 @@ var availableTests = [
             addEntityTypeString: 'Add passport',
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1054,6 +1058,7 @@ var availableTests = [
             addEntityTypeString: 'Add passport',
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1104,6 +1109,7 @@ var availableTests = [
             addEntityTypeString: 'Add vehicle',
             editEntityTypeString: 'Edit vehicle',
             deleteEntityTypeString: 'Delete vehicle',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1136,6 +1142,7 @@ var availableTests = [
             addEntityTypeString: 'Add vehicle',
             editEntityTypeString: 'Edit vehicle',
             deleteEntityTypeString: 'Delete vehicle',
+            supportsWalletStorage: false,
           },
           attributeInstances: [
             {
@@ -1286,6 +1293,7 @@ var availableTests = [
         addEntityTypeString: 'Add passport',
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
+        supportsWalletStorage: false,
       },
       {
         typeName: 1,
@@ -1293,6 +1301,7 @@ var availableTests = [
         addEntityTypeString: 'Add driver\'s license',
         editEntityTypeString: 'Edit driver\'s license',
         deleteEntityTypeString: 'Delete driver\'s license',
+        supportsWalletStorage: false,
       },
       {
         typeName: 2,
@@ -1300,6 +1309,7 @@ var availableTests = [
         addEntityTypeString: 'Add vehicle',
         editEntityTypeString: 'Edit vehicle',
         deleteEntityTypeString: 'Delete vehicle',
+        supportsWalletStorage: false,
       },
     ];
     for (const index in expectedEntityTypesList) {

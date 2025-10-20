@@ -1098,6 +1098,7 @@ AutofillPrivateGetWritableEntityTypesFunction::Run() {
         autofill_ai_util::GetEditEntityTypeStringForI18n(entity_type);
     api_type.delete_entity_type_string =
         autofill_ai_util::GetDeleteEntityTypeStringForI18n(entity_type);
+    api_type.supports_wallet_storage = false;
   }
   return RespondNow(ArgumentList(
       autofill_private::GetWritableEntityTypes::Results::Create(result)));

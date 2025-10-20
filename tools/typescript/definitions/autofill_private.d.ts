@@ -253,6 +253,7 @@ declare global {
         addEntityTypeString: string;
         editEntityTypeString: string;
         deleteEntityTypeString: string;
+        supportsWalletStorage: boolean;
       }
 
       export interface DateValue {
