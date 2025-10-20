@@ -34,11 +34,6 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
  public:
   DECLARE_USER_DATA(GlicSidePanelCoordinator);
 
-  class StateObserver : public base::CheckedObserver {
-   public:
-    virtual void VisibilityChanged(bool isVisible) = 0;
-  };
-
   GlicSidePanelCoordinator(tabs::TabInterface* tab,
                            SidePanelRegistry* side_panel_registry);
   ~GlicSidePanelCoordinator() override;
@@ -46,8 +41,11 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   // Create and register the Glic side panel entry.
   void CreateAndRegisterEntry();
 
-  void AddObserver(StateObserver* observer);
-  void RemoveObserver(StateObserver* observer);
+  using VisibilityCallback = base::RepeatingCallback<void(bool isVisible)>;
+
+  // Registers `callback` to be called when panel visibility is updated.
+  base::CallbackListSubscription AddVisibilityCallback(
+      VisibilityCallback callback);
 
   // Set the content to display in the Glic side panel.
   void SetContentsView(std::unique_ptr<views::View> contents_view);
@@ -73,7 +71,8 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   raw_ptr<actions::ActionItem> glic_action_ = nullptr;
   raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
   base::CallbackListSubscription on_glic_enabled_changed_subscription_;
-  base::ObserverList<StateObserver> state_observers_;
+  base::RepeatingCallbackList<void(bool isShowing)>
+      visibility_changed_callbacks_;
   std::unique_ptr<views::View> contents_view_;
   views::ViewTracker glic_container_tracker_;
 };
