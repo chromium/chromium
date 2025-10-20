@@ -24,8 +24,8 @@ web::WebUIIOSDataSource* CreateHTMLSource(const std::string& host_name) {
                              IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING);
   std::u16string body = l10n_util::GetStringFUTF16(
       IDS_INTERNAL_DEBUG_PAGES_DISABLED_BODY,
-      base::StrCat({base::ASCIIToUTF16(kChromeUIChromeURLsURL), u"?host=",
-                    base::UTF8ToUTF16(host_name), u"#internal-debug-pages"}));
+      base::UTF8ToUTF16(base::StrCat({kChromeUIChromeURLsURL, "?host=",
+                                      host_name, "#internal-debug-pages"})));
   source->AddString("pageBody", body);
   source->AddResourcePath("", IDR_INTERNAL_DEBUG_PAGES_DISABLED_APP_HTML);
   return source;

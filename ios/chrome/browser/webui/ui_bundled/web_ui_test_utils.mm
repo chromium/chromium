@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/webui/ui_bundled/web_ui_test_utils.h"
 
+#import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
@@ -20,14 +21,14 @@ using chrome_test_util::OmniboxText;
 // used when this test is run using EarlGrey2 because the chrome scheme is not
 // registered in the test process and `url::SchemeHostPort` will not build an
 // invalid URL.
-GURL WebUIPageUrlWithHost(const std::string& host) {
-  return GURL(base::StringPrintf("%s://%s", kChromeUIScheme, host.c_str()));
+GURL WebUIPageUrlWithHost(std::string_view host) {
+  return GURL(base::StrCat({kChromeUIScheme, "://", host}));
 }
 
 // Waits for omnibox text to equal (if `exact_match`) or contain (else) `URL`
 // and returns true if it was found or false on timeout. Strips trailing URL
 // slash if present as the omnibox does not display them.
-bool WaitForOmniboxURLString(const std::string& url, bool exact_match) {
+bool WaitForOmniboxURLString(std::string_view url, bool exact_match) {
   const std::string trimmed_URL(
       base::TrimString(url, "/", TrimPositions::TRIM_TRAILING));
 

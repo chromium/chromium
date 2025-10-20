@@ -26,7 +26,7 @@
 namespace chrome_urls {
 
 namespace {
-bool IsWebUIInternal(const std::string& host) {
+bool IsWebUIInternal(std::string_view host) {
   return host == commerce::kChromeUICommerceInternalsHost ||
          host == optimization_guide_internals::
                      kChromeUIOptimizationGuideInternalsHost ||
