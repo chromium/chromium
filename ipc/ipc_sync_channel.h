@@ -118,10 +118,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
 
     base::WaitableEvent* shutdown_event() { return shutdown_event_; }
 
-    ReceivedSyncMsgQueue* received_sync_msgs() {
-      return received_sync_msgs_.get();
-    }
-
    private:
     ~SyncContext() override;
     // ChannelProxy methods that we override.
@@ -162,7 +158,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
 
   // Used to signal events between the IPC and listener threads.
   base::WaitableEventWatcher dispatch_watcher_;
-  base::WaitableEventWatcher::EventCallback dispatch_watcher_callback_;
 };
 
 }  // namespace IPC
