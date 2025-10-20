@@ -44,13 +44,6 @@ namespace {
 constexpr uint32_t kMaxImageDimensionForOcr = 2048;
 #endif
 
-TEST(PDFiumPageHelperTest, ToPDFiumRotation) {
-  EXPECT_EQ(ToPDFiumRotation(PageOrientation::kOriginal), 0);
-  EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise90), 1);
-  EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise180), 2);
-  EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise270), 3);
-}
-
 TEST(PDFiumPageHelperTest, ScopedUnloadPreventer) {
   // Should not DCHECK in its dtor due to ScopedUnloadPreventer usage.
   PDFiumPage page1(/*engine=*/nullptr, 1u);

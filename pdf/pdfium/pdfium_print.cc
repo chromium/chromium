@@ -423,7 +423,7 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
 
   FPDF_RenderPageBitmap(bitmap.get(), page_to_print, 0, 0, bitmap_size.width(),
                         bitmap_size.height(),
-                        ToPDFiumRotation(PageOrientation::kOriginal),
+                        GetClockwiseRotationSteps(PageOrientation::kOriginal),
                         FPDF_PRINTING);
 
   float ratio_x = ConvertUnitFloat(bitmap_size.width(), dpi, kPointsPerInch);

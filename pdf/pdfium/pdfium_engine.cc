@@ -3531,8 +3531,8 @@ bool PDFiumEngine::ContinuePaint(size_t progressive_index,
   return FPDF_RenderPageBitmap_Start(
              new_bitmap_ptr, page, pdfium_rect.x(), pdfium_rect.y(),
              pdfium_rect.width(), pdfium_rect.height(),
-             ToPDFiumRotation(GetCurrentOrientation()), GetRenderingFlags(),
-             this) != FPDF_RENDER_TOBECONTINUED;
+             GetClockwiseRotationSteps(GetCurrentOrientation()),
+             GetRenderingFlags(), this) != FPDF_RENDER_TOBECONTINUED;
 }
 
 void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
@@ -3547,7 +3547,8 @@ void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
   // Draw the forms.
   FPDF_FFLDraw(form(), bitmap, pages_[page_index]->GetPage(), pdfium_rect.x(),
                pdfium_rect.y(), pdfium_rect.width(), pdfium_rect.height(),
-               ToPDFiumRotation(GetCurrentOrientation()), GetRenderingFlags());
+               GetClockwiseRotationSteps(GetCurrentOrientation()),
+               GetRenderingFlags());
 
   FillPageSides(progressive_index);
 
@@ -4073,7 +4074,7 @@ gfx::PointF PDFiumEngine::DeviceToPdf(uint32_t page_index,
   double page_y = 0;
   FPDF_BOOL ret = FPDF_DeviceToPage(
       page->GetPage(), 0, 0, page_rect.width(), page_rect.height(),
-      ToPDFiumRotation(GetCurrentOrientation()), screen_point.x(),
+      GetClockwiseRotationSteps(GetCurrentOrientation()), screen_point.x(),
       screen_point.y(), &page_x, &page_y);
   DCHECK(ret);
   return gfx::PointF(page_x, page_y);

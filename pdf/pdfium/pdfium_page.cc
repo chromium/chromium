@@ -1907,7 +1907,8 @@ gfx::Rect PDFiumPage::PageToScreen(const gfx::Point& page_point,
   if (!FPDF_PageToDevice(
           page(), static_cast<int>(start_x), static_cast<int>(start_y),
           static_cast<int>(ceil(size_x)), static_cast<int>(ceil(size_y)),
-          ToPDFiumRotation(orientation), left, top, &new_left, &new_top)) {
+          GetClockwiseRotationSteps(orientation), left, top, &new_left,
+          &new_top)) {
     return gfx::Rect();
   }
 
@@ -1916,7 +1917,7 @@ gfx::Rect PDFiumPage::PageToScreen(const gfx::Point& page_point,
   if (!FPDF_PageToDevice(
           page(), static_cast<int>(start_x), static_cast<int>(start_y),
           static_cast<int>(ceil(size_x)), static_cast<int>(ceil(size_y)),
-          ToPDFiumRotation(orientation), right, bottom, &new_right,
+          GetClockwiseRotationSteps(orientation), right, bottom, &new_right,
           &new_bottom)) {
     return gfx::Rect();
   }
@@ -1987,13 +1988,14 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   constexpr int kRenderingFlags = FPDF_ANNOT | FPDF_REVERSE_BYTE_ORDER;
   FPDF_RenderPageBitmap(fpdf_bitmap.get(), page, /*start_x=*/0,
                         /*start_y=*/0, image_size.width(), image_size.height(),
-                        ToPDFiumRotation(PageOrientation::kOriginal),
+                        GetClockwiseRotationSteps(PageOrientation::kOriginal),
                         kRenderingFlags);
 
   // Draw the forms.
   FPDF_FFLDraw(engine_->form(), fpdf_bitmap.get(), page, /*start_x=*/0,
                /*start_y=*/0, image_size.width(), image_size.height(),
-               ToPDFiumRotation(PageOrientation::kOriginal), kRenderingFlags);
+               GetClockwiseRotationSteps(PageOrientation::kOriginal),
+               kRenderingFlags);
 
   return thumbnail;
 }
