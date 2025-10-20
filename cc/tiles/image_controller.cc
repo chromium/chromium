@@ -249,13 +249,9 @@ void ImageController::ConvertImagesToTasks(
     std::vector<DrawImage>* sync_decoded_images,
     std::vector<scoped_refptr<TileTask>>* tasks,
     bool* has_at_raster_images,
-    bool* has_hardware_accelerated_jpeg_candidates,
-    bool* has_hardware_accelerated_webp_candidates,
     const ImageDecodeCache::TracingInfo& tracing_info) {
   DCHECK(cache_);
   *has_at_raster_images = false;
-  *has_hardware_accelerated_jpeg_candidates = false;
-  *has_hardware_accelerated_webp_candidates = false;
 
   // We may read/write stand-alone decode image tasks if they are duplicates of
   // raster tasks.
@@ -309,11 +305,8 @@ std::vector<scoped_refptr<TileTask>> ImageController::SetPredecodeImages(
   // getting rasterized, we will still have a chance to record the raster
   // scheduling delay UMAs when we create and run the raster task.
   bool has_at_raster_images = false;
-  bool has_hardware_accelerated_jpeg_candidates = false;
-  bool has_hardware_accelerated_webp_candidates = false;
   ConvertImagesToTasks(&images, &new_tasks, &has_at_raster_images,
-                       &has_hardware_accelerated_jpeg_candidates,
-                       &has_hardware_accelerated_webp_candidates, tracing_info);
+                       tracing_info);
   UnrefImages(predecode_locked_images_);
   predecode_locked_images_ = std::move(images);
   return new_tasks;
