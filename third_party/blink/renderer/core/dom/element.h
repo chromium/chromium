@@ -2041,9 +2041,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void UpdateColumnPseudoElements(const StyleRecalcChange,
                                   const StyleRecalcContext&);
-  PseudoElement* UpdateLayoutSiblingPseudoElement(PseudoId pseudo_id,
-                                                  const StyleRecalcChange,
-                                                  const StyleRecalcContext&);
   PseudoElement* UpdatePseudoElement(
       PseudoId,
       const StyleRecalcChange,

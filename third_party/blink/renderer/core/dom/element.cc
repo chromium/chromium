@@ -4716,20 +4716,37 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       MarkAncestorsWithChildNeedsReattachLayoutTree();
     }
   }
-
+  StyleRecalcContext layout_sibling_recalc_context = child_recalc_context;
+  if (!IsDocumentElement()) {
+    // The ::scroll-marker-group/::scroll-button() box is a sibling of its
+    // originating element, which means that it's laid out before or after its
+    // originating element. That means the ::scroll-marker-group is not
+    // contained by its parent, and size container queries will have layout
+    // cycles if the originating element is an eligible size query container.
+    // There is an exception when the originating element is the root element,
+    // since these pseudo elements generate child boxes in that case.
+    //
+    // Note that the originating element can still be a query container for
+    // style() and scroll-state() queries.
+    //
+    // Use the same start size query container candidate as the originating
+    // element to allow querying container further up the ancestor chain.
+    layout_sibling_recalc_context.container =
+        local_style_recalc_context.container;
+  }
   if (child_change.TraversePseudoElements(*this)) {
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollMarkerGroupBefore,
-                                     child_change, child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonBlockStart,
-                                     child_change, child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonInlineStart,
-                                     child_change, child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonInlineEnd,
-                                     child_change, child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonBlockEnd,
-                                     child_change, child_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollMarkerGroupBefore, child_change,
+                        layout_sibling_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollButtonBlockStart, child_change,
+                        layout_sibling_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollButtonInlineStart, child_change,
+                        layout_sibling_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollButtonInlineEnd, child_change,
+                        layout_sibling_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollButtonBlockEnd, child_change,
+                        layout_sibling_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                         child_recalc_context);
     UpdateColumnPseudoElements(child_change, child_recalc_context);
@@ -4780,8 +4797,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                           child_recalc_context);
     }
 
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollMarkerGroupAfter,
-                                     child_change, child_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollMarkerGroupAfter, child_change,
+                        layout_sibling_recalc_context);
 
     // If we are re-attaching us or any of our descendants, we need to attach
     // the descendants before we know if this element generates a ::first-letter
@@ -9522,34 +9539,6 @@ void Element::UpdateColumnPseudoElements(const StyleRecalcChange change,
   }
 }
 
-PseudoElement* Element::UpdateLayoutSiblingPseudoElement(
-    PseudoId pseudo_id,
-    const StyleRecalcChange change,
-    const StyleRecalcContext& style_recalc_context) {
-  DCHECK(pseudo_id == kPseudoIdScrollMarkerGroupBefore ||
-         pseudo_id == kPseudoIdScrollMarkerGroupAfter ||
-         pseudo_id == kPseudoIdScrollButtonBlockStart ||
-         pseudo_id == kPseudoIdScrollButtonInlineStart ||
-         pseudo_id == kPseudoIdScrollButtonInlineEnd ||
-         pseudo_id == kPseudoIdScrollButtonBlockEnd);
-  StyleRecalcContext context(style_recalc_context);
-  if (style_recalc_context.container &&
-      style_recalc_context.container == this) {
-    // TODO(crbug.com/378584781): Needs specification.
-    //
-    // The ::scroll-marker-group/::scroll-button() box is a sibling of its
-    // originating element, which means that it's laid out before or after its
-    // originating element. That means the ::scroll-marker-group is not
-    // contained by its parent and size container queries will break down. This
-    // behavior is not specified, but we currently make the grandparent the
-    // first size container query candidate to avoid crashing. Note that the
-    // originating element can still be a query container for style() queries,
-    // for instance.
-    context.container =
-        FlatTreeTraversal::ParentElement(*style_recalc_context.container);
-  }
-  return UpdatePseudoElement(pseudo_id, change, context);
-}
 
 PseudoElement* Element::UpdatePseudoElement(
     PseudoId pseudo_id,
