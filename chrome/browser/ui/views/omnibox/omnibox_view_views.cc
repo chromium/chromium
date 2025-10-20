@@ -1590,10 +1590,6 @@ bool OmniboxViewViews::HandleAccessibleAction(
 void OmniboxViewViews::OnFocus() {
   views::Textfield::OnFocus();
 
-  // TODO(tommycli): This does not seem like it should be necessary.
-  // Investigate why it's needed and see if we can remove it.
-  model()->ResetDisplayTexts();
-
   // TODO(oshima): Get control key state.
   model()->OnSetFocus(false);
   // Don't call WebLocationBar::OnSetFocus(), this view has already acquired

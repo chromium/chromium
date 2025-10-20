@@ -21119,7 +21119,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // #2 is triggered by NotifyNavigationEntryCommitted().
     // Note that this is different from the _Ignore test below, which wouldn't
     // fire the events because the client chooses to ignore the updates.
-    EXPECT_EQ(2, all_navigation_state_changed_delegate.call_count());
+    // With "SkipRedundantNavigationStateNotification" enabled, only 1 call will
+    // take place.
+    if (base::FeatureList::IsEnabled(
+            features::kSkipRedundantNavigationStateNotification)) {
+      EXPECT_EQ(1, all_navigation_state_changed_delegate.call_count());
+    } else {
+      EXPECT_EQ(2, all_navigation_state_changed_delegate.call_count());
+    }
   }
 
   {
@@ -21137,12 +21144,20 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
 
-    // 2 additional INVALIDATE_TYPE_ALL NavigationStateChanged calls were
-    // triggered (increasing the count to 4), and they're not for the initial
-    // NavigationEntry.
+    // 1 or 2 additional INVALIDATE_TYPE_ALL NavigationStateChanged calls were
+    // triggered (increasing the count to either 2 or 4 depending on whether
+    // "SkipRedundantNavigationStateNotification" is enabled), and they're not
+    // for the initial NavigationEntry.
     // #1 was triggered by DiscardNonCommittedEntries().
     // #2 is triggered by NotifyNavigationEntryCommitted().
-    EXPECT_EQ(4, all_navigation_state_changed_delegate.call_count());
+    // With "SkipRedundantNavigationStateNotification" enabled, only 1 call will
+    // take place.
+    if (base::FeatureList::IsEnabled(
+            features::kSkipRedundantNavigationStateNotification)) {
+      EXPECT_EQ(2, all_navigation_state_changed_delegate.call_count());
+    } else {
+      EXPECT_EQ(4, all_navigation_state_changed_delegate.call_count());
+    }
   }
 }
 

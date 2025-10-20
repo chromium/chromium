@@ -1159,9 +1159,15 @@ TEST_F(NavigationControllerTest, LoadURL_IgnorePreemptsPending) {
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
   EXPECT_FALSE(controller.GetPendingEntry());
   // The pending entry deletion and commit of the new NavigationEntry both
-  // counts as "navigation state change".
+  // count as "navigation state change", though only one notification will be
+  // sent if kSkipRedundantNavigationStateNotification is enabled.
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
-  EXPECT_EQ(3, delegate->navigation_state_change_count());
+  if (base::FeatureList::IsEnabled(
+          features::kSkipRedundantNavigationStateNotification)) {
+    EXPECT_EQ(2, delegate->navigation_state_change_count());
+  } else {
+    EXPECT_EQ(3, delegate->navigation_state_change_count());
+  }
 
   contents()->SetDelegate(nullptr);
 }

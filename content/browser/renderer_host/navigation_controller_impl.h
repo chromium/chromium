@@ -165,12 +165,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   bool ShouldOverrideUserAgentInNextNavigation(
       NavigationController::UserAgentOverrideOption option) override;
 
-  // Discards the pending entry if any. If this is caused by a navigation
-  // committing a new entry, `commit_details` will contain the committed
-  // navigation's details.
-  void DiscardNonCommittedEntriesWithCommitDetails(
-      LoadCommittedDetails* commit_details);
-
   // Creates the initial NavigationEntry for the NavigationController when its
   // FrameTree is being initialized. See NavigationEntry::IsInitialEntry() on
   // what this means.
@@ -608,6 +602,27 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
         pending_entry_ref_;
   };
 
+  // In most but not all navigation commits, the RendererDidNavigate logic needs
+  // to notify the delegate of navigation state changes (using
+  // INVALIDATE_TYPE_ALL), so that the address bar and other UI can be updated.
+  // There are several places in that function and its helper functions that
+  // must ensure a notification is sent, but it is redundant and expensive to
+  // send multiple notifications. This scoped object ensures that, at most, one
+  // notification will be sent at the end of RendererDidNavigate (when it is
+  // deallocated) and only if RequestDeferredNotification has been called.
+  class ScopedDeferredNavigationStateChangeNotifier {
+   public:
+    explicit ScopedDeferredNavigationStateChangeNotifier(
+        raw_ptr<NavigationControllerDelegate> delegate);
+    ~ScopedDeferredNavigationStateChangeNotifier();
+
+    void RequestDeferredNotification();
+
+   private:
+    raw_ptr<NavigationControllerDelegate> delegate_;
+    bool requested_ = false;
+  };
+
   // Records which navigation API keys are associated with live frames.
   // On destruction, does a final pass to filter out any keys that are still
   // present in |entries_|, then sends the removed navigation API keys to the
@@ -803,7 +818,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool replace_entry,
       bool previous_document_had_history_intervention_activation,
       NavigationRequest* request,
-      LoadCommittedDetails* details);
+      LoadCommittedDetails* details,
+      ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
   void RendererDidNavigateToExistingEntry(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
@@ -811,7 +827,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool was_restored,
       NavigationRequest* request,
       bool keep_pending_entry,
-      LoadCommittedDetails* details);
+      LoadCommittedDetails* details,
+      ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
   void RendererDidNavigateNewSubframe(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
@@ -819,18 +836,35 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool replace_entry,
       bool previous_document_had_history_intervention_activation,
       NavigationRequest* request,
-      LoadCommittedDetails* details);
+      LoadCommittedDetails* details,
+      ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
   bool RendererDidNavigateAutoSubframe(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool was_on_initial_empty_document,
       NavigationRequest* request,
-      LoadCommittedDetails* details);
+      LoadCommittedDetails* details,
+      ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
 
   // Allows the derived class to issue notifications that a load has been
   // committed. This will fill in the active entry to the details structure.
-  void NotifyNavigationEntryCommitted(LoadCommittedDetails* details);
+  //
+  // |deferred_notifier| is scoped to a calling function and delays notifying
+  // the delegate of navigation state changes until that function returns. This
+  // avoids sending multiple redundant and expensive notifications during a
+  // single navigation commit. When non-null, notifications are requested on the
+  // notifier and sent when it goes out of scope. Passing null causes
+  // notifications to send immediately.
+  void NotifyNavigationEntryCommitted(
+      LoadCommittedDetails* details,
+      ScopedDeferredNavigationStateChangeNotifier* deferred_notifier = nullptr);
+
+  // Discards the pending entry if any. Immediately notifies the delegate of a
+  // navigation state change unless `deferred_notifier` is provided, in which
+  // case, the notification is deferred until that object is deallocated.
+  void DiscardNonCommittedEntriesInternal(
+      ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
 
   // Updates the virtual URL of an entry to match a new URL, for cases where
   // the real renderer URL is derived from the virtual URL, like view-source:
@@ -846,11 +880,15 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // If |was_post_commit_error_| is set, the last committed entry will be saved,
   // the new entry will replace it, and on any navigation away from the new
   // entry or on reloads, the old one will replace |entry|.
-  void InsertOrReplaceEntry(std::unique_ptr<NavigationEntryImpl> entry,
-                            bool replace,
-                            bool was_post_commit_error,
-                            bool is_in_fenced_frame_tree,
-                            LoadCommittedDetails* details);
+  // If |deferred_notifier| is provided, notifications are requested on the
+  // notifier and sent when it goes out of scope; passing null causes
+  // notifications to send immediately.
+  void InsertOrReplaceEntry(
+      std::unique_ptr<NavigationEntryImpl> entry,
+      bool replace,
+      bool was_post_commit_error,
+      bool is_in_fenced_frame_tree,
+      ScopedDeferredNavigationStateChangeNotifier* deferred_notifier = nullptr);
 
   // Removes the entry at |index|, as long as it is not the current entry.
   void RemoveEntryAtIndexInternal(int index);
