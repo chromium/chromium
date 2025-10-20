@@ -107,7 +107,11 @@
     "name": "Flight Reservation",
     "attributes": [ "Flight number", "Ticket number", "Confirmation code", "Passenger name", "Departure airport", "Arrival airport"],
     "obfuscated attributes": [],
-    "required fields": "any",
+    "required fields": [
+      [ "Flight number" ],
+      [ "Ticket number" ],
+      [ "Confirmation code" ]
+    ],
     "import constraints": [],
     "merge constraints": [],
     "strike keys": [],
