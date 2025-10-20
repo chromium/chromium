@@ -89,6 +89,8 @@ void ProfileReportGenerator::MaybeGenerate(
 
   if (is_machine_scope_) {
     delegate_->GetExtensionRequest(report_.get());
+    // For profile reporting, the profile id is already in the &reportid= query
+    // param. Only set the proto field for browser reports.
     delegate_->GetProfileId(report_.get());
   }
 
