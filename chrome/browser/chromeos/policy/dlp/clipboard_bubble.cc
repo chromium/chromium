@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/link.h"
@@ -118,14 +119,17 @@ END_METADATA
 
 ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  SetBackground(views::CreateLayerBasedRoundedBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque,
+      kCornerRadii));
 
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetBackgroundBlur(kBubbleBlurRadius);
     layer()->SetBackdropFilterQuality(
         ash::ColorProvider::kBackgroundBlurQuality);
   }
-
-  layer()->SetRoundedCornerRadius(kCornerRadii);
 
   // Add the managed icon.
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
@@ -177,6 +181,8 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   label_->SizeToFit(kBubbleWidth - 2 * kBubblePadding - kManagedIconSize -
                     kIconLabelSpacing);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  label_->SetDisplayedOnBackgroundColor(
+      cros_tokens::kCrosSysSystemBaseElevated);
 
   // Bubble borders
   border_ = AddChildView(std::make_unique<views::ImageView>());
@@ -193,16 +199,6 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
 }
 
 ClipboardBubbleView::~ClipboardBubbleView() = default;
-
-void ClipboardBubbleView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  const SkColor background_color = GetColorProvider()->GetColor(
-      chromeos::features::IsSystemBlurEnabled()
-          ? cros_tokens::kCrosSysSystemBaseElevated
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque);
-  layer()->SetColor(background_color);
-  label_->SetDisplayedOnBackgroundColor(background_color);
-}
 
 void ClipboardBubbleView::UpdateBorderSize(const gfx::Size& size) {
   border_->SetSize(size);

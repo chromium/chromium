@@ -46,6 +46,7 @@ constexpr char kSidetoneNudgeId[] = "video_conference_tray_nudge_ids.sidetone";
 constexpr auto kTitleChildSpacing = 8;
 constexpr auto kTitleViewPadding = gfx::Insets::TLBR(16, 16, 0, 16);
 constexpr auto kMicTestButtonPadding = gfx::Insets::TLBR(6, 6, 6, 6);
+constexpr int kMicTestButtonRadius = 16;
 
 }  // namespace
 
@@ -104,9 +105,11 @@ END_METADATA
 MicTestButton::MicTestButton() {
   background_view_ = AddChildView(std::make_unique<View>());
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  auto* background_layer = background_view_->layer();
-  background_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(16));
+  background_view_->SetBackground(views::CreateLayerBasedRoundedBackground(
+      VideoConferenceTrayController::Get()->GetSidetoneEnabled()
+          ? cros_tokens::kCrosSysSystemPrimaryContainer
+          : cros_tokens::kCrosSysSystemOnBase,
+      gfx::RoundedCornersF(kMicTestButtonRadius)));
 
   button_container_ =
       AddChildView(std::make_unique<MicTestButtonContainer>(base::BindRepeating(
@@ -115,12 +118,6 @@ MicTestButton::MicTestButton() {
 
 void MicTestButton::OnThemeChanged() {
   views::View::OnThemeChanged();
-
-  SkColor color = GetColorProvider()->GetColor(
-      VideoConferenceTrayController::Get()->GetSidetoneEnabled()
-          ? cros_tokens::kCrosSysSystemPrimaryContainer
-          : cros_tokens::kCrosSysSystemOnBase);
-  background_view_->layer()->SetColor(color);
   button_container_->OnThemeChanged();
 }
 

@@ -31,25 +31,15 @@ ContentsSeparator::CreateContentsSeparator() {
 }
 
 ContentsSeparator::ContentsSeparator(bool create_layer) {
-  if (create_layer) {
-    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  } else {
-    SetBackground(
-        views::CreateSolidBackground(kColorToolbarContentAreaSeparator));
-  }
+  SetBackground(create_layer ? views::CreateLayerBasedSolidBackground(
+                                   kColorToolbarContentAreaSeparator)
+                             : views::CreateSolidBackground(
+                                   kColorToolbarContentAreaSeparator));
 
   // BrowserViewLayout will respect either the height or width of this,
   // depending on orientation, not simultaneously both.
   SetPreferredSize(
       gfx::Size(views::Separator::kThickness, views::Separator::kThickness));
-}
-
-void ContentsSeparator::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (layer()) {
-    layer()->SetColor(
-        GetColorProvider()->GetColor(kColorToolbarContentAreaSeparator));
-  }
 }
 
 BEGIN_METADATA(ContentsSeparator)

@@ -91,7 +91,6 @@ class MultiContentsDropTargetView : public views::View,
 
   // views::View
   void SetVisible(bool visible) override;
-  void OnThemeChanged() override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool CanDrop(const ui::OSExchangeData& data) override;

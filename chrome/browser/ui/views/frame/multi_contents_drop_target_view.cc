@@ -68,12 +68,10 @@ MultiContentsDropTargetView::MultiContentsDropTargetView()
                                    views::MaximumFlexSizeRule::kUnbounded));
 
   auto inner_container = std::make_unique<views::View>();
-  inner_container->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  inner_container->layer()->SetName(
+  inner_container->SetBackground(views::CreateLayerBasedRoundedBackground(
+      ui::kColorSysSurface3, gfx::RoundedCornersF(kInnerCornerRadius)));
+  inner_container->background()->SetInternalName(
       "MultiContentsDropTargetView/InnerContainer");
-  inner_container->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kInnerCornerRadius));
-  inner_container->layer()->SetIsFastRoundedCorner(true);
 
   inner_container_layout_ =
       &inner_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -282,12 +280,6 @@ bool MultiContentsDropTargetView::ShouldShowAnimation() const {
 
 void MultiContentsDropTargetView::DisableAnimationsForTesting() {
   should_show_animations_for_testing_ = false;
-}
-
-void MultiContentsDropTargetView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  inner_container_->layer()->SetColor(
-      GetColorProvider()->GetColor(ui::kColorSysSurface3));
 }
 
 bool MultiContentsDropTargetView::GetDropFormats(

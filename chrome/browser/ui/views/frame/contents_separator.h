@@ -22,9 +22,6 @@ class ContentsSeparator : public views::View {
 
  private:
   explicit ContentsSeparator(bool create_layer);
-
-  // views::View:
-  void OnThemeChanged() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_SEPARATOR_H_
