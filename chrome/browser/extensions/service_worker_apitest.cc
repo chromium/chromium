@@ -1970,6 +1970,65 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   EXPECT_TRUE(finished_listener.WaitUntilSatisfied());
 }
 
+// Regression test for crbug.com/c/448034422. Other tests already test that a
+// background page is wakened via WakeEventPage, but this tests that service
+// worker based extensions wake too.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       WakeEventPage_WakesServiceWorkerBasedExtension) {
+  ExtensionTestMessageListener event_listener_added("ready");
+  event_listener_added.set_failure_message("ERROR");
+
+  // Note: Extension is packed to avoid reloading while loading.
+  const Extension* extension = LoadExtension(
+      PackExtension(test_data_dir_.AppendASCII(
+          "service_worker/worker_based_background/events_to_stopped_worker")),
+      // Wait for the registration to be stored so that it's persistent
+      // before the test terminates.
+      {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(event_listener_added.WaitUntilSatisfied());
+  EXPECT_EQ(process_manager()->GetAllWorkersIdsForTesting().size(), 1u);
+
+  // Stop the service worker.
+  {
+    base::RunLoop run_loop;
+    content::ServiceWorkerContext* context = GetServiceWorkerContext();
+    // The service worker is registered at the root scope.
+    content::StopServiceWorkerForScope(context, extension->url(),
+                                       run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_EQ(process_manager()->GetAllWorkersIdsForTesting().size(), 0u);
+
+  service_worker_test_utils::TestServiceWorkerContextObserver regular_observer(
+      profile(), extension->id());
+  EXPECT_TRUE(
+      process_manager()->WakeEventPage(extension->id(), base::DoNothing()));
+
+  regular_observer.WaitForWorkerStarted();
+  EXPECT_EQ(process_manager()->GetAllWorkersIdsForTesting().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       WakeEventPage_ReturnsFalseIfServiceWorkerAlreadyAwake) {
+  ExtensionTestMessageListener event_listener_added("ready");
+  event_listener_added.set_failure_message("ERROR");
+
+  // Note: Extension is packed to avoid reloading while loading.
+  const Extension* extension = LoadExtension(
+      PackExtension(test_data_dir_.AppendASCII(
+          "service_worker/worker_based_background/events_to_stopped_worker")),
+      // Wait for the registration to be stored so that it's persistent
+      // before the test terminates.
+      {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(event_listener_added.WaitUntilSatisfied());
+  EXPECT_EQ(process_manager()->GetAllWorkersIdsForTesting().size(), 1u);
+
+  EXPECT_FALSE(
+      process_manager()->WakeEventPage(extension->id(), base::DoNothing()));
+}
+
 namespace {
 
 constexpr char kIncognitoManifest[] =

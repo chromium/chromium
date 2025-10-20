@@ -399,13 +399,19 @@ ExtensionHost* ProcessManager::GetBackgroundHostForRenderFrameHost(
 
 bool ProcessManager::WakeEventPage(const ExtensionId& extension_id,
                                    base::OnceCallback<void(bool)> callback) {
-  if (GetBackgroundHostForExtension(extension_id)) {
+  const Extension* extension =
+      extension_registry_->enabled_extensions().GetByID(extension_id);
+  if ((extension && BackgroundInfo::IsServiceWorkerBased(extension) &&
+       !GetServiceWorkersForExtension(extension_id).empty()) ||
+      GetBackgroundHostForExtension(extension_id)) {
     // The extension is already awake.
     return false;
   }
 
   const auto context_id =
-      LazyContextId::ForBackgroundPage(browser_context_, extension_id);
+      extension
+          ? LazyContextId::ForExtension(browser_context_, extension)
+          : LazyContextId::ForBackgroundPage(browser_context_, extension_id);
   context_id.GetTaskQueue()->AddPendingTask(
       context_id,
       base::BindOnce(&PropagateExtensionWakeResult, std::move(callback)));
