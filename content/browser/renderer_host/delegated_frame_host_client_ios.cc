@@ -23,7 +23,7 @@ ui::Layer* DelegatedFrameHostClientIOS::DelegatedFrameHostGetLayer() const {
 }
 
 bool DelegatedFrameHostClientIOS::DelegatedFrameHostIsVisible() const {
-  return !render_widget_host_view_->host()->is_hidden();
+  return !render_widget_host_view_->host()->IsHidden();
 }
 
 SkColor DelegatedFrameHostClientIOS::DelegatedFrameHostGetGutterColor() const {

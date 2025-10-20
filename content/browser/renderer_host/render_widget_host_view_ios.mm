@@ -105,7 +105,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
       screen->GetScreenInfosNearestDisplay(screen->GetPrimaryDisplay().id());
 
   browser_compositor_ = std::make_unique<BrowserCompositorIOS>(
-      [ui_view_->view_ viewHandle], this, host()->is_hidden(),
+      [ui_view_->view_ viewHandle], this, host()->IsHidden(),
       host()->GetFrameSinkId());
 
   if (IsTesting()) {
@@ -311,7 +311,7 @@ void RenderWidgetHostViewIOS::Hide() {
   is_visible_ = false;
   browser_compositor_->SetViewVisible(is_visible_);
   browser_compositor_->SetRenderWidgetHostIsHidden(true);
-  if (!host() || host()->is_hidden()) {
+  if (!host() || host()->IsHidden()) {
     return;
   }
 
