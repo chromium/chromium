@@ -311,9 +311,11 @@ public class CookieControlsBridgeTest {
         assertEquals(CookieControlsEnforcement.NO_ENFORCEMENT, mEnforcement);
 
         // Make new incognito page now
-        Tab incognitoTab = mActivityTestRule.loadUrlInNewTab(url, true);
+        WebPageStation webPage =
+                mInitialPage.openNewIncognitoTabOrWindowFast().loadWebPageProgrammatically(url);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Tab incognitoTab = webPage.getActivity().getActivityTab();
                     mCookieControlsBridge =
                             new CookieControlsBridge(
                                     mCallbackHandler,

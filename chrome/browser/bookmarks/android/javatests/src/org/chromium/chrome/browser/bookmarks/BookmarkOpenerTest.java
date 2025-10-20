@@ -34,6 +34,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -65,10 +66,11 @@ public class BookmarkOpenerTest {
     private RecyclerView mItemsContainer;
 
     private UserActionTester mActionTester;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mActionTester = new UserActionTester();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -199,7 +201,7 @@ public class BookmarkOpenerTest {
         GURL url = new GURL(UrlConstants.NTP_URL);
         BookmarkId id = addMobileBookmark("test", url);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL, /* incognito= */ true);
+        mPage.openNewIncognitoTabOrWindowFast();
 
         openBookmarkManager();
         openMobileBookmarks();

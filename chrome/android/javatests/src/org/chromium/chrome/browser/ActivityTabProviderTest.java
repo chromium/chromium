@@ -212,6 +212,7 @@ public class ActivityTabProviderTest {
     @Test
     @SmallTest
     @Feature({"ActivityTabObserver"})
+    @Restriction(DeviceFormFactor.PHONE)
     public void testTriggerOnLastTabClosed() throws TimeoutException {
         // Have a tab open in incognito model. This should not be in the way getting the event
         // triggered when closing the last tab in normal mode.
