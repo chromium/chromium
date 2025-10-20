@@ -44,9 +44,8 @@ AccountId GetUserAccount(Profile* profile) {
   return user->GetAccountId();
 }
 
-static void SetUserLastInputMethodPreference(
-    const AccountId& account_id,
-    const std::string& input_method_id) {
+void SetUserLastInputMethodPreference(const AccountId& account_id,
+                                      const std::string& input_method_id) {
   if (!account_id.is_valid()) {
     return;
   }
@@ -159,7 +158,8 @@ void InputMethodPersistence::PersistUserInputMethod(
   user_prefs->SetString(::prefs::kLanguageCurrentInputMethod, input_method_id);
 }
 
-void SetUserLastInputMethodPreferenceForTesting(
+// static
+void InputMethodPersistence::SetUserLastInputMethodPreferenceForTesting(
     const AccountId& account_id,
     const std::string& input_method) {
   SetUserLastInputMethodPreference(account_id, input_method);

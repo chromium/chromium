@@ -104,10 +104,12 @@ class LoginUIKeyboardTest : public LoginManagerTest {
   // Should be called from PRE_ test so that local_state is saved to disk, and
   // reloaded in the main test.
   void InitUserLastInputMethod() {
-    input_method::SetUserLastInputMethodPreferenceForTesting(
-        test_users_[0], user_input_methods[0]);
-    input_method::SetUserLastInputMethodPreferenceForTesting(
-        test_users_[1], user_input_methods[1]);
+    input_method::InputMethodPersistence::
+        SetUserLastInputMethodPreferenceForTesting(test_users_[0],
+                                                   user_input_methods[0]);
+    input_method::InputMethodPersistence::
+        SetUserLastInputMethodPreferenceForTesting(test_users_[1],
+                                                   user_input_methods[1]);
   }
 
  protected:
@@ -261,15 +263,18 @@ class LoginUIKeyboardTestWithUsersAndOwner : public LoginManagerTest {
   // Should be called from PRE_ test so that local_state is saved to disk, and
   // reloaded in the main test.
   void InitUserLastInputMethod() {
-    input_method::SetUserLastInputMethodPreferenceForTesting(
-        AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId),
-        user_input_methods[0]);
-    input_method::SetUserLastInputMethodPreferenceForTesting(
-        AccountId::FromUserEmailGaiaId(kTestUser2, kTestUser2GaiaId),
-        user_input_methods[1]);
-    input_method::SetUserLastInputMethodPreferenceForTesting(
-        AccountId::FromUserEmailGaiaId(kTestUser3, kTestUser3GaiaId),
-        user_input_methods[2]);
+    input_method::InputMethodPersistence::
+        SetUserLastInputMethodPreferenceForTesting(
+            AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId),
+            user_input_methods[0]);
+    input_method::InputMethodPersistence::
+        SetUserLastInputMethodPreferenceForTesting(
+            AccountId::FromUserEmailGaiaId(kTestUser2, kTestUser2GaiaId),
+            user_input_methods[1]);
+    input_method::InputMethodPersistence::
+        SetUserLastInputMethodPreferenceForTesting(
+            AccountId::FromUserEmailGaiaId(kTestUser3, kTestUser3GaiaId),
+            user_input_methods[2]);
 
     PrefService* local_state = g_browser_process->local_state();
     local_state->SetString(language_prefs::kPreferredKeyboardLayout,
@@ -477,8 +482,8 @@ IN_PROC_BROWSER_TEST_F(FirstLoginKeyboardTest,
   locker_tester.Lock();
 
   // Clear user input method.
-  input_method::SetUserLastInputMethodPreferenceForTesting(test_user_,
-                                                           std::string());
+  input_method::InputMethodPersistence::
+      SetUserLastInputMethodPreferenceForTesting(test_user_, std::string());
   EXPECT_TRUE(lock_screen_utils::GetUserLastInputMethodId(test_user_).empty());
 
   locker_tester.UnlockWithPassword(test_user_, "password");

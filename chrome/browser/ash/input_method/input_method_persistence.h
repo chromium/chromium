@@ -44,16 +44,17 @@ class InputMethodPersistence : public InputMethodManager::Observer {
   void SetUserLastLoginInputMethodId(const std::string& input_method_id,
                                      Profile* profile);
 
+  // Update user last input method ID into known_user data.
+  static void SetUserLastInputMethodPreferenceForTesting(
+      const AccountId& account_id,
+      const std::string& input_method);
+
  private:
   void PersistUserInputMethod(const std::string& input_method_id,
                               Profile* profile);
 
   raw_ptr<InputMethodManager> input_method_manager_;
 };
-
-void SetUserLastInputMethodPreferenceForTesting(
-    const AccountId& account_id,
-    const std::string& input_method);
 
 }  // namespace input_method
 }  // namespace ash
