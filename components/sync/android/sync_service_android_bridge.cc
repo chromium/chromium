@@ -52,10 +52,7 @@ DataType IntToDataTypeChecked(int type) {
 
 ScopedJavaLocalRef<jintArray> DataTypeSetToJavaIntArray(JNIEnv* env,
                                                         DataTypeSet types) {
-  std::vector<int> type_vector;
-  for (DataType type : types) {
-    type_vector.push_back(type);
-  }
+  std::vector<int> type_vector(types.begin(), types.end());
   return base::android::ToJavaIntArray(env, type_vector);
 }
 
@@ -74,6 +71,7 @@ ScopedJavaLocalRef<jintArray> UserSelectableTypeSetToJavaIntArray(
     JNIEnv* env,
     UserSelectableTypeSet types) {
   std::vector<int> type_vector;
+  type_vector.reserve(types.size());
   for (UserSelectableType type : types) {
     type_vector.push_back(static_cast<int>(type));
   }
@@ -100,7 +98,9 @@ void NativeGetLocalDataDescriptionsCallback(
     const base::android::ScopedJavaGlobalRef<jobject>& callback,
     std::map<DataType, LocalDataDescription> localDataDescription) {
   std::vector<int> data_types;
+  data_types.reserve(localDataDescription.size());
   std::vector<LocalDataDescription> local_data_descriptions;
+  local_data_descriptions.reserve(localDataDescription.size());
   for (const auto& [data_type, description] : localDataDescription) {
     data_types.push_back(data_type);
     local_data_descriptions.push_back(description);
