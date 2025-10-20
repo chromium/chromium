@@ -216,6 +216,7 @@ source_set("impl") {
     "//chrome/browser/background/glic",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/feedback",
+    "//chrome/browser/glic/actor",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/fre",
     "//chrome/browser/glic/media",

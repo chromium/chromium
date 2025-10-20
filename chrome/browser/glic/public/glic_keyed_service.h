@@ -35,7 +35,6 @@ class Profile;
 class ProfileManager;
 
 namespace actor {
-struct ActionResultWithLatencyInfo;
 class ActorKeyedService;
 class ActorTaskDelegate;
 }  // namespace actor
@@ -61,6 +60,7 @@ class GlicShareImageHandler;
 class GlicTabSourceObserver;
 class GlicWindowController;
 class HostManager;
+class GlicActorTaskManager;
 
 enum class GlicPrewarmingChecksResult;
 
@@ -287,15 +287,6 @@ class GlicKeyedService : public KeyedService,
   void FinishPreload(GlicPrewarmingChecksResult reason);
   void FinishPreloadFre(GlicPrewarmingFreSource source, bool should_preload);
 
-  void PerformActionsFinished(
-      mojom::WebClientHandler::PerformActionsCallback callback,
-      actor::TaskId task_id,
-      base::TimeTicks start_time,
-      bool skip_async_observation_information,
-      actor::mojom::ActionResultCode result_code,
-      std::optional<size_t> index_of_failed_action,
-      std::vector<actor::ActionResultWithLatencyInfo> action_results);
-
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.
   base::RepeatingCallbackList<void(bool)>
@@ -325,11 +316,11 @@ class GlicKeyedService : public KeyedService,
       zero_state_suggestions_manager_;
   std::unique_ptr<GlicTabSourceObserver> glic_tab_source_observer_;
   base::OnceCallback<void()> preload_callback_;
+  std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
 
   // Unowned
   raw_ptr<contextual_cueing::ContextualCueingService>
       contextual_cueing_service_;
-  raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };
