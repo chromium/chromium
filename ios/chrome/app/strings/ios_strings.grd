@@ -3009,7 +3009,7 @@
         Continue with this tab
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE" desc="The title of the top toolbar for the main page of the Home customization menu.">
-        Customize home page
+        Customize homepage
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_MOST_VISITED_SUBTITLE" desc="The subtitle of the Most Visited toggle in the Home Customization menu's main page.">
         Sites you’ve visited lately on this device
