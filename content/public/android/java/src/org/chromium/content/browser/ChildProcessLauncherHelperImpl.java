@@ -904,11 +904,6 @@ public final class ChildProcessLauncherHelperImpl {
         }
 
         // Add first and remove second.
-        if (visible && !mVisible) {
-            if (mBindingManager != null) mBindingManager.addConnection(connection);
-        }
-        mVisible = visible;
-
         if (mEffectiveImportance != newEffectiveImportance) {
             switch (newEffectiveImportance) {
                 case ChildProcessImportance.NORMAL:
@@ -935,6 +930,14 @@ public final class ChildProcessLauncherHelperImpl {
                     assert false;
             }
         }
+
+        // Add connection to BindingManager after upgrading the connection binding priority. The
+        // binding state stronger than not-perceptible, which will be added by BindingManager,
+        // should be applied first.
+        if (visible && !mVisible) {
+            if (mBindingManager != null) mBindingManager.addConnection(connection);
+        }
+        mVisible = visible;
 
         mIsSpareRenderer = isSpareRenderer;
 
