@@ -10,8 +10,10 @@
 #import "ios/chrome/browser/safari_data_import/public/utils.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -279,6 +281,9 @@ NSString* const kInvalidPasswordUsername = @"Superman";
 /// password conflicts, if there is any,
 - (void)testPasswordConflictResolution {
   if (@available(iOS 18.2, *)) {
+    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+    [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kSuccess];
     /// Store some password that will result in a conflict.
     NSString* existingPassword = @"Google!Password)";
     NSURL* url = [NSURL URLWithString:kURL];
@@ -301,9 +306,24 @@ NSString* const kInvalidPasswordUsername = @"Superman";
         GetPasswordConflictResolutionTableViewAccessibilityIdentifier());
     [ChromeEarlGrey
         waitForUIElementToAppearWithMatcher:conflictResolutionTable];
-    /// Tests "(de)select all" button.
+    /// Tests password reveal.
     id<GREYMatcher> row2 = grey_accessibilityID(
         GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(1));
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(
+                                     grey_ancestor(row2),
+                                     grey_accessibilityID(kShowActionSymbol),
+                                     nil)] performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:grey_text(kPassword2)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(
+                                     grey_ancestor(row2),
+                                     grey_accessibilityID(kHideActionSymbol),
+                                     nil)] performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:grey_text(kPassword2)]
+        assertWithMatcher:grey_nil()];
+    /// Tests "(de)select all" button.
     id<GREYMatcher> select_all = grey_allOf(
         grey_buttonTitle(l10n_util::GetNSString(
             IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_SELECT_ALL)),
@@ -348,6 +368,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
                                   password:existingPassword];
     [PasswordManagerAppInterface verifyCredentialStoredWithUsername:kUsername2
                                                            password:kPassword2];
+    [PasswordSettingsAppInterface removeMockReauthenticationModule];
   }
 }
 
