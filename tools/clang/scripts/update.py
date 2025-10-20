@@ -191,11 +191,17 @@ def DownloadAndUnpack(url, output_dir, path_prefixes=None, is_known_zip=False):
       zipfile.ZipFile(f).extractall(path=output_dir)
     else:
       t = tarfile.open(mode='r:*', fileobj=f)
-      members = None
+      members = t.getmembers()
       if path_prefixes is not None:
         members = [m for m in t.getmembers()
                    if any(m.name.startswith(p) for p in path_prefixes)]
       t.extractall(path=output_dir, members=members)
+
+      # Don't set mtime based on the archive metadata; see crbug.com/450551220
+      # The nicest way to do this would be by passing a filter to extractall,
+      # but that functionality is not available in macOS system Python (3.9.6).
+      for m in members:
+        os.utime(os.path.join(output_dir, m.name), follow_symlinks=False)
 
 
 def GetPlatformUrlPrefix(host_os):
