@@ -189,7 +189,6 @@ void AccountNameEmailStore::SoftRemoveAccountNameEmail() {
   if (account_name_email_profiles.empty()) {
     return;
   }
-  CHECK_EQ(1u, account_name_email_profiles.size());
 
   address_data_manager_->RemoveProfile(
       account_name_email_profiles[0]->guid(),
@@ -311,7 +310,7 @@ void AccountNameEmailStore::OnCounterPrefUpdated() {
   if (account_name_email_profiles.empty()) {
     return;
   }
-  CHECK_EQ(1u, account_name_email_profiles.size());
+
   address_data_manager_->RemoveProfile(account_name_email_profiles[0]->guid());
 }
 
