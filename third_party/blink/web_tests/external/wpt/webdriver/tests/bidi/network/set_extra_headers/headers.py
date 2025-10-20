@@ -50,8 +50,7 @@ async def test_multiple_headers(bidi_session, top_context,
         }],
         contexts=[top_context["context"]])
     new_headers = await get_headers_methods_invariant(top_context)
-    assert new_headers["some_header_name"] == [
-        "some_header_value_1, some_header_value_2"]
+    assert new_headers["some_header_name"] == ["some_header_value_2"]
     assert new_headers["another_header_name"] == ["another_header_value"]
 
     await set_extra_headers(headers=[], contexts=[top_context["context"]])

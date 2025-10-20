@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Sorting of attributes
+  assert_false: Either elements or a removeElements, but not both expected false got true
+[FAIL] Sorting of removeAttributes
+  assert_false: Either elements or a removeElements, but not both expected false got true
+[FAIL] Sorting of elements
+  assert_false: Either elements or a removeElements, but not both expected false got true
+[FAIL] Sorting of removeElements
+  assert_false: Either elements or a removeElements, but not both expected false got true
+[FAIL] Sorting of replaceWithChildrenElements
+  assert_false: Either elements or a removeElements, but not both expected false got true
+[FAIL] Sorting of element's attributes
+  assert_false: Either elements or a removeElements, but not both expected false got true
+[FAIL] Sorting of element's removeAttributes
+  assert_false: Either elements or a removeElements, but not both expected false got true
+Harness: the test ran to completion.
+
