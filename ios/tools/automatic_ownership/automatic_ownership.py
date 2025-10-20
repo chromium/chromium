@@ -30,6 +30,7 @@ The final output is a CSV file named `final_algo.csv` containing the suggested
 owners for each directory.
 """
 
+import argparse
 import datetime
 import json
 import math
@@ -69,7 +70,7 @@ def progress_indicator(future) -> None:
     print('.', end='', flush=True)
 
 
-def get_all_commits_of_folder(path: str) -> list[str]:
+def get_all_commits_of_folder(path: str, quiet: bool = False) -> list[str]:
     """Retrieves all raw commit logs for a folder over the last two years.
 
     This function parallelizes the git log calls by splitting the time period
@@ -77,6 +78,7 @@ def get_all_commits_of_folder(path: str) -> list[str]:
 
     Args:
         path: The directory to retrieve commit logs for.
+        quiet: If True, suppresses progress indicators.
 
     Returns:
         A list of raw commit description strings.
@@ -88,9 +90,10 @@ def get_all_commits_of_folder(path: str) -> list[str]:
         executor.submit(get_commits_in_folder_in_period, path, dates)
         for dates in get_dates_range()
     ]
-    # Register the progress indicator callback.
-    for future in futures:
-        future.add_done_callback(progress_indicator)
+    if not quiet:
+        # Register the progress indicator callback.
+        for future in futures:
+            future.add_done_callback(progress_indicator)
     # Iterate over all submitted tasks and get results as they are available.
     for future in as_completed(futures):
         # Get the result for the next completed task.
@@ -102,11 +105,13 @@ def get_all_commits_of_folder(path: str) -> list[str]:
     return commits
 
 
-def extract_commits_informations(commits: list[str]) -> dict:
+def extract_commits_informations(commits: list[str],
+                                 quiet: bool = False) -> dict:
     """Parses raw commit logs and aggregates statistics by folder.
 
     Args:
         commits: A list of raw commit description strings.
+        quiet: If True, suppresses progress indicators.
 
     Returns:
         A dictionary where keys are folder paths and values are dictionaries
@@ -114,20 +119,23 @@ def extract_commits_informations(commits: list[str]) -> dict:
     """
     allStatsPerFolder = {}
     commit_to_analyse_count = len(commits)
-    print('Getting logs done. Total number of commits to analyse: ',
-          str(commit_to_analyse_count))
+    if not quiet:
+        print('Getting logs done. Total number of commits to analyse: ',
+              str(commit_to_analyse_count))
 
     for commit_description in commits:
         commit_to_analyse_count -= 1
         analysed_commit = Commit(commit_description)
-        (author, reviewers, changes, path, date,
+        (author, reviewers, changes, path,
+         date,
          commit_hash) = analysed_commit.all_informations()
         if len(changes) == 0 or not path:
             continue
-        print(('Save commit ' + commit_hash + ' from ' + author + ' in\t' +
-               path),
-              end='',
-              flush=True)
+        if not quiet:
+            print(('Save commit ' + commit_hash + ' from ' + author + ' in\t' +
+                   path),
+                  end='',
+                  flush=True)
         if not path in allStatsPerFolder:
             allStatsPerFolder[path] = dict(total_commit=0,
                                            total_review=0,
@@ -150,34 +158,42 @@ def extract_commits_informations(commits: list[str]) -> dict:
                     commit_count=0, review_count=0)
             allStatsPerFolder[path]['individual_stats'][reviewer][
                 'review_count'] += 1
-        print('\t\t\tDONE, commits left: ',
-              commit_to_analyse_count,
-              flush=True)
+        if not quiet:
+            print('\t\t\tDONE, commits left: ',
+                  commit_to_analyse_count,
+                  flush=True)
     return allStatsPerFolder
 
 
 def get_all_git_blame_informations_for_folder(
-        file_paths: list[str], date_filter: datetime) -> list[str]:
+        file_paths: list[str],
+        date_filter: datetime,
+        quiet: bool = False) -> list[str]:
     """Retrieves all `git blame` output for a list of files in parallel.
 
     Args:
         file_paths: A list of file paths to run `git blame` on.
         date_filter: The date to use for the `--after` flag in git blame.
+        quiet: If True, suppresses progress indicators.
 
     Returns:
         A list of strings, where each string is one line of blame output.
     """
     lines = []
-    print('[Git blame] ' + os.path.dirname(file_paths[0]), end='', flush=True)
+    if not quiet:
+        print('[Git blame] ' + os.path.dirname(file_paths[0]),
+              end='',
+              flush=True)
     executor = ProcessPoolExecutor(max_workers=6)
     # Dispatch tasks into the process pool and create a list of futures.
     futures = [
         executor.submit(get_blame_for_file, file, date_filter)
         for file in file_paths
     ]
-    # Register the progress indicator callback.
-    for future in futures:
-        future.add_done_callback(progress_indicator)
+    if not quiet:
+        # Register the progress indicator callback.
+        for future in futures:
+            future.add_done_callback(progress_indicator)
     # Iterate over all submitted tasks and get results as they are available.
     for future in as_completed(futures):
         # Get the result for the next completed task.
@@ -248,13 +264,15 @@ def determine_owners_from_git_blame_informations(
 
 
 def determine_owners_from_git_blame(root: str, files: list[str],
-                                    last_update: datetime) -> list[str]:
+                                    last_update: datetime,
+                                    quiet: bool = False) -> list[str]:
     """High-level function to determine owners using the git blame strategy.
 
     Args:
         root: The root directory of the files.
         files: A list of filenames within the root directory.
         last_update: The last update time for the directory, used for filtering.
+        quiet: If True, suppresses progress indicators.
 
     Returns:
         A list of usernames identified as owners.
@@ -269,7 +287,8 @@ def determine_owners_from_git_blame(root: str, files: list[str],
         return []
 
     date_filter = last_update - datetime.timedelta(TWO_YEARS)
-    lines = get_all_git_blame_informations_for_folder(file_paths, date_filter)
+    lines = get_all_git_blame_informations_for_folder(file_paths, date_filter,
+                                                      quiet)
     stats, lines_count = extract_blame_informations(lines)
     return determine_owners_from_git_blame_informations(stats, lines_count)
 
@@ -322,14 +341,34 @@ def determine_owners_from_zscore(stats: dict) -> list[str]:
 
 
 if __name__ == '__main__':
-    # TODO: Use argparse for options
-    root_folder = 'ios'
-    if len(sys.argv) > 1:
-        root_folder = sys.argv[1]
+    parser = argparse.ArgumentParser(
+        description='Automatic Ownership Calculator.')
+    parser.add_argument(
+        '-q',
+        '--quiet',
+        action='store_true',
+        help='Enable quiet mode, suppresses progress indicators.')
+    parser.add_argument(
+        '--root-directory',
+        default='ios',
+        help="The root directory to start the analysis from. Default: 'ios'.")
+    parser.add_argument(
+        '--output-file',
+        default='final_algo.csv',
+        help="The path to the output CSV file. Defaults to 'final_algo.csv'.")
+    args = parser.parse_args()
+
+    root_folder = args.root_directory
+    output_file = args.output_file
+    quiet_mode = args.quiet
 
     # Phase 1: Data Collection
-    commits = get_all_commits_of_folder(root_folder)
-    stats_per_folder = extract_commits_informations(commits)
+    commits = get_all_commits_of_folder(root_folder, quiet=quiet_mode)
+    stats_per_folder = extract_commits_informations(commits, quiet=quiet_mode)
+
+    # Clear output file before starting
+    with open(output_file, 'w') as f:
+        pass
 
     # Phase 2: Analysis and Ownership Calculation
     steps = len(stats_per_folder)
@@ -338,24 +377,33 @@ if __name__ == '__main__':
         if avoid_directory(root):
             continue
         if not root in stats_per_folder:
-            with open('final_algo.csv', 'a') as file:
+            with open(output_file, 'a') as file:
                 file.write(root + '\n')
             continue
 
         step_count += 1
-        print(str(step_count) + '/' + str(steps) + '\t', end='', flush=True)
+        if not quiet_mode:
+            print(
+                str(step_count) + '/' + str(steps) + '\t',
+                end='',
+                flush=True)
 
         # Decide which algorithm to use based on commit history.
         if stats_per_folder[root]['total_commit'] > 5:
             owners = determine_owners_from_zscore(stats_per_folder[root])
-            print('[Z-Score] ' + root + '\tRESULT: ' + str(owners))
+            if not quiet_mode:
+                print('[Z-Score] ' + root + '\tRESULT: ' + str(owners))
         else:
             owners = determine_owners_from_git_blame(
-                root, files, stats_per_folder[root]['last_update'])
-            print('[Blame] ' + root + '\tRESULT: ' + str(owners))
+                root,
+                files,
+                stats_per_folder[root]['last_update'],
+                quiet=quiet_mode)
+            if not quiet_mode:
+                print('[Blame] ' + root + '\tRESULT: ' + str(owners))
 
         # Write results to the output CSV.
-        with open('final_algo.csv', 'a') as file:
+        with open(output_file, 'a') as file:
             file.write(root + ', ' +
                        str(stats_per_folder[root]['last_update']))
             for owner in owners:
