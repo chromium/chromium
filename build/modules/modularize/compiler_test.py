@@ -63,16 +63,18 @@ class CompilerTest(unittest.TestCase):
         self.compiler1._parse_depfile(
             textwrap.dedent("""\
           /dev/null: /tmp/main.cc \\
-            ../up.cc \\
-            path/to/relative.cc \\
-            /path/to/absolute.cc \\
-            path\\ with\\ spaces.cc \\
+            /path/to/foo.txt \\
+            ../up.h \\
+            path/to/relative \\
+            /path/to/absolute.hpp \\
+            path\\ with\\ spaces path2.h \\
           """)),
         [
-            pathlib.Path('/tmp/up.cc'),
-            pathlib.Path('/tmp/compiler1/path/to/relative.cc'),
-            pathlib.Path('/path/to/absolute.cc'),
-            pathlib.Path('/tmp/compiler1/path with spaces.cc'),
+            pathlib.Path('/tmp/up.h'),
+            pathlib.Path('/tmp/compiler1/path/to/relative'),
+            pathlib.Path('/path/to/absolute.hpp'),
+            pathlib.Path('/tmp/compiler1/path with spaces'),
+            pathlib.Path('/tmp/compiler1/path2.h'),
         ],
     )
 

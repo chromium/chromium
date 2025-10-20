@@ -79,16 +79,18 @@ class Compiler:
     return hash(self.gn_out)
 
   def _parse_depfile(self, content: str) -> list[pathlib.Path]:
+    deps = content.replace('\\\n', '').split(': ', 1)[1]
+    deps = deps.replace('\\ ', ':SPACE:')
     files = []
     # The file will look like:
-    # /dev/null: <blah>.cc \
-    # <main include> \
-    # <other includes> \
-    # So we need [1:] to ensure it doesn't have a dependency on itself.
-    for line in content.rstrip().split('\n')[1:]:
+    # /dev/null: foo.h bar.cc \
+    # baz.h \
+    # <other includes>
+    for dep in deps.split():
       # Remove both the trailing newlines and any escapes in the file names.
-      p = pathlib.Path(self.gn_out, line.replace('\\', '').strip(' '))
-      files.append(p.resolve())
+      p = pathlib.Path(self.gn_out, dep.replace(':SPACE:', ' ')).resolve()
+      if p.suffix != '.txt' and p.suffix != '.cc':
+        files.append(p)
     return files
 
   def _clang_arg(self, arg: str) -> str:
