@@ -160,6 +160,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+  PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(registry);
   PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

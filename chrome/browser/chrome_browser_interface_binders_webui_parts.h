@@ -36,6 +36,8 @@ void PopulateChromeWebUIFrameBindersPartsAndroid(
 void PopulateChromeWebUIFrameBindersPartsDesktop(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host);
+void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry);
 void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
     content::WebUIBrowserInterfaceBrokerRegistry& registry);
 #endif

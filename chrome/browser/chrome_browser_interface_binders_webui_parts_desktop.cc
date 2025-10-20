@@ -207,10 +207,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<downloads::mojom::PageHandlerFactory,
                                          DownloadsUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<
-      new_tab_page_third_party::mojom::PageHandlerFactory,
-      NewTabPageThirdPartyUI>(map);
-
   if (lens::features::IsLensOverlayEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         lens::mojom::LensSidePanelPageHandlerFactory,
@@ -253,11 +249,11 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       ColorPipelineInternalsUI, UserEducationInternalsUI, ReadingListUI,
       TabSearchUI, WebuiGalleryUI, HistoryClustersSidePanelUI,
       ShoppingInsightsSidePanelUI, media_router::AccessCodeCastUI,
-      commerce::ProductSpecificationsUI, NewTabFooterUI>(map);
+      commerce::ProductSpecificationsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI,
-      NewTabFooterUI>(map);
+      customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
@@ -269,11 +265,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   }
 
   RegisterWebUIControllerInterfaceBinder<
-      new_tab_footer::mojom::NewTabFooterHandlerFactory, NewTabFooterUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI,
-      NewTabPageThirdPartyUI>(map);
+      most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI>(map);
 
   if (HistorySidePanelCoordinator::IsSupported()) {
     RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
@@ -359,22 +351,21 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<
       customize_color_scheme_mode::mojom::
           CustomizeColorSchemeModeHandlerFactory,
-      CustomizeChromeUI, settings::SettingsUI>(map);
+      CustomizeChromeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       theme_color_picker::mojom::ThemeColorPickerHandlerFactory,
       CustomizeChromeUI
 #if !BUILDFLAG(IS_CHROMEOS)
       ,
-      ProfileCustomizationUI, settings::SettingsUI
+      ProfileCustomizationUI
 #endif  // !BUILDFLAG(IS_CHROMEOS)
       >(map);
 
   RegisterWebUIControllerInterfaceBinder<
       help_bubble::mojom::HelpBubbleHandlerFactory, UserEducationInternalsUI,
-      settings::SettingsUI, ReadingListUI, NewTabPageUI, CustomizeChromeUI,
-      PasswordManagerUI, HistoryUI, lens::LensOverlayUntrustedUI,
-      lens::LensSidePanelUntrustedUI
+      ReadingListUI, NewTabPageUI, CustomizeChromeUI, PasswordManagerUI,
+      HistoryUI, lens::LensOverlayUntrustedUI, lens::LensSidePanelUntrustedUI
 #if !BUILDFLAG(IS_CHROMEOS)
       ,
       ProfilePickerUI
@@ -566,6 +557,33 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
         composebox::mojom::PageHandlerFactory, NewTabPageUI>(map);
   }
 #endif
+}
+
+void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    registry.ForWebUI<NewTabFooterUI>()
+        .Add<color_change_listener::mojom::PageHandler>()
+        .Add<customize_buttons::mojom::CustomizeButtonsHandlerFactory>()
+        .Add<new_tab_footer::mojom::NewTabFooterHandlerFactory>();
+  }
+
+  registry.ForWebUI<NewTabPageThirdPartyUI>()
+      .Add<most_visited::mojom::MostVisitedPageHandlerFactory>()
+      .Add<new_tab_page_third_party::mojom::PageHandlerFactory>();
+
+  registry
+      .ForWebUI<settings::SettingsUI>()
+#if !BUILDFLAG(IS_CHROMEOS)
+      .Add<theme_color_picker::mojom::ThemeColorPickerHandlerFactory>()
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+      .Add<customize_color_scheme_mode::mojom::
+               CustomizeColorSchemeModeHandlerFactory>()
+      .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();
+
+  // TODO(crbug.com/452983498): Migrate all remaining
+  // RegisterWebUIControllerInterfaceBinder calls to registry.ForWebUI().Add()
+  // calls.
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
