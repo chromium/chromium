@@ -214,14 +214,11 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
   BOOL hasSingleManualFillButton =
       suggestions.count > 0 &&
       (_mainFillingProduct != FillingProduct::kAutocomplete);
-  self.formInputAccessoryView.manualFillButton.hidden =
-      !hasSingleManualFillButton;
-  self.formInputAccessoryView.passwordManualFillButton.hidden =
-      hasSingleManualFillButton;
-  self.formInputAccessoryView.creditCardManualFillButton.hidden =
-      hasSingleManualFillButton;
-  self.formInputAccessoryView.addressManualFillButton.hidden =
-      hasSingleManualFillButton;
+  [self.formInputAccessoryView
+      setManualFillMode:
+          hasSingleManualFillButton
+              ? FormInputAccessoryViewManualFillMode::kExpandButtonOnly
+              : FormInputAccessoryViewManualFillMode::kDetailedButtons];
 
   [self createFormSuggestionViewIfNeeded];
   [self forceUserInterfaceStyle];
@@ -430,6 +427,7 @@ UIImage* GetManualFillSymbol() {
          addressManualFillSymbol:CustomSymbolWithPointSize(
                                      kLocationSymbol, kSymbolActionPointSize)
                closeButtonSymbol:closeButtonSymbol
+                twoBubbleEnabled:IsIOSKeyboardAccessoryTwoBubbleEnabled()
               isTabletFormFactor:isTabletFormFactor];
   [formInputAccessoryView setIsCompact:[self isCompact]];
 

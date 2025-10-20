@@ -95,6 +95,28 @@ constexpr CGFloat kShadowRadius = 16.0;
 constexpr CGFloat kShadowVerticalOffset = 4.0;
 constexpr CGFloat kShadowOpacity = 0.12;
 
+// Creates a `UIVisualEffectView` with a `UIGlassEffect`.
+UIVisualEffectView* CreateGlassEffectView() {
+  if (@available(iOS 26, *)) {
+    // Create glass effect
+    UIGlassEffect* glass_effect = [[UIGlassEffect alloc] init];
+    glass_effect.interactive = YES;
+    glass_effect.tintColor = [[UIColor colorNamed:kSecondaryBackgroundColor]
+        colorWithAlphaComponent:kGlassTintAlpha];
+
+    UIVisualEffectView* effect_view =
+        [[UIVisualEffectView alloc] initWithEffect:nil];
+    effect_view.effect = glass_effect;
+    effect_view.cornerConfiguration = [UICornerConfiguration
+        configurationWithRadius:
+            [UICornerRadius
+                containerConcentricRadiusWithMinimum:kCornerRadius]];
+    return effect_view;
+  }
+
+  return nil;
+}
+
 }  // namespace
 
 // Large height for the keyboard accessory.
@@ -166,6 +188,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   NSLayoutConstraint* _trailingConstraint;
   // Trailing constraint in compact mode (tablet only).
   NSLayoutConstraint* _compactTrailingConstraint;
+  // Whether two-bubble design is enabled.
+  BOOL _twoBubbleEnabled;
 }
 
 #pragma mark - Public
@@ -208,10 +232,12 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
              closeButtonSymbol:(UIImage*)closeButtonSymbol
+              twoBubbleEnabled:(BOOL)twoBubbleEnabled
             isTabletFormFactor:(BOOL)isTabletFormFactor {
   DCHECK(manualFillSymbol);
   _largeAccessoryViewEnabled = YES;
   _isTabletFormFactor = isTabletFormFactor;
+  _twoBubbleEnabled = twoBubbleEnabled;
   [self setUpWithLeadingView:leadingView
               customTrailingView:nil
               navigationDelegate:delegate
@@ -237,6 +263,15 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   _isCompact = isCompact;
   [self adjustManualFillButtonTitle:self.manualFillButton];
   [self setHorizontalConstraints];
+}
+
+- (void)setManualFillMode:(FormInputAccessoryViewManualFillMode)mode {
+  BOOL expandButtonOnly =
+      mode == FormInputAccessoryViewManualFillMode::kExpandButtonOnly;
+  self.manualFillButton.hidden = !expandButtonOnly;
+  self.passwordManualFillButton.hidden = expandButtonOnly;
+  self.creditCardManualFillButton.hidden = expandButtonOnly;
+  self.addressManualFillButton.hidden = expandButtonOnly;
 }
 
 #pragma mark - UIInputViewAudioFeedback
@@ -801,23 +836,12 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 - (BOOL)setupLiquidGlassEffect {
   if ([self isLiquidGlassEffectEnabled]) {
     if (@available(iOS 26, *)) {
-      // Create glass effect
-      UIGlassEffect* glassEffect = [[UIGlassEffect alloc] init];
-      glassEffect.interactive = YES;
-      glassEffect.tintColor = [[UIColor colorNamed:kSecondaryBackgroundColor]
-          colorWithAlphaComponent:kGlassTintAlpha];
-
-      UIVisualEffectView* effectView =
-          [[UIVisualEffectView alloc] initWithEffect:nil];
-      effectView.effect = glassEffect;
-      effectView.cornerConfiguration = [UICornerConfiguration
-          configurationWithRadius:
-              [UICornerRadius
-                  containerConcentricRadiusWithMinimum:kCornerRadius]];
-
-      [self addSubview:effectView];
+      UIVisualEffectView* effectView = CreateGlassEffectView();
+      CHECK(effectView);
 
       effectView.translatesAutoresizingMaskIntoConstraints = NO;
+      [self addSubview:effectView];
+
       [self setOmniboxSafeTopConstraint:effectView];
 
       // Add padding under and on the sides of the keyboard accessory.

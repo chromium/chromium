@@ -13,6 +13,17 @@ extern const CGFloat kLargeKeyboardAccessoryHeight;
 @class FormInputAccessoryView;
 @class FormInputAccessoryViewTextData;
 
+// Enum to determine which set of manual fill buttons from
+// FormInputAccessoryView are visible.
+enum class FormInputAccessoryViewManualFillMode {
+  // Three specialized manual fill buttons are visible. The expand button is
+  // hidden.
+  kDetailedButtons = 0,
+  // Only the expand button is visible. The specialized manual fill buttons are
+  // hidden.
+  kExpandButtonOnly
+};
+
 // Informs the receiver of actions in the accessory view.
 @protocol FormInputAccessoryViewDelegate
 - (void)formInputAccessoryViewDidTapNextButton:(FormInputAccessoryView*)sender;
@@ -104,6 +115,7 @@ extern NSString* const
 // - The background color is set to grey.
 // If `closeButtonSymbol` is nil, the close button will use the default text.
 // Otherwise, it will use closeButtonSymbol as the image instead.
+// `twoBubble` indicates whether two-bubble design feature flag is enabled.
 // `isTabletFormFactor` modifies the appearance of the manual fill button.
 - (void)setUpWithLeadingView:(UIView*)leadingView
             navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
@@ -112,6 +124,7 @@ extern NSString* const
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
              closeButtonSymbol:(UIImage*)closeButtonSymbol
+              twoBubbleEnabled:(BOOL)twoBubbleEnabled
             isTabletFormFactor:(BOOL)isTabletFormFactor;
 
 // Sets up the view with the given `leadingView`. Navigation controls are
@@ -128,6 +141,9 @@ extern NSString* const
 // Sets whether the UI is in compact mode, so that the keyboard accessory can
 // adapt to the compact size class if necessary.
 - (void)setIsCompact:(BOOL)isCompact;
+
+// Sets the manual fill mode.
+- (void)setManualFillMode:(FormInputAccessoryViewManualFillMode)mode;
 
 @end
 
