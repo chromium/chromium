@@ -305,6 +305,10 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   for (const auto& disposed_entry : disposed_entries) {
     disposed_entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
   }
+
+  if (auto* routemap = RouteMap::Get(window_->document())) {
+    routemap->OnNavigationStart(old_current->url(), currentEntry()->url());
+  }
 }
 
 NavigationHistoryEntry* NavigationApi::GetEntryForRestore(
@@ -776,12 +780,6 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   PromoteUpcomingNavigationToOngoing(key);
 
-  KURL previous_url;
-  // currentEntry() may be nullptr, although we have no repro.
-  // See crbug.com/451762633
-  if (currentEntry()) {
-    previous_url = currentEntry()->url();
-  }
   auto* init = NavigateEventInit::Create();
   V8NavigationType::Enum navigation_type =
       DetermineNavigationType(params->frame_load_type);
@@ -887,10 +885,6 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     navigate_event->MaybeCommitImmediately(script_state);
   } else if (params->event_type != NavigateEventType::kCrossDocument) {
     navigate_event->React(script_state);
-  }
-
-  if (auto* routemap = RouteMap::Get(window_->document())) {
-    routemap->OnNavigationStart(previous_url, params->url);
   }
 
   // Note: we cannot clean up ongoing_navigation_ for cross-document
