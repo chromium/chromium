@@ -153,9 +153,9 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
     const sync_pb::WifiConfigurationSpecifics& proto =
         change->data().specifics.wifi_configuration();
     NetworkIdentifier id = NetworkIdentifier::FromProto(proto);
-    if (sync_networks.contains(id) &&
-        sync_networks[id].last_connected_timestamp() >
-            proto.last_connected_timestamp()) {
+    if (auto it = sync_networks.find(id);
+        it != sync_networks.end() && it->second.last_connected_timestamp() >
+                                         proto.last_connected_timestamp()) {
       continue;
     }
     sync_networks[id] = proto;
@@ -164,9 +164,9 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
   // Iterate through local networks and add to sync where appropriate.
   for (sync_pb::WifiConfigurationSpecifics& proto : local_network_list) {
     NetworkIdentifier id = NetworkIdentifier::FromProto(proto);
-    if (sync_networks.contains(id) &&
-        sync_networks[id].last_connected_timestamp() >
-            proto.last_connected_timestamp()) {
+    if (auto it = sync_networks.find(id);
+        it != sync_networks.end() && it->second.last_connected_timestamp() >
+                                         proto.last_connected_timestamp()) {
       continue;
     }
 
@@ -186,9 +186,9 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
       store_->CreateWriteBatch();
   // Iterate through synced networks and update local stack where appropriate.
   for (const auto& [id, proto] : sync_networks) {
-    if (local_networks.contains(id) &&
-        local_networks[id].last_connected_timestamp() >
-            proto.last_connected_timestamp()) {
+    if (auto it = local_networks.find(id);
+        it != local_networks.end() && it->second.last_connected_timestamp() >
+                                          proto.last_connected_timestamp()) {
       continue;
     }
 
@@ -583,13 +583,14 @@ void WifiConfigurationBridge::OnBeforeConfigurationRemoved(
 void WifiConfigurationBridge::OnConfigurationRemoved(
     const std::string& service_path,
     const std::string& network_guid) {
-  if (!pending_deletes_.contains(network_guid)) {
+  auto it = pending_deletes_.find(network_guid);
+  if (it == pending_deletes_.end()) {
     NET_LOG(EVENT) << "Configuration " << network_guid
                    << " removed with no matching saved metadata.";
     return;
   }
 
-  const std::string& storage_key = pending_deletes_[network_guid];
+  const std::string& storage_key = it->second;
   if (!store_ || !change_processor()->IsTrackingMetadata()) {
     networks_to_sync_when_ready_.insert_or_assign(storage_key, std::nullopt);
     return;
