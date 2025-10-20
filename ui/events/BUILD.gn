@@ -232,6 +232,17 @@ component("events_base") {
   }
 }
 
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "features.cc" ]
+    class_name = "org.chromium.ui.events.UiEventsFeatures"
+  }
+  android_library("ui_events_features_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
+}
+
 component("events") {
   public = [
     "cocoa/cocoa_event_utils.h",

@@ -840,6 +840,7 @@ if (_is_default_toolchain) {
       "//ui/accessibility:accessibility_features_java",
       "//ui/android:ui_android_features_java",
       "//ui/base:ui_base_features_java",
+      "//ui/events:ui_events_features_java",
       "//ui/gfx:ui_gfx_java",
     ]
 
