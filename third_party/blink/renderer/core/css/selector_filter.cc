@@ -44,12 +44,6 @@ namespace {
 // .article won't match <article> elements.
 enum { kTagNameSalt = 1, kIdSalt = 3, kClassSalt = 5, kAttributeSalt = 7 };
 
-inline bool IsExcludedAttribute(const AtomicString& name) {
-  return name == html_names::kClassAttr.LocalName() ||
-         name == html_names::kIdAttr.LocalName() ||
-         name == html_names::kStyleAttr.LocalName();
-}
-
 template <class Func>
 inline void CollectElementIdentifierHashes(const Element& element,
                                            Func&& func) {
@@ -66,7 +60,8 @@ inline void CollectElementIdentifierHashes(const Element& element,
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
     const AtomicString& attribute_name = attribute_item.LocalName();
-    if (IsExcludedAttribute(attribute_name)) {
+    if (Element::IsExcludedAttribute(attribute_item.GetName(),
+                                     Element::kExcludeStandardAttributesOnly)) {
       continue;
     }
     if (attribute_name.IsLowerASCII()) {
@@ -108,10 +103,11 @@ inline void CollectDescendantSelectorIdentifierHashes(
     case CSSSelector::kAttributeBegin:
     case CSSSelector::kAttributeEnd:
     case CSSSelector::kAttributeHyphen: {
-      auto attribute_name = selector.Attribute().LocalName();
-      if (IsExcludedAttribute(attribute_name)) {
+      if (Element::IsExcludedAttribute(
+              selector.Attribute(), Element::kExcludeStandardAttributesOnly)) {
         break;
       }
+      const AtomicString& attribute_name = selector.Attribute().LocalName();
       auto lower_name = attribute_name.IsLowerASCII()
                             ? attribute_name
                             : attribute_name.LowerASCII();
@@ -193,8 +189,12 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
   }
 }
 
-void CollectSubjectIdentifierHashes(const CSSSelector* selector,
-                                    Element::TinyBloomFilter& subject_filter) {
+}  // namespace
+
+void SelectorFilter::CollectSubjectIdentifierHashes(
+    const CSSSelector* selector,
+    Element::AttributesToExcludeHashesFor attributes_to_exclude,
+    Element::TinyBloomFilter& subject_filter) {
   for (const CSSSelector* current = selector; current;
        current = current->NextSimpleSelector()) {
     switch (current->Match()) {
@@ -210,8 +210,8 @@ void CollectSubjectIdentifierHashes(const CSSSelector* selector,
       case CSSSelector::kAttributeBegin:
       case CSSSelector::kAttributeEnd:
       case CSSSelector::kAttributeHyphen: {
-        auto attribute_name = current->Attribute().LocalName();
-        if (IsExcludedAttribute(attribute_name)) {
+        if (Element::IsExcludedAttribute(current->Attribute(),
+                                         attributes_to_exclude)) {
           break;
         }
         subject_filter |= Element::FilterForAttribute(current->Attribute());
@@ -227,7 +227,8 @@ void CollectSubjectIdentifierHashes(const CSSSelector* selector,
             const CSSSelector* selector_list = current->SelectorListOrParent();
             if (selector_list &&
                 CSSSelectorList::Next(*selector_list) == nullptr) {
-              CollectSubjectIdentifierHashes(selector_list, subject_filter);
+              CollectSubjectIdentifierHashes(
+                  selector_list, attributes_to_exclude, subject_filter);
             }
             break;
           }
@@ -245,8 +246,6 @@ void CollectSubjectIdentifierHashes(const CSSSelector* selector,
     }
   }
 }
-
-}  // namespace
 
 void SelectorFilter::PushAllParentsOf(TreeScope& tree_scope) {
   PushAncestors(tree_scope.RootNode());
@@ -295,7 +294,9 @@ void SelectorFilter::CollectIdentifierHashes(
       selector.NextSimpleSelector(), selector.Relation(), style_scope,
       bloom_hash_backing);
   subject_filter = 0;
-  CollectSubjectIdentifierHashes(&selector, subject_filter);
+  CollectSubjectIdentifierHashes(
+      &selector, Element::kExcludeAllLazilySynchronizedAttributes,
+      subject_filter);
 }
 
 void SelectorFilter::Trace(Visitor* visitor) const {

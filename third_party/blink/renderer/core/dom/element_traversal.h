@@ -82,6 +82,10 @@ class HasTagName {
 // FlatTreeTraversal.
 //
 // ElementTraversal is a specialized version of Traversal<Element>.
+//
+// The variants that take Element::TinyBloomFilter are used when you have
+// one or more attributes or CSS classes that you know you are searching for;
+// they will skip entire subtrees that don't contain them if possible.
 template <class ElementType>
 class Traversal {
   STATIC_ONLY(Traversal);
@@ -132,6 +136,16 @@ class Traversal {
   template <typename MatchFunc>
   static ElementType* FirstWithin(const ContainerNode&, MatchFunc);
 
+  // This variant skips subtrees that don't match the given Bloom filter.
+  static ElementType* FirstWithin(const ContainerNode& current,
+                                  Element::TinyBloomFilter bloom_filter) {
+    return FirstWithinTemplate(current, bloom_filter);
+  }
+  static ElementType* FirstWithin(const Node& current,
+                                  Element::TinyBloomFilter bloom_filter) {
+    return FirstWithinTemplate(current, bloom_filter);
+  }
+
   static ElementType* InclusiveFirstWithin(Node& current) {
     auto* first = DynamicTo<ElementType>(current);
     return first ? first : FirstWithin(current);
@@ -165,6 +179,9 @@ class Traversal {
   static ElementType* Next(const ContainerNode& current,
                            const Node* stay_within,
                            MatchFunc);
+  static ElementType* Next(const ContainerNode& current,
+                           const Node* stay_within,
+                           Element::TinyBloomFilter bloom_filter);
   static ElementType* Previous(const Node&);
   static ElementType* Previous(const Node&, const Node* stay_within);
   template <class MatchFunc>
@@ -184,6 +201,10 @@ class Traversal {
   static ElementType* NextSkippingChildren(const Node&);
   static ElementType* NextSkippingChildren(const Node&,
                                            const Node* stay_within);
+  static ElementType* NextSkippingChildren(
+      const Node& current,
+      const Node* stay_within,
+      Element::TinyBloomFilter bloom_filter);
 
   // Pre-order traversal including the pseudo-elements.
   static ElementType* PreviousIncludingPseudo(
@@ -206,10 +227,14 @@ class Traversal {
   static ElementType* NextSibling(const Node&);
   template <class MatchFunc>
   static ElementType* NextSibling(const Node&, MatchFunc);
+  static ElementType* NextSibling(const Node&, Element::TinyBloomFilter);
 
   static TraversalSiblingRange<Traversal<ElementType>> ChildrenOf(const Node&);
   static TraversalDescendantRange<Traversal<ElementType>> DescendantsOf(
       const Node&);
+  static TraversalDescendantRangeWithFilter<Traversal<ElementType>,
+                                            Element::TinyBloomFilter>
+  DescendantsOfWithFilter(const Node&, Element::TinyBloomFilter bloom_filter);
   static TraversalInclusiveDescendantRange<Traversal<ElementType>>
   InclusiveDescendantsOf(const ElementType&);
   static TraversalNextRange<Traversal<ElementType>> StartsAt(
@@ -220,11 +245,15 @@ class Traversal {
   template <class NodeType>
   static ElementType* FirstChildTemplate(NodeType&);
   template <class NodeType>
+  static ElementType* FirstChildTemplate(NodeType&, Element::TinyBloomFilter);
+  template <class NodeType>
   static ElementType* LastChildTemplate(NodeType&);
   template <class NodeType>
   static ElementType* FirstAncestorOrSelfTemplate(NodeType&);
   template <class NodeType>
   static ElementType* FirstWithinTemplate(NodeType&);
+  template <class NodeType>
+  static ElementType* FirstWithinTemplate(NodeType&, Element::TinyBloomFilter);
   template <class NodeType>
   static ElementType* LastWithinTemplate(NodeType&);
   template <class NodeType>
@@ -246,6 +275,17 @@ template <class ElementType>
 inline TraversalDescendantRange<Traversal<ElementType>>
 Traversal<ElementType>::DescendantsOf(const Node& root) {
   return TraversalDescendantRange<Traversal<ElementType>>(&root);
+}
+
+template <class ElementType>
+inline TraversalDescendantRangeWithFilter<Traversal<ElementType>,
+                                          Element::TinyBloomFilter>
+Traversal<ElementType>::DescendantsOfWithFilter(
+    const Node& root,
+    Element::TinyBloomFilter bloom_filter) {
+  return TraversalDescendantRangeWithFilter<Traversal<ElementType>,
+                                            Element::TinyBloomFilter>(
+      &root, bloom_filter);
 }
 
 template <class ElementType>
@@ -273,6 +313,14 @@ template <>
 template <class NodeType>
 inline Element* Traversal<Element>::FirstWithinTemplate(NodeType& current) {
   return FirstChildTemplate(current);
+}
+
+template <>
+template <class NodeType>
+inline Element* Traversal<Element>::FirstWithinTemplate(
+    NodeType& current,
+    Element::TinyBloomFilter bloom_filter) {
+  return FirstChildTemplate(current, bloom_filter);
 }
 
 template <>
@@ -305,6 +353,25 @@ inline ElementType* Traversal<ElementType>::FirstChildTemplate(
     }
   }
   return nullptr;
+}
+
+template <class ElementType>
+template <class NodeType>
+inline ElementType* Traversal<ElementType>::FirstChildTemplate(
+    NodeType& current,
+    Element::TinyBloomFilter bloom_filter) {
+  ElementType* element = FirstChildTemplate(current);
+
+  while (element && !element->SubtreeMayMatchClassOrAttrFilter(bloom_filter)) {
+    // Skip the entire subtree.
+    element = Traversal<ElementType>::NextSibling(*element);
+  }
+#if DCHECK_IS_ON()
+  if (element) {
+    element->VerifyBloomFilterTreeConsistency();
+  }
+#endif
+  return element;
 }
 
 template <class ElementType>
@@ -457,6 +524,25 @@ inline ElementType* Traversal<ElementType>::Next(const ContainerNode& current,
 }
 
 template <class ElementType>
+inline ElementType* Traversal<ElementType>::Next(
+    const ContainerNode& current,
+    const Node* stay_within,
+    Element::TinyBloomFilter bloom_filter) {
+  ElementType* element = Traversal<ElementType>::Next(current, stay_within);
+  while (element && !element->SubtreeMayMatchClassOrAttrFilter(bloom_filter)) {
+    // Skip the entire subtree.
+    element =
+        Traversal<ElementType>::NextSkippingChildren(*element, stay_within);
+  }
+#if DCHECK_IS_ON()
+  if (element) {
+    element->VerifyBloomFilterTreeConsistency();
+  }
+#endif
+  return element;
+}
+
+template <class ElementType>
 inline ElementType* Traversal<ElementType>::Previous(const Node& current) {
   for (Node* node = NodeTraversal::Previous(current); node;
        node = NodeTraversal::Previous(*node)) {
@@ -527,6 +613,24 @@ inline ElementType* Traversal<ElementType>::NextSkippingChildren(
        node; node = NodeTraversal::NextSkippingChildren(*node, stay_within)) {
     if (auto* element = DynamicTo<ElementType>(*node)) {
       return element;
+    }
+  }
+  return nullptr;
+}
+
+template <class ElementType>
+inline ElementType* Traversal<ElementType>::NextSkippingChildren(
+    const Node& current,
+    const Node* stay_within,
+    Element::TinyBloomFilter bloom_filter) {
+  for (Node* node =
+           Traversal<ElementType>::NextSkippingChildren(current, stay_within);
+       node; node = Traversal<ElementType>::NextSkippingChildren(*node,
+                                                                 stay_within)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      if (element->SubtreeMayMatchClassOrAttrFilter(bloom_filter)) {
+        return element;
+      }
     }
   }
   return nullptr;
@@ -627,6 +731,17 @@ inline ElementType* Traversal<ElementType>::NextSibling(const Node& current,
   ElementType* element = Traversal<ElementType>::NextSibling(current);
   while (element && !is_match(*element))
     element = Traversal<ElementType>::NextSibling(*element);
+  return element;
+}
+
+template <class ElementType>
+inline ElementType* Traversal<ElementType>::NextSibling(
+    const Node& current,
+    Element::TinyBloomFilter bloom_filter) {
+  ElementType* element = Traversal<ElementType>::NextSibling(current);
+  while (element && !element->SubtreeMayMatchClassOrAttrFilter(bloom_filter)) {
+    element = Traversal<ElementType>::NextSibling(*element);
+  }
   return element;
 }
 

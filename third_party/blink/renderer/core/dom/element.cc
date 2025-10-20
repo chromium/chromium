@@ -3666,8 +3666,97 @@ void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
   for (const AtomicString& class_name : new_classes) {
     attribute_or_class_bloom_ |= FilterForString(class_name);
   }
+  UpdateSubtreeBloomFilterAfterInsert();
   GetDocument().GetStyleEngine().ClassChangedForElement(old_classes,
                                                         new_classes, *this);
+}
+
+void Element::UpdateSubtreeBloomFilterAfterInsert() {
+  Element* to_update = this;
+  Element* parent = parentElement();
+  while (parent && (parent->attribute_or_class_bloom_ |
+                    to_update->attribute_or_class_bloom_) !=
+                       parent->attribute_or_class_bloom_) {
+    parent->attribute_or_class_bloom_ |= to_update->attribute_or_class_bloom_;
+    to_update = parent;
+    parent = to_update->parentElement();
+  }
+}
+
+void Element::UpdateSubtreeBloomFilterAfterChildRemoval() {
+  Element* first_child = ElementTraversal::FirstChild(*this);
+  if (first_child && first_child->nextSibling()) {
+    // Two or more children left; don't do anything, and don't propagate.
+    // Note that this may leave stale bits in the filter.
+    return;
+  }
+
+  // Zero or one children left.
+  TinyBloomFilter new_bloom_filter =
+      first_child ? first_child->attribute_or_class_bloom_ : 0;
+  new_bloom_filter |= RecomputeLocalBloomFilter();
+  if (attribute_or_class_bloom_ == new_bloom_filter) {
+    // No need to do anything, nor traverse upwards.
+    return;
+  }
+  attribute_or_class_bloom_ = new_bloom_filter;
+
+  // If the parent _also_ has a single child (us), update its
+  // subtree Bloom filter as well, and so on. (It may never have
+  // zero children, obviously.)
+  for (Element *current = this, *parent = parentElement();
+       parent && !current->previousElementSibling() &&
+       !current->nextElementSibling();
+       current = parent, parent = current->parentElement()) {
+    new_bloom_filter |= parent->RecomputeLocalBloomFilter();
+    if (parent->attribute_or_class_bloom_ == new_bloom_filter) {
+      break;
+    }
+    parent->attribute_or_class_bloom_ = new_bloom_filter;
+  }
+}
+
+Element::TinyBloomFilter Element::RecomputeLocalBloomFilter() const {
+  TinyBloomFilter new_bloom_filter = 0;
+  if (element_data_) {
+    for (const AtomicString& class_name : element_data_->ClassNames()) {
+      new_bloom_filter |= FilterForString(class_name);
+    }
+    for (const Attribute& attribute : element_data_->Attributes()) {
+      new_bloom_filter |= FilterForAttribute(attribute.GetName());
+    }
+  }
+  return new_bloom_filter;
+}
+
+bool Element::IsExcludedAttribute(
+    const QualifiedName& qname,
+    Element::AttributesToExcludeHashesFor attributes_to_exclude) {
+  if (attributes_to_exclude == kExcludeStandardAttributesOnly) {
+    return qname.LocalName() == html_names::kClassAttr.LocalName() ||
+           qname.LocalName() == html_names::kIdAttr.LocalName() ||
+           qname.LocalName() == html_names::kStyleAttr.LocalName();
+  }
+
+  DCHECK(attributes_to_exclude == kExcludeAllLazilySynchronizedAttributes ||
+         attributes_to_exclude ==
+             kExcludeLowercaseLazilySynchronizedAttributes);
+
+  // Assume any known name needs synchronization.
+  if (qname.IsDefinedName()) {
+    return true;
+  }
+  const QualifiedName local_qname(qname.LocalName());
+  if (local_qname.IsDefinedName()) {
+    return true;
+  }
+  // HTML elements in an html doc use the lower case name.
+  if (attributes_to_exclude == kExcludeLowercaseLazilySynchronizedAttributes ||
+      qname.LocalName().IsLowerASCII()) {
+    return false;
+  }
+  const QualifiedName lower_local_qname(qname.LocalName().LowerASCII());
+  return lower_local_qname.IsDefinedName();
 }
 
 void Element::UpdateClassList(const AtomicString& old_class_string,
@@ -3737,12 +3826,15 @@ void Element::ParserSetAttributes(
           ShareableElementData::CreateWithAttributes(attribute_vector);
     }
 
+    DCHECK_EQ(nullptr, ElementTraversal::FirstChild(*this));
+
     // NOTE: AttributeChanged() will add back the class names (if any),
     // so it is safe to reset the filter here.
     attribute_or_class_bloom_ = 0;
     for (const Attribute& attribute : attribute_vector) {
       attribute_or_class_bloom_ |= FilterForAttribute(attribute.GetName());
     }
+    UpdateSubtreeBloomFilterAfterInsert();
   }
 
   ParserDidSetAttributes();
@@ -3824,6 +3916,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   // need to do superclass processing first so isConnected() is true
   // by the time we reach updateId
   ContainerNode::InsertedInto(insertion_point);
+  UpdateSubtreeBloomFilterAfterInsert();
 
   DCHECK(!GetElementRareData() || !GetElementRareData()->HasPseudoElements() ||
          GetDocument().StatePreservingAtomicMoveInProgress());
@@ -3974,6 +4067,9 @@ void Element::SetIsCanvasOrInCanvasSubtree(bool value) {
 
 void Element::RemovedFrom(ContainerNode& insertion_point) {
   bool was_in_document = insertion_point.isConnected();
+  if (Element* parent = DynamicTo<Element>(insertion_point)) {
+    parent->UpdateSubtreeBloomFilterAfterChildRemoval();
+  }
 
   if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
     SetComputedStyle(nullptr);
@@ -7285,6 +7381,7 @@ void Element::AppendAttributeInternal(const QualifiedName& name,
                                       const AtomicString& value,
                                       AttributeModificationReason reason) {
   attribute_or_class_bloom_ |= FilterForAttribute(name);
+  UpdateSubtreeBloomFilterAfterInsert();
 
   if (reason !=
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
@@ -9539,7 +9636,6 @@ void Element::UpdateColumnPseudoElements(const StyleRecalcChange change,
   }
 }
 
-
 PseudoElement* Element::UpdatePseudoElement(
     PseudoId pseudo_id,
     const StyleRecalcChange change,
@@ -9848,7 +9944,6 @@ bool Element::PseudoElementStylesDependOnFontMetrics() const {
 }
 
 bool Element::PseudoElementStylesDependOnAttr() const {
-
   auto func = [](const ComputedStyle& style) {
     return style.HasAttrFunction();
   };
@@ -10882,13 +10977,22 @@ void Element::CloneAttributesFrom(const Element& other) {
   // opportunity to recreate the Bloom filter; in particular, it may
   // be different from the source's Bloom filter if it came from a document
   // with different quirks mode setting.
-  attribute_or_class_bloom_ = 0;
+  Element* first_child = ElementTraversal::FirstChild(*this);
+  if (!first_child) {
+    attribute_or_class_bloom_ = 0;
+  } else if (!first_child->nextSibling()) {
+    attribute_or_class_bloom_ = first_child->attribute_or_class_bloom_;
+  } else {
+    // Two or more children left; we don't consider it worth it
+    // to try to reset the filter fully.
+  }
   for (const Attribute& attr : element_data_->Attributes()) {
     AttributeChanged(
         AttributeModificationParams(attr.GetName(), g_null_atom, attr.Value(),
                                     AttributeModificationReason::kByCloning));
     attribute_or_class_bloom_ |= FilterForAttribute(attr.GetName());
   }
+  UpdateSubtreeBloomFilterAfterInsert();
 
   if (other.nonce() != g_null_atom) {
     setNonce(other.nonce());
@@ -12690,5 +12794,14 @@ AnimationTrigger* Element::NamedTrigger(const ScopedCSSName* name) const {
   auto it = trigger_map->find(name);
   return it == trigger_map->end() ? nullptr : it->value.Get();
 }
+
+#if DCHECK_IS_ON()
+void Element::VerifyBloomFilterTreeConsistencyIncludingChildren() const {
+  VerifyBloomFilterTreeConsistency();
+  for (Element& other_element : ElementTraversal::DescendantsOf(*this)) {
+    other_element.VerifyBloomFilterTreeConsistency();
+  }
+}
+#endif
 
 }  // namespace blink

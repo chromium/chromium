@@ -30,6 +30,7 @@
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -40,7 +41,6 @@ namespace blink {
 class CSSSelector;
 class ContainerNode;
 class Document;
-class Element;
 class ExceptionState;
 template <typename NodeType>
 class StaticNodeTypeList;
@@ -87,10 +87,12 @@ class CORE_EXPORT SelectorQuery : public GarbageCollected<SelectorQuery> {
   template <typename SelectorQueryTrait>
   void FindTraverseRootsAndExecute(
       ContainerNode& root_node,
+      Element::TinyBloomFilter subject_filter,
       typename SelectorQueryTrait::OutputType&) const;
   template <typename SelectorQueryTrait>
   void ExecuteForTraverseRoot(ContainerNode& traverse_root,
                               ContainerNode& root_node,
+                              Element::TinyBloomFilter subject_filter,
                               typename SelectorQueryTrait::OutputType&) const;
   template <typename SelectorQueryTrait>
   void ExecuteSlow(ContainerNode& root_node,
@@ -114,9 +116,12 @@ class CORE_EXPORT SelectorQuery : public GarbageCollected<SelectorQuery> {
   // SelectorQueryCache::add would have thrown an exception.
   Vector<unsigned, 4> selector_start_offsets_;
   AtomicString selector_id_;
-  bool selector_id_is_rightmost_ : 1;
-  bool selector_id_affected_by_sibling_combinator_ : 1;
-  bool use_slow_scan_ : 1;
+
+  // Only relevant if selector_id_ is set.
+  bool selector_id_in_subject_ : 1 = true;
+
+  bool selector_id_affected_by_sibling_combinator_ : 1 = false;
+  bool use_slow_scan_ : 1 = true;
 };
 
 class SelectorQueryCache : public GarbageCollected<SelectorQueryCache> {

@@ -794,16 +794,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns false if the element definitely does not have an attribute
   // matching the given name. Is allowed to return false positives.
   bool CouldHaveAttribute(const QualifiedName& attribute_name) const {
-    return CouldHaveAttributeWithPrecomputedFilter(
-        FilterForAttribute(attribute_name));
+    return CouldMatchFilter(FilterForAttribute(attribute_name));
   }
   bool CouldHaveClass(const AtomicString& class_name) const {
-    return CouldHaveClassWithPrecomputedFilter(FilterForString(class_name));
+    return CouldMatchFilter(FilterForString(class_name));
   }
 
   // A variant of CouldHave{Attribute,Class}() that allows you to compute
   // the filter ahead-of-time; useful if you want to test many elements
-  // against the same attribute/class name.
+  // against the same attribute/class name, or to test against multiple
+  // attributes/classes at the same time.
   using TinyBloomFilter = uint32_t;
   static TinyBloomFilter FilterForAttribute(
       const QualifiedName& attribute_name) {
@@ -819,10 +819,22 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     filter |= 1u << ((hash >> 5) & 31);
     return filter;
   }
-  bool CouldHaveAttributeWithPrecomputedFilter(TinyBloomFilter filter) const {
-    return (attribute_or_class_bloom_ & filter) == filter;
+  bool SubtreeMayMatchClassOrAttrFilter(TinyBloomFilter filter) const {
+    bool match = CouldMatchFilter(filter);
+#if DCHECK_IS_ON()
+    if (!match) {
+      // The caller is going to skip this entire subtree,
+      // so verify that we're not missing anything.
+      VerifyBloomFilterTreeConsistencyIncludingChildren();
+    }
+#endif
+    return match;
   }
-  bool CouldHaveClassWithPrecomputedFilter(TinyBloomFilter filter) const {
+  // Exactly the same as SubtreeMayMatchClassOrAttrFilter(),
+  // except that it can be called before the entire tree is
+  // attached correctly, so we don't DCHECK that the Bloom filters
+  // are consistent.
+  bool CouldMatchFilter(TinyBloomFilter filter) const {
     return (attribute_or_class_bloom_ & filter) == filter;
   }
   // Useful if you are to match the same element against a lot of different
@@ -830,6 +842,31 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   TinyBloomFilter AttributeOrClassBloomFilter() const {
     return attribute_or_class_bloom_;
   }
+
+#if DCHECK_IS_ON()
+  void VerifyBloomFilterTreeConsistency() const {
+    if (!parentElement()) {
+      return;
+    }
+
+    if ((parentElement()->attribute_or_class_bloom_ &
+         attribute_or_class_bloom_) != attribute_or_class_bloom_) {
+      char bitsstr[256];
+      snprintf(bitsstr, sizeof(bitsstr),
+               "bits=0x%08x subtree=0x%08x parentbits=0x%08x missing=0x%08x",
+               attribute_or_class_bloom_, attribute_or_class_bloom_,
+               parentElement()->attribute_or_class_bloom_,
+               attribute_or_class_bloom_ &
+                   ~parentElement()->attribute_or_class_bloom_);
+      LOG(FATAL) << this << " Bloom bits were not properly propagated up to "
+                 << parentElement() << " " << bitsstr;
+    }
+  }
+
+  // Used when skipping over an entire subtree, to check that we're not
+  // missing anything inside it.
+  void VerifyBloomFilterTreeConsistencyIncludingChildren() const;
+#endif
 
   // Step 5 of https://dom.spec.whatwg.org/#concept-node-clone
   virtual void CloneNonAttributePropertiesFrom(const Element&,
@@ -1824,6 +1861,25 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   NamedAnimationTriggerMap* NamedTriggers() const;
   AnimationTrigger* NamedTrigger(const ScopedCSSName* name) const;
 
+  enum AttributesToExcludeHashesFor {
+    // Exclude [id], [style] and [class], which are the attributes
+    // ignored by SelectorFilter by default.
+    kExcludeStandardAttributesOnly,
+
+    // Exclude any attribute that may be lazily synchronized and thus
+    // not show up in Element's Bloom filter (in particular, its subtree).
+    // Note that this may be overly conservative (the set required for SVG
+    // is rather large), but it should at least be safe.
+    kExcludeAllLazilySynchronizedAttributes,
+
+    // Same, but case-sensitive (used for non-HTML documents); this means
+    // that e.g. STYLE="" will _not_ be ignored.
+    kExcludeLowercaseLazilySynchronizedAttributes,
+  };
+  static bool IsExcludedAttribute(
+      const QualifiedName& qname,
+      AttributesToExcludeHashesFor attributes_to_exclude);
+
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }
   const ElementData* GetElementData() const { return element_data_.Get(); }
@@ -1898,6 +1954,23 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void ClassAttributeChanged(const AtomicString& new_class_string);
   void UpdateClassList(const AtomicString& old_class_string,
                        const AtomicString& new_class_string);
+
+  // Update parents' subtree Bloom filters recursively. Must be called after
+  // anything that could add bits, or when this element is attached to a new
+  // parent, so that the tree is consistent.
+  void UpdateSubtreeBloomFilterAfterInsert();
+
+  // Update this element's subtree Bloom filter after removing a child.
+  // Unlike UpdateSubtreeBloomFilterAfterInsert, this is called on the
+  // _parent_ of the element that's being removed or changed. It is also
+  // voluntary; it is generally hard to remove bits from a Bloom filter,
+  // so we only do updates for some special cases (such as the entire
+  // subtree under an element going away).
+  void UpdateSubtreeBloomFilterAfterChildRemoval();
+
+  // Recompute the desired value of the subtree Bloom filter, given only
+  // this element's attributes and classes (not including children).
+  TinyBloomFilter RecomputeLocalBloomFilter() const;
 
   static bool AttributeValueIsJavaScriptURL(const Attribute&);
 
@@ -2372,11 +2445,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   subtle::UncompressedMember<const ComputedStyle> computed_style_;
   Member<ElementData> element_data_;
 
-  // A tiny Bloom filter for which attribute names and class names we have;
-  // saves going to ElementData if the attribute/class doesn't exist. May have
-  // false positives, of course. We do not currently update this when
-  // attributes/classes are removed, only when they are added. Attribute
-  // _values_ are not part of this filter, except for the values of class="".
+  // A tiny Bloom filter for which attribute names and class names exist
+  // in this subtree; saves going to ElementData if the attribute/class
+  // doesn't exist, and used to accelerate querySelector() (can quickly
+  // skip entire subtrees). May have false positives, of course.
+  // We do not currently update this when attributes/classes are removed,
+  // only when they are added. Attribute _values_ are not part of this
+  // filter, except for the values of class="".
   uint32_t attribute_or_class_bloom_ = 0;
 };
 

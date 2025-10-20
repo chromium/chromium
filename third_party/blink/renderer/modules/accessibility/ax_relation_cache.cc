@@ -474,8 +474,7 @@ AXRelationCache::GetTextRelationAttributes() {
 
 void AXRelationCache::UpdateReverseTextRelations(Element& source) {
   for (const auto& [attribute, filter] : GetTextRelationAttributes()) {
-    if (source.CouldHaveAttributeWithPrecomputedFilter(filter) ||
-        source.GetElementInternals()) {
+    if (source.CouldMatchFilter(filter) || source.GetElementInternals()) {
       UpdateReverseTextRelations(source, attribute);
     }
   }
@@ -585,8 +584,7 @@ AXRelationCache::GetOtherRelationAttributes() {
 
 void AXRelationCache::UpdateReverseOtherRelations(Element& source) {
   for (const auto& [attribute, filter] : GetOtherRelationAttributes()) {
-    if (source.CouldHaveAttributeWithPrecomputedFilter(filter) ||
-        source.GetElementInternals()) {
+    if (source.CouldMatchFilter(filter) || source.GetElementInternals()) {
       UpdateReverseRelations(source, attribute, aria_other_relations_id_map_,
                              aria_other_relations_node_map_);
     }
