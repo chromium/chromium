@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/home_customization/ui/centered_flow_layout.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_custom_color_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_cutomization_color_palette_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -65,6 +66,10 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   // `HomeCustomizationColorPaletteCell` in the collection view.
   UICollectionViewCellRegistration* _colorCellRegistration;
 
+  // The `UICollectionViewCellRegistration` for registering  and configuring the
+  // `HomeCustomizationCustomColorCell` in the collection view.
+  UICollectionViewCellRegistration* _customColorCellRegistration;
+
   // Currently selected color index in the palette.
   NSString* _selectedColorId;
 
@@ -106,11 +111,20 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
                                    atIndexPath:indexPath];
            }];
 
+  _customColorCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:[HomeCustomizationCustomColorCell class]
+           configurationHandler:^(HomeCustomizationCustomColorCell* cell,
+                                  NSIndexPath* indexPath,
+                                  id<BackgroundCustomizationConfiguration>
+                                      backgroundConfiguration) {
+             cell.color = [weakSelf
+                 resolvedColorPaletteLightColor:backgroundConfiguration];
+           }];
+
   _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                        collectionViewLayout:layout];
   _collectionView.dataSource = self;
   _collectionView.delegate = self;
-
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_collectionView];
 
@@ -168,11 +182,16 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView
      numberOfItemsInSection:(NSInteger)section {
-  return _backgroundCollectionConfiguration.configurationOrder.count;
+  return _backgroundCollectionConfiguration.configurationOrder.count + 1;
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  std::size_t index = static_cast<std::size_t>(indexPath.item);
+  if (index >= _backgroundCollectionConfiguration.configurationOrder.count) {
+    return;
+  }
+
   NSString* selectedID =
       _backgroundCollectionConfiguration.configurationOrder[indexPath.item];
 
@@ -181,9 +200,15 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     return;
   }
 
+  HomeCustomizationCustomColorCell* customColorCell = [self customColorCell];
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCollectionConfiguration.configurations[selectedID];
   _selectedColorId = backgroundConfiguration.configurationID;
+  // Synchronize the custom color cell's display color with the current palette
+  // configuration.
+  customColorCell.color =
+      [self resolvedColorPaletteLightColor:backgroundConfiguration];
+
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
 
   if (backgroundConfiguration.backgroundStyle ==
@@ -196,16 +221,27 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  NSString* selectedID =
-      _backgroundCollectionConfiguration.configurationOrder[indexPath.item];
-  id<BackgroundCustomizationConfiguration> backgroundConfiguration =
-      _backgroundCollectionConfiguration.configurations[selectedID];
+  std::size_t index = static_cast<std::size_t>(indexPath.item);
 
   if (indexPath.item >= 0) {
-    std::size_t index = static_cast<std::size_t>(indexPath.item);
     if (index < _backgroundCollectionConfiguration.configurationOrder.count) {
+      NSString* selectedID =
+          _backgroundCollectionConfiguration.configurationOrder[indexPath.item];
+      id<BackgroundCustomizationConfiguration> backgroundConfiguration =
+          _backgroundCollectionConfiguration.configurations[selectedID];
+
       return [collectionView
           dequeueConfiguredReusableCellWithRegistration:_colorCellRegistration
+                                           forIndexPath:indexPath
+                                                   item:
+                                                       backgroundConfiguration];
+    } else {
+      id<BackgroundCustomizationConfiguration> backgroundConfiguration =
+          _backgroundCollectionConfiguration.configurations[_selectedColorId];
+
+      return [collectionView
+          dequeueConfiguredReusableCellWithRegistration:
+              _customColorCellRegistration
                                            forIndexPath:indexPath
                                                    item:
                                                        backgroundConfiguration];
@@ -216,6 +252,24 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 }
 
 #pragma mark - Private
+
+// Retrieve the light color from the color palette, or use the default color if
+// none is available.
+- (UIColor*)resolvedColorPaletteLightColor:
+    (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
+  return backgroundConfiguration.colorPalette.lightColor
+             ?: DynamicNamedColor(@"ntp_background_color", kGrey100Color);
+}
+
+// Retrieve the custom color cell corresponding to the last index path in the
+// collection view..
+- (HomeCustomizationCustomColorCell*)customColorCell {
+  NSIndexPath* lastIndexPath = [NSIndexPath
+      indexPathForItem:[_collectionView numberOfItemsInSection:0] - 1
+             inSection:0];
+
+  return [_collectionView cellForItemAtIndexPath:lastIndexPath];
+}
 
 // Configures a `HomeCustomizationColorPaletteCell` with the provided background
 // color configuration and selects it if it matches the currently selected
@@ -232,7 +286,7 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     // The first choice should be the "no background" option (default appearance
     // colors).
     defaultColorPalette.lightColor =
-        DynamicNamedColor(@"ntp_background_color", kGrey100Color);
+        [self resolvedColorPaletteLightColor:backgroundConfiguration];
     defaultColorPalette.mediumColor =
         [UIColor colorNamed:@"fake_omnibox_solid_background_color"];
     defaultColorPalette.darkColor =

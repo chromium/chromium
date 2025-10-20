@@ -172,6 +172,7 @@ NSString* const kCopyActionSymbol = @"doc.on.doc";
 NSString* const kPasteActionSymbol = @"doc.on.clipboard";
 NSString* const kPlusRectangleSymbol = @"plus.rectangle";
 NSString* const kNewWindowActionSymbol = @"square.split.2x1";
+NSString* const kEyedropperSymbol = @"eyedropper";
 NSString* const kShowActionSymbol = @"eye";
 NSString* const kHideActionSymbol = @"eye.slash";
 NSString* const kFindInPageActionSymbol = @"doc.text.magnifyingglass";

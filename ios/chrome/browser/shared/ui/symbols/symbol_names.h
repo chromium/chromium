@@ -170,6 +170,7 @@ extern NSString* const kCopyActionSymbol;
 extern NSString* const kPasteActionSymbol;
 extern NSString* const kPlusRectangleSymbol;
 extern NSString* const kNewWindowActionSymbol;
+extern NSString* const kEyedropperSymbol;
 extern NSString* const kShowActionSymbol;
 extern NSString* const kHideActionSymbol;
 extern NSString* const kFindInPageActionSymbol;

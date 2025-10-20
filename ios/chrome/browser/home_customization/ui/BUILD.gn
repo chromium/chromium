@@ -32,6 +32,8 @@ source_set("ui") {
     "home_customization_background_skeleton_cell.mm",
     "home_customization_collection_configurator.h",
     "home_customization_collection_configurator.mm",
+    "home_customization_custom_color_cell.h",
+    "home_customization_custom_color_cell.mm",
     "home_customization_discover_consumer.h",
     "home_customization_discover_view_controller.h",
     "home_customization_discover_view_controller.mm",
