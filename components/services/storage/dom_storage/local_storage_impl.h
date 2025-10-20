@@ -188,7 +188,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // Maps between a StorageKey and its prefixed LevelDB view.
   std::map<blink::StorageKey, std::unique_ptr<StorageAreaHolder>> areas_;
 
-  bool is_low_end_device_;
   // Counts consecutive commit errors. If this number reaches a threshold, the
   // whole database is thrown away.
   int commit_error_count_ = 0;

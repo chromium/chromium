@@ -344,8 +344,7 @@ LocalStorageImpl::LocalStorageImpl(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       memory_dump_id_(base::StringPrintf("LocalStorage/0x%" PRIXPTR,
-                                         reinterpret_cast<uintptr_t>(this))),
-      is_low_end_device_(base::SysInfo::IsLowEndDevice()) {
+                                         reinterpret_cast<uintptr_t>(this))) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "LocalStorage", task_runner, MemoryDumpProvider::Options());
@@ -522,7 +521,8 @@ void LocalStorageImpl::PurgeUnusedAreasIfNeeded() {
 
   // No purge is needed.
   if (total_cache_size <= kMaxLocalStorageCacheSize &&
-      areas_.size() <= kMaxLocalStorageAreaCount && !is_low_end_device_) {
+      areas_.size() <= kMaxLocalStorageAreaCount &&
+      !base::SysInfo::IsLowEndDevice()) {
     return;
   }
 

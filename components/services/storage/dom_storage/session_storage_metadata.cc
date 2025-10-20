@@ -420,9 +420,8 @@ std::vector<uint8_t> SessionStorageMetadata::GetNamespacePrefix(
   std::vector<uint8_t> namespace_prefix(
       SessionStorageMetadata::kNamespacePrefixBytes,
       std::end(SessionStorageMetadata::kNamespacePrefixBytes));
-  namespace_prefix.insert(
-      namespace_prefix.end(), namespace_id.data(),
-      UNSAFE_TODO(namespace_id.data() + namespace_id.size()));
+  namespace_prefix.insert(namespace_prefix.end(), namespace_id.begin(),
+                          namespace_id.end());
   namespace_prefix.push_back(kNamespaceStorageKeySeperatorByte);
   return namespace_prefix;
 }
@@ -437,8 +436,8 @@ std::vector<uint8_t> SessionStorageMetadata::GetAreaKey(
   area_key.insert(area_key.end(), namespace_id.begin(), namespace_id.end());
   area_key.push_back(kNamespaceStorageKeySeperatorByte);
   std::string storage_key_str = storage_key.Serialize();
-  area_key.insert(area_key.end(), storage_key_str.data(),
-                  UNSAFE_TODO(storage_key_str.data() + storage_key_str.size()));
+  area_key.insert(area_key.end(), storage_key_str.begin(),
+                  storage_key_str.end());
   return area_key;
 }
 

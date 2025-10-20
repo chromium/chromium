@@ -29,8 +29,6 @@ class DOMWindowStorage final : public GarbageCollected<DOMWindowStorage>,
 
   StorageArea* sessionStorage(ExceptionState&) const;
   StorageArea* localStorage(ExceptionState&) const;
-  StorageArea* OptionalSessionStorage() const { return session_storage_.Get(); }
-  StorageArea* OptionalLocalStorage() const { return local_storage_.Get(); }
 
   // These Init* methods allow initializing the StorageArea as an optimization
   // to avoid it being requested from the browser process, which can be slow.

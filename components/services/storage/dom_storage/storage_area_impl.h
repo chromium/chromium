@@ -272,11 +272,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
     LOADED_KEYS_AND_VALUES
   };
 
-  using LoadStateForForkCallback = base::OnceCallback<
-      void(bool database_enabled, const ValueMap&, const KeysOnlyMap&)>;
-  using ForkSourceEarlyDeathCallback =
-      base::OnceCallback<void(std::vector<uint8_t> source_prefix)>;
-
   // Changes the cache mode of the area. If applicable, this will change the
   // internal storage type after the next commit. The keys-only mode can only
   // be set only when there is one client binding. It automatically changes to
