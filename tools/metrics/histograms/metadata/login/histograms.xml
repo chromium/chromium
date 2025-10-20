@@ -224,7 +224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PageLoad.DetectionType" enum="LoginDetectionType"
-    expires_after="2025-11-30">
+    expires_after="2026-05-30">
   <owner>tbansal@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
