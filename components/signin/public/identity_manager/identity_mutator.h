@@ -57,12 +57,8 @@ class JniIdentityMutator {
   // Called by java to revoke sync consent for the primary account.
   void RevokeSyncConsent(JNIEnv* env, jint source_metric);
 
-  // Called by java to reload the accounts in the token service from the system
+  // Called by java to seed the accounts in the token service with system
   // accounts.
-  void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& primary_account_id);
-
   void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& j_account_infos,
