@@ -4312,6 +4312,12 @@ inline constexpr char kUseSearchClickForRightClickDescription[] =
     "webpages and apps to consume alt+click. When disabled the legacy "
     "behavior of remapping alt+click to right click will remain unchanged.";
 
+inline constexpr char kNotificationOneTapUnsubscribeOnDesktopName[] =
+    "Notification one-tap unsubscribe on Desktop";
+inline constexpr char kNotificationOneTapUnsubscribeOnDesktopDescription[] =
+    "Enables an experimental UX  on Desktop that replaces the [Site settings]"
+    "button on web push notifications with an [Unsubscribe] button.";
+
 inline constexpr char kUseAndroidBufferedInputDispatchName[] =
     "Use Android buffered input dispatch";
 inline constexpr char kUseAndroidBufferedInputDispatchDescription[] =

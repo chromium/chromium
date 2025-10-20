@@ -77,6 +77,8 @@ const base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
 extern base::FeatureParam<bool>
     kNotificationOneTapUnsubscribeUseServiceIntentParam;
+#else
+BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribeOnDesktop);
 #endif
 
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);

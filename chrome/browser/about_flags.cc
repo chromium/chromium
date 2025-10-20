@@ -8898,7 +8898,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotificationOneTapUnsubscribeName,
      flag_descriptions::kNotificationOneTapUnsubscribeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kNotificationOneTapUnsubscribe)},
-#endif  // !BUILDFLAG(IS_ANDROID)
+#else
+    {"notification-one-tap-unsubscribe-on-desktop",
+     flag_descriptions::kNotificationOneTapUnsubscribeOnDesktopName,
+     flag_descriptions::kNotificationOneTapUnsubscribeOnDesktopDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kNotificationOneTapUnsubscribeOnDesktop)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
     {"enable-new-mac-notification-api",

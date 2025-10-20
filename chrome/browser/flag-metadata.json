@@ -7051,8 +7051,19 @@
   },
   {
     "name": "notification-one-tap-unsubscribe",
-    "owners": [ "engedy@chromium.org" ],
+    "owners": [
+      "engedy@chromium.org"
+    ],
     "expiry_milestone": 132
+  },
+  {
+    "name": "notification-one-tap-unsubscribe-on-desktop",
+    "owners": [
+      "lyf@chromium.org",
+      "antoniosartori@chromium.org",
+      "//components/permissions/PERMISSIONS_OWNERS"
+    ],
+    "expiry_milestone": 150
   },
   {
     "name": "notification-permission-rationale-bottom-sheet",

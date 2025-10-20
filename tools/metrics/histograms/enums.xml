@@ -11310,6 +11310,8 @@ from previous Chrome versions.
   <int value="-1055998734" label="MahiPanelResizable:disabled"/>
   <int value="-1055845287" label="SensorContentSetting:enabled"/>
   <int value="-1055523523" label="ForceMinorVersion100InUserAgent:disabled"/>
+  <int value="-1055289598"
+      label="NotificationOneTapUnsubscribeOnDesktop:enabled"/>
   <int value="-1053496936" label="WebViewSendVariationsHeaders:disabled"/>
   <int value="-1053198238" label="kScrollableTabStripWithDragging:enabled"/>
   <int value="-1052980318"
@@ -14107,6 +14109,8 @@ from previous Chrome versions.
   <int value="-55890693" label="MessagesForAndroidSaveCard:disabled"/>
   <int value="-55592344" label="SyncPseudoUSSDictionary:disabled"/>
   <int value="-54796636" label="kids-management-url-classification:disabled"/>
+  <int value="-53885679"
+      label="NotificationOneTapUnsubscribeOnDesktop:disabled"/>
   <int value="-52737423" label="EnableMixedContentDownloadDialog:disabled"/>
   <int value="-52483823" label="disable-new-video-renderer"/>
   <int value="-52241456" label="enable-single-click-autofill"/>

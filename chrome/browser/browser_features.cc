@@ -142,12 +142,15 @@ BASE_FEATURE(kNewTabPageTriggerForPrerender2, base::FEATURE_ENABLED_BY_DEFAULT);
 // crbug.com/421941586 for more details of New Tab Page triggered prefetching.
 BASE_FEATURE(kNewTabPageTriggerForPrefetch, base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
 // Adds an "Unsubscribe" action to web push notifications that allows stopping
 // notifications from a given origin with a single tap (with an option to undo).
+#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kNotificationOneTapUnsubscribe, base::FEATURE_ENABLED_BY_DEFAULT);
 base::FeatureParam<bool> kNotificationOneTapUnsubscribeUseServiceIntentParam{
     &kNotificationOneTapUnsubscribe, "use_service_intent", false};
+#else
+BASE_FEATURE(kNotificationOneTapUnsubscribeOnDesktop,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables executing the browser commands sent by the NTP promos.
