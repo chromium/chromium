@@ -23,12 +23,14 @@ void RecordUmaGeolocationImplClientId(mojom::GeolocationClientId client_id) {
 GeolocationImpl::GeolocationImpl(mojo::PendingReceiver<Geolocation> receiver,
                                  const GURL& requesting_url,
                                  mojom::GeolocationClientId client_id,
-                                 GeolocationContext* context)
+                                 GeolocationContext* context,
+                                 bool has_precise_permission)
     : receiver_(this, std::move(receiver)),
       url_(requesting_url),
       client_id_(client_id),
       context_(context),
-      high_accuracy_(false) {
+      high_accuracy_hint_(false),
+      has_precise_permission_(has_precise_permission) {
   DCHECK(context_);
   receiver_.set_disconnect_handler(base::BindOnce(
       &GeolocationImpl::OnConnectionError, base::Unretained(this)));
@@ -61,15 +63,27 @@ void GeolocationImpl::ResumeUpdates() {
 }
 
 void GeolocationImpl::StartListeningForUpdates() {
-  geolocation_subscription_ =
-      GeolocationProvider::GetInstance()->AddLocationUpdateCallback(
-          base::BindRepeating(&GeolocationImpl::OnLocationUpdate,
-                              base::Unretained(this)),
-          high_accuracy_);
+  const bool effective_high_accuracy =
+      high_accuracy_hint_ && has_precise_permission_;
+
+  if (effective_high_accuracy_ != effective_high_accuracy) {
+    effective_high_accuracy_ = effective_high_accuracy;
+    // When the accuracy requirement changes, we should reset `current_result_`
+    // so we will not report a stale position.
+    current_result_.reset();
+    // Reset the subscription before creating a new one to avoid a brief
+    // transition state where two subscriptions could exist concurrently.
+    geolocation_subscription_ = {};
+    geolocation_subscription_ =
+        GeolocationProvider::GetInstance()->AddLocationUpdateCallback(
+            base::BindRepeating(&GeolocationImpl::OnLocationUpdate,
+                                base::Unretained(this)),
+            *effective_high_accuracy_);
+  }
 }
 
 void GeolocationImpl::SetHighAccuracyHint(bool high_accuracy) {
-  high_accuracy_ = high_accuracy;
+  high_accuracy_hint_ = high_accuracy;
 
   if (position_override_) {
     OnLocationUpdate(*position_override_);
@@ -121,15 +135,23 @@ void GeolocationImpl::ClearOverride() {
   StartListeningForUpdates();
 }
 
-void GeolocationImpl::OnPermissionRevoked() {
-  if (!position_callback_.is_null()) {
-    std::move(position_callback_)
-        .Run(mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
-            mojom::GeopositionErrorCode::kPermissionDenied,
-            /*error_message=*/"User denied Geolocation",
-            /*error_technical=*/"")));
+void GeolocationImpl::OnPermissionUpdated(
+    mojom::GeolocationPermissionLevel permission_level) {
+  if (permission_level == mojom::GeolocationPermissionLevel::kDenied) {
+    if (!position_callback_.is_null()) {
+      std::move(position_callback_)
+          .Run(mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+              mojom::GeopositionErrorCode::kPermissionDenied,
+              /*error_message=*/"User denied Geolocation",
+              /*error_technical=*/"")));
+      position_callback_.Reset();
+    }
+    geolocation_subscription_ = {};
+  } else {
+    has_precise_permission_ =
+        (permission_level == mojom::GeolocationPermissionLevel::kPrecise);
+    StartListeningForUpdates();
   }
-  position_callback_.Reset();
 }
 
 void GeolocationImpl::OnConnectionError() {

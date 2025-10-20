@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
@@ -126,12 +127,24 @@ void ShellPermissionManager::RequestPermissionsFromCurrentDocument(
     return;
   }
   std::vector<PermissionResult> result;
+  blink::PermissionType permission_type;
   for (const auto& permission : request_description.permissions) {
-    result.emplace_back(
-        IsAllowlistedPermissionType(
-            blink::PermissionDescriptorToPermissionType(permission))
-            ? blink::mojom::PermissionStatus::GRANTED
-            : blink::mojom::PermissionStatus::DENIED);
+    permission_type = blink::PermissionDescriptorToPermissionType(permission);
+    // When the `ApproximateGeolocationPermission` feature is enabled, granting
+    // geolocation requires more granular control via `GeolocationSetting`.
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kApproximateGeolocationPermission) &&
+        permission_type == blink::PermissionType::GEOLOCATION &&
+        IsAllowlistedPermissionType(permission_type)) {
+      GeolocationSetting setting = {PermissionOption::kAllowed,
+                                    PermissionOption::kAllowed};
+      result.emplace_back(blink::mojom::PermissionStatus::GRANTED,
+                          PermissionStatusSource::UNSPECIFIED, setting);
+    } else {
+      result.emplace_back(IsAllowlistedPermissionType(permission_type)
+                              ? blink::mojom::PermissionStatus::GRANTED
+                              : blink::mojom::PermissionStatus::DENIED);
+    }
   }
   std::move(callback).Run(result);
 }

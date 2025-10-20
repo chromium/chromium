@@ -6,7 +6,10 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -25,6 +28,38 @@
 #endif
 
 namespace content {
+
+namespace {
+
+using GeolocationPermissionLevel = device::mojom::GeolocationPermissionLevel;
+
+GeolocationPermissionLevel GetPermissionLevel(
+    const PermissionResult& permission_result) {
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    if (permission_result.status == blink::mojom::PermissionStatus::GRANTED) {
+      // A GRANTED permission must have an associated setting. The setting is
+      // assumed to be the `GeolocationSetting` variant, which is then
+      // extracted.
+      CHECK(permission_result.retrieved_permission_setting.has_value());
+      GeolocationSetting geo_setting = std::get<GeolocationSetting>(
+          *(permission_result.retrieved_permission_setting));
+      if (geo_setting.precise == PermissionOption::kAllowed) {
+        return GeolocationPermissionLevel::kPrecise;
+      } else if (geo_setting.approximate == PermissionOption::kAllowed) {
+        return GeolocationPermissionLevel::kApproximate;
+      }
+    }
+    // Otherwise, the permission is considered denied.
+    return GeolocationPermissionLevel::kDenied;
+  }
+  // With the feature disabled, the result is either granted for precise or
+  // denied.
+  return permission_result.status == blink::mojom::PermissionStatus::GRANTED
+             ? GeolocationPermissionLevel::kPrecise
+             : GeolocationPermissionLevel::kDenied;
+}
+}  // namespace
 
 GeolocationServiceImplContext::GeolocationServiceImplContext() = default;
 
@@ -122,11 +157,14 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionResult(
     mojo::PendingReceiver<device::mojom::Geolocation> receiver,
     CreateGeolocationCallback callback,
     PermissionResult permission_result) {
-  std::move(callback).Run(permission_result.status);
-  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
+  GeolocationPermissionLevel permission_level =
+      GetPermissionLevel(permission_result);
+  if (permission_level == GeolocationPermissionLevel::kDenied) {
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
 
+  std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
   IncrementActivityCount();
 
   requesting_origin_ =
@@ -134,9 +172,12 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionResult(
   auto requesting_url =
       render_frame_host_->GetMainFrame()->GetLastCommittedURL();
 
+  bool has_precise_permission =
+      permission_level == GeolocationPermissionLevel::kPrecise;
   geolocation_context_->BindGeolocation(
       std::move(receiver), requesting_url,
-      device::mojom::GeolocationClientId::kGeolocationServiceImpl);
+      device::mojom::GeolocationClientId::kGeolocationServiceImpl,
+      has_precise_permission);
   subscription_id_ =
       PermissionControllerImpl::FromBrowserContext(
           render_frame_host_->GetBrowserContext())
@@ -154,14 +195,17 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionResult(
 
 void GeolocationServiceImpl::HandlePermissionResultChange(
     PermissionResult permission_result) {
-  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED &&
+  GeolocationPermissionLevel permission_level =
+      GetPermissionLevel(permission_result);
+  if (permission_level == GeolocationPermissionLevel::kDenied &&
       subscription_id_.value()) {
     PermissionControllerImpl::FromBrowserContext(
         render_frame_host_->GetBrowserContext())
         ->UnsubscribeFromPermissionResultChange(subscription_id_);
-    geolocation_context_->OnPermissionRevoked(requesting_origin_);
     DecrementActivityCount();
   }
+  geolocation_context_->OnPermissionUpdated(requesting_origin_,
+                                            permission_level);
 }
 
 void GeolocationServiceImpl::OnDisconnected() {

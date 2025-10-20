@@ -61,7 +61,8 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
         geolocation_context_.BindNewPipeAndPassReceiver());
     geolocation_context_->BindGeolocation(
         geolocation_.BindNewPipeAndPassReceiver(), GURL(),
-        mojom::GeolocationClientId::kForTesting);
+        mojom::GeolocationClientId::kForTesting,
+        /*has_precise_permission=*/true);
   }
 
   void TearDown() override {
