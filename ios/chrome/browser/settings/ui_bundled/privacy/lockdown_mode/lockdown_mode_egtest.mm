@@ -48,13 +48,6 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
 
 @implementation LockdownModeTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  // TODO (crbug.com/1285974) Remove when bug is resolved.
-  config.features_disabled.push_back(kNewOverflowMenu);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   // Ensure that Browser Lockdown Mode opt-out starts in its default (opted-out)

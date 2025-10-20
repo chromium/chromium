@@ -93,8 +93,6 @@ void PressInfoButtonForCell(NSString* cellId) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // TODO (crbug.com/1285974) Remove when bug is resolved.
-  config.features_disabled.push_back(kNewOverflowMenu);
   // TODO: crbug.com/336547987 - Remove when this is fully deployed.
   config.features_disabled.push_back(
       safe_browsing::kExtendedReportingRemovePrefDependencyIos);
@@ -466,8 +464,6 @@ void PressInfoButtonForCell(NSString* cellId) {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(
       safe_browsing::kExtendedReportingRemovePrefDependencyIos);
-  // TODO (crbug.com/1285974) Remove when bug is resolved.
-  config.features_disabled.push_back(kNewOverflowMenu);
   return config;
 }
 
@@ -488,8 +484,6 @@ void PressInfoButtonForCell(NSString* cellId) {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       safe_browsing::kExtendedReportingRemovePrefDependencyIos);
-  // TODO (crbug.com/1285974) Remove when bug is resolved.
-  config.features_disabled.push_back(kNewOverflowMenu);
   return config;
 }
 
