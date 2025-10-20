@@ -1,3 +1,14 @@
+# 2.10.0
+
+## What's Changed
+* Implement iterator for all named flags by @ssrlive in https://github.com/bitflags/bitflags/pull/465
+* Depend on serde_core instead of serde by @KodrAus in https://github.com/bitflags/bitflags/pull/467
+
+## New Contributors
+* @ssrlive made their first contribution in https://github.com/bitflags/bitflags/pull/465
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.9.4...2.10.0
+
 # 2.9.4
 
 ## What's Changed

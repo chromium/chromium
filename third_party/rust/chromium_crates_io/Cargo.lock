@@ -47,7 +47,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "bitflags"
-version = "2.9.4"
+version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -102,7 +102,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "base64",
- "bitflags 2.9.4",
+ "bitflags 2.10.0",
  "bytemuck",
  "bytes",
  "crc32fast",
@@ -773,7 +773,7 @@ name = "png"
 version = "0.18.0-rc"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "bitflags 2.9.4",
+ "bitflags 2.10.0",
  "crc32fast",
  "fdeflate",
  "flate2",

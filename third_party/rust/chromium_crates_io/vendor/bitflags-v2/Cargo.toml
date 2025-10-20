@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56.0"
 name = "bitflags"
-version = "2.9.4"
+version = "2.10.0"
 authors = ["The Rust Project Developers"]
 build = false
 exclude = [
@@ -46,6 +46,7 @@ features = ["example_generated"]
 
 [features]
 example_generated = []
+serde = ["serde_core"]
 std = []
 
 [lib]
@@ -84,8 +85,8 @@ optional = true
 version = "1.12"
 optional = true
 
-[dependencies.serde]
-version = "1.0.103"
+[dependencies.serde_core]
+version = "1.0.228"
 optional = true
 default-features = false
 
@@ -100,11 +101,13 @@ features = ["derive"]
 [dev-dependencies.rustversion]
 version = "1.0"
 
-[dev-dependencies.serde_derive]
-version = "1.0.103"
-
 [dev-dependencies.serde_json]
 version = "1.0"
+
+[dev-dependencies.serde_lib]
+version = "1.0.103"
+features = ["derive"]
+package = "serde"
 
 [dev-dependencies.serde_test]
 version = "1.0.19"
