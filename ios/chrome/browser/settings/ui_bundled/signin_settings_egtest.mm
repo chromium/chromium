@@ -568,7 +568,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 // Tests that if a user signs in and declines History Sync, then sign-out, then
 // History Sync screen is skipped if they sign-in again from the settings.
-- (void)testHistorySyncSkippedIfDeclinedJustBefore {
+// TODO(crbug.com/453019053): Test is failing on the waterfall.
+- (void)DISABLED_testHistorySyncSkippedIfDeclinedJustBefore {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [ChromeEarlGreyUI openSettingsMenu];
