@@ -531,13 +531,10 @@ void CanvasResourceSharedImage::GetSyncToken() {
   DCHECK(!is_cross_thread());
 
   auto* raster_interface = RasterInterface();
+  CHECK(raster_interface);
 
-  // TODO(crbug.com/40286368): Verify that context loss is handled at all
-  // callsites before invoking this method and remove this conditional.
-  if (raster_interface) {
-    raster_interface->GenUnverifiedSyncTokenCHROMIUM(
-        owning_thread_data().sync_token.GetData());
-  }
+  raster_interface->GenUnverifiedSyncTokenCHROMIUM(
+      owning_thread_data().sync_token.GetData());
 }
 
 void CanvasResourceSharedImage::VerifySyncToken() {
