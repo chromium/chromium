@@ -81,6 +81,11 @@ EXCLUDED_TESTS = [
                  'issue-122600-ptr-discriminant-update.rs'),
     os.path.join('tests', 'codegen-llvm', 'vec_pop_push_noop.rs'),
     os.path.join('tests', 'codegen-llvm', 'vecdeque_pop_push.rs'),
+    # Temporarily disabled due to https://crbug.com/453668132
+    os.path.join('tests', 'codegen-llvm', 'simd-intrinsic', 'simd-intrinsic-generic-scatter.rs'),
+    os.path.join('tests', 'codegen-llvm', 'simd-intrinsic', 'simd-intrinsic-generic-gather.rs'),
+    os.path.join('tests', 'codegen-llvm', 'simd-intrinsic', 'simd-intrinsic-generic-masked-store.rs'),
+    os.path.join('tests', 'codegen-llvm', 'simd-intrinsic', 'simd-intrinsic-generic-masked-load.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
