@@ -4,6 +4,11 @@
     --cr-searchbox-min-width: min(calc(100%), 1100px);
     --composebox-collapsed-height: 90px;
     --aim-header-height: 66px;
+
+    background-color: var(--search-background-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   /* Light mode not on AIM results */
@@ -75,7 +80,7 @@
   }
 
   :host([dark-mode]) .results-pane {
-    background-color: #1f1f1f;
+    background-color: var(--search-background-color);
   }
 
   :host([enable-aim-searchbox]:not([enable-client-side-aim-header])) .results-pane {

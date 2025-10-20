@@ -37,7 +37,7 @@
 }
 
 #errorPage {
-  background-color: white;
+  background-color: var(--search-background-color);
   height: 100%;
   inset: 0;
   position: absolute;
@@ -57,10 +57,6 @@
 
 :host([dark-mode]) #errorBottomLine {
   color: #9AA0A6;
-}
-
-:host([dark-mode]) #errorPage {
-  background-color: #1F1F1F;
 }
 
 :host([dark-mode]) #errorTopLine {
