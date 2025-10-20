@@ -52,6 +52,9 @@ class DataControlsTabHelper
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
+  // Called after the clipboard has been read from.
+  void DidFinishClipboardRead();
+
  private:
   friend class web::LazyWebStateUserData<DataControlsTabHelper>;
   explicit DataControlsTabHelper(web::WebState* web_state);

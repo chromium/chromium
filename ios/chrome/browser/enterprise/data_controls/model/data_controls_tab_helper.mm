@@ -135,6 +135,9 @@ void DataControlsTabHelper::SetSnackbarHandler(
     id<SnackbarCommands> snackbar_handler) {
   snackbar_handler_ = snackbar_handler;
 }
+void DataControlsTabHelper::DidFinishClipboardRead() {
+  // TODO(crbug.com/448120059): Handle clipboard finish reads.
+}
 
 bool DataControlsTabHelper::IsClipboardDataControlsEnabled() const {
   return base::FeatureList::IsEnabled(kEnableClipboardDataControlsIOS);

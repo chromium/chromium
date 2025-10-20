@@ -374,3 +374,9 @@ void WebStateDelegateBrowserAgent::ShouldAllowCut(
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
       ->ShouldAllowCut(std::move(callback));
 }
+
+void WebStateDelegateBrowserAgent::DidFinishClipboardRead(
+    web::WebState* source) {
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
+      ->DidFinishClipboardRead();
+}
