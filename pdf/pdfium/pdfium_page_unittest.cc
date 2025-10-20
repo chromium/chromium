@@ -843,6 +843,21 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfoAt) {
   EXPECT_EQ(page.GetCharCount(), current_char_index);
   text_run_info_result = page.GetTextRunInfoAt(current_char_index);
   ASSERT_FALSE(text_run_info_result.has_value());
+
+  // Test a char index that is not at the start of a text run.
+  text_run_info_result = page.GetTextRunInfoAt(1);
+  ASSERT_TRUE(text_run_info_result.has_value());
+  const auto& actual_text_run = text_run_info_result.value();
+  // TODO(crbug.com/452406608): Expected text run should be the same as
+  // `expected_text_runs[0]`.
+  static const AccessibilityTextRunInfo expected_text_run{
+      /*start_index=*/1,
+      /*len=*/6,
+      "",
+      gfx::RectF(38.666666f, 189.333333f, 26.666672f, 13.333344f),
+      AccessibilityTextDirection::kLeftToRight,
+      expected_style_1};
+  CompareTextRuns(expected_text_run, actual_text_run);
 }
 
 TEST_P(PDFiumPageTextTest, HighlightTextRunInfo) {
