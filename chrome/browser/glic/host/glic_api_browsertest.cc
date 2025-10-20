@@ -213,6 +213,24 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
     NonInteractiveGlicApiTest::SetUpCommandLine(command_line);
   }
 
+  // Common setup used in some tests.
+  void NavigateTabAndOpenGlic(bool open_floating = false) {
+    if (open_floating) {
+      TrackFloatingGlicInstance();
+    }
+    // Load the test page in a tab, so that there is some page context.
+    RunTestSequence(
+        InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, page_url()),
+        Log("Opening Glic window"),
+        !open_floating
+            ? OpenGlicWindow(GlicWindowMode::kDetached,
+                             GlicInstrumentMode::kHostAndContents)
+            : OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents),
+        Log("Done opening glic window"));
+  }
+
+  void NavigateTabAndOpenGlicFloating() { NavigateTabAndOpenGlic(true); }
+
   GURL page_url() {
     return InProcessBrowserTest::embedded_test_server()->GetURL(
         "/glic/browser_tests/test.html");
@@ -239,14 +257,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   void SetUpOnMainThread() override {
     GlicApiTest::SetUpOnMainThread();
 
-    LOG(INFO) << "GlicApiTestWithOneTab: opening tab";
-    // Load the test page in a tab, so that there is some page context.
-    RunTestSequence(InstrumentTab(kFirstTab),
-                    NavigateWebContents(kFirstTab, page_url()),
-                    Log("Opening Glic window"),
-                    OpenGlicWindow(GlicWindowMode::kDetached,
-                                   GlicInstrumentMode::kHostAndContents),
-                    Log("Done opening glic window"));
+    NavigateTabAndOpenGlic();
   }
 
   std::string GetDocumentIdForTab(ui::ElementIdentifier tab_id) {
@@ -1856,7 +1867,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
-  // multi-instance: document.visibilityState never transitions to 'hidden'.
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   ExecuteJsTest();
@@ -1875,13 +1885,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPinTabs) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testUnpinTabsWhileClosing) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsWhileClosing) {
+  NavigateTabAndOpenGlicFloating();
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPinTabsWithTwoTabs) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsWithTwoTabs) {
+  // TODO(b/452687492): This crashes with multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
+  NavigateTabAndOpenGlicFloating();
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
   ExecuteJsTest();
   browser()->tab_strip_model()->SelectPreviousTab();

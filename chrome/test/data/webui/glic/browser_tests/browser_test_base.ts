@@ -8,7 +8,7 @@
 
 import {WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, PanelStateKind} from '/glic/glic_api/glic_api.js';
-import {ObservableValue, type Subscriber} from '/glic/observable.js';
+import {ObservableValue, Subject, type Subscriber} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
@@ -24,6 +24,16 @@ export function getTestName(): string|null {
     testName = testName ? testName.substring(0, lastSlashIndex) : null;
   }
   return testName;
+}
+
+export function mapObservable<S, T>(src: Observable<S>, mapping: (s: S) => T) {
+  const result = new Subject<T>();
+  src.subscribe(
+      (v) => {
+        result.next(mapping(v));
+      },
+  );
+  return result;
 }
 
 // Creates a queue of promises from an observable.
