@@ -17,6 +17,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/dbus/utils/read_message.h"
 #include "components/dbus/utils/read_value.h"
 #include "components/dbus/utils/signature.h"
 #include "components/dbus/utils/types.h"
@@ -26,26 +27,6 @@
 #include "dbus/object_proxy.h"
 
 namespace dbus_utils {
-
-namespace internal {
-
-// Convert a std::tuple<Ts...> to std::tuple<std::optional<Ts>...>
-template <typename T>
-struct TupleToOpts;
-
-template <typename... Ts>
-struct TupleToOpts<std::tuple<Ts...>> {
-  using type = std::tuple<std::optional<Ts>...>;
-};
-
-template <typename... Ts>
-std::tuple<Ts...> Unwrap(std::tuple<std::optional<Ts>...> input) {
-  return std::apply(
-      [](auto&&... args) { return std::tuple(*std::move(args)...); },
-      std::move(input));
-}
-
-}  // namespace internal
 
 enum class CallMethodErrorStatus {
   kErrorResponse = 0,
@@ -100,32 +81,20 @@ void CallMethodImpl(dbus::ObjectProxy* proxy,
           [](base::OnceCallback<void(Result)> cb, dbus::Response* response,
              dbus::ErrorResponse* error_response) {
             if (response) {
-              typename TupleToOpts<typename Result::value_type>::type rets;
-              dbus::MessageReader reader(response);
-              const bool success = std::apply(
-                  [&](auto&... value) {
-                    auto read_and_assign = [&](auto& member) {
-                      using OptionalType =
-                          std::remove_cvref_t<decltype(member)>;
-                      if (auto result =
-                              ReadValue<typename OptionalType::value_type>(
-                                  reader)) {
-                        member = std::move(*result);
-                        return true;
-                      }
-                      return false;
-                    };
-                    return (read_and_assign(value) && ...);
-                  },
-                  rets);
-              if (!success) {
-                std::move(cb).Run(base::unexpected(CallMethodError(
-                    CallMethodErrorStatus::kInvalidResponseFormat, nullptr)));
-              } else if (reader.HasMoreData()) {
-                std::move(cb).Run(base::unexpected(CallMethodError(
-                    CallMethodErrorStatus::kExtraDataInResponse, nullptr)));
-              } else {
-                std::move(cb).Run(Unwrap(std::move(rets)));
+              auto rets = ReadMessage<typename Result::value_type>(*response);
+              if (rets.has_value()) {
+                std::move(cb).Run(std::move(*rets));
+                return;
+              }
+              switch (rets.error()) {
+                case MessageFormatError::kInvalidMessageFormat:
+                  std::move(cb).Run(base::unexpected(CallMethodError(
+                      CallMethodErrorStatus::kInvalidResponseFormat, nullptr)));
+                  return;
+                case MessageFormatError::kExtraDataInMessage:
+                  std::move(cb).Run(base::unexpected(CallMethodError(
+                      CallMethodErrorStatus::kExtraDataInResponse, nullptr)));
+                  return;
               }
             } else if (error_response) {
               std::move(cb).Run(base::unexpected(CallMethodError(

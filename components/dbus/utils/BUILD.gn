@@ -12,8 +12,10 @@ source_set("utils") {
     "call_method.h",
     "check_for_service_and_start.cc",
     "check_for_service_and_start.h",
+    "connect_to_signal.h",
     "name_has_owner.cc",
     "name_has_owner.h",
+    "read_message.h",
     "read_value.h",
     "signature.h",
     "types.h",
@@ -34,6 +36,7 @@ source_set("unit_tests") {
   sources = [
     "call_method_unittest.cc",
     "check_for_service_and_start_unittest.cc",
+    "connect_to_signal_unittest.cc",
     "read_write_value_unittest.cc",
     "signature_unittest.cc",
     "types_unittest.cc",
