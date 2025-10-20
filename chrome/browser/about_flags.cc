@@ -1230,6 +1230,13 @@ const FeatureEntry::FeatureVariation kJourneysVariations[] = {
      std::size(kJourneysAllLocalesParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam kLensAimSuggestionsTypeContextual[] = {
+    {"lens-aim-suggestions-type", "Contextual"}};
+
+const FeatureEntry::FeatureVariation kLensAimSuggestionsVariations[] = {
+    {"with Contextual", kLensAimSuggestionsTypeContextual,
+     std::size(kLensAimSuggestionsTypeContextual), nullptr}};
+
 const FeatureEntry::FeatureVariation kRemotePageMetadataVariations[] = {
     {"High Performance Canonicalization", nullptr, 0, "3362133"},
 };
@@ -11301,6 +11308,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"language-detection-api", flag_descriptions::kLanguageDetectionAPIName,
      flag_descriptions::kLanguageDetectionAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kLanguageDetectionAPI)},
+
+    {"lens-aim-suggestions", flag_descriptions::kLensAimSuggestionsName,
+     flag_descriptions::kLensAimSuggestionsDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensAimSuggestions,
+                                    kLensAimSuggestionsVariations,
+                                    "LensAimSuggestions")},
 
 #if BUILDFLAG(IS_ANDROID)
 

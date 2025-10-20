@@ -2637,6 +2637,12 @@ inline constexpr char kLensSearchAimM3Name[] =
 inline constexpr char kLensSearchAimM3Description[] =
     "Enables AIM follow ups with the Lens overlay results side panel.";
 
+inline constexpr char kLensAimSuggestionsName[] =
+    "Lens AIM M3 Side Panel Suggestions";
+inline constexpr char kLensAimSuggestionsDescription[] =
+    "Enables suggestions in the Lens composebox. This will have an effect "
+    "only when the Lens search AIM M3 flag is also enabled.";
+
 inline constexpr char kLensSearchReinvocationAffordanceName[] =
     "Lens search reinvocation affordance";
 inline constexpr char kLensSearchReinvocationAffordanceDescription[] =

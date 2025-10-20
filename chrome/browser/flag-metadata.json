@@ -6396,6 +6396,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "lens-aim-suggestions",
+    "owners": [ "dianaou@google.com", "lens-chrome@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "lens-block-fetch-objects-interaction-rpcs-on-separate-handshake",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 145

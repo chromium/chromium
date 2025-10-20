@@ -14786,6 +14786,7 @@ from previous Chrome versions.
   <int value="182986882" label="TerminalSSH:disabled"/>
   <int value="183208826" label="TabGroups:enabled"/>
   <int value="183467994" label="GridTabSwitcherAndroidAnimations:disabled"/>
+  <int value="184274661" label="LensAimSuggestions:enabled"/>
   <int value="185991204" label="enable-webrtc-srtp-encrypted-headers"/>
   <int value="186463628" label="DnsOverHttps:disabled"/>
   <int value="187109402" label="SyncingCompromisedCredentials:enabled"/>
@@ -20192,6 +20193,7 @@ from previous Chrome versions.
   <int value="2081852489" label="GeolocationElement:enabled"/>
   <int value="2082210271" label="AndroidTabGroupStableIds:enabled"/>
   <int value="2083728915" label="GlicEntrypointVariations:enabled"/>
+  <int value="2084094570" label="LensAimSuggestions:disabled"/>
   <int value="2084477383" label="CrostiniDiskResizing:enabled"/>
   <int value="2084638930"
       label="AutofillEnforceMinRequiredFieldsForUpload:enabled"/>
