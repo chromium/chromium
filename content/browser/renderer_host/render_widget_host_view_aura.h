@@ -99,6 +99,13 @@ class RenderFrameHostImpl;
 class RenderWidgetHostView;
 class TouchSelectionControllerClientAura;
 
+// For use in conditional Arabic digit substitution. See comment in InsertChar.
+inline constexpr char16_t kArabicIndicZero = u'\u0660';
+
+#if BUILDFLAG(IS_WIN)
+CONTENT_EXPORT void ResetArabicDigitSubStateForTesting();
+#endif  // BUILDFLAG(IS_WIN)
+
 // RenderWidgetHostView class hierarchy described in render_widget_host_view.h.
 class CONTENT_EXPORT RenderWidgetHostViewAura
     : public RenderWidgetHostViewBase,

@@ -33,6 +33,7 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/input_router.h"
 #include "components/input/mouse_wheel_event_queue.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
@@ -114,6 +115,7 @@
 #include "ui/events/blink/blink_features.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/gestures/motion_event_aura.h"
@@ -135,6 +137,8 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
+#include "ui/events/keycodes/keyboard_codes_win.h"
+#include "ui/events/test/keyboard_layout.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -5159,6 +5163,44 @@ TEST_F(RenderWidgetHostViewAuraTest, KeyEventsHandled) {
   view_->OnKeyEvent(&key_event2);
   EXPECT_FALSE(key_event2.handled());
 }
+
+#if BUILDFLAG(IS_WIN)
+// Arabic keyboard layouts on Windows do not natively support Arabic-Indic
+// digit input. This is worked around for web page input scenarios by
+// forwarding NativeWebKeyboardEvents with Arabic-Indic digit in InsertChar
+// upon receipt of a KeyEvent containing an ASCII digit.
+// This test verifies that behavior.
+TEST_F(RenderWidgetHostViewAuraTest, InsertCharArabicDigitSubstitution) {
+  ResetArabicDigitSubStateForTesting();
+
+  InitViewForFrame(nullptr);
+  view_->Show();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kArabicDigitSubstitution);
+  ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ARABIC);
+
+  // Calling ActivateKeyboardLayout does not trigger
+  // TSFTextStore::OnLanguageChanged nor does it generate a WM_INPUTLANGCHANGE
+  // message. So for testing purposes call OnInputMethodChanged directly.
+  view_->OnInputMethodChanged();
+
+  for (int i = 0; i < 10; ++i) {
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed,
+                           static_cast<ui::KeyboardCode>(ui::VKEY_0 + i),
+                           ui::DomCode::NONE, ui::EF_NONE);
+    view_->InsertChar(key_event);
+    const input::NativeWebKeyboardEvent* event =
+        delegates_.back()->last_event();
+    ASSERT_TRUE(event);
+
+    char16_t expected = static_cast<char16_t>(i + kArabicIndicZero);
+    EXPECT_EQ(expected, event->windows_key_code) << "Digit index: " << i;
+    EXPECT_EQ(expected, event->text[0]) << "Digit index: " << i;
+    EXPECT_EQ(expected, event->unmodified_text[0]) << "Digit index: " << i;
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(RenderWidgetHostViewAuraTest, SetCanScrollForWebMouseWheelEvent) {
   InitViewForFrame(nullptr);
