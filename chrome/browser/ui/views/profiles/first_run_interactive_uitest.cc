@@ -560,6 +560,8 @@ class FirstRunParameterizedInteractiveUiTest
           {privacy_sandbox::kPrivacySandboxSettings4,
            {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.name,
              "true"}}});
+      disabled_features.push_back(
+          privacy_sandbox::kDisablePrivacySandboxPrompts);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
