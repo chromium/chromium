@@ -229,19 +229,22 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
     return;
   }
 
-  UIView* logoView = searchEngineLogoMediator.view;
-  logoView.translatesAutoresizingMaskIntoConstraints = NO;
-  logoView.userInteractionEnabled = NO;
+  if (searchEngineLogoMediator && searchEngineLogoMediator.view) {
+    UIView* logoView = searchEngineLogoMediator.view;
+    logoView.translatesAutoresizingMaskIntoConstraints = NO;
+    logoView.userInteractionEnabled = NO;
 
-  // Insert the logo view right after the spacer.
-  [self.innerContentView insertArrangedSubview:logoView atIndex:1];
+    // Insert the logo view right after the spacer.
+    [self.innerContentView insertArrangedSubview:logoView atIndex:1];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
-    [logoView.heightAnchor constraintEqualToConstant:kLogoHeight],
-  ]];
+    [NSLayoutConstraint activateConstraints:@[
+      [logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
+      [logoView.heightAnchor constraintEqualToConstant:kLogoHeight],
+    ]];
 
-  [self.innerContentView setCustomSpacing:kOmniboxTopMargin afterView:logoView];
+    [self.innerContentView setCustomSpacing:kOmniboxTopMargin
+                                  afterView:logoView];
+  }
 
   _backgroundConfiguration = option;
   _searchEngineLogoMediator = searchEngineLogoMediator;
