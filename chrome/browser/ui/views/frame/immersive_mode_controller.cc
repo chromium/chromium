@@ -15,6 +15,11 @@ ImmersiveModeController* ImmersiveModeController::From(
     BrowserWindowInterface* browser) {
   return Get(browser->GetUnownedUserDataHost());
 }
+// static
+const ImmersiveModeController* ImmersiveModeController::From(
+    const BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
 
 ImmersiveModeController::ImmersiveModeController(
     BrowserWindowInterface* browser)

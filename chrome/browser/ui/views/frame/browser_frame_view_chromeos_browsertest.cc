@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
   // No painting should occur in non-immersive fullscreen. (We enter into tab
   // fullscreen here because tab fullscreen is non-immersive even on ChromeOS).
   EnterTabFullscreenMode(browser(), web_contents);
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(ImmersiveModeController::From(browser())->IsEnabled());
   EXPECT_TRUE(browser_view->IsFullscreen());
   EXPECT_FALSE(test_api.GetShouldPaint());
 
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
   // The frame should be painted again when fullscreen is exited and the caption
   // buttons should be visible.
   ExitTabFullscreenMode(browser(), web_contents);
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(ImmersiveModeController::From(browser())->IsEnabled());
   EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(test_api.GetShouldPaint());
 }
@@ -361,14 +361,14 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
 
   EnterTabFullscreenMode(browser(), web_contents);
   EXPECT_TRUE(browser_view->IsFullscreen());
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(ImmersiveModeController::From(browser())->IsEnabled());
   // Caption buttons are hidden.
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 
   // The frame should be painted again when fullscreen is exited and the caption
   // buttons should be visible.
   ExitTabFullscreenMode(browser(), web_contents);
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(ImmersiveModeController::From(browser())->IsEnabled());
   EXPECT_FALSE(browser_view->IsFullscreen());
   // Caption button container visible again.
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
@@ -942,9 +942,8 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasNoToolbar) {
 
 // Test the normal type browser's kTopViewInset is always 0.
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, TopViewInset) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
   aura::Window* window = browser()->window()->GetNativeWindow();
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 
@@ -1155,10 +1154,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
   Browser* app_browser =
       CreateBrowserForApp("test_browser_app", browser()->profile());
 
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(app_browser);
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(app_browser);
   aura::Window* window = app_browser->window()->GetNativeWindow();
   EXPECT_LT(0, window->GetProperty(aura::client::kTopViewInset));
 
@@ -1191,8 +1188,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        ToggleTabletModeWhileImmersiveModeEnabled) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
 
   EnterImmersiveFullscreenMode(browser());
 
@@ -1240,8 +1237,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        ToggleImmersiveModeWhileTabletModeEnabled) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
   ASSERT_FALSE(immersive_mode_controller->IsEnabled());
   ASSERT_FALSE(browser_view->IsFullscreen());
 
@@ -1425,8 +1422,8 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
       ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(ash::WindowState::Get(native_window)->IsMaximized());
 
-  const ImmersiveModeController* immersive_mode_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 }
 
@@ -1484,8 +1481,8 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
       BrowserView::GetBrowserViewForBrowser(app_browser);
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(app_browser);
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 
   // Tablet mode doesn't affect app's caption button's visibility.
@@ -1514,7 +1511,9 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
   browser()->SetLockedForOnTask(false);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 
   // Set locked fullscreen state.
   PinWindow(browser_view->GetWidget()->GetNativeWindow(), /*trusted=*/true);
@@ -1522,7 +1521,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
   // We're fullscreen, immersive is disabled in locked fullscreen, and while
   // we're at it, also make sure that the shelf is hidden.
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
 
   auto* const widget = browser_view->GetWidget();
@@ -1538,13 +1537,13 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
 
   EnterTabletMode();
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 
   ExitTabletMode();
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 }
@@ -1554,7 +1553,9 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
   browser()->SetLockedForOnTask(true);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 
   // Set locked fullscreen state.
   PinWindow(browser_view->GetWidget()->GetNativeWindow(), /*trusted=*/true);
@@ -1562,7 +1563,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
   // Verify immersive mode is enabled in locked fullscreen mode and when locked
   // for OnTask. Also verify that the shelf is hidden.
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
-  EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_TRUE(immersive_mode_controller->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
 
   auto* const widget = browser_view->GetWidget();
@@ -1578,13 +1579,13 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
 
   EnterTabletMode();
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
-  EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_TRUE(immersive_mode_controller->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 
   ExitTabletMode();
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
-  EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_TRUE(immersive_mode_controller->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 }

@@ -92,7 +92,7 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
     return [&]() {
       auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
       return browser_view->GetWidget()->IsFullscreen() &&
-             browser_view->immersive_mode_controller()->IsEnabled();
+             ImmersiveModeController::From(browser())->IsEnabled();
     };
   }
 #endif  // BUILDFLAG(IS_MAC)

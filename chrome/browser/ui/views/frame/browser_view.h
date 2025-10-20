@@ -376,12 +376,6 @@ class BrowserView : public BrowserWindow,
   // hosted in an OverlayWidget.
   views::Widget* GetWidgetForAnchoring();
 
-  // See ImmersiveModeController for description.
-  // TODO(crbug.com/427826289): Eliminate this accessor and pass
-  // ImmersiveModeController to dependent features during construction.
-  ImmersiveModeController* immersive_mode_controller();
-  const ImmersiveModeController* immersive_mode_controller() const;
-
   // Returns true if the view has been initialized.
   bool initialized() const { return initialized_; }
 
@@ -774,15 +768,6 @@ class BrowserView : public BrowserWindow,
   bool CanUserEnterFullscreen() const override;
   bool CanUserExitFullscreen() const override;
 
-  // ExclusiveAccessBubbleViewsContext:
-  ExclusiveAccessManager* GetExclusiveAccessManager() override;
-  ui::AcceleratorProvider* GetAcceleratorProvider() override;
-  gfx::NativeView GetBubbleParentView() const override;
-  gfx::Rect GetClientAreaBoundsInScreen() const override;
-  bool IsImmersiveModeEnabled() const override;
-  gfx::Rect GetTopContainerBoundsInScreen() override;
-  void DestroyAnyExclusiveAccessBubble() override;
-
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
@@ -899,6 +884,15 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
 
   class AccessibilityModeObserver;
+
+  // ExclusiveAccessBubbleViewsContext:
+  ExclusiveAccessManager* GetExclusiveAccessManager() override;
+  ui::AcceleratorProvider* GetAcceleratorProvider() override;
+  gfx::NativeView GetBubbleParentView() const override;
+  gfx::Rect GetClientAreaBoundsInScreen() const override;
+  bool IsImmersiveModeEnabled() const override;
+  gfx::Rect GetTopContainerBoundsInScreen() override;
+  void DestroyAnyExclusiveAccessBubble() override;
 
   // Sets or clears the flags to force showing bookmark bar.
   void SetForceShowBookmarkBarFlag(BookmarkBarController::ForceShowFlag flag);

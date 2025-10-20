@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
@@ -45,7 +46,7 @@ void FindBarOwnerViews::OnFindBarVisibilityChanged(gfx::Rect visible_bounds) {
   // Tell the immersive mode controller about the find bar's new bounds. The
   // immersive mode controller uses the bounds to keep the top-of-window views
   // revealed when the mouse is hovered over the find bar.
-  browser_view_->immersive_mode_controller()->OnFindBarVisibleBoundsChanged(
-      visible_bounds);
+  ImmersiveModeController::From(browser_view_->browser())
+      ->OnFindBarVisibleBoundsChanged(visible_bounds);
   browser_view_->browser()->OnFindBarVisibilityChanged();
 }

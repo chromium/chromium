@@ -37,6 +37,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -48,7 +49,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
@@ -511,8 +512,7 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock;
   if (location_bar_view_ && location_bar_view_->browser()) {
     focus_reveal_lock =
-        BrowserView::GetBrowserViewForBrowser(location_bar_view_->browser())
-            ->immersive_mode_controller()
+        ImmersiveModeController::From(location_bar_view_->browser())
             ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 

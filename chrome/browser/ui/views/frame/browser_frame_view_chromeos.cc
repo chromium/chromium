@@ -204,9 +204,8 @@ BrowserFrameViewChromeOS::BrowserFrameViewChromeOS(BrowserWidget* widget,
 }
 
 BrowserFrameViewChromeOS::~BrowserFrameViewChromeOS() {
-  ImmersiveModeController* immersive_controller =
-      browser_view()->immersive_mode_controller();
-  if (immersive_controller) {
+  if (auto* immersive_controller =
+          ImmersiveModeController::From(browser_view()->browser())) {
     immersive_controller->RemoveObserver(this);
   }
 
@@ -265,7 +264,7 @@ void BrowserFrameViewChromeOS::Init() {
     UpdateBorderlessModeEnabled();
   }
 
-  browser_view()->immersive_mode_controller()->AddObserver(this);
+  ImmersiveModeController::From(browser_view()->browser())->AddObserver(this);
 }
 
 BrowserLayoutParams BrowserFrameViewChromeOS::GetBrowserLayoutParams() const {
@@ -332,9 +331,9 @@ int BrowserFrameViewChromeOS::GetTopInset(bool restored) const {
 
   if (!GetShouldPaint()) {
     // When immersive fullscreen unrevealed, tabstrip is offscreen with normal
-    // tapstrip bounds, the top inset should reach this topmost edge.
-    const ImmersiveModeController* const immersive_controller =
-        browser_view()->immersive_mode_controller();
+    // tabstrip bounds, the top inset should reach this topmost edge.
+    const auto* const immersive_controller =
+        ImmersiveModeController::From(browser_view()->browser());
     if (immersive_controller->IsEnabled() &&
         !immersive_controller->IsRevealed()) {
       return (-1) * browser_view()->GetTabStripHeight();
@@ -639,12 +638,11 @@ bool BrowserFrameViewChromeOS::DoesIntersectRect(const views::View* target,
     return false;
   }
 
-  bool should_leave_to_top_container = false;
   // In immersive mode, the caption buttons container is reparented to the
   // TopContainerView and hence |rect| should not be claimed here.  See
   // BrowserFrameViewChromeOS::OnImmersiveRevealStarted().
-  should_leave_to_top_container =
-      browser_view()->immersive_mode_controller()->IsRevealed();
+  const bool should_leave_to_top_container =
+      ImmersiveModeController::From(browser_view()->browser())->IsRevealed();
 
   return !should_leave_to_top_container;
 }
@@ -709,7 +707,8 @@ void BrowserFrameViewChromeOS::OnDisplayMetricsChanged(
 }
 
 void BrowserFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
-  if (!enabled && browser_view()->immersive_mode_controller()->IsRevealed()) {
+  if (!enabled &&
+      ImmersiveModeController::From(browser_view()->browser())->IsRevealed()) {
     // Before updating the caption buttons state below (which triggers a
     // relayout), we want to move the caption buttons from the
     // TopContainerView back to this view.
@@ -720,8 +719,8 @@ void BrowserFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   caption_button_container_->SetVisible(should_show_caption_buttons);
   caption_button_container_->UpdateCaptionButtonState(true /*=animate*/);
 
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view()->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser_view()->browser());
   const bool was_immersive = immersive_mode_controller->IsEnabled();
 
   // Set the immersive mode to what it should be because an immersive mode may
@@ -822,8 +821,8 @@ void BrowserFrameViewChromeOS::OnWindowPropertyChanged(aura::Window* window,
     // fullscreen states (fullscreen <> pinneed), the immersive mode is updated
     // in `BrowserView::FullscreenStateChanged`.
     if (!is_fullscreen && !was_fullscreen) {
-      browser_view()->immersive_mode_controller()->SetEnabled(
-          ShouldEnableImmersiveModeController());
+      ImmersiveModeController::From(browser_view()->browser())
+          ->SetEnabled(ShouldEnableImmersiveModeController());
     }
 
     return;
@@ -1038,8 +1037,8 @@ bool BrowserFrameViewChromeOS::GetShouldPaint() const {
 
   // We need to paint when the top-of-window views are revealed in immersive
   // fullscreen.
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view()->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser_view()->browser());
   if (immersive_mode_controller->IsEnabled()) {
     return immersive_mode_controller->IsRevealed();
   }
@@ -1076,7 +1075,7 @@ BrowserFrameViewChromeOS::CreateFrameHeader() {
 void BrowserFrameViewChromeOS::UpdateTopViewInset() {
   // In immersive fullscreen mode, the top view inset property should be 0.
   const bool immersive =
-      browser_view()->immersive_mode_controller()->IsEnabled();
+      ImmersiveModeController::From(browser_view()->browser())->IsEnabled();
   const bool tab_strip_visible = browser_view()->GetTabStripVisible();
   const int inset = (tab_strip_visible || immersive ||
                      (AppIsPwaWithBorderlessDisplayMode() &&
@@ -1193,7 +1192,8 @@ bool BrowserFrameViewChromeOS::GetHideCaptionButtonsForFullscreen() const {
     return false;
   }
 
-  auto* immersive_controller = browser_view()->immersive_mode_controller();
+  auto* const immersive_controller =
+      ImmersiveModeController::From(browser_view()->browser());
 
   // In fullscreen view, but not in immersive mode. Hide the caption buttons.
   if (!immersive_controller || !immersive_controller->IsEnabled()) {

@@ -97,9 +97,7 @@ class BrowserViewLayoutDelegateImplBrowsertest
         break;
       }
       case WindowState::kImmersiveMode: {
-        auto* const browser_view =
-            BrowserView::GetBrowserViewForBrowser(browser);
-        auto* const controller = browser_view->immersive_mode_controller();
+        auto* const controller = ImmersiveModeController::From(browser);
         // Note: this will enter immersive mode without going fullscreen.
         controller->SetEnabled(true);
         ASSERT_TRUE(controller->IsEnabled());

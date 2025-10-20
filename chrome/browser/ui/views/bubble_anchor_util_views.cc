@@ -80,8 +80,8 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 
   // The app menu button is not visible when immersive mode is enabled and the
   // title bar is not revealed. So return null anchor configuration.
-  if (browser_view->IsImmersiveModeEnabled() &&
-      !browser_view->immersive_mode_controller()->IsRevealed()) {
+  auto* const controller = ImmersiveModeController::From(browser);
+  if (controller->IsEnabled() && !controller->IsRevealed()) {
     return {};
   }
 

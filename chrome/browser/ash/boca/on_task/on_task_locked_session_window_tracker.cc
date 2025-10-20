@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
@@ -221,8 +221,7 @@ void LockedSessionWindowTracker::OnPauseModeChanged(bool paused) {
   // in certain scenarios (like switching to tablet mode), we monitor the
   // browsing instance for such anomalies.
   auto* const immersive_mode_controller =
-      BrowserView::GetBrowserViewForBrowser(browser_)
-          ->immersive_mode_controller();
+      ImmersiveModeController::From(browser_);
   if (paused) {
     immersive_mode_controller->SetEnabled(false);
     immersive_mode_controller_observation_.Reset();

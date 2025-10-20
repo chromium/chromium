@@ -171,8 +171,8 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
       chromeos::ImmersiveFullscreenController::Get(browser_view->GetWidget()));
   immersive_test_api.SetupForTest();
 
-  ImmersiveModeController* const immersive_mode_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
   immersive_mode_controller->SetEnabled(true);
 
   WebUITabStripContainerView* const container = browser_view->webui_tab_strip();

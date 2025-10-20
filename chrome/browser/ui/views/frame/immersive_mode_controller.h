@@ -73,6 +73,8 @@ class ImmersiveModeController {
   virtual ~ImmersiveModeController();
 
   static ImmersiveModeController* From(BrowserWindowInterface* browser);
+  static const ImmersiveModeController* From(
+      const BrowserWindowInterface* browser);
 
   // Must initialize after browser view has a Widget and native window.
   virtual void Init(BrowserView* browser_view) = 0;

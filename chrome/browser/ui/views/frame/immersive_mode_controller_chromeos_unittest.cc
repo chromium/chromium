@@ -51,7 +51,7 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
 
     browser()->window()->Show();
 
-    controller_ = browser_view()->immersive_mode_controller();
+    controller_ = ImmersiveModeController::From(browser());
     chromeos::ImmersiveFullscreenControllerTestApi(
         static_cast<ImmersiveModeControllerChromeos*>(controller_)
             ->controller())

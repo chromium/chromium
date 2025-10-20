@@ -41,7 +41,7 @@ void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
 // TODO (b/287068468): Verify if it's needed on MacOS, once it's verified, we
 // can decide whether keep or remove this function.
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (browser_view_->immersive_mode_controller()->IsRevealed()) {
+  if (ImmersiveModeController::From(browser_view_->browser())->IsRevealed()) {
     // Top-views depend on parts of the frame (themes, window title, window
     // controls) being painted underneath them. Clip rect has already been set
     // to the bounds of this view, so just paint the frame.  Use a clone without

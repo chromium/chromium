@@ -568,9 +568,11 @@ bool DownloadToolbarUIController::IsFullscreenWithParentViewHidden() const {
 #endif
 
   // If immersive fullscreen, check if top chrome is visible.
+  auto* const controller =
+      ImmersiveModeController::From(browser_view_->browser());
   if (browser_view_ && browser_view_->GetLocationBarView() &&
-      browser_view_->IsImmersiveModeEnabled()) {
-    return !browser_view_->immersive_mode_controller()->IsRevealed();
+      controller->IsEnabled()) {
+    return !controller->IsRevealed();
   }
 
   // Handle the remaining fullscreen case.
@@ -593,7 +595,8 @@ bool DownloadToolbarUIController::ShouldShowExclusiveAccessBubble() const {
     return true;
   }
 #endif
-  return !browser_view_->IsImmersiveModeEnabled() &&
+  return !ImmersiveModeController::From(browser_view_->browser())
+              ->IsEnabled() &&
          browser_view_->CanUserExitFullscreen();
 }
 
@@ -904,10 +907,13 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
   }
 
   // If we are in immersive fullscreen, reveal the toolbar to show the bubble.
-  if (browser_view_ && browser_view_->immersive_mode_controller()) {
-    immersive_revealed_lock_ =
-        browser_view_->immersive_mode_controller()->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES);
+  if (browser_view_) {
+    auto* const controller =
+        ImmersiveModeController::From(browser_view_->browser());
+    if (controller) {
+      immersive_revealed_lock_ = controller->GetRevealedLock(
+          ImmersiveModeController::ANIMATE_REVEAL_YES);
+    }
   }
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       button, views::BubbleBorder::TOP_RIGHT,

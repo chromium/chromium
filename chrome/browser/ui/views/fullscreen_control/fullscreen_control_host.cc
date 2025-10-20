@@ -271,7 +271,7 @@ void FullscreenControlHost::OnExitFullscreen() {
 FullscreenControlPopup* FullscreenControlHost::GetPopup() {
   if (!IsPopupCreated()) {
     fullscreen_control_popup_ = std::make_unique<FullscreenControlPopup>(
-        browser_view_->GetBubbleParentView(),
+        browser_view_->GetWidget()->GetNativeView(),
         base::BindRepeating(
             &FullscreenControlHost::OnExitFullscreenPopupClicked,
             base::Unretained(this)),
@@ -296,7 +296,7 @@ void FullscreenControlHost::ShowForInputEntryMethod(
   if (bubble) {
     bubble->HideImmediately();
   }
-  GetPopup()->Show(browser_view_->GetClientAreaBoundsInScreen());
+  GetPopup()->Show(browser_view_->GetWidget()->GetClientAreaBoundsInScreen());
 
   // Exit cooldown mode in case the exit UI is triggered by a different method.
   in_mouse_cooldown_mode_ = false;

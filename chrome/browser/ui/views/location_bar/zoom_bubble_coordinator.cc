@@ -42,7 +42,7 @@ views::View* GetAnchorView(BrowserView* browser_view) {
 
   if (!browser_view->GetWidget()->IsFullscreen() ||
       browser_view->IsToolbarVisible() ||
-      browser_view->immersive_mode_controller()->IsRevealed()) {
+      ImmersiveModeController::From(browser_view->browser())->IsRevealed()) {
     return browser_view->toolbar_button_provider()->GetAnchorView(
         kActionZoomNormal);
   }
@@ -82,7 +82,7 @@ ZoomBubbleCoordinator::ZoomBubbleCoordinator(BrowserView& browser_view)
           *this),
       browser_view_(browser_view) {
   immersive_mode_observation_.Observe(
-      browser_view_->immersive_mode_controller());
+      ImmersiveModeController::From(browser_view_->browser()));
 }
 
 ZoomBubbleCoordinator::~ZoomBubbleCoordinator() {

@@ -257,13 +257,12 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
                                       views::FlexSpecification());
   }
 
-  browser_view_->immersive_mode_controller()->AddObserver(this);
+  ImmersiveModeController::From(browser_view_->browser())->AddObserver(this);
 }
 
 WebAppToolbarButtonContainer::~WebAppToolbarButtonContainer() {
-  ImmersiveModeController* immersive_controller =
-      browser_view_->immersive_mode_controller();
-  if (immersive_controller) {
+  if (auto* const immersive_controller =
+          ImmersiveModeController::From(browser_view_->browser())) {
     immersive_controller->RemoveObserver(this);
   }
 }
@@ -362,7 +361,7 @@ gfx::Insets WebAppToolbarButtonContainer::PageActionIconInsetsFromSize(
 // highlight and icon fade in).
 bool WebAppToolbarButtonContainer::GetAnimate() const {
   return !g_animation_disabled_for_testing &&
-         !browser_view_->immersive_mode_controller()->IsEnabled();
+         !ImmersiveModeController::From(browser_view_->browser())->IsEnabled();
 }
 
 void WebAppToolbarButtonContainer::StartTitlebarAnimation() {

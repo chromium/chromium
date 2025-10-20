@@ -330,7 +330,7 @@ gfx::Rect ExclusiveAccessBubbleViews::GetPopupRect() const {
   int x = widget_bounds.x() + (widget_bounds.width() - size.width()) / 2;
 
   int top_container_bottom = widget_bounds.y();
-#if !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS)
   if (bubble_view_context_->IsImmersiveModeEnabled()) {
     // Skip querying the top container height in CrOS non-immersive fullscreen
     // because:

@@ -392,10 +392,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, FullScreenBrowser) {
   browser()->tab_strip_model()->ActivateTabAt(4);
 
   chrome::ToggleFullscreenMode(browser());
-  BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
-      browser()->window()->GetNativeWindow());
-  ImmersiveModeController* immersive_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_controller = ImmersiveModeController::From(browser());
   EXPECT_TRUE(immersive_controller->IsEnabled());
 
   ImmersiveRevealEndedWaiter waiter(immersive_controller);

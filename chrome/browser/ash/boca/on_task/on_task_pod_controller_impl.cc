@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_header.h"
@@ -120,11 +121,9 @@ void OnTaskPodControllerImpl::ToggleTabStripVisibility(bool show,
   }
 
   // Acquire lock to reveal the tab strip.
-  auto* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_.get());
   tab_strip_reveal_lock_ =
-      browser_view->immersive_mode_controller()->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_YES);
+      ImmersiveModeController::From(browser_.get())
+          ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES);
 }
 
 void OnTaskPodControllerImpl::SetSnapLocation(
@@ -222,10 +221,8 @@ bool OnTaskPodControllerImpl::CanNavigateToNextPage() {
 }
 
 bool OnTaskPodControllerImpl::CanToggleTabStripVisibility() {
-  const auto* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_.get());
   return browser_ && platform_util::IsBrowserLockedFullscreen(browser_.get()) &&
-         browser_view->immersive_mode_controller()->IsEnabled();
+         ImmersiveModeController::From(browser_.get())->IsEnabled();
 }
 
 const gfx::Rect OnTaskPodControllerImpl::CalculateWidgetBounds() {

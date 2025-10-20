@@ -66,7 +66,8 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ContentFullscreen) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
 
-  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+  BrowserView* const browser_view =
+      static_cast<BrowserView*>(browser()->window());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
 
   // The zoom bubble should be anchored when not in fullscreen.
@@ -91,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ContentFullscreen) {
   }
 #if !BUILDFLAG(IS_MAC)
   // The immersive mode controller is enabled in content fullscreen on Mac.
-  ASSERT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  ASSERT_FALSE(ImmersiveModeController::From(browser())->IsEnabled());
 #endif
   waiter.Wait();
   EXPECT_FALSE(zoom_bubble_coordinator_->bubble());
@@ -207,11 +208,11 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleImmersiveDisabledBrowserTest,
 // Test whether the zoom bubble is anchored and whether it is visible when in
 // immersive fullscreen.
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
-  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+  BrowserView* const browser_view =
+      static_cast<BrowserView*>(browser()->window());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
 
-  ImmersiveModeController* immersive_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_controller = ImmersiveModeController::From(browser());
   chromeos::ImmersiveFullscreenControllerTestApi(
       static_cast<ImmersiveModeControllerChromeos*>(immersive_controller)
           ->controller())

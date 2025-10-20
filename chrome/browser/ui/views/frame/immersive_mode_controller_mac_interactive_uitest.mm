@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/common/chrome_features.h"
@@ -185,9 +186,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        MinimumContentOffset) {
   DisableFindBarAnimationsDuringTesting(true);
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ImmersiveModeController* controller =
-      browser_view->immersive_mode_controller();
+  auto* const controller = ImmersiveModeController::From(browser());
   controller->SetEnabled(true);
   {
     ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
@@ -224,10 +223,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        ExtraInfobarOffset) {
   ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ImmersiveModeControllerMac* controller =
       reinterpret_cast<ImmersiveModeControllerMac*>(
-          browser_view->immersive_mode_controller());
+          ImmersiveModeController::From(browser()));
   controller->SetEnabled(true);
 
   controller->OnImmersiveModeMenuBarRevealChanged(0);

@@ -277,8 +277,7 @@ void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
   Direction direction = (x_offset < 0) ? LEFT : RIGHT;
   ScrubDirectionChanged(direction);
 
-  ImmersiveModeController* immersive_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_controller = ImmersiveModeController::From(browser_);
   if (immersive_controller->IsEnabled()) {
     immersive_reveal_lock_ = immersive_controller->GetRevealedLock(
         ImmersiveModeController::ANIMATE_REVEAL_YES);

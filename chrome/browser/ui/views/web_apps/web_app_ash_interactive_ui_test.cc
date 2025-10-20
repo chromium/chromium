@@ -38,7 +38,7 @@ class WebAppAshInteractiveUITest : public web_app::WebAppBrowserTestBase {
     Browser* browser = LaunchWebAppBrowser(app_id);
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser);
 
-    controller_ = browser_view_->immersive_mode_controller();
+    controller_ = ImmersiveModeController::From(browser);
     chromeos::ImmersiveFullscreenControllerTestApi(
         static_cast<ImmersiveModeControllerChromeos*>(controller_)
             ->controller())

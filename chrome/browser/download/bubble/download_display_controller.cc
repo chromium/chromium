@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
@@ -149,8 +150,8 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
     should_show_details_on_exit_fullscreen_ =
         display_->ShouldShowExclusiveAccessBubble();
     // Show the details if we are in immersive fullscreen.
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-    will_show_details = browser_view && browser_view->IsImmersiveModeEnabled();
+    auto* const controller = ImmersiveModeController::From(browser_);
+    will_show_details = controller && controller->IsEnabled();
   }
 
   // At this point, we are possibly in fullscreen. If we're in immersive

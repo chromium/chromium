@@ -60,7 +60,7 @@ int BrowserViewLayoutDelegateImplBase::GetTopInsetInBrowserView() const {
   }
 #if BUILDFLAG(IS_MAC)
   if (browser_view_->UsesImmersiveFullscreenTabbedMode() &&
-      browser_view_->immersive_mode_controller()->IsEnabled()) {
+      GetImmersiveModeController()->IsEnabled()) {
     return 0;
   }
 #endif
@@ -103,7 +103,7 @@ bool BrowserViewLayoutDelegateImplBase::IsActiveTabSplit() const {
 
 const ImmersiveModeController*
 BrowserViewLayoutDelegateImplBase::GetImmersiveModeController() const {
-  return browser_view_->immersive_mode_controller();
+  return ImmersiveModeController::From(browser_view_->browser());
 }
 
 ExclusiveAccessBubbleViews*
@@ -167,7 +167,7 @@ bool BrowserViewLayoutDelegateImplBase::ShouldLayoutTabStrip() const {
   // The tab strip is hosted in a separate widget in immersive fullscreen on
   // macOS.
   if (browser_view_->UsesImmersiveFullscreenTabbedMode() &&
-      browser_view_->immersive_mode_controller()->IsEnabled()) {
+      GetImmersiveModeController()->IsEnabled()) {
     return false;
   }
 #endif
@@ -176,9 +176,9 @@ bool BrowserViewLayoutDelegateImplBase::ShouldLayoutTabStrip() const {
 
 int BrowserViewLayoutDelegateImplBase::GetExtraInfobarOffset() const {
 #if BUILDFLAG(IS_MAC)
-  if (browser_view_->UsesImmersiveFullscreenMode() &&
-      browser_view_->immersive_mode_controller()->IsEnabled()) {
-    return browser_view_->immersive_mode_controller()->GetExtraInfobarOffset();
+  auto* const controller = GetImmersiveModeController();
+  if (browser_view_->UsesImmersiveFullscreenMode() && controller->IsEnabled()) {
+    return controller->GetExtraInfobarOffset();
   }
 #endif
   return 0;

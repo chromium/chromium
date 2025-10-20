@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -136,8 +137,8 @@ void BrowserFrameViewMac::OnFullscreenStateChanged() {
   }
 
   if (browser_view()->UsesImmersiveFullscreenMode()) {
-    browser_view()->immersive_mode_controller()->SetEnabled(
-        browser_view()->IsFullscreen());
+    ImmersiveModeController::From(browser_view()->browser())
+        ->SetEnabled(browser_view()->IsFullscreen());
     UpdateFullscreenTopUI();
 
     // browser_view()->DeprecatedLayoutImmediately() is not needed since top
@@ -265,13 +266,13 @@ void BrowserFrameViewMac::UpdateFullscreenTopUI() {
 
     // Update the immersive controller about content fullscreen changes.
     if (mapped_style == remote_cocoa::mojom::ToolbarVisibilityStyle::kNone) {
-      browser_view()->immersive_mode_controller()->OnContentFullscreenChanged(
-          true);
+      ImmersiveModeController::From(browser_view()->browser())
+          ->OnContentFullscreenChanged(true);
     } else if (old_style.has_value() &&
                old_style ==
                    remote_cocoa::mojom::ToolbarVisibilityStyle::kNone) {
-      browser_view()->immersive_mode_controller()->OnContentFullscreenChanged(
-          false);
+      ImmersiveModeController::From(browser_view()->browser())
+          ->OnContentFullscreenChanged(false);
     }
 
     // The layout changes further down are not needed in immersive fullscreen.
@@ -355,7 +356,7 @@ void BrowserFrameViewMac::LayoutWebAppWindowTitle(
   // immersive fullscreen, it is drawn in a way that isn't detected by the
   // DCHECK in Label. As such, disable the DCHECK.
   window_title_label.SetSkipSubpixelRenderingOpacityCheck(
-      browser_view()->IsImmersiveModeEnabled());
+      ImmersiveModeController::From(browser_view()->browser())->IsEnabled());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -441,7 +442,7 @@ void BrowserFrameViewMac::PaintChildren(const views::PaintInfo& info) {
   // allow painting of the frame's children, which fixes a flickering bug:
   // 1400287.
   if (browser_view()->UsesImmersiveFullscreenTabbedMode() ||
-      !browser_view()->immersive_mode_controller()->IsRevealed()) {
+      !ImmersiveModeController::From(browser_view()->browser())->IsRevealed()) {
     BrowserFrameView::PaintChildren(info);
   }
 }

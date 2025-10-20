@@ -290,9 +290,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_TRUE(boca_app_browser->window()->IsVisible());
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
-  auto* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(boca_app_browser);
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(ImmersiveModeController::From(boca_app_browser)->IsEnabled());
   EXPECT_EQ(boca_app_browser->tab_strip_model()->active_index(), 0);
 
   // Verify that tab switch commands are disabled.
@@ -343,9 +341,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
-  auto* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(boca_app_browser);
-  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(ImmersiveModeController::From(boca_app_browser)->IsEnabled());
 
   // Verify that camera and microphone access are disabled.
   ASSERT_TRUE(
@@ -358,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
-  EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_TRUE(ImmersiveModeController::From(boca_app_browser)->IsEnabled());
 
   // Verify that tab switch commands are enabled.
   chrome::BrowserCommandController* const command_controller =
