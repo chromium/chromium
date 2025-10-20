@@ -19,9 +19,6 @@ class GlicSharingManagerImpl;
 // delegated), but notify calls from current delegate are
 // forwarded and all non-callback-subsciptions methods are delegated directly.
 //
-// Holds delegate in a WeakPtr because there are no ownership requirements for
-// the delegate, and we must be able to handle empty delegate behavior anyways.
-//
 // This base class doesn't expose a method to set the delegate, to do so use one
 // of the derived classes below instead.
 class GlicDelegatingSharingManagerBase : public GlicSharingManager {
@@ -85,8 +82,8 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
  protected:
   // Sets the sharing manager delegate. Notifies all subscribers for all
   // callback list subscriptions.
-  void SetDelegate(base::WeakPtr<GlicSharingManager> sharing_manager_delegate);
-  base::WeakPtr<GlicSharingManager> GetDelegate();
+  void SetDelegate(GlicSharingManager* sharing_manager_delegate);
+  GlicSharingManager* GetDelegate();
 
  private:
   // Callbacks for subscribing to delegate (will be forwarded).
@@ -109,7 +106,7 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
   // notifications we actually force (i.e. what delegation is possible).
   void ForceNotify(const std::vector<content::WebContents*>& old_pinned_tabs);
 
-  base::WeakPtr<GlicSharingManager> sharing_manager_delegate_;
+  raw_ptr<GlicSharingManager> sharing_manager_delegate_;
 
   // Callback lists. Maintains its own callback lists to seamlessly support
   // hot-swapping delegate.
@@ -166,7 +163,7 @@ class GlicStablePinningDelegatingSharingManager
     : public GlicDelegatingSharingManagerBase {
  public:
   explicit GlicStablePinningDelegatingSharingManager(
-      base::WeakPtr<GlicSharingManagerImpl> sharing_manager_delegate);
+      GlicSharingManagerImpl* sharing_manager_delegate);
   ~GlicStablePinningDelegatingSharingManager() override;
 
   // Forwards requests to the delegate, under the assumption that the delegate's
@@ -177,8 +174,7 @@ class GlicStablePinningDelegatingSharingManager
 
   // Changes the delegate. Crashes if the GlicPinnedTabManager instance is not
   // the same as the current delegate.
-  void SetDelegate(
-      base::WeakPtr<GlicSharingManagerImpl> sharing_manager_delegate);
+  void SetDelegate(GlicSharingManagerImpl* sharing_manager_delegate);
 };
 
 }  // namespace glic

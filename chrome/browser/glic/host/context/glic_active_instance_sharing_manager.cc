@@ -26,7 +26,7 @@ GlicActiveInstanceSharingManager::~GlicActiveInstanceSharingManager() = default;
 void GlicActiveInstanceSharingManager::OnActiveInstanceChanged(
     GlicInstance* instance) {
   if (instance) {
-    SetDelegate(instance->host().sharing_manager().GetWeakPtr());
+    SetDelegate(&instance->host().sharing_manager());
   } else {
     SetDelegate(nullptr);
   }

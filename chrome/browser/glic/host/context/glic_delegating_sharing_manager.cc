@@ -164,10 +164,9 @@ GlicDelegatingSharingManagerBase::GetWeakPtr() {
 }
 
 void GlicDelegatingSharingManagerBase::SetDelegate(
-    base::WeakPtr<GlicSharingManager> sharing_manager_delegate) {
+    GlicSharingManager* sharing_manager_delegate) {
   // Do nothing if the delegate hasn't changed.
-  if (!sharing_manager_delegate_.WasInvalidated() &&
-      sharing_manager_delegate.get() == sharing_manager_delegate_.get()) {
+  if (sharing_manager_delegate == sharing_manager_delegate_) {
     return;
   }
   // Grab currently pinned tabs before swapping delegate so we can fire pinned
@@ -178,8 +177,7 @@ void GlicDelegatingSharingManagerBase::SetDelegate(
   ForceNotify(old_pinned_tabs);
 }
 
-base::WeakPtr<GlicSharingManager>
-GlicDelegatingSharingManagerBase::GetDelegate() {
+GlicSharingManager* GlicDelegatingSharingManagerBase::GetDelegate() {
   return sharing_manager_delegate_;
 }
 
@@ -285,7 +283,7 @@ GlicDelegatingSharingManager::~GlicDelegatingSharingManager() = default;
 
 GlicStablePinningDelegatingSharingManager::
     GlicStablePinningDelegatingSharingManager(
-        base::WeakPtr<GlicSharingManagerImpl> sharing_manager_delegate) {
+        GlicSharingManagerImpl* sharing_manager_delegate) {
   CHECK(sharing_manager_delegate &&
         sharing_manager_delegate->pinned_tab_manager_);
   GlicDelegatingSharingManagerBase::SetDelegate(sharing_manager_delegate);
@@ -295,10 +293,9 @@ GlicStablePinningDelegatingSharingManager::
     ~GlicStablePinningDelegatingSharingManager() = default;
 
 void GlicStablePinningDelegatingSharingManager::SetDelegate(
-    base::WeakPtr<GlicSharingManagerImpl> sharing_manager_delegate) {
-  CHECK(!GetDelegate().WasInvalidated());
+    GlicSharingManagerImpl* sharing_manager_delegate) {
   GlicSharingManagerImpl* old_delegate =
-      static_cast<GlicSharingManagerImpl*>(GetDelegate().get());
+      static_cast<GlicSharingManagerImpl*>(GetDelegate());
   CHECK(sharing_manager_delegate && old_delegate);
   CHECK(sharing_manager_delegate->pinned_tab_manager_ &&
         sharing_manager_delegate->pinned_tab_manager_ ==
