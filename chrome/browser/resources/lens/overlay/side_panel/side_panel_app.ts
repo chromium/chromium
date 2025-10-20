@@ -733,6 +733,9 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   }
 
   private hideAndReshowFeedbackToast() {
+    // Cancel the timeout to show the feedback toast if it is set.
+    clearTimeout(this.feedbackToastShowAfterDelayTimeoutId);
+
     this.$.feedbackToast.hide();
     this.feedbackToastDismissed = false;
     this.showFeedbackToast();

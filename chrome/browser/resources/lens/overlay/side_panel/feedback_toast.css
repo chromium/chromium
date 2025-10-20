@@ -39,10 +39,9 @@
 
 :host([updated-feedback-enabled]) #feedbackToast {
   bottom: 95px;
-  margin-inline-start: 30px;
-  margin-inline-end: 30px;
-  max-width: 100%;
-  width: auto;
+  max-width: calc(100% - 60px);
+  min-width: 312px;
+  width: 100%;
   z-index: 3;
 }
 
