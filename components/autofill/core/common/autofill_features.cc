@@ -478,7 +478,7 @@ BASE_FEATURE(kAutofillUseChildrenAndReformatMergeMode,
 // See `AutofillAgent::GetSubmittedForm()` for more documentation.
 // TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillUseSubmittedFormInHtmlSubmission,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
@@ -486,7 +486,7 @@ BASE_FEATURE(kAutofillUseSubmittedFormInHtmlSubmission,
 // documentation.
 // TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillPreferSavedFormAsSubmittedForm,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows the import of an Autofill profile if duplicate fields were present
 // with identical field values.

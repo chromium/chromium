@@ -2806,27 +2806,6 @@
             ]
         }
     ],
-    "AutofillImproveSubmissionDetectionV2": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPreferSavedFormAsSubmittedForm",
-                        "AutofillUseSubmittedFormInHtmlSubmission"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillImprovedLabels": [
         {
             "platforms": [
