@@ -19,6 +19,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
@@ -317,8 +318,43 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenWhileClosing) {
   Init();
+
+  class SidePanelEntryObserverFuture : public SidePanelEntryObserver {
+   public:
+    explicit SidePanelEntryObserverFuture(SidePanelEntry* entry)
+        : entry_(entry) {
+      entry_->AddObserver(this);
+    }
+
+    ~SidePanelEntryObserverFuture() override { entry_->RemoveObserver(this); }
+
+    void OnEntryShown(SidePanelEntry* entry) override {
+      shown_future_.SetValue();
+    }
+    void OnEntryHideCancelled(SidePanelEntry* entry) override {
+      hide_cancelled_future_.SetValue();
+    }
+
+    bool WaitForShown() { return shown_future_.WaitAndClear(); }
+    bool WaitForHideCancelled() {
+      return hide_cancelled_future_.WaitAndClear();
+    }
+
+   private:
+    raw_ptr<SidePanelEntry> entry_;
+    base::test::TestFuture<void> shown_future_;
+    base::test::TestFuture<void> hide_cancelled_future_;
+  };
+
+  auto* entry = global_registry()->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+  ASSERT_TRUE(entry);
+
+  SidePanelEntryObserverFuture observer(entry);
+
   // Wait for the side panel to be visible and fully shown.
   coordinator()->Show(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+  EXPECT_TRUE(observer.WaitForShown());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()->GetBrowserView().contents_height_side_panel()->state() ==
            SidePanel::State::kOpen;
@@ -331,6 +367,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenWhileClosing) {
 
   // Opening the same entry should cancel the close.
   coordinator()->Show(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+  EXPECT_TRUE(observer.WaitForHideCancelled());
   auto state =
       browser()->GetBrowserView().contents_height_side_panel()->state();
   EXPECT_TRUE(state == SidePanel::State::kOpen ||

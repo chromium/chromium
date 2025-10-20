@@ -158,6 +158,7 @@ void SidePanelCoordinator::Show(
       browser_view_->contents_height_side_panel()->Open(/*animated=*/true);
       side_panel_toolbar_pinning_controller_->UpdateActiveState(
           entry->key(), entry->should_show_ephemerally_in_toolbar());
+      entry->OnEntryHideCancelled();
     }
     return;
   }

@@ -86,6 +86,10 @@ void SidePanelEntry::OnEntryWillHide(SidePanelEntryHideReason reason) {
   observers_.Notify(&SidePanelEntryObserver::OnEntryWillHide, this, reason);
 }
 
+void SidePanelEntry::OnEntryHideCancelled() {
+  observers_.Notify(&SidePanelEntryObserver::OnEntryHideCancelled, this);
+}
+
 void SidePanelEntry::OnEntryHidden() {
   SidePanelUtil::RecordEntryHiddenMetrics(key_.id(), entry_shown_timestamp_);
   observers_.Notify(&SidePanelEntryObserver::OnEntryHidden, this);
