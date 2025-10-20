@@ -1907,15 +1907,17 @@ void AppMenuModel::Build() {
   if (!browser_->profile()->IsGuestSession()) {
     sub_menus_.push_back(
         std::make_unique<PasswordsAndAutofillSubMenuModel>(this));
-    int string_id = base::FeatureList::IsEnabled(
-                        autofill::features::kYourSavedInfoBrandingInSettings)
+    bool use_your_saved_info_branding =
+        base::FeatureList::IsEnabled(
+            autofill::features::kYourSavedInfoSettingsPage) ||
+        base::FeatureList::IsEnabled(
+            autofill::features::kYourSavedInfoBrandingInSettings);
+    int string_id = use_your_saved_info_branding
                         ? IDS_SETTINGS_YOUR_SAVED_INFO
                         : IDS_PASSWORDS_AND_AUTOFILL_MENU;
     const gfx::VectorIcon& vector_icon =
-        base::FeatureList::IsEnabled(
-            autofill::features::kYourSavedInfoBrandingInSettings)
-            ? vector_icons::kPersonTextIcon
-            : vector_icons::kPasswordManagerIcon;
+        use_your_saved_info_branding ? vector_icons::kPersonTextIcon
+                                     : vector_icons::kPasswordManagerIcon;
     AddSubMenuWithStringIdAndVectorIcon(this, IDC_PASSWORDS_AND_AUTOFILL_MENU,
                                         string_id, sub_menus_.back().get(),
                                         vector_icon);
