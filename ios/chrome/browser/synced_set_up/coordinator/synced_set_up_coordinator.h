@@ -7,8 +7,13 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol SyncedSetUpCoordinatorDelegate;
+
 // Coordinator that orchestrates the Synced Set Up experience.
 @interface SyncedSetUpCoordinator : ChromeCoordinator
+
+// The delegate that receives events from this coordinator.
+@property(nonatomic, weak) id<SyncedSetUpCoordinatorDelegate> delegate;
 
 @end
 

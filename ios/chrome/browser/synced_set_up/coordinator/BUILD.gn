@@ -6,9 +6,12 @@ source_set("coordinator") {
   sources = [
     "synced_set_up_coordinator.h",
     "synced_set_up_coordinator.mm",
+    "synced_set_up_coordinator_delegate.h",
   ]
 
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
 
   deps = []
+
+  frameworks = [ "Foundation.framework" ]
 }

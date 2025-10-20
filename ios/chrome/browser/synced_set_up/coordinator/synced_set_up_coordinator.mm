@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 
+#import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
+
 @implementation SyncedSetUpCoordinator
 
 @end
