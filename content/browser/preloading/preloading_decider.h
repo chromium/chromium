@@ -59,8 +59,11 @@ class CONTENT_EXPORT PreloadingDecider
   //  Receives and processes ML model score for 'url' target link.
   void OnPreloadingHeuristicsModelDone(const GURL& url, float score);
 
-  // Receives and processes 'url' selected by viewport heuristic.
-  void OnViewportHeuristicTriggered(const GURL& url);
+  // Receives and processes `url` selected by "moderate" viewport heuristic.
+  void OnModerateViewportHeuristicTriggered(const GURL& url);
+
+  // Receives and processes `url` selected by "eager" viewport heuristic.
+  void OnEagerViewportHeuristicTriggered(const GURL& url);
 
   // Sets the new preloading decider observer for testing and returns the old
   // one.

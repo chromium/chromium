@@ -351,7 +351,7 @@ void PreloadingDecider::OnPointerHover(
                       eagerness_to_exclude);
 }
 
-void PreloadingDecider::OnViewportHeuristicTriggered(const GURL& url) {
+void PreloadingDecider::OnModerateViewportHeuristicTriggered(const GURL& url) {
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kPreloadingModerateViewportHeuristics));
   static const base::FeatureParam<bool> kShouldEnactCandidates{
@@ -366,6 +366,15 @@ void PreloadingDecider::OnViewportHeuristicTriggered(const GURL& url) {
   }
 
   MaybeEnactCandidate(url, preloading_predictor::kModerateViewportHeuristic,
+                      PreloadingConfidence{100},
+                      /*fallback_to_preconnect=*/false,
+                      /*eagerness_to_exclude=*/{});
+}
+
+void PreloadingDecider::OnEagerViewportHeuristicTriggered(const GURL& url) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kPreloadingEagerViewportHeuristics));
+  MaybeEnactCandidate(url, preloading_predictor::kEagerViewportHeuristic,
                       PreloadingConfidence{100},
                       /*fallback_to_preconnect=*/false,
                       /*eagerness_to_exclude=*/{});

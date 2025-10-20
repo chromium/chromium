@@ -1033,7 +1033,8 @@ TEST_F(PreloadingDeciderTest,
       /*100*(75-0/500)=*/15, 1);
 }
 
-TEST_F(PreloadingDeciderTest, ViewportHeuristicPredictionIsNotEnacted) {
+TEST_F(PreloadingDeciderTest,
+       ModerateViewportHeuristicPredictionIsNotEnactedIfDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kPreloadingModerateViewportHeuristics,
@@ -1051,13 +1052,14 @@ TEST_F(PreloadingDeciderTest, ViewportHeuristicPredictionIsNotEnacted) {
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(url);
   const auto& prefetches = GetPrefetchService()->prefetches_;
   EXPECT_TRUE(prefetches.empty());
 }
 
-TEST_F(PreloadingDeciderTest,
-       ViewportHeuristicPredictionIsEnactedForModeratePrefetchCandidate) {
+TEST_F(
+    PreloadingDeciderTest,
+    ModerateViewportHeuristicPredictionIsEnactedForModeratePrefetchCandidate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kPreloadingModerateViewportHeuristics,
@@ -1076,7 +1078,7 @@ TEST_F(PreloadingDeciderTest,
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(url);
   const auto& prefetches = GetPrefetchService()->prefetches_;
   ASSERT_EQ(prefetches.size(), 1u);
   EXPECT_EQ(prefetches[0]->GetURL(), url);
@@ -1095,7 +1097,44 @@ TEST_F(PreloadingDeciderTest,
 }
 
 TEST_F(PreloadingDeciderTest,
-       ViewportHeuristicIsEnactedForModeratePrerenderCandidate) {
+       EagerViewportHeuristicPredictionIsEnactedForEagerPrefetchCandidate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kPreloadingEagerViewportHeuristics);
+
+  base::HistogramTester histogram_tester;
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider != nullptr);
+
+  const GURL url("https://example.com");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  auto candidate =
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationEagerness::kEager);
+  candidates.push_back(std::move(candidate));
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  preloading_decider->OnEagerViewportHeuristicTriggered(url);
+  const auto& prefetches = GetPrefetchService()->prefetches_;
+  ASSERT_EQ(prefetches.size(), 1u);
+  EXPECT_EQ(prefetches[0]->GetURL(), url);
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(url, main_rfh());
+  navigation->SetTransition(ui::PAGE_TRANSITION_LINK);
+  navigation->Start();
+
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Predictor.EagerViewportHeuristic.Precision",
+      PredictorConfusionMatrix::kTruePositive, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Predictor.EagerViewportHeuristic.Recall",
+      PredictorConfusionMatrix::kTruePositive, 1);
+}
+
+TEST_F(PreloadingDeciderTest,
+       ModerateViewportHeuristicIsEnactedForModeratePrerenderCandidate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kPreloadingModerateViewportHeuristics,
@@ -1114,17 +1153,43 @@ TEST_F(PreloadingDeciderTest,
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(url);
   ASSERT_EQ(mock_prerender.Get()->prerenders_.size(), 1u);
   EXPECT_EQ(mock_prerender.Get()->prerenders_[0].first, url);
 }
 
 TEST_F(PreloadingDeciderTest,
-       ViewportHeuristicIsNotEnactedForConservativePrefetchCandidate) {
+       EagerViewportHeuristicIsEnactedForEagerPrerenderCandidate) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kPreloadingModerateViewportHeuristics,
-      {{"enact_candidates", "true"}});
+  feature_list.InitAndEnableFeature(
+      blink::features::kPreloadingEagerViewportHeuristics);
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider != nullptr);
+  ScopedMockPrerenderer mock_prerender(preloading_decider);
+
+  const GURL url("https://example.com");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  auto candidate =
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrerender,
+                    blink::mojom::SpeculationEagerness::kEager);
+  candidates.push_back(std::move(candidate));
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  preloading_decider->OnEagerViewportHeuristicTriggered(url);
+  ASSERT_EQ(mock_prerender.Get()->prerenders_.size(), 1u);
+  EXPECT_EQ(mock_prerender.Get()->prerenders_[0].first, url);
+}
+
+TEST_F(PreloadingDeciderTest,
+       ViewportHeuristicsAreNotEnactedForConservativePrefetchCandidate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kPreloadingModerateViewportHeuristics,
+        {{"enact_candidates", "true"}}},
+       {blink::features::kPreloadingEagerViewportHeuristics, {}}},
+      /*disabled_features=*/{});
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
@@ -1138,7 +1203,8 @@ TEST_F(PreloadingDeciderTest,
   candidates.push_back(std::move(candidate));
   preloading_decider->UpdateSpeculationCandidates(candidates);
 
-  preloading_decider->OnViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(url);
+  preloading_decider->OnEagerViewportHeuristicTriggered(url);
   const auto& prefetches = GetPrefetchService()->prefetches_;
   EXPECT_TRUE(prefetches.empty());
 }

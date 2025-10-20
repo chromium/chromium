@@ -179,7 +179,7 @@ void AnchorElementInteractionHostImpl::OnViewportHeuristicTriggered(
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->OnViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(url);
 }
 
 }  // namespace content
