@@ -775,8 +775,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Scroll to the bottom so that Bottom 1 is visible.
   [BookmarkEarlGreyUI scrollToBottom];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"Bottom 1, google.com")]
+
+  [[EarlGrey selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
+                                                     @"Bottom 1, google.com"),
+                                                 grey_hidden(NO), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Close bookmarks.
