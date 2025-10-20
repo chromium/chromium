@@ -3036,7 +3036,7 @@ crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/classic/find_elements
 crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/bidi/browser/set_download_behavior/user_context.py [ Pass Timeout ]
 
 # Unstable memory addresses dumped in traceback
-external/wpt/html/semantics/forms/the-textarea-element/selection-after-whitespace-change.html [ Failure ]
+crbug.com/453673799 external/wpt/html/semantics/forms/the-textarea-element/selection-after-whitespace-change.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 external/wpt/html/browsers/history/the-location-interface/location_replace_session_history.html [ Timeout ]
@@ -9862,7 +9862,7 @@ crbug.com/450592015 [ Mac15-arm64 ] external/wpt/webxr/idlharness.https.window.h
 crbug.com/450592015 [ Win11-arm64 ] external/wpt/webxr/idlharness.https.window.html [ Failure ]
 
 # Disabled for landing behavior change
-crbug.com/439514253 external/wpt/webrtc-extensions/RTCRtpTransceiver-headerExtensionControl.html [ Pass Failure ]
+crbug.com/439514253 external/wpt/webrtc-extensions/RTCRtpTransceiver-headerExtensionControl.html [ Failure Pass ]
 
 # Gardener 2025-10-15
 crbug.com/451712152 virtual/permission-element/external/wpt/html/semantics/permission-element/bounded-sizes-reftest.tentative.html [ Failure Pass ]
