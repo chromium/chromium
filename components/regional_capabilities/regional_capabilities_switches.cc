@@ -26,7 +26,7 @@ BASE_FEATURE(kResolveRegionalCapabilitiesFromDevice,
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kUseFinchPermanentCountryForFetchCountryId,
              "UseFinchPermanentCountyForFetchCountryId",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
