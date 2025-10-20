@@ -84,7 +84,7 @@ TabStateStorageDatabase::Transaction::~Transaction() {
 }
 
 bool TabStateStorageDatabase::Transaction::Begin() {
-  DCHECK(!transaction_) << "Transaction already exists.";
+  DCHECK(transaction_) << "Transaction already closed.";
   return transaction_->Begin();
 }
 
