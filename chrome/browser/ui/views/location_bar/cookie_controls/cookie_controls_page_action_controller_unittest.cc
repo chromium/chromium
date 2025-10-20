@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -86,12 +87,12 @@ class FakePageActionController : public page_actions::MockPageActionController {
   std::u16string last_text_;
 };
 
-// Mock implementation of the BubbleDelegate for testing.
-class MockBubbleDelegate
+// Fake implementation of the BubbleDelegate for testing.
+class FakeBubbleDelegate
     : public CookieControlsPageActionController::BubbleDelegate {
  public:
-  MockBubbleDelegate() = default;
-  ~MockBubbleDelegate() override = default;
+  FakeBubbleDelegate() = default;
+  ~FakeBubbleDelegate() override = default;
 
   MOCK_METHOD(bool, IsReloading, (), (override));
   MOCK_METHOD(bool, HasBubble, (), (override));
@@ -101,6 +102,16 @@ class MockBubbleDelegate
                content::WebContents* web_contents,
                content_settings::CookieControlsController* controller),
               (override));
+
+  base::CallbackListSubscription RegisterBubbleClosingCallback(
+      base::RepeatingClosure callback) override {
+    return closing_callbacks_.Add(std::move(callback));
+  }
+
+  void TriggerBubbleClosed() { closing_callbacks_.Notify(); }
+
+ private:
+  base::RepeatingClosureList closing_callbacks_;
 };
 
 class CookieControlsPageActionControllerTestBase : public testing::Test {
@@ -112,8 +123,8 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
          {privacy_sandbox::kActUserBypassUx, {}}},
         {});
 
-    auto mock_bubble_delegate = std::make_unique<MockBubbleDelegate>();
-    mock_bubble_delegate_ = mock_bubble_delegate.get();
+    auto fake_bubble_delegate = std::make_unique<FakeBubbleDelegate>();
+    fake_bubble_delegate_ = fake_bubble_delegate.get();
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
@@ -139,14 +150,14 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
               .Run(user_education::FeaturePromoResult::Success());
         });
 
-    ON_CALL(*mock_bubble_delegate_, IsReloading()).WillByDefault(Return(false));
-    ON_CALL(*mock_bubble_delegate_, HasBubble()).WillByDefault(Return(false));
+    ON_CALL(*fake_bubble_delegate_, IsReloading()).WillByDefault(Return(false));
+    ON_CALL(*fake_bubble_delegate_, HasBubble()).WillByDefault(Return(false));
 
     cookie_controls_page_action_controller_ =
         std::make_unique<CookieControlsPageActionController>(
             mock_tab_interface_, profile_, page_action_controller_);
     controller().set_bubble_delegate_for_testing(
-        std::move(mock_bubble_delegate));
+        std::move(fake_bubble_delegate));
 
     controller().Init();
   }
@@ -165,7 +176,7 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
 
   TestingProfile& profile() { return profile_; }
 
-  MockBubbleDelegate* mock_bubble_delegate() { return mock_bubble_delegate_; }
+  FakeBubbleDelegate* fake_bubble_delegate() { return fake_bubble_delegate_; }
 
   base::UserActionTester& user_action_tester() { return user_action_tester_; }
 
@@ -191,7 +202,7 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
   FakePageActionController page_action_controller_;
   std::unique_ptr<CookieControlsPageActionController>
       cookie_controls_page_action_controller_;
-  raw_ptr<MockBubbleDelegate> mock_bubble_delegate_;
+  raw_ptr<FakeBubbleDelegate> fake_bubble_delegate_;
   base::UserActionTester user_action_tester_;
 };
 
@@ -224,7 +235,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Verifies icon remains visible when the bubble is showing, even if
 // the status says it should be hidden.
 TEST_P(CookieControlsPageActionControllerTest, IconVisibleWhenBubbleShowing) {
-  EXPECT_CALL(*mock_bubble_delegate(), HasBubble()).WillOnce(Return(true));
+  EXPECT_CALL(*fake_bubble_delegate(), HasBubble()).WillOnce(Return(true));
   // isReloading() is not checked if hasBubble() is true in this path.
 
   // The icon should be forced to show because the bubble is visible.
@@ -244,7 +255,7 @@ TEST_P(CookieControlsPageActionControllerTest, ChipNotShownWhenBubbleShowing) {
   if (!In3pcd()) {
     GTEST_SKIP() << "IPHs are used when not in 3pcd";
   }
-  EXPECT_CALL(*mock_bubble_delegate(), HasBubble()).WillOnce(Return(true));
+  EXPECT_CALL(*fake_bubble_delegate(), HasBubble()).WillOnce(Return(true));
 
   // The chip should NOT be shown because the bubble is already visible.
   EXPECT_CALL(page_action_controller(),
@@ -263,7 +274,7 @@ TEST_P(CookieControlsPageActionControllerTest, ChipNotShownWhenBubbleShowing) {
 // updates are ignored.
 TEST_P(CookieControlsPageActionControllerTest,
        StatusChangedIgnoredWhenReloading) {
-  EXPECT_CALL(*mock_bubble_delegate(), IsReloading()).WillOnce(Return(true));
+  EXPECT_CALL(*fake_bubble_delegate(), IsReloading()).WillOnce(Return(true));
 
   // No calls to the page action controller are expected.
   EXPECT_CALL(page_action_controller(), Show(_)).Times(0);
@@ -280,7 +291,7 @@ TEST_P(CookieControlsPageActionControllerTest,
   if (!In3pcd()) {
     GTEST_SKIP() << "IPHs are used when not in 3pcd";
   }
-  EXPECT_CALL(*mock_bubble_delegate(), HasBubble()).WillOnce(Return(false));
+  EXPECT_CALL(*fake_bubble_delegate(), HasBubble()).WillOnce(Return(false));
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
       .Times(1);
   EXPECT_CALL(page_action_controller(),
@@ -303,7 +314,7 @@ TEST_P(CookieControlsPageActionControllerTest,
   if (!In3pcd()) {
     GTEST_SKIP() << "IPHs are used when not in 3pcd";
   }
-  EXPECT_CALL(*mock_bubble_delegate(), HasBubble())
+  EXPECT_CALL(*fake_bubble_delegate(), HasBubble())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
       .Times(2);
@@ -330,7 +341,7 @@ TEST_P(CookieControlsPageActionControllerTest,
   if (!In3pcd()) {
     GTEST_SKIP() << "IPHs are used when not in 3pcd";
   }
-  EXPECT_CALL(*mock_bubble_delegate(), HasBubble())
+  EXPECT_CALL(*fake_bubble_delegate(), HasBubble())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
       .Times(2);
@@ -365,7 +376,7 @@ TEST_P(CookieControlsPageActionControllerTest,
 
 TEST_P(CookieControlsPageActionControllerTest,
        IconHiddenWhenIconVisibleIsFalse) {
-  EXPECT_CALL(*mock_bubble_delegate(), HasBubble()).WillOnce(Return(false));
+  EXPECT_CALL(*fake_bubble_delegate(), HasBubble()).WillOnce(Return(false));
   EXPECT_CALL(page_action_controller(), Hide(kActionShowCookieControls))
       .Times(1);
   EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls))
@@ -535,6 +546,13 @@ TEST_P(CookieControlsPageActionControllerTest, ChipHidesAfterTimeout) {
   task_environment().FastForwardBy(base::Seconds(12));
 }
 
+TEST_P(CookieControlsPageActionControllerTest, IconRespondsToBubbleHidden) {
+  EXPECT_CALL(page_action_controller(), Hide(kActionShowCookieControls))
+      .Times(1);
+
+  fake_bubble_delegate()->TriggerBubbleClosed();
+}
+
 struct ActionTestParams {
   CookieControlsState controls_state;
   std::string action_name;
@@ -564,7 +582,7 @@ TEST_P(CookieControlsPageActionControllerActionTest, ExecuteAction) {
       true, GetParam().controls_state, CookieBlocking3pcdStatus::kNotIn3pcd,
       false);
 
-  EXPECT_CALL(*mock_bubble_delegate(), ShowBubble);
+  EXPECT_CALL(*fake_bubble_delegate(), ShowBubble);
   EXPECT_CALL(user_education(),
               NotifyFeaturePromoFeatureUsed(
                   testing::Ref(feature_engagement::kIPHCookieControlsFeature),

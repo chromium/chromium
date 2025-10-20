@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -42,6 +44,9 @@ class CookieControlsBubbleCoordinator : public views::ViewObserver {
 
   virtual CookieControlsBubbleViewImpl* GetBubble() const;
 
+  base::CallbackListSubscription RegisterBubbleClosingCallback(
+      base::RepeatingClosure callback);
+
   bool IsReloadingState() const;
 
   CookieControlsBubbleViewController* GetViewControllerForTesting();
@@ -56,6 +61,8 @@ class CookieControlsBubbleCoordinator : public views::ViewObserver {
 
   ui::ScopedUnownedUserData<CookieControlsBubbleCoordinator>
       scoped_unowned_user_data_;
+
+  base::RepeatingClosureList bubble_closing_callbacks_;
 
   // Testing override that's passed to CookieControlsBubbleViewController during
   // construction.

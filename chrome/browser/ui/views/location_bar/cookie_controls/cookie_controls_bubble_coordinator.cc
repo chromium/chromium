@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -93,10 +95,17 @@ void CookieControlsBubbleCoordinator::SetDisplayNameForTesting(
   }
 }
 
+base::CallbackListSubscription
+CookieControlsBubbleCoordinator::RegisterBubbleClosingCallback(
+    base::RepeatingClosure callback) {
+  return bubble_closing_callbacks_.Add(std::move(callback));
+}
+
 void CookieControlsBubbleCoordinator::OnViewIsDeleting(
     views::View* observed_view) {
   bubble_view_ = nullptr;
   view_controller_ = nullptr;
+  bubble_closing_callbacks_.Notify();
 }
 
 // static

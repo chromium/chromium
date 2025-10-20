@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_page_action_controller.h"
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -82,6 +84,12 @@ class BubbleDelegateImpl
       content_settings::CookieControlsController* controller) override {
     return GetBubbleCoordinator().ShowBubble(toolbar_button_provider,
                                              web_contents, controller);
+  }
+
+  base::CallbackListSubscription RegisterBubbleClosingCallback(
+      base::RepeatingClosure callback) override {
+    return GetBubbleCoordinator().RegisterBubbleClosingCallback(
+        std::move(callback));
   }
 
  private:
@@ -196,6 +204,11 @@ void CookieControlsPageActionController::Init() {
         }
       },
       std::ref(*cookie_controls_controller_)));
+
+  bubble_will_close_subscription_ =
+      bubble_delegate_->RegisterBubbleClosingCallback(base::BindRepeating(
+          &CookieControlsPageActionController::OnBubbleClosed,
+          base::Unretained(this)));
 }
 
 void CookieControlsPageActionController::OnPageActionChipShown(
@@ -334,6 +347,10 @@ void CookieControlsPageActionController::OnShowPromoResult(
 
 void CookieControlsPageActionController::OnIPHClosed() {
   iph_activity_.reset();
+}
+
+void CookieControlsPageActionController::OnBubbleClosed() {
+  UpdateIconVisibility();
 }
 
 void CookieControlsPageActionController::MaybeShowIPH(
