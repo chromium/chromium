@@ -113,7 +113,7 @@ public class KeyboardAccessoryChipGroupTest {
         mChipGroup.addView(chip2);
         measureChipGroup();
 
-        assertEquals(SCREEN_WIDTH - getLastChipPeekWidth(), chip1.getMaxWidth());
+        assertEquals(getSingleChipBufferSize(), chip1.getMaxWidth());
         assertEquals(Integer.MAX_VALUE, chip2.getMaxWidth());
     }
 
@@ -159,7 +159,7 @@ public class KeyboardAccessoryChipGroupTest {
         mChipGroup.addView(chip3);
         measureChipGroup();
 
-        assertEquals(SCREEN_WIDTH - getLastChipPeekWidth(), chip1.getMaxWidth());
+        assertEquals(getSingleChipBufferSize(), chip1.getMaxWidth());
         assertEquals(Integer.MAX_VALUE, chip2.getMaxWidth());
         assertEquals(Integer.MAX_VALUE, chip3.getMaxWidth());
     }
@@ -178,9 +178,9 @@ public class KeyboardAccessoryChipGroupTest {
         measureChipGroup();
 
         // The chip width should be reduced proportionally.
-        final int firstChipWidth = (SCREEN_WIDTH - getLastChipPeekWidth()) / 6;
+        final int firstChipWidth = getTwoChipsCombinedSize() / 6;
         assertEquals(firstChipWidth, chip1.getMaxWidth());
-        final int secondChipWidth = ((SCREEN_WIDTH - getLastChipPeekWidth()) * 5) / 6;
+        final int secondChipWidth = (getTwoChipsCombinedSize() * 5) / 6;
         assertEquals(secondChipWidth, chip2.getMaxWidth());
         assertEquals(Integer.MAX_VALUE, chip3.getMaxWidth());
     }
@@ -196,7 +196,7 @@ public class KeyboardAccessoryChipGroupTest {
         mChipGroup.addView(chip2);
         measureChipGroup();
 
-        assertEquals(SCREEN_WIDTH - getLastChipPeekWidth(), chip1.getMaxWidth());
+        assertEquals(getSingleChipBufferSize(), chip1.getMaxWidth());
         assertEquals(Integer.MAX_VALUE, chip2.getMaxWidth());
 
         // Step 2: reduce the first chip width so that it fits on the screen. The maximum width
@@ -215,10 +215,47 @@ public class KeyboardAccessoryChipGroupTest {
                 MeasureSpec.makeMeasureSpec(KEYBOARD_ACCESSORY_HEIGHT, MeasureSpec.EXACTLY));
     }
 
+    /**
+     * Returns the preferred width of the last chip on the screen.
+     *
+     * @return the preferred width of the last chip on the screen.
+     */
     private @Px int getLastChipPeekWidth() {
         return getContext()
                 .getResources()
                 .getDimensionPixelSize(R.dimen.keyboard_accessory_last_chip_peek_width);
+    }
+
+    /**
+     * Return the margin between the Keyboard accessory chips. This margin applies to the start and
+     * the end of the suggestion list in the keyboard accessory.
+     *
+     * @return the margin between the Keyboard accessory chips.
+     */
+    private @Px int getChipMargin() {
+        return getContext()
+                .getResources()
+                .getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding);
+    }
+
+    /**
+     * Returns the preferred size of a single chip that doesn't fit into the screen width initially.
+     *
+     * @return the preferred size of a single chip.
+     */
+    private @Px int getSingleChipBufferSize() {
+        return SCREEN_WIDTH - 2 * getChipMargin() - getLastChipPeekWidth();
+    }
+
+    /**
+     * Returns the combined preferred size of 2 chips that do not fit into the screen width
+     * initially.
+     *
+     * @return the combined preferred size of 2 chips.
+     */
+    private @Px int getTwoChipsCombinedSize() {
+        // Just subtract a single margin between these 2 chips.
+        return getSingleChipBufferSize() - getChipMargin();
     }
 
     private Context getContext() {

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Px;
@@ -21,15 +22,29 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * Accessory chips aren't limited by width. This class is used to limit the width of the first chip
  * or the first 2 chips so that the next one is partially displayed on the screen. This is done to
  * hint the user that the Keyboard Accessory UI is scrollable.
- *
- * <p>TODO: crbug.com/385172647 - Add margins between children and take them into account during
- * measurement.
  */
 @NullMarked
 class KeyboardAccessoryChipGroup extends LinearLayout {
 
     public KeyboardAccessoryChipGroup(Context context) {
         super(context);
+    }
+
+    @Override
+    public void addView(View child) {
+        super.addView(child);
+        if (getChildCount() > 1) {
+            View penultimateChild = getChildAt(getChildCount() - 2);
+            LinearLayout.LayoutParams params =
+                    (LinearLayout.LayoutParams) penultimateChild.getLayoutParams();
+            params.setMarginEnd(
+                    params.getMarginEnd()
+                            + getContext()
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.keyboard_accessory_bar_item_padding));
+            penultimateChild.setLayoutParams(params);
+        }
     }
 
     @Override
@@ -47,7 +62,18 @@ class KeyboardAccessoryChipGroup extends LinearLayout {
         @Px
         int lastChipPeekWidth =
                 resources.getDimensionPixelSize(R.dimen.keyboard_accessory_last_chip_peek_width);
-        @Px int chipBuffer = resources.getDisplayMetrics().widthPixels - lastChipPeekWidth;
+        @Px
+        int chipMargin =
+                resources.getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding);
+        // Try to fit a single chip into the screen width. Calculate the allowed chip width by
+        // subtracting last chip peek width and 2x the chip margin:
+        //
+        //               margin           chip buffer         margin
+        //
+        // screen start ->|  [ suggestion to fit on the screen ]  [last ...]| <- screen end
+        @Px
+        int chipBuffer =
+                resources.getDisplayMetrics().widthPixels - 2 * chipMargin - lastChipPeekWidth;
         if (firstChip.getMeasuredWidth() > chipBuffer) {
             firstChip.setMaxWidth(chipBuffer);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -57,6 +83,10 @@ class KeyboardAccessoryChipGroup extends LinearLayout {
         if (getChildCount() < 3) {
             return;
         }
+
+        // Try to fit 2 chips into the chip buffer. Subtract the chip margin again to account for
+        // the space between the chips.
+        chipBuffer -= chipMargin;
         if (firstChip.getMeasuredWidth() + secondChip.getMeasuredWidth() > chipBuffer) {
             // Proportionally decreases the width of both chips:
             //
