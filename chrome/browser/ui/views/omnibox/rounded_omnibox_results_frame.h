@@ -19,7 +19,8 @@ class RoundedOmniboxResultsFrame : public views::View {
 
  public:
   RoundedOmniboxResultsFrame(views::View* contents,
-                             LocationBarView* location_bar);
+                             LocationBarView* location_bar,
+                             bool include_cutout = true);
   RoundedOmniboxResultsFrame(const RoundedOmniboxResultsFrame&) = delete;
   RoundedOmniboxResultsFrame& operator=(const RoundedOmniboxResultsFrame&) =
       delete;
@@ -30,7 +31,7 @@ class RoundedOmniboxResultsFrame : public views::View {
                                  views::Widget* widget);
 
   // The height of the location bar view part of the omnibox popup.
-  static int GetNonResultSectionHeight();
+  static int GetNonResultSectionHeight(bool include_cutout = true);
 
   // How the Widget is aligned relative to the location bar.
   static gfx::Insets GetLocationBarAlignmentInsets();
@@ -52,6 +53,7 @@ class RoundedOmniboxResultsFrame : public views::View {
   raw_ptr<views::View> top_background_ = nullptr;
   raw_ptr<views::View> contents_host_ = nullptr;
   raw_ptr<views::View> contents_;
+  bool include_cutout_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_

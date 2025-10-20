@@ -82,6 +82,9 @@ class OmniboxPopupPresenter : public views::WebView,
 
   // Whether any call to `GetHandler` has been made.
   bool requested_handler_ = false;
+
+  // Whether or not the WebUI popup includes the `location_bar_view` cutout.
+  bool include_location_bar_cutout_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
