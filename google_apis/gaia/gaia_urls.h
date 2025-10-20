@@ -6,6 +6,7 @@
 #define GOOGLE_APIS_GAIA_GAIA_URLS_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/memory/singleton.h"
@@ -44,6 +45,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const GURL& signin_chrome_sync_dice() const;
   const GURL& reauth_chrome_dice() const;
   const GURL& signin_chrome_sync_keys_retrieval_url() const;
+  const std::string_view signin_chrome_passkey_unlock_kdi_parameter() const;
+  const GURL& signin_chrome_passkey_unlock_url() const;
   const GURL& signin_chrome_sync_keys_recoverability_degraded_url() const;
   const GURL& service_logout_url() const;
   const GURL& oauth_multilogin_url() const;
@@ -112,6 +115,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL signin_chrome_sync_dice_;
   GURL reauth_chrome_dice_;
   GURL signin_chrome_sync_keys_retrieval_url_;
+  GURL signin_chrome_passkey_unlock_url_;
   GURL signin_chrome_sync_keys_recoverability_degraded_url_;
   GURL service_logout_url_;
   GURL blank_page_url_;

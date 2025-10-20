@@ -47,7 +47,7 @@ class PasskeyUnlockManager : public KeyedService,
   bool ShouldDisplayErrorUi();
 
   // Opens a browser tab with a challenge for unlocking passkeys.
-  static void OpenTabForPasskeyUnlockHandler(Browser* browser);
+  static void OpenTabWithPasskeyUnlockChallenge(Browser* browser);
 
  private:
   // Returns the PasskeyModel associated with the profile passed to the

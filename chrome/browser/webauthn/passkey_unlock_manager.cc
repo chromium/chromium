@@ -8,7 +8,11 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "google_apis/gaia/gaia_urls.h"
 
 namespace webauthn {
 PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
@@ -36,9 +40,10 @@ bool PasskeyUnlockManager::ShouldDisplayErrorUi() {
   return false;
 }
 
-void PasskeyUnlockManager::OpenTabForPasskeyUnlockHandler(Browser* browser) {
-  // TODO(crbug.com/449986753): Implement.
-  NOTIMPLEMENTED();
+void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(Browser* browser) {
+  NavigateParams params(GetSingletonTabNavigateParams(
+      browser, GaiaUrls::GetInstance()->signin_chrome_passkey_unlock_url()));
+  Navigate(&params);
 }
 
 PasskeyModel* PasskeyUnlockManager::passkey_model() {
