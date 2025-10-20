@@ -9826,11 +9826,11 @@ crbug.com/451712152 virtual/permission-element/external/wpt/html/semantics/permi
 crbug.com/377152628 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-cross-origin-multi-query.tentative.https.sub.html [ Failure Pass ]
 
 # Gardener 2025-10-17
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f32.wast.js.html [ Failure Pass ]
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f32_cmp.wast.js.html [ Failure Pass ]
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f64.wast.js.html [ Failure Pass ]
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f64_cmp.wast.js.html [ Failure Pass ]
-crbug.com/452827889 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Failure Pass ]
+crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f32.wast.js.html [ Crash Failure Pass ]
+crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f32_cmp.wast.js.html [ Crash Failure Pass ]
+crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f64.wast.js.html [ Crash Failure Pass ]
+crbug.com/452827889 [ Linux ] external/wpt/wasm/core/f64_cmp.wast.js.html [ Crash Failure Pass ]
+crbug.com/452827889 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Crash Failure Pass ]
 # Started to fail on Linux, previously was flaky on all platforms (crbug.com/387374119)
 crbug.com/452827889 external/wpt/wasm/core/simd/simd_f64x2_cmp.wast.js.html [ Failure Pass Timeout ]
 crbug.com/431170125 [ Android ] external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
