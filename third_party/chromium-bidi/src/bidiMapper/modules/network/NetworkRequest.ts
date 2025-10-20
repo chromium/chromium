@@ -1035,8 +1035,11 @@ export class NetworkRequest {
         return 'image';
       case 'Document':
         // If request to document is initiated by parser, assume it is expected to
-        // arrive in an iframe. Otherwise, fallback to empty string.
-        return this.#request.info?.initiator.type === 'parser' ? 'iframe' : '';
+        // arrive in an iframe. Otherwise, consider it is a navigation and the request
+        // result will end up in the document.
+        return this.#request.info?.initiator.type === 'parser'
+          ? 'iframe'
+          : 'document';
       default:
         return '';
     }

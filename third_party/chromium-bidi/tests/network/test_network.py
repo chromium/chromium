@@ -63,7 +63,7 @@ async def test_network_before_request_sent_event_navigation(
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
@@ -111,7 +111,7 @@ async def test_network_before_request_sent_event_emitted_with_url_fragment(
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
@@ -211,7 +211,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
@@ -407,7 +407,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
@@ -468,7 +468,7 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
                 "bodySize": 0,
                 "timings": ANY_DICT,
                 "initiatorType": None,
-                "destination": "",
+                "destination": "document",
             },
             "initiator": {
                 "type": "other"
