@@ -305,6 +305,7 @@ void PrefHashFilter::FinalizeFilterOnLoad(
     base::Value::Dict pref_store_contents,
     bool prefs_altered) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::set<std::string> reset_paths;
   bool did_reset = false;
 
   // Perform the initial synchronous validation pass (without the encryptor).
@@ -330,6 +331,7 @@ void PrefHashFilter::FinalizeFilterOnLoad(
               pref_store_contents, hash_store_transaction.get(),
               external_validation_hash_store_transaction.get())) {
         did_reset = true;
+        reset_paths.insert(it->first);
         prefs_altered = true;
       }
     }
@@ -343,6 +345,10 @@ void PrefHashFilter::FinalizeFilterOnLoad(
         base::NumberToString(base::Time::Now().ToInternalValue()));
     FilterUpdate(user_prefs::kPreferenceResetTime);
 
+    // Treat the setting of the reset time as a reset itself, so the async
+    // validation will skip it. This prevents the "double reset" side effect.
+    reset_paths.insert(user_prefs::kPreferenceResetTime);
+
     if (reset_on_load_observer_)
       reset_on_load_observer_->OnResetOnLoad();
   }
@@ -350,13 +356,14 @@ void PrefHashFilter::FinalizeFilterOnLoad(
 
   // If encrypted hashing is on, post a deferred task to re-validate with the
   // encryptor once it's available. Pass a clone of the pref store contents
-  // so the task operates on the exact state at load time.
-  if (encrypted_hashing_enabled_ && !did_reset) {
+  // so the task operates on the exact state at load time. Also pass the list of
+  // prefs already reset by the synchronous validation.
+  if (encrypted_hashing_enabled_) {
     deferred_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&PrefHashFilter::DeferredEncryptorRevalidation,
                        weak_ptr_factory_.GetWeakPtr(),
-                       pref_store_contents.Clone()));
+                       pref_store_contents.Clone(), std::move(reset_paths)));
   } else {
     // No deferred task will be posted, so validation is complete.
     // Log metrics now.
@@ -375,7 +382,8 @@ void PrefHashFilter::FinalizeFilterOnLoad(
 }
 
 void PrefHashFilter::DeferredEncryptorRevalidation(
-    base::Value::Dict pref_store_contents_at_load) {
+    base::Value::Dict pref_store_contents_at_load,
+    const std::set<std::string>& already_reset_paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(encryptor_.has_value());
   const os_crypt_async::Encryptor* encryptor = &encryptor_.value();
@@ -393,6 +401,11 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
 
   // First pass: Validate and reset any tampered preferences.
   for (const auto& [path, preference] : tracked_paths_) {
+    // Skip re-validating any preference that was already reset during the
+    // synchronous pass.
+    if (already_reset_paths.count(path)) {
+      continue;
+    }
     if (!pref_service_->FindPreference(path)) {
       continue;
     }
