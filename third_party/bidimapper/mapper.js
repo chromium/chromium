@@ -9258,7 +9258,7 @@
         }
         #getOrCreateNetworkRequest(id, cdpTarget, redirectCount) {
             let request = this.getRequestById(id);
-            if (request) {
+            if (redirectCount === undefined && request) {
                 return request;
             }
             request = new NetworkRequest(id, this.#eventManager, this, cdpTarget, redirectCount, this.#logger);
