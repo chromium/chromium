@@ -145,8 +145,19 @@ inline constexpr PreloadingPredictor kPreloadingHeuristicsMLModel(
     5,
     "PreloadingHeuristicsMLModel");
 
-// Preloading is triggered by a deterministic viewport-based heuristic.
-inline constexpr PreloadingPredictor kViewportHeuristic(6, "ViewportHeuristic");
+// Preloading is triggered by a deterministic viewport-based heuristic for
+// the "moderate" eagerness. Note that this predictor does nothing for the other
+// eagerness like "eager" while the name of this predictor is general for
+// historical reasons.
+inline constexpr PreloadingPredictor kModerateViewportHeuristic(
+    6,
+    "ViewportHeuristic");
+
+// Preloading is triggered by a deterministic viewport-based heuristic for
+// the "eager" eagerness.
+inline constexpr PreloadingPredictor kEagerViewportHeuristic(
+    7,
+    "EagerViewportHeuristic");
 }  // namespace preloading_predictor
 // LINT.ThenChange()
 
