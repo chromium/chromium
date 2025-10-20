@@ -239,6 +239,8 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     text_changed_callback_ =
         label()->AddTextChangedCallback(base::BindRepeating(
             &BookmarkFolderButton::OnTextChanged, base::Unretained(this)));
+
+    UpdateCachedTooltipText();
   }
 
   BookmarkFolderButton(const BookmarkFolderButton&) = delete;
