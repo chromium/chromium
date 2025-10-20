@@ -4278,7 +4278,7 @@
   {
     "name": "enable-resampling-scroll-events-experimental-prediction",
     "owners": [ "input-dev@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 160
   },
   {
      "name": "enable-retry-capture-device-enumeration-on-crash",
