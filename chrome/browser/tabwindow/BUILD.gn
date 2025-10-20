@@ -8,6 +8,7 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabwindow/TabModelSelectorFactory.java",
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowInfo.java",
     "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java",
     "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabwindow/WindowId.java",

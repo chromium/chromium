@@ -157,6 +157,15 @@ public interface TabWindowManager {
     @Nullable Tab getTabById(@TabId int tabId, @WindowId int windowId);
 
     /**
+     * Similar to {@link #getTabById(int)} but returns a {@link TabWindowInfo}. Does not check the
+     * non-window sources for the tab.
+     *
+     * @param tabId The id of the tab to look for.
+     * @return The tab and related parents, null if it cannot be found.
+     */
+    @Nullable TabWindowInfo getTabWindowInfoById(@TabId int tabId);
+
+    /**
      * @param windowId The ID of the window that holds the tab group.
      * @param tabGroupId The tab group ID of the tab group.
      * @param isIncognito Whether the grouped tabs are incognito tabs.
