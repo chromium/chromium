@@ -167,7 +167,9 @@ void CheckTreeConsistency(
         msg << "\n* Serialized an unincluded node: " << obj;
       }
     }
-    NOTREACHED(base::NotFatalUntil::M140) << msg.str();
+    // TODO(crbug.com/452392024): Investigate why this is reached, fix it, and
+    // move to a NOTREACHED.
+    DUMP_WILL_BE_NOTREACHED() << msg.str();
   }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
