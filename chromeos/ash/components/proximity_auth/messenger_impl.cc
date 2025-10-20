@@ -210,8 +210,15 @@ void MessengerImpl::OnSendMessageResult(bool success) {
   // Don't wait if the message could not be sent, as there won't ever be a
   // response in that case. Likewise, don't wait for a response to local
   // event messages, as there is no response for such messages.
-  if (success && pending_message_->type != kMessageTypeLocalEvent)
+  if (success && pending_message_->type != kMessageTypeLocalEvent) {
     return;
+  }
+
+  // Be prepared in case that an observer deletes this object.
+  //
+  // Note that it's not clear whether it's allowed/supported by design or not
+  // that an observer deletes this object. See also crbug.com/392028938
+  base::WeakPtr<MessengerImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
 
   // Notify observer of failure if sending the message fails.
   // For local events, we don't expect a response, so on success, we
@@ -225,6 +232,12 @@ void MessengerImpl::OnSendMessageResult(bool success) {
   } else {
     PA_LOG(ERROR) << "Message of unknown type '" << pending_message_->type
                   << "' sent.";
+  }
+
+  // Note that it's not clear whether it's allowed/supported by design or not
+  // that an observer deletes this object. See also crbug.com/392028938
+  if (!weak_this) {
+    return;  // An observer has deleted this object.
   }
 
   pending_message_.reset();
