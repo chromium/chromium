@@ -87,7 +87,7 @@ class GlicInstanceImpl : public GlicInstance,
   // These methods should only be called by the GlicInstanceCoordinator.
   void Show(EmbedderType type, tabs::TabInterface* tab);
   void Close(EmbedderType type, tabs::TabInterface* tab);
-  void Toggle(EmbedderType type, tabs::TabInterface* tab);
+  void Toggle(EmbedderType type, tabs::TabInterface* tab, bool prevent_close);
 
   // Manages the association of this instance with a tab.
   void DisassociateFromTab(tabs::TabInterface* tab);
