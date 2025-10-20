@@ -27,6 +27,8 @@ source_set("internal") {
     "//components/data_sharing/migration/public",
     "//components/data_sharing/public",
     "//components/prefs",
+    "//components/sqlite_proto",
+    "//sql",
   ]
 }
 
@@ -37,6 +39,7 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/data_sharing/public",
     "//testing/gtest",
   ]
 }

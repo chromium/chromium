@@ -16,6 +16,10 @@
 #include "components/data_sharing/migration/internal/migration_state_database.h"
 #include "components/data_sharing/migration/internal/protocol/migration_state.pb.h"
 #include "components/data_sharing/migration/public/context_id.h"
+#include "components/sqlite_proto/key_value_data.h"
+#include "components/sqlite_proto/key_value_table.h"
+#include "components/sqlite_proto/proto_table_manager.h"
+#include "sql/database.h"
 
 namespace data_sharing {
 
@@ -24,7 +28,8 @@ namespace data_sharing {
 // cached in memory for synchronous reads.
 class MigrationStateDatabaseImpl : public MigrationStateDatabase {
  public:
-  explicit MigrationStateDatabaseImpl(const base::FilePath& profile_dir);
+  explicit MigrationStateDatabaseImpl(const base::FilePath& profile_dir,
+                                      InitCallback callback);
   ~MigrationStateDatabaseImpl() override;
   MigrationStateDatabaseImpl(const MigrationStateDatabaseImpl&) = delete;
   MigrationStateDatabaseImpl& operator=(const MigrationStateDatabaseImpl&) =
@@ -40,8 +45,26 @@ class MigrationStateDatabaseImpl : public MigrationStateDatabase {
   void DeleteMigrationState(const ContextId& context_id) override;
 
  private:
+  void OnInitialized(InitCallback callback, bool success);
+
   // In-memory cache of the migration state.
   std::map<ContextId, data_sharing_pb::MigrationState> cache_;
+
+  // The file path of the profile directory.
+  const base::FilePath profile_path_;
+
+  // The following fields hold objects to work with SQLite database. `db_`,
+  // `proto_table_manager_` are deleted on db sequence; `migration_state_data_`
+  // and `migration_state_table_` are deleted on the main thread, however only
+  // after deletion of the rest.
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+  std::unique_ptr<sql::Database> db_;
+  scoped_refptr<sqlite_proto::ProtoTableManager> proto_table_manager_;
+  // Entities are keyed by ContextID.
+  std::unique_ptr<sqlite_proto::KeyValueTable<data_sharing_pb::MigrationState>>
+      migration_state_table_;
+  std::unique_ptr<sqlite_proto::KeyValueData<data_sharing_pb::MigrationState>>
+      migration_state_data_;
 
   // Whether database is initialized.
   bool is_initialized_ = false;

@@ -37,6 +37,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Cookie" summary="Cookie"/>
   <variant name="DatabaseTracker" summary="DatabaseTracker"/>
   <variant name="DataSharingGroupStorage" summary="DataSharingGroupStorage"/>
+  <variant name="DataSharingMigrationStateStorage"
+      summary="DataSharingMigrationStateStorage"/>
   <variant name="DBSCSessions" summary="DBSCSessions"/>
   <variant name="DIPS" summary="DIPS"/>
   <variant name="DownloadRecord" summary="DownloadRecord"/>

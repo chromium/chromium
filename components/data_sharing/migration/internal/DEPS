@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/sqlite_proto",
+  "+sql",
+]
