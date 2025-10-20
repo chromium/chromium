@@ -19,6 +19,7 @@
 <translation id="10614374240317010">Never saved</translation>
 <translation id="1062138828266376352">Your PIN wasn't changed. Please check your Internet connection and try again</translation>
 <translation id="1063070031224282617">Choose where to save '<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />' (<ph name="FILE_SIZE" />)</translation>
+<translation id="1063300264396686489">Automatically open tab groups from other devices</translation>
 <translation id="1072476005125066234">Reviews based on your interests</translation>
 <translation id="1072679792409426431">Disabled by your administrator</translation>
 <translation id="1074827084851510304">You are about to delete {password_count} passwords and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2360196772093551345">Request Mobile Site</translation>
 <translation id="2362083820973145409">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opens settings.</translation>
+<translation id="2371084566192454134">Tabs and tab groups</translation>
 <translation id="2381405137052800939">Basics</translation>
 <translation id="2384692388811649784">Hide Incognito tabs</translation>
 <translation id="2386793615875593361">1 selected</translation>

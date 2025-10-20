@@ -19,6 +19,7 @@
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
 <translation id="1062138828266376352">तपाईंको PIN परिवर्तन गरिएको छैन। इन्टरनेट कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) कहाँ सेभ गर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
+<translation id="1063300264396686489">अन्य डिभाइसहरूमा भएका ट्याब समूह स्वतः खोल्नुहोस्</translation>
 <translation id="1072476005125066234">तपाईंका रुचिमा आधारित रिभ्यूहरू</translation>
 <translation id="1072679792409426431">तपाईंका एड्मिनले अफ गर्नुभएको छ</translation>
 <translation id="1074827084851510304">तपाईं {password_count} वटा पासवर्ड र आफूले कहिल्यै पनि साइन इनसम्बन्धी जानकारी सेभ नगर्ने विकल्प रोजेका साइट तथा एपहरूको सूची मेटाउन लाग्दै हुनुहुन्छ। तपाईंले साइट तथा एपहरूको खाता बनाउनुभएको छ भने सो खाता मेटाइने छैन।</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2360196772093551345">मोबाइल साइट अनुरोध गर्नुहोस्</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />। सेटिङ खोल्छ।</translation>
+<translation id="2371084566192454134">ट्याब र ट्याब समूहहरू</translation>
 <translation id="2381405137052800939">आधारभूत</translation>
 <translation id="2384692388811649784">इन्कोग्निटो ट्याबहरू लुकाउनुहोस्</translation>
 <translation id="2386793615875593361">1 चयन गरियो</translation>

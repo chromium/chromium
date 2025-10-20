@@ -19,6 +19,7 @@
 <translation id="10614374240317010">Ніколи не зберігалося</translation>
 <translation id="1062138828266376352">Ваш PIN-код не змінено. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
 <translation id="1063070031224282617">Виберіть, де зберегти файл <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="1063300264396686489">Автоматично відкривати групи вкладок з інших пристроїв</translation>
 <translation id="1072476005125066234">Відгуки на основі ваших інтересів</translation>
 <translation id="1072679792409426431">Вимкнено адміністратором</translation>
 <translation id="1074827084851510304">Ви збираєтеся видалити паролі ({password_count}) та список сайтів і додатків, для яких вирішили не зберігати дані для входу. Облікові записи, створені для сайтів і додатків, не видалятимуться.</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2360196772093551345">Мобільний сайт</translation>
 <translation id="2362083820973145409">Ви ввійшли як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ця опція відкриває налаштування.</translation>
+<translation id="2371084566192454134">Вкладки й групи вкладок</translation>
 <translation id="2381405137052800939">Основні</translation>
 <translation id="2384692388811649784">Приховувати анонімні вкладки</translation>
 <translation id="2386793615875593361">Вибрано 1</translation>

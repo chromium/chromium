@@ -19,6 +19,7 @@
 <translation id="10614374240317010">一律不保存</translation>
 <translation id="1062138828266376352">PIN 码未更改。请检查网络连接，然后重试</translation>
 <translation id="1063070031224282617">选择保存“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”(<ph name="FILE_SIZE" />) 的位置</translation>
+<translation id="1063300264396686489">自动打开其他设备的标签页分组</translation>
 <translation id="1072476005125066234">根据您的兴趣推荐的评价</translation>
 <translation id="1072679792409426431">已被管理员停用</translation>
 <translation id="1074827084851510304">您即将删除 {password_count} 个密码以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">继续</translation>
 <translation id="2360196772093551345">请求切换到移动版网站</translation>
 <translation id="2362083820973145409">您已使用<ph name="USER_NAME" />的身份登录。<ph name="USER_EMAIL" />。打开设置。</translation>
+<translation id="2371084566192454134">标签页和标签页分组</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2384692388811649784">隐藏无痕式标签页</translation>
 <translation id="2386793615875593361">已选择 1 张</translation>

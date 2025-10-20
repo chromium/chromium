@@ -19,6 +19,7 @@
 <translation id="10614374240317010">Огт хадгалагдаагүй байна</translation>
 <translation id="1062138828266376352">Таны ПИН-г өөрчлөөгүй. Интернэт холболтоо шалгаад, дахин оролдоно уу</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)-г хаана хадгалахыг сонгоно уу</translation>
+<translation id="1063300264396686489">Бусад төхөөрөмжөөс табын бүлгийг автоматаар нээх</translation>
 <translation id="1072476005125066234">Таны сонирхолд тулгуурласан шүүмж</translation>
 <translation id="1072679792409426431">Танай администратор идэвхгүй болгосон</translation>
 <translation id="1074827084851510304">Та {password_count} нууц үг болон нэвтрэх мэдээлэл хэзээ ч хадгалахгүй байхаар сонгосон сайт, аппын жагсаалтыг устгах гэж байна. Таны сайт, аппад зориулж үүсгэсэн аливаа бүртгэлийг устгахгүй.</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2360196772093551345">Мобайл сайтын хүсэлт тавих</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" />-р нэвтэрсэн. <ph name="USER_EMAIL" />. Тохиргоог нээнэ.</translation>
+<translation id="2371084566192454134">Таб, табын бүлэг</translation>
 <translation id="2381405137052800939">Үндэс</translation>
 <translation id="2384692388811649784">Нууцлалтай табыг нуух</translation>
 <translation id="2386793615875593361">1 сонгогдсон</translation>

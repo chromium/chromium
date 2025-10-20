@@ -19,6 +19,7 @@
 <translation id="10614374240317010">Никада се не чува</translation>
 <translation id="1062138828266376352">PIN није промењен. Проверите интернет везу и пробајте поново</translation>
 <translation id="1063070031224282617">Одаберите где желите да сачувате <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
+<translation id="1063300264396686489">Аутоматски отварај групе картица са других уређаја</translation>
 <translation id="1072476005125066234">Рецензије на основу интересовања</translation>
 <translation id="1072679792409426431">Онемогућио је администратор</translation>
 <translation id="1074827084851510304">Избрисаћете лозинке ({password_count}) и листу сајтова и апликација за које сте одабрали да никада не чувате податке за пријављивање. Налози које сте отворили за сајтове и апликације неће бити избрисани.</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2360196772093551345">Захтевај мобилни сајт</translation>
 <translation id="2362083820973145409">Пријављени сте као <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отвара подешавања.</translation>
+<translation id="2371084566192454134">Картице и групе картица</translation>
 <translation id="2381405137052800939">Основе</translation>
 <translation id="2384692388811649784">Сакриј картице без архивирања</translation>
 <translation id="2386793615875593361">Изабрана је 1 слика</translation>

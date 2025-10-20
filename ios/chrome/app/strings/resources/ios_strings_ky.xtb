@@ -19,6 +19,7 @@
 <translation id="10614374240317010">Эч качан сакталбайт</translation>
 <translation id="1062138828266376352">PIN кодуңуз өзгөргөн жок. Интернет байланышыңызды текшерип, кайталап көрүңүз</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) сактала турган жерди тандаңыз</translation>
+<translation id="1063300264396686489">Башка түзмөктөрдөгү өтмөк топторун автоматтык түрдө ачуу</translation>
 <translation id="1072476005125066234">Кызыкчылыктарыңызга негизделген сын-пикирлер</translation>
 <translation id="1072679792409426431">Администраторуңуз тарабынан өчүрүлгөн</translation>
 <translation id="1074827084851510304">{password_count} сырсөздү жана кирүү маалыматы эч качан сакталбай турган сайттардын жана колдонмолордун тизмесин өчүргөнү турасыз. Сайттарда же колдонмолордо түзүлгөн аккаунт өчүрүлбөйт.</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2360196772093551345">Мобилдик версиясы керек</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> катары кирдиңиз. <ph name="USER_EMAIL" />. Параметрлерди ачат.</translation>
+<translation id="2371084566192454134">Өтмөктөр жана өтмөктөр тобу</translation>
 <translation id="2381405137052800939">Негизги параметрлер</translation>
 <translation id="2384692388811649784">Жашыруун өтмөктөрүн жашыруу</translation>
 <translation id="2386793615875593361">1 тандалды</translation>

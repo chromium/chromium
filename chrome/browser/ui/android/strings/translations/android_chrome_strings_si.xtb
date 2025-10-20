@@ -49,6 +49,7 @@
 <translation id="11947597112837849">ඉ-තැපැල් ලිපිනය</translation>
 <translation id="1197267115302279827">පිටුසන් ගෙන යන්න</translation>
 <translation id="1197761954713363183">මුරයතුර තහවුරු කිරීමේ පත්‍රය වසා ඇත</translation>
+<translation id="1197933394627598677">කියවීමේ මාදිලිය පෙන්වන්න</translation>
 <translation id="1201402288615127009">ඊළඟ</translation>
 <translation id="1202892408424955784">හඹා ගිය නිෂ්පාදන</translation>
 <translation id="1204037785786432551">බාගැනීමේ සබැඳිය</translation>
@@ -1397,6 +1398,7 @@
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{බාගැනීම් 1ක් පොරොත්තුවෙන්}one{බාගැනීම් #ක් පොරොත්තුවෙන්}other{බාගැනීම් #ක් පොරොත්තුවෙන්}}</translation>
 <translation id="7230064152164845085">අප්‍රසිද්ධ වෙත මාරු වන්න</translation>
 <translation id="7237724030342645845">Google මුරපද කළමනාකරු ක්‍රියා කිරීම නැවතී ඇත</translation>
+<translation id="7239496616545081903">කියවීමේ මාදිලිය සඟවන්න</translation>
 <translation id="72415438529550637">මුරපද යෝජනාව වසා ඇත.</translation>
 <translation id="7248671827512403053">ඉල්ලුම් පත්‍රය</translation>
 <translation id="7253951228444156601">මුරපද පරීක්ෂා කරමින්…</translation>
@@ -1738,6 +1740,7 @@
 <translation id="8723453889042591629">මෙම පිටුව ඉක්මනින් පරිවර්තන කරන්න. මෙම කෙටිමඟ සංස්කරණ කිරීමට, ස්පර්ශ කර අල්ලා සිටින්න.</translation>
 <translation id="8725066075913043281">නැවත උත්සහ කරන්න</translation>
 <translation id="8731268612289859741">ආරක්ෂක කේතය</translation>
+<translation id="8738163682604285902">කියවීමේ මාදිලිය බලන්න ද?</translation>
 <translation id="8746155870861185046">උද්දීපනය බෙදා ගන්න</translation>
 <translation id="8748850008226585750">අන්තර්ගත සැඟවිණි</translation>
 <translation id="8754448020583829686">සබැඳියකින් තොරව පිටපත් කරන්න</translation>

@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">තන්තු සහ රෙදිපිළි කලාව</translation>
 <translation id="243815215670139125">මෙම කාඩ්පත ඔබේ Google ගිණුමේ සුරැකිය නොහැකි විය. එය වෙනුවට මෙම උපාංගයෙහි Chrome වෙත සුරැකී ඇත.</translation>
 <translation id="2438874542388153331">දකුණට සිවු වරක් අනින්න</translation>
+<translation id="2440855519769445271">පසුව ගෙවීමේ විකල්ප සැඟවීමට, <ph name="BEGIN_LINK" />ගෙවීම් සැකසීම්<ph name="END_LINK" /> වෙත යන්න</translation>
 <translation id="2441854154602066476">ස්පර්ශයෙන් පිරවිය හැකි ගෙවීම් ක්‍රම තිබේ. යතුරු පුවරුව සැඟවී ඇත.</translation>
 <translation id="2442865686365739754">Chrome පහත දේ <ph name="BEGIN_EMPHASIS" />නොසුරකිනු ඇත<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2222,6 +2223,7 @@
 <translation id="4648262692072505866">හැෂ් SHA-256 ආකෘතියෙන් විය යුතු වේ.</translation>
 <translation id="4652266463001779298">ඉඩ නොදේ</translation>
 <translation id="4652440160515225514">ඔබේ සංවිධානය මෙම අඩවිය එය ප්‍රතිපත්තියක් උල්ලංඝනය කරන නිසා අවහිර කර ඇත.</translation>
+<translation id="4654457557264366314">ගෙවීම් සැලසුම් සුදුසුකම් ලැබීමට යටත් වේ.</translation>
 <translation id="4658638640878098064">ඉහළ වම ස්ටේපල් කරන්න</translation>
 <translation id="4660592918803576381">Drive හි විවෘත කරන්න</translation>
 <translation id="4661556981531699496">සුරතලුන් සහ සතුන්</translation>

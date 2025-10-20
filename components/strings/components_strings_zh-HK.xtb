@@ -882,6 +882,7 @@
 <translation id="2436976580469434549">纖維和紡織藝術</translation>
 <translation id="243815215670139125">此卡無法儲存至 Google 帳戶，因此已改為儲存至此裝置上的 Chrome。</translation>
 <translation id="2438874542388153331">四孔 (右側)</translation>
+<translation id="2440855519769445271">如要隱藏「稍後付款」選項，請前往<ph name="BEGIN_LINK" />付款設定<ph name="END_LINK" /></translation>
 <translation id="2441854154602066476">㩒一下先可以填嘅付款方法。隱藏咗鍵盤。</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />以下資料：
           <ph name="BEGIN_LIST" />
@@ -2221,6 +2222,7 @@
 <translation id="4648262692072505866">雜湊必須為 SHA-256 格式。</translation>
 <translation id="4652266463001779298">不允許</translation>
 <translation id="4652440160515225514">由於此網站違反政策，因此已被您的機構封鎖。</translation>
+<translation id="4654457557264366314">付款計劃須符合資格條件。</translation>
 <translation id="4658638640878098064">釘裝 (左上方)</translation>
 <translation id="4660592918803576381">在「雲端硬碟」中開啟</translation>
 <translation id="4661556981531699496">寵物及動物</translation>

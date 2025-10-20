@@ -19,6 +19,7 @@
 <translation id="10614374240317010">저장하지 않음</translation>
 <translation id="1062138828266376352">PIN이 변경되지 않았습니다. 인터넷 연결 상태를 확인하고 다시 시도해 주세요.</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"(<ph name="FILE_SIZE" />) 저장 위치 선택</translation>
+<translation id="1063300264396686489">다른 기기에서 생성된 탭 그룹 자동 열기</translation>
 <translation id="1072476005125066234">관심분야를 기반으로 한 리뷰</translation>
 <translation id="1072679792409426431">관리자가 사용 중지함</translation>
 <translation id="1074827084851510304">비밀번호 {password_count}개와 로그인 정보를 저장하지 않도록 선택한 사이트 및 앱 목록을 삭제하려고 합니다. 사이트 및 앱용으로 만든 계정은 삭제되지 않습니다.</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">계속</translation>
 <translation id="2360196772093551345">모바일 버전으로 보기</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. <ph name="USER_EMAIL" />입니다. 설정을 엽니다.</translation>
+<translation id="2371084566192454134">탭 및 탭 그룹</translation>
 <translation id="2381405137052800939">기본설정</translation>
 <translation id="2384692388811649784">시크릿 탭 숨기기</translation>
 <translation id="2386793615875593361">1장 선택됨</translation>

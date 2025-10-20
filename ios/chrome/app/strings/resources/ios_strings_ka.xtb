@@ -19,6 +19,7 @@
 <translation id="10614374240317010">არასოდეს შენახული</translation>
 <translation id="1062138828266376352">თქვენი PIN-კოდი არ შეიცვალა. შეამოწმეთ ინტერნეტ-კავშირი და ცადეთ ხელახლა</translation>
 <translation id="1063070031224282617">აირჩიეთ, სად შეინახოთ „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“ (<ph name="FILE_SIZE" />)</translation>
+<translation id="1063300264396686489">ჩანართების ჯგუფების სხვა მოწყობილობებიდან ავტომატურად გახსნა</translation>
 <translation id="1072476005125066234">მიმოხილვები თქვენი ინტერესების მიხედვით</translation>
 <translation id="1072679792409426431">გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="1074827084851510304">თქვენ აპირებთ, წაშალოთ {password_count} პაროლი და იმ საიტებისა და აპების სია, რომლებშიც აირჩიეთ, რომ არასდროს შენახულიყო სისტემაში შესვლის ინფორმაცია. საიტებისთვის ან აპებისთვის შექმნილი არცერთი ანგარიში არ წაიშლება.</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2360196772093551345">მობილური საიტის მოთხოვნა</translation>
 <translation id="2362083820973145409">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. გახსნის პარამეტრებს.</translation>
+<translation id="2371084566192454134">ჩანართები და ჩანართების ჯგუფები</translation>
 <translation id="2381405137052800939">ძირითადი</translation>
 <translation id="2384692388811649784">ინკოგნიტო ჩანართების დამალვა</translation>
 <translation id="2386793615875593361">1 არჩეულია</translation>

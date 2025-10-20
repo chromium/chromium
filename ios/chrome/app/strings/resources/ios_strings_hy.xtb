@@ -19,6 +19,7 @@
 <translation id="10614374240317010">Կայքեր, որոնց համար գաղտնաբառերը երբեք չեն պահվում</translation>
 <translation id="1062138828266376352">Ձեր PIN կոդը չի փոխվել։ Ստուգեք ձեր ինտերնետ կապը և նորից փորձեք</translation>
 <translation id="1063070031224282617">Ընտրեք, թե որտեղ պահել «<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />» ֆայլը (<ph name="FILE_SIZE" />)</translation>
+<translation id="1063300264396686489">Ավտոմատ բացում է ներդիրների խմբերն այլ սարքերից</translation>
 <translation id="1072476005125066234">Կարծիքներ՝ հիմնված ձեր հետաքրքրությունների վրա</translation>
 <translation id="1072679792409426431">Անջատված է ադմինիստրատորի կողմից</translation>
 <translation id="1074827084851510304">Դուք պատրաստվում եք ջնջել {password_count} գաղտնաբառ և այն կայքերի ու հավելվածների ցանկը, որոնց մուտքի տվյալներն ընտրել եք չպահել։ Հաշիվները, որոնք ստեղծել եք կայքերի կամ հավելվածների համար, չեն ջնջվի։</translation>
@@ -368,6 +369,7 @@
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2360196772093551345">Բջջային տարբերակ</translation>
 <translation id="2362083820973145409">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />։ Բացել կարգավորումները:</translation>
+<translation id="2371084566192454134">Ներդիրներ և ներդիրների խմբեր</translation>
 <translation id="2381405137052800939">Հիմնական</translation>
 <translation id="2384692388811649784">Թաքցնել ինկոգնիտո ներդիրները</translation>
 <translation id="2386793615875593361">Ընտրվել է 1 էջանիշ</translation>
