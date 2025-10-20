@@ -69,8 +69,6 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   Browser* browser() const { return browser_; }
   SidePanelRegistry* GetWindowRegistry() { return window_registry_.get(); }
 
-  std::optional<UniqueKey> current_key() const { return current_key_; }
-
  protected:
   friend class SidePanelEntryWaiter;
 
@@ -101,6 +99,7 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
       SidePanelRegistry* old_contextual_registry,
       SidePanelRegistry* new_contextual_registry) = 0;
 
+  std::optional<UniqueKey> current_key() const { return current_key_; }
   void set_current_key(std::optional<UniqueKey> new_key) {
     current_key_ = new_key;
   }

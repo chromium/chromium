@@ -861,9 +861,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
 
   // Show the extension side panel. This should show the tab-scoped side panel.
   side_panel_coordinator()->Show(extension_key);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return side_panel_coordinator()->IsSidePanelShowing(); }));
-  EXPECT_TRUE(side_panel_coordinator()->current_key()->tab_handle);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_coordinator()->IsSidePanelEntryShowing(extension_key,
+                                                             /*for_tab=*/true);
+  }));
 
   // Disable the extension's side panel for the current tab.
   RunSetOptions(*extension, tab_id, /*path=*/std::nullopt,

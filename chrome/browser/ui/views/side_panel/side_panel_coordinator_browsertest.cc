@@ -2012,7 +2012,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
                                     extension->id());
   coordinator()->Show(extension_key);
-  EXPECT_FALSE(coordinator()->current_key()->tab_handle.has_value());
+  EXPECT_TRUE(
+      coordinator()->IsSidePanelEntryShowing(extension_key, /*for_tab=*/false));
+  EXPECT_FALSE(
+      coordinator()->IsSidePanelEntryShowing(extension_key, /*for_tab=*/true));
 
   // Give extension access to tab side panel.
   // Tab entry is not shown.
@@ -2023,7 +2026,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
                     .id(),
                 /*path=*/"panel.html",
                 /*enabled=*/true);
-  EXPECT_FALSE(coordinator()->current_key()->tab_handle.has_value());
+  EXPECT_TRUE(
+      coordinator()->IsSidePanelEntryShowing(extension_key, /*for_tab=*/false));
+  EXPECT_FALSE(
+      coordinator()->IsSidePanelEntryShowing(extension_key, /*for_tab=*/true));
 }
 
 // Test that if global or contextual entries are deregistered, and if it exists,
