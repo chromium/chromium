@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
@@ -27,11 +28,9 @@ namespace {
 
 InputMethodPersistence* g_input_method_persistence = nullptr;
 
-void PersistSystemInputMethod(const std::string& input_method) {
-  PrefService* const local_state = g_browser_process->local_state();
-  CHECK(local_state);
-  local_state->SetString(language_prefs::kPreferredKeyboardLayout,
-                         input_method);
+void PersistSystemInputMethod(PrefService& local_state,
+                              const std::string& input_method) {
+  local_state.SetString(language_prefs::kPreferredKeyboardLayout, input_method);
 }
 
 // Returns the user email, whether or not they have consented to browser sync.
@@ -44,12 +43,13 @@ AccountId GetUserAccount(Profile* profile) {
   return user->GetAccountId();
 }
 
-void SetUserLastInputMethodPreference(const AccountId& account_id,
+void SetUserLastInputMethodPreference(PrefService& local_state,
+                                      const AccountId& account_id,
                                       const std::string& input_method_id) {
   if (!account_id.is_valid()) {
     return;
   }
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   known_user.SetUserLastLoginInputMethodId(account_id, input_method_id);
 }
 
@@ -62,8 +62,10 @@ InputMethodPersistence* InputMethodPersistence::GetInstance() {
 }
 
 InputMethodPersistence::InputMethodPersistence(
+    PrefService* local_state,
     InputMethodManager* input_method_manager)
-    : input_method_manager_(input_method_manager) {
+    : local_state_(CHECK_DEREF(local_state)),
+      input_method_manager_(input_method_manager) {
   CHECK(!g_input_method_persistence);
   g_input_method_persistence = this;
 
@@ -95,7 +97,7 @@ void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
                  << current_input_method;
         return;
       }
-      PersistSystemInputMethod(current_input_method);
+      PersistSystemInputMethod(*local_state_, current_input_method);
       return;
     case InputMethodManager::UIStyle::kNormal:
       PersistUserInputMethod(current_input_method, profile);
@@ -128,7 +130,8 @@ void InputMethodPersistence::SetUserLastLoginInputMethodId(
   // TODO(https://crbug.com/1121565): Create more general fix for all the data
   // that is required on the lock screen.
   profile->GetPrefs()->SetString(prefs::kLastLoginInputMethod, input_method_id);
-  SetUserLastInputMethodPreference(GetUserAccount(profile), input_method_id);
+  SetUserLastInputMethodPreference(*local_state_, GetUserAccount(profile),
+                                   input_method_id);
 }
 
 void InputMethodPersistence::PersistUserInputMethod(
@@ -160,9 +163,10 @@ void InputMethodPersistence::PersistUserInputMethod(
 
 // static
 void InputMethodPersistence::SetUserLastInputMethodPreferenceForTesting(
+    PrefService& local_state,
     const AccountId& account_id,
     const std::string& input_method) {
-  SetUserLastInputMethodPreference(account_id, input_method);
+  SetUserLastInputMethodPreference(local_state, account_id, input_method);
 }
 
 }  // namespace ash::input_method

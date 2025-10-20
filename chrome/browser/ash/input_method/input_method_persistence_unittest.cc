@@ -79,14 +79,16 @@ class InputMethodPersistenceTest : public testing::Test {
 
 TEST_F(InputMethodPersistenceTest, TestLifetime) {
   {
-    InputMethodPersistence persistence(&mock_manager_);
+    InputMethodPersistence persistence(
+        TestingBrowserProcess::GetGlobal()->local_state(), &mock_manager_);
     EXPECT_EQ(1, mock_manager_.add_observer_count());
   }
   EXPECT_EQ(1, mock_manager_.remove_observer_count());
 }
 
 TEST_F(InputMethodPersistenceTest, TestPrefPersistenceByState) {
-  InputMethodPersistence persistence(&mock_manager_);
+  InputMethodPersistence persistence(
+      TestingBrowserProcess::GetGlobal()->local_state(), &mock_manager_);
 
   mock_manager_.GetActiveIMEState()->SetUIStyle(
       InputMethodManager::UIStyle::kLogin);

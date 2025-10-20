@@ -1098,7 +1098,7 @@ InputMethodManagerImpl::InputMethodManagerImpl(
   // InputMethodPersistence ctor calls back a virtual method of
   // InputMethodManager. Hence, it can not be instantiated from the ctor
   // initialization list.
-  persistence_ = std::make_unique<InputMethodPersistence>(this);
+  persistence_ = std::make_unique<InputMethodPersistence>(local_state, this);
 
   // We should not use ALL_BROWSERS_CLOSING here since logout might be cancelled
   // by JavaScript after ALL_BROWSERS_CLOSING is sent (crosbug.com/11055).
