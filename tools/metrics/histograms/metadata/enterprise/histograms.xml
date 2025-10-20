@@ -272,7 +272,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime"
     units="ms" expires_after="2026-04-06">
   <owner>sergiyb@google.com</owner>
-  <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Duration of the private set membership request to determine enrollment state
@@ -2300,9 +2299,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRollbackAttestation"
-    enum="EnterpriseEnrollmentType" expires_after="2025-11-16">
-  <owner>crisguerrero@chromium.org</owner>
-  <owner>mpolzer@google.com</owner>
+    enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
+  <owner>rbock@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to attestation based re-enrollment after enterprise rollback.
@@ -2314,8 +2312,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.EnrollmentRollbackManualFallback"
     enum="EnterpriseEnrollmentType" expires_after="2026-04-06">
-  <owner>crisguerrero@chromium.org</owner>
-  <owner>mpolzer@google.com</owner>
+  <owner>rbock@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Events related to manual re-enrollment after enterprise rollback. This is
