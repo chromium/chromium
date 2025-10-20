@@ -34,7 +34,6 @@
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace cc {
-class ImageDecodeCache;
 class PaintCanvas;
 class SkiaPaintCanvas;
 }  // namespace cc
@@ -344,12 +343,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                              context_provider_wrapper,
                          Delegate* delegate);
 
-  // Its important to use this method for generating PaintImage wrapped canvas
-  // snapshots to get a cache hit from cc's ImageDecodeCache. This method
-  // ensures that the PaintImage ID for the snapshot, used for keying
-  // decodes/uploads in the cache is invalidated only when the canvas contents
-  // change.
-  cc::PaintImage MakeImageSnapshot(FlushReason);
   virtual void RasterRecord(cc::PaintRecord) = 0;
   void UnacceleratedRasterRecord(cc::PaintRecord);
   void AcceleratedRasterRecord(cc::PaintRecord last_recording,
