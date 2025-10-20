@@ -288,12 +288,8 @@ import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactor
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.ui.extensions.windowing.ExtensionWindowControllerBridgeFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -823,19 +819,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
             mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
             TabModel currentTabModel = mTabModelSelector.getCurrentModel();
-
-            // Initialize ChromeAndroidTask.
-            //
-            // This needs to be done before any tab is added so that
-            // TabModel#associateWithBrowserWindow() can be called in time for each tab to have the
-            // same native SessionID as the native AndroidBrowserWindow managed by
-            // ChromeAndroidTask.
-            ChromeAndroidTask chromeAndroidTask = initializeChromeAndroidTask(currentTabModel);
-            if (chromeAndroidTask != null) {
-                currentTabModel.associateWithBrowserWindow(
-                        chromeAndroidTask.getOrCreateNativeBrowserWindowPtr());
-                initializeExtensionWindowControllerBridge(chromeAndroidTask);
-            }
+            initializeChromeAndroidTask(BrowserWindowType.NORMAL, currentTabModel);
 
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
@@ -1320,43 +1304,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             // tests.
             // assert !(mOverviewModeController != null
             //         && mOverviewModeController.overviewVisible());
-        }
-    }
-
-    @Nullable
-    private ChromeAndroidTask initializeChromeAndroidTask(TabModel currentTabModel) {
-        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.initializeChromeAndroidTask")) {
-            var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
-            if (chromeAndroidTaskTracker == null) {
-                return null;
-            }
-
-            var activityWindowAndroid = getWindowAndroid();
-            assert activityWindowAndroid != null
-                    : "ChromeAndroidTask must be initialized after Java WindowAndroid is created.";
-
-            int pendingIdExtraValue =
-                    IntentUtils.safeGetIntExtra(
-                            getIntent(),
-                            ChromeAndroidTaskTracker.EXTRA_PENDING_BROWSER_WINDOW_TASK_ID,
-                            /* defaultValue= */ -1);
-            Integer pendingId = pendingIdExtraValue == -1 ? null : pendingIdExtraValue;
-
-            return chromeAndroidTaskTracker.obtainTask(
-                    BrowserWindowType.NORMAL, activityWindowAndroid, currentTabModel, pendingId);
-        }
-    }
-
-    private void initializeExtensionWindowControllerBridge(
-            @Nullable ChromeAndroidTask chromeAndroidTask) {
-        if (chromeAndroidTask == null) {
-            return;
-        }
-
-        var extensionWindowControllerBridge =
-                ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask);
-        if (extensionWindowControllerBridge != null) {
-            chromeAndroidTask.addFeature(extensionWindowControllerBridge);
         }
     }
 

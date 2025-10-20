@@ -49,6 +49,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.InputHintChecker;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PowerMonitor;
 import org.chromium.base.TraceEvent;
@@ -196,9 +197,15 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.extensions.windowing.ExtensionWindowControllerBridgeFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -989,6 +996,59 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 .onNativeLibraryReady(getWindowAndroid(), getTabContentManager(), prefs);
         mRootUiCoordinator.createContextualSearchManager(originalProfile);
         TraceEvent.end("ChromeActivity:CompositorInitialization");
+    }
+
+    /**
+     * Initializes {@link ChromeAndroidTask} and adds {@link ChromeAndroidTaskFeature}s.
+     *
+     * <p>This method is for a subclass of {@link ChromeActivity} that needs windowing support on
+     * Java and/or native side(s).
+     *
+     * <p>If a subclass of {@link ChromeActivity} needs {@link ChromeAndroidTask}, it should call
+     * this method as early as possible (after the native library is loaded). For example, this
+     * method should be called before any tab is added so that {@link
+     * TabModel#associateWithBrowserWindow} can be called in time for each tab to have the same
+     * native SessionID as the native {@code AndroidBrowserWindow}.
+     *
+     * @param browserWindowType Type of the browser window (normal, popup, etc.)
+     * @param currentTabModel The current {@link TabModel} for this {@code Activity}.
+     */
+    protected final void initializeChromeAndroidTask(
+            @BrowserWindowType int browserWindowType, TabModel currentTabModel) {
+        try (TraceEvent e = TraceEvent.scoped("ChromeActivity.initializeChromeAndroidTask")) {
+            // 1. Obtain a ChromeAndroidTask that represents the Task (window) for this Activity.
+            var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
+            if (chromeAndroidTaskTracker == null) {
+                return;
+            }
+
+            var activityWindowAndroid = getWindowAndroid();
+            assert activityWindowAndroid != null
+                    : "ChromeAndroidTask must be initialized after Java WindowAndroid is created.";
+
+            int pendingIdExtraValue =
+                    IntentUtils.safeGetIntExtra(
+                            getIntent(),
+                            ChromeAndroidTaskTracker.EXTRA_PENDING_BROWSER_WINDOW_TASK_ID,
+                            /* defaultValue= */ -1);
+            Integer pendingId = pendingIdExtraValue == -1 ? null : pendingIdExtraValue;
+
+            var chromeAndroidTask =
+                    chromeAndroidTaskTracker.obtainTask(
+                            browserWindowType, activityWindowAndroid, currentTabModel, pendingId);
+
+            // 2. Associate the current TabModel with ChromeAndroidTask's underlying native
+            // AndroidBrowserWindow object.
+            currentTabModel.associateWithBrowserWindow(
+                    chromeAndroidTask.getOrCreateNativeBrowserWindowPtr());
+
+            // 3. Add windowing features.
+            ChromeAndroidTaskFeature extensionWindowControllerBridge =
+                    ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask);
+            if (extensionWindowControllerBridge != null) {
+                chromeAndroidTask.addFeature(extensionWindowControllerBridge);
+            }
+        }
     }
 
     @Override
