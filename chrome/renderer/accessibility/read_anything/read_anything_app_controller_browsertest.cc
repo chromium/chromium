@@ -80,18 +80,20 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, UninstallVoice, (const std::string& language), (override));
   MOCK_METHOD(void,
               OnLinkClicked,
-              (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),
+              (const ui::AXTreeID& target_tree_id,
+               const ui::AXNodeID& target_node_id),
               (override));
   MOCK_METHOD(void,
               ScrollToTargetNode,
-              (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),
+              (const ui::AXTreeID& target_tree_id,
+               const ui::AXNodeID& target_node_id),
               (override));
   MOCK_METHOD(void,
               OnSelectionChange,
               (const ui::AXTreeID& target_tree_id,
-               ui::AXNodeID anchor_node_id,
+               const ui::AXNodeID& anchor_node_id,
                int anchor_offset,
-               ui::AXNodeID focus_node_id,
+               const ui::AXNodeID& focus_node_id,
                int focus_offset),
               (override));
   MOCK_METHOD(void, OnCollapseSelection, (), (override));
@@ -128,7 +130,8 @@ class MockReadAnythingUntrustedPageHandler
               (override));
   MOCK_METHOD(void,
               OnImageDataRequested,
-              (const ::ui::AXTreeID& target_tree_id, int32_t target_node_id),
+              (const ::ui::AXTreeID& target_tree_id,
+               const ::ui::AXNodeID& target_node_id),
               (override));
   MOCK_METHOD(void, OnReadAloudAudioStateChange, (bool playing), (override));
   MOCK_METHOD(void, LogExtensionState, (), (override));

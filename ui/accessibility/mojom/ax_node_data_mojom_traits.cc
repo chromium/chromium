@@ -5,6 +5,7 @@
 #include "ui/accessibility/mojom/ax_node_data_mojom_traits.h"
 
 #include "base/containers/flat_map.h"
+#include "ui/accessibility/mojom/ax_node_id.mojom-data-view.h"
 #include "ui/accessibility/mojom/ax_relative_bounds.mojom-shared.h"
 #include "ui/accessibility/mojom/ax_relative_bounds_mojom_traits.h"
 
@@ -34,7 +35,11 @@ bool StructTraits<ax::mojom::AXBitsetDataDataView,
 bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
     ax::mojom::AXNodeDataDataView data,
     ui::AXNodeData* out) {
-  out->id = data.id();
+  ax::mojom::AXNodeIDPtr id_ptr;
+  if (!data.ReadId(&id_ptr)) {
+    return false;
+  }
+  out->id = id_ptr->value;
   out->role = data.role();
   out->state = ui::AXStates(data.state());
   out->actions = data.actions();

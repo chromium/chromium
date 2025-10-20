@@ -6,6 +6,7 @@ module ax.mojom;
 
 import "ui/accessibility/ax_enums.mojom";
 import "ui/accessibility/mojom/ax_event_intent.mojom";
+import "ui/accessibility/mojom/ax_node_id.mojom";
 import "ui/accessibility/mojom/ax_node_data.mojom";
 import "ui/accessibility/mojom/ax_tree_data.mojom";
 import "ui/accessibility/mojom/ax_tree_checks.mojom";
@@ -14,8 +15,8 @@ import "ui/accessibility/mojom/ax_tree_checks.mojom";
 struct AXTreeUpdate {
   bool has_tree_data;
   AXTreeData tree_data;
-  int32 node_id_to_clear;
-  int32 root_id;
+  ax.mojom.AXNodeID node_id_to_clear;
+  ax.mojom.AXNodeID root_id;
   array<AXNodeData> nodes;
   ax.mojom.EventFrom event_from;
   ax.mojom.Action event_from_action;

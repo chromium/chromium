@@ -95,7 +95,7 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                read_anything::mojom::HighlightGranularity granularity));
   MOCK_METHOD(void,
               OnImageDataDownloaded,
-              (const ui::AXTreeID&, int, const SkBitmap&));
+              (const ui::AXTreeID&, const ui::AXNodeID&, const SkBitmap&));
   MOCK_METHOD3(OnActiveAXTreeIDChanged,
                void(const ui::AXTreeID& tree_id,
                     ukm::SourceId ukm_source_id,
@@ -151,7 +151,7 @@ class TestReadAnythingUntrustedPageHandler
             /*use_screen_ai_service=*/false) {}
 
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
-                            ui::AXNodeID target_node_id) override {
+                            const ui::AXNodeID& target_node_id) override {
     OnImageDataDownloaded(target_tree_id, target_node_id, /*id=*/0,
                           /*http_status_code=*/0, GURL(),
                           /*bitmaps=*/{test_bitmap_},

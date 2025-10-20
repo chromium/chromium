@@ -13,8 +13,17 @@ bool StructTraits<ax::mojom::AXTreeUpdateDataView, ui::AXTreeUpdate>::Read(
   out->has_tree_data = data.has_tree_data();
   if (!data.ReadTreeData(&out->tree_data))
     return false;
-  out->node_id_to_clear = data.node_id_to_clear();
-  out->root_id = data.root_id();
+  ax::mojom::AXNodeIDPtr node_id_to_clear_ptr;
+  if (!data.ReadNodeIdToClear(&node_id_to_clear_ptr)) {
+    return false;
+  }
+  out->node_id_to_clear = node_id_to_clear_ptr->value;
+
+  ax::mojom::AXNodeIDPtr root_id_ptr;
+  if (!data.ReadRootId(&root_id_ptr)) {
+    return false;
+  }
+  out->root_id = root_id_ptr->value;
   if (!data.ReadNodes(&out->nodes))
     return false;
   out->event_from = data.event_from();

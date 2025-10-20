@@ -754,7 +754,7 @@ void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(
 
 void ReadAnythingUntrustedPageHandler::OnLinkClicked(
     const ui::AXTreeID& target_tree_id,
-    ui::AXNodeID target_node_id) {
+    const ui::AXNodeID& target_node_id) {
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;
   action_data.action = ax::mojom::Action::kDoDefault;
@@ -765,7 +765,7 @@ void ReadAnythingUntrustedPageHandler::OnLinkClicked(
 
 void ReadAnythingUntrustedPageHandler::OnImageDataRequested(
     const ui::AXTreeID& target_tree_id,
-    ui::AXNodeID target_node_id) {
+    const ui::AXNodeID& target_node_id) {
   main_observer_->web_contents()->DownloadImageFromAxNode(
       target_tree_id, target_node_id,
       /*preferred_size=*/gfx::Size(),
@@ -777,7 +777,7 @@ void ReadAnythingUntrustedPageHandler::OnImageDataRequested(
 
 void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
     const ui::AXTreeID& target_tree_id,
-    ui::AXNodeID node_id,
+    const ui::AXNodeID& node_id,
     int id,
     int http_status_code,
     const GURL& image_url,
@@ -801,7 +801,7 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
 
 void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
     const ui::AXTreeID& target_tree_id,
-    ui::AXNodeID target_node_id) {
+    const ui::AXNodeID& target_node_id) {
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;
   action_data.target_node_id = target_node_id;
@@ -827,9 +827,9 @@ void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
 
 void ReadAnythingUntrustedPageHandler::OnSelectionChange(
     const ui::AXTreeID& target_tree_id,
-    ui::AXNodeID anchor_node_id,
+    const ui::AXNodeID& anchor_node_id,
     int anchor_offset,
-    ui::AXNodeID focus_node_id,
+    const ui::AXNodeID& focus_node_id,
     int focus_offset) {
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;

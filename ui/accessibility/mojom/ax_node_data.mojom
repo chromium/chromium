@@ -5,6 +5,7 @@
 module ax.mojom;
 
 import "ui/accessibility/ax_enums.mojom";
+import "ui/accessibility/mojom/ax_node_id.mojom";
 import "ui/accessibility/mojom/ax_relative_bounds.mojom";
 
 [Stable, Uuid="88b0e7cb-5a53-4993-9967-d33fb50b484b"]
@@ -15,7 +16,7 @@ struct AXBitsetData {
 
 // See ui::AXNodeData for comments / explanations of these fields.
 struct AXNodeData {
-  int32 id;
+  ax.mojom.AXNodeID id;
   ax.mojom.Role role;
   uint32 state;
   uint64 actions;
@@ -30,7 +31,7 @@ struct AXNodeData {
   map<ax.mojom.StringListAttribute, array<string>>
       stringlist_attributes;
   map<string, string> html_attributes;
-  array<int32> child_ids;
+  array<ax.mojom.AXNodeID> child_ids;
   ax.mojom.AXRelativeBounds relative_bounds;
   AXBitsetData? bool_attributes_data;
 };

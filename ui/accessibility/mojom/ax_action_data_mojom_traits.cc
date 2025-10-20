@@ -29,19 +29,33 @@ bool StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData>::Read(
   if (!data.ReadSourceExtensionId(&out->source_extension_id)) {
     return false;
   }
-  if (data.target_node_id() != ui::kInvalidAXNodeID &&
+  ax::mojom::AXNodeIDPtr target_node_id_ptr;
+  if (!data.ReadTargetNodeId(&target_node_id_ptr)) {
+    return false;
+  }
+  out->target_node_id = target_node_id_ptr->value;
+
+  if (out->target_node_id != ui::kInvalidAXNodeID &&
       data.target_role() != ax::mojom::Role::kUnknown) {
     // The target could either be found by ID, or by role. Having both set makes
     // no sense.
     return false;
   }
-  out->target_node_id = data.target_node_id();
   out->target_role = data.target_role();
   out->request_id = data.request_id();
   out->flags = data.flags();
-  out->anchor_node_id = data.anchor_node_id();
+  ax::mojom::AXNodeIDPtr anchor_node_id_ptr;
+  if (!data.ReadAnchorNodeId(&anchor_node_id_ptr)) {
+    return false;
+  }
+  out->anchor_node_id = anchor_node_id_ptr->value;
   out->anchor_offset = data.anchor_offset();
-  out->focus_node_id = data.focus_node_id();
+
+  ax::mojom::AXNodeIDPtr focus_node_id_ptr;
+  if (!data.ReadFocusNodeId(&focus_node_id_ptr)) {
+    return false;
+  }
+  out->focus_node_id = focus_node_id_ptr->value;
   out->focus_offset = data.focus_offset();
   out->custom_action_id = data.custom_action_id();
   out->horizontal_scroll_alignment = data.horizontal_scroll_alignment();
