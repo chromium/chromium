@@ -37,6 +37,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
+#include "chrome/browser/ash/input_method/input_method_persistence.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -1094,6 +1095,11 @@ InputMethodManagerImpl::InputMethodManagerImpl(
       component_extension_ime_manager_->GetAllIMEAsInputMethodDescriptor();
   util_.ResetInputMethods(descriptors);
 
+  // InputMethodPersistence ctor calls back a virtual method of
+  // InputMethodManager. Hence, it can not be instantiated from the ctor
+  // initialization list.
+  persistence_ = std::make_unique<InputMethodPersistence>(this);
+
   // We should not use ALL_BROWSERS_CLOSING here since logout might be cancelled
   // by JavaScript after ALL_BROWSERS_CLOSING is sent (crosbug.com/11055).
   on_app_terminating_subscription_ =
@@ -1102,6 +1108,10 @@ InputMethodManagerImpl::InputMethodManagerImpl(
 }
 
 InputMethodManagerImpl::~InputMethodManagerImpl() {
+  // Ensure that `persistence_` gets reset prior to `observers_` since it is
+  // itself an observer.
+  persistence_.reset();
+
   if (candidate_window_controller_.get()) {
     candidate_window_controller_->RemoveObserver(this);
   }

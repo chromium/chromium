@@ -42,6 +42,8 @@ struct AssistiveWindow;
 
 namespace input_method {
 
+class InputMethodPersistence;
+
 // The implementation of InputMethodManager.
 class InputMethodManagerImpl : public InputMethodManager,
                                public CandidateWindowController::Observer,
@@ -304,6 +306,8 @@ class InputMethodManagerImpl : public InputMethodManager,
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   std::unique_ptr<InputMethodDelegate> delegate_;
+
+  std::unique_ptr<InputMethodPersistence> persistence_;
 
   // A list of objects that monitor the manager.
   base::ObserverList<InputMethodManager::Observer>::Unchecked observers_;
