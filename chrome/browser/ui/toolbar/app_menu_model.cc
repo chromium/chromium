@@ -95,6 +95,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
@@ -1906,9 +1907,18 @@ void AppMenuModel::Build() {
   if (!browser_->profile()->IsGuestSession()) {
     sub_menus_.push_back(
         std::make_unique<PasswordsAndAutofillSubMenuModel>(this));
-    AddSubMenuWithStringIdAndVectorIcon(
-        this, IDC_PASSWORDS_AND_AUTOFILL_MENU, IDS_PASSWORDS_AND_AUTOFILL_MENU,
-        sub_menus_.back().get(), vector_icons::kPasswordManagerIcon);
+    int string_id = base::FeatureList::IsEnabled(
+                        autofill::features::kYourSavedInfoBrandingInSettings)
+                        ? IDS_SETTINGS_YOUR_SAVED_INFO
+                        : IDS_PASSWORDS_AND_AUTOFILL_MENU;
+    const gfx::VectorIcon& vector_icon =
+        base::FeatureList::IsEnabled(
+            autofill::features::kYourSavedInfoBrandingInSettings)
+            ? vector_icons::kPersonTextIcon
+            : vector_icons::kPasswordManagerIcon;
+    AddSubMenuWithStringIdAndVectorIcon(this, IDC_PASSWORDS_AND_AUTOFILL_MENU,
+                                        string_id, sub_menus_.back().get(),
+                                        vector_icon);
     SetElementIdentifierAt(
         GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value(),
         kPasswordAndAutofillMenuItem);
