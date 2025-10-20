@@ -76,8 +76,17 @@ class ActorTypeToolBrowserTest
 
 // Basic test of the TypeTool - ensure typed string containing composition
 // characters is entered into an input box.
+// Flaky timeouts on sanitizer builds and in certain debug builds:
+// https://crbug.com/453258855
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+#define MAYBE_TypeTool_TextInputCompositionCharacters \
+  DISABLED_TypeTool_TextInputCompositionCharacters
+#else
+#define MAYBE_TypeTool_TextInputCompositionCharacters \
+  TypeTool_TextInputCompositionCharacters
+#endif
 IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
-                       TypeTool_TextInputCompositionCharacters) {
+                       MAYBE_TypeTool_TextInputCompositionCharacters) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
