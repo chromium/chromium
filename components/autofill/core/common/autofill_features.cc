@@ -429,7 +429,7 @@ const base::FeatureParam<int> kAutofillNameAndEmailProfileNotSelectedThreshold{
 // creating the kAccountNameEmail profile.
 const base::FeatureParam<std::string> kAutofillNameAndEmailProfileNicknameRegex{
     &kAutofillEnableSupportForNameAndEmail, "nickname_regex",
-    R"(\s+\([^)]*\)$|\s+\"[^\"]*\")"};
+    R"(\s+\([^)]*\)|\s+\"[^\"]*\")"};
 
 // When enabled, the autofill suggestion labels are more descriptive and
 // relevant.

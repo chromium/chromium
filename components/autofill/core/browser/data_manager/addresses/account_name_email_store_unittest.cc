@@ -681,6 +681,9 @@ INSTANTIATE_TEST_SUITE_P(
         NicknameTestCase{"John Ben Smith (JJ)", "John Ben Smith"},
         NicknameTestCase{"John Ben Smith (John Smith)", "John Ben Smith"},
         NicknameTestCase{"John Ben \"John Smith\" Smith", "John Ben Smith"},
+        NicknameTestCase{"John \"JJ\" Smith", "John Smith"},
+        NicknameTestCase{"John Ben (John Smith) Smith", "John Ben Smith"},
+        NicknameTestCase{"John (JJ) Smith", "John Smith"},
         NicknameTestCase{"John Smith", "John Smith"}));
 
 }  // namespace
