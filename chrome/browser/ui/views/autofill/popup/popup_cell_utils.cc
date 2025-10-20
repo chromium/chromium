@@ -87,6 +87,9 @@ constexpr int kGoogleWalletIconSize = 20;
 // The additional height of the row in case it has two lines of text.
 constexpr int kAutofillPopupAdditionalDoubleRowHeight = 16;
 
+// The additional height of the row in case it has three lines of text.
+constexpr int kAutofillPopupAdditionalTripleRowHeight = 24;
+
 // The additional padding of the row in case it has three lines of text.
 constexpr int kAutofillPopupAdditionalVerticalPadding = 16;
 
@@ -287,6 +290,68 @@ std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
     }
   }
   return table;
+}
+
+bool IsPaymentMethodSuggestion(const Suggestion& suggestion) {
+  switch (suggestion.type) {
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kIbanEntry:
+    case SuggestionType::kBnplEntry:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+      return true;
+    case SuggestionType::kAllLoyaltyCardsEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kFreeformFooter:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManagePlusAddress:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kAutocompleteEntry:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
+    case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kFillExistingPlusAddress:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kLoyaltyCardEntry:
+    case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kBackupPasswordEntry:
+    case SuggestionType::kTroubleSigningInEntry:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kPlusAddressError:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kTitle:
+    case SuggestionType::kIdentityCredential:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      return false;
+  }
 }
 
 }  // namespace
@@ -604,33 +669,38 @@ void AddSuggestionContentToView(
     std::vector<std::unique_ptr<views::View>> subtext_views,
     std::unique_ptr<views::View> icon,
     PopupRowContentView& content_view) {
+  bool should_show_new_fop_format =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableNewFopDisplayDesktop) &&
+      IsPaymentMethodSuggestion(suggestion);
   // Adjust the row height based on the number of subtexts (lines of text).
   int row_height = views::MenuConfig::instance().touchable_menu_height;
-  if (!subtext_views.empty() ||
-      ((suggestion.type == SuggestionType::kCreditCardEntry ||
-        suggestion.type == SuggestionType::kVirtualCreditCardEntry) &&
-       base::FeatureList::IsEnabled(
-           autofill::features::kAutofillEnableNewFopDisplayDesktop))) {
+  if (!subtext_views.empty() || should_show_new_fop_format) {
     row_height += kAutofillPopupAdditionalDoubleRowHeight;
   }
-  content_view.SetMinimumCrossAxisSize(row_height);
 
   // If there are three rows in total, add extra padding to avoid cramming.
   DCHECK_LE(subtext_views.size(), 2u);
   if (subtext_views.size() == 2u) {
-    content_view.SetInsideBorderInsets(
-        gfx::Insets(content_view.GetInsideBorderInsets())
-            .set_top_bottom(kAutofillPopupAdditionalVerticalPadding,
-                            kAutofillPopupAdditionalVerticalPadding));
+    if (should_show_new_fop_format) {
+      row_height += kAutofillPopupAdditionalTripleRowHeight;
+    } else {
+      content_view.SetInsideBorderInsets(
+          gfx::Insets(content_view.GetInsideBorderInsets())
+              .set_top_bottom(kAutofillPopupAdditionalVerticalPadding,
+                              kAutofillPopupAdditionalVerticalPadding));
+    }
   }
+
+  content_view.SetMinimumCrossAxisSize(row_height);
 
   // The leading icon.
   if (suggestion.is_loading) {
     views::Throbber* throbber =
         content_view.AddChildView(std::make_unique<views::Throbber>());
     if (icon) {
-      // Prevent that the layout is shifted when transitioning from throbber to
-      // icon and vice versa when there is a width difference.
+      // Prevent that the layout is shifted when transitioning from throbber
+      // to icon and vice versa when there is a width difference.
       const int size_delta =
           icon->GetMinimumSize().width() - throbber->GetMinimumSize().width();
       throbber->SetProperty(views::kMarginsKey,
