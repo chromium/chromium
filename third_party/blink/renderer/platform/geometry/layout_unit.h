@@ -612,6 +612,15 @@ inline LayoutUnit operator/(std::integral auto a, const LayoutUnit& b) {
 }
 
 template <unsigned fractional_bits, typename RawValue>
+  requires(std::is_same_v<RawValue, int32_t>)
+inline FixedPoint<fractional_bits, RawValue> operator%(
+    const FixedPoint<fractional_bits, RawValue>& a,
+    const FixedPoint<fractional_bits, RawValue>& b) {
+  int64_t raw_val = a.RawValue() % b.RawValue();
+  return FixedPoint<fractional_bits, RawValue>::FromRawValueWithClamp(raw_val);
+}
+
+template <unsigned fractional_bits, typename RawValue>
 ALWAYS_INLINE FixedPoint<fractional_bits, RawValue> operator+(
     const FixedPoint<fractional_bits, RawValue>& a,
     const FixedPoint<fractional_bits, RawValue>& b) {

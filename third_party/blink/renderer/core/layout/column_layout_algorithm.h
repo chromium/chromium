@@ -218,6 +218,43 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // ClampedToValidFragmentainerCapacity().
   LayoutUnit TotalColumnBlockSize() const;
 
+  // Return true if row height is constrained by something (e.g. non-auto
+  // column-height, or auto column-height and non-auto block-size).
+  bool HasRowHeight() const {
+    return !Style().HasAutoColumnHeight() ||
+           remaining_content_block_size_ > LayoutUnit();
+  }
+
+  // Return the height of one row, if constrained (either by non-auto
+  // `column-height`, or by auto `column-height` combined with non-auto
+  // `block-size`). This function may not be called if row height is
+  // unconstrained (if `HasRowHeight()` is false).
+  LayoutUnit RowHeight() const {
+    if (Style().HasAutoColumnHeight()) {
+      DCHECK_GT(remaining_content_block_size_, LayoutUnit());
+      return remaining_content_block_size_;
+    }
+    return LayoutUnit(Style().ColumnHeight());
+  }
+
+  // Convert a line offset (which is relative to the block-start of the multicol
+  // fragment under construction) to an offset relatively to the start of the
+  // current row.
+  LayoutUnit OffsetInCurrentRow(LayoutUnit line_offset) const;
+
+  // Return the remaining available space in the current row at the specified
+  // line offset. Note that the offset may be inside a row gap, in which case a
+  // negative value is returned (since we're past the end of the row).
+  LayoutUnit RemainingRowHeightAtOffset(LayoutUnit line_offset) const;
+
+  // Return the offset from the specified line offset to the start of the next
+  // row, including any row-gap.
+  LayoutUnit OffsetToNextRow(LayoutUnit line_offset) const;
+
+  // Return true if column wrapping is enabled and the specified line offset is
+  // past the start of the current row.
+  bool IsPastStartInWrappingRow(LayoutUnit line_offset) const;
+
   const ColumnSpannerPath* spanner_path_ = nullptr;
 
   int used_column_count_;

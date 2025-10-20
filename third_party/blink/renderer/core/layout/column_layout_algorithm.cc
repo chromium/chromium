@@ -292,6 +292,16 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 
   intrinsic_block_size_ =
       std::max(intrinsic_block_size_, BorderScrollbarPadding().block_start);
+
+  if (!Style().HasAutoColumnHeight()) {
+    LayoutUnit remaining_column_height =
+        RemainingRowHeightAtOffset(intrinsic_block_size_);
+    if (remaining_column_height < RowHeight()) {
+      // Use all of column-height on the last row as well.
+      intrinsic_block_size_ += remaining_column_height;
+    }
+  }
+
   intrinsic_block_size_ += BorderScrollbarPadding().block_end;
 
   // Figure out how much space we've already been able to process in previous
@@ -672,9 +682,14 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
       DCHECK(!first_trailing_column_gap_idx_);
     }
 
-    if (!is_first_row) {
-      line_offset += row_gap_size_;
+    if (!is_first_row ||
+        (ShouldWrapColumns() && HasRowHeight() &&
+         RemainingRowHeightAtOffset(line_offset) <= LayoutUnit())) {
+      // Move to the next row, by consuming any remaining space from the current
+      // row, and then past the following row gap.
+      line_offset += OffsetToNextRow(line_offset);
     }
+
     const LayoutResult* new_result =
         LayoutLine(next_column_token, line_offset, minimum_column_block_size,
                    !is_first_row, margin_strut);
@@ -721,9 +736,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     MarginStrut* margin_strut) {
   LogicalSize column_size(column_inline_size_, remaining_content_block_size_);
   if (!Style().HasAutoColumnHeight()) {
-    // Use specified `column-height`. May be clamped by outer fragmentainer
-    // space further down.
-    column_size.block_size = LayoutUnit(Style().ColumnHeight());
+    // Use specified `column-height`, or what's left of it. May be clamped by
+    // outer fragmentainer space further down.
+    column_size.block_size = RemainingRowHeightAtOffset(line_offset);
   } else if (column_size.block_size != kIndefiniteSize &&
              !ShouldWrapColumns()) {
     // Subtract the space already taken in the current fragment (spanners and
@@ -1256,17 +1271,43 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   // of an immediately preceding spanner, if any.
   margin_strut->Append(margins.block_start, /* is_quirky */ false);
 
-  LayoutUnit block_offset = intrinsic_block_size_ + margin_strut->Sum();
-  auto spanner_space =
-      CreateConstraintSpaceForSpanner(spanner_node, block_offset);
-
   const EarlyBreak* early_break_in_child = nullptr;
   if (early_break_) [[unlikely]] {
     early_break_in_child = EnterEarlyBreakInChild(spanner_node, *early_break_);
   }
 
-  auto* result =
-      spanner_node.Layout(spanner_space, break_token, early_break_in_child);
+  LayoutUnit block_offset;
+  auto layout = [&]() {
+    block_offset = intrinsic_block_size_ + margin_strut->Sum();
+    auto spanner_space =
+        CreateConstraintSpaceForSpanner(spanner_node, block_offset);
+    return spanner_node.Layout(spanner_space, break_token,
+                               early_break_in_child);
+  };
+  const LayoutResult* result = layout();
+
+  if (IsPastStartInWrappingRow(block_offset) &&
+      result->Status() == LayoutResult::kSuccess) {
+    LogicalFragment logical_fragment(GetConstraintSpace().GetWritingDirection(),
+                                     result->GetPhysicalFragment());
+    if (RemainingRowHeightAtOffset(intrinsic_block_size_) <
+        margin_strut->Sum() + logical_fragment.BlockSize()) {
+      // Not enough room for the spanner in the current row, and we're not at
+      // the beginning of the row. Try at the next row. If it doesn't fit in a
+      // full row, either, the spanner will just overflow.
+      intrinsic_block_size_ +=
+          RemainingRowHeightAtOffset(intrinsic_block_size_);
+
+      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+          Style().HasGapRule()) {
+        // There's a row gap right here.
+        AddMainGap(intrinsic_block_size_);
+      }
+
+      intrinsic_block_size_ += row_gap_size_;
+      result = layout();
+    }
+  }
 
   if (GetConstraintSpace().HasBlockFragmentation() && !early_break_) {
     // We're nested inside another fragmentation context. Examine this break
@@ -1698,9 +1739,9 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   size = std::min(size, max);
   size = (size - extra).ClampNegativeToZero();
 
-  if (!Style().HasAutoColumnHeight()) {
-    // Never become taller than `column-height`.
-    size = std::min(size, LayoutUnit(Style().ColumnHeight()));
+  if (ShouldWrapColumns() && HasRowHeight()) {
+    // Never become taller than used `column-height`.
+    size = std::min(size, RemainingRowHeightAtOffset(line_offset));
   }
 
   return size;
@@ -1780,6 +1821,40 @@ LayoutUnit ColumnLayoutAlgorithm::TotalColumnBlockSize() const {
     }
   }
   return total_block_size;
+}
+
+LayoutUnit ColumnLayoutAlgorithm::OffsetInCurrentRow(
+    LayoutUnit line_offset) const {
+  LayoutUnit row_stride = RowHeight() + row_gap_size_;
+  if (row_stride == LayoutUnit()) {
+    // Zero row height, no gap.
+    return LayoutUnit();
+  }
+  return CurrentContentBlockOffset(line_offset) % row_stride;
+}
+
+LayoutUnit ColumnLayoutAlgorithm::RemainingRowHeightAtOffset(
+    LayoutUnit line_offset) const {
+  return RowHeight() - OffsetInCurrentRow(line_offset);
+}
+
+LayoutUnit ColumnLayoutAlgorithm::OffsetToNextRow(
+    LayoutUnit line_offset) const {
+  LayoutUnit offset_to_row_end;
+  // The row size may not be constrained, but we may still need to wrap, due to
+  // forced breaks.
+  if (HasRowHeight()) {
+    LayoutUnit offset_within_row = OffsetInCurrentRow(line_offset);
+    if (offset_within_row) {
+      offset_to_row_end = RowHeight() - offset_within_row;
+    }
+  }
+  return offset_to_row_end + row_gap_size_;
+}
+
+bool ColumnLayoutAlgorithm::IsPastStartInWrappingRow(
+    LayoutUnit line_offset) const {
+  return ShouldWrapColumns() && OffsetInCurrentRow(line_offset);
 }
 
 }  // namespace blink
