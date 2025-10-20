@@ -187,7 +187,7 @@ changes:
 
 ```python
 target_os="android"
-target_os="arm64" # The only supported architecture.
+target_cpu="arm64" # The only supported architecture.
 is_hwasan=true
 is_debug=false
 ```
