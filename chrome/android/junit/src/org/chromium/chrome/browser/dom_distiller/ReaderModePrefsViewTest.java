@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.dom_distiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -88,13 +89,16 @@ public class ReaderModePrefsViewTest {
     @Test
     @SmallTest
     public void testThemeButtons() {
+        when(mDistilledPagePrefs.getTheme())
+                .thenReturn(Theme.LIGHT, Theme.LIGHT, Theme.DARK, Theme.SEPIA);
+        // Test clicking the already selected theme.
         HistogramWatcher histogramLight =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("DomDistiller.Android.ThemeSelected", Theme.LIGHT)
+                        .expectNoRecords("DomDistiller.Android.ThemeSelected")
                         .build();
         mReaderModePrefsView.findViewById(R.id.light_mode).performClick();
-        verify(mDistilledPagePrefs).setUserPrefTheme(Theme.LIGHT);
-        Assert.assertEquals(1, mActionTester.getActionCount("DomDistiller.Android.ThemeChanged"));
+        verify(mDistilledPagePrefs, never()).setUserPrefTheme(Theme.LIGHT);
+        Assert.assertEquals(0, mActionTester.getActionCount("DomDistiller.Android.ThemeChanged"));
         histogramLight.assertExpected();
 
         HistogramWatcher histogramDark =
@@ -103,7 +107,7 @@ public class ReaderModePrefsViewTest {
                         .build();
         mReaderModePrefsView.findViewById(R.id.dark_mode).performClick();
         verify(mDistilledPagePrefs).setUserPrefTheme(Theme.DARK);
-        Assert.assertEquals(2, mActionTester.getActionCount("DomDistiller.Android.ThemeChanged"));
+        Assert.assertEquals(1, mActionTester.getActionCount("DomDistiller.Android.ThemeChanged"));
         histogramDark.assertExpected();
 
         HistogramWatcher histogramSepia =
@@ -112,24 +116,41 @@ public class ReaderModePrefsViewTest {
                         .build();
         mReaderModePrefsView.findViewById(R.id.sepia_mode).performClick();
         verify(mDistilledPagePrefs).setUserPrefTheme(Theme.SEPIA);
-        Assert.assertEquals(3, mActionTester.getActionCount("DomDistiller.Android.ThemeChanged"));
+        Assert.assertEquals(2, mActionTester.getActionCount("DomDistiller.Android.ThemeChanged"));
         histogramSepia.assertExpected();
+
+        // Test clicking the first option again.
+        HistogramWatcher histogramLight2 =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("DomDistiller.Android.ThemeSelected", Theme.LIGHT)
+                        .build();
+        mReaderModePrefsView.findViewById(R.id.light_mode).performClick();
+        verify(mDistilledPagePrefs).setUserPrefTheme(Theme.LIGHT);
+        Assert.assertEquals(3, mActionTester.getActionCount("DomDistiller.Android.ThemeChanged"));
+        histogramLight2.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testFontFamilyButtons() {
+        when(mDistilledPagePrefs.getFontFamily())
+                .thenReturn(
+                        FontFamily.SANS_SERIF,
+                        FontFamily.SANS_SERIF,
+                        FontFamily.SERIF,
+                        FontFamily.MONOSPACE);
+        // Test clicking the already selected font family.
         HistogramWatcher histogramSansSerif =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "DomDistiller.Android.FontFamilySelected", FontFamily.SANS_SERIF)
+                        .expectNoRecords("DomDistiller.Android.FontFamilySelected")
                         .build();
         mReaderModePrefsView.findViewById(R.id.font_sans_serif).performClick();
-        verify(mDistilledPagePrefs).setFontFamily(FontFamily.SANS_SERIF);
+        verify(mDistilledPagePrefs, never()).setFontFamily(FontFamily.SANS_SERIF);
         Assert.assertEquals(
-                1, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
+                0, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
         histogramSansSerif.assertExpected();
 
+        // Test clicking a new font family.
         HistogramWatcher histogramSerif =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -138,7 +159,7 @@ public class ReaderModePrefsViewTest {
         mReaderModePrefsView.findViewById(R.id.font_serif).performClick();
         verify(mDistilledPagePrefs).setFontFamily(FontFamily.SERIF);
         Assert.assertEquals(
-                2, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
+                1, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
         histogramSerif.assertExpected();
 
         HistogramWatcher histogramMonospace =
@@ -149,8 +170,20 @@ public class ReaderModePrefsViewTest {
         mReaderModePrefsView.findViewById(R.id.font_monospace).performClick();
         verify(mDistilledPagePrefs).setFontFamily(FontFamily.MONOSPACE);
         Assert.assertEquals(
-                3, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
+                2, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
         histogramMonospace.assertExpected();
+
+        // Test clicking the first option again.
+        HistogramWatcher histogramSansSerif2 =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "DomDistiller.Android.FontFamilySelected", FontFamily.SANS_SERIF)
+                        .build();
+        mReaderModePrefsView.findViewById(R.id.font_sans_serif).performClick();
+        verify(mDistilledPagePrefs).setFontFamily(FontFamily.SANS_SERIF);
+        Assert.assertEquals(
+                3, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
+        histogramSansSerif2.assertExpected();
     }
 
     @Test
