@@ -18,7 +18,9 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -168,6 +170,9 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
   [super viewWillAppear:animated];
 
   [self.formInputAccessoryView layoutIfNeeded];
+
+  [self.layoutGuideCenter referenceView:self.view
+                              underName:kInputAccessoryViewLayoutGuide];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -192,6 +197,9 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 
   // Whether the keyboard was closed the next time the keyboard accessory opens.
   _keyboardWasClosed = YES;
+
+  [self.layoutGuideCenter referenceView:nil
+                              underName:kInputAccessoryViewLayoutGuide];
 }
 
 #pragma mark - Public

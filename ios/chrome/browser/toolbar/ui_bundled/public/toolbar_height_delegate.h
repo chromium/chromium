@@ -25,6 +25,7 @@ enum class ToolbarType;
 
 /// Adjust the secondary toolbar when the keyboard is shown.
 - (void)adjustSecondaryToolbarForKeyboardHeight:(CGFloat)keyboardHeight
+                                    isCollapsed:(BOOL)isCollapsed
                                        duration:(NSTimeInterval)duration
                                           curve:(UIViewAnimationCurve)curve;
 

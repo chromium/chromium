@@ -2800,6 +2800,7 @@ const CGFloat kTopDynamicIslandInset = 24;
 }
 
 - (void)adjustSecondaryToolbarForKeyboardHeight:(CGFloat)keyboardHeight
+                                    isCollapsed:(BOOL)isCollapsed
                                        duration:(NSTimeInterval)duration
                                           curve:(UIViewAnimationCurve)curve {
   CHECK(ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET);
@@ -2807,7 +2808,9 @@ const CGFloat kTopDynamicIslandInset = 24;
       keyboardHeight +
       self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
   CGFloat baseHeight = [self secondaryToolbarHeightWithInset];
-  CGFloat offsetRequired = MAX(keyboardAttachedOffset, baseHeight);
+  CGFloat offsetRequired = isCollapsed
+                               ? keyboardAttachedOffset
+                               : MAX(keyboardAttachedOffset, baseHeight);
 
   // No need to start an animation when the offset is already set.
   BOOL alreadyInPosition =

@@ -166,22 +166,6 @@ UIView* SecondaryToolbarLocationBarContainerView(
                     kSecondaryToolbarWithoutOmniboxHeight);
 }
 
-- (void)willMoveToSuperview:(UIView*)newSuperview {
-  [super willMoveToSuperview:newSuperview];
-
-  if (IsBottomOmniboxAvailable() && newSuperview) {
-    _locationBarKeyboardConstraint.active = NO;
-
-    // UIKeyboardLayoutGuide is updated sooner in superview's
-    // keyboardLayoutGuide rendering smoother animation. Constraint is
-    // updated
-    // in view controller.
-    _locationBarKeyboardConstraint = [newSuperview.keyboardLayoutGuide.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.locationBarContainer
-                                                 .topAnchor];
-  }
-}
-
 - (void)updateConstraints {
   if (IsDiamondPrototypeEnabled()) {
     [super updateConstraints];

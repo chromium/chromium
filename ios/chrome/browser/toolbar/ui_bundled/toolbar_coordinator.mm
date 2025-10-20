@@ -686,6 +686,10 @@
                                .view.frame.size.height +
                            2 * kBottomAdaptiveLocationBarTopMargin;
 
+  if (!self.locationBarFocused) {
+    return 0;
+  }
+
   BOOL forceEditState = omnibox::ForceBottomOmniboxInEditState();
   if (forceEditState) {
     return attachedHeight;

@@ -38,3 +38,5 @@ GuideName* const kReaderModeOptionsEntrypointGuide =
     @"kReaderModeOptionsEntrypointGuide";
 GuideName* const kNTPIdentityDiscButtonGuide = @"kNTPIdentityDiscButtonGuide";
 GuideName* const kSelectedRegularCellGuide = @"kSelectedRegularCellGuide";
+GuideName* const kInputAccessoryViewLayoutGuide =
+    @"kInputAccessoryViewLayoutGuide";
