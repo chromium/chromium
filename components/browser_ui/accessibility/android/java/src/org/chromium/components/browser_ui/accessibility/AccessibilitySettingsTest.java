@@ -73,7 +73,7 @@ import org.chromium.ui.widget.ChromeImageButton;
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
     ContentFeatureList.SMART_ZOOM
 })
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class AccessibilitySettingsTest {
     private AccessibilitySettings mAccessibilitySettings;
 
