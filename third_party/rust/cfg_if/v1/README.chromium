@@ -1,7 +1,7 @@
 Name: cfg-if
 URL: https://crates.io/crates/cfg-if
-Version: 1.0.3
-Revision: 9c7bb0bf7184698c16ba60aad424b9b8263ac6db
+Version: 1.0.4
+Revision: 3510ca6abea34cbbc702509a4e50ea9709925eda
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/cfg-if-v1/LICENSE-APACHE

@@ -24,7 +24,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "cfg-if"
   cargo_pkg_description = "A macro to ergonomically define an item depending on a large number of #[cfg] parameters. Structured like an if-else chain, the first matching branch is the item that gets emitted."
   cargo_pkg_repository = "https://github.com/rust-lang/cfg-if"
-  cargo_pkg_version = "1.0.3"
+  cargo_pkg_version = "1.0.4"
 
   allow_unsafe = false
 

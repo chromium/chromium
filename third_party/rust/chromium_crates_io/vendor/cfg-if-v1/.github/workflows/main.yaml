@@ -4,13 +4,21 @@ on: [push, pull_request]
 permissions:
   contents: read
 
+env:
+  RUSTDOCFLAGS: -Dwarnings
+  RUSTFLAGS: -Dwarnings
+
 jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rust: [stable, beta, nightly]
+        rust:
+          - "1.32" # msrv
+          - stable
+          - beta
+          - nightly
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Install Rust ${{ matrix.rust }}
@@ -20,7 +28,11 @@ jobs:
           rustup default ${{ matrix.rust }}
           rustc -vV
       - name: Run tests
-        run: cargo test
+        run: |
+          set -eux
+          # Remove `-Dwarnings` at the MSRV since lints may be different
+          [ "${{ matrix.rust }}" = "1.32" ] && export RUSTFLAGS="--cfg msrv_test"
+          cargo test
 
   rustfmt:
     name: Rustfmt

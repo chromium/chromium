@@ -26,42 +26,30 @@
 #![no_std]
 #![doc(html_root_url = "https://docs.rs/cfg-if")]
 #![deny(missing_docs)]
-#![cfg_attr(test, deny(warnings))]
 #![cfg_attr(test, allow(unexpected_cfgs))] // we test with features that do not exist
 
 /// The main macro provided by this crate. See crate documentation for more
 /// information.
 #[macro_export]
 macro_rules! cfg_if {
-    // match if/else chains with a final `else`
     (
+        if #[cfg( $($i_meta:tt)+ )] { $( $i_tokens:tt )* }
         $(
-            if #[cfg( $i_meta:meta )] { $( $i_tokens:tt )* }
-        ) else+
-        else { $( $e_tokens:tt )* }
-    ) => {
-        $crate::cfg_if! {
-            @__items () ;
-            $(
-                (( $i_meta ) ( $( $i_tokens )* )) ,
-            )+
-            (() ( $( $e_tokens )* )) ,
-        }
-    };
-
-    // match if/else chains lacking a final `else`
-    (
-        if #[cfg( $i_meta:meta )] { $( $i_tokens:tt )* }
-        $(
-            else if #[cfg( $e_meta:meta )] { $( $e_tokens:tt )* }
+            else if #[cfg( $($ei_meta:tt)+ )] { $( $ei_tokens:tt )* }
         )*
+        $(
+            else { $( $e_tokens:tt )* }
+        )?
     ) => {
         $crate::cfg_if! {
             @__items () ;
-            (( $i_meta ) ( $( $i_tokens )* )) ,
+            (( $($i_meta)+ ) ( $( $i_tokens )* )),
             $(
-                (( $e_meta ) ( $( $e_tokens )* )) ,
+                (( $($ei_meta)+ ) ( $( $ei_tokens )* )),
             )*
+            $(
+                (() ( $( $e_tokens )* )),
+            )?
         }
     };
 
@@ -69,33 +57,40 @@ macro_rules! cfg_if {
     //
     // Collects all the previous cfgs in a list at the beginning, so they can be
     // negated. After the semicolon are all the remaining items.
-    (@__items ( $( $_:meta , )* ) ; ) => {};
+    (@__items ( $( ($($_:tt)*) , )* ) ; ) => {};
     (
-        @__items ( $( $no:meta , )* ) ;
-        (( $( $yes:meta )? ) ( $( $tokens:tt )* )) ,
+        @__items ( $( ($($no:tt)+) , )* ) ;
+        (( $( $($yes:tt)+ )? ) ( $( $tokens:tt )* )),
         $( $rest:tt , )*
     ) => {
         // Emit all items within one block, applying an appropriate #[cfg]. The
         // #[cfg] will require all `$yes` matchers specified and must also negate
         // all previous matchers.
         #[cfg(all(
-            $( $yes , )?
-            not(any( $( $no ),* ))
+            $( $($yes)+ , )?
+            not(any( $( $($no)+ ),* ))
         ))]
-        $crate::cfg_if! { @__identity $( $tokens )* }
+        // Subtle: You might think we could put `$( $tokens )*` here. But if
+        // that contains multiple items then the `#[cfg(all(..))]` above would
+        // only apply to the first one. By wrapping `$( $tokens )*` in this
+        // macro call, we temporarily group the items into a single thing (the
+        // macro call) that will be included/excluded by the `#[cfg(all(..))]`
+        // as appropriate. If the `#[cfg(all(..))]` succeeds, the macro call
+        // will be included, and then evaluated, producing `$( $tokens )*`. See
+        // also the "issue #90" test below.
+        $crate::cfg_if! { @__temp_group $( $tokens )* }
 
         // Recurse to emit all other items in `$rest`, and when we do so add all
         // our `$yes` matchers to the list of `$no` matchers as future emissions
         // will have to negate everything we just matched as well.
         $crate::cfg_if! {
-            @__items ( $( $no , )* $( $yes , )? ) ;
+            @__items ( $( ($($no)+) , )* $( ($($yes)+) , )? ) ;
             $( $rest , )*
         }
     };
 
-    // Internal macro to make __apply work out right for different match types,
-    // because of how macros match/expand stuff.
-    (@__identity $( $tokens:tt )* ) => {
+    // See the "Subtle" comment above.
+    (@__temp_group $( $tokens:tt )* ) => {
         $( $tokens )*
     };
 }
@@ -144,6 +139,32 @@ mod tests {
         }
     }
 
+    // In issue #90 there was a bug that caused only the first item within a
+    // block to be annotated with the produced `#[cfg(...)]`. In this example,
+    // it meant that the first `type _B` wasn't being omitted as it should have
+    // been, which meant we had two `type _B`s, which caused an error. See also
+    // the "Subtle" comment above.
+    cfg_if!(
+        if #[cfg(target_os = "no-such-operating-system-good-sir!")] {
+            type _A = usize;
+            type _B = usize;
+        } else {
+            type _A = i32;
+            type _B = i32;
+        }
+    );
+
+    #[cfg(not(msrv_test))]
+    cfg_if! {
+        if #[cfg(false)] {
+            fn works6() -> bool { false }
+        } else if #[cfg(true)] {
+            fn works6() -> bool { true }
+        } else if #[cfg(false)] {
+            fn works6() -> bool { false }
+        }
+    }
+
     #[test]
     fn it_works() {
         assert!(works1().is_some());
@@ -151,6 +172,8 @@ mod tests {
         assert!(works3());
         assert!(works4().is_some());
         assert!(works5());
+        #[cfg(not(msrv_test))]
+        assert!(works6());
     }
 
     #[test]

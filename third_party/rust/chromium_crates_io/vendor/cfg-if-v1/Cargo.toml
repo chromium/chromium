@@ -11,8 +11,9 @@
 
 [package]
 edition = "2018"
+rust-version = "1.32"
 name = "cfg-if"
-version = "1.0.3"
+version = "1.0.4"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
 build = false
 autolib = false
