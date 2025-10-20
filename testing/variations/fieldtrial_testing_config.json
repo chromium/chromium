@@ -2551,6 +2551,36 @@
             ]
         }
     ],
+    "AutofillEnableKeyboardAccessoryChipRedesign": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableKeyboardAccessoryChipRedesign"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillEnableKeyboardAccessoryChipWidthAdjustment": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableKeyboardAccessoryChipWidthAdjustment"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableLabelPrecedenceForTurkishAddresses": [
         {
             "platforms": [
