@@ -132,7 +132,7 @@ import org.chromium.build.annotations.NullMarked;
     boolean isUnbound();
 
     /**
-     * @return a string representation of the current binding state for debugging purposes.
+     * @return the detailed binding state for debugging purposes.
      */
-    String buildDebugStateString();
+    ChildProcessConnectionState getConnectionStateForDebugging();
 }

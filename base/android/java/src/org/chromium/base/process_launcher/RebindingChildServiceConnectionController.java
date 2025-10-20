@@ -216,23 +216,30 @@ import javax.annotation.concurrent.GuardedBy;
     }
 
     @Override
-    public String buildDebugStateString() {
-        assert mConnection != null;
+    public ChildProcessConnectionState getConnectionStateForDebugging() {
+        boolean isWaivedBound = false;
+        boolean isNotPerceptibleBound = false;
+        boolean isVisibleBound = false;
+        boolean isStrongBound = false;
         @ChildBindingState int bindingState = getBindingState();
         switch (bindingState) {
             case ChildBindingState.WAIVED:
-                return "WAIVED";
+                isWaivedBound = true;
+                break;
             case ChildBindingState.VISIBLE:
-                return "VISIBLE";
+                isVisibleBound = true;
+                break;
             case ChildBindingState.NOT_PERCEPTIBLE:
-                return "NOT_PERCEPTIBLE";
+                isNotPerceptibleBound = true;
+                break;
             case ChildBindingState.STRONG:
-                return "STRONG";
-            case ChildBindingState.UNBOUND:
-                return "UNBOUND";
+                isStrongBound = true;
+                break;
             default:
-                return "UNKNOWN";
+                break;
         }
+        return new ChildProcessConnectionState(
+                isWaivedBound, isNotPerceptibleBound, isVisibleBound, isStrongBound);
     }
 
     private int getBindFlags(@ChildBindingState int bindingState) {

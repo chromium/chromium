@@ -365,14 +365,12 @@ import javax.annotation.concurrent.GuardedBy;
     }
 
     @Override
-    public String buildDebugStateString() {
-        StringBuilder s = new StringBuilder();
-        s.append("bindings:");
-        s.append(mWaivedBinding.isBound() ? "W" : " ");
-        s.append(mVisibleBinding.isBound() ? "V" : " ");
-        s.append(mNotPerceptibleBinding.isBound() ? "N" : " ");
-        s.append(mStrongBinding.isBound() ? "S" : " ");
-        return s.toString();
+    public ChildProcessConnectionState getConnectionStateForDebugging() {
+        return new ChildProcessConnectionState(
+                mWaivedBinding.isBound(),
+                mNotPerceptibleBinding.isBound(),
+                mVisibleBinding.isBound(),
+                mStrongBinding.isBound());
     }
 
     // Should be called any binding is bound or unbound.

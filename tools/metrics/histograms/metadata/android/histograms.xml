@@ -1270,6 +1270,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.ChildProcessBinding.TotalBindingCount"
+    units="bindings" expires_after="2026-03-08">
+  <owner>kawasin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the total number of service bindings for sandboxed
+    ChildProcessConnections in existence. This is emitted even if there are no
+    live connections. Emitted at a Poisson distributed period with a mean of 5
+    minutes on Chrome on Android while in the foreground.
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessBinding.TotalConnections"
     units="connections" expires_after="2026-03-08">
   <owner>ckitagawa@chromium.org</owner>
@@ -1280,6 +1292,21 @@ chromium-metrics-reviews@google.com.
     distributed period with a mean of 5 minutes on Chrome on Android while in
     the foreground.
   </summary>
+</histogram>
+
+<histogram
+    name="Android.ChildProcessBinding.{ChildProcessConnectionMetricsBindingState}BindingCount"
+    units="connections" expires_after="2026-03-08">
+  <owner>kawasin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the number of {ChildProcessConnectionMetricsBindingState} service
+    bindings for sandboxed ChildProcessConnections. This is emitted even if
+    there are no live connections. Emitted at a Poisson distributed period with
+    a mean of 5 minutes on Chrome on Android while in the foreground.
+  </summary>
+  <token key="ChildProcessConnectionMetricsBindingState"
+      variants="ChildProcessConnectionMetricsBindingState"/>
 </histogram>
 
 <histogram
