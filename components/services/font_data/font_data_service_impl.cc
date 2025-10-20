@@ -88,17 +88,23 @@ void FontDataServiceImpl::BindReceiver(
 base::File FontDataServiceImpl::GetFileHandle(SkTypeface& typeface) {
   SkString font_path;
   typeface.getResourceName(&font_path);
+  base::UmaHistogramBoolean("Chrome.FontDataService.EmptyPathOnGetFileHandle",
+                            font_path.isEmpty());
   if (font_path.isEmpty()) {
-#if BUILDFLAG(IS_WIN)
-    base::UmaHistogramSparse("Chrome.FontDataService.WinLastError",
-                             ::GetLastError());
-#endif  // BUILDFLAG(IS_WIN)
     return {};
   }
 
-  return base::File(base::FilePath::FromUTF8Unsafe(font_path.c_str()),
-                    base::File::FLAG_OPEN | base::File::FLAG_READ |
-                        base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  auto font_file = base::File(base::FilePath::FromUTF8Unsafe(font_path.c_str()),
+                              base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                  base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+#if BUILDFLAG(IS_WIN)
+  if (!font_file.IsValid()) {
+    base::UmaHistogramSparse("Chrome.FontDataService.WinLastError",
+                             ::GetLastError());
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  return font_file;
 }
 
 void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
