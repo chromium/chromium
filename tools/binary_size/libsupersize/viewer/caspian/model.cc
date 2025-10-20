@@ -340,6 +340,10 @@ SectionId BaseSizeInfo::ShortSectionName(const char* section_name) {
       ret = SectionId::kDex;
     } else if (!strcmp(section_name, ".dex.method")) {
       ret = SectionId::kDexMethod;
+    } else if (!strcmp(section_name, ".native")) {
+      // For simplicity, merge .native into .rodata.
+      // This contains things like ** section .shstrtab.
+      ret = SectionId::kRoData;
     } else if (!strcmp(section_name, ".other")) {
       ret = SectionId::kOther;
     } else if (!strcmp(section_name, ".rodata")) {
@@ -353,6 +357,10 @@ SectionId BaseSizeInfo::ShortSectionName(const char* section_name) {
     } else if (!strcmp(section_name, ".bss")) {
       ret = SectionId::kBss;
     } else if (!strcmp(section_name, ".bss.rel.ro")) {
+      ret = SectionId::kBss;
+    } else if (!strcmp(section_name, ".part.end")) {
+      ret = SectionId::kBss;
+    } else if (!strcmp(section_name, ".relro_padding")) {
       ret = SectionId::kBss;
     } else if (!strcmp(section_name, ".tbss")) {
       ret = SectionId::kBss;

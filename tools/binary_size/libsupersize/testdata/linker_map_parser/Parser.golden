@@ -1,9 +1,7 @@
 ******** section_sizes ********
-.ARM.attributes          @0        35
 .ARM.exidx               @188      1975928
 .ARM.extab               @82504c   36860
 .bss                     @2f56000  1089404
-.comment                 @0        168
 .data                    @2d4c000  118728
 .data.rel.ro             @2d69000  2013024
 .dynamic                 @2f54778  240
@@ -20,14 +18,10 @@
 .note.android.ident      @213134   152
 .note.crashpad.info      @213118   28
 .note.gnu.build-id       @2131cc   36
-.part.end                @0        4096
 .plt                     @2d4a7f0  6096
 .rel.dyn                 @1e5368   184789
 .rel.plt                 @212540   3032
 .rodata                  @213200   6364747
-.shstrtab                @0        452
-.strtab                  @0        49754930
-.symtab                  @0        18626064
 .text                    @82f000   38909928
 
 ******** raw_symbols ********
@@ -125,4 +119,3 @@
 .bss@2f56000(size_without_padding=4,padding=0,full_name=WebRtcSpl_CrossCorrelation,object_path=,source_path=,flags={},num_aliases=1,component=)
 .bss@2f56004(size_without_padding=4,padding=0,full_name=WebRtcSpl_DownsampleFast,object_path=,source_path=,flags={},num_aliases=1,component=)
 .bss@2f56008(size_without_padding=4,padding=0,full_name=WebRtcSpl_MaxAbsValueW16,object_path=,source_path=,flags={},num_aliases=1,component=)
-.part.end@0(size_without_padding=4096,padding=0,full_name=** ,object_path=,source_path=,flags={},num_aliases=1,component=)

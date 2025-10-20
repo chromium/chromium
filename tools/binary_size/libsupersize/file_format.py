@@ -33,16 +33,17 @@ _SIZEDIFF_VERSION = 1
 # Native sections are sorted by address.
 _SECTION_SORT_ORDER = {
     models.SECTION_DATA: 0,
-    models.SECTION_DATA_REL_RO_LOCAL: 0,
     models.SECTION_DATA_REL_RO: 0,
+    models.SECTION_DATA_REL_RO_LOCAL: 0,
     models.SECTION_RODATA: 0,
     models.SECTION_TDATA: 0,
+    models.SECTION_TDATA_REL_RO: 0,
     models.SECTION_TEXT: 0,
     models.SECTION_BSS: 1,
     models.SECTION_BSS_REL_RO: 1,
-    models.SECTION_TBSS: 1,
-    models.SECTION_RELRO_PADDING: 1,
     models.SECTION_PART_END: 1,
+    models.SECTION_RELRO_PADDING: 1,
+    models.SECTION_TBSS: 1,
     models.SECTION_DEX: 2,
     models.SECTION_DEX_METHOD: 3,
     models.SECTION_PAK_NONTRANSLATED: 4,
@@ -170,7 +171,9 @@ def CalculatePadding(raw_symbols):
 Input symbols must be sorted by container, section, then address.
 Found: {}
 Then: {}
-""".format(prev_symbol, symbol)
+
+All: {}
+""".format(prev_symbol, symbol, '\n'.join(str(s) for s in raw_symbols))
       seen_container_and_sections.add(container_and_section)
       continue
     if (symbol.address <= 0 or prev_symbol.address <= 0

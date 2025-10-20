@@ -43,6 +43,7 @@ enum class SectionId : char {
   kDataRelRo = 'R',
   kDex = 'x',
   kDexMethod = 'm',
+  kNativeOther = 'n',
   kOther = 'o',
   kRoData = 'r',
   kText = 't',
@@ -154,6 +155,7 @@ class BaseSymbol {
     SectionId section_id = Section();
     return (section_id == SectionId::kBss || section_id == SectionId::kData ||
             section_id == SectionId::kDataRelRo ||
+            section_id == SectionId::kNativeOther ||
             section_id == SectionId::kText || section_id == SectionId::kRoData);
   }
 

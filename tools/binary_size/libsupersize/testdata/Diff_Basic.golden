@@ -23,7 +23,6 @@ Section Sizes (Total=0 bytes (0 bytes)):
     .text: 0 bytes (0 bytes) (0.0%)
 
 Other section sizes:
-    .ARM.attributes: 0 bytes (0 bytes) (counted in .other)
     .ARM.exidx: 0 bytes (0 bytes) (counted in .other)
     .ARM.extab: 0 bytes (0 bytes) (counted in .other)
     .dynamic: 0 bytes (0 bytes) (counted in .other)
@@ -38,17 +37,13 @@ Other section sizes:
     .init_array: 0 bytes (0 bytes) (counted in .other)
     .interp: 0 bytes (0 bytes) (counted in .other)
     .note.gnu.build-id: 0 bytes (0 bytes) (counted in .other)
-    .note.gnu.gold-version: 0 bytes (0 bytes) (counted in .other)
     .plt: 0 bytes (0 bytes) (counted in .other)
     .rel.plt: 0 bytes (0 bytes) (counted in .other)
-    .shstrtab: 0 bytes (0 bytes) (counted in .other)
-    .strtab: 0 bytes (0 bytes) (counted in .other)
-    .symtab: 0 bytes (0 bytes) (counted in .other)
 
-2 symbols added (+), 1 changed (~), 3 removed (-), 269 unchanged (not shown)
+2 symbols added (+), 1 changed (~), 3 removed (-), 264 unchanged (not shown)
 Added/Removed by section: .data: +2 .pak.translations: -3
 Of changed symbols, 3 grew, 3 shrank
-Number of unique symbols 277 -> 276 (-1)
+Number of unique symbols 272 -> 271 (-1)
 0 paths added, 0 removed, 1 changed
 Changed files:
   third_party/container/container.c

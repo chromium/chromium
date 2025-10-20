@@ -16,6 +16,21 @@ def ExtendSectionRange(section_range_by_name, section_name, delta_size):
   section_range_by_name[section_name] = (prev_address, prev_size + delta_size)
 
 
+def ExtendSectionRangeAdjacent(section_range_by_name, section_name, addr, size):
+  """Extends the section to consume the start / size of an adjacent section"""
+  prev_address, prev_size = section_range_by_name[section_name]
+  prev_end_address = prev_address + prev_size
+  # Consistency check: The sections don't overlap.
+  assert addr - prev_end_address >= 0, (
+      f'{section_name} {prev_end_address} {addr}')
+  # Consistency check: Gap between them is less than 64 KiB.
+  assert addr - prev_end_address < 64 * 1024, (
+      f'{section_name} {prev_end_address} {addr}')
+  new_end_address = addr + size
+  new_size = new_end_address - prev_address
+  section_range_by_name[section_name] = (prev_address, new_size)
+
+
 def _NormalizeObjectPath(path, obj_prefixes):
   """Normalizes object paths.
 

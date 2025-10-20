@@ -26,6 +26,7 @@ import re
 import readline
 import sys
 
+import archive_util
 import demangle
 import models
 
@@ -44,6 +45,15 @@ _STRIP_NAME_PREFIX = {
     models.FLAG_HOT: 4,
 }
 
+# Sections that we want to create individual symbols from.
+_USEFUL_SECTIONS = frozenset(models.BSS_SECTIONS + (
+    models.SECTION_DATA,
+    models.SECTION_DATA_REL_RO,
+    models.SECTION_DATA_REL_RO_LOCAL,
+    models.SECTION_RODATA,
+    models.SECTION_TDATA,
+    models.SECTION_TEXT,
+))
 
 def _OpenMaybeGzAsText(path):
   """Calls `gzip.open()` if |path| ends in ".gz", otherwise calls `open()`."""
@@ -191,6 +201,7 @@ class MapFileParserGold:
       if not line:
         break
       section_name = None
+      prev_section_name = None
       try:
         # Parse section name and size.
         parts = self._ParsePossiblyWrappedParts(line, 3)
@@ -198,12 +209,25 @@ class MapFileParserGold:
           break
         section_name, section_address_str, section_size_str = parts
         section_address = int(section_address_str[2:], 16)
+
+        # .debug sections have address=0, and always come at the end.
+        if syms and section_address == 0:
+          logging.info('Stopped parsing at %s', section_name)
+          break
+
         section_size = int(section_size_str[2:], 16)
-        self._section_ranges[section_name] = (section_address, section_size)
-        if (section_name in models.BSS_SECTIONS
-            or section_name in (models.SECTION_RODATA, models.SECTION_TEXT)
-            or section_name.startswith(
-                (models.SECTION_DATA, models.SECTION_TDATA))):
+
+        # E.g. Merge user-defined sections. e.g.: malloc_hook, protected_memory.
+        if not section_name.startswith('.'):
+          logging.info('Merged %s into %s', section_name, prev_section_name)
+          section_name = prev_section_name
+          archive_util.ExtendSectionRangeAdjacent(section_ranges, section_name,
+                                                  section_address, section_size)
+        else:
+          prev_section_name = section_name
+          self._section_ranges[section_name] = (section_address, section_size)
+
+        if section_name in _USEFUL_SECTIONS:
           logging.info('Parsing %s', section_name)
           if section_name in models.BSS_SECTIONS:
             # Common symbols have no address.
@@ -448,11 +472,14 @@ class MapFileParserLld:
     #     600      600       14     4         ...:(.text.OUTLINED_FUNCTION_0)
     #     600      600        0     1                 $x.3
     #     600      600       14     1                 OUTLINED_FUNCTION_0
+    #    3f00     3f00      700     4 malloc_hook
+    #    3f00     3f00      700     1         ...:o:(malloc_hook.foo)
+    #    3f00     3f00      700     1                 foo (.llvm.1234)
     #  123800   123800    20000   256 .rodata
-    #  123800   123800       4      4         ...:o:(.rodata._ZN3fooE.llvm.1234)
-    #  123800   123800       4      1                 foo (.llvm.1234)
-    #  123804   123804       4      4         ...:o:(.rodata.bar.llvm.1234)
-    #  123804   123804       4      1                 bar.llvm.1234
+    #  123800   123800        4     4         ...:o:(.rodata._ZN3fooE.llvm.1234)
+    #  123800   123800        4     1                 foo (.llvm.1234)
+    #  123804   123804        4     4         ...:o:(.rodata.bar.llvm.1234)
+    #  123804   123804        4     1                 bar.llvm.1234
     # Older format:
     # Address          Size             Align Out     In      Symbol
     # 00000000002002a8 000000000000001c     1 .interp
@@ -494,42 +521,46 @@ class MapFileParserLld:
 
     tokenizer = self.Tokenize(lines)
 
-    in_partitions = False
     in_jump_table = False
     jump_tables_count = 0
     jump_entries_count = 0
+    prev_section_end = 0
+    prev_section_name = None
 
     for (line, address, size, level, span, tok) in tokenizer:
       # Level 1 data match the "Out" column. They specify sections or
       # PROVIDE_HIDDEN lines.
       if level == 1:
-        # Ignore sections that belong to feature library partitions. Seeing a
-        # partition name is an indicator that we've entered a list of feature
-        # partitions. After these, a single .part.end section will follow to
-        # reserve memory at runtime. Seeing the .part.end section also marks the
-        # end of partition sections in the map file.
-        if tok.endswith('_partition'):
-          in_partitions = True
-        elif tok == '.part.end':
-          # Note that we want to retain .part.end section, so it's fine to
-          # restart processing on this section, rather than the next one.
-          in_partitions = False
+        # .debug sections have address=0, and always come at the end.
+        # Once we've hit a partition, we've finished the main library.
+        # Ideally we'd also break down symbols in partitions, but we're likely
+        # to stop using them soon anyways.
+        if (syms and address == 0 or tok.endswith('_partition')
+            or tok.startswith('PROVIDE_HIDDEN')):
+          logging.info('Stopped parsing at %s', tok)
+          break
 
-        if in_partitions:
-          # For now, completely ignore feature partitions.
-          cur_section = None
-          cur_section_is_useful = False
+        cur_section = tok
+        assert address >= prev_section_end, (
+            f'Section {cur_section} has start address within previous section: '
+            f'{address}\n{self._section_ranges}')
+
+        # E.g. Merge user-defined sections. e.g.: malloc_hook, protected_memory.
+        if not cur_section.startswith('.'):
+          logging.info('Merged %s into %s', cur_section, prev_section_name)
+          cur_section = prev_section_name
+          archive_util.ExtendSectionRangeAdjacent(self._section_ranges,
+                                                  cur_section, address, size)
         else:
-          if not tok.startswith('PROVIDE_HIDDEN'):
-            self._section_ranges[tok] = (address, size)
-          cur_section = tok
-          # E.g., Want to convert "(.text._name)" -> "_name" later.
-          mangled_start_idx = len(cur_section) + 2
-          cur_section_is_useful = (
-              cur_section in models.BSS_SECTIONS
-              or cur_section in (models.SECTION_RODATA, models.SECTION_TEXT)
-              or cur_section.startswith(
-                  (models.SECTION_DATA, models.SECTION_TDATA)))
+          prev_section_name = cur_section
+          self._section_ranges[cur_section] = (address, size)
+
+        if cur_section not in models.BSS_SECTIONS:
+          prev_section_end = address + size
+
+        # E.g., Want to convert "(.text._name)" -> "_name" later.
+        mangled_start_idx = len(cur_section) + 2
+        cur_section_is_useful = cur_section in _USEFUL_SECTIONS
 
       elif cur_section_is_useful:
         # Level 2 data match the "In" column. They specify object paths and
@@ -561,7 +592,7 @@ class MapFileParserLld:
                 mangled_name = '** lld merge strings'
               else:
                 # e.g. <internal>:(.text.thunk)
-                mangled_name = '** ' + mangled_name
+                mangled_name = '** ' + paren_value.strip('()')
 
               is_partial = False
               cur_obj = None

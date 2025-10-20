@@ -667,24 +667,18 @@ def _MakeNativeSpec(json_config, **kwargs):
   return native_spec
 
 
-def _ElfIsMainPartition(elf_path):
-  section_ranges = readelf.SectionInfoFromElf(elf_path)
-  return models.SECTION_PART_END in section_ranges.keys()
-
-
 def _DeduceMapPath(elf_path):
-  if _ElfIsMainPartition(elf_path):
-    map_path = elf_path.replace('.so', '__combined.so') + '.map'
-  else:
-    map_path = elf_path + '.map'
-  if not os.path.exists(map_path):
-    map_path += '.gz'
-    if not os.path.exists(map_path):
-      map_path = None
-
-  if map_path:
-    logging.debug('Detected map_path=%s', map_path)
-  return map_path
+  to_try = [
+      elf_path.replace('.so', '__combined.so') + '.map',
+      elf_path.replace('.so', '__combined.so') + '.map.gz',
+      elf_path + '.map',
+      elf_path + '.map.gz',
+  ]
+  for path in to_try:
+    if os.path.exists(path):
+      logging.debug('Detected map_path=%s', path)
+      return path
+  return None
 
 
 def _CreateNativeSpecs(*, tentative_output_dir, symbols_dir, apk_infolist,
