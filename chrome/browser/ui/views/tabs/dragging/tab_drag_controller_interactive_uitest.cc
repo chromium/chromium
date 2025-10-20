@@ -1438,15 +1438,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(group_model->GetTabGroup(group1)->ListTabs(), gfx::Range(3, 4));
 }
 
-// TODO(crbug.com/333085989): Re-enable flaky tests
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RevertDragSplitTab DISABLED_RevertDragSplitTab
-#else
-#define MAYBE_RevertDragSplitTab RevertDragSplitTab
-#endif
 // Drag a split tab within a tabstrip and cancel the drag.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_RevertDragSplitTab) {
+                       RevertDragSplitTab) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
