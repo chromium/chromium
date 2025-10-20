@@ -105,11 +105,17 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::DataTypeStore::RecordList> entries);
 
-  void AddEntityToMap(
+  // Inserts an entity proto into the entities map, returns true if insert
+  // takes place, or false otherwise.
+  bool AddEntityToMap(
       const proto::ContextualTaskEntity& contextual_task_entity);
-  void UpdateEntityInMap(
+  // Updates an entity proto in the entities map, returns true if the update
+  // takes place, or false otherwise.
+  bool UpdateEntityInMap(
       const proto::ContextualTaskEntity& contextual_task_entity);
-  void DeleteEntityFromMap(const std::string& guid);
+  // Deletes an entity proto in the entities map, returns true if the delete
+  // takes place, or false otherwise.
+  bool DeleteEntityFromMap(const std::string& guid);
   std::optional<proto::ContextualTaskEntity> GetEntityProto(
       const std::string& guid);
 

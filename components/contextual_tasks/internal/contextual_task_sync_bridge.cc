@@ -194,19 +194,23 @@ ContextualTaskSyncBridge::ApplyIncrementalSyncChanges(
         CHECK(entity_specifics.has_contextual_task());
         const proto::ContextualTaskEntity& entity =
             SpecificsToEntityProto(entity_specifics.contextual_task());
+        bool updated = false;
         if (change->type() == syncer::EntityChange::ACTION_ADD) {
-          AddEntityToMap(entity);
+          updated = AddEntityToMap(entity);
         } else {
-          UpdateEntityInMap(entity);
+          updated = UpdateEntityInMap(entity);
         }
-        added_or_updated_guids.emplace_back(change->storage_key());
+        if (updated) {
+          added_or_updated_guids.emplace_back(change->storage_key());
+        }
         batch->WriteData(change->storage_key(), entity.SerializeAsString());
         break;
       }
       case syncer::EntityChange::ACTION_DELETE:
-        DeleteEntityFromMap(change->storage_key());
-        removed.emplace_back(
-            base::Uuid::ParseCaseInsensitive(change->storage_key()));
+        if (DeleteEntityFromMap(change->storage_key())) {
+          removed.emplace_back(
+              base::Uuid::ParseCaseInsensitive(change->storage_key()));
+        }
         batch->DeleteData(change->storage_key());
         break;
     }
@@ -443,12 +447,12 @@ void ContextualTaskSyncBridge::OnReadAllData(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ContextualTaskSyncBridge::AddEntityToMap(
+bool ContextualTaskSyncBridge::AddEntityToMap(
     const proto::ContextualTaskEntity& contextual_task_entity) {
   std::string task_id =
       GetTaskIdFromContextualTaskEntity(contextual_task_entity);
   if (task_id.empty()) {
-    return;
+    return false;
   }
 
   auto it = task_id_to_entities_map_.find(task_id);
@@ -459,39 +463,43 @@ void ContextualTaskSyncBridge::AddEntityToMap(
         task_id,
         std::vector<proto::ContextualTaskEntity>{contextual_task_entity});
   }
+  return true;
 }
 
-void ContextualTaskSyncBridge::UpdateEntityInMap(
+bool ContextualTaskSyncBridge::UpdateEntityInMap(
     const proto::ContextualTaskEntity& contextual_task_entity) {
   std::string task_id =
       GetTaskIdFromContextualTaskEntity(contextual_task_entity);
 
   if (task_id.empty()) {
-    return;
+    return false;
   }
 
   auto it = task_id_to_entities_map_.find(task_id);
   if (it == task_id_to_entities_map_.end()) {
-    return;
+    return false;
   }
 
   for (proto::ContextualTaskEntity& entity : it->second) {
     if (entity.specifics().guid() ==
         contextual_task_entity.specifics().guid()) {
       entity = contextual_task_entity;
+      return true;
     }
   }
+  return false;
 }
 
-void ContextualTaskSyncBridge::DeleteEntityFromMap(const std::string& guid) {
+bool ContextualTaskSyncBridge::DeleteEntityFromMap(const std::string& guid) {
   for (auto& [task_id, task_entities] : task_id_to_entities_map_) {
     for (auto it = task_entities.begin(); it != task_entities.end(); ++it) {
       if (it->specifics().guid() == guid) {
         task_entities.erase(it);
-        return;
+        return true;
       }
     }
   }
+  return false;
 }
 
 std::optional<proto::ContextualTaskEntity>
