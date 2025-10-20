@@ -597,22 +597,24 @@ Browser* OpenNewEmptyWindowAndWaitUntilActivated(
   return new_browser->GetBrowserForMigrationOnly();
 }
 
-BrowserSetLastActiveWaiter::BrowserSetLastActiveWaiter(
+BrowserDidBecomeActiveWaiter::BrowserDidBecomeActiveWaiter(
     BrowserWindowInterface* browser,
     bool wait_for_set_last_active_observed)
-    : browser_(browser),
-      wait_for_set_last_active_observed_(wait_for_set_last_active_observed) {
-  browser_list_observation_.Observe(BrowserList::GetInstance());
-  if (chrome::FindLastActive() == browser_ &&
+    : wait_for_set_last_active_observed_(wait_for_set_last_active_observed) {
+  browser_did_become_active_subscription_ =
+      browser->RegisterDidBecomeActive(base::BindRepeating(
+          &BrowserDidBecomeActiveWaiter::OnBrowserDidBecomeActive,
+          base::Unretained(this)));
+  if (chrome::FindLastActive() == browser &&
       !wait_for_set_last_active_observed_) {
     satisfied_ = true;
   }
 }
 
-BrowserSetLastActiveWaiter::~BrowserSetLastActiveWaiter() = default;
+BrowserDidBecomeActiveWaiter::~BrowserDidBecomeActiveWaiter() = default;
 
 // Runs a loop until |browser_| becomes the last active browser.
-void BrowserSetLastActiveWaiter::Wait() {
+void BrowserDidBecomeActiveWaiter::Wait() {
   if (satisfied_) {
     return;
   }
@@ -620,19 +622,18 @@ void BrowserSetLastActiveWaiter::Wait() {
   run_loop_.Run();
 }
 
-// BrowserListObserver:
-void BrowserSetLastActiveWaiter::OnBrowserSetLastActive(Browser* browser) {
-  if (browser == browser_) {
-    satisfied_ = true;
-    if (run_loop_.running()) {
-      run_loop_.Quit();
-    }
+void BrowserDidBecomeActiveWaiter::OnBrowserDidBecomeActive(
+    BrowserWindowInterface* Browser) {
+  satisfied_ = true;
+  if (run_loop_.running()) {
+    run_loop_.Quit();
   }
 }
 
 void WaitForBrowserSetLastActive(BrowserWindowInterface* browser,
                                  bool wait_for_set_last_active_observed) {
-  BrowserSetLastActiveWaiter waiter(browser, wait_for_set_last_active_observed);
+  BrowserDidBecomeActiveWaiter waiter(browser,
+                                      wait_for_set_last_active_observed);
   waiter.Wait();
 }
 

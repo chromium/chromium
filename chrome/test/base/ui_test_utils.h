@@ -288,7 +288,7 @@ class FullscreenWaiter : public FullscreenObserver {
 // Many testing code needs to wait until the expected browser to be set as
 // the last active browser, and some testing code needs to wait until
 // BrowserList::OnSetLastActive() is observed.
-class BrowserSetLastActiveWaiter : public BrowserListObserver {
+class BrowserDidBecomeActiveWaiter {
  public:
   // By default, the waiting will be satisfied if the expected |browser| is the
   // last active browser in BrowserList. In most cases, the testing code
@@ -302,28 +302,25 @@ class BrowserSetLastActiveWaiter : public BrowserListObserver {
   // first, we can configure the waiter to be satisfied upon
   // OnBrowserSetLastActive is observed by passing
   // |wait_for_set_last_active_observed| being true.
-  explicit BrowserSetLastActiveWaiter(
+  explicit BrowserDidBecomeActiveWaiter(
       BrowserWindowInterface* browser,
       bool wait_for_set_last_active_observed = false);
-  BrowserSetLastActiveWaiter(const BrowserSetLastActiveWaiter&) = delete;
-  BrowserSetLastActiveWaiter& operator=(const BrowserSetLastActiveWaiter&) =
+  BrowserDidBecomeActiveWaiter(const BrowserDidBecomeActiveWaiter&) = delete;
+  BrowserDidBecomeActiveWaiter& operator=(const BrowserDidBecomeActiveWaiter&) =
       delete;
 
-  ~BrowserSetLastActiveWaiter() override;
+  ~BrowserDidBecomeActiveWaiter();
 
   // Runs a loop until |browser_| becomes the last active browser.
   void Wait();
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  void OnBrowserDidBecomeActive(BrowserWindowInterface* Browser);
 
  private:
-  const raw_ptr<BrowserWindowInterface> browser_;  // not_owned
+  base::CallbackListSubscription browser_did_become_active_subscription_;
   bool satisfied_ = false;
   bool wait_for_set_last_active_observed_ = false;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
 };
 
 // Toggles browser fullscreen mode, then wait for its completion.
