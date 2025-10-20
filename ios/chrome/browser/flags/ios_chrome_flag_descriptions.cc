@@ -684,7 +684,7 @@ const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";
 
 const char kIOSBrowserReportIncludeAllProfilesName[] =
-    "include all profiles in browser reports";
+    "Include all profiles in browser reports";
 const char kIOSBrowserReportIncludeAllProfilesDescription[] =
     "When enabled, enterprise browser reports include all profiles (instead of "
     "only the current profile).";
