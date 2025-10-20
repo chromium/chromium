@@ -117,7 +117,8 @@ class KioskMixin : public InProcessBrowserTestMixin {
                          GURL update_manifest_url,
                          std::string update_channel = "",
                          std::string pinned_version = "",
-                         bool allow_downgrades = false);
+                         bool allow_downgrades = false,
+                         bool skip_iwa_allowlist_checks = true);
 
     IsolatedWebAppOption(const IsolatedWebAppOption&);
     IsolatedWebAppOption(IsolatedWebAppOption&&);
@@ -131,6 +132,10 @@ class KioskMixin : public InProcessBrowserTestMixin {
     std::string update_channel;
     std::string pinned_version;
     bool allow_downgrades;
+    // Only IWA allowlisted through Key Distribution component can be installed.
+    // Allowlisting through component update may interfere with other component
+    // updates in unexpected way, so skipping is preferred for most tests.
+    bool skip_iwa_allowlist_checks;
   };
 
   // The account ID of the app that Kiosk should auto launch, as configured in

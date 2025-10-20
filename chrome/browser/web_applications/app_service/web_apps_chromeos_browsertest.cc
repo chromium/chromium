@@ -206,6 +206,8 @@ class WebAppsPreventCloseChromeOsBrowserTest
 
       case AppType::kIsolatedWebApp:
         auto web_bundle_id = web_app::test::GetDefaultEd25519WebBundleId();
+        SetIwaManagedAllowlist({web_bundle_id},
+                               /*component_version=*/base::Version("1.0"));
 
         iwa_test_update_server_.AddBundle(
             web_app::IsolatedWebAppBuilder(

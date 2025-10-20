@@ -622,6 +622,8 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
+    web_app::IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(true);
     test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
     SetUpFilesAndServer();
     AddTrustedWebBundleIdForTesting(url_info_->web_bundle_id());
@@ -630,6 +632,8 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
 
   void TearDownOnMainThread() override {
     run_on_os_login_handler_.TearDown();
+    web_app::IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(false);
     IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
   }
 

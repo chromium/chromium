@@ -292,7 +292,7 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
             .value());
   }
 
-  void SetIWAForceInstallPolicy(base::Value::List update_manifest_entries) {
+  void SetIwaForceInstallPolicy(base::Value::List update_manifest_entries) {
     if (is_user_session_) {
       policy::PolicyMap policies;
       policies.Set(policy::key::kIsolatedWebAppInstallForceList,
@@ -307,13 +307,21 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
     }
   }
 
+  void SetIwaAllowlist(
+      const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
+                    base::Version("1.0.0"), std::move(managed_allowlist)),
+                base::test::HasValue());
+  }
+
   void SetPolicyWithOneApp() {
-    SetIWAForceInstallPolicy(base::Value::List().Append(
+    SetIwaForceInstallPolicy(base::Value::List().Append(
         iwa_test_update_server_.CreateForceInstallPolicyEntry(kWebBundleId1)));
   }
 
   void SetPolicyWithTwoApps() {
-    SetIWAForceInstallPolicy(
+    SetIwaForceInstallPolicy(
         base::Value::List()
             .Append(iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 kWebBundleId1))
@@ -323,7 +331,7 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 
   void SetPolicyWithOneAppWithPinnedVersion(
       std::string pinned_version = kPinnedVersion) {
-    SetIWAForceInstallPolicy(base::Value::List().Append(
+    SetIwaForceInstallPolicy(base::Value::List().Append(
         iwa_test_update_server_.CreateForceInstallPolicyEntry(
             kWebBundleId1, /*update_channel=*/std::nullopt,
             *IwaVersion::Create(pinned_version))));
@@ -331,7 +339,7 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 
   void SetPolicyWithBetaChannelApp(
       const web_package::SignedWebBundleId& web_bundle_id) {
-    SetIWAForceInstallPolicy(base::Value::List().Append(
+    SetIwaForceInstallPolicy(base::Value::List().Append(
         iwa_test_update_server_.CreateForceInstallPolicyEntry(web_bundle_id,
                                                               {kBetaChannel})));
   }
@@ -486,14 +494,6 @@ class IsolatedWebAppPolicyManagerBrowserTest
       const IsolatedWebAppPolicyManagerBrowserTest&) = delete;
   IsolatedWebAppPolicyManagerBrowserTest& operator=(
       const IsolatedWebAppPolicyManagerBrowserTest&) = delete;
-
-  void SetIwaAllowlist(
-      const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
-                    base::Version("1.0.0"), std::move(managed_allowlist)),
-                base::test::HasValue());
-  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -762,6 +762,7 @@ class IsolatedWebAppDevToolsTestWithPolicy
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTestWithPolicy,
                        DisabledForForceInstalledIwas) {
   AddUser();
+  SetIwaAllowlist({kWebBundleId1});
   WaitForUserAdded();
 
   // Log in to the managed guest session. There is no IWA policy set at the

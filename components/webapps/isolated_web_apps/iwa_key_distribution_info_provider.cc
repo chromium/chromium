@@ -200,6 +200,11 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
 
 bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
     std::string_view web_bundle_id) const {
+  if (skip_managed_checks_for_testing_) {
+    CHECK_IS_TEST();
+    return true;
+  }
+
   bool is_permitted =
       data_ && base::Contains(data_->managed_allowlist, web_bundle_id);
 
@@ -209,16 +214,16 @@ bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
   base::UmaHistogramBoolean(
       kIwaKeyDistributionManagedInstallAllowedHistogramName, is_permitted);
 
-  if (skip_managed_checks_for_testing_) {
-    CHECK_IS_TEST();
-    return true;
-  }
-
   return IsIsolatedWebAppManagedAllowlistEnabled() ? is_permitted : true;
 }
 
 bool IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted(
     std::string_view web_bundle_id) const {
+  if (skip_managed_checks_for_testing_) {
+    CHECK_IS_TEST();
+    return true;
+  }
+
   bool is_permitted =
       data_ && base::Contains(data_->managed_allowlist, web_bundle_id);
 
@@ -227,11 +232,6 @@ bool IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted(
       GetComponentDataSource(data_));
   base::UmaHistogramBoolean(
       kIwaKeyDistributionManagedUpdateAllowedHistogramName, is_permitted);
-
-  if (skip_managed_checks_for_testing_) {
-    CHECK_IS_TEST();
-    return true;
-  }
 
   return IsIsolatedWebAppManagedAllowlistEnabled() ? is_permitted : true;
 }
@@ -322,7 +322,6 @@ void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
         DispatchComponentUpdateError(error);
       });
 
-  // TODO(crbug.com/410532804): Add allowlist to the proto file.
   data_ = ComponentData(component_version, std::move(key_rotations),
                         std::move(special_app_permissions),
                         std::move(managed_allowlist), is_preloaded);

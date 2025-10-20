@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -260,6 +261,15 @@ void CommitPendingIsolatedWebAppNavigation(content::WebContents* web_contents) {
   }
 
   CommitNavigation(content::NavigationSimulator::CreateFromPending(controller));
+}
+
+void IsolatedWebAppBrowserTestHarness::SetIwaManagedAllowlist(
+    const std::vector<web_package::SignedWebBundleId>& managed_allowlist,
+    const base::Version& component_version) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(test::UpdateKeyDistributionInfoWithAllowlist(
+                  component_version, std::move(managed_allowlist))
+                  .has_value());
 }
 
 }  // namespace web_app

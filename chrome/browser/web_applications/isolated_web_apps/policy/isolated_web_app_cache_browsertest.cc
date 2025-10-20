@@ -128,7 +128,11 @@ KioskMixin::Config GetKioskIwaManualLaunchConfig(
   KioskMixin::IsolatedWebAppOption iwa_option(
       bundle_id.id(), bundle_id, update_manifest_url,
       update_channel ? update_channel->ToString() : "",
-      pinned_version.has_value() ? pinned_version->GetString() : "");
+      pinned_version.has_value() ? pinned_version->GetString() : "",
+      /*allow_downgrades=*/false,
+      // We set up the allowlist manually for all tests in this file as some of
+      // them tests an interaction with the allowlist.
+      /*skip_iwa_allowlist_checks=*/false);
   return {bundle_id.id(),
           /*auto_launch_account_id=*/{},
           {iwa_option}};
@@ -270,7 +274,6 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
     OverrideCacheDir();
     ConfigureSession(iwa_policy_configs_);
-    SkipIwaAllowlist(/*skip=*/true);
   }
 
   void TearDownOnMainThread() override {
@@ -500,11 +503,6 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
     return provider().ui_manager().GetNumWindowsForApp(GetAppId(bundle_id));
   }
 
-  void SkipIwaAllowlist(bool skip) {
-    IwaKeyDistributionInfoProvider::GetInstance()
-        .SkipManagedAllowlistChecksForTesting(skip);
-  }
-
   // To set the allowlist multiple times within one test,
   // `key_distribution_version` should be increased.
   void SetIwasAllowlist(
@@ -665,6 +663,11 @@ class IwaCacheOneAppTest : public IwaCacheBaseTest,
             /*add_to_server_iwas=*/
             {IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair}}) {
   }
+
+  void SetUpOnMainThread() override {
+    IwaCacheBaseTest::SetUpOnMainThread();
+    SetIwasAllowlist({kWebBundleId});
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, PRE_InstallIsolatedWebAppFromCache) {
@@ -824,6 +827,11 @@ class IwaCacheNonConfiguredMgsSessionTest : public IwaCacheBaseTest {
       : IwaCacheBaseTest(SessionType::kManagedGuestSession,
                          /*iwa_policy_configs=*/{},
                          /*add_to_server_iwas=*/{}) {}
+
+  void SetUpOnMainThread() override {
+    IwaCacheBaseTest::SetUpOnMainThread();
+    SetIwasAllowlist({kWebBundleId, kWebBundleId2});
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
@@ -858,7 +866,6 @@ IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
 
 IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
                        PRE_RemoveTwoCachedBundles) {
-  SkipIwaAllowlist(/*skip=*/false);
   SetIwasAllowlist({kWebBundleId, kWebBundleId2});
 
   ConfigureSession(
@@ -881,7 +888,6 @@ IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
 // `kWebBundleId2` is no longer in the allowlist --> remove from cache.
 IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
                        RemoveTwoCachedBundles) {
-  SkipIwaAllowlist(/*skip=*/false);
   SetIwasAllowlist({kWebBundleId});
   AddNewIwaToServer(
       IwaServerConfig{kWebBundleId2, GetBaseVersion(), kPublicKeyPair2});
@@ -905,6 +911,11 @@ class IwaCacheMgsTest : public IwaCacheBaseTest {
             {IwaPolicyConfig{kWebBundleId}},
             /*add_to_server_iwas=*/
             {IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair}}) {
+  }
+
+  void SetUpOnMainThread() override {
+    IwaCacheBaseTest::SetUpOnMainThread();
+    SetIwasAllowlist({kWebBundleId});
   }
 
   void CloseApp(const SignedWebBundleId& bundle_id) {
@@ -1005,6 +1016,11 @@ class IwaCacheCrossSessionCleanupTest
             /*add_to_server_iwas=*/
             {IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair}}) {
   }
+
+  void SetUpOnMainThread() override {
+    IwaCacheBaseTest::SetUpOnMainThread();
+    SetIwasAllowlist({kWebBundleId, kWebBundleId2});
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
@@ -1087,6 +1103,11 @@ class IwaCacheKioskTest : public IwaCacheBaseTest {
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+  void SetUpOnMainThread() override {
+    IwaCacheBaseTest::SetUpOnMainThread();
+    SetIwasAllowlist({kWebBundleId});
   }
 
   void DisableKioskOfflineLaunch() {
@@ -1178,6 +1199,7 @@ class IwaCacheMultipleAppsConfigurationMgs : public IwaCacheBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs, TwoAppsAreCached) {
+  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
   LaunchSession({kWebBundleId, kWebBundleId2});
   AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
   AssertAppInstalledAtVersion(kWebBundleId2, GetBaseVersion());
@@ -1188,7 +1210,6 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs, TwoAppsAreCached) {
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs,
                        PRE_RemoveNotAllowlistedIwa) {
-  SkipIwaAllowlist(/*skip=*/false);
   SetIwasAllowlist({kWebBundleId, kWebBundleId2});
   LaunchSession({kWebBundleId, kWebBundleId2});
   AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
@@ -1200,7 +1221,6 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs,
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs,
                        RemoveNotAllowlistedIwa) {
-  SkipIwaAllowlist(/*skip=*/false);
   SetIwasAllowlist({kWebBundleId});
   LaunchSession({kWebBundleId});
   AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
@@ -1224,6 +1244,7 @@ class IwaCacheMultipleAppsConfigurationKiosk : public IwaCacheBaseTest {
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
                        PRE_TwoAppsAreCached) {
+  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
   LaunchSession(kWebBundleId);
   AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
 
@@ -1232,6 +1253,7 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
                        TwoAppsAreCached) {
+  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
   LaunchSession(kWebBundleId2);
   AssertAppInstalledAtVersion(kWebBundleId2, GetBaseVersion());
 
@@ -1241,7 +1263,6 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
                        PRE_RemoveNotAllowlistedIwa) {
-  SkipIwaAllowlist(/*skip=*/false);
   SetIwasAllowlist({kWebBundleId});
 
   LaunchSession(kWebBundleId);
@@ -1252,7 +1273,6 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
                        RemoveNotAllowlistedIwa) {
-  SkipIwaAllowlist(/*skip=*/false);
   SetIwasAllowlist({kWebBundleId2});
 
   LaunchSession({kWebBundleId2});
@@ -1271,6 +1291,11 @@ class IwaCacheVersionManagementTest
       : IwaCacheBaseTest(GetParam(),
                          /*iwa_policy_configs=*/{},
                          /*add_to_server_iwas=*/{}) {}
+
+  void SetUpOnMainThread() override {
+    IwaCacheBaseTest::SetUpOnMainThread();
+    SetIwasAllowlist({kWebBundleId});
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest,

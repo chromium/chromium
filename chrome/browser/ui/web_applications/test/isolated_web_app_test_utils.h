@@ -58,6 +58,18 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
  protected:
   std::unique_ptr<net::EmbeddedTestServer> CreateAndStartServer(
       base::FilePath::StringViewType chrome_test_data_relative_root);
+
+  // Overrides the Key Distribution component. Sets managed allowlist of bundle
+  // ids which enables installing and updating Isolated Web Apps from policy.
+  // CAUTION: This function fully overrides all fields of the Key Distribution
+  // component (see IwaKeyDistributionInfoProvider::ComponentData), take care to
+  // not override other fields important for a testing feature or previously
+  // allowlisted bundles. CAUTION: Subsequent calls must use a higher
+  // `component_version`.
+  void SetIwaManagedAllowlist(
+      const std::vector<web_package::SignedWebBundleId>& managed_allowlist,
+      const base::Version& component_version);
+
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
   content::RenderFrameHost* OpenApp(

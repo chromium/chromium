@@ -108,5 +108,6 @@ static_library("test_support") {
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/experiences/settings_ui",
     "//components/web_package",
+    "//components/webapps/isolated_web_apps:key_distribution",
   ]
 }

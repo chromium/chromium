@@ -127,9 +127,17 @@ class MultiCaptureUsageIndicatorBrowserTestBase
 
     notification_observation_.Observe(&notificiation_display_service());
 
+    web_app::IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(true);
     InstallIwas();
     SetCaptureAllowList();
     SetSkipNotificationsAllowlist();
+  }
+
+  void TearDownOnMainThread() override {
+    web_app::IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(false);
+    IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
   }
 
   void InstallIwa(const InstalledApp& app) {

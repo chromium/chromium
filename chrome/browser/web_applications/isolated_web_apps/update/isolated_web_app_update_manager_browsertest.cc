@@ -26,6 +26,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -90,6 +91,16 @@ using ::testing::VariantWith;
 
 using UpdateDiscoveryTaskFuture =
     base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
+
+const web_package::SignedWebBundleId kWebBundleId1 =
+    test::GetDefaultEd25519WebBundleId();
+const web_package::test::Ed25519KeyPair kKeyPair1 =
+    test::GetDefaultEd25519KeyPair();
+
+const web_package::SignedWebBundleId kWebBundleId2 =
+    test::GetDefaultEcdsaP256WebBundleId();
+const web_package::test::EcdsaP256KeyPair kKeyPair2 =
+    test::GetDefaultEcdsaP256KeyPair();
 
 constexpr std::string_view kIndexHtml304WithServiceWorker = R"(
   <head>
@@ -188,7 +199,7 @@ class IsolatedWebAppUpdateManagerBrowserTest
         IsolatedWebAppBuilder(
             ManifestBuilder().SetName(app_name).SetVersion(app_version))
             .AddHtml("/", kIndexHtml706)
-            .BuildBundle(GetWebBundleId(), {test::GetDefaultEd25519KeyPair()}),
+            .BuildBundle(GetWebBundleId(), {kKeyPair1}),
         update_channels);
   }
   url::Origin GetAppOrigin() const {
@@ -200,7 +211,7 @@ class IsolatedWebAppUpdateManagerBrowserTest
         .app_id();
   }
   web_package::SignedWebBundleId GetWebBundleId() const {
-    return test::GetDefaultEd25519WebBundleId();
+    return kWebBundleId1;
   }
   const WebApp* GetIsolatedWebApp(const webapps::AppId& app_id) {
     return provider().registrar_unsafe().GetAppById(app_id);
@@ -209,6 +220,8 @@ class IsolatedWebAppUpdateManagerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
+    SetIwaManagedAllowlist({kWebBundleId1},
+                           /*component_version=*/base::Version("1.0"));
     AddInitialBundle();
   }
 
@@ -219,15 +232,7 @@ class IsolatedWebAppUpdateManagerBrowserTest
             .AddHtml("/", kIndexHtml304WithServiceWorker)
             .AddJs("/register-sw.js", kRegisterServiceWorkerScript)
             .AddJs("/sw.js", kServiceWorkerScript)
-            .BuildBundle(GetWebBundleId(), {test::GetDefaultEd25519KeyPair()}));
-
-    // TODO(crbug.com/426542051): Remove this when more versatile approach is
-    // implemented.
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
-                    base::Version("1.0.0"),
-                    /*managed_allowlist=*/{GetWebBundleId()}),
-                HasValue());
+            .BuildBundle(GetWebBundleId(), {kKeyPair1}));
   }
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
@@ -282,6 +287,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        NoUpdatesWhenAppNotAllowlisted) {
   base::HistogramTester histogram_tester;
 
+  // Initially app is allowlisted in the class setup to be installable
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
       base::Value::List().Append(
@@ -296,13 +302,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   IwaVersion installed_version = app_isolation_data.version();
 
   // Clear the allowlist, so the app is not allowlisted
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_THAT(
-        test::UpdateKeyDistributionInfoWithAllowlist(base::Version("1.0.1"),
-                                                     /*managed_allowlist=*/{}),
-        HasValue());
-  }
+  SetIwaManagedAllowlist(/*managed_allowlist=*/{}, base::Version("1.0.1"));
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
@@ -1258,6 +1258,18 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
  protected:
+  void SetUpOnMainThread() override {
+    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
+    IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(true);
+  }
+
+  void TearDownOnMainThread() override {
+    IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(false);
+    IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
+  }
+
   void AddBundleSignedBy(const web_package::test::KeyPair& key_pair) {
     iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(
@@ -1281,8 +1293,7 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
       component_updater::kIwaKeyDistributionComponent};
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  web_package::SignedWebBundleId web_bundle_id_ =
-      test::GetDefaultEd25519WebBundleId();
+  web_package::SignedWebBundleId web_bundle_id_ = kWebBundleId1;
 
   // Override the pre-install component directory and its alternative directory
   // so that the component update will not find the pre-installed key dist
@@ -1301,7 +1312,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Add a bundle with version 1.0.0 signed by the original key corresponding to
   // `web_bundle_id_`.
-  AddBundleSignedBy(test::GetDefaultEd25519KeyPair());
+  AddBundleSignedBy(kKeyPair1);
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
@@ -1314,40 +1325,39 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   EXPECT_THAT(
       GetIsolatedWebApp(app_id),
-      test::IwaIs(Eq("app-1.0.0"),
-                  test::IsolationDataIs(
-                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
-                      /*controlled_frame_partitions=*/_,
-                      /*pending_update_info=*/Eq(std::nullopt),
-                      /*integrity_block_data=*/
-                      test::IntegrityBlockDataPublicKeysAre(
-                          test::GetDefaultEd25519KeyPair().public_key))));
+      test::IwaIs(
+          Eq("app-1.0.0"),
+          test::IsolationDataIs(
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/Eq(std::nullopt),
+              /*integrity_block_data=*/
+              test::IntegrityBlockDataPublicKeysAre(kKeyPair1.public_key))));
 
   // Add a bundle with version 1.0.0 signed by a rotated key.
-  AddBundleSignedBy(test::GetDefaultEcdsaP256KeyPair());
+  AddBundleSignedBy(kKeyPair2);
 
   WebAppTestManifestUpdatedObserver manifest_updated_observer(
       &provider().install_manager());
   manifest_updated_observer.BeginListening({app_id});
   // Key rotation should trigger a discovery in the update manager.
-  EXPECT_THAT(
-      test::InstallIwaKeyDistributionComponent(
-          base::Version("0.1.0"), test::GetDefaultEd25519WebBundleId().id(),
-          test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
-      HasValue());
+  EXPECT_THAT(test::InstallIwaKeyDistributionComponent(
+                  base::Version("0.1.0"), kWebBundleId1.id(),
+                  kKeyPair2.public_key.bytes()),
+              HasValue());
   manifest_updated_observer.Wait();
 
   // The app's integrity block data must be different now due to an update.
   EXPECT_THAT(
       GetIsolatedWebApp(app_id),
-      test::IwaIs(Eq("app-1.0.0"),
-                  test::IsolationDataIs(
-                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
-                      /*controlled_frame_partitions=*/_,
-                      /*pending_update_info=*/Eq(std::nullopt),
-                      /*integrity_block_data=*/
-                      test::IntegrityBlockDataPublicKeysAre(
-                          test::GetDefaultEcdsaP256KeyPair().public_key))));
+      test::IwaIs(
+          Eq("app-1.0.0"),
+          test::IsolationDataIs(
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/Eq(std::nullopt),
+              /*integrity_block_data=*/
+              test::IntegrityBlockDataPublicKeysAre(kKeyPair2.public_key))));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
@@ -1358,7 +1368,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Add a bundle with version 1.0.0 signed by the original key corresponding to
   // `web_bundle_id_`.
-  AddBundleSignedBy(test::GetDefaultEd25519KeyPair());
+  AddBundleSignedBy(kKeyPair1);
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
@@ -1371,14 +1381,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   EXPECT_THAT(
       GetIsolatedWebApp(app_id),
-      test::IwaIs(Eq("app-1.0.0"),
-                  test::IsolationDataIs(
-                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
-                      /*controlled_frame_partitions=*/_,
-                      /*pending_update_info=*/Eq(std::nullopt),
-                      /*integrity_block_data=*/
-                      test::IntegrityBlockDataPublicKeysAre(
-                          test::GetDefaultEd25519KeyPair().public_key))));
+      test::IwaIs(
+          Eq("app-1.0.0"),
+          test::IsolationDataIs(
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/Eq(std::nullopt),
+              /*integrity_block_data=*/
+              test::IntegrityBlockDataPublicKeysAre(kKeyPair1.public_key))));
 
   // Open the app and ensure it loads the content properly. This will also cache
   // a bundle reader.
@@ -1395,11 +1405,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and clear the reader cache.
-  EXPECT_THAT(
-      test::InstallIwaKeyDistributionComponent(
-          base::Version("0.1.0"), test::GetDefaultEd25519WebBundleId().id(),
-          test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
-      HasValue());
+  EXPECT_THAT(test::InstallIwaKeyDistributionComponent(
+                  base::Version("0.1.0"), kWebBundleId1.id(),
+                  kKeyPair2.public_key.bytes()),
+              HasValue());
 
   // Now an attempt to open the app should display the "missing or damaged"
   // page.
@@ -1422,7 +1431,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
     manifest_updated_observer.BeginListening({app_id});
 
     // Add a bundle with version 1.0.0 signed by a rotated key.
-    AddBundleSignedBy(test::GetDefaultEcdsaP256KeyPair());
+    AddBundleSignedBy(kKeyPair2);
     EXPECT_EQ(provider().iwa_update_manager().DiscoverUpdatesNow(), 1u);
     manifest_updated_observer.Wait();
   }
@@ -1446,7 +1455,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Add a bundle with version 1.0.0 signed by the original key corresponding to
   // `web_bundle_id_`.
-  AddBundleSignedBy(test::GetDefaultEd25519KeyPair());
+  AddBundleSignedBy(kKeyPair1);
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
@@ -1459,14 +1468,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   EXPECT_THAT(
       GetIsolatedWebApp(app_id),
-      test::IwaIs(Eq("app-1.0.0"),
-                  test::IsolationDataIs(
-                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
-                      /*controlled_frame_partitions=*/_,
-                      /*pending_update_info=*/Eq(std::nullopt),
-                      /*integrity_block_data=*/
-                      test::IntegrityBlockDataPublicKeysAre(
-                          test::GetDefaultEd25519KeyPair().public_key))));
+      test::IwaIs(
+          Eq("app-1.0.0"),
+          test::IsolationDataIs(
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/Eq(std::nullopt),
+              /*integrity_block_data=*/
+              test::IntegrityBlockDataPublicKeysAre(kKeyPair1.public_key))));
 
   // Open the app and ensure it loads the content properly. This will also cache
   // a bundle reader.
@@ -1481,11 +1490,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and queue a cache clear request for this bundle reader.
-  EXPECT_THAT(
-      test::InstallIwaKeyDistributionComponent(
-          base::Version("0.1.0"), test::GetDefaultEd25519WebBundleId().id(),
-          test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
-      HasValue());
+  EXPECT_THAT(test::InstallIwaKeyDistributionComponent(
+                  base::Version("0.1.0"), kWebBundleId1.id(),
+                  kKeyPair2.public_key.bytes()),
+              HasValue());
 
   // The currently open app should not be affected.
   {
@@ -1525,7 +1533,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
   {
     // Add a bundle with version 1.0.0 signed by a rotated key and attempt to
     // install it; this installation will fail.
-    AddBundleSignedBy(test::GetDefaultEcdsaP256KeyPair());
+    AddBundleSignedBy(kKeyPair2);
 
     base::test::TestFuture<web_package::SignedWebBundleId, IwaInstallerResult>
         future;
@@ -1553,25 +1561,24 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
   waiter.BeginListening({app_id});
 
   // Key rotation should trigger a policy reprocess.
-  EXPECT_THAT(
-      test::InstallIwaKeyDistributionComponent(
-          base::Version("0.1.0"), test::GetDefaultEd25519WebBundleId().id(),
-          test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
-      HasValue());
+  EXPECT_THAT(test::InstallIwaKeyDistributionComponent(
+                  base::Version("0.1.0"), kWebBundleId1.id(),
+                  kKeyPair2.public_key.bytes()),
+              HasValue());
 
   waiter.Wait();
 
   // Now the app should be installed.
   EXPECT_THAT(
       GetIsolatedWebApp(app_id),
-      test::IwaIs(Eq("app-1.0.0"),
-                  test::IsolationDataIs(
-                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
-                      /*controlled_frame_partitions=*/_,
-                      /*pending_update_info=*/Eq(std::nullopt),
-                      /*integrity_block_data=*/
-                      test::IntegrityBlockDataPublicKeysAre(
-                          test::GetDefaultEcdsaP256KeyPair().public_key))));
+      test::IwaIs(
+          Eq("app-1.0.0"),
+          test::IsolationDataIs(
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/Eq(std::nullopt),
+              /*integrity_block_data=*/
+              test::IntegrityBlockDataPublicKeysAre(kKeyPair2.public_key))));
 }
 
 }  // namespace

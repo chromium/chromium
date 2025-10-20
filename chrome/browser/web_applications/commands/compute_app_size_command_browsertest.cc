@@ -87,9 +87,17 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
 
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
+    IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(true);
     iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle(kPublicKeyPair1));
+  }
+
+  void TearDownOnMainThread() override {
+    IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(false);
+    IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
   }
 
   ComputeAppSizeCommandForIsolatedWebAppBrowserTest(
