@@ -354,6 +354,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"uploadFile", IDS_NTP_COMPOSE_ADD_FILE},
       {"deepSearch", IDS_NTP_COMPOSE_DEEP_SEARCH},
       {"createImages", IDS_NTP_COMPOSE_CREATE_IMAGES},
+      {"composeDeepSearchPlaceholder", IDS_COMPOSE_DEEP_SEARCH_PLACEHOLDER},
+      {"composeCreateImagePlaceholder", IDS_COMPOSE_CREATE_IMAGE_PLACEHOLDER},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString("searchboxComposePlaceholder",
