@@ -141,6 +141,8 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Extract only the candidates which apply to prerender, and sort them by URL
   // so we can efficiently compare them to `started_prerenders_`.
+  // TODO(https://crbug.com/428500219): Add warning message if prerender and
+  // prerender-until-script are applied to the same URL.
   std::vector<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
       prerender_candidates;
   for (const auto& candidate : candidates) {
@@ -240,11 +242,14 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     started_it = equal_prerender_end;
   }
 
-  std::vector<GURL> urls;
+  std::vector<std::pair<GURL, PreloadingType>> to_be_cancelled_prerender_list;
   for (auto ftn_id : removed_prerender_rules) {
     if (PrerenderHost* prerender_host =
             registry_->FindNonReservedHostById(ftn_id)) {
-      urls.push_back(prerender_host->GetInitialUrl());
+      to_be_cancelled_prerender_list.emplace_back(
+          prerender_host->GetInitialUrl(),
+          ConvertSpeculationActionToPreloadingType(
+              prerender_host->speculation_action()));
     }
   }
   std::set<FrameTreeNodeId> canceled_prerender_rules_set =
@@ -259,8 +264,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     auto* prefetch_document_manager =
         content::PrefetchDocumentManager::GetOrCreateForCurrentDocument(
             web_contents->GetPrimaryMainFrame());
-    for (const auto& url : urls) {
-      prefetch_document_manager->ResetPrefetchAheadOfPrerenderIfExist(url);
+    for (const auto& [url, preloading_type] : to_be_cancelled_prerender_list) {
+      prefetch_document_manager->ResetPrefetchAheadOfPrerenderIfExist(
+          preloading_type, url);
     }
   }
 
