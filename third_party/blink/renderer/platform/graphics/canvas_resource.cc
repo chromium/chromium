@@ -515,15 +515,16 @@ void CanvasResourceSharedImage::WaitSyncToken(
   if (sync_token.HasData()) {
     acquire_sync_token_ = sync_token;
     if (!base::FeatureList::IsEnabled(kCanvasResourceDefersWaitSyncToken)) {
-      WaitSyncToken();
+      if (auto* interface_base = InterfaceBase()) {
+        interface_base->WaitSyncTokenCHROMIUM(
+            acquire_sync_token_.GetConstData());
+      }
     }
   }
 }
 
 void CanvasResourceSharedImage::WaitSyncToken() {
-  if (auto* interface_base = InterfaceBase()) {
-    interface_base->WaitSyncTokenCHROMIUM(acquire_sync_token_.GetConstData());
-  }
+  InterfaceBase()->WaitSyncTokenCHROMIUM(acquire_sync_token_.GetConstData());
 }
 
 void CanvasResourceSharedImage::GetSyncToken() {
