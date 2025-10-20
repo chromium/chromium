@@ -215,6 +215,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // Record the time between the response received time and the fetch handler
   // end time iff both events are already reached.
   void MaybeRecordResponseReceivedToFetchHandlerEndTiming();
+  void RecordDataTransferCompletionResult();
 
   void SetFetchHandlerEndTiming(base::TimeTicks fetch_handler_end_time,
                                 bool is_fallback);
@@ -246,7 +247,12 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   std::optional<base::TimeTicks> fetch_handler_end_time_;
   std::optional<bool> is_fetch_handler_fallback_;
   bool is_main_resource_;
+  bool clone_response_for_network_completed_ = false;
   bool clone_response_for_fetch_handler_completed_ = false;
+
+  // TODO(crbug.com/340949948): Remove this after fixing the bug. This is set
+  // only when the data cloning to the fetch handler is excplitly cancelled.
+  bool clone_response_for_fetch_handler_cancelled_ = false;
 
   base::TimeTicks request_start_;
   base::Time request_start_time_;

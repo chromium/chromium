@@ -48,6 +48,19 @@ void RecordRaceNetworkRequestCloningResponseForFetchHandlerHistogram(
                     ".IsCloningDataFinishedBeforeResponseComplete"}),
       is_cloning_data_finished_before_response_complete);
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DataTransferCompletionResult)
+enum class DataTransferCompletionResult {
+  kBothCompleted,
+  kNetworkCompletedFetchHandlerNotCompleted,
+  kFetchHandlerCompletedNetworkNotCompleted,
+  kBothNotCompleted,
+  kMaxValue = kBothNotCompleted
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:RaceNetworkRequestDataTransferResult)
 }  // namespace
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -84,6 +97,16 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
                          "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
                          "~ServiceWorkerRaceNetworkRequestURLLoaderClient",
                          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+  if (simple_buffer_manager_.has_value()) {
+    RecordDataTransferCompletionResult();
+  } else {
+    base::UmaHistogramBoolean(
+        base::StrCat({is_main_resource_
+                          ? kMainResourceHistogramForRaceNetworkFetchEvent
+                          : kSubresourceHistogramForRaceNetworkFetchEvent,
+                      ".CloneResponseForFetchHandlerCancelled"}),
+        clone_response_for_fetch_handler_cancelled_);
+  }
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnUploadProgress(
@@ -539,6 +562,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
         write_buffer_manager_for_race_network_request_.EndWriteData(0);
         write_buffer_manager_for_fetch_handler_.EndWriteData(0);
         write_buffer_manager_for_fetch_handler_.CancelWatching();
+        clone_response_for_fetch_handler_cancelled_ = true;
         write_buffer_manager_for_race_network_request_.ArmOrNotify();
         return;
     }
@@ -698,6 +722,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnCloneCompleted() {
+  clone_response_for_network_completed_ = true;
   if (state_ == State::kCompleted) {
     //  `kCompleted` indicates the network request and data processing to
     //  `owner_` are finished. With
@@ -854,6 +879,26 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::ConvertMojoResultForUMA(
     default:
       NOTREACHED();
   }
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    RecordDataTransferCompletionResult() {
+  CHECK(simple_buffer_manager_.has_value());
+  base::UmaHistogramEnumeration(
+      base::StrCat({is_main_resource_
+                        ? kMainResourceHistogramForRaceNetworkFetchEvent
+                        : kSubresourceHistogramForRaceNetworkFetchEvent,
+                    ".DataTransferResult"}),
+      clone_response_for_network_completed_ &&
+              clone_response_for_fetch_handler_completed_
+          ? DataTransferCompletionResult::kBothCompleted
+      : clone_response_for_network_completed_
+          ? DataTransferCompletionResult::
+                kNetworkCompletedFetchHandlerNotCompleted
+      : clone_response_for_fetch_handler_completed_
+          ? DataTransferCompletionResult::
+                kFetchHandlerCompletedNetworkNotCompleted
+          : DataTransferCompletionResult::kBothNotCompleted);
 }
 
 net::NetworkTrafficAnnotationTag

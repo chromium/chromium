@@ -128,6 +128,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kWarmedUp"/>
 </enum>
 
+<!-- LINT.IfChange(RaceNetworkRequestDataTransferResult) -->
+
+<enum name="RaceNetworkRequestDataTransferResult">
+  <int value="0" label="BothCompleted"/>
+  <int value="1" label="NetworkCompletedFetchHandlerNotCompleted"/>
+  <int value="2" label="FetchHandlerCompletedNetworkNotCompleted"/>
+  <int value="3" label="BothNotCompleted"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/common/service_worker/race_network_request_url_loader_client.cc:DataTransferCompletionResult) -->
+
 <enum name="ServiceWorkerDatabaseStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Not Found Error"/>

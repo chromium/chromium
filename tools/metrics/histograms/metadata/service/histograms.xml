@@ -506,6 +506,47 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.CloneResponseForFetchHandlerCancelled"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Recorded as true when the data cloning from the original response to the
+    data pipe for the fetch handler is cancelled not to pause the data transfer
+    for the network request.
+
+    This metric is recorded per {Resource}. Recorded only when
+    `ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement` is
+    disabled, and recorded in the destructor of
+    `ServiceWorkerRaceNetworkRequestURLLoaderClient`.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.DataTransferResult"
+    enum="RaceNetworkRequestDataTransferResult" expires_after="2026-03-22">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Recorded the result of data transfer from the original netowrk response to
+    the data pipes for both the network and the fetch handler.
+
+    This metric is recorded per {Resource}. Recorded only when
+    `ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement` is
+    enabled, and recorded in the destructor of
+    `ServiceWorkerRaceNetworkRequestURLLoaderClient`.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
+<histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.IsCloningDataFinishedBeforeResponseComplete"
     enum="Boolean" expires_after="2026-03-22">
   <owner>sisidovski@chromium.org</owner>
