@@ -346,12 +346,6 @@ static_library("browser") {
     "component_updater/trust_token_key_commitments_component_installer.h",
     "component_updater/wasm_tts_engine_component_installer.cc",
     "component_updater/wasm_tts_engine_component_installer.h",
-    "content_index/content_index_metrics.cc",
-    "content_index/content_index_metrics.h",
-    "content_index/content_index_provider_factory.cc",
-    "content_index/content_index_provider_factory.h",
-    "content_index/content_index_provider_impl.cc",
-    "content_index/content_index_provider_impl.h",
     "contextmenu/context_menu_features.cc",
     "contextmenu/context_menu_features.h",
     "custom_handlers/chrome_protocol_handler_registry_delegate.cc",
@@ -1813,6 +1807,13 @@ static_library("browser") {
     # headers get componentized:
     # - c/b/chrome_content_browser_client.h
     "//chrome/browser/btm:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
+    # headers get componentized:
+    # - c/b/metrics/ukm_background_recorder_service.h
+    # - c/b/offline_items_collection/offline_content_aggregator_factory.h
+    # - c/b/engagement/site_engagement_service_factory.h
+    "//chrome/browser/content_index:impl",
   ]
 
   public_deps = [
@@ -1891,6 +1892,8 @@ static_library("browser") {
     "//chrome/browser/complex_tasks:impl",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/content_extraction",
+    "//chrome/browser/content_index",
+    "//chrome/browser/content_index:impl",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/content_settings:content_settings_factory_impl",
