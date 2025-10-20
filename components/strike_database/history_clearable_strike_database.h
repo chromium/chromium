@@ -10,7 +10,7 @@
 
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 #include "components/strike_database/strike_database_integrator_base.h"
 
 namespace strike_database {
@@ -43,10 +43,9 @@ namespace strike_database {
 //
 // If additional logic or overrides are needed, derive from this class.
 template <typename Traits>
-class HistoryClearableStrikeDatabase
-    : public SimpleAutofillStrikeDatabase<Traits> {
+class HistoryClearableStrikeDatabase : public SimpleStrikeDatabase<Traits> {
  public:
-  using SimpleAutofillStrikeDatabase<Traits>::SimpleAutofillStrikeDatabase;
+  using SimpleStrikeDatabase<Traits>::SimpleStrikeDatabase;
   using StrikeDatabaseIntegratorBase::ClearAllStrikes;
   using StrikeDatabaseIntegratorBase::ClearStrikesByIdMatching;
   using StrikeDatabaseIntegratorBase::ClearStrikesByIdMatchingAndTime;

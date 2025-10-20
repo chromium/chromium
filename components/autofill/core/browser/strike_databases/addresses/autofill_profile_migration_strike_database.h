@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_AUTOFILL_PROFILE_MIGRATION_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_AUTOFILL_PROFILE_MIGRATION_STRIKE_DATABASE_H_
 
-#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 
 namespace autofill {
 
@@ -22,7 +22,7 @@ struct AutofillProfileMigrationStrikeDatabaseTraits {
 // `kLocalOrSyncable` profile to `kAccount` profile and stops prompting the user
 // to do so after reaching a strike limit.
 using AutofillProfileMigrationStrikeDatabase =
-    strike_database::SimpleAutofillStrikeDatabase<
+    strike_database::SimpleStrikeDatabase<
         AutofillProfileMigrationStrikeDatabaseTraits>;
 
 }  // namespace autofill

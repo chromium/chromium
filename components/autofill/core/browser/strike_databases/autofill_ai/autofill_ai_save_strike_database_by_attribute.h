@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 
 namespace autofill {
 
@@ -24,7 +24,7 @@ struct AutofillAiSaveStrikeDatabaseByAttributeTraits {
 };
 
 using AutofillAiSaveStrikeDatabaseByAttribute =
-    strike_database::SimpleAutofillStrikeDatabase<
+    strike_database::SimpleStrikeDatabase<
         AutofillAiSaveStrikeDatabaseByAttributeTraits>;
 
 }  // namespace autofill

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_STRIKE_DATABASE_SIMPLE_AUTOFILL_STRIKE_DATABASE_H_
-#define COMPONENTS_STRIKE_DATABASE_SIMPLE_AUTOFILL_STRIKE_DATABASE_H_
+#ifndef COMPONENTS_STRIKE_DATABASE_SIMPLE_STRIKE_DATABASE_H_
+#define COMPONENTS_STRIKE_DATABASE_SIMPLE_STRIKE_DATABASE_H_
 
 #include <stddef.h>
 
@@ -34,17 +34,17 @@ namespace strike_database {
 // };
 //
 // using MyStrikeDatabase =
-//                 SimpleAutofillStrikeDatabase<MyStrikeDatabaseTraits>;
+//                 SimpleStrikeDatabase<MyStrikeDatabaseTraits>;
 //
 // If additional logic or overrides are needed, derive from this class.
 template <typename Traits>
-class SimpleAutofillStrikeDatabase : public StrikeDatabaseIntegratorBase {
+class SimpleStrikeDatabase : public StrikeDatabaseIntegratorBase {
  public:
-  explicit SimpleAutofillStrikeDatabase(StrikeDatabaseBase* strike_database)
+  explicit SimpleStrikeDatabase(StrikeDatabaseBase* strike_database)
       : StrikeDatabaseIntegratorBase(strike_database) {
     RemoveExpiredStrikes();
   }
-  ~SimpleAutofillStrikeDatabase() override = default;
+  ~SimpleStrikeDatabase() override = default;
 
   std::optional<size_t> GetMaximumEntries() const override {
     return Traits::kMaxStrikeEntities;
@@ -64,4 +64,4 @@ class SimpleAutofillStrikeDatabase : public StrikeDatabaseIntegratorBase {
 
 }  // namespace strike_database
 
-#endif  // COMPONENTS_STRIKE_DATABASE_SIMPLE_AUTOFILL_STRIKE_DATABASE_H_
+#endif  // COMPONENTS_STRIKE_DATABASE_SIMPLE_STRIKE_DATABASE_H_

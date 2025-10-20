@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/strike_database/simple_autofill_strike_database.h"
-
 #include <memory>
 #include <string>
 
@@ -11,6 +9,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/strike_database/simple_strike_database.h"
 #include "components/strike_database/strike_data.pb.h"
 #include "components/strike_database/strike_database_integrator_test_strike_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,10 +28,9 @@ struct TestStrikeDatabaseTraits {
   static constexpr bool kUniqueIdRequired = true;
 };
 
-using TestStrikeDatabase =
-    SimpleAutofillStrikeDatabase<TestStrikeDatabaseTraits>;
+using TestStrikeDatabase = SimpleStrikeDatabase<TestStrikeDatabaseTraits>;
 
-class SimpleAutofillStrikeDatabaseTest : public ::testing::Test {
+class SimpleStrikeDatabaseTest : public ::testing::Test {
  public:
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -63,7 +61,7 @@ class SimpleAutofillStrikeDatabaseTest : public ::testing::Test {
 
 // Tests that strikes can be added and removed, and that depending on the
 // `kMaxStrikeLimit`, the feature is considered blocked.
-TEST_F(SimpleAutofillStrikeDatabaseTest, AddAndRemoveStrikes) {
+TEST_F(SimpleStrikeDatabaseTest, AddAndRemoveStrikes) {
   const std::string test_key = "123";
   strike_database_->AddStrike(test_key);
   EXPECT_EQ(strike_database_->GetStrikes(test_key), 1);
@@ -82,7 +80,7 @@ TEST_F(SimpleAutofillStrikeDatabaseTest, AddAndRemoveStrikes) {
 }
 
 // Tests that when too many strikes are added, the oldest strikes are cleared.
-TEST_F(SimpleAutofillStrikeDatabaseTest, MaxEntries) {
+TEST_F(SimpleStrikeDatabaseTest, MaxEntries) {
   for (size_t i = 0; i < TestStrikeDatabaseTraits::kMaxStrikeEntities; i++) {
     strike_database_->AddStrike(base::ToString(i));
   }

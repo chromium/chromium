@@ -11,7 +11,7 @@
 #include <string_view>
 
 #include "base/time/time.h"
-#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 
 namespace autofill {
 
@@ -24,12 +24,11 @@ struct CvcStorageStrikeDatabaseTraits {
   static constexpr bool kUniqueIdRequired = true;
 };
 
-class CvcStorageStrikeDatabase
-    : public strike_database::SimpleAutofillStrikeDatabase<
-          CvcStorageStrikeDatabaseTraits> {
+class CvcStorageStrikeDatabase : public strike_database::SimpleStrikeDatabase<
+                                     CvcStorageStrikeDatabaseTraits> {
  public:
-  using SimpleAutofillStrikeDatabase<
-      CvcStorageStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
+  using SimpleStrikeDatabase<
+      CvcStorageStrikeDatabaseTraits>::SimpleStrikeDatabase;
 
   std::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
       const override;

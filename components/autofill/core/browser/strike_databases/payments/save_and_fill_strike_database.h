@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "base/time/time.h"
-#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 #include "components/strike_database/strike_database.h"
 
 namespace autofill {
@@ -26,12 +26,11 @@ struct SaveAndFillStrikeDatabaseTraits {
   static constexpr bool kUniqueIdRequired = false;
 };
 
-class SaveAndFillStrikeDatabase
-    : public strike_database::SimpleAutofillStrikeDatabase<
-          SaveAndFillStrikeDatabaseTraits> {
+class SaveAndFillStrikeDatabase : public strike_database::SimpleStrikeDatabase<
+                                      SaveAndFillStrikeDatabaseTraits> {
  public:
-  using strike_database::SimpleAutofillStrikeDatabase<
-      SaveAndFillStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
+  using strike_database::SimpleStrikeDatabase<
+      SaveAndFillStrikeDatabaseTraits>::SimpleStrikeDatabase;
 
   std::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
       const override;

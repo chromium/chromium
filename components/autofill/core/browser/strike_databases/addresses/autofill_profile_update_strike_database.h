@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_AUTOFILL_PROFILE_UPDATE_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_AUTOFILL_PROFILE_UPDATE_STRIKE_DATABASE_H_
 
-#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 
 namespace autofill {
 
@@ -21,7 +21,7 @@ struct AutofillProfileUpdateStrikeDatabaseTraits {
 // Records the number of times a user declines updating their Autofill profile
 // and stops prompting the user to do so after reaching a strike limit.
 using AutofillProfileUpdateStrikeDatabase =
-    strike_database::SimpleAutofillStrikeDatabase<
+    strike_database::SimpleStrikeDatabase<
         AutofillProfileUpdateStrikeDatabaseTraits>;
 
 }  // namespace autofill

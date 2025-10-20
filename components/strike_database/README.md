@@ -16,13 +16,13 @@ To use a strike database, you need to do the following:
 - Define `Traits` that specify how your strike database is supposed to behave,
   e.g., the expiry time of strikes or the maximum number of strikes before a
   features is blocked.
-- Create either an instance of `SimpleAutofillStrikeDatabase<YourTraits>` or
+- Create either an instance of `SimpleStrikeDatabase<YourTraits>` or
   `HistoryClearableStrikeDatabase<YourTraits>` and pass a pointer to the
   `StrikeDatabaseBase`. This is a `KeyedService` that you obtain in your
   embedder (e.g., Chrome).
 - Use your strike database!
 
-Note that `SimpleAutofillStrikeDatabase<YourTraits>` and
+Note that `SimpleStrikeDatabase<YourTraits>` and
 `HistoryClearableStrikeDatabase<YourTraits>` contain no state beyond a pointer
 to the `StrikeDatabaseBase`. Therefore instantiating lots of strike databases
 across multiple tabs is cheap and they all share the same underlying database.

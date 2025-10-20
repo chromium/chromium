@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 
 namespace autofill {
 
@@ -23,8 +23,7 @@ struct AutofillAiUpdateStrikeDatabaseTraits {
 };
 
 using AutofillAiUpdateStrikeDatabase =
-    strike_database::SimpleAutofillStrikeDatabase<
-        AutofillAiUpdateStrikeDatabaseTraits>;
+    strike_database::SimpleStrikeDatabase<AutofillAiUpdateStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

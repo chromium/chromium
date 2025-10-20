@@ -28,7 +28,7 @@ VirtualCardEnrollmentStrikeDatabase::GetExpiryTimeDelta() const {
              features::kAutofillVcnEnrollStrikeExpiryTime)
              ? std::optional<base::TimeDelta>(base::Days(
                    features::kAutofillVcnEnrollStrikeExpiryTimeDays.Get()))
-             : SimpleAutofillStrikeDatabase::GetExpiryTimeDelta();
+             : SimpleStrikeDatabase::GetExpiryTimeDelta();
 }
 
 }  // namespace autofill

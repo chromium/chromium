@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_AUTOFILL_ON_TYPING_SUGGESTION_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_AUTOFILL_ON_TYPING_SUGGESTION_STRIKE_DATABASE_H_
 
-#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 
 namespace autofill {
 
@@ -21,7 +21,7 @@ struct AutofillOnTypingSuggestionStrikeDatabaseTraits {
 // Records the number of times a user declines Autofill on typing suggestions
 // and stops showing suggestion after reaching the strike limit.
 using AutofillOnTypingSuggestionStrikeDatabase =
-    strike_database::SimpleAutofillStrikeDatabase<
+    strike_database::SimpleStrikeDatabase<
         AutofillOnTypingSuggestionStrikeDatabaseTraits>;
 
 }  // namespace autofill

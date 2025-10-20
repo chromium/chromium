@@ -7,7 +7,7 @@ import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 static_library("strike_database") {
   sources = [
     "history_clearable_strike_database.h",
-    "simple_autofill_strike_database.h",
+    "simple_strike_database.h",
     "strike_database.cc",
     "strike_database.h",
     "strike_database_base.cc",

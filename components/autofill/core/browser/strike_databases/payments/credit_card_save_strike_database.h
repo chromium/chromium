@@ -11,7 +11,7 @@
 #include <string_view>
 
 #include "base/time/time.h"
-#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 #include "components/strike_database/strike_database.h"
 
 namespace autofill {
@@ -27,8 +27,7 @@ struct CreditCardSaveStrikeDatabaseTraits {
 
 // Strike database for credit card saves (both local and upload).
 using CreditCardSaveStrikeDatabase =
-    strike_database::SimpleAutofillStrikeDatabase<
-        CreditCardSaveStrikeDatabaseTraits>;
+    strike_database::SimpleStrikeDatabase<CreditCardSaveStrikeDatabaseTraits>;
 
 }  // namespace autofill
 
