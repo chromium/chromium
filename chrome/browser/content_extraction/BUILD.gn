@@ -14,4 +14,28 @@ source_set("content_extraction") {
     "//services/service_manager/public/cpp",
     "//third_party/blink/public/common",
   ]
+
+  if (is_android) {
+    sources += [ "android/inner_text_bridge.cc" ]
+    deps += [
+      "//chrome/browser/content_extraction/android:jni_headers",
+      "//components/content_extraction/content/browser",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "inner_html_browsertest.cc" ]
+    deps = [
+      ":content_extraction",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+    ]
+  }
 }
