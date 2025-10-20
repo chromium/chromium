@@ -4,11 +4,22 @@
 # found in the LICENSE file.
 """Utility for checking and processing licensing information in third_party
 directories.
+
+Usage: licenses.py <command>
+
+Commands:
+  scan     scan third_party directories, verifying that we have licensing info
+  credits  generate about:credits on stdout
+
+(You can also import this as a module.)
 """
+from __future__ import print_function
+
 import argparse
+import codecs
 import csv
-import html
 import io
+import itertools
 import json
 import logging
 import os
@@ -18,7 +29,12 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
+
+if sys.version_info.major == 2:
+  import cgi as html
+else:
+  import html
 
 from spdx_writer import SpdxWriter
 
@@ -31,25 +47,6 @@ METADATA_FILE_NAMES = frozenset({
     "README.chromium", "README.crashpad", "README.v8", "README.pdfium",
     "README.angle"
 })
-
-_DEFAULT_FILE_TEMPLATE_FILE = os.path.join(_REPOSITORY_ROOT, 'components',
-                                           'webui', 'about', 'resources',
-                                           'about_credits.tmpl')
-_DEFAULT_ENTRY_TEMPLATE_FILE = os.path.join(_REPOSITORY_ROOT, 'components',
-                                            'webui', 'about', 'resources',
-                                            'about_credits_entry.tmpl')
-_DEFAULT_RECIPROCAL_TEMPLATE_FILE = os.path.join(
-    _REPOSITORY_ROOT, 'components', 'webui', 'about', 'resources',
-    'about_credits_reciprocal.tmpl')
-
-_CHROMIUM_LICENSE_METADATA = {
-    'Name': 'The Chromium Project',
-    'URL': 'https://www.chromium.org',
-    'License': 'BSD-3-Clause',
-    'Shipped': 'yes',
-    'License File': ['LICENSE'],
-    'dir': '',  # Relative to _REPOSITORY_ROOT
-}
 
 # Paths from the root of the tree to directories to skip.
 PRUNE_PATHS = set([
@@ -130,9 +127,6 @@ PRUNE_PATHS = set([
 
     # Overrides some WebRTC files, same license. Skip this one.
     os.path.join('third_party', 'webrtc_overrides'),
-
-    # Integration tests entry
-    os.path.join('third_party', 'pruned'),
 ])
 
 # Directories we don't scan through.
@@ -348,14 +342,6 @@ SPECIAL_CASES = {
         "License": "Apache 2.0",
         "License File": ["//third_party/dawn/third_party/khronos/LICENSE"],
     },
-    # This entry is for the integration tests.
-    os.path.join('third_party', 'sample3'): {
-        "Name": "Sample 3",
-        "URL": "https://sample3",
-        "Shipped": "yes",
-        "License": "Apache 2.0",
-        "License File": ["//third_party/sample3/the_license"],
-    },
 }
 
 # These buildtools/third_party directories only contain
@@ -463,14 +449,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
 ])
 
 
-_read_paths = set()
-
-
-def _read_file(path):
-  _read_paths.add(path)
-  return pathlib.Path(path).read_text(encoding='utf-8', errors='replace')
-
-
 class InvalidMetadata(Exception):
   """This exception is raised when metadata is invalid."""
   pass
@@ -483,8 +461,9 @@ class LicenseError(Exception):
   pass
 
 
-def _ResolvePath(path, filename, root):
-  """Convert a path in README.chromium to be relative to |root|."""
+def AbsolutePath(path, filename, root):
+  """Convert a path in README.chromium to be absolute based on the source
+    root."""
   if filename.startswith('/'):
     # Absolute-looking paths are relative to the source root
     # (which is the directory we're run from).
@@ -492,7 +471,7 @@ def _ResolvePath(path, filename, root):
   else:
     absolute_path = os.path.join(root, path, os.path.normpath(filename))
   if os.path.exists(absolute_path):
-    return os.path.relpath(absolute_path, root)
+    return absolute_path
   return None
 
 
@@ -516,40 +495,41 @@ def ParseMetadataFile(filepath: str,
 
   dependencies = []
   metadata = {}
-  for line in _read_file(filepath).splitlines():
-    line = line.strip()
-    # Skip empty lines.
-    if not line:
-      continue
+  with codecs.open(filepath, encoding="utf-8") as readme:
+    for line in readme:
+      line = line.strip()
+      # Skip empty lines.
+      if not line:
+        continue
 
-    # Check if a new dependency will be described.
-    if re.match(PATTERN_DEPENDENCY_DIVIDER, line):
-      # Save the metadata for the previous dependency.
-      if metadata:
-        dependencies.append(metadata)
-      metadata = {}
-      continue
+      # Check if a new dependency will be described.
+      if re.match(PATTERN_DEPENDENCY_DIVIDER, line):
+        # Save the metadata for the previous dependency.
+        if metadata:
+          dependencies.append(metadata)
+        metadata = {}
+        continue
 
-    # Otherwise, try to parse the field name and field value.
-    parts = line.split(": ", 1)
-    if len(parts) == 2:
-      raw_field, value = parts
-      field = field_lookup.get(raw_field.lower())
-      if field:
-        if field in metadata:
-          # Duplicate field for this dependency.
-          raise InvalidMetadata(f"duplicate '{field}' in {filepath}")
-        if field in MULTIVALUE_FIELDS:
-          metadata[field] = [
-              entry.strip() for entry in value.split(VALUE_DELIMITER)
-          ]
-        else:
-          metadata[field] = value
+      # Otherwise, try to parse the field name and field value.
+      parts = line.split(": ", 1)
+      if len(parts) == 2:
+        raw_field, value = parts
+        field = field_lookup.get(raw_field.lower())
+        if field:
+          if field in metadata:
+            # Duplicate field for this dependency.
+            raise InvalidMetadata(f"duplicate '{field}' in {filepath}")
+          if field in MULTIVALUE_FIELDS:
+            metadata[field] = [
+                entry.strip() for entry in value.split(VALUE_DELIMITER)
+            ]
+          else:
+            metadata[field] = value
 
-  # The end of the file has been reached. Save the metadata for the
-  # last dependency, if available.
-  if metadata:
-    dependencies.append(metadata)
+    # The end of the file has been reached. Save the metadata for the
+    # last dependency, if available.
+    if metadata:
+      dependencies.append(metadata)
 
   return dependencies
 
@@ -736,14 +716,14 @@ def process_license_files(
     if file_path == NOT_SHIPPED:
       continue
 
-    license_path = _ResolvePath(path, file_path, root)
+    license_path = AbsolutePath(path, file_path, root)
     # Check that the license file exists.
     if license_path is not None:
       license_paths.append(license_path)
 
   # If there are no license files at all, check for the COPYING license file.
   if not license_paths:
-    license_path = _ResolvePath(path, "COPYING", root)
+    license_path = AbsolutePath(path, "COPYING", root)
     # Check that the license file exists.
     if license_path is not None:
       license_paths.append(license_path)
@@ -779,7 +759,8 @@ def _MaybeAddThirdPartyPath(root, dirpath, third_party_dirs):
   additional_paths_file = os.path.join(root, dirpath, ADDITIONAL_PATHS_FILENAME)
   if not os.path.exists(additional_paths_file):
     return
-  additional_paths = json.loads(_read_file(additional_paths_file))
+  with codecs.open(additional_paths_file, encoding='utf-8') as paths_file:
+    additional_paths = json.load(paths_file)
   for p in additional_paths:
     subpath = os.path.normpath(os.path.join(dirpath, p))
     _MaybeAddThirdPartyPath(root, subpath, third_party_dirs)
@@ -836,10 +817,6 @@ def FindThirdPartyDirs(root,
 # Many builders do not contain 'gn' in their PATH, so use the GN binary from
 # //buildtools.
 def _GnBinary():
-  gn_path = os.environ.get('LICENSES_GN_PATH')
-  if gn_path:
-    return [sys.executable, gn_path]
-
   exe = 'gn'
   if sys.platform.startswith('linux'):
     subdir = 'linux64'
@@ -850,7 +827,7 @@ def _GnBinary():
   else:
     raise RuntimeError("Unsupported platform '%s'." % sys.platform)
 
-  return [os.path.join(_REPOSITORY_ROOT, 'buildtools', subdir, exe)]
+  return os.path.join(_REPOSITORY_ROOT, 'buildtools', subdir, exe)
 
 
 def LogParseDirErrors(errors):
@@ -862,7 +839,6 @@ def LogParseDirErrors(errors):
 
 
 def GetThirdPartyDepsFromGNDepsOutput(
-    scan_root: str,
     gn_deps: str,
     exclude_dirs: Optional[List[str]] = None,
     extra_allowed_dirs: Optional[List[str]] = None):
@@ -875,7 +851,7 @@ def GetThirdPartyDepsFromGNDepsOutput(
     Rust dependencies are a special case, with a deeper structure:
         third_party/rust/foo/v1/crate/BUILD.gn -> third_party/rust/foo/v1/
 
-    Returns relative paths from scan_root.
+    It returns relative paths from _REPOSITORY_ROOT, not absolute paths.
     """
   allowed_paths_list = ['third_party']
   if extra_allowed_dirs:
@@ -901,7 +877,7 @@ def GetThirdPartyDepsFromGNDepsOutput(
 
   third_party_deps = set()
   for absolute_build_dep in gn_deps.split():
-    relative_build_dep = os.path.relpath(absolute_build_dep, scan_root)
+    relative_build_dep = os.path.relpath(absolute_build_dep, _REPOSITORY_ROOT)
     m = path_regex.search(relative_build_dep)
     if not m:
       continue
@@ -917,7 +893,6 @@ def GetThirdPartyDepsFromGNDepsOutput(
 
 def FindThirdPartyDeps(gn_out_dir: str,
                        gn_target: str,
-                       scan_root: str,
                        exclude_dirs: Optional[List[str]] = None,
                        extra_third_party_dirs: Optional[List[str]] = None,
                        extra_allowed_dirs: Optional[List[str]] = None):
@@ -936,96 +911,51 @@ def FindThirdPartyDeps(gn_out_dir: str,
     # "gn gen" is slow and requires too much memory.
     with open(os.path.join(tmp_dir, "build.ninja"), "w") as w:
       pass
-    gn_deps = subprocess.check_output(_GnBinary() + [
-        "desc",
-        "--root=%s" % scan_root, tmp_dir, gn_target, "deps", "--as=buildfile",
-        "--all"
+    gn_deps = subprocess.check_output([
+        _GnBinary(), "desc",
+        "--root=%s" % _REPOSITORY_ROOT, tmp_dir, gn_target, "deps",
+        "--as=buildfile", "--all"
     ],
-                                      encoding='utf-8',
                                       stderr=sys.stderr)
+    if isinstance(gn_deps, bytes):
+      gn_deps = gn_deps.decode("utf-8")
 
-  third_party_deps = GetThirdPartyDepsFromGNDepsOutput(scan_root, gn_deps,
-                                                       exclude_dirs,
+  third_party_deps = GetThirdPartyDepsFromGNDepsOutput(gn_deps, exclude_dirs,
                                                        extra_allowed_dirs)
   if extra_third_party_dirs:
     third_party_deps.update(extra_third_party_dirs)
   return sorted(third_party_deps)
 
 
-def _DiscoverMetadatas(args):
-  # Convert the path separators to the OS specific ones
-  extra_third_party_dirs = args.extra_third_party_dirs
-  if extra_third_party_dirs is not None:
-    extra_third_party_dirs = [
-        os.path.normpath(path) for path in extra_third_party_dirs
-    ]
+def ScanThirdPartyDirs(root=None):
+  """Scan a list of directories and report on any problems we find."""
+  if root is None:
+    root = os.getcwd()
+  third_party_dirs = FindThirdPartyDirs(root)
 
-  if args.gn_target is not None:
-    third_party_dirs = FindThirdPartyDeps(args.gn_out_dir, args.gn_target,
-                                          args.scan_root, args.exclude_dirs,
-                                          extra_third_party_dirs,
-                                          args.extra_allowed_dirs)
-
-    # Sanity-check to raise a build error if invalid gn_... settings are
-    # somehow passed to this script.
-    if not third_party_dirs:
-      raise RuntimeError("No deps found.")
-
-  else:
-    third_party_dirs = FindThirdPartyDirs(args.scan_root, args.exclude_dirs,
-                                          extra_third_party_dirs)
-
-  metadatas = []
-  had_errors = False
-  for d in third_party_dirs:
+  errors = []
+  for path in sorted(third_party_dirs):
     try:
-      dir_metadatas, errors = ParseDir(d,
-                                       args.scan_root,
-                                       require_license_file=True,
-                                       enable_warnings=args.enable_warnings)
-
-      for m in dir_metadatas:
-        if args.shipped_only and m['Shipped'] == NO:
-          continue
-        m['dir'] = d
-        metadatas.append(m)
-    except LicenseError as lic_exp:
-      had_errors = True
-      # TODO(phajdan.jr): Convert to fatal error (https://crbug.com/39240).
-      if args.enable_warnings:
-        print(f"Error: {lic_exp}")
+      _, errors = ParseDir(path, root, enable_warnings=True)
+    except LicenseError as e:
+      errors.append(f"{path}: {e}")
       continue
 
-    if args.enable_warnings and errors:
-      had_errors = True
-      LogParseDirErrors(errors)
+    LogParseDirErrors(errors)
 
-  metadatas.sort(key=lambda m: (m['Name'].lower(), m['dir']))
-  metadatas = [_CHROMIUM_LICENSE_METADATA] + metadatas
-  return metadatas, had_errors
+  return len(errors) == 0
 
 
-def _WriteIfChanged(path, data):
-  output_path = pathlib.Path(path)
-  changed = True
-  try:
-    old_output = output_path.read_text('utf-8')
-    changed = old_output != data
-  except:
-    pass
-  if changed:
-    output_path.write_text(data, 'utf-8')
-
-
-def _ListLicenses(args, metadatas):
-  for m in metadatas:
-    if args.verbose:
-      print(m)
-    else:
-      print(f'//{m["dir"]}:', ', '.join(m['License File']))
-
-
-def GenerateCredits(args, metadatas):
+def GenerateCredits(file_template_file,
+                    entry_template_file,
+                    reciprocal_template_file,
+                    output_file,
+                    gn_out_dir,
+                    gn_target,
+                    exclude_dirs,
+                    extra_third_party_dirs=None,
+                    depfile=None,
+                    enable_warnings=False):
   """Generate about:credits."""
   def EvaluateTemplate(template, env, escape=True):
     """Expand a template with variables like {{foo}} using a
@@ -1037,9 +967,11 @@ def GenerateCredits(args, metadatas):
     return template
 
   def MetadataToTemplateEntry(metadata, entry_template):
-    license_paths = metadata['License File']
-    license_content = '\n\n'.join(
-        _read_file(os.path.join(args.scan_root, f)) for f in license_paths)
+    licenses = []
+    for filepath in metadata['License File']:
+      licenses.append(
+          codecs.open(filepath, errors="replace", encoding='utf-8').read())
+    license_content = '\n\n'.join(licenses)
 
     env = {
         'name': metadata['Name'],
@@ -1053,23 +985,72 @@ def GenerateCredits(args, metadatas):
         'license_file': metadata['License File'],
     }
 
-  entry_template = pathlib.Path(args.entry_template).read_text(encoding='utf-8')
-  reciprocal_template = pathlib.Path(
-      args.reciprocal_template).read_text('utf-8')
-  file_template = pathlib.Path(args.file_template).read_text('utf-8')
+  if gn_target:
+    third_party_dirs = FindThirdPartyDeps(gn_out_dir, gn_target, exclude_dirs,
+                                          extra_third_party_dirs)
 
+    # Sanity-check to raise a build error if invalid gn_... settings are
+    # somehow passed to this script.
+    if not third_party_dirs:
+      raise RuntimeError("No deps found.")
+  else:
+    third_party_dirs = FindThirdPartyDirs(_REPOSITORY_ROOT, exclude_dirs,
+                                          extra_third_party_dirs)
+
+  if not file_template_file:
+    file_template_file = os.path.join(_REPOSITORY_ROOT, 'components', 'webui',
+                                      'about', 'resources',
+                                      'about_credits.tmpl')
+  if not entry_template_file:
+    entry_template_file = os.path.join(_REPOSITORY_ROOT, 'components', 'webui',
+                                       'about', 'resources',
+                                       'about_credits_entry.tmpl')
+
+  # Used to add a link at the top of credits for Chromium code to
+  # satisfy the requirements for reciprocal license types.
+  if not reciprocal_template_file:
+    reciprocal_template_file = os.path.join(_REPOSITORY_ROOT, 'components',
+                                            'webui', 'about', 'resources',
+                                            'about_credits_reciprocal.tmpl')
+
+  entry_template = codecs.open(entry_template_file, encoding='utf-8').read()
   entries = []
+  # Start from Chromium's LICENSE file
+  chromium_license_metadata = {
+      'Name': 'The Chromium Project',
+      'URL': 'https://www.chromium.org',
+      'Shipped': 'yes',
+      'License File': [os.path.join(_REPOSITORY_ROOT, 'LICENSE')],
+  }
+  entries.append(
+      MetadataToTemplateEntry(chromium_license_metadata, entry_template))
+
   entries_by_name = {}
-  for metadata in metadatas:
-    new_entry = MetadataToTemplateEntry(metadata, entry_template)
-    # Skip entries that we've already seen (it exists in multiple
-    # directories).
-    prev_entry = entries_by_name.setdefault(new_entry['name'].lower(), new_entry)
-    if prev_entry is not new_entry and (prev_entry['content'].lower()
-                                        == new_entry['content'].lower()):
+  for path in third_party_dirs:
+    try:
+      # Directory metadata can be for multiple dependencies.
+      directory_metadata, _ = ParseDir(path,
+                                       _REPOSITORY_ROOT,
+                                       enable_warnings=enable_warnings)
+      if not directory_metadata:
+        continue
+    except LicenseError:
+      # TODO(phajdan.jr): Convert to fatal error (https://crbug.com/39240).
       continue
 
-    entries.append(new_entry)
+    for dep_metadata in directory_metadata:
+      if dep_metadata['Shipped'] == NO:
+        continue
+
+      new_entry = MetadataToTemplateEntry(dep_metadata, entry_template)
+      # Skip entries that we've already seen (it exists in multiple
+      # directories).
+      prev_entry = entries_by_name.setdefault(new_entry['name'], new_entry)
+      if prev_entry is not new_entry and (prev_entry['content']
+                                          == new_entry['content']):
+        continue
+
+      entries.append(new_entry)
 
   entries.sort(key=lambda entry: (entry['name'].lower(), entry['content']))
   for entry_id, entry in enumerate(entries):
@@ -1077,12 +1058,15 @@ def GenerateCredits(args, metadatas):
 
   entries_contents = '\n'.join([entry['content'] for entry in entries])
 
+  reciprocal_template = codecs.open(reciprocal_template_file,
+                                    encoding='utf-8').read()
   reciprocal_contents = EvaluateTemplate(reciprocal_template, {
       'opensource_project': 'Chromium',
       'opensource_link': 'https://source.chromium.org/chromium'
   },
                                          escape=False)
 
+  file_template = codecs.open(file_template_file, encoding='utf-8').read()
   template_contents = "<!-- Generated by licenses.py; do not edit. -->"
   template_contents += EvaluateTemplate(file_template, {
       'entries': entries_contents,
@@ -1090,54 +1074,175 @@ def GenerateCredits(args, metadatas):
   },
                                         escape=False)
 
-  _WriteIfChanged(args.output_file, template_contents)
+  if output_file:
+    changed = True
+    try:
+      old_output = codecs.open(output_file, 'r', encoding='utf-8').read()
+      if old_output == template_contents:
+        changed = False
+    except:
+      pass
+    if changed:
+      with codecs.open(output_file, 'w', encoding='utf-8') as output:
+        output.write(template_contents)
+  else:
+    print(template_contents)
+
+  if depfile:
+    GenerateDepfile(entries, depfile, output_file)
+
+  return True
 
 
-def GenerateDepfile(depfile, output_file):
-  """Writes a depfile listing all files read via _read_file()."""
-  paths = sorted(os.path.relpath(p) for p in _read_paths)
+def GenerateDepfile(records: Iterable[Dict[str, Any]], depfile: str,
+                    output_file: str) -> None:
+  """Writes a depfile listing all the LICENSE files we used, plus build.ninja.
 
+  Args:
+    records: An iterable collection containing metadata records or template
+      entries. These are dicts which contain a key, named either 'license_file'
+      or 'License File', which is mapped to a list of str representing paths to
+      license files.
+    depfile: The path to store the generated depfile at.
+    output_file: The path to the primary output of this script invocation.
+      The generated depfile refers to this path, but this function does not
+      touch this file.
+  """
+  assert depfile
+  assert output_file
+
+  license_file_list = ListLicenseFiles(records)
   # Add in build.ninja so that the target will be considered dirty whenever
   # gn gen is run. Otherwise, it will fail to notice new files being added.
   # This is still not perfect, as it will fail if no build files are changed,
   # but a new README.chromium / LICENSE is added. This shouldn't happen in
   # practice however.
-  paths.append('build.ninja')
+  license_file_list.append('build.ninja')
 
-  action_helpers.write_depfile(depfile, os.path.relpath(output_file), paths)
+  action_helpers.write_depfile(depfile, output_file, license_file_list)
 
 
-def GenerateLicenseFile(args, metadatas):
+def ListLicenseFiles(records: Iterable[Dict[str, Any]]) -> List[str]:
+  """Collects license file paths from a set of metadata or template records.
+
+  Arg:
+    records: An iterable collection containing metadata records or template
+      entries. These are dicts which contain a key, named either 'license_file'
+      or 'License File', which is mapped to a list of str representing paths to
+      license files.
+
+  Returns:
+    Relative paths to all unique license files in the provided records, sorted.
+"""
+
+  license_file_list = []
+  for record in records:
+    # Metadata records and template entries store the same license file data
+    # under slightly different keys. Allow either.
+    if 'license_file' in record:
+      record_licenses = record['license_file']
+    else:
+      record_licenses = record['License File']
+    license_file_list.extend(record_licenses)
+
+  license_file_list = (os.path.relpath(p) for p in license_file_list)
+  license_file_list = sorted(set(license_file_list))
+
+  return license_file_list
+
+
+def GenerateLicenseFile(args: argparse.Namespace, root_dir=_REPOSITORY_ROOT):
   """Top level function for the license file generation.
 
   Either saves the text to a file or prints it to stdout depending on if
     args.output_file is set.
+
+  Args:
+    args: parsed arguments passed from the cli
+    root_dir: The root directory to start the third party search
   """
+  # Convert the path separators to the OS specific ones
+  extra_third_party_dirs = args.extra_third_party_dirs
+  if extra_third_party_dirs is not None:
+    extra_third_party_dirs = [
+        os.path.normpath(path) for path in extra_third_party_dirs
+    ]
+
+  if args.gn_target is not None:
+    third_party_dirs = FindThirdPartyDeps(args.gn_out_dir, args.gn_target,
+                                          args.exclude_dirs,
+                                          extra_third_party_dirs,
+                                          args.extra_allowed_dirs)
+
+    # Sanity-check to raise a build error if invalid gn_... settings are
+    # somehow passed to this script.
+    if not third_party_dirs:
+      raise RuntimeError("No deps found.")
+
+  else:
+    third_party_dirs = FindThirdPartyDirs(root_dir, args.exclude_dirs,
+                                          extra_third_party_dirs)
+
+  metadatas = {}
+  for d in third_party_dirs:
+    try:
+      directory_metadata, errors = ParseDir(
+          d,
+          root_dir,
+          require_license_file=True,
+          enable_warnings=args.enable_warnings)
+      if directory_metadata:
+        metadatas[d] = directory_metadata
+    except LicenseError as lic_exp:
+      # TODO(phajdan.jr): Convert to fatal error (https://crbug.com/39240).
+      if args.enable_warnings:
+        print(f"Error: {lic_exp}")
+      continue
+
+    if args.enable_warnings:
+      LogParseDirErrors(errors)
+
   if args.format == 'spdx':
     license_txt = GenerateLicenseFileSpdx(metadatas, args.spdx_link,
-                                          args.spdx_root, args.scan_root,
-                                          args.spdx_doc_name,
+                                          args.spdx_root, args.spdx_doc_name,
                                           args.spdx_doc_namespace)
   elif args.format == 'txt':
-    license_txt = GenerateLicenseFilePlainText(metadatas, args.scan_root)
+    license_txt = GenerateLicenseFilePlainText(metadatas)
   elif args.format == 'csv':
     license_txt = GenerateLicenseFileCsv(metadatas)
   elif args.format == 'notice':
-    license_txt = GenerateNoticeFilePlainText(metadatas, args.scan_root)
+    license_txt = GenerateNoticeFilePlainText(metadatas)
   else:
     raise ValueError(f'Unknown license format: {args.format}')
 
-  pathlib.Path(args.output_file).write_text(license_txt, 'utf-8')
+  if args.depfile:
+    GenerateDepfile(itertools.chain.from_iterable(metadatas.values()),
+                    args.depfile, args.output_file)
+
+  if args.output_file:
+    with open(args.output_file, 'w', encoding='utf-8') as f:
+      f.write(license_txt)
+  else:
+    print(license_txt)
 
 
-def GenerateLicenseFileCsv(metadatas: List[Dict[str, Any]], ) -> str:
+def GenerateLicenseFileCsv(
+    metadata: Dict[str, List[Dict[str, Any]]],
+    repo_root: str = _REPOSITORY_ROOT,
+) -> str:
   """Generates a CSV formatted file which contains license data to be used as
     part of the submission to the Open Source Licensing Review process.
   """
+  third_party_data = []
+
+  # Collect all the metadata we want to write out and sort it so that the
+  # resulting CSV is ordered by dependency name
+  for data in metadata.values():
+    third_party_data.extend(data)
+  third_party_data.sort(key=lambda item: item['Name'])
+
   csv_content = io.StringIO()
-  csv_writer = csv.writer(csv_content,
-                          quoting=csv.QUOTE_NONNUMERIC,
-                          lineterminator='\n')
+  csv_writer = csv.writer(csv_content, quoting=csv.QUOTE_NONNUMERIC)
 
   # These values are applied statically to all dependencies which are included
   # in the exported CSV.
@@ -1157,23 +1262,36 @@ def GenerateLicenseFileCsv(metadatas: List[Dict[str, Any]], ) -> str:
       "Authorization date"
   ])
 
-  for m in metadatas:
-    data_row = [m["Name"]]
+  # Include Chromium at the top of the file as it's the main artifact.
+  csv_writer.writerow([
+      "Chromium",
+      "https://source.chromium.org/chromium/chromium/src/+/main:LICENSE",
+      "BSD 3-Clause"
+  ] + static_data)
+
+  for dep_metadata in third_party_data:
+    # Only third party libraries which are shipped as part of a final
+    # product are in scope for license review.
+    if dep_metadata['Shipped'] == NO:
+      continue
+
+    data_row = [dep_metadata['Name'] or "UNKNOWN"]
 
     urls = []
-    for f in m["License File"]:
+    for lic in dep_metadata['License File']:
       # The review process requires that a link is provided to each license
       # which is included. We can achieve this by combining a static
       # Chromium googlesource URL with the relative path to the license
       # file from the top level Chromium src directory.
-      lic_url = f"https://source.chromium.org/chromium/chromium/src/+/main:{f}"
+      lic_url = ("https://source.chromium.org/chromium/chromium/src/+/main:" +
+                 os.path.relpath(lic, repo_root))
 
       # Since these are URLs and not paths, replace any Windows path `\`
       # separators with a `/`
       urls.append(lic_url.replace("\\", "/"))
 
     data_row.append(", ".join(urls) or "UNKNOWN")
-    data_row.append(m["License"] or "UNKNOWN")
+    data_row.append(dep_metadata["License"] or "UNKNOWN")
 
     # Join the default data which applies to each row
     csv_writer.writerow(data_row + static_data)
@@ -1181,9 +1299,11 @@ def GenerateLicenseFileCsv(metadatas: List[Dict[str, Any]], ) -> str:
   return csv_content.getvalue()
 
 
-def GenerateNoticeFilePlainText(metadatas: List[Dict[str, Any]],
-                                scan_root: str,
-                                read_file=_read_file) -> str:
+def GenerateNoticeFilePlainText(
+    metadata: Dict[str, List[Dict[str, Any]]],
+    repo_root: str = _REPOSITORY_ROOT,
+    read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')
+) -> str:
   """Generate a plain-text THIRD_PARTY_NOTICE file which can be used when you
     ship a part of Chromium code (specified by gn_target) as a stand-alone
     library (e.g., //ios/web_view).
@@ -1197,45 +1317,60 @@ def GenerateNoticeFilePlainText(metadatas: List[Dict[str, Any]],
   # Start with Chromium's THIRD_PARTY_NOTICE file.
   content = []
   # Add necessary third_party.
-  for m in metadatas:
-    for license_file in m['License File']:
-      content.append('-' * 20)
-      content.append('License notice for %s' % m["Name"])
-      content.append('-' * 20)
-      content.append(read_file(os.path.join(scan_root, license_file)))
+  for directory in sorted(metadata):
+    dir_metadata = metadata[directory]
+    for dep_metadata in dir_metadata:
+      shipped = dep_metadata['Shipped']
+      license_files = dep_metadata['License File']
+      if shipped == YES and license_files:
+        for license_file in license_files:
+          content.append('-' * 20)
+          content.append('License notice for %s' % dep_metadata["Name"])
+          content.append('-' * 20)
+          content.append(read_file(os.path.join(repo_root, license_file)))
 
   return '\n'.join(content)
 
 
-def GenerateLicenseFilePlainText(metadatas: List[Dict[str, Any]],
-                                 scan_root: str,
-                                 read_file=_read_file) -> str:
+def GenerateLicenseFilePlainText(
+    metadata: Dict[str, List[Dict[str, Any]]],
+    repo_root: str = _REPOSITORY_ROOT,
+    read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')
+) -> str:
   """Generate a plain-text LICENSE file which can be used when you ship a part
     of Chromium code (specified by gn_target) as a stand-alone library
     (e.g., //ios/web_view).
 
     The LICENSE file contains licenses of both Chromium and third-party
     libraries which gn_target depends on. """
-  content = []
-  for m in metadatas:
-    license_files = m['License File']
-    if license_files:
-      content.append('-' * 20)
-      content.append(m['Name'])
-      content.append('-' * 20)
-      for license_file in license_files:
-        content.append(read_file(os.path.join(scan_root, license_file)))
+  # Start with Chromium's LICENSE file.
+  content = [read_file(os.path.join(repo_root, 'LICENSE'))]
+
+  # Add necessary third_party.
+  for directory in sorted(metadata):
+    dir_metadata = metadata[directory]
+    for dep_metadata in dir_metadata:
+      shipped = dep_metadata['Shipped']
+      license_files = dep_metadata['License File']
+      if shipped == YES and license_files:
+        content.append('-' * 20)
+        content.append(dep_metadata["Name"])
+        content.append('-' * 20)
+        for license_file in license_files:
+          content.append(read_file(os.path.join(repo_root, license_file)))
 
   return '\n'.join(content)
 
 
-def GenerateLicenseFileSpdx(metadatas: List[Dict[str, Any]],
-                            spdx_link_prefix: str,
-                            spdx_root: str,
-                            scan_root: str,
-                            doc_name: Optional[str],
-                            doc_namespace: Optional[str],
-                            read_file=_read_file) -> str:
+def GenerateLicenseFileSpdx(
+    metadata: Dict[str, List[Dict[str, Any]]],
+    spdx_link_prefix: str,
+    spdx_root: str,
+    doc_name: Optional[str],
+    doc_namespace: Optional[str],
+    repo_root: str = _REPOSITORY_ROOT,
+    read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')
+) -> str:
   """Generates a LICENSE file in SPDX format.
 
   The SPDX output contains the following elements:
@@ -1248,114 +1383,82 @@ def GenerateLicenseFileSpdx(metadatas: List[Dict[str, Any]],
   The output is based on the following specification:
   https://spdx.github.io/spdx-spec/v2-draft/
   """
-  assert metadatas[0] is _CHROMIUM_LICENSE_METADATA
-  root_license = os.path.join(scan_root, metadatas[0]['License File'][0])
-  spdx_writer = SpdxWriter(
-      spdx_root,
-      'Chromium',  # Rather than "The Chromium Project"
-      root_license,
-      spdx_link_prefix,
-      doc_name=doc_name,
-      doc_namespace=doc_namespace,
-      read_file=read_file)
+  root_license = os.path.join(repo_root, 'LICENSE')
+  spdx_writer = SpdxWriter(spdx_root,
+                           'Chromium',
+                           root_license,
+                           spdx_link_prefix,
+                           doc_name=doc_name,
+                           doc_namespace=doc_namespace,
+                           read_file=read_file)
 
   # Add all third party libraries
-  for m in metadatas[1:]:
-    for license_file in m['License File']:
-      license_path = os.path.join(scan_root, license_file)
-      spdx_writer.add_package(m['Name'], license_path)
+  for directory in sorted(metadata):
+    dir_metadata = metadata[directory]
+    for dep_metadata in dir_metadata:
+      shipped = dep_metadata['Shipped']
+      license_files = dep_metadata['License File']
+      if shipped == YES and license_files:
+        for license_file in license_files:
+          license_path = os.path.join(repo_root, license_file)
+          spdx_writer.add_package(dep_metadata['Name'], license_path)
 
   return spdx_writer.write()
 
 
-def _AddCommonArgs(parser):
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--file-template',
+                      help='Template HTML to use for the license page.')
+  parser.add_argument('--entry-template',
+                      help='Template HTML to use for each license.')
+  parser.add_argument('--reciprocal-template',
+                      help=('Template HTML to use for adding a link to an open '
+                            'source code repository to satisfy reciprocal '
+                            'license requirements. eg Chromium.'))
   parser.add_argument(
       '--extra-third-party-dirs',
       help='Gn list of additional third_party dirs to look through.')
   parser.add_argument(
       '--extra-allowed-dirs',
       help=('Gn list of extra allowed paths to look for '
-            '(deps that will be picked up automatically) besides third_party'))
+            '(deps that will be picked up automatically) besides third_party'),
+  )
   parser.add_argument(
       '--exclude-dirs',
-      help='Gn list of directories that should be excluded from the output.')
-  parser.add_argument('--scan-root',
-                      default=_REPOSITORY_ROOT,
-                      help='Directory to scan for licenses')
+      help='Gn list of directories that should be excluded from the output.',
+  )
   parser.add_argument('--target-os', help='OS that this build is targeting.')
   parser.add_argument('--gn-out-dir',
                       help='GN output directory for scanning dependencies.')
   parser.add_argument('--gn-target', help='GN target to scan for dependencies.')
+  parser.add_argument('--format',
+                      default='txt',
+                      choices=['txt', 'spdx', 'csv', 'notice'],
+                      help='What format to output in')
+  parser.add_argument('--spdx-root',
+                      default=_REPOSITORY_ROOT,
+                      help=('Use a different root for license refs than ' +
+                            _REPOSITORY_ROOT))
+  parser.add_argument(
+      '--spdx-link',
+      default='https://source.chromium.org/chromium/chromium/src/+/main:',
+      help='Link prefix for license cross ref')
+  parser.add_argument('--spdx-doc-name',
+                      help='Specify a document name for the SPDX doc')
+  parser.add_argument(
+      '--spdx-doc-namespace',
+      default='https://chromium.googlesource.com/chromium/src/tools/',
+      help='Specify the document namespace for the SPDX doc')
   parser.add_argument(
       '--enable-warnings',
       action='store_true',
       help='Enables warning logs when processing directory metadata for '
       'credits or license file generation.')
+  parser.add_argument('command',
+                      choices=['help', 'scan', 'credits', 'license_file'])
+  parser.add_argument('output_file', nargs='?')
   action_helpers.add_depfile_arg(parser)
-
-
-def main():
-  parser = argparse.ArgumentParser()
-  # Allow common args to appear before or after the command.
-  _AddCommonArgs(parser)
-  sub_parsers = parser.add_subparsers(dest='command', required=True)
-  sub_parser = sub_parsers.add_parser('scan',
-                                      help='Scan for problems with metadata.')
-  _AddCommonArgs(sub_parser)
-  sub_parser.set_defaults(enable_warnings=True)
-  sub_parser.set_defaults(shipped_only=False)
-
-  sub_parser = sub_parsers.add_parser('list', help='List all license paths')
-  _AddCommonArgs(sub_parser)
-  sub_parser.add_argument('--shipped-only',
-                          action='store_true',
-                          help='List only shipped licenses')
-  sub_parser.add_argument('--verbose',
-                          action='store_true',
-                          help='Print all metadata')
-
-  sub_parser = sub_parsers.add_parser('credits',
-                                      help='Create the about://credits HTML.')
-  _AddCommonArgs(sub_parser)
-  sub_parser.set_defaults(shipped_only=True)
-  sub_parser.add_argument('--file-template',
-                          default=_DEFAULT_FILE_TEMPLATE_FILE,
-                          help='Template HTML to use for the license page.')
-  sub_parser.add_argument('--entry-template',
-                          default=_DEFAULT_ENTRY_TEMPLATE_FILE,
-                          help='Template HTML to use for each license.')
-  sub_parser.add_argument(
-      '--reciprocal-template',
-      default=_DEFAULT_RECIPROCAL_TEMPLATE_FILE,
-      help=('Template HTML to use for adding a link to an open '
-            'source code repository to satisfy reciprocal '
-            'license requirements. eg Chromium.'))
-  sub_parser.add_argument('output_file')
-
-  sub_parser = sub_parsers.add_parser(
-      'license_file', help='Generate a LICENSE file in the given format.')
-  _AddCommonArgs(sub_parser)
-  sub_parser.set_defaults(shipped_only=True)
-  sub_parser.add_argument('--format',
-                          default='txt',
-                          choices=['txt', 'spdx', 'csv', 'notice'],
-                          help='What format to output in')
-  sub_parser.add_argument('--spdx-root',
-                          default=_REPOSITORY_ROOT,
-                          help=('Use a different root for license refs than ' +
-                                _REPOSITORY_ROOT))
-  sub_parser.add_argument(
-      '--spdx-link',
-      default='https://source.chromium.org/chromium/chromium/src/+/main:',
-      help='Link prefix for license cross ref')
-  sub_parser.add_argument('--spdx-doc-name',
-                          help='Specify a document name for the SPDX doc')
-  sub_parser.add_argument(
-      '--spdx-doc-namespace',
-      default='https://chromium.googlesource.com/chromium/src/tools/',
-      help='Specify the document namespace for the SPDX doc')
-  sub_parser.add_argument('output_file')
-
   args = parser.parse_args()
   args.extra_third_party_dirs = action_helpers.parse_gn_list(
       args.extra_third_party_dirs)
@@ -1365,26 +1468,24 @@ def main():
   if (not args.exclude_dirs) and args.target_os == 'ios':
     args.exclude_dirs = list(KNOWN_NON_IOS_LIBRARIES)
 
-  for p in (args.extra_third_party_dirs + args.extra_allowed_dirs +
-            args.exclude_dirs):
-    if os.path.isabs(p):
-      parser.error('Expected paths to be relative to scan root. Found: ' + p)
-
-  metadatas, had_errors = _DiscoverMetadatas(args)
-
   if args.command == 'scan':
-    return 1 if had_errors else 0
-  elif args.command == 'list':
-    _ListLicenses(args, metadatas)
+    if not ScanThirdPartyDirs():
+      return 1
   elif args.command == 'credits':
-    GenerateCredits(args, metadatas)
+    if not GenerateCredits(
+        args.file_template, args.entry_template, args.reciprocal_template,
+        args.output_file, args.gn_out_dir, args.gn_target, args.exclude_dirs,
+        args.extra_third_party_dirs, args.depfile, args.enable_warnings):
+      return 1
   elif args.command == 'license_file':
-    GenerateLicenseFile(args, metadatas)
-
-  if args.depfile:
-    GenerateDepfile(args.depfile, args.output_file)
-
-  return 0
+    try:
+      GenerateLicenseFile(args)
+    except LicenseError as e:
+      print("Failed to parse README.chromium: {}".format(e))
+      return 1
+  else:
+    print(__doc__)
+    return 1
 
 
 if __name__ == '__main__':

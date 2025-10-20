@@ -139,7 +139,6 @@ if (generate_about_credits) {
       "../webui/about/resources/about_credits.tmpl",
       "../webui/about/resources/about_credits_entry.tmpl",
       "../webui/about/resources/about_credits_reciprocal.tmpl",
-      "//tools/licenses/spdx_writer.py",
     ]
 
     outputs = [ about_credits_file ]
