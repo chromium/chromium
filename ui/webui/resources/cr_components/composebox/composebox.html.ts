@@ -28,6 +28,7 @@ export function getHtml(this: ComposeboxElement) {
             type="search" spellcheck="false"
             placeholder="${this.inputPlaceholder_}"
             part="input"
+            .value="${this.input_}"
             @input=${this.handleInput_}
             @scroll="${this.handleScroll_}"
             @focusin="${this.handleInputFocusIn_}"></textarea>

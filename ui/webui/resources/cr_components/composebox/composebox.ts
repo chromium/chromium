@@ -204,9 +204,9 @@ export class ComposeboxElement extends I18nMixinLit
                    !file.type.includes('image'))) {
                 // Query autocomplete to get contextual suggestions for files.
                 this.clearAutocompleteMatches_();
-                this.lastQueriedInput_ = this.$.input.value;
+                this.lastQueriedInput_ = this.input_;
                 this.searchboxHandler_.queryAutocomplete(
-                    stringToMojoString16(this.$.input.value), false);
+                    stringToMojoString16(this.input_), false);
               }
               if (file.type.includes('image') &&
                   !this.enableImageContextualSuggestions_) {
@@ -222,7 +222,7 @@ export class ComposeboxElement extends I18nMixinLit
     ];
 
     this.eventTracker_.add(this.$.input, 'input', () => {
-      this.submitEnabled_ = this.$.input.value.trim().length > 0;
+      this.submitEnabled_ = this.input_.trim().length > 0;
     });
     this.eventTracker_.add(this.$.context, 'on-context-files-changed',
         (e: CustomEvent<{files: number}>) => {
@@ -232,7 +232,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.input.focus();
     if (this.showZps) {
       this.searchboxHandler_.queryAutocomplete(
-          stringToMojoString16(this.$.input.value), false);
+          stringToMojoString16(this.input_), false);
     }
 
     this.searchboxHandler_.notifySessionStarted();
@@ -277,14 +277,12 @@ export class ComposeboxElement extends I18nMixinLit
           // Update the input.
           const text = mojoString16ToString(this.selectedMatch_.fillIntoEdit);
           assert(text);
-          this.$.input.value = text;
           this.input_ = text;
           this.submitEnabled_ = true;
         }
       } else if (!this.lastQueriedInput_) {
         // This is for cases when focus leaves the matches/input.
         // If there was already text in the input do not clear it.
-        this.$.input.value = '';
         this.input_ = '';
         this.submitEnabled_ = false;
       }
@@ -305,11 +303,11 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   getText() {
-    return this.$.input.value;
+    return this.input_;
   }
 
   setText(text: string) {
-    this.$.input.value = text;
+    this.input_ = text;
   }
 
   getAndResetContextFiles() {
@@ -374,9 +372,9 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxHandler_.deleteContext(e.detail.uuid);
     this.$.input.focus();
     this.clearAutocompleteMatches_();
-    this.lastQueriedInput_ = this.$.input.value;
+    this.lastQueriedInput_ = this.input_;
     this.searchboxHandler_.queryAutocomplete(
-        stringToMojoString16(this.$.input.value), false);
+        stringToMojoString16(this.input_), false);
   }
 
   protected async addFileContext_(e: CustomEvent<{
@@ -453,8 +451,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onCancelClick_() {
-    if (this.$.input.value.trim().length > 0 || this.contextFilesSize_ > 0) {
-      this.$.input.value = '';
+    if (this.input_.trim().length > 0 || this.contextFilesSize_ > 0) {
       this.input_ = '';
       this.lastQueriedInput_ = this.input_;
       this.$.context.resetContextFiles();
@@ -466,7 +463,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.$.matches.unselect();
       this.clearAutocompleteMatches_();
       this.searchboxHandler_.queryAutocomplete(
-          stringToMojoString16(this.$.input.value), false);
+          stringToMojoString16(this.input_), false);
     } else {
       this.closeComposebox_();
     }
@@ -501,9 +498,11 @@ export class ComposeboxElement extends I18nMixinLit
       e: CustomEvent<{inDeepSearchMode: boolean}>) {
     this.pageHandler_.setDeepSearchMode(e.detail.inDeepSearchMode);
     this.clearAutocompleteMatches_();
-    this.lastQueriedInput_ = this.$.input.value;
+
+    this.lastQueriedInput_ = this.input_;
     this.searchboxHandler_.queryAutocomplete(
-        stringToMojoString16(this.$.input.value), false);
+        stringToMojoString16(this.input_), false);
+
     this.updateInputPlaceholder_();
 
     await this.updateComplete;
@@ -514,9 +513,10 @@ export class ComposeboxElement extends I18nMixinLit
       e: CustomEvent<{inCreateImageMode: boolean}>) {
     this.pageHandler_.setCreateImageMode(e.detail.inCreateImageMode);
     this.clearAutocompleteMatches_();
-    this.lastQueriedInput_ = this.$.input.value;
+
+    this.lastQueriedInput_ = this.input_;
     this.searchboxHandler_.queryAutocomplete(
-        stringToMojoString16(this.$.input.value), false);
+        stringToMojoString16(this.input_), false);
     this.updateInputPlaceholder_();
 
     await this.updateComplete;
@@ -541,7 +541,7 @@ export class ComposeboxElement extends I18nMixinLit
       return;
     }
     this.searchboxHandler_.queryAutocomplete(
-        stringToMojoString16(this.$.input.value), false);
+        stringToMojoString16(this.input_), false);
   }
 
   protected onKeydown_(e: KeyboardEvent) {
@@ -571,7 +571,6 @@ export class ComposeboxElement extends I18nMixinLit
           this.$.matches.unselect();
         } else if (this.smartComposeEnabled_ && this.smartComposeInlineHint_) {
           this.input_ = this.input_ + this.smartComposeInlineHint_;
-          this.$.input.value = this.input_;
           this.smartComposeInlineHint_ = '';
           e.preventDefault();
         }
@@ -674,7 +673,7 @@ export class ComposeboxElement extends I18nMixinLit
   private closeComposebox_() {
     this.resetModes();
     this.fire('close-composebox', {
-      composeboxText: this.$.input.value,
+      composeboxText: this.input_,
       contextFiles: this.getAndResetContextFiles(),
     });
 
@@ -704,7 +703,7 @@ export class ComposeboxElement extends I18nMixinLit
           e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
     } else {
       this.searchboxHandler_.submitQuery(
-          this.$.input.value.trim(), (e as MouseEvent).button || 0, e.altKey,
+          this.input_.trim(), (e as MouseEvent).button || 0, e.altKey,
           e.ctrlKey, e.metaKey, e.shiftKey);
     }
 
@@ -764,8 +763,7 @@ export class ComposeboxElement extends I18nMixinLit
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
       this.$.matches.selectFirst();
     } else if (
-        this.$.input.value.trim() && hasMatches &&
-        this.selectedMatchIndex_ >= 0 &&
+        this.input_.trim() && hasMatches && this.selectedMatchIndex_ >= 0 &&
         this.selectedMatchIndex_ < this.result_.matches.length) {
       // Restore the selection and update the input. Don't restore when the
       // user deletes all their input and autocomplete is queried or else the
@@ -777,7 +775,6 @@ export class ComposeboxElement extends I18nMixinLit
       // `onSelectedMatchIndexChanged_` is not called).
       this.selectedMatch_ = this.result_.matches[this.selectedMatchIndex_]!;
       this.input_ = mojoString16ToString(this.selectedMatch_.fillIntoEdit);
-      this.$.input.value = this.input_;
     } else {
       this.$.matches.unselect();
     }
