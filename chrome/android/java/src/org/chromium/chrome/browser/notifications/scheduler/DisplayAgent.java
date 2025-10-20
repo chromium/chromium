@@ -238,10 +238,19 @@ public class DisplayAgent {
         }
     }
 
-    private static AndroidNotificationData toAndroidNotificationData() {
-        @ChannelId String channel = ChannelId.BROWSER;
+    private static AndroidNotificationData toAndroidNotificationData(
+            @SchedulerClientType int type) {
         @SystemNotificationType int systemNotificationType = SystemNotificationType.UNKNOWN;
-        return new AndroidNotificationData(channel, systemNotificationType);
+        return new AndroidNotificationData(getNotificationChannel(type), systemNotificationType);
+    }
+
+    private static @ChannelId String getNotificationChannel(@SchedulerClientType int type) {
+        switch (type) {
+            case SchedulerClientType.TIPS:
+                return ChannelId.TIPS;
+            default:
+                return ChannelId.BROWSER;
+        }
     }
 
     private static Intent buildIntent(
@@ -257,7 +266,7 @@ public class DisplayAgent {
 
     @CalledByNative
     private static void showNotification(NotificationData notificationData, SystemData systemData) {
-        AndroidNotificationData platformData = toAndroidNotificationData();
+        AndroidNotificationData platformData = toAndroidNotificationData(systemData.type);
         // TODO(xingliu): Plumb platform specific data from native.
         // mode and provide correct notification id. Support buttons.
         Context context = ContextUtils.getApplicationContext();

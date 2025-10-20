@@ -43,7 +43,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
      * set of channels returned by {@link #getStartupChannelIds()} or {@link #getLegacyChannelIds()}
      * changes.
      */
-    static final int CHANNELS_VERSION = 4;
+    static final int CHANNELS_VERSION = 5;
 
     private static class LazyHolder {
         private static final ChromeChannelDefinitions sInstance = new ChromeChannelDefinitions();
@@ -93,7 +93,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         ChannelId.SECURITY_KEY,
         ChannelId.BLUETOOTH,
         ChannelId.USB,
-        ChannelId.SERIAL
+        ChannelId.SERIAL,
+        ChannelId.TIPS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
@@ -128,6 +129,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String BLUETOOTH = "bluetooth";
         String USB = "usb";
         String SERIAL = "serial";
+        String TIPS = "tips";
     }
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
@@ -166,6 +168,14 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                             NotificationManager.IMPORTANCE_LOW,
                             ChannelGroupId.GENERAL));
             startup.add(ChannelId.BROWSER);
+
+            map.put(
+                    ChannelId.TIPS,
+                    PredefinedChannel.create(
+                            ChannelId.TIPS,
+                            R.string.notification_category_tips,
+                            NotificationManager.IMPORTANCE_HIGH,
+                            ChannelGroupId.GENERAL));
 
             map.put(
                     ChannelId.COLLABORATION,
