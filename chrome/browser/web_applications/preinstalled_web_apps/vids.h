@@ -10,7 +10,7 @@
 namespace web_app {
 
 // Returns the config for preinstalling the Vids app.
-ExternalInstallOptions GetConfigForVids();
+ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed);
 
 }  // namespace web_app
 

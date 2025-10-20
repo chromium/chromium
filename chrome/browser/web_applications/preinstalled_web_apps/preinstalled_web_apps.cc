@@ -78,8 +78,7 @@ bool IsGoogleInternalAccount() {
 std::vector<ExternalInstallOptions> GetChromeBrandedApps(
     Profile& profile,
     const std::optional<DeviceInfo>& device_info) {
-  bool is_standalone_tabbed =
-      IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(profile);
+  bool is_standalone_tabbed = IsPreinstalledWorkspaceStandaloneTabbed(profile);
   // TODO(crbug.com/40705277): Replace these C++ configs with JSON configs like
   // those seen in: chrome/test/data/web_app_default_apps/good_json
   // This requires:
@@ -109,7 +108,7 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(chromeos::features::kVidsAppPreinstall)) {
-    apps.push_back(GetConfigForVids());
+    apps.push_back(GetConfigForVids(is_standalone_tabbed));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

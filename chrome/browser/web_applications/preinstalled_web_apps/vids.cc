@@ -48,11 +48,13 @@ blink::Manifest::HomeTabParams HomeTabPathnames(
 
 }  // namespace
 
-ExternalInstallOptions GetConfigForVids() {
+ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed) {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://docs.google.com/videos/installwebapp?usp=chrome_default"),
-      /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
+      /*user_display_mode=*/
+      is_standalone_tabbed ? mojom::UserDisplayMode::kStandalone
+                           : mojom::UserDisplayMode::kBrowser,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed"};
