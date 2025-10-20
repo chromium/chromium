@@ -9877,7 +9877,7 @@ crbug.com/452827889 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js
 # Started to fail on Linux, previously was flaky on all platforms (crbug.com/387374119)
 crbug.com/452827889 external/wpt/wasm/core/simd/simd_f64x2_cmp.wast.js.html [ Failure Pass Timeout ]
 crbug.com/431170125 [ Android ] external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
-crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?1-5 [ Failure Pass ]
-crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?6-10 [ Failure Pass ]
-crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?11-15 [ Failure Pass ]
-crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?16-20 [ Failure Pass ]
+crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?1-5 [ Crash Failure Pass ]
+crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?6-10 [ Crash Failure Pass ]
+crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?11-15 [ Crash Failure Pass ]
+crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?16-20 [ Crash Failure Pass ]
