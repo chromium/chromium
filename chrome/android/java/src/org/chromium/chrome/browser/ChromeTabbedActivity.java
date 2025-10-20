@@ -53,7 +53,6 @@ import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -91,7 +90,6 @@ import org.chromium.chrome.browser.auxiliary_search.module.AuxiliarySearchModule
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
-import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.bookmarks.BookmarkPane;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -163,7 +161,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
-import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
@@ -1390,12 +1387,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 : "Launch Cause has not been computed for this start yet.";
         return (launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON
                 || launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT);
-    }
-
-    // Returns whether startup was cold or not.
-    private boolean isColdStart() {
-        return ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
-                && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession();
     }
 
     @Override
@@ -2861,22 +2852,14 @@ public class ChromeTabbedActivity extends ChromeActivity {
             startupLatencyInjector.maybeInjectLatency();
         }
 
-        // Decide whether to record startup UMA histograms. This is done early in the main
-        // Activity.onCreate() to avoid recording navigation delays when they require user input to
-        // proceed. Having an uninitialized native library has been taken as a sign of starting
-        // Chrome with an immediate navigation without user input.
-        // TODO(crbug.com/40926074): Native library initialization was moved to another thread, and
-        //  it now proceeds faster, making the metrics think that the start is not cold enough.
-        //  To cover more startup cases change the heuristic detecting cold startup that happens
-        //  without user interaction.
-        if (!LibraryLoader.getInstance().isInitialized()) {
-            setTrackColdStartupMetrics(true);
-        }
-
-        // Enable Paint Preview only on a cold start. This way the Paint preview is most useful by
-        // being much faster than the real load of the page. Also cold start detection excludes user
-        // interactions changing the course of restoring the page.
         if (isColdStart()) {
+            // Decide whether to record startup UMA histograms. This is done early in the main
+            // Activity.onCreate() to avoid recording navigation delays when they require user input
+            // to proceed.
+            setTrackColdStartupMetrics(true);
+            // Enable Paint Preview only on a cold start. This way the Paint preview is most useful
+            // by being much faster than the real load of the page. Also cold start detection
+            // excludes user interactions changing the course of restoring the page.
             StartupPaintPreviewHelper.enableShowOnRestore();
         }
 

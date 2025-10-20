@@ -22,7 +22,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -36,6 +35,7 @@ import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
@@ -171,6 +171,12 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         performPreInflationStartup();
     }
 
+    // Returns whether startup was cold or not.
+    protected boolean isColdStart() {
+        return ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
+                && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession();
+    }
+
     /**
      * Perform pre-inflation startup for the activity. Sub-classes providing custom pre-inflation
      * startup logic should override this method.
@@ -178,7 +184,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @CallSuper
     protected void performPreInflationStartup() {
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(this);
-        mHadWarmStart = LibraryLoader.getInstance().isInitialized();
+        mHadWarmStart = !isColdStart();
         SimpleStartupForegroundSessionDetector.onTransitionToForeground();
         // TODO(crbug.com/40621278): Dispatch in #preInflationStartup instead so that
         // subclass's #performPreInflationStartup has executed before observers are notified.
@@ -799,8 +805,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     }
 
     /**
-     * @return Whether the activity had a warm start because the native library was already fully
-     *     loaded and initialized.
+     * @return Whether the activity had a warm start.
      */
     public boolean hadWarmStart() {
         return mHadWarmStart;

@@ -144,10 +144,6 @@ public class LegacyTabStartupMetricsTracker {
                     FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
         }
 
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Startup.Android.Cold.TimeToForegroundSessionStart",
-                SystemClock.uptimeMillis() - mActivityStartTimeMs);
-
         UmaUtils.removeObserver();
     }
 

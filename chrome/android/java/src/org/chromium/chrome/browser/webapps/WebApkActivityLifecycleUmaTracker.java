@@ -14,8 +14,8 @@ import android.os.SystemClock;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
 
@@ -45,6 +46,11 @@ public class WebApkActivityLifecycleUmaTracker
 
     /** The start time that the activity becomes focused in milliseconds since boot. */
     private long mStartTime;
+
+    private boolean isColdStart() {
+        return ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
+                && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession();
+    }
 
     public WebApkActivityLifecycleUmaTracker(
             Activity activity,
@@ -81,7 +87,7 @@ public class WebApkActivityLifecycleUmaTracker
 
         // Decide whether to record startup UMA histograms. This is a similar check to the one done
         // in ChromeTabbedActivity.performPreInflationStartup refer to the comment there for why.
-        if (!LibraryLoader.getInstance().isInitialized()) {
+        if (isColdStart()) {
             mLegacyTabStartupMetricsTracker.setHistogramSuffix(ActivityType.WEB_APK);
             mStartupMetricsTracker.setHistogramSuffix(ActivityType.WEB_APK);
             // If there is a saved instance state, then the intent (and its stored timestamp) might
