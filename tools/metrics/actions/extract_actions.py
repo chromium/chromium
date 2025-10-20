@@ -694,18 +694,17 @@ def _ExtractText(parent_dom: minidom.Element, tag_name: str) -> List[str]:
 def ParseActionFile(
     file_content: str
 ) -> Tuple[Dict[str, action_utils.Action], List[minidom.Node], Dict[
-    str, List[action_utils.Variant]], List[minidom.Node]]:
+    str, List[action_utils.Variant]]]:
   """Parse the XML data currently stored in the file.
 
   Args:
     file_content: a string containing the action XML file content.
 
   Returns:
-    (actions_dict, comment_nodes, suffixes, variants_dict):
+    (actions_dict, comment_nodes, variants_dict):
       - actions_dict is a dict from user action name to Action object.
       - comment_nodes is a list of top-level comment nodes.
       - variants_dict is a dict of Variant objects.
-      - suffixes is a list of <action-suffix> DOM elements.
   """
   dom = minidom.parseString(file_content)
 
@@ -757,13 +756,8 @@ def ParseActionFile(
                                                     owners, not_user_triggered,
                                                     obsolete, tokens)
 
-  suffixes = dom.getElementsByTagName('action-suffix')
 
-  # TODO: remove suffix logic after migrating to variants
-  # crbug.com/374120501
-  action_utils.CreateActionsFromSuffixes(actions_dict, suffixes)
-
-  return actions_dict, comment_nodes, variants_dict, suffixes
+  return actions_dict, comment_nodes, variants_dict
 
 
 def _CreateActionTag(doc: minidom.Document,
@@ -797,11 +791,8 @@ def _CreateActionTag(doc: minidom.Document,
     action: An Action object representing the data to be inserted.
 
   Returns:
-    An action tag Element with proper children elements, or None if a tag should
-    not be created for this action (e.g. if it comes from a suffix).
+    An action tag Element with proper children elements.
   """
-  if action.from_suffix:
-    return None
 
   action_dom = doc.createElement('action')
   action_dom.setAttribute('name', action.name)
@@ -860,15 +851,13 @@ def _CreateActionTag(doc: minidom.Document,
 
 def PrettyPrint(actions_dict: Dict[str, action_utils.Action],
                 comment_nodes: List[minidom.Node],
-                variants_dict: Dict[str, List[action_utils.Variant]],
-                suffixes: List[minidom.Node]) -> str:
+                variants_dict: Dict[str, List[action_utils.Variant]]) -> str:
   """Given a list of actions, create a well-printed minidom document.
 
   Args:
     actions_dict: A mapping from action name to Action object.
     comment_nodes: A list of top-level comment nodes.
     variants_dict: A mapping from variants dict to shared <variants> tags.
-    suffixes: A list of <action-suffix> tags to be appended as-is.
 
   Returns:
     A well-printed minidom document that represents the input action data.
@@ -899,15 +888,11 @@ def PrettyPrint(actions_dict: Dict[str, action_utils.Action],
     if action_tag:
       actions_element.appendChild(action_tag)
 
-  for suffix_tag in suffixes:
-    actions_element.appendChild(suffix_tag)
-
   return actions_model.PrettifyTree(doc)
 
 
 def UpdateXml(original_xml):
-  actions_dict, comment_nodes, variants_dict, suffixes = ParseActionFile(
-      original_xml)
+  actions_dict, comment_nodes, variants_dict = ParseActionFile(original_xml)
 
   expanded_actions_dict = copy.deepcopy(actions_dict)
   # Created a deep copy of the actions dictionary to expand variants into. This
@@ -937,7 +922,7 @@ def UpdateXml(original_xml):
     if action_name not in expanded_actions_dict:
       actions_dict[action_name] = action_utils.Action(action_name, None, [])
 
-  return PrettyPrint(actions_dict, comment_nodes, variants_dict, suffixes)
+  return PrettyPrint(actions_dict, comment_nodes, variants_dict)
 
 
 def main(argv):
