@@ -4841,6 +4841,10 @@
       status: "stable",
     },
     {
+      name: "SvgFallBackToContainerSize",
+      status: "experimental",
+    },
+    {
       name: "SvgFeConvolveMatrixZeroDivisorBehavior",
       status: "stable",
     },
