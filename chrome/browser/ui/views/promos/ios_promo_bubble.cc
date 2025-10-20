@@ -11,6 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
+#include "build/branding_buildflags.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
@@ -33,6 +35,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -47,6 +50,24 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+// Generates and returns the QRCode image for the given URL `qr_code_url`.
+ui::ImageModel CreateQrCodeImage(const std::string& qr_code_url) {
+  // Note that the absence of a quiet zone may interfere with decoding
+  // of QR codes even for small codes.
+  auto qr_image = qr_code_generator::GenerateImage(
+      base::as_byte_span(std::string_view(qr_code_url)),
+      qr_code_generator::ModuleStyle::kCircles,
+      qr_code_generator::LocatorStyle::kRounded,
+      qr_code_generator::CenterImage::kProductLogo,
+      qr_code_generator::QuietZone::kIncluded);
+
+  // Generating QR code for `kQRCodeURL` should always succeed (e.g. it
+  // can't result in input-too-long error or other errors).
+  CHECK(qr_image.has_value());
+  return ui::ImageModel::FromImageSkia(qr_image.value());
+}
+
 // Creates and returns IOSPromoTypeConfigs for the Password bubble.
 IOSPromoConstants::IOSPromoTypeConfigs SetUpPasswordBubble(
     IOSPromoBubbleType bubble_type) {
@@ -63,8 +84,8 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpPasswordBubble(
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
-      config.promo_qr_code_url =
-          IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL;
+      config.promo_image = CreateQrCodeImage(
+          IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL);
       break;
     case IOSPromoBubbleType::kReminder:
       config.accept_button_text_id =
@@ -90,7 +111,8 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpAddressBubble(
   config.decline_button_text_id =
       IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE;
   config.accept_button_text_id = IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
-  config.promo_qr_code_url = IOSPromoConstants::kIOSPromoAddressBubbleQRCodeURL;
+  config.promo_image =
+      CreateQrCodeImage(IOSPromoConstants::kIOSPromoAddressBubbleQRCodeURL);
   return config;
 }
 
@@ -110,7 +132,8 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpPaymentBubble(
   config.decline_button_text_id =
       IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE;
   config.accept_button_text_id = IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
-  config.promo_qr_code_url = IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL;
+  config.promo_image =
+      CreateQrCodeImage(IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL);
   return config;
 }
 
@@ -128,8 +151,8 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpEnhancedBrowsingBubble(
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
       // TODO(crbug.com/442562546): Create URL for kEnhancedBrowsing promo.
-      config.promo_qr_code_url =
-          IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL;
+      config.promo_image =
+          CreateQrCodeImage(IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL);
       break;
     case IOSPromoBubbleType::kReminder:
       config.promo_title_id = IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_TITLE_REMINDER;
@@ -137,6 +160,8 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpEnhancedBrowsingBubble(
           IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_REMINDER;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
+      config.promo_image =
+          ui::ImageModel::FromVectorIcon(kEnhancedBrowsingOnIosIcon);
       break;
   }
   return config;
@@ -155,13 +180,16 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpLensBubble(
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
       // TODO(crbug.com/442562546): Placeholder, set URL for kLens promo.
-      config.promo_qr_code_url =
-          IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL;
+      config.promo_image = CreateQrCodeImage(
+          IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL);
       break;
     case IOSPromoBubbleType::kReminder:
       config.promo_title_id = IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      config.promo_image = ui::ImageModel::FromResourceId(IDR_LENS_ON_IOS_ICON);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       break;
   }
   return config;
@@ -339,53 +367,31 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateButtonsView(
 std::unique_ptr<views::View> IOSPromoBubble::CreateImageAndBodyTextView(
     const IOSPromoConstants::IOSPromoTypeConfigs& ios_promo_config,
     IOSPromoBubbleType bubble_type) {
-  views::ImageView* image_view = nullptr;
-  views::Builder<views::View> image_or_qr_code_view;
+  views::Builder<views::View> image_view;
+  if (!ios_promo_config.promo_image.IsEmpty()) {
+    auto image_view_builder =
+        views::Builder<views::ImageView>()
+            .SetImage(ios_promo_config.promo_image)
+            .SetImageSize(gfx::Size(IOSPromoConstants::kImageSize,
+                                    IOSPromoConstants::kImageSize))
+            .SetCornerRadius(
+                views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                    views::Emphasis::kHigh));
+    auto image_container_builder =
+        views::Builder<views::View>()
+            .SetLayoutManager(std::make_unique<views::FillLayout>())
+            .AddChild(std::move(image_view_builder));
 
-  switch (bubble_type) {
-    case IOSPromoBubbleType::kQRCode: {
-      auto qr_code_container =
-          views::Builder<views::View>()
-              .SetBorder(views::CreateRoundedRectBorder(
-                  /*thickness=*/1,
-                  views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                      views::Emphasis::kHigh),
-                  SK_ColorLTGRAY))
-              .SetLayoutManager(std::make_unique<views::FillLayout>())
-              .AddChild(
-                  views::Builder<views::ImageView>()
-                      .CopyAddressTo(&image_view)
-                      .SetHorizontalAlignment(
-                          views::ImageView::Alignment::kLeading)
-                      .SetImageSize(
-                          gfx::Size(IOSPromoConstants::kQrCodeImageSize,
-                                    IOSPromoConstants::kQrCodeImageSize))
-                      .SetCornerRadius(
-                          views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                              views::Emphasis::kHigh))
-                      .SetVisible(true));
-
-      // Note that the absence of a quiet zone may interfere with decoding
-      // of QR codes even for small codes.
-      auto qr_image = qr_code_generator::GenerateImage(
-          base::as_byte_span(
-              std::string_view(ios_promo_config.promo_qr_code_url)),
-          qr_code_generator::ModuleStyle::kCircles,
-          qr_code_generator::LocatorStyle::kRounded,
-          qr_code_generator::CenterImage::kProductLogo,
-          qr_code_generator::QuietZone::kIncluded);
-
-      // Generating QR code for `kQRCodeURL` should always succeed (e.g. it
-      // can't result in input-too-long error or other errors).
-      CHECK(qr_image.has_value());
-      image_view->SetImage(ui::ImageModel::FromImageSkia(qr_image.value()));
-      image_or_qr_code_view = std::move(qr_code_container);
-      break;
+    // Add a border if the image is a QRCode.
+    if (bubble_type == IOSPromoBubbleType::kQRCode) {
+      image_container_builder.SetBorder(views::CreateRoundedRectBorder(
+          /*thickness=*/1,
+          views::LayoutProvider::Get()->GetCornerRadiusMetric(
+              views::Emphasis::kHigh),
+          SK_ColorLTGRAY));
     }
-    case IOSPromoBubbleType::kReminder: {
-      // TODO(crbug.com/438769954): Add icon image for kReminder type bubbles.
-      break;
-    }
+
+    image_view = std::move(image_container_builder);
   }
 
   auto description_label =
@@ -408,7 +414,7 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateImageAndBodyTextView(
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
       .SetBetweenChildSpacing(views::LayoutProvider::Get()->GetDistanceMetric(
           views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL))
-      .AddChild(std::move(image_or_qr_code_view))
+      .AddChild(std::move(image_view))
       .AddChild(description_label)
       .Build();
 }

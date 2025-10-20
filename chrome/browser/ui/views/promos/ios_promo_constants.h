@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_CONSTANTS_H_
 #define CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_CONSTANTS_H_
 
-#include <string>
+#include "ui/base/models/image_model.h"
 
 namespace IOSPromoConstants {
 
@@ -21,9 +21,8 @@ inline constexpr char kIOSPromoPaymentBubbleQRCodeURL[] =
     "https://www.google.com/chrome/go-mobile/"
     "?ios-campaign=desktop-chr-payment&android-campaign=desktop-chr-payment";
 
-// Size of the QR code image view including the quiet zone margin added by the
-// QR code generator.
-inline constexpr int kQrCodeImageSize = 80;
+// Size of the image view (QR code or otherwise) in the promos.
+inline constexpr int kImageSize = 80;
 
 struct IOSPromoTypeConfigs {
   IOSPromoTypeConfigs();
@@ -37,7 +36,7 @@ struct IOSPromoTypeConfigs {
   int promo_description_id = -1;
   int decline_button_text_id = -1;
   int accept_button_text_id = -1;
-  std::string promo_qr_code_url;
+  ui::ImageModel promo_image;
   bool with_header;
 };
 
