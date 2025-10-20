@@ -311,10 +311,6 @@ void VizMainImpl::SetHostProcessId(int32_t pid) {
   if (gpu_service_)
     gpu_service_->SetHostProcessId(pid);
 }
-
-void VizMainImpl::NotifyWorkloadIncrease() {
-  viz_compositor_thread_runner_->NotifyWorkloadIncrease();
-}
 #endif
 
 void VizMainImpl::CreateFrameSinkManager(

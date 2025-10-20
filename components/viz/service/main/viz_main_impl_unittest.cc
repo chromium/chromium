@@ -59,7 +59,6 @@ class MockVizCompositorThreadRunner : public VizCompositorThreadRunner {
   }
   void SetIOThreadId(base::PlatformThreadId io_thread_id) override {}
   void SetGpuMainThreadId(base::PlatformThreadId gpu_main_thread_id) override {}
-  void NotifyWorkloadIncrease() override {}
   MOCK_METHOD2(CreateFrameSinkManager,
                void(mojom::FrameSinkManagerParamsPtr, GpuServiceImpl*));
 

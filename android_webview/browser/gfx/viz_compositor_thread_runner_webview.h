@@ -73,7 +73,6 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   void SetGpuMainThreadId(base::PlatformThreadId gpu_main_thread_id) override;
   void CreateFrameSinkManager(viz::mojom::FrameSinkManagerParamsPtr params,
                               viz::GpuServiceImpl* gpu_service) override;
-  void NotifyWorkloadIncrease() override {}
 
  private:
   friend class base::NoDestructor<VizCompositorThreadRunnerWebView>;

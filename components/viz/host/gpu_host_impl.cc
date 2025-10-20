@@ -195,12 +195,6 @@ GpuHostImpl::~GpuHostImpl() {
   SendOutstandingReplies();
 }
 
-void GpuHostImpl::NotifyWorkloadIncrease() {
-#if BUILDFLAG(IS_ANDROID)
-  viz_main_->NotifyWorkloadIncrease();
-#endif
-}
-
 // static
 void GpuHostImpl::InitFontRenderParams(const gfx::FontRenderParams& params) {
   DCHECK(!GetFontRenderParams().Get());

@@ -191,19 +191,6 @@ void VizCompositorThreadRunnerImpl::CreateHintSessionFactoryOnCompositorThread(
   event->Signal();
 }
 
-void VizCompositorThreadRunnerImpl::NotifyWorkloadIncrease() {
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VizCompositorThreadRunnerImpl::
-                                    NotifyWorkloadIncreaseOnCompositorThread,
-                                base::Unretained(this)));
-}
-
-void VizCompositorThreadRunnerImpl::NotifyWorkloadIncreaseOnCompositorThread() {
-  if (hint_session_factory_) {
-    hint_session_factory_->NotifyWorkloadIncrease();
-  }
-}
-
 void VizCompositorThreadRunnerImpl::WakeUpOnCompositorThread() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (hint_session_factory_)

@@ -56,7 +56,6 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
       base::RepeatingClosure* wake_up_closure) override;
   void SetIOThreadId(base::PlatformThreadId io_thread_id) override {}
   void SetGpuMainThreadId(base::PlatformThreadId gpu_main_thread_id) override {}
-  void NotifyWorkloadIncrease() override;
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
                               GpuServiceImpl* gpu_service) override;
   void RequestBeginFrameForGpuService(bool toggle) override;
@@ -66,7 +65,6 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure,
       base::WaitableEvent* event);
-  void NotifyWorkloadIncreaseOnCompositorThread();
   void WakeUpOnCompositorThread();
   void CreateFrameSinkManagerOnCompositorThread(
       mojom::FrameSinkManagerParamsPtr params,
