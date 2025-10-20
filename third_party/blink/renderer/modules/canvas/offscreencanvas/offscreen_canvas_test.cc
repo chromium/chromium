@@ -18,6 +18,8 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_draw_listener.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
+#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -100,6 +102,10 @@ class OffscreenCanvasTest : public ::testing::Test,
   HTMLCanvasElement* GetCanvasElement() const { return canvas_element_; }
 
   FakeGLES2Interface* GetGLInterface() { return &gl_; }
+
+  static uint32_t FrameGenerationOf(const UniqueFontSelector& selector) {
+    return selector.frame_generation_;
+  }
 
  private:
   test::TaskEnvironment task_environment_;
@@ -207,6 +213,39 @@ TEST_F(OffscreenCanvasTest, BlockCanvasReadback) {
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
             DOMExceptionCode::kNotAllowedError);
+}
+
+TEST_F(OffscreenCanvasTest, SwitchFrameByCanvasImageSource) {
+  auto* canvas = MakeGarbageCollected<OffscreenCanvas>(
+      GetDocument().GetExecutionContext(), gfx::Size(100, 100));
+  // Make sure the canvas has the context.
+  ASSERT_TRUE(canvas->GetCanvasRenderingContext(
+      GetDocument().GetExecutionContext(),
+      CanvasRenderingContext::CanvasRenderingAPI::k2D, {}));
+  auto* selector = canvas->GetFontSelector();
+  uint32_t original_generation = FrameGenerationOf(*selector);
+
+  // GetSourceImageForCanvas() should call UniqueFontSelector::DidSwitchFrame().
+  SourceImageStatus source_image_status;
+  canvas->GetSourceImageForCanvas(FlushReason::kWebGLTexImage,
+                                  &source_image_status, {100, 100});
+  EXPECT_GT(FrameGenerationOf(*selector), original_generation);
+}
+
+TEST_F(OffscreenCanvasTest, SwitchFrameByImageBitmapSource) {
+  auto* canvas = MakeGarbageCollected<OffscreenCanvas>(
+      GetDocument().GetExecutionContext(), gfx::Size(100, 100));
+  // Make sure the canvas has the context.
+  ASSERT_TRUE(canvas->GetCanvasRenderingContext(
+      GetDocument().GetExecutionContext(),
+      CanvasRenderingContext::CanvasRenderingAPI::k2D, {}));
+  auto* selector = canvas->GetFontSelector();
+  uint32_t original_generation = FrameGenerationOf(*selector);
+
+  // The ImageBitmap constructor should call
+  // UniqueFontSelector::DidSwitchFrame().
+  MakeGarbageCollected<ImageBitmap>(canvas, std::nullopt);
+  EXPECT_GT(FrameGenerationOf(*selector), original_generation);
 }
 
 // Verifies that an offscreen_canvas()s PushFrame() has the appropriate

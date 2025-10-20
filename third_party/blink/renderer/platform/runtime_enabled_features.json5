@@ -900,6 +900,11 @@
       status: "stable",
     },
     {
+      // crbug.com/450531794.
+      name: "CanvasTextTexImage2DFix",
+      status: "stable",
+    },
+    {
       // Kill switch for https://crbug.com/330506337.
       name: "CanvasUsesArcPaintOp",
       status: "stable",
