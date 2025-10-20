@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -63,6 +64,8 @@ public class ChromeAndroidTaskIntegrationTest {
     @Rule
     public FreshCtaTransitTestRule mFreshCtaTransitTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule public WebappActivityTestRule mWebappActivityTestRule = new WebappActivityTestRule();
 
     @Test
     @MediumTest
@@ -108,6 +111,18 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    public void startWebappActivity_createsChromeAndroidTask() {
+        // Act.
+        mWebappActivityTestRule.startWebappActivity();
+
+        // Assert.
+        int taskId = mWebappActivityTestRule.getActivity().getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+    }
+
+    @Test
+    @MediumTest
     public void startChromeTabbedActivity_chromeAndroidTaskAndTabModelHaveSameSessionId() {
         // Arrange.
         mFreshCtaTransitTestRule.startOnBlankPage();
@@ -142,6 +157,26 @@ public class ChromeAndroidTaskIntegrationTest {
 
         var tabModel = mCustomTabActivityTestRule.getActivity().getCurrentTabModel();
 
+        assertNotNull(chromeAndroidTask.getSessionIdForTesting());
+        assertNotNull(tabModel.getNativeSessionIdForTesting());
+        assertEquals(
+                chromeAndroidTask.getSessionIdForTesting(),
+                tabModel.getNativeSessionIdForTesting());
+    }
+
+    @Test
+    @MediumTest
+    public void startWebappActivity_chromeAndroidTaskAndTabModelHaveSameSessionId() {
+        // Arrange.
+        mWebappActivityTestRule.startWebappActivity();
+
+        int taskId = mWebappActivityTestRule.getActivity().getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        var tabModel = mWebappActivityTestRule.getActivity().getCurrentTabModel();
+
+        // Assert.
         assertNotNull(chromeAndroidTask.getSessionIdForTesting());
         assertNotNull(tabModel.getNativeSessionIdForTesting());
         assertEquals(

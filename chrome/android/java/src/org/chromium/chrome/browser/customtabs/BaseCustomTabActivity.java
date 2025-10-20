@@ -936,9 +936,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         var tabModelOrchestrator = getCustomTabActivityTabFactory().getTabModelOrchestrator();
         tabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
 
-        if (mIntentDataProvider.getUiType() == CustomTabsUiType.POPUP) {
+        @BrowserWindowType Integer browserWindowType = getSupportedBrowserWindowType();
+        if (browserWindowType != null) {
             initializeChromeAndroidTask(
-                    BrowserWindowType.POPUP,
+                    browserWindowType,
                     tabModelOrchestrator.getTabModelSelector().getCurrentModel());
         }
     }
@@ -1592,5 +1593,25 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         }
 
         return mBaseCustomTabRootUiCoordinator.isShowingHeaderAsOverlay();
+    }
+
+    /**
+     * Returns the native browser window type supported by this {@code Activity}.
+     *
+     * <p>The native browser window types are defined in the {@code BrowserWindowInterface::Type}
+     * enum.
+     */
+    @Nullable
+    @BrowserWindowType
+    Integer getSupportedBrowserWindowType() {
+        if (mIntentDataProvider.getUiType() == CustomTabsUiType.POPUP) {
+            return BrowserWindowType.POPUP;
+        }
+
+        if (mIntentDataProvider.getActivityType() == ActivityType.WEBAPP) {
+            return BrowserWindowType.APP_POPUP;
+        }
+
+        return null;
     }
 }
