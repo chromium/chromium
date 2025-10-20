@@ -165,15 +165,7 @@ void GlicActorTaskManager::StopActorTask(
     return;
   }
 
-  bool success = false;
-  switch (stop_reason) {
-    case mojom::ActorTaskStopReason::kTaskComplete:
-      success = true;
-      break;
-    case mojom::ActorTaskStopReason::kStoppedByUser:
-      success = false;
-      break;
-  }
+  const bool success = stop_reason == mojom::ActorTaskStopReason::kTaskComplete;
 
   actor_keyed_service_->StopTask(task->id(), success);
 }
@@ -199,15 +191,8 @@ void GlicActorTaskManager::PauseActorTask(
     task->AddTab(tab_handle, base::DoNothing());
   }
 
-  bool from_actor = false;
-  switch (pause_reason) {
-    case mojom::ActorTaskPauseReason::kPausedByModel:
-      from_actor = true;
-      break;
-    case mojom::ActorTaskPauseReason::kPausedByUser:
-      from_actor = false;
-      break;
-  }
+  const bool from_actor =
+      pause_reason == mojom::ActorTaskPauseReason::kPausedByModel;
 
   task->Pause(from_actor);
 }
