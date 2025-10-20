@@ -185,7 +185,9 @@ class ManifestSilentUpdateCommand
   void OnWebAppInfoCreatedFromManifest(
       std::unique_ptr<WebAppInstallInfo> install_info);
 
-  void FinalizeUpdateIfSilentChangesExist();
+  // Identify whether or not the app needs to be silently updated, or if a
+  // pending update needs to be stored, and starts the writes if needed.
+  void FinalizeUpdateIfSilentChangesExist(bool is_trusted_install);
 
   void UpdateFinalizedWritePendingInfo(
       std::optional<proto::PendingUpdateInfo> pending_update_info,
@@ -232,14 +234,22 @@ class ManifestSilentUpdateCommand
   // Temporary variables stored here while the update check progresses
   // asynchronously.
   std::unique_ptr<WebAppInstallInfo> new_install_info_;
-  bool is_trusted_install_ = false;
   WebAppComparison web_app_diff_;
   IconBitmaps existing_manifest_icon_bitmaps_;
   IconBitmaps existing_trusted_icon_bitmaps_;
   IconBitmaps pending_trusted_icon_bitmaps_;
   IconBitmaps pending_manifest_icon_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
+
+  // Stores whether a silent update can happen depending on the state of the
+  // system after the manifest update process has started and the web app's new
+  // fields have been downloaded.
   bool silent_update_required_ = false;
+
+  // Stores whether a silent update is allowed depending on the state of the web
+  // app itself, like if the app is trusted, or if the generated icons can be
+  // fixed. For these cases, a pending update is not stored inside the web app.
+  bool silently_update_identity_ = false;
 
   base::WeakPtr<content::WebContents> web_contents_;
   // Note: This must be destroyed before `new_install_info_` since it holds a
