@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace content {
 class WebContents;
