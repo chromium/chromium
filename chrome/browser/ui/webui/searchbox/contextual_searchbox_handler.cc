@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/omnibox/contextual_session_web_contents_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -22,6 +23,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/composebox/contextual_session_service.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -49,21 +51,26 @@ std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
 }  // namespace
 
 ContextualOmniboxClient::ContextualOmniboxClient(
-    Profile* profile, content::WebContents* web_contents,
-    std::unique_ptr<ContextualSessionService::SessionHandle>
-        contextual_session_handle)
-    : SearchboxOmniboxClient(profile, web_contents),
-      contextual_session_handle_(std::move(contextual_session_handle)) {}
+    Profile* profile,
+    content::WebContents* web_contents)
+    : SearchboxOmniboxClient(profile, web_contents) {}
 
 ContextualOmniboxClient::~ContextualOmniboxClient() = default;
 
+ComposeboxQueryController* ContextualOmniboxClient::GetQueryController() const {
+  auto* contextual_session_web_contents_helper =
+      ContextualSessionWebContentsHelper::FromWebContents(web_contents());
+  auto* contextual_session_handle =
+      contextual_session_web_contents_helper
+          ? contextual_session_web_contents_helper->session_handle()
+          : nullptr;
+  return contextual_session_handle ? contextual_session_handle->GetController()
+                                   : nullptr;
+}
+
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ContextualOmniboxClient::GetLensOverlaySuggestInputs() const {
-  if (!contextual_session_handle_) {
-    return std::nullopt;
-  }
-
-  auto* query_controller = contextual_session_handle_->GetController();
+  auto* query_controller = GetQueryController();
   if (!query_controller) {
     return std::nullopt;
   }
@@ -195,14 +202,11 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
     Profile* profile,
     content::WebContents* web_contents,
     std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
-    std::unique_ptr<OmniboxController> controller,
-    std::unique_ptr<ContextualSessionService::SessionHandle>
-        contextual_session_handle)
+    std::unique_ptr<OmniboxController> controller)
     : SearchboxHandler(std::move(pending_searchbox_handler),
                        profile,
                        web_contents,
                        std::move(controller)),
-      contextual_session_handle_(std::move(contextual_session_handle)),
       composebox_metrics_recorder_(std::move(composebox_metrics_recorder)),
       web_contents_(web_contents) {
   if (auto* query_controller = GetQueryController()) {
@@ -213,9 +217,14 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
 ContextualSearchboxHandler::~ContextualSearchboxHandler() = default;
 
 ComposeboxQueryController* ContextualSearchboxHandler::GetQueryController() {
-  return contextual_session_handle_
-             ? contextual_session_handle_->GetController()
-             : nullptr;
+  auto* contextual_session_web_contents_helper =
+      ContextualSessionWebContentsHelper::FromWebContents(web_contents_);
+  auto* contextual_session_handle =
+      contextual_session_web_contents_helper
+          ? contextual_session_web_contents_helper->session_handle()
+          : nullptr;
+  return contextual_session_handle ? contextual_session_handle->GetController()
+                                   : nullptr;
 }
 
 void ContextualSearchboxHandler::NotifySessionStarted() {

@@ -9,8 +9,8 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "ui/gfx/vector_icon_types.h"
 
-class Profile;
 class AutocompleteSchemeClassifier;
+class Profile;
 
 namespace content {
 class WebContents;
@@ -28,6 +28,8 @@ class SearchboxOmniboxClient : public OmniboxClient {
  public:
   SearchboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
   ~SearchboxOmniboxClient() override;
+
+  content::WebContents* web_contents() const { return web_contents_; }
 
   // OmniboxClient:
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()

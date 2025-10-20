@@ -137,11 +137,10 @@ void WebUIBrowserUI::BindInterface(
   content::WebContents* web_contents = webui->GetWebContents();
   // TODO(crbug.com/445510209): Pass `metrics_reporter_` after installing a
   // WebUIOmniboxHandler.
-  realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), /*contextual_session_handle=*/nullptr,
-      /*secondary_contextual_session_handle=*/nullptr,
-      /*composebox_metrics_recorder=*/nullptr, Profile::FromWebUI(webui),
-      web_contents);
+  realbox_handler_ =
+      std::make_unique<RealboxHandler>(std::move(pending_page_handler),
+                                       /*composebox_metrics_recorder=*/nullptr,
+                                       Profile::FromWebUI(webui), web_contents);
 }
 
 void WebUIBrowserUI::BindInterface(

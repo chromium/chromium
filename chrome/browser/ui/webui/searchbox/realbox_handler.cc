@@ -31,12 +31,12 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/prefs/pref_service.h"
+#include "components/omnibox/composebox/contextual_session_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "net/cookies/cookie_util.h"
 #include "contextual_searchbox_handler.h"
+#include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/webui/resource_path.h"
@@ -46,9 +46,7 @@ namespace {
 
 class RealboxOmniboxClient final : public ContextualOmniboxClient {
  public:
-  RealboxOmniboxClient(Profile* profile, content::WebContents* web_contents,
-                       std::unique_ptr<ContextualSessionService::SessionHandle>
-                            contextual_session_handle);
+  RealboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
   ~RealboxOmniboxClient() override;
 
   // OmniboxClient:
@@ -57,12 +55,9 @@ class RealboxOmniboxClient final : public ContextualOmniboxClient {
   void OnBookmarkLaunched() override;
 };
 
-RealboxOmniboxClient::RealboxOmniboxClient(
-    Profile* profile, content::WebContents* web_contents,
-    std::unique_ptr<ContextualSessionService::SessionHandle>
-        contextual_session_handle)
-    : ContextualOmniboxClient(profile, web_contents,
-                              std::move(contextual_session_handle)) {}
+RealboxOmniboxClient::RealboxOmniboxClient(Profile* profile,
+                                           content::WebContents* web_contents)
+    : ContextualOmniboxClient(profile, web_contents) {}
 
 RealboxOmniboxClient::~RealboxOmniboxClient() = default;
 
@@ -80,10 +75,6 @@ void RealboxOmniboxClient::OnBookmarkLaunched() {
 
 RealboxHandler::RealboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
-    std::unique_ptr<ContextualSessionService::SessionHandle>
-        contextual_session_handle,
-    std::unique_ptr<ContextualSessionService::SessionHandle>
-        secondary_contextual_session_handle,
     std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     Profile* profile,
     content::WebContents* web_contents)
@@ -94,12 +85,8 @@ RealboxHandler::RealboxHandler(
           std::move(composebox_metrics_recorder),
           std::make_unique<OmniboxController>(
               /*view=*/nullptr,
-              std::make_unique<RealboxOmniboxClient>(
-                  profile,
-                  web_contents,
-                  std::move(secondary_contextual_session_handle)),
-              kAutocompleteDefaultStopTimerDuration),
-          std::move(contextual_session_handle)) {
+              std::make_unique<RealboxOmniboxClient>(profile, web_contents),
+              kAutocompleteDefaultStopTimerDuration)) {
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 
