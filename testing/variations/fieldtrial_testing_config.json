@@ -235,21 +235,6 @@
             ]
         }
     ],
-    "AccessibilityManifestV3ChromeVox": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3ChromeVox"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityPageZoomV2": [
         {
             "platforms": [

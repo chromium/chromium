@@ -243,13 +243,6 @@ class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
 class ChromeVoxAccessibilityEventRewriterTest
     : public AccessibilityEventRewriterTestBase {
  public:
-  ChromeVoxAccessibilityEventRewriterTest() {
-    // This test suite tests ChromeVox in mv2, so ensure the mv3 feature is
-    // disabled.
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kAccessibilityManifestV3ChromeVox);
-  }
-
   void SetUp() override {
     AccessibilityEventRewriterTestBase::SetUp();
 
@@ -324,7 +317,6 @@ class ChromeVoxAccessibilityEventRewriterTest
  private:
   // Records events delivered to the next event rewriter after spoken feedback.
   ui::test::TestEventRewriter event_recorder_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // The delegate should not intercept events when spoken feedback is disabled.
