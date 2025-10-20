@@ -11,6 +11,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 /** The mediator which implements the logic to add, update and remove modules. */
 @NullMarked
@@ -41,7 +41,7 @@ public class HomeModulesMediator {
     // Freshness score was logged older than 24h are considered stale, and rejected.
     static final long FRESHNESS_THRESHOLD_MS = TimeUnit.HOURS.toMillis(24);
 
-    private final Supplier<Profile> mProfileSupplier;
+    private final ObservableSupplier<Profile> mProfileSupplier;
     private final ModelList mModel;
     private final ModuleRegistry mModuleRegistry;
     private final ModuleDelegateHost mModuleDelegateHost;
@@ -85,7 +85,7 @@ public class HomeModulesMediator {
      * @param model The instance of {@link ModelList} of the RecyclerView.
      */
     public HomeModulesMediator(
-            Supplier<Profile> profileSupplier,
+            ObservableSupplier<Profile> profileSupplier,
             ModelList model,
             ModuleRegistry moduleRegistry,
             ModuleDelegateHost moduleDelegateHost,

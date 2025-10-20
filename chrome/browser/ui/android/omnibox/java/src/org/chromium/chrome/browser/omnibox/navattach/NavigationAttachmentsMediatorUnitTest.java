@@ -48,7 +48,6 @@ import org.chromium.url.GURL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -72,12 +71,14 @@ public class NavigationAttachmentsMediatorUnitTest {
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier = () -> mTabModelSelector;
+    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private final ModelList mTabAttachmentsModelList = new ModelList();
     private final List<Tab> mTabs = new ArrayList<>();
 
     @Before
     public void setUp() {
+        mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
+
         mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
         mContext = RuntimeEnvironment.application;
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);

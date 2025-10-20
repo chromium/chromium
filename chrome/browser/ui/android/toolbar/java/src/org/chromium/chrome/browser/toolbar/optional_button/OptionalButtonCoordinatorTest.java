@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -80,7 +81,7 @@ public class OptionalButtonCoordinatorTest {
                         () -> mMockUserEducationHelper,
                         mMockRootView,
                         mMockIsAnimationAllowedDelegate,
-                        () -> mMockTracker);
+                        new ObservableSupplierImpl<>(mMockTracker));
     }
 
     @Test

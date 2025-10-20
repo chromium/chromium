@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -49,7 +50,7 @@ public final class AutocompleteUIContext {
     public final @Nullable Supplier<ShareDelegate> shareDelegateSupplier;
 
     /** Toolbar position supplier, reporting the on-screen position of the Toolbar. */
-    public final Supplier<@ControlsPosition Integer> toolbarPositionSupplier;
+    public final ObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier;
 
     /**
      * @param context Android context for UI operations
@@ -68,7 +69,7 @@ public final class AutocompleteUIContext {
             BookmarkState bookmarkState,
             Supplier<@Nullable Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
-            Supplier<@ControlsPosition Integer> toolbarPositionSupplier) {
+            ObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         this.context = context;
         this.host = host;
         this.textProvider = textProvider;

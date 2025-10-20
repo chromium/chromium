@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
@@ -43,7 +42,7 @@ public class HomePageButtonsMediator {
     private static final int ID_SETTINGS = 0;
 
     private final Context mContext;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
     private final Supplier<Boolean> mIsHomeButtonMenuDisabled;
     private final Callback<Context> mOnHomeButtonMenuClickCallback;
     private MVCListAdapter.@Nullable ModelList mHomeButtonMenuList;
@@ -68,7 +67,7 @@ public class HomePageButtonsMediator {
      */
     public HomePageButtonsMediator(
             Context context,
-            ObservableSupplier<Profile> profileSupplier,
+            Supplier<@Nullable Profile> profileSupplier,
             PropertyModel model,
             Callback<Context> onHomeButtonMenuClickCallback,
             Supplier<Boolean> isHomepageMenuDisabledSupplier,

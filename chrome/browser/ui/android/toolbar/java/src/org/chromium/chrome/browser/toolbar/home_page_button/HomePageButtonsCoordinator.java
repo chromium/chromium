@@ -21,7 +21,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -74,7 +73,7 @@ public class HomePageButtonsCoordinator implements HomeButtonDisplay {
      */
     public HomePageButtonsCoordinator(
             Context context,
-            ObservableSupplier<Profile> profileSupplier,
+            Supplier<@Nullable Profile> profileSupplier,
             View view,
             Callback<Context> onHomeButtonMenuClickCallback,
             Supplier<Boolean> isHomepageMenuDisabledSupplier,

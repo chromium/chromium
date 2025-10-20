@@ -980,8 +980,6 @@ public class ToolbarManager
                     mUpdateMenuItemHelper.onMenuButtonClicked();
                 };
 
-        // TODO(crbug.com/448691376): Change MenuButtonCoordinator menuButtonStateSupplier argument
-        // to Supplier<@Nullable MenuButtonState> and updated the rest of the code.
         mMenuButtonCoordinator =
                 new MenuButtonCoordinator(
                         mActivity,
@@ -994,7 +992,7 @@ public class ToolbarManager
                         isInOverviewModeSupplier,
                         menuButtonThemeColorProvider,
                         mIncognitoStateProvider,
-                        (Supplier<MenuButtonState>) menuButtonStateSupplier,
+                        menuButtonStateSupplier,
                         onMenuButtonClicked,
                         R.id.menu_button_wrapper,
                         menuButtonVisibilityDelegate);
@@ -1002,8 +1000,6 @@ public class ToolbarManager
 
         // TODO(crbug.com/351005760): Investigate the feasibility of replacing
         // mOverviewModeMenuButtonCoordinator with mMenuButtonCoordinator when Hub is enabled.
-        // TODO(crbug.com/448691376): Change MenuButtonCoordinator menuButtonStateSupplier argument
-        // to Supplier<@Nullable MenuButtonState> and updated the rest of the code.
         mOverviewModeMenuButtonCoordinator =
                 new MenuButtonCoordinator(
                         mActivity,
@@ -1016,7 +1012,7 @@ public class ToolbarManager
                         isInOverviewModeSupplier,
                         overviewModeThemeColorProvider,
                         mIncognitoStateProvider,
-                        (Supplier<MenuButtonState>) menuButtonStateSupplier,
+                        menuButtonStateSupplier,
                         onMenuButtonClicked,
                         R.id.none,
                         menuButtonVisibilityDelegate);
@@ -1062,13 +1058,11 @@ public class ToolbarManager
         } else {
             View homePageButtonsContainer =
                     controlContainer.findViewById(R.id.home_page_buttons_layout);
-            // TODO(crbug.com/448691376): Change HomePageButtonsCoordinator profileSupplier argument
-            // to Supplier<@Nullable Profile> and updated the rest of the code.
             if (homePageButtonsContainer != null) {
                 mHomePageButtonsCoordinator =
                         new HomePageButtonsCoordinator(
                                 mActivity,
-                                (ObservableSupplier<Profile>) profileSupplier,
+                                profileSupplier,
                                 homePageButtonsContainer,
                                 this::onHomeButtonMenuClick,
                                 HomepagePolicyManager::isHomepageLocationManaged,

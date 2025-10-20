@@ -15,6 +15,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -61,7 +62,7 @@ public class TailSuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        () -> ControlsPosition.TOP);
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
         mProcessor = new TailSuggestionProcessor(uiContext);
     }
 

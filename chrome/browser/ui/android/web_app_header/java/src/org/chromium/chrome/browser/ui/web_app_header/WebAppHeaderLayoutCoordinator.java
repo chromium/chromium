@@ -52,6 +52,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * Root component to interact with web app header. This coordinator lazily initializes web app
@@ -255,6 +256,8 @@ public class WebAppHeaderLayoutCoordinator
             mMenuButtonContainer = mView.findViewById(R.id.web_app_menu_button_wrapper);
             mMenuButtonContainer.setVisibility(View.VISIBLE);
 
+            // TODO(crbug.com/453007852): When ObservableSupplier<E> extends Supplier<@Nullable E>,
+            // remove cast to Supplier<@Nullable MenuButtonState>,
             mMenuButtonCoordinator =
                     new MenuButtonCoordinator(
                             mActivity,
@@ -267,7 +270,7 @@ public class WebAppHeaderLayoutCoordinator
                             /* isInOverviewModeSupplier= */ () -> false,
                             mThemeColorProvider,
                             mIncognitoStateProvider,
-                            mMenuButtonStateSupplier,
+                            (Supplier<@Nullable MenuButtonState>) mMenuButtonStateSupplier,
                             /* onMenuButtonClicked= */ () -> {},
                             R.id.menu_button_wrapper,
                             /* visibilityDelegate= */ null);

@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -98,7 +99,7 @@ public class ClipboardSuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        () -> ControlsPosition.TOP);
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
         mProcessor = new ClipboardSuggestionProcessor(uiContext);
         mRootView = new LinearLayout(mContext);
         mTitleTextView = new TextView(mContext);

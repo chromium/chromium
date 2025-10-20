@@ -17,6 +17,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -46,7 +47,7 @@ public class OptionalButtonCoordinator {
     private final OptionalButtonMediator mMediator;
     private final OptionalButtonView mView;
     private final Supplier<UserEducationHelper> mUserEducationHelper;
-    private final Supplier<Tracker> mFeatureEngagementTrackerSupplier;
+    private final ObservableSupplier<Tracker> mFeatureEngagementTrackerSupplier;
     private @Nullable Callback<Integer> mTransitionFinishedCallback;
     private @Nullable IphCommandBuilder mIphCommandBuilder;
     private boolean mAlwaysShowActionChip;
@@ -83,7 +84,7 @@ public class OptionalButtonCoordinator {
             Supplier<UserEducationHelper> userEducationHelper,
             ViewGroup transitionRoot,
             BooleanSupplier isAnimationAllowedPredicate,
-            Supplier<Tracker> featureEngagementTrackerSupplier) {
+            ObservableSupplier<Tracker> featureEngagementTrackerSupplier) {
         mUserEducationHelper = userEducationHelper;
         PropertyModel model =
                 new PropertyModel.Builder(OptionalButtonProperties.ALL_KEYS)

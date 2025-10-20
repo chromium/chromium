@@ -27,6 +27,7 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -132,7 +133,7 @@ public class BaseSuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        () -> ControlsPosition.TOP);
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
         mProcessor = new TestBaseSuggestionProcessor(uiContext);
         mInput = new AutocompleteInput();
         mInput.setPageClassification(

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
@@ -54,7 +56,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Mediator for the Navigation Attachments component. */
 @NullMarked
@@ -67,7 +68,7 @@ class NavigationAttachmentsMediator {
     private final PropertyModel mModel;
     private final NavigationAttachmentsPopup mPopup;
     private final ModelList mModelList;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ModelList mTabAttachmentsModelList;
     private final Drawable mFallbackDrawable;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
@@ -84,7 +85,7 @@ class NavigationAttachmentsMediator {
             ObservableSupplier<Profile> profileObservableSupplier,
             ObservableSupplierImpl<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ModelList tabAttachmentsModelList) {
         mContext = context;
         mWindowAndroid = windowAndroid;
@@ -208,6 +209,7 @@ class NavigationAttachmentsMediator {
         }
 
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        assumeNonNull(tabModelSelector);
         Iterable<Tab> filteredTabs =
                 Iterables.filter(
                         tabModelSelector.getCurrentModel(),

@@ -36,7 +36,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -87,7 +87,7 @@ public class HomeModulesMediatorUnitTest {
         mListItems = new ListItem[MODULE_TYPES];
         mModuleProviderBuilderList = new ModuleProviderBuilder[MODULE_TYPES];
         mModuleProviders = new ModuleProvider[MODULE_TYPES];
-        OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+        ObservableSupplierImpl<Profile> profileSupplier = new ObservableSupplierImpl<>();
         profileSupplier.set(mProfile);
 
         registerModule(0, ModuleType.SINGLE_TAB);

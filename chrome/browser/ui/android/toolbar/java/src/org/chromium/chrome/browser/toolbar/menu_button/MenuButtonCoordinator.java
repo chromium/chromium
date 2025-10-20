@@ -101,7 +101,7 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
             Supplier<Boolean> isInOverviewModeSupplier,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
-            Supplier<MenuButtonState> menuButtonStateSupplier,
+            Supplier<@Nullable MenuButtonState> menuButtonStateSupplier,
             Runnable onMenuButtonClicked,
             @IdRes int menuButtonId,
             @Nullable VisibilityDelegate visibilityDelegate) {

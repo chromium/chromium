@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -53,12 +56,12 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable OmniboxImageSupplier mImageSupplier;
     private final BookmarkState mBookmarkState;
-    private final Supplier<@ControlsPosition Integer> mToolbarPositionSupplier;
+    private final ObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
 
     DropdownItemViewInfoListBuilder(
             Supplier<@Nullable Tab> tabSupplier,
             BookmarkState bookmarkState,
-            Supplier<@ControlsPosition Integer> toolbarPositionSupplier) {
+            ObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mActivityTabSupplier = tabSupplier;
         mImageSupplier = null;
@@ -248,7 +251,7 @@ class DropdownItemViewInfoListBuilder {
 
         boolean toolbarOnBottom =
                 ChromeFeatureList.sAndroidBottomToolbarV2ReverseOrderSuggestionsList.getValue()
-                        && mToolbarPositionSupplier.get() == ControlsPosition.BOTTOM;
+                        && assumeNonNull(mToolbarPositionSupplier.get()) == ControlsPosition.BOTTOM;
         var roundingStartEdge =
                 toolbarOnBottom
                         ? DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED

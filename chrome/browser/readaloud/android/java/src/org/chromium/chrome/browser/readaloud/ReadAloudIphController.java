@@ -22,8 +22,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
-import java.util.function.Supplier;
-
 /**
  * Controller to manage when and how we show ReadAloud in-product-help messages to users in the app
  * menu and the CCT app menu.
@@ -34,7 +32,7 @@ public class ReadAloudIphController {
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
     private final ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
-    private final Supplier<Tab> mCurrentTabSupplier;
+    private final ObservableSupplier<Tab> mCurrentTabSupplier;
     private boolean mShowAppMenuTextBubble;
     private final Runnable mReadabilityUpdateListener = this::maybeShowReadAloudAppMenuIph;
 

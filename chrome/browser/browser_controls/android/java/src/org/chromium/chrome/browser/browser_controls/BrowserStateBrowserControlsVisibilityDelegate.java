@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Handler;
 import android.os.SystemClock;
 
@@ -18,8 +20,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.ui.util.TokenHolder;
-
-import java.util.function.Supplier;
 
 /**
  * Determines the desired visibility of the browser controls based on the current state of the
@@ -38,7 +38,7 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
     private final Handler mHandler = new Handler();
 
     /** Predicate that tells if we're in persistent fullscreen mode. */
-    private final Supplier<Boolean> mPersistentFullscreenMode;
+    private final ObservableSupplier<Boolean> mPersistentFullscreenMode;
 
     private long mCurrentShowingStartTime;
 
@@ -113,7 +113,9 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
     }
 
     private @BrowserControlsState int calculateVisibilityConstraints() {
-        if (mPersistentFullscreenMode.get()) {
+        Boolean fullScreenMode = mPersistentFullscreenMode.get();
+        assumeNonNull(fullScreenMode);
+        if (fullScreenMode) {
             return BrowserControlsState.HIDDEN;
         } else if (ChromeFeatureList.sToolbarScrollAblation.isEnabled()
                 || (mTokenHolder.hasTokens() && !sDisableOverridesForTesting)) {

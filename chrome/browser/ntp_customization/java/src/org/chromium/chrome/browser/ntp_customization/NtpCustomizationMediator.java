@@ -71,7 +71,7 @@ public class NtpCustomizationMediator {
     private final BottomSheetObserver mBottomSheetObserver;
     private final PropertyModel mViewFlipperPropertyModel;
     private final List<Integer> mListContent;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
     private final @Nullable PropertyModel mContainerPropertyModel;
     private final boolean mNtpCustomizationForMvtFeatureEnabled;
     private @Nullable Profile mProfile;
@@ -85,7 +85,7 @@ public class NtpCustomizationMediator {
             NtpCustomizationBottomSheetContent bottomSheetContent,
             PropertyModel viewFlipperPropertyModel,
             @Nullable PropertyModel containerPropertyModel,
-            Supplier<Profile> profileSupplier) {
+            Supplier<@Nullable Profile> profileSupplier) {
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mViewFlipperPropertyModel = viewFlipperPropertyModel;

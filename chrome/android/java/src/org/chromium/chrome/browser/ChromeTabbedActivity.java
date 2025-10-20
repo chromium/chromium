@@ -3926,7 +3926,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mTabModelSelector.selectModel(false);
             RecordUserAction.record("MobileMenuSwitchOutOfIncognito");
         } else if (id == R.id.ntp_customization_id) {
-            Supplier<Profile> profileSupplier =
+            Supplier<@Nullable Profile> profileSupplier =
                     () -> {
                         var profileProvider = getProfileProviderSupplier().get();
                         return profileProvider != null

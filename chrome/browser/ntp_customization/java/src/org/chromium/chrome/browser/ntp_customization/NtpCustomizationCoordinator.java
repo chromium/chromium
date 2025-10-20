@@ -50,7 +50,7 @@ public class NtpCustomizationCoordinator {
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
     private final int mBottomSheetType;
     private NtpCustomizationMediator mMediator;
     private @Nullable MvtSettingsCoordinator mMvtSettingCoordinator;
@@ -116,7 +116,7 @@ public class NtpCustomizationCoordinator {
     public NtpCustomizationCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
-            Supplier<Profile> profileSupplier,
+            Supplier<@Nullable Profile> profileSupplier,
             @BottomSheetType int bottomSheetType) {
         mContext = context;
         mBottomSheetController = bottomSheetController;

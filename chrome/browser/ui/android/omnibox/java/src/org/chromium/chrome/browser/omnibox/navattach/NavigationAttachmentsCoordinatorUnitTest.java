@@ -53,7 +53,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /** Unit tests for {@link NavigationAttachmentsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -74,7 +73,8 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     private NavigationAttachmentsCoordinator mCoordinator;
     private ViewGroup mParent;
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier = () -> mTabModelSelector;
+    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
+            new ObservableSupplierImpl<>(mTabModelSelector);
     private final Function<Tab, Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
     private final List<Tab> mTabs = new ArrayList<>();
 

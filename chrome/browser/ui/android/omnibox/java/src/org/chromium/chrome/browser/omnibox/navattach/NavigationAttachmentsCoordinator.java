@@ -25,8 +25,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
-import java.util.function.Supplier;
-
 /** Coordinator for the Navigation Attachments component. */
 @NullMarked
 public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener {
@@ -45,7 +43,7 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
             ViewGroup parent,
             ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
-            Supplier<TabModelSelector> tabModelSelectorSupplier) {
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.location_bar_attachments_toolbar) == null) {
             mMediator = null;
