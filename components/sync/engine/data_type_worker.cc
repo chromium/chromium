@@ -1158,9 +1158,9 @@ void DataTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
 
 bool DataTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
     const std::string& key_name) {
-  return unknown_encryption_keys_by_name_.contains(key_name) &&
-         unknown_encryption_keys_by_name_.at(key_name)
-                 .get_updates_while_should_have_been_known >=
+  auto it = unknown_encryption_keys_by_name_.find(key_name);
+  return it != unknown_encryption_keys_by_name_.end() &&
+         it->second.get_updates_while_should_have_been_known >=
              kMinGuResponsesToIgnoreKey;
 }
 
