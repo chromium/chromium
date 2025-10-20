@@ -26051,6 +26051,21 @@
             ]
         }
     ],
+    "UserLevelMemoryPressureSignalMetricsOnly": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UserLevelMemoryPressureSignalMetricsOnly"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8CodeFlushing": [
         {
             "platforms": [
