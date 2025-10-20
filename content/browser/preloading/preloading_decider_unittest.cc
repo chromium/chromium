@@ -230,8 +230,8 @@ TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider != nullptr);
 
-  const bool use_eager_heurisctics =
-      base::FeatureList::IsEnabled(blink::features::kPreloadingEagerHeuristics);
+  const bool use_eager_heurisctics = base::FeatureList::IsEnabled(
+      blink::features::kPreloadingEagerHoverHeuristics);
 
   // Create list of SpeculationCandidatePtrs.
   std::vector<std::tuple<bool, GURL, blink::mojom::SpeculationAction,
@@ -282,7 +282,7 @@ class PreloadingDeciderPointerEventHeuristicsTest
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
-        blink::features::kPreloadingEagerHeuristics);
+        blink::features::kPreloadingEagerHoverHeuristics);
     PreloadingDeciderTest::SetUp();
   }
 

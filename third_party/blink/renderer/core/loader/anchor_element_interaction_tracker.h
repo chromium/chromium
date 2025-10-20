@@ -104,6 +104,7 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   static constexpr base::TimeDelta kModerateHoverDwellTime{
       base::Milliseconds(200)};
   static base::TimeDelta EagerHoverDwellTime();
+  static base::TimeDelta EagerViewportPresentTime();
 
   void OnMouseMoveEvent(const WebMouseEvent& mouse_event);
   void OnPointerEvent(EventTarget& target, const PointerEvent& pointer_event);

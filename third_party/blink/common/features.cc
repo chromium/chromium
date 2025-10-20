@@ -1929,9 +1929,9 @@ BASE_FEATURE(kPrefetchFontLookupTables,
 );
 #endif
 
-// Launch this feature only on Desktop.
-// TODO(crbug.com/436705485): Support this on mobile.
-BASE_FEATURE(kPreloadingEagerHeuristics,
+// Launch mouse hover feature only on Desktop. Note that Android Desktop mode is
+// currently out of scope.
+BASE_FEATURE(kPreloadingEagerHoverHeuristics,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -1940,10 +1940,17 @@ BASE_FEATURE(kPreloadingEagerHeuristics,
 #endif
 );
 BASE_FEATURE_PARAM(base::TimeDelta,
-                   kPreloadingEagerHeuristicsHoverDwellTime,
-                   &kPreloadingEagerHeuristics,
+                   kPreloadingEagerHoverHeuristicsDwellTime,
+                   &kPreloadingEagerHoverHeuristics,
                    "hover_dwell_time",
                    base::Milliseconds(10));
+BASE_FEATURE(kPreloadingEagerViewportHeuristics,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPreloadingEagerViewportHeuristicsPresentTime,
+                   &kPreloadingEagerViewportHeuristics,
+                   "viewport_present_time",
+                   base::Milliseconds(100));
 
 BASE_FEATURE(kPreloadingHeuristicsMLModel, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,

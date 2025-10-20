@@ -106,7 +106,7 @@ class PreloadingDecider::BehaviorConfig {
         EagernessSet{blink::mojom::SpeculationEagerness::kModerate};
 
     if (base::FeatureList::IsEnabled(
-            blink::features::kPreloadingEagerHeuristics)) {
+            blink::features::kPreloadingEagerHoverHeuristics)) {
       pointer_down_eagerness_.Put(blink::mojom::SpeculationEagerness::kEager);
       pointer_hover_eagerness_.Put(blink::mojom::SpeculationEagerness::kEager);
     }
@@ -335,7 +335,7 @@ void PreloadingDecider::OnPointerHover(
   // Filter `kModerate` for the "eager" mouse hover to prevent false preloading.
   EagernessSet eagerness_to_exclude;
   if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingEagerHeuristics)) {
+          blink::features::kPreloadingEagerHoverHeuristics)) {
     eagerness_to_exclude = EagernessSet::All();
     eagerness_to_exclude.Remove(target_eagerness);
   }

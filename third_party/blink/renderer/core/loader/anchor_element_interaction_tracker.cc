@@ -299,7 +299,14 @@ void AnchorElementInteractionTracker::Trace(Visitor* visitor) const {
 
 // static
 base::TimeDelta AnchorElementInteractionTracker::EagerHoverDwellTime() {
-  return blink::features::kPreloadingEagerHeuristicsHoverDwellTime.Get();
+  static const base::TimeDelta time =
+      blink::features::kPreloadingEagerHoverHeuristicsDwellTime.Get();
+  return time;
+}
+base::TimeDelta AnchorElementInteractionTracker::EagerViewportPresentTime() {
+  static const base::TimeDelta time =
+      blink::features::kPreloadingEagerViewportHeuristicsPresentTime.Get();
+  return time;
 }
 
 void AnchorElementInteractionTracker::OnMouseMoveEvent(
@@ -366,7 +373,7 @@ void AnchorElementInteractionTracker::OnPointerEvent(
 
   if (event_type == event_type_names::kPointerover) {
     if (base::FeatureList::IsEnabled(
-            blink::features::kPreloadingEagerHeuristics)) {
+            blink::features::kPreloadingEagerHoverHeuristics)) {
       // TODO(https://crbug.com/40287486): guard this to only be on desktop, and
       // implement the liberal viewport behavior on mobile. Ideally in a way
       // that works with DevTools emulation.
@@ -387,7 +394,7 @@ void AnchorElementInteractionTracker::OnPointerEvent(
             .timestamp = clock_->NowTicks() + kModerateHoverDwellTime});
     if (!hover_timer_.IsActive()) {
       if (base::FeatureList::IsEnabled(
-              blink::features::kPreloadingEagerHeuristics)) {
+              blink::features::kPreloadingEagerHoverHeuristics)) {
         // Start the timer only for the eager timeout, which will be sooner. It
         // will re-schedule itself for the moderate deadline if necessary.
         hover_timer_.StartOneShot(EagerHoverDwellTime(), FROM_HERE);
@@ -478,7 +485,7 @@ void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
       if (hover_event_candidate.key.second ==
           blink::mojom::SpeculationEagerness::kEager) {
         CHECK(base::FeatureList::IsEnabled(
-            blink::features::kPreloadingEagerHeuristics));
+            blink::features::kPreloadingEagerHoverHeuristics));
         interaction_host_->OnPointerHoverEager(hover_event_candidate.key.first,
                                                std::move(pointer_data));
       } else if (hover_event_candidate.key.second ==

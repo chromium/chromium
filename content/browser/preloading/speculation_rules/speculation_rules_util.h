@@ -17,15 +17,15 @@ namespace content {
 inline constexpr bool IsImmediateSpeculationEagerness(
     blink::mojom::SpeculationEagerness eagerness) {
   switch (eagerness) {
-    // Currently, `kEager` behaves the same as `kImmediate`,
-    // but it will be changed in the near future as ongoing improvements on
-    // `kEager` trigger strategies.
-    // TODO(crbug.com/40287486): Update this according to the latest situation.
     case blink::mojom::SpeculationEagerness::kImmediate:
       return true;
+    // Historically, `kEager` behaves the same as `kImmediate`, but it is
+    // changed as ongoing improvements on `kEager` trigger strategies.
     case blink::mojom::SpeculationEagerness::kEager:
       return !base::FeatureList::IsEnabled(
-          blink::features::kPreloadingEagerHeuristics);
+                 blink::features::kPreloadingEagerHoverHeuristics) &&
+             !base::FeatureList::IsEnabled(
+                 blink::features::kPreloadingEagerViewportHeuristics);
     case blink::mojom::SpeculationEagerness::kModerate:
     case blink::mojom::SpeculationEagerness::kConservative:
       return false;

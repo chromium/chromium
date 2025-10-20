@@ -177,7 +177,7 @@ class AnchorElementMetricsSenderTest : public SimTest {
 
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kNavigationPredictor, nav_predictor_params},
-         {features::kPreloadingEagerHeuristics, eager_heuristics_params}},
+         {features::kPreloadingEagerHoverHeuristics, eager_heuristics_params}},
         {});
 
     IntersectionObserver::SetThrottleDelayEnabledForTesting(false);

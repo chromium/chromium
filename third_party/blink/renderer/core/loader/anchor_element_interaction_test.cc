@@ -404,7 +404,7 @@ class AnchorElementInteractionEagerHeuristicsTest
  public:
   AnchorElementInteractionEagerHeuristicsTest()
       : base::test::WithFeatureOverride(
-            blink::features::kPreloadingEagerHeuristics) {}
+            blink::features::kPreloadingEagerHoverHeuristics) {}
 };
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
@@ -697,7 +697,7 @@ TEST_F(AnchorElementInteractionTest, MouseVelocitySent) {
 
   ASSERT_EQ(hosts_.size(), 1u);
   if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingEagerHeuristics)) {
+          blink::features::kPreloadingEagerHoverHeuristics)) {
     // This feature doubles the `kOnPointerHover` calls by adding an `eager`
     // hover notification in advance of each `moderate` hover.
     ASSERT_EQ(hosts_[0]->calls_.size(), 2u);

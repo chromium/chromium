@@ -10599,7 +10599,7 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID)
     sub_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPreloadingEagerHeuristics,
+        blink::features::kPreloadingEagerHoverHeuristics,
         {{"hover_dwell_time", "50ms"}});
     PrerenderBrowserTest::SetUp();
 #else
@@ -10733,8 +10733,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kImmediate) {
 }
 
 // Tests speculation rules prerendering where the eagerness is "eager".
-// Unless `kPreloadingEagerHeuristics` is enabled, its behavior is the same as
-// that of "immediate"; otherwise, there are dedicated rules to activate
+// Unless `kPreloadingEagerHoverHeuristics` is enabled, its behavior is the same
+// as that of "immediate"; otherwise, there are dedicated rules to activate
 // speculative loads.
 IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kEager) {
   const GURL initial_url = GetUrl("/empty.html");
@@ -10745,10 +10745,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kEager) {
   InsertAnchor(prerendering_url);
 
   if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingEagerHeuristics)) {
+          blink::features::kPreloadingEagerHoverHeuristics)) {
     const base::TimeDelta moderate_hover_time = base::Milliseconds(200);
     const base::TimeDelta eager_hover_time =
-        blink::features::kPreloadingEagerHeuristicsHoverDwellTime.Get();
+        blink::features::kPreloadingEagerHoverHeuristicsDwellTime.Get();
     ASSERT_LE(eager_hover_time, moderate_hover_time);
     // Use `eager_hover_time` + eps. The median time can cause flakiness.
     const base::TimeDelta mid_hover_time =
@@ -10771,7 +10771,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kEager) {
     EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
         prerendering_url, blink::mojom::SpeculationAction::kPrerender));
     // Hover the anchor of the prerendering page. When eagerness is "eager" with
-    // `kPreloadingEagerHeuristics` enabled, this interaction invokes the
+    // `kPreloadingEagerHoverHeuristics` enabled, this interaction invokes the
     // creation of |PrerenderHost|.
     // TODO(crbug.com/435622290): Test this on Mac
 #if !BUILDFLAG(IS_MAC)
@@ -10793,8 +10793,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kEager) {
     auto* preloading_decider =
         PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
     // Add speculation rules with the "eager" eagerness.
-    // With `kPreloadingEagerHeuristics` disabled, the eagerness is the same as
-    // "immediate", speculation candidates will never be kept in the
+    // With `kPreloadingEagerHoverHeuristics` disabled, the eagerness is the
+    // same as "immediate", speculation candidates will never be kept in the
     // |on_standby_candidates_| on |PreloadingDecider|, and |PrerenderHost| will
     // be created immediately.
     AddPrerenderWithEagernessAsync(prerendering_url,
@@ -10844,10 +10844,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kModerate) {
   // Hover the anchor of the prerendering page so briefly that only the hover
   // event for "eager" is triggered but not triggered for "moderate".
   if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingEagerHeuristics)) {
+          blink::features::kPreloadingEagerHoverHeuristics)) {
     const base::TimeDelta moderate_hover_time = base::Milliseconds(200);
     const base::TimeDelta eager_hover_time =
-        blink::features::kPreloadingEagerHeuristicsHoverDwellTime.Get();
+        blink::features::kPreloadingEagerHoverHeuristicsDwellTime.Get();
     // Use `eager_hover_time` + eps. The median time can cause flakiness.
     const base::TimeDelta mid_hover_time =
         eager_hover_time + (moderate_hover_time - eager_hover_time) / 10;
@@ -10983,7 +10983,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest,
     GURL prerendering_url_eager =
         GetUrl("/empty.html?prerender_eager_" + base::NumberToString(i));
     if (base::FeatureList::IsEnabled(
-            blink::features::kPreloadingEagerHeuristics)) {
+            blink::features::kPreloadingEagerHoverHeuristics)) {
       InsertAnchor(prerendering_url_eager);
       AddPrerenderWithEagernessAsync(
           prerendering_url_eager, blink::mojom::SpeculationEagerness::kEager);
