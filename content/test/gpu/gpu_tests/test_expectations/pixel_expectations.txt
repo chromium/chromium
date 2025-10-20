@@ -284,6 +284,9 @@ crbug.com/1372155 [ android android-sm-a137f ] Pixel_WebGLFloat [ Skip ]
 [ android ] Pixel_MeetEffects* [ Skip ]
 [ fuchsia ] Pixel_MeetEffects* [ Skip ]
 
+# WebGpu is not supported on x86 nvidia
+crbug.com/42240193 [ win10 nvidia target-cpu-32 ] Pixel_WebGPU* [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
