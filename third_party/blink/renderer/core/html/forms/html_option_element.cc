@@ -540,18 +540,21 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
   HTMLElement::DefaultEventHandler(event);
 }
 
-namespace {
-bool OptionIsVisible(HTMLOptionElement& option) {
-  PhysicalRect popover_rect =
-      option.OwnerSelectElement()->PopoverPickerElement()->BoundingBox();
-  PhysicalRect option_rect = option.BoundingBox();
-  LayoutUnit popover_top = popover_rect.Y();
-  LayoutUnit option_top = option_rect.Y();
-  return option_top >= popover_top && option_top + option_rect.Height() <=
-                                          popover_top + popover_rect.Height();
-}
-}  // namespace
+bool HTMLOptionElement::IsVisibleInViewport() {
+  HTMLSelectElement* select = OwnerSelectElement();
+  if (!select) {
+    return false;
+  }
 
+  PhysicalRect listbox_rect =
+      select->UsesMenuList() ? select->PopoverPickerElement()->BoundingBox()
+                             : select->BoundingBox();
+  PhysicalRect option_rect = BoundingBox();
+  LayoutUnit listbox_top = listbox_rect.Y();
+  LayoutUnit option_top = option_rect.Y();
+  return option_top >= listbox_top && option_top + option_rect.Height() <=
+                                          listbox_top + listbox_rect.Height();
+}
 void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   auto* select = OwnerSelectElement();
   if (!select) {
@@ -650,13 +653,13 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           return;
         }
       } else if (key == keywords::kPageDown) {
-        if (!OptionIsVisible(*this)) {
+        if (!IsVisibleInViewport()) {
           // If the option isn't visible at all right now, *only* scroll it into
           // view.
           scrollIntoViewIfNeeded(/*center_if_needed*/ false);
         } else {
           auto* next_option = options.NextFocusableOption(*this);
-          if (next_option && !OptionIsVisible(*next_option)) {
+          if (next_option && !next_option->IsVisibleInViewport()) {
             // The next option isn't visible, which means we were at the very
             // bottom. Scroll the current option to the top, and then focus the
             // bottom one.
@@ -670,7 +673,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           }
           // Then find the last option that is still in the view.
           HTMLOptionElement* next_focus = this;
-          for (auto* current = this; current && OptionIsVisible(*current);
+          for (auto* current = this; current && current->IsVisibleInViewport();
                current = options.NextFocusableOption(*current)) {
             next_focus = current;
           }
@@ -678,13 +681,13 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
         }
         event.SetDefaultHandled();
       } else if (key == keywords::kPageUp) {
-        if (!OptionIsVisible(*this)) {
+        if (!IsVisibleInViewport()) {
           // If the option isn't visible at all right now, *only* scroll it into
           // view.
           scrollIntoViewIfNeeded(/*center_if_needed*/ false);
         } else {
           auto* previous_option = options.PreviousFocusableOption(*this);
-          if (previous_option && !OptionIsVisible(*previous_option)) {
+          if (previous_option && !previous_option->IsVisibleInViewport()) {
             // The previous option isn't visible, which means we were at the
             // very top. Scroll the current option to the bottom, and then focus
             // the top one.
@@ -698,7 +701,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           }
           // Then find the first option that is in the view.
           HTMLOptionElement* next_focus = this;
-          for (auto* current = this; current && OptionIsVisible(*current);
+          for (auto* current = this; current && current->IsVisibleInViewport();
                current = options.PreviousFocusableOption(*current)) {
             next_focus = current;
           }

@@ -148,6 +148,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // select's picker, and set default handled on the event.
   void ChooseOption(Event&);
 
+  bool IsVisibleInViewport();
+
   Member<OptionTextObserver> text_observer_;
 
   // The closest ancestor <select> in the DOM tree, without crossing any shadow
