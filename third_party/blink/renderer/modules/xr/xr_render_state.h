@@ -20,6 +20,7 @@ class HTMLCanvasElement;
 class XRWebGLLayer;
 class XRLayer;
 class XRRenderStateInit;
+class XRFrameTransportDelegate;
 
 class XRRenderState : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -43,9 +44,29 @@ class XRRenderState : public ScriptWrappable {
 
   void Update(const XRRenderStateInit* init);
 
+  // Returns true if any layer was updated since the last status read.
+  bool NeedLayersUpdate();
+  void OnLayersUpdated();
+
+  // Calls OnFrameStart for each active layer.
+  void OnFrameStart();
+  // Calls OnFrameEnd for each active layer.
+  void OnFrameEnd();
+  // Calls OnResize for each active layer.
+  void OnResize();
+
   // Only used when removing an outputContext from the session because it was
   // bound to a different session.
   void removeOutputContext();
+
+  // Returns true if the current render state has at least one layer configured
+  // for drawing. This could be either the baseLayer or a non-empty layers
+  // list.
+  bool HasActiveLayer() const;
+
+  // Gets the transport delegate from the baseLayer, or from the last layer in
+  // the layers list if baseLayer is null.
+  XRFrameTransportDelegate* GetTransportDelegate();
 
   void Trace(Visitor*) const override;
 
@@ -56,6 +77,7 @@ class XRRenderState : public ScriptWrappable {
   Member<XRWebGLLayer> base_layer_;
   Member<FrozenArray<XRLayer>> layers_ =
       MakeGarbageCollected<FrozenArray<XRLayer>>();
+  bool needs_layers_update_ = false;
   std::optional<double> inline_vertical_fov_;
 };
 

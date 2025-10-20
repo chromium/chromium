@@ -1097,7 +1097,12 @@ interface XRPresentationProvider {
                                gpu.mojom.SyncToken sync_token);
 
   // XRPresentationTransportMethod DRAW_INTO_TEXTURE_MAILBOX
+  // If layer_ids is empty, the base layer will be used.
+  // Only when WebXR Layers feature is enabled, layer_ids can be
+  // non-empty. In such a case, the Open XR textures of the specified
+  // layers will be updated.
   SubmitFrameDrawnIntoTexture(int16 frame_id,
+                              array<LayerId> layer_ids,
                               gpu.mojom.SyncToken sync_token,
                               mojo_base.mojom.TimeDelta time_waited);
 };

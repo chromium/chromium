@@ -74,6 +74,7 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
                    const gpu::MailboxHolder& mailbox,
                    base::TimeDelta time_waited) override;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,
+                                   const std::vector<LayerId>& layer_ids,
                                    const gpu::SyncToken&,
                                    base::TimeDelta time_waited) override;
 

@@ -2400,7 +2400,7 @@ class MockXRPresentationProvider {
 
   submitFrameWithTextureHandle(frameId, texture, syncToken) {}
 
-  submitFrameDrawnIntoTexture(frameId, syncToken, timeWaited) {}
+  submitFrameDrawnIntoTexture(frameId, layer_ids, syncToken, timeWaited) {}
 
   // Utility methods
   _close() {

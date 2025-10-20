@@ -85,7 +85,7 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
 
   WebGLRenderingContextBase* context() const { return webgl_context_.Get(); }
 
-  XRFrameTransportDelegate* GetTransportDelegate();
+  XRFrameTransportDelegate* GetTransportDelegate() override;
 
   void Trace(Visitor*) const override;
 

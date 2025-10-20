@@ -36,8 +36,7 @@ class PLATFORM_EXPORT XRGpuFrameTransportContext
 // implementation here, which takes the FrameTransportContext to help with any
 // dependency injection we need.
 class PLATFORM_EXPORT XrGpuFrameTransportDelegate
-    : public GarbageCollected<XrGpuFrameTransportDelegate>,
-      public XRFrameTransportDelegate {
+    : public XRFrameTransportDelegate {
  public:
   explicit XrGpuFrameTransportDelegate(
       XRGpuFrameTransportContext* context_provider);
@@ -51,7 +50,7 @@ class PLATFORM_EXPORT XrGpuFrameTransportDelegate
       bool last_transfer_succeeded) override;
 
   // GarbageCollected override
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
  private:
   Member<XRGpuFrameTransportContext> context_provider_;

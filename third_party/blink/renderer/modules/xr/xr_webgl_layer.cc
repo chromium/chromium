@@ -469,7 +469,8 @@ void XRWebGLLayer::OnFrameEnd() {
       }
 
       // Always call submit, but notify if the contents were changed or not.
-      session()->xr()->frameProvider()->SubmitLayer(this, framebuffer_dirty);
+      session()->xr()->frameProvider()->SubmitLayer(layer_id(), this,
+                                                    framebuffer_dirty);
     }
   }
 }
@@ -501,6 +502,10 @@ XRSession* XRWebGLLayer::session() const {
 
 XRFrameTransportDelegate* XRWebGLLayer::GetTransportDelegate() {
   return transport_delegate_;
+}
+
+XrLayerClient* XRWebGLLayer::LayerClient() {
+  return this;
 }
 
 void XRWebGLLayer::Trace(Visitor* visitor) const {

@@ -1213,13 +1213,21 @@ void ArCoreGl::TransitionProcessingFrameToRendering() {
   }
 }
 
-void ArCoreGl::SubmitFrameDrawnIntoTexture(int16_t frame_index,
-                                           const gpu::SyncToken& sync_token,
-                                           base::TimeDelta time_waited) {
+void ArCoreGl::SubmitFrameDrawnIntoTexture(
+    int16_t frame_index,
+    const std::vector<LayerId>& layer_ids,
+    const gpu::SyncToken& sync_token,
+    base::TimeDelta time_waited) {
   TRACE_EVENT1("gpu", "ArCoreGl::SubmitFrameDrawnIntoTexture", "frame",
                frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
   DCHECK(ar_compositor_);
+
+  if (!layer_ids.empty()) {
+    presentation_receiver_.ReportBadMessage(
+        "Layers feature not enabled for this session");
+    return;
+  }
 
   if (!IsSubmitFrameExpected(frame_index))
     return;

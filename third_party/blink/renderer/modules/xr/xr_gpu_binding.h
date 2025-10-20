@@ -59,7 +59,7 @@ class XRGPUBinding final : public ScriptWrappable,
                                XRViewData* view) override;
 
   scoped_refptr<DawnControlClientHolder> GetDawnControlClient() const override;
-  XrGpuFrameTransportDelegate* GetTransportDelegate();
+  XrGpuFrameTransportDelegate* GetTransportDelegate() override;
 
   void Trace(Visitor*) const override;
 

@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "third_party/blink/renderer/modules/xr/xr_id_hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -26,7 +28,7 @@ enum class XRSharedImageSource {
 // incorporated into |gpu::ClientSharedImage|.
 struct XRSharedImageData {
   XRSharedImageSource source = XRSharedImageSource::kInvalid;
-  uint64_t layer_id = 0;
+  device::LayerId layer_id = device::kInvalidLayerId;
   scoped_refptr<gpu::ClientSharedImage> shared_image;
   gpu::SyncToken sync_token;
 };
@@ -40,8 +42,8 @@ class XRLayerSharedImageManager {
   void SetSharedImages(XRLayer* base_layer,
                        Vector<XRSharedImageData> shared_images);
   const XRSharedImageData& CameraSharedImage() const;
-  const XRSharedImageData& LayerSharedImage(uint32_t layer_id) const;
-  bool HasLayerSharedImage(uint32_t layer_id) const;
+  const XRSharedImageData& LayerSharedImage(device::LayerId layer_id) const;
+  bool HasLayerSharedImage(device::LayerId layer_id) const;
 
  private:
   // keep all shared images in a vector

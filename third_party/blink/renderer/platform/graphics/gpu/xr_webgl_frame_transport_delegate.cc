@@ -68,6 +68,7 @@ XRWebGLFrameTransportDelegate::CopyImage(
 
 void XRWebGLFrameTransportDelegate::Trace(Visitor* visitor) const {
   visitor->Trace(context_provider_);
+  XRFrameTransportDelegate::Trace(visitor);
 }
 
 }  // namespace blink

@@ -891,6 +891,7 @@ void OpenXrRenderLoop::SubmitFrame(int16_t frame_index,
 
 void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
+    const std::vector<LayerId>& layer_ids,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("xr", "OpenXrRenderLoop::WaitSyncToken",
@@ -901,8 +902,8 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
   const GLuint id = gl->CreateGpuFenceCHROMIUM();
   context_provider_->ContextSupport()->GetGpuFence(
       id, base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,
-                         weak_ptr_factory_.GetWeakPtr(), frame_index,
-                         std::vector<LayerId>(), id));
+                         weak_ptr_factory_.GetWeakPtr(), frame_index, layer_ids,
+                         id));
 }
 
 void OpenXrRenderLoop::OnWebXrTokenSignaled(

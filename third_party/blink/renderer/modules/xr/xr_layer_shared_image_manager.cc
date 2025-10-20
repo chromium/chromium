@@ -42,7 +42,7 @@ const XRSharedImageData& XRLayerSharedImageManager::CameraSharedImage() const {
 }
 
 const XRSharedImageData& XRLayerSharedImageManager::LayerSharedImage(
-    uint32_t layer_id) const {
+    device::LayerId layer_id) const {
   auto it = std::find_if(shared_images_.begin(), shared_images_.end(),
                          [layer_id](const XRSharedImageData& shared_image) {
                            return shared_image.layer_id == layer_id;
@@ -55,7 +55,8 @@ const XRSharedImageData& XRLayerSharedImageManager::LayerSharedImage(
   return empty_;
 }
 
-bool XRLayerSharedImageManager::HasLayerSharedImage(uint32_t layer_id) const {
+bool XRLayerSharedImageManager::HasLayerSharedImage(
+    device::LayerId layer_id) const {
   return std::any_of(shared_images_.begin(), shared_images_.end(),
                      [layer_id](const XRSharedImageData& shared_image) {
                        return shared_image.layer_id == layer_id;

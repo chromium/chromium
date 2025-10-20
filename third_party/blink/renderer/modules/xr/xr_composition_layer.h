@@ -50,6 +50,8 @@ class XRCompositionLayer : public XRLayer {
 
   XRLayerDrawingContext* drawing_context() { return drawing_context_; }
 
+  XrLayerClient* LayerClient() override;
+
   void Trace(Visitor*) const override;
 
  protected:

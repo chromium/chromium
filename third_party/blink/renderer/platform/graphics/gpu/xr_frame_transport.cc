@@ -85,6 +85,7 @@ void XRFrameTransport::FrameSubmitMissing(
     XRFrameTransportDelegate* delegate,
     int16_t vr_frame_id) {
   TRACE_EVENT0("gpu", "FrameSubmitMissing");
+  CHECK(delegate);
   vr_presentation_provider->SubmitFrameMissing(vr_frame_id,
                                                delegate->GenerateSyncToken());
 }
@@ -92,9 +93,11 @@ void XRFrameTransport::FrameSubmitMissing(
 bool XRFrameTransport::FrameSubmit(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     XRFrameTransportDelegate* delegate,
-    scoped_refptr<StaticBitmapImage> image_ref,
+    Vector<device::LayerId> layer_ids,
+    Vector<scoped_refptr<StaticBitmapImage>> image_refs,
     int16_t vr_frame_id) {
   DCHECK(transport_options_);
+  CHECK(delegate);
 
   if (transport_options_->transport_method ==
       device::mojom::blink::XRPresentationTransportMethod::
@@ -106,9 +109,11 @@ bool XRFrameTransport::FrameSubmit(
     if (transport_options_->wait_for_transfer_notification) {
       WaitForPreviousTransfer();
     }
-
+    // TODO(crbug.com/359418629): This only works because we're restricted to a
+    // single layer at the moment.
+    CHECK_EQ(image_refs.size(), 1UL);
     auto [gpu_memory_buffer_handle, sync_token] =
-        delegate->CopyImage(image_ref, last_transfer_succeeded_);
+        delegate->CopyImage(*image_refs.begin(), last_transfer_succeeded_);
 
     // We can fail to obtain a GMB handle if we don't have GPU support, or
     // for some out-of-memory situations.
@@ -136,11 +141,13 @@ bool XRFrameTransport::FrameSubmit(
   } else if (transport_options_->transport_method ==
              device::mojom::blink::XRPresentationTransportMethod::
                  SUBMIT_AS_MAILBOX_HOLDER) {
+    CHECK_EQ(image_refs.size(), 1UL);
+
     // The AcceleratedStaticBitmapImage must be kept alive until the
     // mailbox is used via CreateAndTexStorage2DSharedImageCHROMIUM, the mailbox
     // itself does not keep it alive. We must keep a reference to the
     // image until the mailbox was consumed.
-    StaticBitmapImage* static_image = image_ref.get();
+    StaticBitmapImage* static_image = image_refs.begin()->get();
     static_image->EnsureSyncTokenVerified();
 
     // Conditionally wait for the previous render to finish. A late wait here
@@ -158,7 +165,7 @@ bool XRFrameTransport::FrameSubmit(
     if (transport_options_->wait_for_transfer_notification) {
       WaitForPreviousTransfer();
     }
-    previous_image_ = std::move(image_ref);
+    previous_images_ = std::move(image_refs);
 
     // Create mailbox and sync token for transfer.
     TRACE_EVENT_BEGIN0("gpu", "XRFrameTransport::GetMailbox");
@@ -181,7 +188,7 @@ bool XRFrameTransport::FrameSubmit(
       frame_wait_time_ += WaitForPreviousRenderToFinish();
     }
     vr_presentation_provider->SubmitFrameDrawnIntoTexture(
-        vr_frame_id, sync_token, frame_wait_time_);
+        vr_frame_id, std::move(layer_ids), sync_token, frame_wait_time_);
   } else {
     NOTREACHED() << "Unimplemented frame transport method";
   }

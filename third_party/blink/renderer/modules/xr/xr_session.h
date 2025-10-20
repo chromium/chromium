@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "device/vr/public/mojom/layer_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "device/vr/public/mojom/xr_session.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -73,7 +74,7 @@ class XRSystem;
 class XRTransientInputHitTestOptionsInit;
 class XRTransientInputHitTestSource;
 class XRViewData;
-class XRLayer;
+class XRFrameTransportDelegate;
 
 template <typename IDLType>
 class FrozenArray;
@@ -426,7 +427,9 @@ class XRSession final : public EventTarget,
     return layer_shared_image_manager_;
   }
 
-  uint32_t GetNextLayerId() { return ++last_layer_id_; }
+  device::LayerId GetNextLayerId() {
+    return layer_id_generator_.GenerateNextId();
+  }
 
  private:
   class XRSessionResizeObserverDelegate;
@@ -613,7 +616,7 @@ class XRSession final : public EventTarget,
 
   Member<XRFrame> animation_frame_ = nullptr;
   Member<XRInputSourceArray> input_sources_;
-  Member<XRLayer> prev_base_layer_;
+  Member<XRFrameTransportDelegate> prev_transport_delegate_ = nullptr;
   Member<ResizeObserver> resize_observer_;
   Member<XRCanvasInputProvider> canvas_input_provider_;
   Member<Element> overlay_element_;
@@ -647,6 +650,11 @@ class XRSession final : public EventTarget,
 
   bool canvas_was_resized_ = false;
 
+  // True if the 'layers' feature was requested for the current session.
+  bool layers_enabled_ = false;
+  // Used to synchronize the active render state with the layers backend.
+  bool should_update_layers_backend_ = false;
+
   // Indicates that we've already logged a metric, so don't need to log it
   // again.
   mutable bool did_log_getInputSources_ = false;
@@ -666,7 +674,8 @@ class XRSession final : public EventTarget,
   bool sensorless_session_ = false;
 
   int16_t last_frame_id_ = -1;
-  uint32_t last_layer_id_ = 0;
+
+  device::LayerId::Generator layer_id_generator_;
 
   bool emulated_position_ = false;
 

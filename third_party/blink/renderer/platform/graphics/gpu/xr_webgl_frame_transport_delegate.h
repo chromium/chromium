@@ -45,8 +45,7 @@ class PLATFORM_EXPORT XRWebGLFrameTransportContext
 // implementation here, which takes the FrameTransportContext to help with any
 // dependency injection we need.
 class PLATFORM_EXPORT XRWebGLFrameTransportDelegate
-    : public GarbageCollected<XRWebGLFrameTransportDelegate>,
-      public XRFrameTransportDelegate {
+    : public XRFrameTransportDelegate {
  public:
   explicit XRWebGLFrameTransportDelegate(
       XRWebGLFrameTransportContext* context_provider);
@@ -60,7 +59,7 @@ class PLATFORM_EXPORT XRWebGLFrameTransportDelegate
       bool last_transfer_succeeded) override;
 
   // GarbageCollected override
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
  private:
   std::unique_ptr<ImageToBufferCopier> image_copier_;

@@ -77,6 +77,7 @@ XRFrameProvider::XRFrameProvider(XRSystem* xr)
               TaskType::kMiscPlatformAPI))),
       immersive_data_provider_(xr->GetExecutionContext()),
       immersive_presentation_provider_(xr->GetExecutionContext()),
+      layer_manager_(xr->GetExecutionContext()),
       last_has_focus_(xr->IsFrameFocused()) {}
 
 void XRFrameProvider::AddImmersiveSessionObserver(
@@ -116,6 +117,15 @@ void XRFrameProvider::OnSessionStarted(
 
     frame_transport_->RegisterFrameRenderedCallback(BindRepeating(
         &XRFrameProvider::OnRenderComplete, WrapWeakPersistent(this)));
+
+    if (session_ptr->layer_manager) {
+      layer_manager_.Bind(std::move(session_ptr->layer_manager),
+                          xr_->GetExecutionContext()->GetTaskRunner(
+                              TaskType::kMiscPlatformAPI));
+      layer_manager_.set_disconnect_handler(
+          BindOnce(&XRFrameProvider::OnProviderConnectionError,
+                   WrapWeakPersistent(this), WrapWeakPersistent(session)));
+    }
 
     frame_transport_->BindSubmitFrameClient(
         std::move(session_ptr->submit_frame_sink->client_receiver));
@@ -182,6 +192,7 @@ void XRFrameProvider::OnSessionEnded(XRSession* session) {
     frame_id_ = -1;
     immersive_presentation_provider_.reset();
     immersive_data_provider_.reset();
+    layer_manager_.reset();
 
     first_immersive_frame_time_ = std::nullopt;
     first_immersive_frame_time_delta_ = std::nullopt;
@@ -347,18 +358,32 @@ void XRFrameProvider::OnImmersiveFrameData(
 
   frame_id_ = data->render_info->frame_id;
   if (data->buffer_shared_image.has_value()) {
-    shared_images_.emplace_back(XRSharedImageSource::kBaseLayer, 0,
-                                gpu::ClientSharedImage::ImportUnowned(std::move(
-                                    data->buffer_shared_image.value())),
-                                data->buffer_sync_token.value());
+    shared_images_.emplace_back(
+        XRSharedImageSource::kBaseLayer, device::kInvalidLayerId,
+        gpu::ClientSharedImage::ImportUnowned(
+            std::move(data->buffer_shared_image.value())),
+        data->buffer_sync_token.value());
   }
 
   if (data->camera_image_buffer_shared_image.has_value()) {
     shared_images_.emplace_back(
-        XRSharedImageSource::kCamera, 0,
+        XRSharedImageSource::kCamera, device::kInvalidLayerId,
         gpu::ClientSharedImage::ImportUnowned(
             std::move(data->camera_image_buffer_shared_image.value())),
         data->camera_image_buffer_sync_token.value());
+  }
+
+  // Cache composition layer buffers.
+  if (data->composition_layers_data.has_value()) {
+    base::span<const device::mojom::blink::XRLayerFrameDataPtr> layers_data =
+        data->composition_layers_data.value();
+    for (const auto& layer_data : layers_data) {
+      shared_images_.emplace_back(
+          XRSharedImageSource::kCompositionLayer, layer_data->layer_id,
+          gpu::ClientSharedImage::ImportUnowned(
+              std::move(layer_data->buffer_shared_image)),
+          layer_data->buffer_sync_token);
+    }
   }
 
   pending_immersive_vsync_ = false;
@@ -641,20 +666,24 @@ double XRFrameProvider::UpdateImmersiveFrameTime(
   return high_res_now_ms;
 }
 
-void XRFrameProvider::SubmitLayer(XrLayerClient* client, bool was_changed) {
+void XRFrameProvider::SubmitLayer(device::LayerId layer_id,
+                                  XrLayerClient* client,
+                                  bool was_changed) {
   CHECK(client);
-  XRFrameTransportDelegate* delegate = client->GetTransportDelegate();
-  CHECK(delegate);
   CHECK(immersive_session_);
   CHECK(client->session());
-
   CHECK_EQ(client->session(), immersive_session_);
+
   if (!immersive_presentation_provider_.is_bound()) {
     return;
   }
 
   TRACE_EVENT1("gpu", "XRFrameProvider::SubmitLayer", "frame", frame_id_);
   DVLOG(3) << __func__ << ": frame=" << frame_id_;
+
+  if (!was_changed) {
+    return;
+  }
 
   if (frame_id_ < 0) {
     // There is no valid frame_id_, and the browser side is not currently
@@ -665,51 +694,33 @@ void XRFrameProvider::SubmitLayer(XrLayerClient* client, bool was_changed) {
     return;
   }
 
-  if (!was_changed) {
-    // Just tell the device side that there was no submitted frame instead of
-    // executing the implicit end-of-frame submit.
-    frame_transport_->FrameSubmitMissing(immersive_presentation_provider_.get(),
-                                         delegate, frame_id_);
-    dropped_frames_++;
+  if (frame_transport_->DrawingIntoSharedBuffer()) {
+    // Image is written to shared buffer already. No need to hold it.
+    DVLOG(3) << __func__ << ": FrameSubmit for SharedBuffer mode";
+    any_layer_changed_ = true;
+    layer_ids_.push_back(layer_id);
+    return;
+  } else {
+    CHECK_NE(client->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGPU)
+        << "WebGPU layers only support shared buffer submission modes";
+  }
 
+  scoped_refptr<StaticBitmapImage> image_ref =
+      client->TransferToStaticBitmapImage();
+
+  if (!image_ref) {
     return;
   }
 
-  frame_transport_->FramePreImage(delegate);
-
-  // When drawing into the shared buffer, the image will already be in that.
-  // We can use an empty placeholder in that case to simplify our logic.
-  // Otherwise, we need to copy and validate the image_ref.
-  scoped_refptr<StaticBitmapImage> image_ref;
-  if (!frame_transport_->DrawingIntoSharedBuffer()) {
-    CHECK_NE(client->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGPU)
-        << "WebGPU layers only support shared buffer submission modes";
-
-    image_ref = client->TransferToStaticBitmapImage();
-
-    if (!image_ref) {
-      return;
-    }
-
-    // Hardware-accelerated rendering should always be texture backed. Don't
-    // attempt to render if using an unexpected drawing path.
-    if (!image_ref->IsTextureBacked()) {
-      NOTREACHED() << "WebXR requires hardware-accelerated texture rendering";
-    }
+  // Hardware-accelerated rendering should always be texture backed. Ensure this
+  // is the case, don't attempt to render if using an unexpected drawing path.
+  if (!image_ref->IsTextureBacked()) {
+    NOTREACHED() << "WebXR requires hardware-accelerated rendering to texture";
   }
 
-  bool succeeded =
-      frame_transport_->FrameSubmit(immersive_presentation_provider_.get(),
-                                    delegate, std::move(image_ref), frame_id_);
-
-  succeeded ? num_frames_++ : dropped_frames_++;
-  if (succeeded) {
-    submit_frame_time_.StartTimer();
-  }
-
-  // Reset our frame id, since anything we'd want to do (resizing/etc) can
-  // no-longer happen to this frame.
-  frame_id_ = -1;
+  any_layer_changed_ = true;
+  current_frame_images_.push_back(image_ref);
+  layer_ids_.push_back(layer_id);
 }
 
 // TODO(bajones): This only works because we're restricted to a single layer at
@@ -797,10 +808,85 @@ void XRFrameProvider::UpdateLayerViewports(XRProjectionLayer* layer) {
       frame_id_, left_coords, right_coords, gfx::Size(width, height));
 }
 
+void XRFrameProvider::ClearCachedLayersData() {
+  any_layer_changed_ = false;
+  current_frame_images_.clear();
+  layer_ids_.clear();
+}
+
+void XRFrameProvider::SubmitFrame(
+    XRFrameTransportDelegate* transport_delegate) {
+  CHECK(transport_delegate);
+
+  if (!immersive_presentation_provider_.is_bound()) {
+    return;
+  }
+
+  TRACE_EVENT1("gpu", "XRFrameProvider::SubmitFrame", "frame", frame_id_);
+  DVLOG(3) << __func__ << ": frame=" << frame_id_;
+
+  // Ensure temporary data is always reset.
+  bool was_any_layer_changed = any_layer_changed_;
+  any_layer_changed_ = false;
+  auto image_refs = std::move(current_frame_images_);
+  auto layer_ids = std::move(layer_ids_);
+
+  if (frame_id_ < 0) {
+    // There is no valid frame_id_, and the browser side is not currently
+    // expecting a frame to be submitted. That can happen for the first
+    // immersive frame if the animation loop submits without a preceding
+    // immersive GetFrameData response, in that case frame_id_ is -1 (see
+    // https://crbug.com/855722).
+    return;
+  }
+
+  auto this_frame_id = frame_id_;
+
+  // Reset an active frame id, since anything we'd want to do (resizing/etc) can
+  // no-longer happen to this frame.
+  frame_id_ = -1;
+
+  if (!immersive_presentation_provider_.is_bound()) {
+    return;
+  }
+
+  if (!was_any_layer_changed) {
+    // Just tell the device side that there was no submitted frame instead of
+    // executing the implicit end-of-frame submit.
+    frame_transport_->FrameSubmitMissing(immersive_presentation_provider_.get(),
+                                         transport_delegate, this_frame_id);
+    dropped_frames_++;
+
+    return;
+  }
+
+  frame_transport_->FramePreImage(transport_delegate);
+
+  // The backend expects an empty layer ID list if the 'layers' feature is not
+  // enabled.
+  if (!layer_manager_.is_bound()) {
+    // At this case, only a single layer should exist since the
+    // layers feature is not enabled.
+    CHECK_EQ(layer_ids.size(), 1U);
+    layer_ids.clear();
+  }
+
+  bool succeeded = frame_transport_->FrameSubmit(
+      immersive_presentation_provider_.get(), transport_delegate,
+      std::move(layer_ids), std::move(image_refs), this_frame_id);
+
+  succeeded ? num_frames_++ : dropped_frames_++;
+  if (succeeded) {
+    submit_frame_time_.StartTimer();
+  }
+}
+
 void XRFrameProvider::Dispose() {
   DVLOG(2) << __func__;
   immersive_presentation_provider_.reset();
   immersive_data_provider_.reset();
+  // Reset layers data.
+  ClearCachedLayersData();
   if (immersive_session_)
     immersive_session_->ForceEnd(XRSession::ShutdownPolicy::kImmediate);
   // TODO(bajones): Do something for outstanding frame requests?
@@ -857,6 +943,7 @@ void XRFrameProvider::Trace(Visitor* visitor) const {
   visitor->Trace(non_immersive_data_providers_);
   visitor->Trace(requesting_sessions_);
   visitor->Trace(immersive_observers_);
+  visitor->Trace(layer_manager_);
 }
 
 }  // namespace blink

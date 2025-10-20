@@ -7,6 +7,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "device/vr/public/mojom/layer_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
@@ -52,7 +53,8 @@ class PLATFORM_EXPORT XRFrameTransport final
 
   bool FrameSubmit(device::mojom::blink::XRPresentationProvider*,
                    XRFrameTransportDelegate* delegate,
-                   scoped_refptr<StaticBitmapImage> image_ref,
+                   Vector<device::LayerId> layer_ids,
+                   Vector<scoped_refptr<StaticBitmapImage>> image_refs,
                    int16_t vr_frame_id);
 
   void FrameSubmitMissing(device::mojom::blink::XRPresentationProvider*,
@@ -78,7 +80,7 @@ class PLATFORM_EXPORT XRFrameTransport final
 
   // Used to keep the image alive until the next frame if using
   // waitForPreviousTransferToFinish.
-  scoped_refptr<StaticBitmapImage> previous_image_;
+  Vector<scoped_refptr<StaticBitmapImage>> previous_images_;
 
   bool waiting_for_previous_frame_transfer_ = false;
   bool last_transfer_succeeded_ = false;

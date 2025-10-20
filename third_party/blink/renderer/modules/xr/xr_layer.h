@@ -7,11 +7,13 @@
 
 #include <optional>
 
+#include "device/vr/public/mojom/layer_id.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 
 namespace blink {
 
+class XrLayerClient;
 class XRSession;
 struct XRSharedImageData;
 
@@ -40,7 +42,7 @@ class XRLayer : public EventTarget {
   ExecutionContext* GetExecutionContext() const override;
   const AtomicString& InterfaceName() const override;
 
-  uint32_t layer_id() const { return layer_id_; }
+  device::LayerId layer_id() const { return layer_id_; }
   virtual XRLayerType LayerType() const = 0;
 
   const XRSharedImageData& SharedImage() const;
@@ -49,11 +51,13 @@ class XRLayer : public EventTarget {
   void SetModified(bool modified);
   bool IsModified() const;
 
+  virtual XrLayerClient* LayerClient() = 0;
+
   void Trace(Visitor*) const override;
 
  private:
   const Member<XRSession> session_;
-  const uint32_t layer_id_;
+  const device::LayerId layer_id_;
   bool is_modified_{false};
 };
 

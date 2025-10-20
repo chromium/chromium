@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
@@ -23,7 +24,8 @@ class StaticBitmapImage;
 // in this directory can't depend on /modules/, so we have to declare the
 // interface here, so that our callers (the XrFrameProvider), can supply an
 // object that will do the things we need that differ based on the session type.
-class PLATFORM_EXPORT XRFrameTransportDelegate {
+class PLATFORM_EXPORT XRFrameTransportDelegate
+    : public GarbageCollected<XRFrameTransportDelegate> {
  public:
   virtual ~XRFrameTransportDelegate() = default;
 
@@ -32,6 +34,9 @@ class PLATFORM_EXPORT XRFrameTransportDelegate {
   virtual std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(
       const scoped_refptr<StaticBitmapImage>& image,
       bool last_transfer_succeeded) = 0;
+
+  // GarbageCollected override
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 }  // namespace blink
