@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/privacy/tracking_protections/tracking_protections_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -40,8 +39,7 @@
     PrivacyNavigationCommands,
     PrivacySafeBrowsingCoordinatorDelegate,
     PrivacyTableViewControllerPresentationDelegate,
-    LockdownModeCoordinatorDelegate,
-    TrackingProtectionsCoordinatorDelegate> {
+    LockdownModeCoordinatorDelegate> {
 }
 
 @property(nonatomic, strong) PrivacyTableViewController* viewController;
@@ -63,9 +61,6 @@
 @implementation PrivacyCoordinator {
   // Verifies that `stop` is always called before dealloc.
   BOOL _stopped;
-
-  // Coordinator for the tracking protections screen.
-  TrackingProtectionsCoordinator* _trackingProtectionsCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -113,7 +108,6 @@
   [self stopLockdownModeCoordinator];
   [self stopSafeBrowsingCoordinator];
   [self stopIncognitoLockCoordinator];
-  [self stopTrackingProtectionsCoordinator];
 
   [self.viewController disconnect];
   self.viewController = nil;
@@ -192,14 +186,6 @@
   self.privacyGuideMainCoordinator.delegate = self;
   [self.privacyGuideMainCoordinator start];
 }
-
-- (void)showTrackingProtections {
-  _trackingProtectionsCoordinator = [[TrackingProtectionsCoordinator alloc]
-      initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser];
-  _trackingProtectionsCoordinator.delegate = self;
-  [_trackingProtectionsCoordinator start];
-}
 #pragma mark - SafeBrowsingCoordinatorDelegate
 
 - (void)privacySafeBrowsingCoordinatorDidRemove:
@@ -231,13 +217,6 @@
   [self stopPrivacyGuideMainCoordinator];
 }
 
-#pragma mark - TrackingProtectionsCoordinatorDelegate
-
-- (void)trackingProtectionsCoordinatorDidRemove:
-    (TrackingProtectionsCoordinator*)coordinator {
-  [self stopTrackingProtectionsCoordinator];
-}
-
 #pragma mark - Private
 
 - (void)stopLockdownModeCoordinator {
@@ -262,12 +241,6 @@
   [self.privacyGuideMainCoordinator stop];
   self.privacyGuideMainCoordinator.delegate = nil;
   self.privacyGuideMainCoordinator = nil;
-}
-
-- (void)stopTrackingProtectionsCoordinator {
-  [_trackingProtectionsCoordinator stop];
-  _trackingProtectionsCoordinator.delegate = nil;
-  _trackingProtectionsCoordinator = nil;
 }
 
 @end

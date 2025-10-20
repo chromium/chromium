@@ -313,8 +313,6 @@ const char kTrackingProtectionSettingsURL[] =
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   if (URL.gurl == GURL(kPageInfoHelpCenterURL)) {
     [self.pageInfoPresentationHandler showSecurityHelpPage];
-  } else if (URL.gurl == GURL(kTrackingProtectionSettingsURL)) {
-    [self.pageInfoPresentationHandler showTrackingProtectionSettingsPage];
   }
 }
 

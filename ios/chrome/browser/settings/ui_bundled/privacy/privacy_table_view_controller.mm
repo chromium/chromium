@@ -22,11 +22,9 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "components/privacy_sandbox/privacy_sandbox_features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/strings/grit/privacy_sandbox_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -85,8 +83,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierIncognitoInterstitial,
   SectionIdentifierLockdownMode,
   SectionIdentifierPrivacyGuide,
-  SectionIdentifierIncognito,
-  SectionIdentifierTrackingProtections,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -104,8 +100,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeIncognitoInterstitialDisabled,
   ItemTypeLockdownMode,
   ItemTypePrivacyGuide,
-  ItemTypeIncognitoHeader,
-  ItemTypeTrackingProtections,
 };
 
 // Used to open the Sync and Google Services settings.
@@ -142,9 +136,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
-
-  // Whether the Incognito tracking protections entrypoint should be shown.
-  BOOL _showIncognitoTrackingProtections;
 
   // Registrar for local pref changes notifications.
   PrefChangeRegistrar _localStateChangeRegistrar;
@@ -231,8 +222,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
         initWithPrefService:GetApplicationContext()->GetLocalState()
                    prefName:prefs::kIncognitoInterstitialEnabled];
     [_incognitoInterstitialPref setObserver:self];
-    _showIncognitoTrackingProtections = base::FeatureList::IsEnabled(
-        privacy_sandbox::kFingerprintingProtectionUx);
   }
   return self;
 }
@@ -309,14 +298,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       toSectionWithIdentifier:SectionIdentifierHTTPSOnlyMode];
 
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
-  if (_showIncognitoTrackingProtections) {
-    [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
-    [model addSectionWithIdentifier:SectionIdentifierIncognito];
-  } else {
-    [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
-    [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
-    [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
+  [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
+  [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
 
   // Clear Browsing item.
   [model addItem:[self clearBrowsingDetailItem]
@@ -336,28 +320,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addItem:[self handoffDetailItem]
       toSectionWithIdentifier:SectionIdentifierWebServices];
 
-  SectionIdentifier incognitoAuthSection = SectionIdentifierIncognitoAuth;
-  SectionIdentifier incognitoInterstitialSection =
-      SectionIdentifierIncognitoInterstitial;
-  SectionIdentifier sectionWithPrivacyFooter = SectionIdentifierLockdownMode;
-  if (_showIncognitoTrackingProtections) {
-    // Incognito section header item.
-    TableViewTextHeaderFooterItem* headerItem =
-        [[TableViewTextHeaderFooterItem alloc]
-            initWithType:ItemTypeIncognitoHeader];
-    headerItem.text =
-        l10n_util::GetNSString(IDS_IOS_INCOGNITO_SETTINGS_SECTION_HEADER);
-    [model setHeader:headerItem
-        forSectionWithIdentifier:SectionIdentifierIncognito];
-    // Tracking protections item.
-    [model addItem:[self trackingProtectionsItem]
-        toSectionWithIdentifier:SectionIdentifierIncognito];
-
-    incognitoAuthSection = SectionIdentifierIncognito;
-    incognitoInterstitialSection = SectionIdentifierIncognito;
-    sectionWithPrivacyFooter = SectionIdentifierIncognito;
-  }
-
   if (IsIOSSoftLockEnabled()) {
     // Incognito Lock item.
     TableViewItem* incognitoLockItem =
@@ -365,7 +327,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
             ? self.incognitoLockItemDisabled
             : self.incognitoLockItem;
     [model addItem:incognitoLockItem
-        toSectionWithIdentifier:incognitoAuthSection];
+        toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
   } else {
     // Incognito reauth item is added. If Incognito mode is disabled, or device
     // authentication is not supported, a disabled version is shown instead with
@@ -376,7 +338,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
             ? self.incognitoReauthItemDisabled
             : self.incognitoReauthItem;
     [model addItem:incognitoReauthItem
-        toSectionWithIdentifier:incognitoAuthSection];
+        toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
   }
 
   // Show "Ask to Open Links from Other Apps in Incognito" setting.
@@ -389,13 +351,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
           ? self.incognitoInterstitialItemDisabled
           : self.incognitoInterstitialItem;
   [model addItem:incognitoInterstitialItem
-      toSectionWithIdentifier:incognitoInterstitialSection];
+      toSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
   // Lockdown Mode item.
   [model addItem:[self lockdownModeDetailItem]
       toSectionWithIdentifier:SectionIdentifierLockdownMode];
   [model setFooter:[self showPrivacyFooterItem]
-      forSectionWithIdentifier:sectionWithPrivacyFooter];
+      forSectionWithIdentifier:SectionIdentifierLockdownMode];
 }
 
 #pragma mark - Model Objects
@@ -588,19 +550,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   return itemDisabled;
 }
 
-- (TableViewItem*)trackingProtectionsItem {
-  TableViewDetailIconItem* item = [self
-           detailItemWithType:ItemTypeTrackingProtections
-                      titleId:IDS_INCOGNITO_TRACKING_PROTECTIONS_LINK_ROW_LABEL
-                   detailText:
-                       l10n_util::GetNSString(
-                           IDS_INCOGNITO_TRACKING_PROTECTIONS_LINK_ROW_SUBLABEL)
-      accessibilityIdentifier:kSettingsTrackingProtectionsCellId];
-  item.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
-  item.detailTextNumberOfLines = 0;  // Unlimited
-  return item;
-}
-
 - (TableViewDetailIconItem*)detailItemWithType:(NSInteger)type
                                        titleId:(NSInteger)titleId
                                     detailText:(NSString*)detailText
@@ -673,11 +622,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       break;
     case ItemTypePrivacyGuide:
       [self.handler showPrivacyGuide];
-      break;
-    case ItemTypeTrackingProtections:
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.TrackingProtections.OpenedFromPrivacyPage"));
-      [self.handler showTrackingProtections];
       break;
     default:
       break;
