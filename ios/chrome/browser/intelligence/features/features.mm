@@ -202,3 +202,27 @@ BASE_FEATURE(kZeroStateSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsZeroStateSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kZeroStateSuggestions);
 }
+
+BASE_FEATURE(kGeminiFullChatHistory, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiFullChatHistoryEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiFullChatHistory);
+}
+
+BASE_FEATURE(kGeminiLoadingStateRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiLoadingStateRedesignEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiLoadingStateRedesign);
+}
+
+BASE_FEATURE(kGeminiLatencyImprovement, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiLatencyImprovementEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiLatencyImprovement);
+}
+
+BASE_FEATURE(kGeminiOnboardingCards, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiOnboardingCardsEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiOnboardingCards);
+}

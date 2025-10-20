@@ -652,6 +652,22 @@ const char kGeminiCrossTabName[] = "Gemini Cross Tab";
 const char kGeminiCrossTabDescription[] =
     "When enabled, the Gemini floaty conversation persists across all tabs.";
 
+const char kGeminiFullChatHistoryName[] = "GeminiFullChatHistory";
+const char kGeminiFullChatHistoryDescription[] =
+    "Enables the full chat history being shown in the floaty.";
+
+const char kGeminiLatencyImprovementName[] = "GeminiLatencyImprovement";
+const char kGeminiLatencyImprovementDescription[] =
+    "Enables the latency improvements for Gemini.";
+
+const char kGeminiLoadingStateRedesignName[] = "GeminiLoadingStateRedesign";
+const char kGeminiLoadingStateRedesignDescription[] =
+    "Enables the redesigned UI for the floaty's loading state.";
+
+const char kGeminiOnboardingCardsName[] = "GeminiOnboardingCards";
+const char kGeminiOnboardingCardsDescription[] =
+    "Enables the discovery onboarding cards for new Gemini users.";
+
 const char kHideToolbarsInOverflowMenuName[] = "Hide Toolbars in Overflow menu";
 const char kHideToolbarsInOverflowMenuDescription[] =
     "When enabled, adds a button in the overflow menu that force the "

@@ -5448,6 +5448,26 @@
     "expiry_milestone": 150
   },
   {
+    "name": "gemini-full-chat-history",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
+    "name": "gemini-latency-improvement",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
+    "name": "gemini-loading-state-redesign",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
+    "name": "gemini-onboarding-cards",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "geolocation-element",
     "owners": [
       "andy@chromium.org",

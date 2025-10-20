@@ -162,4 +162,20 @@ BASE_DECLARE_FEATURE(kZeroStateSuggestions);
 // Returns true if zero-state suggestions are enabled.
 bool IsZeroStateSuggestionsEnabled();
 
+// Feature flag for showing full chat history in the floaty.
+BASE_DECLARE_FEATURE(kGeminiFullChatHistory);
+bool IsGeminiFullChatHistoryEnabled();
+
+// Feature flag for the redesigned loading state UI.
+BASE_DECLARE_FEATURE(kGeminiLoadingStateRedesign);
+bool IsGeminiLoadingStateRedesignEnabled();
+
+// Feature flag for the floaty latency improvements.
+BASE_DECLARE_FEATURE(kGeminiLatencyImprovement);
+bool IsGeminiLatencyImprovementEnabled();
+
+// Feature flag for the discovery onboarding cards.
+BASE_DECLARE_FEATURE(kGeminiOnboardingCards);
+bool IsGeminiOnboardingCardsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
