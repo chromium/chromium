@@ -300,7 +300,12 @@ In addition, Google employees should use RBE, a remote execution system. Detaile
 
 Google employees can visit
 [go/building-chrome-win#setup-remote-execution](https://goto.google.com/building-chrome-win#setup-remote-execution)
-for more information. For external contributors, remote execution for Windows builds is not supported.
+Note: Don't set `DEPOT_TOOLS_WIN_TOOLCHAIN` environment variable.
+Need to use `third_party/depot_tools/win_toolchain/vs_files` for
+remote execution.
+
+For external contributors, Siso's remote execution with rbe-chromium-untrusted
+does not support Windows builds.
 
 #### Use SCCACHE
 
