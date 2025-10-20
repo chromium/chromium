@@ -728,7 +728,7 @@ class AnchorElementInteractionViewportHeuristicsTest
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kNavigationPredictor, GetParamsForNavigationPredictor()},
          {features::kNavigationPredictorNewViewportFeatures, {}},
-         {features::kPreloadingViewportHeuristics,
+         {features::kPreloadingModerateViewportHeuristics,
           {{"delay", "100ms"},
            {"distance_from_ptr_down_low", "-0.3"},
            {"distance_from_ptr_down_hi", "0"},

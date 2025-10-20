@@ -1036,7 +1036,7 @@ TEST_F(PreloadingDeciderTest,
 TEST_F(PreloadingDeciderTest, ViewportHeuristicPredictionIsNotEnacted) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kPreloadingViewportHeuristics,
+      blink::features::kPreloadingModerateViewportHeuristics,
       {{"enact_candidates", "false"}});
 
   auto* preloading_decider =
@@ -1060,7 +1060,7 @@ TEST_F(PreloadingDeciderTest,
        ViewportHeuristicPredictionIsEnactedForModeratePrefetchCandidate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kPreloadingViewportHeuristics,
+      blink::features::kPreloadingModerateViewportHeuristics,
       {{"enact_candidates", "true"}});
 
   base::HistogramTester histogram_tester;
@@ -1098,7 +1098,7 @@ TEST_F(PreloadingDeciderTest,
        ViewportHeuristicIsEnactedForModeratePrerenderCandidate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kPreloadingViewportHeuristics,
+      blink::features::kPreloadingModerateViewportHeuristics,
       {{"enact_candidates", "true"}});
 
   auto* preloading_decider =
@@ -1123,7 +1123,7 @@ TEST_F(PreloadingDeciderTest,
        ViewportHeuristicIsNotEnactedForConservativePrefetchCandidate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kPreloadingViewportHeuristics,
+      blink::features::kPreloadingModerateViewportHeuristics,
       {{"enact_candidates", "true"}});
 
   auto* preloading_decider =

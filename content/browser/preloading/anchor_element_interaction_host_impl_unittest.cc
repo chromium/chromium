@@ -107,7 +107,7 @@ TEST_F(AnchorElementInteractionHostImplTest, OnPointerEvents) {
 TEST_F(AnchorElementInteractionHostImplTest, OnViewportHeuristicTriggered) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      blink::features::kPreloadingViewportHeuristics);
+      blink::features::kPreloadingModerateViewportHeuristics);
 
   base::HistogramTester histogram_tester;
   auto* render_frame_host = static_cast<RenderFrameHostImpl*>(main_rfh());
@@ -145,7 +145,7 @@ TEST_F(AnchorElementInteractionHostImplTest,
        RecallRecordedWhenViewportHeuristicIsNotTriggered) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      blink::features::kPreloadingViewportHeuristics);
+      blink::features::kPreloadingModerateViewportHeuristics);
 
   base::HistogramTester histogram_tester;
 

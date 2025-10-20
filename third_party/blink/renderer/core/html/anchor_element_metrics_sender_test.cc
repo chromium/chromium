@@ -1979,7 +1979,7 @@ TEST_F(AnchorElementMetricsSenderTest,
 }
 
 // TODO(crbug.com/372053392): Remove this test if we enable-by-default and
-// remove kPreloadingViewportHeuristics.
+// remove kPreloadingModerateViewportHeuristics.
 // Simulates a scenario where AnchorElementViewportPositionTracker is created
 // when we mark FCP, resulting in AEVPT::OnFirstContenfulPaint() being called
 // immediately after the object is created.
@@ -1990,7 +1990,7 @@ TEST_F(AnchorElementMetricsSenderTest, RegressionTestForCrbug384610894) {
         {{"random_anchor_sampling_period", "1"},
          {"intersection_observation_after_fcp_only", "true"},
          {"post_fcp_observation_delay", "200ms"}}}},
-      {features::kPreloadingViewportHeuristics});
+      {features::kPreloadingModerateViewportHeuristics});
 
   String source("https://foo.com");
   SimRequest main_resource(source, "text/html");

@@ -114,7 +114,7 @@ class PreloadingDecider::BehaviorConfig {
     CHECK(pointer_down_eagerness_.HasAll(pointer_hover_eagerness_));
 
     static const base::FeatureParam<std::string> kViewportHeuristicEagerness{
-        &blink::features::kPreloadingViewportHeuristics,
+        &blink::features::kPreloadingModerateViewportHeuristics,
         "viewport_heuristic_eagerness", "moderate"};
     viewport_heuristic_eagerness_ =
         EagernessSetFromFeatureParam(kViewportHeuristicEagerness.Get());
@@ -346,10 +346,10 @@ void PreloadingDecider::OnPointerHover(
 
 void PreloadingDecider::OnViewportHeuristicTriggered(const GURL& url) {
   CHECK(base::FeatureList::IsEnabled(
-      blink::features::kPreloadingViewportHeuristics));
+      blink::features::kPreloadingModerateViewportHeuristics));
   static const base::FeatureParam<bool> kShouldEnactCandidates{
-      &blink::features::kPreloadingViewportHeuristics, "enact_candidates",
-      BUILDFLAG(IS_ANDROID)};
+      &blink::features::kPreloadingModerateViewportHeuristics,
+      "enact_candidates", BUILDFLAG(IS_ANDROID)};
   const bool should_enact_candidates = kShouldEnactCandidates.Get();
   if (!should_enact_candidates) {
     AddPreloadingPrediction(url, preloading_predictor::kViewportHeuristic,
@@ -469,7 +469,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
         preloading_predictor::kPreloadingHeuristicsMLModel, is_new_link_nav);
   }
   if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingViewportHeuristics)) {
+          blink::features::kPreloadingModerateViewportHeuristics)) {
     preloading_data->SetIsNavigationInDomainCallback(
         preloading_predictor::kViewportHeuristic, is_new_link_nav);
   }

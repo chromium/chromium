@@ -170,10 +170,10 @@ void AnchorElementInteractionHostImpl::OnPointerHoverModerate(
 void AnchorElementInteractionHostImpl::OnViewportHeuristicTriggered(
     const GURL& url) {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kPreloadingViewportHeuristics)) {
+          blink::features::kPreloadingModerateViewportHeuristics)) {
     ReportBadMessageAndDeleteThis(
         "OnViewportHeuristic should not be called by the renderer without "
-        "blink::features::kPreloadingViewportHeuristics being enabled");
+        "blink::features::kPreloadingModerateViewportHeuristics being enabled");
     return;
   }
 

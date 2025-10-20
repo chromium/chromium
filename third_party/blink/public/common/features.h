@@ -1413,7 +1413,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrefetchFontLookupTables);
 // eagerness:
 // * On desktop, it will use a short (configurable) hover delay.
 // * On mobile, it will use the presence of a link in the viewport (with no
-//   restrictions of the sort used by kPreloadingViewportHeuristics).
+//   restrictions of the sort used by kPreloadingModerateViewportHeuristics).
 // Both are less eager than the "immediate" behavior and more eager than the
 // "moderate" behavior on the respective platforms.
 //
@@ -1450,7 +1450,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // Note: The prediction will only be preloaded if the "enact_candidates" param
 // is set to true (false by default), otherwise it is only logged for metrics
 // purposes.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingViewportHeuristics);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingModerateViewportHeuristics);
 
 // The number of prerenderings that can run concurrently. This only applies for
 // prerenderings triggered by speculation rules.

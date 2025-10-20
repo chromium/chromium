@@ -44,23 +44,21 @@ ViewportHeuristicConfig GetViewportHeuristicConfigFromFeatureParams() {
   // -0.3 is the lower bound of the middle 75% of distance_from_ptr_down_ratio
   // values of clicked anchors (i.e. the P12.5 value).
   const base::FeatureParam<double> kDistanceFromPointerDownLowerBound{
-      &features::kPreloadingViewportHeuristics, "distance_from_ptr_down_low",
-      -0.3};
+      &features::kPreloadingModerateViewportHeuristics,
+      "distance_from_ptr_down_low", -0.3};
   // 0.0 is the upper bound of the middle 75% of distance_from_ptr_down_ratio
   // values of clicked anchors (i.e. the P87.5 value).
   const base::FeatureParam<double> kDistanceFromPointerDownUpperBound{
-      &features::kPreloadingViewportHeuristics, "distance_from_ptr_down_hi",
-      0.0};
+      &features::kPreloadingModerateViewportHeuristics,
+      "distance_from_ptr_down_hi", 0.0};
   // Note: The default value was selected arbitrarily and hasn't been tuned.
   const base::FeatureParam<double> kLargestAnchorThreshold{
-      &features::kPreloadingViewportHeuristics, "largest_anchor_threshold",
-      0.25
-  };
+      &features::kPreloadingModerateViewportHeuristics,
+      "largest_anchor_threshold", 0.25};
   // Note: The default value was selected arbitrarily and hasn't been tuned.
   const base::FeatureParam<base::TimeDelta> kDelay{
-      &features::kPreloadingViewportHeuristics, "delay",
-      base::Milliseconds(500)
-  };
+      &features::kPreloadingModerateViewportHeuristics, "delay",
+      base::Milliseconds(500)};
 
   double low = std::clamp(kDistanceFromPointerDownLowerBound.Get(), -1.0, 1.0);
   double high = std::clamp(kDistanceFromPointerDownUpperBound.Get(), low, 1.0);
@@ -271,7 +269,7 @@ AnchorElementInteractionTracker::AnchorElementInteractionTracker(
           document.GetExecutionContext()->GetTaskRunner(
               TaskType::kInternalDefault)));
   if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingViewportHeuristics)) {
+          blink::features::kPreloadingModerateViewportHeuristics)) {
     auto* anchor_metrics_sender =
         AnchorElementMetricsSender::GetForFrame(GetDocument()->GetFrame());
     auto* anchor_viewport_observer =
@@ -544,7 +542,7 @@ KURL AnchorElementInteractionTracker::GetHrefEligibleForPreloading(
 void AnchorElementInteractionTracker::AnchorPositionsUpdated(
     HeapVector<Member<AnchorPositionUpdate>>& position_updates) {
   CHECK(base::FeatureList::IsEnabled(
-      blink::features::kPreloadingViewportHeuristics));
+      blink::features::kPreloadingModerateViewportHeuristics));
   const ViewportHeuristicConfig& config = GetViewportHeuristicConfig();
 
   // Reset the delay timer (if active); this could happen if a programmatic
@@ -599,7 +597,7 @@ void AnchorElementInteractionTracker::AnchorPositionsUpdated(
 void AnchorElementInteractionTracker::ViewportHeuristicTimerFired(
     TimerBase* timer) {
   CHECK(base::FeatureList::IsEnabled(
-      blink::features::kPreloadingViewportHeuristics));
+      blink::features::kPreloadingModerateViewportHeuristics));
   if (!largest_anchor_element_in_viewport_ || !GetDocument()->GetFrame()) {
     return;
   }
