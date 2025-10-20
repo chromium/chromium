@@ -682,11 +682,8 @@ void GpuImageDecodeCache::DecodedAuxImageData::ResetData() {
 ////////////////////////////////////////////////////////////////////////////////
 // GpuImageDecodeCache::DecodedImageData
 
-GpuImageDecodeCache::DecodedImageData::DecodedImageData(
-    bool is_bitmap_backed,
-    bool can_do_hardware_accelerated_decode)
-    : is_bitmap_backed_(is_bitmap_backed),
-      can_do_hardware_accelerated_decode_(can_do_hardware_accelerated_decode) {
+GpuImageDecodeCache::DecodedImageData::DecodedImageData(bool is_bitmap_backed)
+    : is_bitmap_backed_(is_bitmap_backed) {
   for (const auto& aux_image_data : aux_image_data_) {
     aux_image_data.ValidateImagesMatchPixmaps();
   }
@@ -886,7 +883,6 @@ GpuImageDecodeCache::ImageData::ImageData(
     int upload_scale_mip_level_param,
     bool needs_mips,
     bool is_bitmap_backed,
-    bool can_do_hardware_accelerated_decode,
     bool speculative_decode,
     base::span<ImageInfo, kAuxImageCount> image_info)
     : paint_image_id(paint_image_id_param),
@@ -897,7 +893,7 @@ GpuImageDecodeCache::ImageData::ImageData(
       is_bitmap_backed(is_bitmap_backed),
       info(std::move(image_info[kAuxImageIndexDefault])),
       gainmap_info(std::move(image_info[kAuxImageIndexGainmap])),
-      decode(is_bitmap_backed, can_do_hardware_accelerated_decode) {
+      decode(is_bitmap_backed) {
   if (info.yuva.has_value()) {
     // This is the only plane config supported by non-OOP raster.
     DCHECK_EQ(info.yuva->yuvaInfo().planeConfig(),
@@ -1083,7 +1079,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
   } else if (image_data->decode.decode_failure) {
     // We have already tried and failed to decode this image, so just return.
     return TaskResult(false /* need_unref */, false /* is_at_raster_decode */,
-                      image_data->decode.can_do_hardware_accelerated_decode());
+                      false /* can_do_hardware_accelerated_decode */);
   } else if (task_type == TaskType::kInRaster &&
              !image_data->upload.task_map.empty() &&
              !image_data->HasUploadedData()) {
@@ -1113,8 +1109,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
       image_data->upload.task_map[client_id] = task;
     }
     DCHECK(task);
-    return TaskResult(task,
-                      image_data->decode.can_do_hardware_accelerated_decode());
+    return TaskResult(task, false /* can_do_hardware_accelerated_decode */);
   } else if (task_type == TaskType::kOutOfRaster &&
              !image_data->decode.stand_alone_task_map.empty() &&
              !image_data->HasUploadedData()) {
@@ -1143,7 +1138,6 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
       CHECK_EQ(task, found_task);
 #endif
     }
-    DCHECK(!image_data->decode.can_do_hardware_accelerated_decode());
 
     // This will be null if the image was already decoded.
     if (task)
@@ -1157,7 +1151,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
   if (!image_data->is_budgeted && !EnsureCapacity(image_data->GetTotalSize())) {
     // Image will not fit, do an at-raster decode.
     return TaskResult(false /* need_unref */, true /* is_at_raster_decode */,
-                      image_data->decode.can_do_hardware_accelerated_decode());
+                      false /* can_do_hardware_accelerated_decode */);
   }
 
   // If we had to create new image data, add it to our map now that we know it
@@ -1175,7 +1169,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
   if (image_data->HasUploadedData() &&
       TryLockImage(HaveContextLock::kNo, draw_image, image_data)) {
     return TaskResult(true /* need_unref */, false /* is_at_raster_decode */,
-                      image_data->decode.can_do_hardware_accelerated_decode());
+                      false /* can_do_hardware_accelerated_decode */);
   }
 
   scoped_refptr<TileTask> task;
@@ -1195,12 +1189,11 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
   }
 
   if (task) {
-    return TaskResult(task,
-                      image_data->decode.can_do_hardware_accelerated_decode());
+    return TaskResult(task, false /* can_do_hardware_accelerated_decode */);
   }
 
   return TaskResult(true /* needs_unref */, false /* is_at_raster_decode */,
-                    image_data->decode.can_do_hardware_accelerated_decode());
+                    false /* can_do_hardware_accelerated_decode */);
 }
 
 void GpuImageDecodeCache::UnrefImage(const DrawImage& draw_image) {
@@ -2349,8 +2342,6 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
                                 upload_scale_mip_level == 0 &&
                                 !cache_color_conversion_on_cpu;
 
-  bool can_do_hardware_accelerated_decode = false;
-
   // Determine if we will do YUVA decoding for the image and the gainmap, and
   // update `image_info` to reflect that.
   if (!image_larger_than_max_texture) {
@@ -2374,8 +2365,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
   return base::WrapRefCounted(new ImageData(
       draw_image.paint_image().stable_id(), draw_image.target_color_space(),
       CalculateDesiredFilterQuality(draw_image), upload_scale_mip_level,
-      needs_mips, is_bitmap_backed, can_do_hardware_accelerated_decode,
-      speculative_decode, image_info));
+      needs_mips, is_bitmap_backed, speculative_decode, image_info));
 }
 
 void GpuImageDecodeCache::WillAddCacheEntry(const DrawImage& draw_image) {

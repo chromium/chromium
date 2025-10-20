@@ -320,8 +320,7 @@ class CC_EXPORT GpuImageDecodeCache
 
   // Stores the CPU-side decoded bits of an image and supporting fields.
   struct DecodedImageData : public ImageDataBase {
-    explicit DecodedImageData(bool is_bitmap_backed,
-                              bool can_do_hardware_accelerated_decode);
+    explicit DecodedImageData(bool is_bitmap_backed);
     ~DecodedImageData();
 
     bool Lock();
@@ -361,10 +360,6 @@ class CC_EXPORT GpuImageDecodeCache
       return aux_image_data_[AuxImageIndex(aux_image)].pixmaps;
     }
 
-    bool can_do_hardware_accelerated_decode() const {
-      return can_do_hardware_accelerated_decode_;
-    }
-
     // Test-only functions.
     sk_sp<SkImage> ImageForTesting() const {
       return aux_image_data_[kAuxImageIndexDefault].images[0];
@@ -391,11 +386,6 @@ class CC_EXPORT GpuImageDecodeCache
 
     const bool is_bitmap_backed_;
     std::array<DecodedAuxImageData, kAuxImageCount> aux_image_data_;
-
-    // Keeps tracks of images that could go through hardware decode acceleration
-    // though they're possibly prevented from doing so because of a disabled
-    // feature flag.
-    bool can_do_hardware_accelerated_decode_;
   };
 
   // Stores the GPU-side image and supporting fields.
@@ -441,7 +431,6 @@ class CC_EXPORT GpuImageDecodeCache
               int upload_scale_mip_level,
               bool needs_mips,
               bool is_bitmap_backed,
-              bool can_do_hardware_accelerated_decode,
               bool speculative_decode,
               base::span<ImageInfo, kAuxImageCount> image_info);
 
