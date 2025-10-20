@@ -8283,8 +8283,9 @@ void Document::RequestResizeResponsiveIframe(ExceptionState* exception_state) {
   }
   if (auto* owner = GetFrame()->Owner()) {
     UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
-    View()->RecordNaturalDimensions();
-    owner->NaturalSizingInfoChanged();
+    if (View()->RecordNaturalDimensions()) {
+      owner->NaturalSizingInfoChanged();
+    }
   } else if (exception_state) {
     exception_state->ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,

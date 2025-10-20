@@ -1068,8 +1068,12 @@ LayoutSVGRoot* LocalFrameView::EmbeddedReplacedContent() const {
   return DynamicTo<LayoutSVGRoot>(first_child);
 }
 
-void LocalFrameView::RecordNaturalDimensions() {
+bool LocalFrameView::RecordNaturalDimensions() {
+  if (natural_height_ == layout_overflow_size_.height()) {
+    return false;
+  }
   natural_height_ = layout_overflow_size_.height();
+  return true;
 }
 
 void LocalFrameView::RequestSameDocumentNavigationPresentationTime(

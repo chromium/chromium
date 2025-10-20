@@ -844,7 +844,8 @@ class CORE_EXPORT LocalFrameView final
       ScrollMarkerGroupPseudoElement* scroll_marker_group);
   void ExecutePendingScrollMarkerSelectionUpdates();
 
-  void RecordNaturalDimensions();
+  // True if the recorded value has changed.
+  bool RecordNaturalDimensions();
 
   void RequestSameDocumentNavigationPresentationTime(
       base::OnceCallback<void(const viz::FrameTimingDetails&)>);
