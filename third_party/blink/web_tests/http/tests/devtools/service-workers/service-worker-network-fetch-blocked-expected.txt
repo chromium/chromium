@@ -4,7 +4,9 @@ Fetch in worker result: FETCH_FAILED
 http://127.0.0.1:8000/devtools/service-workers/resources/network-fetch-worker.js
 resource.type: script
 request.failed: false
+request.blockedReason: undefined
 http://127.0.0.1:8000/devtools/network/resources/resource.php
 resource.type: fetch
 request.failed: true
+request.blockedReason: inspector
 

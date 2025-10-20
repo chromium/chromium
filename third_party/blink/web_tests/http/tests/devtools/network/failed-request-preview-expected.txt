@@ -1,5 +1,6 @@
 Verifies that network request previews don't have src set when the request fails
 request.url(): http://localhost:8000/
 request.failed: true
+request.blockedReason: inspector
 previewImage.src: 
 
