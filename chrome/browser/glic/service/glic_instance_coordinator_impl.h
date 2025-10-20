@@ -72,6 +72,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
       const ShowOptions& options,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  // Closes any existing GlicFloatingUi. This enforces at most one floating ui
+  // per profile.
   void OnDetachRequested(GlicInstance* instance,
                          tabs::TabInterface* tab) override;
   void UnbindTabFromAnyInstance(tabs::TabInterface* tab) override;

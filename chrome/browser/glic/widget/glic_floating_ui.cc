@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_panel_hotkey_delegate.h"
@@ -51,6 +52,7 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
 }
 
 GlicFloatingUi::~GlicFloatingUi() {
+  GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(nullptr);
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
   tracker->RemovePictureInPictureWidget(glic_widget_.get());
@@ -220,6 +222,7 @@ bool GlicFloatingUi::IsShowing() const {
 }
 
 void GlicFloatingUi::Show() {
+  GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(profile_);
   GetGlicWidget()->Show();
   GetGlicView()->SetWebContents(delegate_->host().webui_contents());
   GetGlicView()->UpdateBackgroundColor();

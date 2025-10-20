@@ -42,8 +42,15 @@ class GlicProfileManager : public ProfileManagerObserver {
   // is no eligible profile.
   Profile* GetProfileForLaunch() const;
 
-  // Called by GlicKeyedService.
+  // Called by GlicKeyedService. Closes any existing active glic in the
+  // single-instance implementation, which enforces at most one floaty per
+  // profile.
   void SetActiveGlic(GlicKeyedService* glic);
+
+  // Used in GlicMultiInstance. Called when a GlicFloatingUi is shown and closes
+  // any previous existing floating glic. Resets the tracked glic if a null
+  // profile is passed.
+  void SetCurrentDetachedGlic(Profile* profile);
 
   // Called by GlicKeyedService.
   void OnServiceShutdown(GlicKeyedService* glic);
@@ -115,6 +122,9 @@ class GlicProfileManager : public ProfileManagerObserver {
   base::ObserverList<Observer> observers_;
   base::WeakPtr<GlicKeyedService> last_active_glic_;
   base::WeakPtr<GlicKeyedService> last_loaded_glic_;
+  // Used in GlicMultiInstance to track the GlicKeyedService of the current
+  // detached glic, if any.
+  base::WeakPtr<GlicKeyedService> current_detached_glic_;
   bool did_auto_open_ = false;
   base::WeakPtrFactory<GlicProfileManager> weak_ptr_factory_{this};
 };

@@ -5,10 +5,12 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -79,9 +81,15 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
     return *g_forced_profile_for_launch_;
   }
 
-  // If the glic window is currently showing detached use that profile.
-  if (last_active_glic_ && last_active_glic_->IsWindowDetached()) {
+  // If the glic window is currently showing detached use that profile. When
+  // GlicMultiInstance is enabled, this profile is the one where a detached
+  // instance was most recently used.
+  if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance) &&
+      last_active_glic_ && last_active_glic_->IsWindowDetached()) {
     return last_active_glic_->profile();
+  } else if (base::FeatureList::IsEnabled(features::kGlicMultiInstance) &&
+             current_detached_glic_) {
+    return current_detached_glic_->profile();
   }
 
   // Look for a profile to based on most recently used browser windows
@@ -129,6 +137,14 @@ void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
   }
   observers_.Notify(&Observer::OnLastActiveGlicProfileChanged,
                     last_active_glic_profile);
+}
+
+void GlicProfileManager::SetCurrentDetachedGlic(Profile* profile) {
+  if (!profile) {
+    current_detached_glic_.reset();
+    return;
+  }
+  current_detached_glic_ = GlicKeyedService::Get(profile)->GetWeakPtr();
 }
 
 void GlicProfileManager::OnServiceShutdown(GlicKeyedService* glic) {
