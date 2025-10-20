@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_LENS_LENS_COMPOSEBOX_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,8 +82,12 @@ class LensComposeboxController {
   // Guarantee to outlive this.
   const raw_ptr<Profile> profile_;
 
-  // The remote UI's capabilities.
+  // The remote UI's capabilities. Only populated once the handshake completes.
   std::set<lens::FeatureCapability> remote_ui_capabilities_;
+
+  // A query that was issued before the remote UI was ready. This will be sent
+  // once the handshake completes.
+  std::optional<std::string> pending_query_text_;
 
   // The class responsible for handling messages between the compose box and
   // the WebUI.

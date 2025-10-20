@@ -478,3 +478,73 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
     return overlay_controller->state() == State::kOverlayAndResults;
   }));
 }
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       QueryBeforeHandshakeIsQueued) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  auto* overlay_controller = GetLensOverlayController();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Also need to run until the query controller has sent all requests to avoid
+  // flakiness.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          lens_controller->lens_overlay_query_controller());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->num_full_image_requests_sent() == 1 &&
+           fake_query_controller->num_page_content_update_requests_sent() ==
+               1 &&
+           fake_query_controller->num_interaction_requests_sent() == 1;
+  }));
+
+  // Send a query before handshake.
+  GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
+      "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
+      /*meta_key=*/false,
+      /*shift_key=*/false);
+
+  // Send another query. This should overwrite the last one.
+  GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
+      "test query 2", /*mouse_button=*/0, /*alt_key=*/false,
+      /*ctrl_key=*/false,
+      /*meta_key=*/false,
+      /*shift_key=*/false);
+
+  // Verify the client message was not sent.
+  auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
+  ASSERT_TRUE(test_side_panel_coordinator);
+  ASSERT_FALSE(test_side_panel_coordinator->last_sent_client_message_to_aim_
+                   .has_submit_query());
+
+  // Mock a handshake call so the composebox controller can send query messages.
+  lens::AimToClientMessage aim_to_client_message;
+  aim_to_client_message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  MockAimToClientMessage(aim_to_client_message);
+
+  // Verify the client message sent.
+  ASSERT_TRUE(test_side_panel_coordinator->last_sent_client_message_to_aim_
+                  .has_submit_query());
+
+  // Verify the submit query message.
+  auto submit_query = test_side_panel_coordinator
+                          ->last_sent_client_message_to_aim_.submit_query();
+  ASSERT_EQ(submit_query.payload().query_text(), "test query 2");
+}
