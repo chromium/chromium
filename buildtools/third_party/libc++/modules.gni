@@ -226,8 +226,24 @@ template("sysroot_modulemap") {
 }
 
 template("apple_sysroot_modulemap") {
+  modulemap = "${sysroot_include_dir}/${invoker.sysroot_path}"
   modulemap_config(target_name) {
-    source = "${sysroot_include_dir}/${invoker.sysroot_path}"
+    source = modulemap
+  }
+
+  # sysroot_modulemaps can be inside the build directory. This no-op action
+  # declares the modulemap files as outputs to satisfy GN's dependency
+  # tracking when other targets use them as inputs.
+  rel = string_split(rebase_path(modulemap, root_build_dir), "/")
+  if (rel[0] == "..") {
+    # It's not in the output directory so we can't declare it as an output file.
+    group(target_name + "_file") {
+    }
+  } else {
+    action(target_name + "_file") {
+      script = "//build/noop.py"
+      outputs = [ modulemap ]
+    }
   }
 }
 
@@ -241,6 +257,22 @@ template("apple_sysroot_module") {
                            ])
     modulemap = "${sysroot_include_dir}/${invoker.modulemap_path}"
     public_configs = [ invoker.modulemap ]
+    if (!defined(public_deps)) {
+      public_deps = []
+    }
+
+    # The no-op action above depends on SDK paths that differ between macOS and
+    # iOS, so it must be built with the correct toolchain
+    # for the target OS.
+    if (use_xcode_symlinks) {
+      toolchain = "//build/toolchain/mac:clang_$target_cpu"
+      if (is_ios || target_environment == "catalyst") {
+        toolchain = "//build/toolchain/ios:ios_clang_$target_cpu"
+      } else if (target_os == "ios" && is_mac) {
+        toolchain = "//build/toolchain/mac:clang_$host_cpu"
+      }
+      public_deps += [ "${invoker.modulemap}_file(${toolchain})" ]
+    }
   }
 }
 
