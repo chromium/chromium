@@ -39,8 +39,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/apps/app_service/publishers/arc_apps.h"
-#include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/privacy_items/arc_privacy_items_bridge.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
@@ -508,8 +507,6 @@ TEST_F(PublisherTest, ArcAppsSetLaunchTime) {
 TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
-  ArcApps* arc_apps = apps::ArcAppsFactory::GetForProfile(profile());
-  ASSERT_TRUE(arc_apps);
 
   const auto& fake_apps = arc_test.fake_apps();
   std::string package_name1 = fake_apps[0]->package_name;
