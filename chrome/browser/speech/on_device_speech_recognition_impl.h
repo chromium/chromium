@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "content/public/browser/document_user_data.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -23,6 +25,10 @@
 namespace content {
 class RenderFrameHost;
 }  // namespace content
+
+namespace optimization_guide {
+class ModelBrokerClient;
+}  // namespace optimization_guide
 
 namespace speech {
 
@@ -90,6 +96,9 @@ class OnDeviceSpeechRecognitionImpl
   // to safeguard against fingerprinting resulting from timing the installation.
   base::TimeDelta GetDownloadDelay(const std::vector<std::string>& languages);
 
+  void OnModelClientAvailable(
+      base::WeakPtr<optimization_guide::ModelClient> client);
+
   // A set of languages that have been downloaded for the current document. This
   // is used for origins that cannot persist content settings, e.g. opaque
   // origins or file schemes.
@@ -97,6 +106,8 @@ class OnDeviceSpeechRecognitionImpl
 
   base::flat_map<std::set<std::string>, std::list<InstallCallback>>
       language_installation_callbacks_;
+
+  std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   mojo::Receiver<media::mojom::OnDeviceSpeechRecognition> receiver_{this};

@@ -4,18 +4,9 @@
 
 #include "content/public/browser/speech_recognition_session_config.h"
 
-namespace {
-const uint32_t kDefaultMaxHypotheses = 1;
-}
-
 namespace content {
 
-SpeechRecognitionSessionConfig::SpeechRecognitionSessionConfig()
-    : filter_profanities(false),
-      continuous(false),
-      interim_results(false),
-      max_hypotheses(kDefaultMaxHypotheses) {
-}
+SpeechRecognitionSessionConfig::SpeechRecognitionSessionConfig() = default;
 
 SpeechRecognitionSessionConfig::SpeechRecognitionSessionConfig(
     const SpeechRecognitionSessionConfig& other) = default;

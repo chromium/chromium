@@ -46,6 +46,7 @@
 #include "media/mojo/mojom/speech_recognition_result.mojom.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -54,6 +55,7 @@
 #elif !BUILDFLAG(IS_FUCHSIA)
 #include "components/soda/constants.h"
 #include "components/soda/soda_util.h"
+#include "content/browser/speech/on_device_speech_recognition_engine_impl.h"
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 #include "media/base/media_switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -166,16 +168,6 @@ void SpeechRecognitionManager::SetManagerForTesting(
 
 SpeechRecognitionManagerImpl* SpeechRecognitionManagerImpl::GetInstance() {
   return g_speech_recognition_manager_impl;
-}
-
-bool SpeechRecognitionManagerImpl::IsOnDeviceSpeechRecognitionInstalled(
-    const SpeechRecognitionSessionConfig& config) {
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-  return speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ==
-         media::mojom::AvailabilityStatus::kAvailable;
-#else
-  return false;
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
 }
 
 SpeechRecognitionManagerImpl::SpeechRecognitionManagerImpl(
@@ -527,7 +519,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
   DCHECK(!SessionExists(session_id));
 
   base::UmaHistogramBoolean(kWebSpeechAudioOnDeviceAvailableHistogram,
-                            IsOnDeviceSpeechRecognitionInstalled(config));
+                            config.on_device_available);
   base::UmaHistogramBoolean(kWebSpeechAudioUseOnDeviceHistogram,
                             UseOnDeviceSpeechRecognition(config));
   base::UmaHistogramBoolean(kWebSpeechAudioUseAudioForwarderHistogram,
@@ -544,8 +536,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
       error = media::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed;
     }
 
-    bool is_on_device_speech_recognition_installed =
-        IsOnDeviceSpeechRecognitionInstalled(config);
+    bool is_on_device_speech_recognition_installed = config.on_device_available;
     base::UmaHistogramBoolean(
         kWebSpeechIsOnDeviceSpeechRecognitionInstalledHistogram,
         is_on_device_speech_recognition_installed);
@@ -605,7 +596,8 @@ int SpeechRecognitionManagerImpl::CreateSession(
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_FUCHSIA)
   if (UseOnDeviceSpeechRecognition(config) &&
-      audio_forwarder_config.has_value()) {
+      audio_forwarder_config.has_value() &&
+      !base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) {
     CHECK_GT(audio_forwarder_config.value().channel_count, 0);
     CHECK_GT(audio_forwarder_config.value().sample_rate, 0);
     // The speech recognition service process will create and manage the speech
@@ -654,11 +646,16 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
 #if !BUILDFLAG(IS_FUCHSIA)
   if (UseOnDeviceSpeechRecognition(config)) {
-    std::unique_ptr<SodaSpeechRecognitionEngineImpl>
-        soda_speech_recognition_engine =
-            std::make_unique<SodaSpeechRecognitionEngineImpl>(config);
-    if (soda_speech_recognition_engine->Initialize()) {
-      speech_recognition_engine = std::move(soda_speech_recognition_engine);
+    if (base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) {
+      speech_recognition_engine =
+          std::make_unique<OnDeviceSpeechRecognitionEngine>(config);
+    } else {
+      std::unique_ptr<SodaSpeechRecognitionEngineImpl>
+          soda_speech_recognition_engine =
+              std::make_unique<SodaSpeechRecognitionEngineImpl>(config);
+      if (soda_speech_recognition_engine->Initialize()) {
+        speech_recognition_engine = std::move(soda_speech_recognition_engine);
+      }
     }
   }
 #endif  //! BUILDFLAG(IS_FUCHSIA)
@@ -746,9 +743,7 @@ bool SpeechRecognitionManagerImpl::UseOnDeviceSpeechRecognition(
     const SpeechRecognitionSessionConfig& config) {
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   return config.on_device &&
-         (speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ==
-              media::mojom::AvailabilityStatus::kAvailable ||
-          !config.allow_cloud_fallback);
+         (config.on_device_available || !config.allow_cloud_fallback);
 #else
   return false;
 #endif

@@ -60,6 +60,7 @@
 #include "media/base/picture_in_picture_events_info.h"
 #include "media/mojo/mojom/media_service.mojom-forward.h"
 #include "media/mojo/mojom/remoting.mojom-forward.h"
+#include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -171,6 +172,10 @@ class URLLoader;
 class URLLoaderClient;
 }  // namespace mojom
 }  // namespace network
+
+namespace optimization_guide {
+class ModelBrokerClient;
+}  // namespace optimization_guide
 
 namespace service_manager {
 template <typename...>
@@ -1462,6 +1467,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // The delegate will be owned by the manager. It's valid to return nullptr.
   virtual SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate();
+
+  // Allows the embedder to create a ModelBrokerClient.
+  virtual std::unique_ptr<optimization_guide::ModelBrokerClient>
+  CreateModelBrokerClient(BrowserContext* browser_context);
+
+  // Returns whether on-device speech recognition is available.
+  virtual media::mojom::AvailabilityStatus
+  GetOnDeviceSpeechRecognitionAvailabilityStatus(BrowserContext* context,
+                                                 const std::string& language);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Allows the embedder to return a delegate for the TtsController.
