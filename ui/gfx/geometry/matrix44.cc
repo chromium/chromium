@@ -104,13 +104,25 @@ ALWAYS_INLINE bool InverseWithDouble4Cols(Double4& c0,
 }  // anonymous namespace
 
 void Matrix44::GetColMajor(double dst[16]) const {
-  const double* src = &matrix_[0][0];
-  std::copy(src, UNSAFE_TODO(src + 16), dst);
+  return GetColMajor(UNSAFE_TODO(base::span(dst, base::fixed_extent<16>())));
+}
+
+void Matrix44::GetColMajor(base::span<double, 16> dst) const {
+  base::span UNSAFE_TODO(src{&matrix_[0][0], base::fixed_extent<16>()});
+  dst.copy_from(src);
 }
 
 void Matrix44::GetColMajorF(float dst[16]) const {
-  const double* src = &matrix_[0][0];
-  std::copy(src, UNSAFE_TODO(src + 16), dst);
+  return GetColMajorF(UNSAFE_TODO(base::span(dst, base::fixed_extent<16>())));
+}
+
+void Matrix44::GetColMajorF(base::span<float, 16> dst) const {
+  base::span UNSAFE_TODO(src{&matrix_[0][0], base::fixed_extent<16>()});
+
+  // TODO: It's surprising that this isn't flagged as unsafe.
+  //       It'd be nice if copy_from() supported differing element types,
+  //       then this would be statically safe.
+  std::ranges::copy(src, dst.begin());
 }
 
 void Matrix44::PreTranslate(double dx, double dy) {

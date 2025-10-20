@@ -1969,7 +1969,7 @@ TEST(XFormTest, GetColMajor) {
   auto transform = GetTestMatrix1();
 
   std::array<double, 16> data;
-  transform.GetColMajor(data.data());
+  transform.GetColMajor(data);
   for (int i = 0; i < 16; i++) {
     EXPECT_EQ(i + 10.0, data[i]);
     EXPECT_EQ(data[i], transform.ColMajorData(i));

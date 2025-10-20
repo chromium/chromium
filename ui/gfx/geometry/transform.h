@@ -170,10 +170,13 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
   // AxisTransform2d or a Matrix44 depending on the values. GetColMajorF() and
   // ColMajorF() are used when passing a Transform through mojo.
   static Transform ColMajorF(const float a[16]);
+  static Transform ColMajorF(base::span<const float, 16> a);
 
   // Gets col-major data.
   void GetColMajor(double a[16]) const;
+  void GetColMajor(base::span<double, 16> a) const;
   void GetColMajorF(float a[16]) const;
+  void GetColMajorF(base::span<float, 16> a) const;
   double ColMajorData(int index) const { return rc(index % 4, index / 4); }
 
   // Applies a transformation on the current transformation,

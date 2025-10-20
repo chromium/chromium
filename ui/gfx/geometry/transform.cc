@@ -54,16 +54,14 @@ Matrix44 AxisTransform2dToMatrix44(const AxisTransform2d& axis_2d) {
 }
 
 template <typename T>
-void AxisTransform2dToColMajor(const AxisTransform2d& axis_2d, T a[16]) {
+void AxisTransform2dToColMajor(const AxisTransform2d& axis_2d,
+                               base::span<T, 16> a) {
   a[0] = axis_2d.scale().x();
-  UNSAFE_TODO(a[5]) = axis_2d.scale().y();
-  UNSAFE_TODO(a[12]) = axis_2d.translation().x();
-  UNSAFE_TODO(a[13]) = axis_2d.translation().y();
-  UNSAFE_TODO(a[1]) = UNSAFE_TODO(a[2]) = UNSAFE_TODO(a[3]) =
-      UNSAFE_TODO(a[4]) = UNSAFE_TODO(a[6]) = UNSAFE_TODO(a[7]) =
-          UNSAFE_TODO(a[8]) = UNSAFE_TODO(a[9]) = UNSAFE_TODO(a[11]) =
-              UNSAFE_TODO(a[14]) = 0;
-  UNSAFE_TODO(a[10]) = UNSAFE_TODO(a[15]) = 1;
+  a[5] = axis_2d.scale().y();
+  a[12] = axis_2d.translation().x();
+  a[13] = axis_2d.translation().y();
+  a[1] = a[2] = a[3] = a[4] = a[6] = a[7] = a[8] = a[9] = a[11] = a[14] = 0;
+  a[10] = a[15] = 1;
 }
 
 }  // namespace
@@ -113,24 +111,24 @@ Transform Transform::ColMajor(base::span<const double, 16> a) {
 
 // static
 Transform Transform::ColMajorF(const float a[16]) {
-  if (AllTrue(Float4{UNSAFE_TODO(a[1]), UNSAFE_TODO(a[2]), UNSAFE_TODO(a[3]),
-                     UNSAFE_TODO(a[4])} == Float4{0, 0, 0, 0} &
-              Float4{UNSAFE_TODO(a[6]), UNSAFE_TODO(a[7]), UNSAFE_TODO(a[8]),
-                     UNSAFE_TODO(a[9])} == Float4{0, 0, 0, 0} &
-              Float4{UNSAFE_TODO(a[10]), UNSAFE_TODO(a[11]), UNSAFE_TODO(a[14]),
-                     UNSAFE_TODO(a[15])} == Float4{1, 0, 0, 1})) {
-    return Transform(a[0], UNSAFE_TODO(a[5]), UNSAFE_TODO(a[12]),
-                     UNSAFE_TODO(a[13]));
+  return ColMajorF(UNSAFE_TODO(base::span(a, base::fixed_extent<16>())));
+}
+
+Transform Transform::ColMajorF(base::span<const float, 16> a) {
+  if (AllTrue(Float4{a[1], a[2], a[3], a[4]} == Float4{0, 0, 0, 0} &
+              Float4{a[6], a[7], a[8], a[9]} == Float4{0, 0, 0, 0} &
+              Float4{a[10], a[11], a[14], a[15]} == Float4{1, 0, 0, 1})) {
+    return Transform(a[0], a[5], a[12], a[13]);
   }
-  return Transform(a[0], UNSAFE_TODO(a[1]), UNSAFE_TODO(a[2]),
-                   UNSAFE_TODO(a[3]), UNSAFE_TODO(a[4]), UNSAFE_TODO(a[5]),
-                   UNSAFE_TODO(a[6]), UNSAFE_TODO(a[7]), UNSAFE_TODO(a[8]),
-                   UNSAFE_TODO(a[9]), UNSAFE_TODO(a[10]), UNSAFE_TODO(a[11]),
-                   UNSAFE_TODO(a[12]), UNSAFE_TODO(a[13]), UNSAFE_TODO(a[14]),
-                   UNSAFE_TODO(a[15]));
+  return Transform(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9],
+                   a[10], a[11], a[12], a[13], a[14], a[15]);
 }
 
 void Transform::GetColMajor(double a[16]) const {
+  return GetColMajor(UNSAFE_TODO(base::span(a, base::fixed_extent<16>())));
+}
+
+void Transform::GetColMajor(base::span<double, 16> a) const {
   if (!full_matrix_) [[likely]] {
     AxisTransform2dToColMajor(axis_2d_, a);
   } else {
@@ -139,6 +137,10 @@ void Transform::GetColMajor(double a[16]) const {
 }
 
 void Transform::GetColMajorF(float a[16]) const {
+  return GetColMajorF(UNSAFE_TODO(base::span(a, base::fixed_extent<16>())));
+}
+
+void Transform::GetColMajorF(base::span<float, 16> a) const {
   if (!full_matrix_) [[likely]] {
     AxisTransform2dToColMajor(axis_2d_, a);
   } else {
