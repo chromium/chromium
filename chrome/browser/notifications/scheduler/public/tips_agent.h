@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_TIPS_AGENT_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_TIPS_AGENT_H_
 
+#include <memory>
+
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
 namespace notifications {
