@@ -27,6 +27,9 @@ BASE_DECLARE_FEATURE(kSyncAccountSettings);
 // Enables syncing of Loyalty Cards coming from Google Wallet.
 BASE_DECLARE_FEATURE(kSyncAutofillLoyaltyCard);
 
+// Enables syncing of usage metadata from Google Wallet passes.
+BASE_DECLARE_FEATURE(kSyncAutofillValuableMetadata);
+
 // Enables storing valuables in the profile db instead of the account db.
 BASE_DECLARE_FEATURE(kSyncMoveValuablesToProfileDb);
 

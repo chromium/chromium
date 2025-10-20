@@ -21,6 +21,7 @@ import "components/sync/protocol/arc_package_specifics.proto";
 import "components/sync/protocol/autofill_specifics.proto";
 import "components/sync/protocol/autofill_offer_specifics.proto";
 import "components/sync/protocol/autofill_valuable_specifics.proto";
+import "components/sync/protocol/autofill_valuable_metadata_specifics.proto";
 import "components/sync/protocol/account_setting_specifics.proto";
 import "components/sync/protocol/autofill_wallet_credential_specifics.proto";
 import "components/sync/protocol/autofill_wallet_usage_specifics.proto";
@@ -165,6 +166,7 @@ message EntitySpecifics {
     AccountSettingSpecifics account_setting = 1438954;
     AiThreadSpecifics ai_thread = 1517585;
     ContextualTaskSpecifics contextual_task = 1518931;
+    AutofillValuableMetadataSpecifics autofill_valuable_metadata = 1520954;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/

@@ -817,6 +817,12 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
                       base::RetainedRef(autofill_web_data_service)))));
     }
   }
+
+  if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE_METADATA) &&
+      base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
+    // TODO(crbug.com/436551488) Complete syncing of valuable usage.
+  }
+
 #endif
 
 #if !BUILDFLAG(IS_IOS)
