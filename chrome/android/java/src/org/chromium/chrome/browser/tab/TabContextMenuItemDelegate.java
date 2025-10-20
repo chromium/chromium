@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
@@ -76,6 +77,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final Runnable mContextMenuCopyLinkObserver;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
+    private @Nullable final MultiInstanceManager mMultiInstanceManager;
 
     /** Builds a {@link TabContextMenuItemDelegate} instance. */
     public TabContextMenuItemDelegate(
@@ -86,7 +88,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             Runnable contextMenuCopyLinkObserver,
             Supplier<SnackbarManager> snackbarManagerSupplier,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier) {
+            Supplier<BottomSheetController> bottomSheetControllerSupplier,
+            @Nullable MultiInstanceManager multiInstanceManager) {
         mActivity = activity;
         mActivityType = activityType;
         mTab = (TabImpl) tab;
@@ -95,6 +98,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
+        mMultiInstanceManager = multiInstanceManager;
     }
 
     @Override
@@ -271,22 +275,41 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     /**
-     * Opens a URL in another window with the specified incognito state.
+     * Opens a URL in a window selected through the window management dialog.
      *
      * @param url The URL to open.
      * @param referrer The referrer to use when opening the URL.
-     * @param incognito Whether the other window should be incognito.
+     * @param isIncognito Whether the other window should be incognito.
      */
-    public void openInOtherWindow(GURL url, @Nullable Referrer referrer, boolean incognito) {
-        ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(incognito);
+    public void openInOtherWindow(GURL url, @Nullable Referrer referrer, boolean isIncognito) {
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
+        loadUrlParams.setReferrer(referrer);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow() && mMultiInstanceManager != null) {
+            mMultiInstanceManager.openUrlInSelectedWindow(loadUrlParams, mTab.getParentId());
+        } else {
+            openInAnotherWindow(url, referrer, isIncognito);
+        }
+    }
+
+    /**
+     * Opens a URL in a new window if there is only one window opened, or foreground window if there
+     * are multiple windows. Opens the window with the specified incognito state.
+     *
+     * @param url The URL to open.
+     * @param referrer The referrer to use when opening the URL.
+     * @param isIncognito Whether the other window should be incognito.
+     */
+    public void openInAnotherWindow(GURL url, @Nullable Referrer referrer, boolean isIncognito) {
+        ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(isIncognito);
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
         Activity activity = TabUtils.getActivity(mTab);
         assumeNonNull(activity);
+        // null if there are no foreground window activities.
         Activity otherWindowActivity =
                 IncognitoUtils.shouldOpenIncognitoAsWindow()
                         ? MultiWindowUtils.getForegroundWindowActivityWithProfileType(
-                                activity, incognito)
+                                activity, isIncognito)
                         : MultiWindowUtils.getForegroundWindowActivity(activity);
 
         chromeAsyncTabLauncher.launchTabInOtherWindow(
