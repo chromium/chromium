@@ -165,7 +165,7 @@ void PrefHashFilter::RegisterProfilePrefs(
   registry->RegisterStringPref(
       user_prefs::kPreferenceResetTime,
       base::NumberToString(base::Time().ToInternalValue()));
-  registry->RegisterDictionaryPref(user_prefs::kTrackedPreferencesReset);
+  registry->RegisterListPref(user_prefs::kTrackedPreferencesReset);
   // Register the preference to trigger a flush to disk.
   // It's a string preference to store a timestamp.
   registry->RegisterStringPref(
@@ -559,10 +559,10 @@ void PrefHashFilter::MaybeRecordTrackedPreferenceResetCount(
   if (reset_metric_recorded_) {
     return;
   }
-  const base::Value::Dict* reset_dict =
-      pref_store_contents.FindDict(user_prefs::kTrackedPreferencesReset);
+  const base::Value::List* reset_list =
+      pref_store_contents.FindList(user_prefs::kTrackedPreferencesReset);
   UMA_HISTOGRAM_COUNTS_100("Settings.TrackedPreferenceResets.Count",
-                           reset_dict ? reset_dict->size() : 0);
+                           reset_list ? reset_list->size() : 0);
   reset_metric_recorded_ = true;
 }
 

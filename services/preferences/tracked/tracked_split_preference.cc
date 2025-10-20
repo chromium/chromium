@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -103,6 +104,8 @@ bool TrackedSplitPreference::EnforceAndReport(
   if (reset_action == TrackedPreferenceHelper::DO_RESET ||
       reset_action == TrackedPreferenceHelper::DO_RESET_LEGACY ||
       reset_action == TrackedPreferenceHelper::DO_RESET_ENCRYPTED) {
+    base::Value::List* reset_prefs_list =
+        pref_store_contents.EnsureList(user_prefs::kTrackedPreferencesReset);
     if (value_state == ValueState::CHANGED ||
         value_state == ValueState::CHANGED_VIA_HMAC_FALLBACK ||
         value_state == ValueState::CHANGED_ENCRYPTED) {
@@ -114,21 +117,20 @@ bool TrackedSplitPreference::EnforceAndReport(
       // function reports this as `CHANGED`. This check prevents a crash when
       // attempting to reset keys on a non-existent dictionary.
       if (dict_value) {
-        base::Value::Dict* reset_prefs = pref_store_contents.EnsureDict(
-            user_prefs::kTrackedPreferencesReset);
-        for (std::vector<std::string>::const_iterator it = invalid_keys.begin();
-             it != invalid_keys.end(); ++it) {
-          const base::Value* invalid_value = dict_value->Find(*it);
-          DCHECK(invalid_value);
-          reset_prefs->Set(pref_path_ + "." + *it, invalid_value->Clone());
-          dict_value->Remove(*it);
+        for (const std::string& key : invalid_keys) {
+          base::Value new_path(pref_path_ + "." + key);
+          if (!base::Contains(*reset_prefs_list, new_path)) {
+            reset_prefs_list->Append(std::move(new_path));
+          }
+          dict_value->Remove(key);
         }
       }
     } else {
       if (value) {
-        base::Value::Dict* reset_prefs = pref_store_contents.EnsureDict(
-            user_prefs::kTrackedPreferencesReset);
-        reset_prefs->Set(pref_path_, value->Clone());
+        base::Value new_path(pref_path_);
+        if (!base::Contains(*reset_prefs_list, new_path)) {
+          reset_prefs_list->Append(std::move(new_path));
+        }
       }
       pref_store_contents.RemoveByDottedPath(pref_path_);
     }
