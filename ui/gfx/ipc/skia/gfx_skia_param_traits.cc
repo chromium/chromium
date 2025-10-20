@@ -11,9 +11,7 @@
 #include "ipc/param_traits_utils.h"
 // Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/gfx/geometry/transform.h"
 namespace IPC {
 #undef UI_GFX_IPC_SKIA_GFX_SKIA_PARAM_TRAITS_MACROS_H_
 #include "ui/gfx/ipc/skia/gfx_skia_param_traits_macros.h"
@@ -48,51 +46,6 @@ bool ParamTraits<SkImageInfo>::Read(const base::Pickle* m,
   }
 
   *r = SkImageInfo::Make(width, height, color_type, alpha_type);
-  return true;
-}
-
-void ParamTraits<SkBitmap>::Write(base::Pickle* m, const SkBitmap& p) {
-  WriteParam(m, p.info());
-  size_t pixel_size = p.computeByteSize();
-  m->WriteData(reinterpret_cast<const char*>(p.getPixels()), pixel_size);
-}
-
-bool ParamTraits<SkBitmap>::Read(const base::Pickle* m,
-                                 base::PickleIterator* iter,
-                                 SkBitmap* r) {
-  SkImageInfo image_info;
-  if (!ReadParam(m, iter, &image_info))
-    return false;
-
-  const char* bitmap_data;
-  size_t bitmap_data_size = 0;
-  if (!iter->ReadData(&bitmap_data, &bitmap_data_size))
-    return false;
-
-  if (!r->tryAllocPixels(image_info))
-    return false;
-
-  if (bitmap_data_size != r->computeByteSize())
-    return false;
-  UNSAFE_TODO(memcpy(r->getPixels(), bitmap_data, bitmap_data_size));
-  return true;
-}
-
-void ParamTraits<gfx::Transform>::Write(base::Pickle* m, const param_type& p) {
-  float column_major_data[16];
-  p.GetColMajorF(column_major_data);
-  // We do this in a single write for performance reasons.
-  m->WriteBytes(&column_major_data, sizeof(column_major_data));
-}
-
-bool ParamTraits<gfx::Transform>::Read(const base::Pickle* m,
-                                       base::PickleIterator* iter,
-                                       param_type* r) {
-  const char* column_major_data;
-  if (!iter->ReadBytes(&column_major_data, sizeof(float) * 16))
-    return false;
-  *r = gfx::Transform::ColMajorF(
-      reinterpret_cast<const float*>(column_major_data));
   return true;
 }
 

@@ -47,51 +47,6 @@ TEST(IPCMessageTest, Pair) {
 }
 
 // Tests bitmap serialization.
-TEST(IPCMessageTest, Bitmap) {
-  SkBitmap bitmap;
-
-  bitmap.allocN32Pixels(10, 5);
-  UNSAFE_TODO(memset(bitmap.getPixels(), 'A', bitmap.computeByteSize()));
-
-  base::Pickle msg;
-  IPC::ParamTraits<SkBitmap>::Write(&msg, bitmap);
-
-  SkBitmap output;
-  base::PickleIterator iter(msg);
-  EXPECT_TRUE(IPC::ParamTraits<SkBitmap>::Read(&msg, &iter, &output));
-
-  EXPECT_EQ(bitmap.colorType(), output.colorType());
-  EXPECT_EQ(bitmap.width(), output.width());
-  EXPECT_EQ(bitmap.height(), output.height());
-  EXPECT_EQ(bitmap.rowBytes(), output.rowBytes());
-  EXPECT_EQ(bitmap.computeByteSize(), output.computeByteSize());
-  UNSAFE_TODO(EXPECT_EQ(
-      memcmp(bitmap.getPixels(), output.getPixels(), bitmap.computeByteSize()),
-      0));
-
-  // Also test the corrupt case.
-
-  base::Pickle bad_msg;
-
-  // Copy the first message block over to |bad_msg|.
-  const char* fixed_data;
-  size_t fixed_data_size;
-  iter = base::PickleIterator(msg);
-  EXPECT_TRUE(iter.ReadData(&fixed_data, &fixed_data_size));
-  bad_msg.WriteData(fixed_data, fixed_data_size);
-
-  // Add some bogus pixel data.
-  const size_t bogus_pixels_size = bitmap.computeByteSize() * 2;
-  auto bogus_pixels = base::HeapArray<uint8_t>::Uninit(bogus_pixels_size);
-  std::ranges::fill(bogus_pixels, 'B');
-  bad_msg.WriteData(bogus_pixels);
-
-  // Make sure we don't read out the bitmap!
-  SkBitmap bad_output;
-  iter = base::PickleIterator(bad_msg);
-  EXPECT_FALSE(IPC::ParamTraits<SkBitmap>::Read(&bad_msg, &iter, &bad_output));
-}
-
 TEST(IPCMessageTest, ValueDict) {
   base::Value::Dict input;
   input.Set("null", base::Value());
