@@ -71,8 +71,7 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
                                              public viz::TestContextSupport {
  public:
   explicit FakeGPUImageDecodeTestGLES2Interface(
-      TransferCacheTestHelper* transfer_cache_helper,
-      bool advertise_accelerated_decoding)
+      TransferCacheTestHelper* transfer_cache_helper)
       : extension_string_(
             "GL_EXT_texture_format_BGRA8888 GL_OES_rgb8_rgba8 "
             "GL_OES_texture_npot GL_EXT_texture_rg "
@@ -170,12 +169,11 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
 class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
  public:
   static scoped_refptr<GPUImageDecodeTestMockContextProvider> Create(
-      TransferCacheTestHelper* transfer_cache_helper,
-      bool advertise_accelerated_decoding) {
+      TransferCacheTestHelper* transfer_cache_helper) {
     auto support = std::make_unique<FakeGPUImageDecodeTestGLES2Interface>(
-        transfer_cache_helper, advertise_accelerated_decoding);
+        transfer_cache_helper);
     auto gl = std::make_unique<FakeGPUImageDecodeTestGLES2Interface>(
-        transfer_cache_helper, false /* advertise_accelerated_decoding */);
+        transfer_cache_helper);
     auto raster = std::make_unique<gpu::raster::RasterImplementationGLES>(
         gl.get(), support.get(), gpu::Capabilities());
     return new GPUImageDecodeTestMockContextProvider(
@@ -237,27 +235,25 @@ class GpuImageDecodeCacheTest
     : public ::testing::TestWithParam<
           std::tuple<SkColorType,
                      bool /* do_yuv_decode */,
-                     bool /* advertise_accelerated_decoding */,
                      bool /* enable_clipped_image_scaling */,
                      bool /* no_discardable_memory */>> {
  public:
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
-    no_discardable_memory_ = std::get<4>(GetParam());
+    no_discardable_memory_ = std::get<3>(GetParam());
     if (no_discardable_memory_)
       enabled_features.push_back(
           features::kNoDiscardableMemoryForGpuDecodePath);
     feature_list_.InitWithFeatures(enabled_features,
                                    {} /* disabled_features */);
-    advertise_accelerated_decoding_ = std::get<2>(GetParam());
-    enable_clipped_image_scaling_ = std::get<3>(GetParam());
+    enable_clipped_image_scaling_ = std::get<2>(GetParam());
     if (enable_clipped_image_scaling_) {
       auto* command_line = base::CommandLine::ForCurrentProcess();
       ASSERT_TRUE(command_line != nullptr);
       command_line->AppendSwitch(switches::kEnableClippedImageScaling);
     }
-    context_provider_ = GPUImageDecodeTestMockContextProvider::Create(
-        &transfer_cache_helper_, advertise_accelerated_decoding_);
+    context_provider_ =
+        GPUImageDecodeTestMockContextProvider::Create(&transfer_cache_helper_);
     context_provider_->BindToCurrentSequence();
     sk_sp<const GrGLInterface> gr_interface =
         skia_bindings::CreateGLES2InterfaceBindings(
@@ -563,7 +559,6 @@ class GpuImageDecodeCacheTest
 
   SkColorType color_type_;
   bool do_yuv_decode_;
-  bool advertise_accelerated_decoding_;
   bool enable_clipped_image_scaling_;
   bool no_discardable_memory_;
   int max_texture_size_ = 0;
@@ -4101,7 +4096,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::ValuesIn(test_color_types),
         testing::Bool() /* do_yuv_decode */,
-        testing::Values(false) /* advertise_accelerated_decoding */,
         testing::Values(false) /* enable_clipped_image_scaling */,
         testing::Values(false) /* no_discardable_memory */));
 
@@ -4369,7 +4363,6 @@ INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCachePurgeOnTimerTest,
     testing::Combine(testing::Values(kN32_SkColorType),
                      testing::Bool() /* do_yuv_decode */,
-                     testing::Bool() /* advertise_accelerated_decoding */,
                      testing::Values(false) /* enable_clipped_image_scaling */,
                      testing::Bool() /* no_discardable_memory */));
 
