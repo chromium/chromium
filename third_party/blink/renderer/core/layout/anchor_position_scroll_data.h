@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -172,6 +173,12 @@ class AnchorPositionScrollData
     void Trace(Visitor* visitor) const { visitor->Trace(anchor_element); }
 
     PhysicalOffset TotalOffset() const {
+      if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+        return containers_include_viewport
+                   ? accumulated_adjustment +
+                         anchored_element_container_scroll_offset
+                   : accumulated_adjustment;
+      }
       return accumulated_adjustment + anchored_element_container_scroll_offset;
     }
   };

@@ -333,6 +333,10 @@ void AnchorPositionScrollData::InvalidateLayoutAndPaint() {
     return;
   }
   DCHECK(anchored_element_->GetLayoutObject());
+
+  if (OutOfFlowData* out_of_flow_data = anchored_element_->GetOutOfFlowData()) {
+    out_of_flow_data->ClearRememberedScrollOffsets();
+  }
   anchored_element_->GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kAnchorPositioning);
   anchored_element_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();

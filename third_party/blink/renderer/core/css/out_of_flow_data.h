@@ -129,6 +129,11 @@ class CORE_EXPORT OutOfFlowData final
   const RememberedScrollOffsets* GetSpeculativeRememberedScrollOffsets() const;
   bool SetPendingRememberedScrollOffsets(const RememberedScrollOffsets*);
 
+  void ClearRememberedScrollOffsets() {
+    remembered_scroll_offsets_ = nullptr;
+    pending_remembered_scroll_offsets_ = nullptr;
+  }
+
   void Trace(Visitor*) const override;
 
  private:

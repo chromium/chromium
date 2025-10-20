@@ -147,14 +147,12 @@ class OOFCandidateStyleIterator {
       const LayoutObject& object,
       AnchorEvaluatorImpl& anchor_evaluator,
       WritingDirectionMode container_writing_direction,
-      std::optional<wtf_size_t> last_successful_index,
       const OutOfFlowData::RememberedScrollOffsets* remembered_scroll_offsets)
       : element_(DynamicTo<Element>(object.GetNode())),
         original_style_(object.StyleRef()),
         anchor_evaluator_(anchor_evaluator),
-        container_writing_direction_(container_writing_direction),
-        last_successful_index_(last_successful_index),
-        remembered_scroll_offsets_(remembered_scroll_offsets) {
+        container_writing_direction_(container_writing_direction) {
+    anchor_evaluator_.SetRememberedScrollOffsets(remembered_scroll_offsets);
     Initialize();
   }
 
@@ -179,12 +177,6 @@ class OOFCandidateStyleIterator {
   }
 
   const ComputedStyle& ActivateBaseStyleForTryAttempt() {
-    // If we're activating a base style and we didn't have a last successful
-    // size, that means we can potentially use remembered offsets. on the first
-    // layout, these offsets won't be set anyway, but on subsequent layouts we
-    // need to use them unless there's an anchor recalculation point.
-    UpdateEvaluatorWithScrollOffsets(!last_successful_index_);
-
     if (!HasPositionTryFallbacks()) {
       return GetStyle();
     }
@@ -226,6 +218,7 @@ class OOFCandidateStyleIterator {
 
   void MoveToLastSuccessfulOrStyleWithoutFallbacks() {
     CHECK(element_);
+    anchor_evaluator_.ClearRememberedScrollOffsets();
     std::optional<wtf_size_t> index;
     if (OutOfFlowData* out_of_flow_data = element_->GetOutOfFlowData()) {
       // No successful fallbacks for this pass. Clear out the new successful
@@ -278,6 +271,7 @@ class OOFCandidateStyleIterator {
   }
 
   void Reset() {
+    anchor_evaluator_.ClearRememberedScrollOffsets();
     try_fallback_index_.reset();
     Initialize();
   }
@@ -329,14 +323,6 @@ class OOFCandidateStyleIterator {
     return false;
   }
 
-  void UpdateEvaluatorWithScrollOffsets(bool use_remembered) {
-    if (use_remembered) {
-      anchor_evaluator_.SetRememberedScrollOffsets(remembered_scroll_offsets_);
-    } else {
-      anchor_evaluator_.ClearRememberedScrollOffsets();
-    }
-  }
-
   // Update the style using the specified index into `position_try_fallbacks_`
   // (which must exist), and return that updated style. Returns nullptr if
   // the fallback references a @position-try rule which doesn't exist.
@@ -349,11 +335,6 @@ class OOFCandidateStyleIterator {
 
     try_fallback_index_ = try_fallback_index;
     style_ = nullptr;
-
-    // If we're updating for the last successful index, we have to use the
-    // remembered offsets if they exist.
-    UpdateEvaluatorWithScrollOffsets(last_successful_index_ ==
-                                     try_fallback_index_);
 
     // Previously evaluated anchor is not relevant if another position fallback
     // is applied.
@@ -412,16 +393,6 @@ class OOFCandidateStyleIterator {
   // UpdateStyleAndLayoutTreeForOutOfFlow() in order to resolve logical values
   // for anchored(fallback) container queries.
   WritingDirectionMode container_writing_direction_;
-
-  // Refers to the last successful `position-try-fallbacks` index. If not set,
-  // then potentially last successful attempt was with base styles.
-  std::optional<wtf_size_t> last_successful_index_;
-
-  // Refers to the scroll offsets that were remembered from the last successful
-  // layout (the same as `last_successful_index_`). If not set, then there were
-  // no remembered offsets (e.g. anchor recalculation point has occurred).
-  const OutOfFlowData::RememberedScrollOffsets* remembered_scroll_offsets_ =
-      nullptr;
 };
 
 const Element* GetPositionAnchorElement(
@@ -2339,7 +2310,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   HeapVector<std::optional<wtf_size_t>, kMaxTryAttempts> overflowing_options;
   OOFCandidateStyleIterator iter(
       *node_info.node.GetLayoutBox(), anchor_evaluator,
-      node_info.base_container_info.writing_direction, last_successful_index,
+      node_info.base_container_info.writing_direction,
       oof_data ? oof_data->GetRememberedScrollOffsets() : nullptr);
 
   do {
@@ -2370,8 +2341,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
 
       // Also check if it fits the containing block after applying scroll offset
       // (i.e. the scroll-adjusted inset-modified containing block).
-      if (offset_info) {
-        if (try_fit_available_space) {
+      if (try_fit_available_space) {
+        if (offset_info || RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
           non_overflowing_scroll_ranges.push_back(non_overflowing_range);
           if (!non_overflowing_range.Contains(GetAnchorOffset(
                   node_info.node, style, anchor_evaluator.AnchorQuery()))) {
@@ -2387,6 +2358,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
             continue;
           }
         }
+      }
+
+      if (offset_info) {
         NonOverflowingCandidate candidate{iter.TryFallbackIndex(),
                                           *offset_info};
         if (find_last_successful_option &&
@@ -2420,7 +2394,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     default_anchor_scroll_shift =
         oof_data->PotentialNextDefaultAnchorScrollShift(
             *node_info.node.GetLayoutBox());
-    if (default_anchor_scroll_shift == last_remembered_scroll_offset) {
+    if (!RuntimeEnabledFeatures::CSSAnchorUpdateEnabled() &&
+        default_anchor_scroll_shift == last_remembered_scroll_offset) {
       // No new scroll offset, and we don't have to try with the same scroll
       // offset twice.
       break;
