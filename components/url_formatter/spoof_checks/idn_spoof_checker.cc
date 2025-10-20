@@ -648,8 +648,7 @@ TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
   // a dot. Skeleton of certain characters are dots (e.g. "۰" (U+06F0)).
   IDNSpoofChecker::HuffmanTrieParams& trie_params = GetTrieParams();
   TopDomainPreloadDecoder preload_decoder(
-      trie_params.huffman_tree.data(), trie_params.huffman_tree.size(),
-      trie_params.trie.data(), trie_params.trie_bits,
+      trie_params.huffman_tree, trie_params.trie, trie_params.trie_bits,
       trie_params.trie_root_position);
   auto labels = base::SplitStringPiece(skeleton, ".", base::KEEP_WHITESPACE,
                                        base::SPLIT_WANT_ALL);
