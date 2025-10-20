@@ -664,6 +664,15 @@ export class ComposeboxElement extends I18nMixinLit
     if (this.lastQueriedInput_ && this.result_?.matches.length) {
       this.$.matches.selectFirst();
     }
+    if (this.ntpRealboxNextEnabled) {
+      this.fire('composebox-input-focus-changed', {value: true});
+    }
+  }
+
+  protected handleInputFocusOut_() {
+    if (this.ntpRealboxNextEnabled) {
+      this.fire('composebox-input-focus-changed', {value: false});
+    }
   }
 
   protected handleComposeboxFocusIn_(e: FocusEvent) {
