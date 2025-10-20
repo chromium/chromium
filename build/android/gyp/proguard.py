@@ -85,6 +85,8 @@ _IGNORE_WARNINGS = (
     # so safe to ignore. b/431248021
     r'.*AndroidComposeUiTestEnvironment.*',
     r'.*ComposeUiTest.*',
+    # We don't use this, so safe to ignore. crbug.com/453685303
+    r'.*AndroidComposeTestRule.*',
 )
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
