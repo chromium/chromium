@@ -55,6 +55,7 @@ class GlicMetrics;
 class GlicOcclusionNotifier;
 class GlicProfileManager;
 class GlicScreenshotCapturer;
+class GlicShareImageHandler;
 class GlicTabSourceObserver;
 class GlicWindowController;
 class HostManager;
@@ -213,6 +214,13 @@ class GlicKeyedService : public KeyedService,
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
 
+  // Fetches the image for the context menu item (if possible, and potentially
+  // scaling and reencoding) and sends the result to the web client as
+  // additional data.
+  void ShareContextImage(tabs::TabInterface* tab,
+                         content::RenderFrameHost* frame,
+                         const ::GURL& src_url);
+
   AuthController& GetAuthController() { return *auth_controller_; }
 
   bool IsActiveWebContents(content::WebContents* contents);
@@ -248,6 +256,9 @@ class GlicKeyedService : public KeyedService,
   // Get the GlicInstance associated with the given browser's active tab, or
   // null if there is none. `bwi` can be null if preloaded with no browser open.
   GlicInstance* GetInstanceForActiveTab(BrowserWindowInterface* bwi);
+
+  // Get the GlicInstance for a provided tab, or null if there is none.
+  GlicInstance* GetInstanceForTab(tabs::TabInterface* tab);
 
   // Sends additional context to the web client associated with the given tab.
   // If no web client exists for the tab, then this method does nothing. It is
@@ -294,6 +305,7 @@ class GlicKeyedService : public KeyedService,
   // Is either a GlicWindowControllerImpl or GlicPanelCoordinatorImpl.
   std::unique_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicSharingManager> sharing_manager_;
+  std::unique_ptr<GlicShareImageHandler> share_image_handler_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;

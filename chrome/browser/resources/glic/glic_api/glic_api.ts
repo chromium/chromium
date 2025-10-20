@@ -2033,6 +2033,8 @@ export enum InvocationSource {
   SHARED_TAB = 11,
   // From the actor task icon.
   ACTOR_TASK_ICON = 12,
+  // User shared an image via the context menu.
+  SHARED_IMAGE = 13,
 }
 
 ///////////////////////////////////////////////

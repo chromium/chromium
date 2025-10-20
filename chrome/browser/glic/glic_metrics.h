@@ -79,6 +79,20 @@ enum class PercentOverlap {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PercentOverlap)
 
+// LINT.IfChange(ShareImageResult)
+enum class ShareImageResult {
+  kSuccess = 0,
+  kFailedNoTab = 1,
+  kFailedNoFrame = 2,
+  kFailedNoBrowser = 3,
+  kFailedTimedOut = 4,
+  kFailedNoImage = 5,
+  kFailedReplacedByNewShare = 6,
+  kMaxValue = kFailedReplacedByNewShare,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ShareImageResult)
+
 // LINT.IfChange(Error)
 enum class Error {
   kResponseStartWithoutInput = 0,
@@ -312,6 +326,12 @@ class GlicMetrics {
   // Called when a response is received with closed captions showing.
   void LogClosedCaptionsShown();
 
+  // Called when an attempt to share an image with glic is begun.
+  void OnShareImageStarted();
+
+  // Called when an attempt to share an image with glic completes.
+  void OnShareImageComplete(ShareImageResult result);
+
   // Logs an error that occurred while trying to get context from the focused
   // tab.
   void LogGetContextFromFocusedTabError(
@@ -455,6 +475,9 @@ class GlicMetrics {
   mojom::WebClientMode last_input_mode_ = mojom::WebClientMode::kUnknown;
 
   std::optional<base::TimeTicks> last_upload_start_time_;
+
+  // The time the last attempt to share an image started.
+  base::TimeTicks share_image_start_time_;
 
   std::unique_ptr<internal::BrowserActivityObserver> browser_activity_observer_;
 };

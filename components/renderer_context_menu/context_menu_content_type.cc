@@ -100,6 +100,10 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
       // Image menu items imply search web for image item.
       return SupportsGroupInternal(ITEM_GROUP_MEDIA_IMAGE);
 
+    case ITEM_GROUP_GLICSHAREIMAGE:
+      // Image menu items imply glic share image item.
+      return SupportsGroupInternal(ITEM_GROUP_MEDIA_IMAGE);
+
     case ITEM_GROUP_MEDIA_VIDEO:
       return params_.media_type == ContextMenuDataMediaType::kVideo;
 

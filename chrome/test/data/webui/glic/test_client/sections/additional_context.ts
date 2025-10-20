@@ -4,48 +4,59 @@
 
 import type {AdditionalContext} from '/glic/glic_api/glic_api.js';
 
-import {getBrowser} from '../client.js';
+import {client, getBrowser} from '../client.js';
 import {$} from '../page_element_types.js';
 
-$.listenAdditionalContext.addEventListener('click', async () => {
-  $.listenAdditionalContext.disabled = true;
+client.getInitialized().then(async () => {
   getBrowser()?.getAdditionalContext?.()?.subscribe(
       async (context: AdditionalContext) => {
-        let output = '';
+        let pre = document.createElement('pre');
+        $.additionalContextResult.appendChild(pre);
         if (context.name) {
-          output += `Name: ${context.name}\n`;
+          pre.innerText += `Name: ${context.name}\n`;
         }
         if (context.tabId) {
-          output += `Tab ID: ${context.tabId}\n`;
+          pre.innerText += `Tab ID: ${context.tabId}\n`;
         }
         if (context.origin) {
-          output += `Origin: ${context.origin}\n`;
+          pre.innerText += `Origin: ${context.origin}\n`;
         }
         if (context.frameUrl) {
-          output += `URL: ${context.frameUrl}\n`;
+          pre.innerText += `URL: ${context.frameUrl}\n`;
         }
         for (const part of context.parts) {
           if (part.data) {
-            output += `MIME Type: ${part.data.type}\n`;
-            output += `Data: ${await part.data.text()}\n`;
+            pre = document.createElement('pre');
+            $.additionalContextResult.appendChild(pre);
+            pre.innerText += `MIME Type: ${part.data.type}\n`;
+            if (part.data.type === 'image/png' ||
+                part.data.type === 'image/jpeg' ||
+                part.data.type === 'image/webp') {
+              const i = document.createElement('img');
+              i.src = URL.createObjectURL(part.data);
+              $.additionalContextResult.appendChild(i);
+            } else {
+              pre.innerText += `Data: ${await part.data.text()}\n`;
+            }
           }
+
+          pre = document.createElement('pre');
+          $.additionalContextResult.appendChild(pre);
           if (part.screenshot) {
-            output += `Screenshot: ${part.screenshot.widthPixels}x${
+            pre.innerText += `Screenshot: ${part.screenshot.widthPixels}x${
                 part.screenshot.heightPixels} ${part.screenshot.mimeType}\n`;
           }
           if (part.webPageData) {
-            output += `Web Page Data: ${
+            pre.innerText += `Web Page Data: ${
                 part.webPageData.mainDocument.innerText?.substring(
                     0, 20)}...\n`;
           }
           if (part.annotatedPageData) {
-            output += `Annotated Page Data: present\n`;
+            pre.innerText += `Annotated Page Data: present\n`;
           }
           if (part.pdf) {
-            output += `PDF: present\n`;
+            pre.innerText += `PDF: present\n`;
           }
         }
-        output += '\n';
-        $.additionalContextResult.value += output;
       });
 });

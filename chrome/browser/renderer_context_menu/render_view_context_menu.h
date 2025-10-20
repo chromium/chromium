@@ -105,6 +105,7 @@ class RenderViewContextMenu
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kComposeMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicCloseMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicReloadMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicShareImageMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenLinkInSplitMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRegionSearchItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForImageItem);
@@ -316,8 +317,8 @@ class RenderViewContextMenu
   void AppendCurrentExtensionItems();
 #endif
   void AppendPrintPreviewItems();
-  void AppendSearchLensForImageItems();
   void AppendSearchWebForImageItems();
+  void AppendGlicShareImageItem();
   void AppendProtocolHandlerSubMenu();
   // TODO(b/316143236): Remove this method (along with the methods called by it)
   // once `kPasswordManualFallbackAvailable` is rolled out.
@@ -376,6 +377,7 @@ class RenderViewContextMenu
   void ExecInspectBackgroundPage();
   void ExecSaveLinkAs();
   void ExecSaveAs();
+  void ExecGlicShareImage();
   void ExecExitFullscreen();
   void ExecCopyLinkText();
   void ExecCopyImageAt();

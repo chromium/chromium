@@ -916,6 +916,8 @@ enum InvocationSource {
   [MinVersion=3] kSharedTab = 11,
   // From the actor task icon.
   [MinVersion=4] kActorTaskIcon = 12,
+  // User shared an image via the context menu.
+  [MinVersion=5] kSharedImage = 13,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)
