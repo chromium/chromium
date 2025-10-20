@@ -12669,6 +12669,7 @@ from previous Chrome versions.
   <int value="-571429438" label="FedCmWithStorageAccessAPI:disabled"/>
   <int value="-571236436" label="AppManagement:disabled"/>
   <int value="-570889908" label="CCTModuleDexLoading:enabled"/>
+  <int value="-570310052" label="PrerenderUntilScript:enabled"/>
   <int value="-570005880"
       label="AutofillFixServerQueriesIfPasswordManagerIsEnabled:disabled"/>
   <int value="-569256428" label="MacAddressRandomization:enabled"/>
@@ -13959,6 +13960,7 @@ from previous Chrome versions.
   <int value="-106789551" label="AndroidWebAppMenuButton:disabled"/>
   <int value="-106676514" label="LensOverlayEntrypointLabelAlt:enabled"/>
   <int value="-106631643" label="TurnOffStreamingMediaCachingAlways:disabled"/>
+  <int value="-106621727" label="PrerenderUntilScript:disabled"/>
   <int value="-106373261" label="PaintPreviewDemo:enabled"/>
   <int value="-106128305" label="DragDropTabTearing:disabled"/>
   <int value="-105400607" label="Glic:enabled"/>

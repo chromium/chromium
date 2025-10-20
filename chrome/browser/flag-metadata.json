@@ -8165,6 +8165,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "prerender-until-script",
+    "owners": [
+      "lingqi@chromium.org",
+      "//content/browser/preloading/prerender/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "prerender2",
     "owners": [
       "//content/browser/preloading/prerender/OWNERS"

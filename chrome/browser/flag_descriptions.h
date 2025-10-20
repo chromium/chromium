@@ -625,6 +625,11 @@ inline constexpr char kPrerender2ReuseHostDescription[] =
     "If enabled, the browser will reuse the prerender host and the underlying"
     "process for future prerendered pages when possible.";
 
+inline constexpr char kPrerenderUntilScriptName[] = "Prerender Until Script";
+inline constexpr char kPrerenderUntilScriptDescription[] =
+    "Prerenders pages until a script is about to be executed. The script "
+    "execution and the page parsing will be deferred until action.";
+
 inline constexpr char kBookmarkBarPrefetchName[] = "BookmarkBarPrefetch";
 inline constexpr char kBookmarkBarPrefetchDescription[] =
     "If enabled, bookmarkbar can trigger prefetch";

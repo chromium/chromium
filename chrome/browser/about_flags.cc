@@ -9524,6 +9524,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrerender2ReuseHostDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPrerender2ReuseHost)},
 
+    {"prerender-until-script", flag_descriptions::kPrerenderUntilScriptName,
+     flag_descriptions::kPrerenderUntilScriptDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kPrerenderUntilScript)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-phone-hub-call-notification",
      flag_descriptions::kPhoneHubCallNotificationName,
