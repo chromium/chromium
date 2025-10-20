@@ -7527,6 +7527,7 @@ data/gpu/pixel_webgpu_display_p3.html
 data/gpu/pixel_webgpu_import_video_frame.html
 data/gpu/pixel_webgpu_import_video_frame_hdr.html
 data/gpu/pixel_webgpu_import_video_frame_offscreen_canvas.html
+data/gpu/pixel_webgpu_texture_storage.html
 data/gpu/pixel_webgpu_util.js
 data/gpu/pixel_webgpu_webgl_teximage2d.html
 data/gpu/power_video_bear_1280x720_mp4.html
