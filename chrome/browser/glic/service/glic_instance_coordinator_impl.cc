@@ -416,13 +416,16 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   }
 
   CHECK(target_instance);
-  if (&source_instance != target_instance) {
-    source_instance.UnbindEmbedder(GetEmbedderKey(options));
-  }
-
   target_instance->Show(options);
 
   std::move(callback).Run(std::nullopt);
+}
+
+void GlicInstanceCoordinatorImpl::UnbindTabFromAnyInstance(
+    tabs::TabInterface* tab) {
+  if (auto* instance = GetInstanceImplForTab(tab)) {
+    instance->UnbindEmbedder(EmbedderKey(tab));
+  }
 }
 
 void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(

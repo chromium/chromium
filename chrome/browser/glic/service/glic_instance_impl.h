@@ -67,6 +67,8 @@ class GlicInstanceImpl : public GlicInstance,
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
 
+    virtual void UnbindTabFromAnyInstance(tabs::TabInterface* tab) = 0;
+
     // Called by an instance when user requests to undock to Floaty.
     virtual void OnDetachRequested(GlicInstance* instance,
                                    tabs::TabInterface* tab) = 0;

@@ -74,6 +74,7 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void OnDetachRequested(GlicInstance* instance,
                          tabs::TabInterface* tab) override;
+  void UnbindTabFromAnyInstance(tabs::TabInterface* tab) override;
 
   // GlicWindowController implementation
   HostManager& host_manager() override;

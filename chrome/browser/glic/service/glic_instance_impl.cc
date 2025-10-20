@@ -624,6 +624,10 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
     return it->second;
   }
 
+  if (coordinator_delegate_) {
+    coordinator_delegate_->UnbindTabFromAnyInstance(tab);
+  }
+
   EmbedderEntry& new_entry = it->second;
   auto* helper = GlicInstanceHelper::From(tab);
   CHECK(helper);
