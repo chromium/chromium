@@ -270,6 +270,20 @@ TEST_F(AddressFieldParserTest, ParseCity) {
   ClassifyAndVerify();
 }
 
+TEST_F(AddressFieldParserTest, ParseCity_IgnoreNonCityWordsEndingInCity) {
+  AddTextFormFieldData("opacity", "Opacity", UNKNOWN_TYPE);
+  AddTextFormFieldData("ethnicity", "Ethnicity", UNKNOWN_TYPE);
+  AddTextFormFieldData("capacity", "Capacity", UNKNOWN_TYPE);
+  AddTextFormFieldData("incapacity", "Incapacity", UNKNOWN_TYPE);
+  AddTextFormFieldData("electricity", "Electricity", UNKNOWN_TYPE);
+  AddTextFormFieldData("velocity", "Velocity", UNKNOWN_TYPE);
+  AddTextFormFieldData("publicity", "Publicity", UNKNOWN_TYPE);
+  AddTextFormFieldData("simplicity", "Simplicity", UNKNOWN_TYPE);
+  AddTextFormFieldData("caloricity", "Caloricity", UNKNOWN_TYPE);
+  AddTextFormFieldData("homecity", "Homecity", ADDRESS_HOME_CITY);
+  ClassifyAndVerifyWithMultipleParses();
+}
+
 TEST_F(AddressFieldParserTest, ParseState) {
   AddTextFormFieldData("state", "State", ADDRESS_HOME_STATE);
   ClassifyAndVerify();
