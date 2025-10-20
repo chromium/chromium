@@ -243,7 +243,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1749109475624620922">Janela <ph name="WINDOW_TITLE" /> atribuída a todos os espaços de trabalho</translation>
 <translation id="1750088060796401187">São permitidos apenas <ph name="MAX_DESK_LIMIT" /> espaços de trabalho. Remova um deles para abrir outro novo.</translation>
 <translation id="1751335846119670066">Quero ajuda para ler</translation>
-<translation id="1755408179247123630">Ativar o "Selecionar para ouvir"?</translation>
+<translation id="1755408179247123630">Ativar o Selecionar para Ouvir?</translation>
 <translation id="1755556344721611131">App Diagnóstico</translation>
 <translation id="1756833229520115364">Não foi possível salvar o modelo. Excesso de janelas ou guias.</translation>
 <translation id="1757857692711134412">Desativado até o pôr do sol</translation>
@@ -498,7 +498,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2665788051462227163">Os apps <ph name="UNAVAILABLE_APPS_ONE" /> e <ph name="UNAVAILABLE_APPS_TWO" /> não estão no dispositivo.</translation>
 <translation id="2670350619068134931">Animações reduzidas</translation>
 <translation id="2673968385134502798">Jogos</translation>
-<translation id="2678852583403169292">Menu do Selecionar para ouvir</translation>
+<translation id="2678852583403169292">Menu do Selecionar para Ouvir</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> da semana passada</translation>
 <translation id="2687510499067466116">O atalho do teclado foi editado</translation>
 <translation id="2689613560355655046">Espaço de trabalho 8</translation>
@@ -1264,7 +1264,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5092436659250499817">Ativar/desativar a luz de fundo do teclado</translation>
 <translation id="5094577350232361255">sobre</translation>
 <translation id="5095136268899496849">Personalize o <ph name="PRODUCT_NAME" /> nas Configurações. Tente mudar o plano de fundo ou definir um protetor de tela.</translation>
-<translation id="5096125376090473584">Para ouvir o texto sendo lido em voz alta, marque o ícone do "Selecionar para ouvir" na parte de baixo da tela e depois destaque o texto.
+<translation id="5096125376090473584">Para ouvir o texto sendo lido em voz alta, marque o ícone do Selecionar para Ouvir na parte de baixo da tela e depois destaque o texto.
 
 Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depois pressione <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Quando você fizer uma transmissão dos apps do smartphone, eles vão aparecer aqui.</translation>
@@ -1476,7 +1476,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5764569119212455782">Mudar para o último idioma selecionado</translation>
 <translation id="5767730327234918501">O administrador desativou o ponto de acesso.</translation>
 <translation id="5769373120130404283">Tela de privacidade</translation>
-<translation id="5770004650349728202">Ativar a opção "Selecionar para ouvir"</translation>
+<translation id="5770004650349728202">Ativar a opção "Selecionar para Ouvir"</translation>
 <translation id="5773950591113557721">Esta ação libera o acesso para o app <ph name="APP_NAME" /> e todos os apps e sites com essas permissões</translation>
 <translation id="5774295353725270860">Abrir aplicativo Arquivos</translation>
 <translation id="5775936059231769503">Ative ou desative o ponto de acesso. O ponto de acesso está desativado.</translation>
@@ -2078,7 +2078,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7751260505918304024">Exibir todos</translation>
 <translation id="7762664108390426952">Termos de Serviço e a Política de Privacidade do Google</translation>
-<translation id="7768784765476638775">Selecionar para ouvir</translation>
+<translation id="7768784765476638775">Selecionar para Ouvir</translation>
 <translation id="7769299611924763557">Seu GIF estará pronto em breve</translation>
 <translation id="7773536009433685931">Ativar o Wi-Fi</translation>
 <translation id="77747521138552256">Excesso de tentativas de PIN. Aguarde <ph name="TIME_LEFT" /> e tente usar o PIN de novo ou digite a senha para fazer login imediatamente.</translation>
@@ -2194,7 +2194,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8098591350844501178">Parar de transmitir tela para <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Liberar app da estante</translation>
 <translation id="8113423164597455979">Ativ. nos apps</translation>
-<translation id="8113515504791187892">Botão "Selecionar para ouvir"</translation>
+<translation id="8113515504791187892">Botão "Selecionar para Ouvir"</translation>
 <translation id="8120151603115102514">Seu smartphone não tem uma tela de bloqueio. Para desbloquear o Chromebook, digite sua senha</translation>
 <translation id="8120249852906205273">Reiniciar</translation>
 <translation id="8127095419621171197">Abrir o app Calculadora</translation>
@@ -2291,7 +2291,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8444246603146515890">Espaço de trabalho <ph name="DESK_TITILE" /> ativado</translation>
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
-<translation id="8462305545768648477">Fechar o Selecionar para ouvir</translation>
+<translation id="8462305545768648477">Fechar o Selecionar para Ouvir</translation>
 <translation id="8466665972451889002">Mostrar itens no grupo <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">prazo: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Exibir configurações de escala</translation>
