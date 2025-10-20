@@ -3063,8 +3063,9 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
           OPTIONAL_TRACE_EVENT0("content",
                                 "WebContentsImpl::IgnoreInputEvents.Release");
           if (callback_id.has_value()) {
-            CHECK(wc->web_input_event_audit_callbacks_.contains(*callback_id));
-            wc->web_input_event_audit_callbacks_.erase(*callback_id);
+            auto it = wc->web_input_event_audit_callbacks_.find(*callback_id);
+            CHECK(it != wc->web_input_event_audit_callbacks_.end());
+            wc->web_input_event_audit_callbacks_.erase(it);
           } else {
 #if BUILDFLAG(IS_ANDROID)
             // Reset gesture detection so that we don't continue to generate new
@@ -4764,8 +4765,8 @@ void WebContentsImpl::FullscreenStateChanged(
       delegate_->FullscreenStateChangedForTab(rfh, *options);
     }
 
-    if (!base::Contains(fullscreen_frames_, rfh)) {
-      fullscreen_frames_.insert(rfh);
+    if (bool was_inserted = fullscreen_frames_.insert(rfh).second;
+        was_inserted) {
       FullscreenFrameSetUpdated();
     }
     return;
@@ -11352,8 +11353,11 @@ int WebContentsImpl::GetCurrentlyPlayingVideoCount() const {
 std::optional<gfx::Size> WebContentsImpl::GetFullscreenVideoSize() {
   std::optional<MediaPlayerId> id =
       media_web_contents_observer_->GetFullscreenVideoMediaPlayerId();
-  if (id && base::Contains(cached_video_sizes_, id.value())) {
-    return std::optional<gfx::Size>(cached_video_sizes_[id.value()]);
+  if (id) {
+    if (auto it = cached_video_sizes_.find(id.value());
+        it != cached_video_sizes_.end()) {
+      return std::optional<gfx::Size>(it->second);
+    }
   }
   return std::nullopt;
 }
