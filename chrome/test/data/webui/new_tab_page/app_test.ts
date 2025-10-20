@@ -6,8 +6,8 @@ import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customi
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeChromeSection, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {AppElement, CustomizeButtonsElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import type {AppElement, CustomizeButtonsElement, SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -15,9 +15,11 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {stringToMojoString16} from '//resources/js/mojo_type_util.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -90,9 +92,10 @@ suite('NewTabPageAppTest', () => {
             mock, new ComposeboxPageCallbackRouter(),
             new SearchboxPageHandlerRemote(),
             new SearchboxPageCallbackRouter())));
-    searchboxHandler = installMock(
-        SearchboxPageHandlerRemote,
-        mock =>  ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    searchboxHandler = installMock(SearchboxPageHandlerRemote, mock => {
+      ComposeboxProxyImpl.getInstance().searchboxHandler = mock;
+      SearchboxBrowserProxy.getInstance().handler = mock;
+    });
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
@@ -114,6 +117,68 @@ suite('NewTabPageAppTest', () => {
     assertTrue(!!searchboxContainer);
     return searchboxContainer.shadowRoot.querySelector<HTMLElement>(
         '#composeButton');
+  }
+
+  function createAutocompleteMatch(): AutocompleteMatch {
+    return {
+      a11yLabel: stringToMojoString16(''),
+      actions: [],
+      allowedToBeDefaultMatch: false,
+      isSearchType: false,
+      isEnterpriseSearchAggregatorPeopleType: false,
+      swapContentsAndDescription: false,
+      supportsDeletion: false,
+      suggestionGroupId: -1,  // Indicates a missing suggestion group Id.
+      contents: stringToMojoString16(''),
+      contentsClass: [{offset: 0, style: 0}],
+      description: stringToMojoString16(''),
+      descriptionClass: [{offset: 0, style: 0}],
+      destinationUrl: {url: ''},
+      inlineAutocompletion: stringToMojoString16(''),
+      fillIntoEdit: stringToMojoString16(''),
+      iconPath: '',
+      iconUrl: {url: ''},
+      imageDominantColor: '',
+      imageUrl: '',
+      isNoncannedAimSuggestion: false,
+      removeButtonA11yLabel: stringToMojoString16(''),
+      type: '',
+      isRichSuggestion: false,
+      isWeatherAnswerSuggestion: null,
+      answer: null,
+      tailSuggestCommonPrefix: null,
+      keywordChipHint: '',
+      keywordChipA11y: '',
+    };
+  }
+
+  function createAutocompleteResult(
+      modifiers: Partial<AutocompleteResult> = {}): AutocompleteResult {
+    const base: AutocompleteResult = {
+      input: stringToMojoString16(''),
+      matches: [],
+      suggestionGroupsMap: {},
+      smartComposeInlineHint: null,
+    };
+
+    return Object.assign(base, modifiers);
+  }
+
+  function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
+      AutocompleteMatch {
+    return Object.assign(
+        createAutocompleteMatch(), {
+          isSearchType: true,
+          contents: stringToMojoString16('hello world'),
+          destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+          fillIntoEdit: stringToMojoString16('hello world'),
+          type: 'search-suggest',
+        },
+        modifiers);
+  }
+
+  function getScrim(): HTMLElement|null {
+    return app.shadowRoot.querySelector<HTMLElement>('#scrim');
   }
 
   suite('Misc', () => {
@@ -1323,7 +1388,7 @@ suite('NewTabPageAppTest', () => {
       const ntpComposebox = app.shadowRoot.querySelector('ntp-composebox');
       ntpComposebox!.setText('hello');
       const composeboxScrim =
-          app.shadowRoot.querySelector<HTMLElement>('#composeboxScrim');
+          app.shadowRoot.querySelector<HTMLElement>('#scrim');
       assertTrue(!!composeboxScrim);
       assertEquals(ntpComposebox!.getText(), 'hello');
       composeboxScrim.click();
@@ -1378,7 +1443,7 @@ suite('NewTabPageAppTest', () => {
           }));
         await microtasksFinished();
         const composeboxScrim =
-            app.shadowRoot.querySelector<HTMLElement>('#composeboxScrim');
+            app.shadowRoot.querySelector<HTMLElement>('#scrim');
         assertTrue(!!composeboxScrim);
         composeboxScrim.click();
         await microtasksFinished();
@@ -1857,5 +1922,82 @@ suite('NewTabPageAppTest', () => {
       assertTrue(!!$$(app, '#customizeButtons'));
       assertTrue(!!$$(app, '#backgroundImageAttribution'));
     });
+  });
+
+  suite('RealboxNext', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        ntpRealboxNextEnabled: true,
+      });
+    });
+    test(
+        'A scrim is applied when the dropdown is shown in searchbox',
+        async () => {
+          assertFalse(!!getScrim());
+          const realbox_input =
+              $$<SearchboxElement>(app, '#searchbox')!.$.input;
+          realbox_input.value = 'he';
+          realbox_input.dispatchEvent(new InputEvent('input'));
+          await microtasksFinished();
+          const matches = [createSearchMatch()];
+          SearchboxBrowserProxy.getInstance()
+              .callbackRouter.$.bindNewPipeAndPassRemote()
+              .autocompleteResultChanged(createAutocompleteResult({
+                input: stringToMojoString16(realbox_input.value.trimStart()),
+                matches: matches,
+              }));
+          await microtasksFinished();
+          const scrim = getScrim();
+          assertTrue(!!scrim);
+
+          // The dropdown is closed when a keypress on Esc is made.
+          const escapeEvent = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,  // So it propagates across shadow DOM boundary.
+            key: 'Escape',
+          });
+          realbox_input.dispatchEvent(escapeEvent);
+          await microtasksFinished();
+          assertFalse(!!getScrim());
+        });
+    test(
+        'A scrim is applied when the dropdown is shown in composebox',
+        async () => {
+          loadTimeData.overrideValues({
+            composeboxShowZps: true,
+            composeboxShowTypedSuggest: true,
+            composeboxCloseByClickOutside: true,
+          });
+          assertFalse(!!getScrim());
+          const realbox = $$(app, '#searchbox');
+          assertTrue(!!realbox);
+          realbox.dispatchEvent(new CustomEvent('open-composebox', {
+            detail: {searchboxText: '', contextFiles: []},
+          }));
+          await microtasksFinished();
+          const ntpComposebox = app.shadowRoot.querySelector('ntp-composebox');
+          assertTrue(!!ntpComposebox);
+
+          // Open the dropbox by satisfying its opening condition
+          ntpComposebox.$.input.value = 'Test';
+          ntpComposebox.$.input.style.height = '48px';
+          ntpComposebox.$.input.dispatchEvent(new Event('input'));
+          await microtasksFinished();
+          const matches = [createSearchMatch()];
+          ComposeboxProxyImpl.getInstance()
+              .searchboxCallbackRouter.$.bindNewPipeAndPassRemote()
+              .autocompleteResultChanged(createAutocompleteResult({
+                input: stringToMojoString16('Test'.trimStart()),
+                matches: matches,
+              }));
+          await microtasksFinished();
+          const scrim = getScrim();
+          assertTrue(!!scrim);
+
+          scrim.click();  // closes the composebox and thus the dropdown
+          await microtasksFinished();
+          assertFalse(!!getScrim());
+        });
   });
 });
