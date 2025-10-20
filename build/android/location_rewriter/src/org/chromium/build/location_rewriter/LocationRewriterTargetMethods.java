@@ -66,6 +66,13 @@ public final class LocationRewriterTargetMethods {
                 "runSynchronously",
                 "(ILjava/lang/Runnable;)V",
                 /* isInterface= */ false);
+        // org.chromium.base.task.ChainedTasks#add(int, Runnable)
+        addRewriterTarget(
+                Opcodes.INVOKEVIRTUAL,
+                "org/chromium/base/task/ChainedTasks",
+                "add",
+                "(ILjava/lang/Runnable;)V",
+                /* isInterface= */ false);
     }
 
     private static void addRewriterTarget(

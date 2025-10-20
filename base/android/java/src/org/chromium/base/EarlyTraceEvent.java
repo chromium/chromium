@@ -277,7 +277,7 @@ public class EarlyTraceEvent {
 
     @EnsuresNonNullIf({"sEvents", "sAsyncEvents"})
     @SuppressWarnings("NullAway")
-    static boolean enabled() {
+    public static boolean enabled() {
         return sState == STATE_ENABLED;
     }
 

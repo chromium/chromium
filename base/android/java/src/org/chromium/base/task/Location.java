@@ -6,6 +6,7 @@ package org.chromium.base.task;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -31,7 +32,7 @@ public class Location {
     }
 
     public static @Nullable Location from(String fileName, String functionName, int lineNumber) {
-        if (!TraceEvent.enabled()) {
+        if (!(EarlyTraceEvent.enabled() || TraceEvent.enabled())) {
             return null;
         }
 
