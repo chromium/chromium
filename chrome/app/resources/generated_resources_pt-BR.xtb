@@ -786,7 +786,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Entendo que este download vai danificar meu computador</translation>
 <translation id="1535228823998016251">Alto</translation>
-<translation id="1535753739390684432">Ouvir um texto específico lido em voz alta. Primeiro, selecione o ícone do recurso "Selecionar para ouvir" na parte de baixo da tela e depois destaque o texto.</translation>
+<translation id="1535753739390684432">Ouvir um texto específico lido em voz alta. Primeiro, selecione o ícone do recurso Selecionar para Ouvir na parte de baixo da tela e depois destaque o texto.</translation>
 <translation id="1536754031901697553">Desconectando…</translation>
 <translation id="1536883206862903762">Isso vai desativar as extensões e redefinir as configurações para os padrões seguros. Guias, arquivos e cookies serão preservados. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa de tela cheia</translation>
@@ -1005,7 +1005,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="166454475160289583">Não podem substituir a entrada do teclado</translation>
 <translation id="1665328953287874063">Use uma senha ou um PIN para desbloquear o <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionismo</translation>
-<translation id="1667842670298352129">Ouvir um texto específico lido em voz alta. Primeiro, selecione o ícone do recurso "Selecionar para ouvir" na parte de baixo da tela e depois destaque o texto. Você também pode usar um atalho do teclado, destacando texto e depois pressionando as teclas Pesquisa + S.</translation>
+<translation id="1667842670298352129">Ouvir um texto específico lido em voz alta. Primeiro, selecione o ícone do recurso Selecionar para Ouvir na parte de baixo da tela e depois destaque o texto. Você também pode usar um atalho do teclado, destacando texto e depois pressionando as teclas Pesquisa + S.</translation>
 <translation id="1668435968811469751">Registrar manualmente</translation>
 <translation id="1668804837842452164">Salvar no <ph name="BRAND" /> da conta <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Saiba mais sobre sugestões</translation>
@@ -2996,7 +2996,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3022072018423103125">Cordilheira</translation>
 <translation id="3022361196600037287">O dispositivo <ph name="DEVICE" /> vai ser removido deste Chromebook e não será salvo em <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Não entendi.</translation>
-<translation id="3023464535986383522">Selecionar para ouvir</translation>
+<translation id="3023464535986383522">Selecionar para Ouvir</translation>
 <translation id="3024374909719388945">Usar relógio no formato 24 horas</translation>
 <translation id="3027296729579831126">Ativar "Compartilhar por proximidade"</translation>
 <translation id="3027644380269727216">Com base na sua atividade em um site. Esta configuração está ativada.</translation>
@@ -4815,7 +4815,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4281844954008187215">Termos de Serviço</translation>
 <translation id="4281849573951338030">Personalizar botões da caneta</translation>
 <translation id="4282196459431406533">O Smart Lock está ativado</translation>
-<translation id="4284903252249997120">Leitor de tela ChromeVox e recurso Selecionar para ouvir</translation>
+<translation id="4284903252249997120">Leitor de tela ChromeVox e recurso Selecionar para Ouvir</translation>
 <translation id="4285418559658561636">Atualizar senha</translation>
 <translation id="4285498937028063278">Liberar guia</translation>
 <translation id="428565720843367874">O software antivírus falhou inesperadamente ao verificar este arquivo.</translation>
@@ -7172,10 +7172,10 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5955721306465922729">Um site quer abrir esse aplicativo.</translation>
 <translation id="5955809630138889698">Este dispositivo pode estar qualificado apenas para o modo de demonstração on-line. Entre em contato com seu representante de suporte para receber mais detalhes.</translation>
 <translation id="59561895884837262">Você vai receber uma notificação quando a gravação começar.</translation>
-<translation id="5957987129450536192">Toque no ícone "Selecionar para ouvir" ao lado da sua imagem de perfil e selecione o que você quer ouvir.</translation>
+<translation id="5957987129450536192">Toque no ícone Selecionar para Ouvir ao lado da sua imagem de perfil e selecione o que você quer ouvir.</translation>
 <translation id="5958836583172610505">Sincronização ativada</translation>
 <translation id="5959471481388474538">Rede não disponível</translation>
-<translation id="5959982036207776176">A lupa segue a palavra lida pelo recurso "Selecionar para ouvir"</translation>
+<translation id="5959982036207776176">A lupa segue a palavra lida pelo recurso Selecionar para Ouvir</translation>
 <translation id="5961545272769624207">Atribuir um gesto</translation>
 <translation id="5963413905009737549">Seção</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (pico de <ph name="NUM_KILOBYTES_LIVE" />)</translation>
@@ -7288,7 +7288,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6043994281159824495">Sair agora</translation>
 <translation id="6045114302329202345">Botão do TrackPoint principal</translation>
 <translation id="6047632800149092791">A sincronização não está funcionando. Tente sair e fazer login novamente.</translation>
-<translation id="6048747414605857443">Selecione e personalize as vozes da conversão de texto em voz para o ChromeVox e o recurso "Selecionar para ouvir".</translation>
+<translation id="6048747414605857443">Selecione e personalize as vozes da conversão de texto em voz para o ChromeVox e o recurso Selecionar para Ouvir.</translation>
 <translation id="6050189528197190982">Escala de cinza</translation>
 <translation id="6051354611314852653">Ops! O sistema encontrou uma falha ao autorizar o acesso à API para este dispositivo.</translation>
 <translation id="6051811090255711417">Sua organização bloqueou esse arquivo porque ele não atende a uma política de segurança</translation>
@@ -9759,7 +9759,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7767972280546034736">Criar uma senha de acesso para <ph name="APP_NAME" /></translation>
 <translation id="7768507955883790804">Os sites seguem esta configuração automaticamente ao serem acessados</translation>
 <translation id="7768770796815395237">Mudar</translation>
-<translation id="7768784765476638775">Selecionar para ouvir</translation>
+<translation id="7768784765476638775">Selecionar para Ouvir</translation>
 <translation id="7769709635093101687">Atalho do teclado para pausar</translation>
 <translation id="7769748505895274502">Recolher guias fechadas recentemente</translation>
 <translation id="7770072242481632881">Seletor do painel lateral</translation>
@@ -10697,7 +10697,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8390449457866780408">Servidor não disponível.</translation>
 <translation id="8391218455464584335">Vinil</translation>
 <translation id="8391918125842702622">Alerta de problema de desempenho</translation>
-<translation id="8392726714909453725">Configurações do Selecionar para ouvir</translation>
+<translation id="8392726714909453725">Configurações do Selecionar para Ouvir</translation>
 <translation id="8393511274964623038">Parar plug-in</translation>
 <translation id="839363317075970734">Detalhes do dispositivo Bluetooth</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
@@ -11438,7 +11438,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8899851313684471736">Abrir link em uma nova &amp;janela</translation>
 <translation id="8900413463156971200">Ativar rede celular</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> hoje.}one{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> antes do fim do prazo.}other{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> antes do fim do prazo.}}</translation>
-<translation id="8902667442496790482">Abrir configurações de Selecionar para ouvir</translation>
+<translation id="8902667442496790482">Abrir configurações de Selecionar para Ouvir</translation>
 <translation id="8903733144777177139">O acesso ao microfone está bloqueado</translation>
 <translation id="890616557918890486">Alterar origem</translation>
 <translation id="8907701755790961703">Selecione um país</translation>
