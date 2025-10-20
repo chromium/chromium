@@ -348,7 +348,8 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_Video_MP4_
 crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_ViewTransitionsCapture_TreesInViz [ Skip ]
 crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_WebGLGreenTriangle_AA_Alpha_TreesInViz [ Skip ]
 crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_SolidColorBackground_TreesInViz [ Skip ]
-crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_RenderPasses_TreesInViz [ Skip ]
+# TODO(crbug.com/431824747): Re-add when the test is re-enabled.
+# crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_RenderPasses_TreesInViz [ Skip ]
 
 # WebGPU is currently not enabled on win11 qualcomm but it will be soon
 [ win11 qualcomm ] Pixel_WebGPU* [ Failure ]
@@ -533,11 +534,12 @@ crbug.com/415830130 [ android-chromium android-pixel-2 android-q angle-disabled 
 crbug.com/415830130 [ android android-chromium ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ angle-vulkan arm fuchsia fuchsia-board-sherlock no-asan no-clang-coverage ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
-crbug.com/415830130 [ mac ] Pixel_RenderPasses_TreesInViz [ Failure ]
-crbug.com/415830130 [ linux ] Pixel_RenderPasses_TreesInViz [ Failure ]
-crbug.com/415830130 [ chromeos chromeos-board-amd64-generic ] Pixel_RenderPasses_TreesInViz [ Failure ]
-crbug.com/431824747 [ win ] Pixel_RenderPasses_TreesInViz [ Failure ]
-crbug.com/431824747 [ android android-chromium no-clang-coverage ] Pixel_RenderPasses_TreesInViz [ Failure ]
+# TODO(crbug.com/431824747): Re-add when the test is re-enabled.
+# crbug.com/415830130 [ mac ] Pixel_RenderPasses_TreesInViz [ Failure ]
+# crbug.com/415830130 [ linux ] Pixel_RenderPasses_TreesInViz [ Failure ]
+# crbug.com/415830130 [ chromeos chromeos-board-amd64-generic ] Pixel_RenderPasses_TreesInViz [ Failure ]
+# crbug.com/431824747 [ win ] Pixel_RenderPasses_TreesInViz [ Failure ]
+# crbug.com/431824747 [ android android-chromium no-clang-coverage ] Pixel_RenderPasses_TreesInViz [ Failure ]
 
 # brya/Android Desktop
 crbug.com/437973213 [ android android-brya ] Pixel_Video_Context_Loss_VP9 [ Failure ]
