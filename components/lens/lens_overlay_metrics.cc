@@ -333,9 +333,15 @@ void RecordAimSessionEndMetrics(AimSessionEndMetrics aim_session_end_metrics) {
   }
 
   // UMA AIM searchbox query submitted in session.
-  if (aim_session_end_metrics.query_issued_) {
+  if (aim_session_end_metrics.query_submitted_) {
     base::UmaHistogramEnumeration("Lens.Composebox.UserActionInSession",
                                   LensComposeboxUserAction::kQuerySubmitted);
+  }
+
+  // UMA AIM searchbox query issued in session.
+  if (aim_session_end_metrics.query_issued_) {
+    base::UmaHistogramEnumeration("Lens.Composebox.UserActionInSession",
+                                  LensComposeboxUserAction::kQueryIssued);
   }
 }
 

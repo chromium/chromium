@@ -128,6 +128,12 @@ void LensSessionMetricsLogger::OnAimComposeboxFocused() {
 void LensSessionMetricsLogger::OnAimQueryIssued() {
   aim_session_end_metrics_.query_issued_ = true;
   lens::RecordAimComposeboxUserAction(
+      lens::LensComposeboxUserAction::kQueryIssued);
+}
+
+void LensSessionMetricsLogger::OnAimQuerySubmitted() {
+  aim_session_end_metrics_.query_submitted_ = true;
+  lens::RecordAimComposeboxUserAction(
       lens::LensComposeboxUserAction::kQuerySubmitted);
 }
 
