@@ -7335,12 +7335,12 @@ void WebContentsImpl::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::ReadyToCommitNavigation",
                "navigation_handle", navigation_handle);
+  CHECK(!navigation_handle->IsSameDocument());
 
   // Cross-document navigation of the top-level frame resets the capture
   // handle config. Using IsInPrimaryMainFrame is valid here since the browser
   // caches this state for the active main frame only.
-  if (!navigation_handle->IsSameDocument() &&
-      navigation_handle->IsInPrimaryMainFrame()) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     SetCaptureHandleConfig(blink::mojom::CaptureHandleConfig::New());
   }
 
@@ -7365,10 +7365,6 @@ void WebContentsImpl::ReadyToCommitNavigation(
   if (!navigation_handle->IsRendererInitiated()) {
     GpuDataManagerImpl::GetInstance()->UnblockDomainFrom3DAPIs(
         navigation_handle->GetURL());
-  }
-
-  if (navigation_handle->IsSameDocument()) {
-    return;
   }
 
   // SSLInfo is not needed on subframe navigations since the main-frame
