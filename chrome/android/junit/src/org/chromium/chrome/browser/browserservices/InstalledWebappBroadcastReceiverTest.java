@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -153,8 +154,8 @@ public class InstalledWebappBroadcastReceiverTest {
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mStore).resetPermission(eq(Origin.create(url1.getSpec())), anyInt());
-        verify(mStore).resetPermission(eq(Origin.create(url2.getSpec())), anyInt());
+        verify(mStore, times(2)).resetPermission(eq(Origin.create(url1.getSpec())), anyInt());
+        verify(mStore, times(2)).resetPermission(eq(Origin.create(url2.getSpec())), anyInt());
     }
 
     /** Tests we differentiate between app uninstalled and data cleared. */
