@@ -37,18 +37,13 @@
   _promosManager->DeregisterAfterDisplay(promo);
 }
 
-- (std::optional<PromoDisplayData>)nextPromoForDisplay:(BOOL)isFirstShownPromo {
+- (std::optional<PromoDisplayData>)nextPromoForDisplay {
   DCHECK_NE(_promosManager, nullptr);
-  // Only check for a forced promo the first time around, to prevent infinite
-  // forced promos.
-  // TODO(crbug.com/40273505): Once promo reentrance is supported, remove this
-  // and always show the forced promo.
-  if (isFirstShownPromo) {
-    std::optional<promos_manager::Promo> forcedPromo =
-        [self forcedPromoToDisplay];
-    if (forcedPromo) {
-      return PromoDisplayData{.promo = forcedPromo.value(), .was_forced = true};
-    }
+
+  std::optional<promos_manager::Promo> forcedPromo =
+      [self forcedPromoToDisplay];
+  if (forcedPromo) {
+    return PromoDisplayData{.promo = forcedPromo.value(), .was_forced = true};
   }
 
   std::optional<promos_manager::Promo> promo =

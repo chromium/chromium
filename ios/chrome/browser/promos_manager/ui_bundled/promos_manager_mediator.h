@@ -38,9 +38,8 @@ struct PromoDisplayData {
 - (void)deregisterAfterDisplay:(promos_manager::Promo)promo;
 
 // Queries the PromosManager for the next promo (promos_manager::Promo) to
-// display, if any. Allows for special behavior if this is the first promo
-// shown.
-- (std::optional<PromoDisplayData>)nextPromoForDisplay:(BOOL)isFirstShownPromo;
+// display, if any.
+- (std::optional<PromoDisplayData>)nextPromoForDisplay;
 
 // The Promos Manager used for deciding which promo should be displayed, if any.
 @property(nonatomic, assign) PromosManager* promosManager;

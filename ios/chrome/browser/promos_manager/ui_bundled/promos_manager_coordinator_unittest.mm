@@ -196,7 +196,7 @@ TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackTest) {
       .promo = promos_manager::Promo::Test, .was_forced = true};
   OCMExpect([mockCoordinator displayPromo:promoDisplayData]);
 
-  [mockCoordinator displayPromoCallback:true];
+  [mockCoordinator displayPromoCallback];
 
   EXPECT_OCMOCK_VERIFY(mockCoordinator);
 }
@@ -220,7 +220,7 @@ TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackUINotAvailableTest) {
   // Set UI not available for promo display before calling
   // ```displayPromoCallback```
   scene_state_.activationLevel = SceneActivationLevelBackground;
-  [mockCoordinator displayPromoCallback:true];
+  [mockCoordinator displayPromoCallback];
 
   EXPECT_OCMOCK_VERIFY(mockCoordinator);
 }

@@ -180,7 +180,7 @@
 #pragma mark - Public
 
 - (void)start {
-  [self displayPromoIfAvailable:YES];
+  [self displayPromoIfAvailable];
 }
 
 - (void)stop {
@@ -188,13 +188,8 @@
   [self dismissViewControllers];
 }
 
+// Display a promo if one is available.
 - (void)displayPromoIfAvailable {
-  [self displayPromoIfAvailable:NO];
-}
-
-// Display a promo if one is available, with special behavior if this is the
-// first time this coordinator has shown a promo.
-- (void)displayPromoIfAvailable:(BOOL)isFirstShownPromo {
   // Wait to present a promo until the feature engagement tracker database
   // is fully initialized.
   __weak __typeof(self) weakSelf = self;
@@ -202,7 +197,7 @@
     if (!successfullyLoaded) {
       return;
     }
-    [weakSelf displayPromoCallback:isFirstShownPromo];
+    [weakSelf displayPromoCallback];
   };
 
   feature_engagement::Tracker* tracker =
@@ -210,7 +205,7 @@
   tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
 }
 
-- (void)displayPromoCallback:(BOOL)isFirstShownPromo {
+- (void)displayPromoCallback {
   // Check if UI is no longer available before proceeding. It is possible that
   // while tracker is being initialized the UI can change and become not
   // available.
@@ -224,7 +219,7 @@
   }
 
   std::optional<PromoDisplayData> nextPromoForDisplay =
-      [self.mediator nextPromoForDisplay:isFirstShownPromo];
+      [self.mediator nextPromoForDisplay];
 
   if (nextPromoForDisplay.has_value()) {
     [self displayPromo:nextPromoForDisplay.value()];
