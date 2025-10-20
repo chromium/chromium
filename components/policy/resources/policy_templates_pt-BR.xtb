@@ -198,9 +198,9 @@ Se a política for ativada, os usuários poderão usar o hardware de dispositivo
 
       Se a política for desativada ou deixada sem definição, as chamadas para a API vão falhar com um código de erro.</translation>
 <translation id="1133622335785078255">Permitir que usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
-<translation id="1137096407176363892">Permitir as vozes aprimoradas da conversão de texto em voz da rede no recurso de acessibilidade Selecionar para ouvir. Essas vozes enviam textos para os servidores do Google para sintetizar falas com som natural.
+<translation id="1137096407176363892">Permitir as vozes aprimoradas da conversão de texto em voz da rede no recurso de acessibilidade Selecionar para Ouvir. Essas vozes enviam textos para os servidores do Google para sintetizar falas com som natural.
 
-          Se esta política for definida como falsa, o recurso de vozes aprimoradas da conversão de texto em voz da rede no Selecionar para ouvir ficará sempre desativado.
+          Se esta política for definida como falsa, o recurso de vozes aprimoradas da conversão de texto em voz da rede no Selecionar para Ouvir ficará sempre desativado.
 
           Se a política for definida como verdadeira ou deixada sem definição, o recurso poderá ser ativado ou desativado pelo usuário.</translation>
 <translation id="1137479817584930805">Permitir o salvamento de imagens diretamente no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /></translation>
@@ -3116,7 +3116,7 @@ Os certificados precisam ser codificados em base64. É preciso especificar pelo 
 <translation id="3113283011165145080">Permitir que o <ph name="PRODUCT_NAME" /> decida</translation>
 <translation id="3118552207903834734">Permitir que o usuário configure o nome do host do dispositivo</translation>
 <translation id="3122082892722698079">Controlar o uso de exceções de conteúdo não seguro</translation>
-<translation id="3125472566440502628">Desativar o recurso Selecionar para ouvir</translation>
+<translation id="3125472566440502628">Desativar Selecionar para Ouvir</translation>
 <translation id="312561239664885970">Esta política foi descontinuada e dividida em <ph name="BROWSER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />, <ph name="USER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
 
 Ative o <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para criar uma lista de URLs.
@@ -3149,7 +3149,7 @@ Se a política for definida como desativada ou não for definida, o menu de aces
 <translation id="3142410959002029864">A definição da política substitui o modo duplex de impressão padrão. Se o modo não estiver disponível, a política será ignorada.</translation>
 <translation id="3143203373436771188">Ao navegar para documentos do Office gerenciados pelo <ph name="BASIC_EDITOR_NAME" />, abri-los no <ph name="BASIC_EDITOR_NAME" /></translation>
 <translation id="3144173889708944482">Se <ph name="PRINTERS_BLOCKLIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Todas as impressoras estão disponíveis para os usuários, com exceção dos IDs listados nesta política. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
-<translation id="3146711617256415776">Proibir as vozes aprimoradas da conversão de texto em voz da rede ao usar o Selecionar para ouvir</translation>
+<translation id="3146711617256415776">Proibir as vozes aprimoradas da conversão de texto em voz da rede ao usar o Selecionar para Ouvir</translation>
 <translation id="315013437951136266">Ativar o recurso <ph name="IP_PROTECTION_NAME" /></translation>
 <translation id="3150351525324499342">Não mostrar o ícone do <ph name="PRODUCT_NAME" /> na barra de ferramentas por padrão, mas permitir que os usuários escolham</translation>
 <translation id="3152135410085709340">Permitir que os arquivos locais sejam acessados pelos URLs file:// nesses sites no Visualizador de PDF</translation>
@@ -3594,15 +3594,15 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="3478406829037689272">Ativar verificações detalhadas de downloads com a Navegação segura</translation>
 <translation id="3480403794500220210">Permita que docentes usem a lista de estudantes da turma do Google Sala de Aula.</translation>
 <translation id="3480961938508521469">Carregar totalmente a bateria na velocidade padrão.</translation>
-<translation id="348110646151632565">Ativar o recurso de acessibilidade "Selecionar para ouvir" na tela de login.
+<translation id="348110646151632565">Ativar o recurso de acessibilidade "Selecionar para Ouvir" na tela de login.
 
-          Se esta política for definida como verdadeira, o recurso "Selecionar para ouvir" sempre ficará ativado na tela de login.
+          Se esta política for definida como verdadeira, o recurso Selecionar para Ouvir sempre ficará ativado na tela de login.
 
-          Se esta política for definida como falsa, o recurso "Selecionar para ouvir" sempre ficará desativado na tela de login.
+          Se esta política for definida como falsa, o recurso Selecionar para Ouvir sempre ficará desativado na tela de login.
 
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
-          Se esta política não for definida, o recurso "Selecionar para ouvir" ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+          Se esta política não for definida, o recurso Selecionar para Ouvir ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="3483585138745445814">Permitir que os usuários ativem o recurso "Compartilhar por proximidade"</translation>
 <translation id="3484305545282013129">Permitir que as origens acessem as permissões do navegador disponíveis para a origem de instalação do quiosque da Web.</translation>
 <translation id="3485200437120267231">Desativar interceptação de login</translation>
@@ -3768,15 +3768,15 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3584722841530002134">A definição da política atribui servidores que podem ser delegados pelo <ph name="PRODUCT_NAME" />. Separe vários nomes de servidor usando vírgulas. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
 
       Se a política não for definida, o <ph name="PRODUCT_NAME" /> não delegará credenciais de usuário, mesmo que um servidor seja detectado como intranet.</translation>
-<translation id="3585177699591644295">Ativa o recurso de acessibilidade "Selecionar para ouvir".
+<translation id="3585177699591644295">Ativa o recurso de acessibilidade "Selecionar para Ouvir".
 
-          Se esta política for definida como verdadeira, o "Selecionar para ouvir" estará sempre ativado.
+          Se esta política for definida como verdadeira, o "Selecionar para Ouvir" estará sempre ativado.
 
-          Se esta política for definida como falsa, o "Selecionar para ouvir" estará sempre desativado.
+          Se esta política for definida como falsa, o "Selecionar para Ouvir" estará sempre desativado.
 
           Se você definir esta política, os usuários não poderão alterá-la ou substituí-la.
 
-          Se esta política não for definida, o "Selecionar para ouvir" será desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+          Se esta política não for definida, o "Selecionar para Ouvir" será desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3587487647039152577">Esta configuração foi descontinuada. Permite que usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" />.
 
@@ -7353,7 +7353,7 @@ Se a política for desativada ou deixada sem definição, a autenticação prim�
 Os relatórios de indicadores de segurança do usuário só são enviados quando o <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> está ativado.
 
 Esta política só pode ser definida como uma política do usuário em nuvem.</translation>
-<translation id="5895569286536062756">Ativar o recurso "Selecionar para ouvir" na tela de login</translation>
+<translation id="5895569286536062756">Ativar o recurso Selecionar para Ouvir na tela de login</translation>
 <translation id="5895861015839311441">Informa dados de telemetria de uso do app para usuários afiliados.
 
       Se a política for definida, ela vai controlar os relatórios de telemetria de uso dos tipos de app especificados.
@@ -7535,7 +7535,7 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="6020795917180493154">Na versão M119, se a política for definida como falsa ou deixada sem definição, o WebSQL será desativado, mas poderá ser ativado com a Sinalização do Chrome "web-sql-access". Se ela for definida como verdadeira, o acesso ao WebSQL será ativado.
 Esta política foi descontinuada na versão M124.</translation>
 <translation id="6022948604095165524">Ação na inicialização</translation>
-<translation id="602318745029752898">Permitir as vozes aprimoradas da conversão de texto em voz da rede no Selecionar para ouvir</translation>
+<translation id="602318745029752898">Permitir as vozes aprimoradas da conversão de texto em voz da rede no Selecionar para Ouvir</translation>
 <translation id="6026722971789064331">Controlar o uso da API File System para gravação</translation>
 <translation id="602728333950205286">URL instantâneo do provedor de pesquisa padrão</translation>
 <translation id="603410445099326293">Parâmetros para URL de sugestões que usa POST</translation>
@@ -9751,7 +9751,7 @@ Se a política não for definida, ela será funcionalmente equivalente a ser def
 <translation id="7438982301540282785">Automatizar a configuração do <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7443356543619955157">Se a política for definida, será possível aplicar a configuração de rede para todos os usuários de um dispositivo <ph name="PRODUCT_OS_NAME" />. A configuração de rede é uma string formatada em JSON, conforme definido pelo formato Open Network Configuration.</translation>
 <translation id="7446978687387327623">Permitir verificações em tempo real com o proxy da Navegação segura</translation>
-<translation id="7448430478749155471">Ativa o recurso "Selecionar para ouvir" na tela de login</translation>
+<translation id="7448430478749155471">Ativa o recurso Selecionar para Ouvir na tela de login</translation>
 <translation id="7453470801190369311">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem mostrar imagens.
 
       Se a política não tiver definição, <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -10602,7 +10602,7 @@ Esta política não terá efeito quando a <ph name="SCREENSAVER_LOCK_SCREEN_ENAB
 <translation id="812369175049698774">Permita que os usuários iniciem atualizações de firmware</translation>
 <translation id="8124468781472887384">Política de acesso à configuração de impressoras do dispositivo.</translation>
 <translation id="8128192446158421884">URLs em que é possível aplicar AutoOpenFileTypes</translation>
-<translation id="8131046602440880289">Permitir as vozes aprimoradas da conversão de texto em voz da rede ao usar o Selecionar para ouvir</translation>
+<translation id="8131046602440880289">Permitir as vozes aprimoradas da conversão de texto em voz da rede ao usar o Selecionar para Ouvir</translation>
 <translation id="8132419228205300235">Não mostrar a tela inicial da IA durante o login</translation>
 <translation id="8133152694354699657">Se a política for definida como verdadeira ou não for definida, a opção "Pesquisa por toque" ficará disponível para o usuário, e ele poderá ativar ou desativar esse recurso.
 
@@ -11306,7 +11306,7 @@ Se ela for desativada, a configuração de anúncios sugeridos pelo site também
 Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para anúncios sugeridos pelo site no dispositivo.
 
 A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.</translation>
-<translation id="8559221882677768248">Desativar o recurso "Selecionar para ouvir" na tela de login</translation>
+<translation id="8559221882677768248">Desativar o recurso Selecionar para Ouvir na tela de login</translation>
 <translation id="8561512522781085002">As configurações PageUp/Page Down usam o atalho que contém a tecla modificadora de pesquisa</translation>
 <translation id="8562398722263115493">O recurso Quero ajuda para escrever é um assistente de escrita baseado em IA para conteúdos curtos na Web. As sugestões são baseadas nos comandos inseridos pelo usuário e no conteúdo da página da Web.
 
@@ -11447,7 +11447,7 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="8653561013005884087">Se esta política for definida como verdadeira, a resposta falada será ativada. Se esta política for definida como falsa, a resposta falada será desativada.
 
        Se você definir a política, os usuários não podem mudá-la. Se a política não for definida, a resposta falada é desativada inicialmente, mas os usuários podem mudar isso a qualquer momento.</translation>
-<translation id="8656110680728938054">Ativa o Selecionar para ouvir</translation>
+<translation id="8656110680728938054">Ativar Selecionar para Ouvir</translation>
 <translation id="8657026983981036230">Se a política for definida, o diretório usado para salvar arquivos de download no Chrome vai ser configurado. O diretório fornecido será usado, ainda que o usuário tenha especificado outro diretório ou ativado a sinalização de sempre perguntar o local de download.
 
       Esta política substitui a política <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
