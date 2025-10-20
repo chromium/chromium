@@ -87,8 +87,11 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // profile.
   void ApplyChange(const AutofillProfileChange& change);
 
-  // Removes the kAccountNameEmail autofill profile if it exists.
-  void SoftRemoveAccountNameEmail();
+  // Removes the kAccountNameEmail autofill profile if it exists. If
+  // `is_soft_removal` is true then the AccountNameEmail profile will be
+  // recreated when conditions are met again, otherwise it will be recreated iff
+  // the account name changed.
+  void RemoveAccountNameEmail(bool is_soft_removal);
 
  private:
   friend class AccountNameEmailStoreTestApi;

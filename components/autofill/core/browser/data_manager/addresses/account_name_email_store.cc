@@ -105,14 +105,14 @@ void AccountNameEmailStore::OnStateChanged(syncer::SyncService* sync_service) {
   switch (reason.value()) {
     case ProfileUpdateBlockReason::kAutofillSyncToggleDisabled:
     case ProfileUpdateBlockReason::kSyncDisabled:
-      SoftRemoveAccountNameEmail();
+      RemoveAccountNameEmail(/*is_soft_removal=*/true);
       return;
     case ProfileUpdateBlockReason::kUserSignedOut:
       // User signed out and prefs are no longer synced. Clear their local state
       // to prevent them from leaking into a different account. It is important
       // that this happens after PRIORITY_PREFERENCES stopped syncing, because
       // the metadata should be redownloaded during the next sign-in.
-      SoftRemoveAccountNameEmail();
+      RemoveAccountNameEmail(/*is_soft_removal=*/true);
       pref_service_->ClearPref(prefs::kAutofillNameAndEmailProfileSignature);
       pref_service_->ClearPref(
           prefs::kAutofillNameAndEmailProfileNotSelectedCounter);
@@ -182,7 +182,7 @@ void AccountNameEmailStore::ApplyChange(const AutofillProfileChange& change) {
   }
 }
 
-void AccountNameEmailStore::SoftRemoveAccountNameEmail() {
+void AccountNameEmailStore::RemoveAccountNameEmail(bool is_soft_removal) {
   const std::vector<const AutofillProfile*> account_name_email_profiles =
       address_data_manager_->GetProfilesByRecordType(
           AutofillProfile::RecordType::kAccountNameEmail);
@@ -192,7 +192,7 @@ void AccountNameEmailStore::SoftRemoveAccountNameEmail() {
 
   address_data_manager_->RemoveProfile(
       account_name_email_profiles[0]->guid(),
-      /*non_permanent_account_profile_removal=*/true);
+      /*non_permanent_account_profile_removal=*/is_soft_removal);
 }
 
 void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(AccountInfo& info) {
@@ -239,9 +239,21 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(AccountInfo& info) {
     return;
   }
 
-  if (account_name_email_exists) {
-    SoftRemoveAccountNameEmail();
+  // If the name not available, the `info.full_name` can default to the
+  // `info.email`. In this case, don't create the profile.
+  if (info.full_name == info.email) {
+    // If the account info was updated, make sure any prior profile is removed.
+    RemoveAccountNameEmail(/*is_soft_removal=*/false);
+    // Ensure that the hash reflects the current values of the account info.
+    pref_service_->SetString(prefs::kAutofillNameAndEmailProfileSignature,
+                             new_hash);
+    return;
   }
+
+  if (account_name_email_exists) {
+    RemoveAccountNameEmail(/*is_soft_removal=*/true);
+  }
+
   address_data_manager_->AddProfile(AutofillProfile{info});
   if (hashes_different) {
     pref_service_->SetString(prefs::kAutofillNameAndEmailProfileSignature,
@@ -304,14 +316,7 @@ void AccountNameEmailStore::OnCounterPrefUpdated() {
     return;
   }
 
-  const std::vector<const AutofillProfile*> account_name_email_profiles =
-      address_data_manager_->GetProfilesByRecordType(
-          AutofillProfile::RecordType::kAccountNameEmail);
-  if (account_name_email_profiles.empty()) {
-    return;
-  }
-
-  address_data_manager_->RemoveProfile(account_name_email_profiles[0]->guid());
+  RemoveAccountNameEmail(/*is_soft_removal=*/false);
 }
 
 bool AccountNameEmailStore::ShouldUpdateOrCreateAccountNameEmail() {

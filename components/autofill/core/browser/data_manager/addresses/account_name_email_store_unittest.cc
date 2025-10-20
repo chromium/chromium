@@ -161,6 +161,42 @@ TEST_F(AccountNameEmailStoreTest, EmptyAccountNameCreation) {
   EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
 }
 
+// Tests that a new kAccountNameEmail profile isn't created when the account
+// info's full_name is an email address.
+TEST_F(AccountNameEmailStoreTest, FullNameIsEmailAddress) {
+  CreatePrimaryAccount(kTestEmailAddress1, kTestEmailAddress1);
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+}
+
+// Tests that a new kAccountNameEmail profile is removed when name was changed
+// to an email address.
+TEST_F(AccountNameEmailStoreTest, NameUpdatedToEmailAddress) {
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  ASSERT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
+
+  // Update the name to an email address.
+  AccountInfo info = GetPrimaryAccountInfo();
+  info.full_name = kTestEmailAddress1;
+  OnAccountUpdated(info);
+
+  // The old profile should be removed and nothing should be created.
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+
+  // Update the name to a valid value.
+  info = GetPrimaryAccountInfo();
+  info.full_name = kTestName2;
+  OnAccountUpdated(info);
+
+  // A profile with a valid name should be created.
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName2),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
+}
+
 // Tests that a new kAccountNameEmail profile isn't created when autofill is not
 // synced.
 TEST_F(AccountNameEmailStoreTest, AutofillNotSynced) {
