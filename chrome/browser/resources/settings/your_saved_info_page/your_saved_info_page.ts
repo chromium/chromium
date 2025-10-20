@@ -66,6 +66,11 @@ export class SettingsYourSavedInfoPageElement extends
         type: Array,
         computed: 'computeAddressesCardData_(addressesCount)',
       },
+      travelCardData_: {
+        type: Array,
+        computed:
+            'computeTravelCardData_(flightReservationsCount, travelInfoCount, vehiclesCount)',
+      },
 
       passwordsCount: Number,
       passkeysCount: Number,
@@ -77,8 +82,7 @@ export class SettingsYourSavedInfoPageElement extends
       driversLicensesCount: Number,
       vehiclesCount: Number,
       nationalIdCardsCount: Number,
-      knownTravelerNumbersCount: Number,
-      redressNumbersCount: Number,
+      travelInfoCount: Number,
       flightReservationsCount: Number,
       loyaltyCardsCount: Number,
     };
@@ -98,14 +102,14 @@ export class SettingsYourSavedInfoPageElement extends
   declare driversLicensesCount: number|undefined;
   declare vehiclesCount: number|undefined;
   declare nationalIdCardsCount: number|undefined;
-  declare knownTravelerNumbersCount: number|undefined;
-  declare redressNumbersCount: number|undefined;
+  declare travelInfoCount: number|undefined;
   declare flightReservationsCount: number|undefined;
   declare loyaltyCardsCount: number|undefined;
 
   declare private passwordsCardData_: ChipData[];
   declare private paymentsCardData_: ChipData[];
   declare private addressesCardData_: ChipData[];
+  declare private travelCardData_: ChipData[];
 
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -156,7 +160,7 @@ export class SettingsYourSavedInfoPageElement extends
     this.paymentsManager_.getCreditCardList().then(setCreditCardsListener);
     this.paymentsManager_.getIbanList().then(setIbansListener);
     this.paymentsManager_.getPayOverTimeIssuerList().then(
-      setPayOverTimeListener);
+        setPayOverTimeListener);
 
     // Addresses and Payments: Listen for changes.
     const setPersonalDataListener: PersonalDataChangedListener =
@@ -204,10 +208,9 @@ export class SettingsYourSavedInfoPageElement extends
     this.vehiclesCount = entityCounts.get(EntityTypeName.kVehicle) ?? 0;
     this.nationalIdCardsCount =
         entityCounts.get(EntityTypeName.kNationalIdCard) ?? 0;
-    this.knownTravelerNumbersCount =
-        entityCounts.get(EntityTypeName.kKnownTravelerNumber) ?? 0;
-    this.redressNumbersCount =
-        entityCounts.get(EntityTypeName.kRedressNumber) ?? 0;
+    this.travelInfoCount =
+        (entityCounts.get(EntityTypeName.kKnownTravelerNumber) ?? 0) +
+        (entityCounts.get(EntityTypeName.kRedressNumber) ?? 0);
     this.flightReservationsCount =
         entityCounts.get(EntityTypeName.kFlightReservation) ?? 0;
   }
@@ -326,6 +329,24 @@ export class SettingsYourSavedInfoPageElement extends
     ];
   }
 
+  private computeTravelCardData_(): ChipData[] {
+    return [{
+      label: this.i18n('yourSavedInfoFlightReservationsChip'),
+      icon: 'firstLevelTopics20:travel',
+      counter: this.flightReservationsCount,
+    },
+    {
+      label: this.i18n('yourSavedInfoTravelInfoChip'),
+      icon: 'privacy20:person-check',
+      counter: this.travelInfoCount,
+    },
+    {
+      label: this.i18n('yourSavedInfoVehiclesChip'),
+      icon: 'firstLevelTopics20:directions-car',
+      counter: this.vehiclesCount,
+    }];
+  }
+
   /**
    * Shows the manage payment methods sub page.
    */
@@ -338,6 +359,15 @@ export class SettingsYourSavedInfoPageElement extends
    */
   private onAddressesManagerClick_() {
     Router.getInstance().navigateTo(routes.ADDRESSES);
+  }
+
+  /**
+   * Shows the manage travel sub page.
+   */
+  private onTravelManagerClick_() {
+    // TODO(crbug.com/438666322): Update routing once the Travel subpage is
+    // created.
+    Router.getInstance().navigateTo(routes.BASIC);
   }
 
   /**

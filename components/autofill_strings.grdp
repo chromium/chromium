@@ -763,6 +763,9 @@
     <message name="IDS_AUTOFILL_PAYMENTS_TITLE" desc="Title for the Autofill settings page that allows user to manage their list of saved payment methods and Autofill preferences for payment methods. Sentence-Cased." formatter_data="android_java">
       Payments
     </message>
+    <message name="IDS_AUTOFILL_TRAVEL_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved travel info. Sentence-Cased." formatter_data="android_java">
+      Travel
+    </message>
   </if>
 
   <!-- Autofill Address Edit Dialog -->
@@ -805,6 +808,17 @@
   </message>
   <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME" desc="The label for something that a user can autofill when filling a form. For context, a user has been able to fill addresses within Chrome for many users. Now a user can also fill a “Flight reservation”.">
     Flight
+  </message>
+
+  <!-- Titles -->
+  <message name="IDS_AUTOFILL_AI_VEHICLES_TITLE" desc="The title of a chip referring to vehicles(IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME) on Your saved info settings page.">
+    Vehicles
+  </message>
+    <message name="IDS_AUTOFILL_AI_TRAVEL_INFO_TITLE" desc="The title of a chip referring to travel info(IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME and IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME) on Your saved info settings page.">
+    Travel info
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE" desc="The title of a chip referring to flights(IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME) on Your saved info settings page.">
+    Flight reservations
   </message>
 
   <!-- Add entity strings -->

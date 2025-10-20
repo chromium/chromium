@@ -75,6 +75,7 @@ suite('YourSavedInfoPage', function() {
       loadTimeData.getString('localPasswordManager'),
       loadTimeData.getString('paymentsTitle'),
       loadTimeData.getString('contactInfoTitle'),
+      loadTimeData.getString('travelCardTitle'),
     ];
 
     assertEquals(expectedCardTitles.length, cards.length);
@@ -100,6 +101,8 @@ suite('YourSavedInfoPage', function() {
   [
     {cardTitle: 'paymentsTitle', expectedRoute: routes.PAYMENTS},
     {cardTitle: 'contactInfoTitle', expectedRoute: routes.ADDRESSES},
+    // TODO(crbug.com/438666322): Update routing once the Travel subpage is created.
+    {cardTitle: 'travelCardTitle', expectedRoute: routes.BASIC},
   ].forEach(({cardTitle, expectedRoute}) => {
     test(`${cardTitle} card navigates to the correct route`, function() {
       const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
