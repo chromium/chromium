@@ -97,6 +97,7 @@ using enum OmniboxKeyboardAction;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
     self.textContainer.lineFragmentPadding = 0;
     self.dataDetectorTypes = UIDataDetectorTypeNone;
+    self.allowsEditingTextAttributes = NO;
 
     // Disable drag on iPhone because there's nowhere to drag to
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
