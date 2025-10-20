@@ -311,6 +311,22 @@ class ProfileImportProcess {
   // If the user didn't edit any fields (or wasn't prompted), this is a no-op.
   int CollectedEditedTypeHistograms() const;
 
+  // Records UKM metrics after the import was applied.
+  void LogUkmMetrics(
+      ukm::UkmRecorder* ukm_recorder,
+      const std::vector<const AutofillProfile*>& existing_profiles,
+      int num_edited_fields = 0) const;
+
+  // Records new profile import metrics after the import was applied.
+  void LogNewProfileMetrics() const;
+
+  // Records confirmable profile update metrics after the import was applied.
+  void LogConfirmableProfileUpdateMetrics(
+      const std::vector<const AutofillProfile*>& existing_profiles) const;
+
+  // Records Home and Work superset metrics after the import was applied.
+  void LogHomeAndWorkSupersetMetrics() const;
+
   // Indicates if the user is already prompted.
   bool prompt_shown_{false};
 

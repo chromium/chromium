@@ -601,19 +601,11 @@ void ProfileImportProcess::CollectMetrics(
   // Metrics should only be recorded after a user decision was supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
-  auto LogUkmMetrics = [&](int num_edited_fields = 0) {
-    autofill_metrics::LogAddressProfileImportUkm(
-        ukm_recorder, ukm_source_id_, import_type_, user_decision_,
-        import_metadata_, num_edited_fields,
-        UserAccepted() ? confirmed_import_candidate_ : import_candidate_,
-        existing_profiles, app_locale_);
-  };
-
   if (allow_only_silent_updates_) {
     // Record the import type for the silent updates.
     autofill_metrics::LogSilentUpdatesProfileImportType(import_type_);
     if (import_type_ == AutofillProfileImportType::kSilentUpdate) {
-      LogUkmMetrics();
+      LogUkmMetrics(ukm_recorder, existing_profiles);
     }
     return;
   }
@@ -628,57 +620,23 @@ void ProfileImportProcess::CollectMetrics(
   // For an import process that involves prompting the user, record the
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
-    autofill_metrics::LogNewProfileImportDecision(
-        user_decision_, import_metadata_, existing_profiles,
-        UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
-        app_locale_);
-    LogUkmMetrics(num_edited_fields);
-    if (UserAccepted()) {
-      autofill_metrics::LogNewProfileStorageLocation(
-          *confirmed_import_candidate_);
-    }
+    LogNewProfileMetrics();
+    LogUkmMetrics(ukm_recorder, existing_profiles, num_edited_fields);
   } else if (import_type_ ==
              AutofillProfileImportType::kHomeWorkNameEmailMerge) {
     autofill_metrics::LogHomeWorkNameEmailMergeImportDecision(user_decision_);
   } else if (import_type_ == AutofillProfileImportType::kHomeAndWorkSuperset) {
-    autofill_metrics::LogHomeAndWorkSupersetImportDecision(user_decision_);
-    CHECK(merge_candidate_.has_value() && import_candidate_.has_value());
-    // Log the types that triggered the prompt.
-    for (const ProfileValueDifference& difference :
-         AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-             import_candidate_.value(), merge_candidate_.value(),
-             app_locale_)) {
-      autofill_metrics::LogHomeAndWorkSupersetAffectedType(difference.type);
-    }
+    LogHomeAndWorkSupersetMetrics();
   } else if (import_type_ == AutofillProfileImportType::kNameEmailSuperset) {
     autofill_metrics::LogNameEmailSupersetImportDecision(user_decision_);
   } else if (is_confirmable_update()) {
-    autofill_metrics::LogProfileUpdateImportDecision(
-        user_decision_, existing_profiles,
-        UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
-        app_locale_);
-
-    DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
-    // For all update prompts, log the field types and total number of fields
-    // that would change due to the update. Note that this does not include
-    // additional manual edits the user can perform in the storage dialog.
-    // Those are covered separately below.
-    const std::vector<ProfileValueDifference> merge_difference =
-        AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-            import_candidate_.value(), merge_candidate_.value(), app_locale_);
-
-    for (const auto& difference : merge_difference) {
-      autofill_metrics::LogProfileUpdateAffectedType(difference.type,
-                                                     user_decision_);
-    }
-    autofill_metrics::LogUpdateProfileNumberOfAffectedFields(
-        merge_difference.size(), user_decision_);
-    LogUkmMetrics(num_edited_fields);
+    LogConfirmableProfileUpdateMetrics(existing_profiles);
+    LogUkmMetrics(ukm_recorder, existing_profiles, num_edited_fields);
   } else if (import_type_ == AutofillProfileImportType::kSilentUpdate) {
-    LogUkmMetrics();
+    LogUkmMetrics(ukm_recorder, existing_profiles);
   } else if (is_migration()) {
     autofill_metrics::LogProfileMigrationImportDecision(user_decision_);
-    LogUkmMetrics(num_edited_fields);
+    LogUkmMetrics(ukm_recorder, existing_profiles, num_edited_fields);
   }
 }
 
@@ -697,6 +655,63 @@ int ProfileImportProcess::CollectedEditedTypeHistograms() const {
   }
 
   return edit_difference.size();
+}
+
+void ProfileImportProcess::LogUkmMetrics(
+    ukm::UkmRecorder* ukm_recorder,
+    const std::vector<const AutofillProfile*>& existing_profiles,
+    int num_edited_fields) const {
+  autofill_metrics::LogAddressProfileImportUkm(
+      ukm_recorder, ukm_source_id_, import_type_, user_decision_,
+      import_metadata_, num_edited_fields,
+      UserAccepted() ? confirmed_import_candidate_ : import_candidate_,
+      existing_profiles, app_locale_);
+}
+
+void ProfileImportProcess::LogNewProfileMetrics() const {
+  autofill_metrics::LogNewProfileImportDecision(
+      user_decision_, import_metadata_, {},
+      UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
+      app_locale_);
+  if (UserAccepted()) {
+    autofill_metrics::LogNewProfileStorageLocation(
+        *confirmed_import_candidate_);
+  }
+}
+
+void ProfileImportProcess::LogConfirmableProfileUpdateMetrics(
+    const std::vector<const AutofillProfile*>& existing_profiles) const {
+  autofill_metrics::LogProfileUpdateImportDecision(
+      user_decision_, existing_profiles,
+      UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
+      app_locale_);
+
+  DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
+  // For all update prompts, log the field types and total number of fields
+  // that would change due to the update. Note that this does not include
+  // additional manual edits the user can perform in the storage dialog.
+  // Those are covered separately below.
+  const std::vector<ProfileValueDifference> merge_difference =
+      AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+          import_candidate_.value(), merge_candidate_.value(), app_locale_);
+
+  for (const auto& difference : merge_difference) {
+    autofill_metrics::LogProfileUpdateAffectedType(difference.type,
+                                                   user_decision_);
+  }
+  autofill_metrics::LogUpdateProfileNumberOfAffectedFields(
+      merge_difference.size(), user_decision_);
+}
+
+void ProfileImportProcess::LogHomeAndWorkSupersetMetrics() const {
+  autofill_metrics::LogHomeAndWorkSupersetImportDecision(user_decision_);
+  CHECK(merge_candidate_.has_value() && import_candidate_.has_value());
+  // Log the types that triggered the prompt.
+  for (const ProfileValueDifference& difference :
+       AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+           import_candidate_.value(), merge_candidate_.value(), app_locale_)) {
+    autofill_metrics::LogHomeAndWorkSupersetAffectedType(difference.type);
+  }
 }
 
 }  // namespace autofill
