@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Property text-transform value 'full-width'
-  assert_true: 'full-width' is a supported value for text-transform. expected true got false
 [FAIL] Property text-transform value 'full-size-kana'
   assert_true: 'full-size-kana' is a supported value for text-transform. expected true got false
 [FAIL] Property text-transform value 'capitalize full-width'
