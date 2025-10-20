@@ -17,7 +17,6 @@ grit_strings("ios_strings") {
   source = "ios_strings.grd"
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [ "grit/ios_strings.h" ]
-  locales = locales_with_pseudolocales
 }
 
 grit_strings("ios_branded_strings") {
