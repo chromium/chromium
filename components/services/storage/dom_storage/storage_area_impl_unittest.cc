@@ -1215,24 +1215,7 @@ struct FuzzState {
 
 }  // namespace
 
-class StorageAreaImplCrossAreaCommitsTest
-    : public StorageAreaImplTest,
-      public testing::WithParamInterface<bool> {
- public:
-  StorageAreaImplCrossAreaCommitsTest() {
-    features_.InitWithFeatureState(kCoalesceStorageAreaCommits, GetParam());
-  }
-  ~StorageAreaImplCrossAreaCommitsTest() override = default;
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-INSTANTIATE_TEST_SUITE_P(StorageAreaImplTest,
-                         StorageAreaImplCrossAreaCommitsTest,
-                         testing::Bool());
-
-TEST_P(StorageAreaImplCrossAreaCommitsTest, PrefixForkingPsuedoFuzzer) {
+TEST_F(StorageAreaImplTest, PrefixForkingPsuedoFuzzer) {
   const std::string kKey1 = "key1";
   const std::vector<uint8_t> kKey1Vec = ToBytes(kKey1);
   const std::string kKey2 = "key2";
@@ -1343,25 +1326,15 @@ TEST_P(StorageAreaImplCrossAreaCommitsTest, PrefixForkingPsuedoFuzzer) {
   // This section verifies that all areas have committed their changes to
   // the database.
   ASSERT_EQ(areas.size(), delegates.size());
-  if (base::FeatureList::IsEnabled(kCoalesceStorageAreaCommits)) {
-    // Committing just one should commit all.
-    for (size_t i = 0; i < areas.size(); i++) {
-      if (BlockingCommit(&delegates[i], areas[i].get())) {
-        break;
-      }
-    }
-    for (const auto& area : areas) {
-      EXPECT_FALSE(area->has_changes_to_commit());
-    }
-  } else {
-    size_t half = kTotalAreas / 2;
-    for (size_t i = 0; i < half; i++) {
-      BlockingCommit(&delegates[i], areas[i].get());
-    }
 
-    for (size_t i = kTotalAreas - 1; i >= half; i--) {
-      BlockingCommit(&delegates[i], areas[i].get());
+  // Committing just one should commit all.
+  for (size_t i = 0; i < areas.size(); i++) {
+    if (BlockingCommit(&delegates[i], areas[i].get())) {
+      break;
     }
+  }
+  for (const auto& area : areas) {
+    EXPECT_FALSE(area->has_changes_to_commit());
   }
 
   // This section checks the data in the database itself to verify all areas

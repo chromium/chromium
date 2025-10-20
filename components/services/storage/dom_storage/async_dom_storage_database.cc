@@ -125,22 +125,17 @@ void AsyncDomStorageDatabase::RemoveCommitter(Committer* source) {
   DCHECK(erased);
 }
 
-void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
+void AsyncDomStorageDatabase::InitiateCommit() {
   std::vector<Commit> commits;
   std::vector<base::OnceCallback<void(DbStatus)>> commit_dones;
-  if (base::FeatureList::IsEnabled(kCoalesceStorageAreaCommits)) {
-    commits.reserve(committers_.size());
-    commit_dones.reserve(committers_.size());
-    for (Committer* committer : committers_) {
-      std::optional<Commit> commit = committer->CollectCommit();
-      if (commit) {
-        commits.emplace_back(std::move(*commit));
-        commit_dones.emplace_back(committer->GetCommitCompleteCallback());
-      }
+  commits.reserve(committers_.size());
+  commit_dones.reserve(committers_.size());
+  for (Committer* committer : committers_) {
+    std::optional<Commit> commit = committer->CollectCommit();
+    if (commit) {
+      commits.emplace_back(std::move(*commit));
+      commit_dones.emplace_back(committer->GetCommitCompleteCallback());
     }
-  } else {
-    commits.emplace_back(*source->CollectCommit());
-    commit_dones.emplace_back(source->GetCommitCompleteCallback());
   }
 
   auto run_all = base::BindOnce(

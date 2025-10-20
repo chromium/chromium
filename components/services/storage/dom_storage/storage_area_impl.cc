@@ -730,7 +730,7 @@ void StorageAreaImpl::CommitChanges() {
     return;
   }
 
-  database_->InitiateCommit(this);
+  database_->InitiateCommit();
 }
 
 std::optional<AsyncDomStorageDatabase::Commit>

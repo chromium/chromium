@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/features.h"
 #include "storage/common/database/db_status.h"
 
 namespace storage {
@@ -140,10 +139,10 @@ class AsyncDomStorageDatabase {
   void RemoveCommitter(Committer* source);
 
   // To be called by a committer when it has data that should be committed
-  // without delay. TODO(crbug.com/340200017): the parameter only exists to
-  // support the legacy behavior of distinct commits per storage area, and
-  // should be removed when kCoalesceStorageAreaCommits is enabled by default.
-  void InitiateCommit(Committer* source);
+  // without delay. Persists the list of pending `Commit` batches from
+  // `committers_` using `RunDatabaseTask()`. After the database task, runs the
+  // completed callback for each `Committer` that provided a `Commit`.
+  void InitiateCommit();
 
  private:
   void OnDatabaseOpened(StatusCallback callback,
