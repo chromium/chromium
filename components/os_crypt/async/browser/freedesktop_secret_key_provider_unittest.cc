@@ -52,6 +52,7 @@ constexpr char kItemPromptPath[] =
     "/org/freedesktop/secrets/prompt/item_prompt";
 constexpr char kNetworkWallet[] = "kdewallet";
 constexpr int32_t kKWalletHandle = 42;
+constexpr int32_t kTransactionId = 123;
 
 constexpr char kFakeSecret[] = "c3VwZXJfc2VjcmV0X2tleQ==";
 
@@ -601,12 +602,29 @@ TEST(FreedesktopSecretKeyProviderTest, KWallet) {
                    MatchArgs(), _))
       .WillOnce(RespondWith(std::string(kNetworkWallet)));
 
-  // open -> non-negative handle
+  // ConnectToSignal walletAsyncOpened
+  dbus::ObjectProxy::SignalCallback signal_callback;
+  EXPECT_CALL(
+      *mock_kwallet5_proxy,
+      ConnectToSignal(
+          FreedesktopSecretKeyProvider::kKWalletInterface,
+          FreedesktopSecretKeyProvider::kKWalletSignalWalletAsyncOpened, _, _))
+      .WillOnce([&](const std::string& interface_name,
+                    const std::string& signal_name,
+                    dbus::ObjectProxy::SignalCallback callback,
+                    dbus::ObjectProxy::OnConnectedCallback on_connected) {
+        std::move(on_connected).Run(interface_name, signal_name, true);
+        signal_callback = std::move(callback);
+      });
+
+  // openAsync -> transaction ID
   EXPECT_CALL(*mock_kwallet5_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
-                   FreedesktopSecretKeyProvider::kKWalletMethodOpen,
-                   MatchArgs(kNetworkWallet, int64_t(0), kProductName), _))
-      .WillOnce(RespondWith(kKWalletHandle));
+                   FreedesktopSecretKeyProvider::kKWalletMethodOpenAsync,
+                   MatchArgs(kNetworkWallet, static_cast<int64_t>(0),
+                             kProductName, true),
+                   _))
+      .WillOnce(RespondWith(kTransactionId));
 
   // hasFolder -> true
   EXPECT_CALL(*mock_kwallet5_proxy,
@@ -657,6 +675,16 @@ TEST(FreedesktopSecretKeyProviderTest, KWallet) {
         key = std::move(returned_key.value());
       }));
 
+  // Simulate walletAsyncOpened signal
+  ASSERT_TRUE(signal_callback);
+  auto signal = dbus::Signal(
+      FreedesktopSecretKeyProvider::kKWalletInterface,
+      FreedesktopSecretKeyProvider::kKWalletSignalWalletAsyncOpened);
+  dbus::MessageWriter writer(&signal);
+  dbus_utils::WriteValue(writer, kTransactionId);
+  dbus_utils::WriteValue(writer, kKWalletHandle);
+  signal_callback.Run(&signal);
+
   EXPECT_EQ(tag, "v11");
   EXPECT_TRUE(key.has_value());
 }
@@ -701,12 +729,29 @@ TEST(FreedesktopSecretKeyProviderTest, KWalletCreateFolderAndPassword) {
                    MatchArgs(), _))
       .WillOnce(RespondWith(std::string(kNetworkWallet)));
 
-  // open -> non-negative handle
+  // ConnectToSignal walletAsyncOpened
+  dbus::ObjectProxy::SignalCallback signal_callback;
+  EXPECT_CALL(
+      *mock_kwallet6_proxy,
+      ConnectToSignal(
+          FreedesktopSecretKeyProvider::kKWalletInterface,
+          FreedesktopSecretKeyProvider::kKWalletSignalWalletAsyncOpened, _, _))
+      .WillOnce([&](const std::string& interface_name,
+                    const std::string& signal_name,
+                    dbus::ObjectProxy::SignalCallback callback,
+                    dbus::ObjectProxy::OnConnectedCallback on_connected) {
+        std::move(on_connected).Run(interface_name, signal_name, true);
+        signal_callback = std::move(callback);
+      });
+
+  // openAsync -> transaction ID
   EXPECT_CALL(*mock_kwallet6_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
-                   FreedesktopSecretKeyProvider::kKWalletMethodOpen,
-                   MatchArgs(kNetworkWallet, int64_t(0), kProductName), _))
-      .WillOnce(RespondWith(kKWalletHandle));
+                   FreedesktopSecretKeyProvider::kKWalletMethodOpenAsync,
+                   MatchArgs(kNetworkWallet, static_cast<int64_t>(0),
+                             kProductName, true),
+                   _))
+      .WillOnce(RespondWith(kTransactionId));
 
   // hasFolder -> false
   EXPECT_CALL(*mock_kwallet6_proxy,
@@ -751,6 +796,16 @@ TEST(FreedesktopSecretKeyProviderTest, KWalletCreateFolderAndPassword) {
         tag = returned_tag;
         key = std::move(returned_key.value());
       }));
+
+  // Simulate walletAsyncOpened signal
+  ASSERT_TRUE(signal_callback);
+  auto signal = dbus::Signal(
+      FreedesktopSecretKeyProvider::kKWalletInterface,
+      FreedesktopSecretKeyProvider::kKWalletSignalWalletAsyncOpened);
+  dbus::MessageWriter writer(&signal);
+  dbus_utils::WriteValue(writer, kTransactionId);
+  dbus_utils::WriteValue(writer, kKWalletHandle);
+  signal_callback.Run(&signal);
 
   EXPECT_EQ(tag, "v11");
   EXPECT_TRUE(key.has_value());
