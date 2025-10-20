@@ -10,6 +10,8 @@ import os
 import subprocess
 import sys
 
+################################################################################
+# Utils
 
 def count_matching_files(abs_directory,
                          include_file_content_strings=None,
@@ -141,6 +143,56 @@ def get_shell_metrics(command_str):
   return number
 
 
+def count_browser_owned_objects(abs_directory):
+  """
+    Returns a count of feature instances directly owned by Browser.
+
+    Args:
+        abs_directory (str): The absolute directory to search in.
+
+    Returns:
+        int: The count of BrowserUserData instances.
+    """
+  count = 0
+  with open(os.path.join(abs_directory, "ui/browser.h"), 'r') as f:
+    for line in f:
+      # Do not match KeepAlive instances or any lines that may be part of a
+      # method signature.
+      if any(el in line for el in ["KeepAlive", ",", "("]):
+        continue
+
+      # Explicitly include BookmarkBar::State and SigninViewController features.
+      if any(el in line for el in [
+          "std::unique_ptr<", "BookmarkBar::State bookmark_bar_state_",
+          "SigninViewController signin_view_controller_"
+      ]):
+        count += 1
+
+  return count
+
+
+def count_browser_user_data(abs_directory):
+  """
+    Returns a count of the number of BrowserUserData instances.
+
+    Args:
+        abs_directory (str): The absolute directory to search in.
+
+    Returns:
+        int: The count of BrowserUserData instances.
+    """
+  total_count = 0
+  for root, _, files in os.walk(abs_directory):
+    for filename in files:
+      file_path = os.path.join(root, filename)
+      with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        total_count += f.read().count('public BrowserUserData<')
+  return total_count
+
+
+################################################################################
+# Metrics Calculation
+
 def main():
   parser = argparse.ArgumentParser(
       description="Produces project Bedrock metrics.")
@@ -223,6 +275,10 @@ def main():
       "allow_circular_includes_from | xargs -I{} gn desc out/Default {} "
       "sources | wc -l")
 
+  # Calculate the number of features / classes directly owned by Browser.
+  browser_owned_data = count_browser_owned_objects(
+      abs_cb_directory) + count_browser_user_data(abs_cb_directory)
+
   # Define the JSON data.
   data_to_write = {
       "commit_hash": commit_hash,
@@ -239,6 +295,7 @@ def main():
       "browser_ui_sources": browser_ui_sources,
       "browser_sources_circular": browser_sources_circular,
       "browser_ui_sources_circular": browser_ui_sources_circular,
+      "browser_owned_data": browser_owned_data,
   }
 
   # Write the JSON data to the output file.
@@ -253,7 +310,6 @@ def main():
   except Exception as e:
     print(f"An unexpected error occurred: {e}", file=sys.stderr)
     sys.exit(1)
-
 
 if __name__ == "__main__":
   main()
