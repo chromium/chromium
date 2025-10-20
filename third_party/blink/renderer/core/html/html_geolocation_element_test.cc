@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -231,12 +232,12 @@ class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {
   TestPermissionService* permission_service() { return &permission_service_; }
 
   HTMLGeolocationElement* CreateGeolocationElement(
-      bool precise_location = false) {
+      bool precise_accuracy_mode = false) {
     HTMLGeolocationElement* geolocation_element =
         MakeGarbageCollected<HTMLGeolocationElement>(GetDocument());
-    if (precise_location) {
-      geolocation_element->setAttribute(html_names::kPreciselocationAttr,
-                                        AtomicString(""));
+    if (precise_accuracy_mode) {
+      geolocation_element->setAttribute(html_names::kAccuracymodeAttr,
+                                        AtomicString("precise"));
     }
     GetDocument().body()->AppendChild(geolocation_element);
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -308,7 +309,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationSetInnerTextAfterRegistration) {
   const struct {
     MojoPermissionStatus status;
     String expected_text;
-    bool precise_location = false;
+    bool precise_accuracy_mode = false;
   } kTestData[] = {
       {MojoPermissionStatus::ASK, kGeolocationString},
       {MojoPermissionStatus::DENIED, kGeolocationString},
@@ -318,7 +319,8 @@ TEST_F(HTMLGeolocationElementTest, GeolocationSetInnerTextAfterRegistration) {
       {MojoPermissionStatus::GRANTED, kPreciseGeolocationString, true},
   };
   for (const auto& data : kTestData) {
-    auto* geolocation_element = CreateGeolocationElement(data.precise_location);
+    auto* geolocation_element =
+        CreateGeolocationElement(data.precise_accuracy_mode);
     permission_service()->set_initial_statuses({data.status});
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return geolocation_element->is_registered_in_browser_process();
@@ -329,11 +331,65 @@ TEST_F(HTMLGeolocationElementTest, GeolocationSetInnerTextAfterRegistration) {
   }
 }
 
+TEST_F(HTMLGeolocationElementTest,
+       GeolocationPreciseLocationAttributeDoesNotChangeText) {
+  auto* geolocation_element = CreateGeolocationElement();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return geolocation_element->is_registered_in_browser_process();
+  }));
+  String initial_text =
+      geolocation_element->permission_text_span_for_testing()->innerText();
+  geolocation_element->setAttribute(html_names::kPreciselocationAttr,
+                                    AtomicString(""));
+  EXPECT_EQ(
+      initial_text,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+}
+
+TEST_F(HTMLGeolocationElementTest,
+       GeolocationPreciseLocationAttributeCamelCaseDoesNotChangeText) {
+  auto* geolocation_element = CreateGeolocationElement();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return geolocation_element->is_registered_in_browser_process();
+  }));
+  String initial_text =
+      geolocation_element->permission_text_span_for_testing()->innerText();
+  geolocation_element->setAttribute(AtomicString("pReCiSeLoCaTiOn"),
+                                    AtomicString(""));
+  EXPECT_EQ(
+      initial_text,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+}
+
+TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyMode) {
+  auto* geolocation_element = CreateGeolocationElement();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return geolocation_element->is_registered_in_browser_process();
+  }));
+  geolocation_element->setAttribute(html_names::kAccuracymodeAttr,
+                                    AtomicString("precise"));
+  EXPECT_EQ(
+      kPreciseGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+}
+
+TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyModeCaseInsensitive) {
+  auto* geolocation_element = CreateGeolocationElement();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return geolocation_element->is_registered_in_browser_process();
+  }));
+  geolocation_element->setAttribute(html_names::kAccuracymodeAttr,
+                                    AtomicString("PrEcIsE"));
+  EXPECT_EQ(
+      kPreciseGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+}
+
 TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {
   const struct {
     MojoPermissionStatus status;
     String expected_text;
-    bool precise_location = false;
+    bool precise_accuracy_mode = false;
   } kTestData[] = {
       {MojoPermissionStatus::ASK, kGeolocationString},
       {MojoPermissionStatus::DENIED, kGeolocationString},
@@ -342,7 +398,8 @@ TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {
       {MojoPermissionStatus::DENIED, kPreciseGeolocationString, true},
       {MojoPermissionStatus::GRANTED, kPreciseGeolocationString, true}};
   for (const auto& data : kTestData) {
-    auto* geolocation_element = CreateGeolocationElement(data.precise_location);
+    auto* geolocation_element =
+        CreateGeolocationElement(data.precise_accuracy_mode);
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return geolocation_element->is_registered_in_browser_process();
     }));
@@ -642,15 +699,9 @@ class HTMLGeolocationElementSimTest : public SimTest {
 
   TestPermissionService* permission_service() { return &permission_service_; }
 
-  HTMLGeolocationElement* CreateGeolocationElement(
-      Document& document,
-      std::optional<const char*> precise_location = std::nullopt) {
+  HTMLGeolocationElement* CreateGeolocationElement(Document& document) {
     HTMLGeolocationElement* geolocation_element =
         MakeGarbageCollected<HTMLGeolocationElement>(document);
-    if (precise_location.has_value()) {
-      geolocation_element->setAttribute(html_names::kPreciselocationAttr,
-                                        AtomicString(precise_location.value()));
-    }
     document.body()->AppendChild(geolocation_element);
     document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();

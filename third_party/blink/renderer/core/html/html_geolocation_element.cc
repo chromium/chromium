@@ -21,6 +21,7 @@ namespace blink {
 namespace {
 // The minimum time that the spinning icon should be displayed.
 constexpr base::TimeDelta kMinimumSpinningIconTime = base::Seconds(2);
+const char kAccuracyModePrecise[] = "precise";
 }  // namespace
 
 HTMLGeolocationElement::HTMLGeolocationElement(Document& document)
@@ -100,20 +101,32 @@ Geolocation* HTMLGeolocationElement::GetGeolocation() {
 
 void HTMLGeolocationElement::AttributeChanged(
     const AttributeModificationParams& params) {
-  // The autolocate and the watch attributes are exclusive to the geolocation
-  // element, other attributes will be handled by the HTMLPermissionElement.
-  if (params.name == html_names::kAutolocateAttr) {
+  // The "preciselocation" attribute does not have a special meaning on the
+  // geolocation element. It is handled by the generic HTMLElement attribute
+  // changed function to avoid the special handling in HTMLPermissionElement.
+  // TODO(crbug.com/450801233): Remove this when the "preciselocation"
+  // attribute is removed entirely along with the "geolocation" permission
+  // element type.
+  if (params.name == html_names::kPreciselocationAttr) {
+    HTMLElement::AttributeChanged(params);
+    return;
+  } else if (params.name == html_names::kAutolocateAttr) {
     if (!params.new_value) {
       did_autolocate_trigger_request = false;
     } else {
       MaybeTriggerAutolocate(ForceAutolocate::kNo);
     }
-  }
-  if (params.name == html_names::kWatchAttr) {
+  } else if (params.name == html_names::kWatchAttr) {
     if (!params.new_value) {
       ClearWatch();
     }
+  } else if (params.name == html_names::kAccuracymodeAttr &&
+             EqualIgnoringASCIICase(params.new_value, kAccuracyModePrecise)) {
+    SetPreciseLocation();
   }
+
+  // If it's not a geolocation element specific attribute, the base class
+  // permission element can handle attributes.
   HTMLPermissionElement::AttributeChanged(params);
 }
 

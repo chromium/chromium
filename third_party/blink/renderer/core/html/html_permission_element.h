@@ -145,6 +145,8 @@ class CORE_EXPORT HTMLPermissionElement
     return permission_text_span_.Get();
   }
 
+  void SetPreciseLocation();
+
   bool is_precise_location() const { return is_precise_location_; }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
@@ -173,6 +175,15 @@ class CORE_EXPORT HTMLPermissionElement
                            GeolocationTranslateInnerText);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            GeolocationSetInnerTextAfterRegistration);
+  FRIEND_TEST_ALL_PREFIXES(
+      HTMLGeolocationElementTest,
+      GeolocationPreciseLocationAttributeDoesNotChangeText);
+  FRIEND_TEST_ALL_PREFIXES(
+      HTMLGeolocationElementTest,
+      GeolocationPreciseLocationAttributeCamelCaseDoesNotChangeText);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, GeolocationAccuracyMode);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationAccuracyModeCaseInsensitive);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, GeolocationStatusChange);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementSimTest,
                            GeolocationInitializeGrantedText);

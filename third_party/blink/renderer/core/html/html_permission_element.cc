@@ -639,6 +639,16 @@ void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
   UpdateAppearance();
 }
 
+void HTMLPermissionElement::SetPreciseLocation() {
+  // This attribute can only be set once, and can not be modified afterwards.
+  if (is_precise_location_) {
+    return;
+  }
+
+  is_precise_location_ = true;
+  UpdateAppearance();
+}
+
 mojom::blink::EmbeddedPermissionRequestDescriptorPtr
 HTMLPermissionElement::CreateEmbeddedPermissionRequestDescriptor() {
   auto descriptor = EmbeddedPermissionRequestDescriptor::New();
@@ -826,13 +836,7 @@ void HTMLPermissionElement::AttributeChanged(
   MaybeRegisterPageEmbeddedPermissionControl();
 
   if (params.name == html_names::kPreciselocationAttr) {
-    // This attribute can only be set once, and can not be modified afterwards.
-    if (is_precise_location_) {
-      return;
-    }
-
-    is_precise_location_ = true;
-    UpdateAppearance();
+    SetPreciseLocation();
   }
 
   HTMLElement::AttributeChanged(params);

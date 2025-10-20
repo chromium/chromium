@@ -689,6 +689,7 @@ html element frameset
     property onunload
     property rows
 html element geolocation
+    property accuracymode
     property autolocate
     property error
     property initialPermissionStatus
@@ -702,7 +703,6 @@ html element geolocation
     property onvalidationstatuschange
     property permissionStatus
     property position
-    property precise
     property type
     property watch
 html element h1

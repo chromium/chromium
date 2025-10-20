@@ -13,7 +13,7 @@ interface HTMLGeolocationElement : HTMLPermissionElement {
   readonly attribute GeolocationPosition position;
   readonly attribute GeolocationPositionError error;
 
-  [CEReactions] attribute boolean precise;
+  [CEReactions, Reflect] attribute DOMString accuracymode;
   [CEReactions] attribute boolean autolocate;
   [CEReactions] attribute boolean watch;
 };

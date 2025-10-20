@@ -4306,16 +4306,16 @@ interface HTMLFrameSetElement : HTMLElement
     setter rows
 interface HTMLGeolocationElement : HTMLPermissionElement
     attribute @@toStringTag
+    getter accuracymode
     getter autolocate
     getter error
     getter onlocation
     getter position
-    getter precise
     getter watch
     method constructor
+    setter accuracymode
     setter autolocate
     setter onlocation
-    setter precise
     setter watch
 interface HTMLHRElement : HTMLElement
     attribute @@toStringTag
