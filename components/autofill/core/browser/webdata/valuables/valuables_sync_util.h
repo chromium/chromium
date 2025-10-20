@@ -34,6 +34,7 @@ LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
 // included in the client version.
 sync_pb::AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
     const sync_pb::AutofillValuableSpecifics& specifics);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLES_SYNC_UTIL_H_

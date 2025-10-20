@@ -1381,6 +1381,7 @@ chromium-metrics-reviews@google.com.
   <int value="185" label="kContactInfoFailedToLoadAutofillWebDatabase"/>
   <int value="186" label="kContactInfoFailedToLoadProfilesFromTable"/>
   <int value="187" label="kGenericTestError"/>
+  <int value="188" label="kAutofillValuableMetadataFailedToLoadDatabase"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->
