@@ -208,6 +208,10 @@ const base::FeatureParam<std::string> kWebGPUEnabledToggles{
 // Note that the comma should be URL-encoded.
 const base::FeatureParam<std::string> kWebGPUUnsafeFeatures{
     &kWebGPUService, "UnsafeFeatures", ""};
+// Whether to enable Dawn's spontaneous wire mode on the server side for faster
+// async resolution and timed wait any on the client side.
+const base::FeatureParam<bool> kWebGPUSpontaneousWireServer{
+    &kWebGPUService, "DawnSpontaneousWireServer", false};
 // List of WGSL feature names, delimited by ,
 // The FeatureParam may be overridden via Finch config, or via the command line
 // For example:
