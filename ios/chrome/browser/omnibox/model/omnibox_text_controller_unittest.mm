@@ -208,3 +208,10 @@ TEST_F(OmniboxTextControllerTest, DisplayText) {
             [omnibox_text_controller_ displayedText]);
   EXPECT_TRUE(current_text_is_URL());
 }
+
+// Tests that calling onTextChanged after disconnect doesn't crash.
+TEST_F(OmniboxTextControllerTest, OnTextChangedAfterDisconnect) {
+  [omnibox_text_controller_ disconnect];
+  [omnibox_text_controller_ onTextChanged];
+  // The test passes if it doesn't crash.
+}
