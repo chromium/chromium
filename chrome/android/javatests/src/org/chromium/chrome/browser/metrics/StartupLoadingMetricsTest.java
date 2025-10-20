@@ -67,14 +67,14 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstContentfulPaint";
     private static final String FIRST_CONTENTFUL_PAINT_HISTOGRAM3 =
             "Startup.Android.Cold.TimeToFirstContentfulPaint3";
-    private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM =
-            "Startup.Android.Cold.TimeToFirstVisibleContent";
     private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM2 =
             "Startup.Android.Cold.TimeToFirstVisibleContent2";
     private static final String FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM4 =
             "Startup.Android.Cold.TimeToFirstVisibleContent4";
     private static final String VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToVisibleContent";
+    private static final String TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM =
+            "Startup.Android.Cold.TimeToStartupFcpOrPaintPreview";
     private static final String FIRST_COMMIT_COLD_HISTOGRAM3 =
             "Startup.Android.Cold.TimeToFirstNavigationCommit3";
     private static final String MAIN_INTENT_COLD_START_HISTOGRAM =
@@ -209,7 +209,11 @@ public class StartupLoadingMetricsTest {
 
         int visibleContentSamples =
                 RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM);
+        int timeToStartupFcpOrPaintPreviewSamples =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM);
         Assert.assertTrue(visibleContentSamples < 2);
+        Assert.assertTrue(timeToStartupFcpOrPaintPreviewSamples < 2);
 
         if (expectedCount == 1 && firstCommitSamples == 0) {
             // The startup FCP and 'visible content' also record their samples depending on how fast
@@ -229,10 +233,6 @@ public class StartupLoadingMetricsTest {
         if (isTabbedSuffix) {
             // These tests only exercise the cases when the first visible content is calculated as
             // the first navigation commit.
-            Assert.assertEquals(
-                    firstCommitSamples,
-                    RecordHistogram.getHistogramTotalCountForTesting(
-                            FIRST_VISIBLE_CONTENT_HISTOGRAM));
             Assert.assertEquals(
                     expectedCount,
                     RecordHistogram.getHistogramTotalCountForTesting(
@@ -537,9 +537,6 @@ public class StartupLoadingMetricsTest {
                 0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_HISTOGRAM + TABBED_SUFFIX));
-        Assert.assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
         assertMainIntentLaunchColdStartHistogramRecorded(0);
 
         // The metric based on early foreground notification should be recorded.
@@ -565,9 +562,6 @@ public class StartupLoadingMetricsTest {
                 0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_HISTOGRAM + TABBED_SUFFIX));
-        Assert.assertEquals(
-                0,
-                RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
     }
 
     @Test

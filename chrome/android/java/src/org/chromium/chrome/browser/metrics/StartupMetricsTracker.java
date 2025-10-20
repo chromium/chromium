@@ -42,6 +42,8 @@ public class StartupMetricsTracker {
     private static final long TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS = 2500;
     private static final String NTP_COLD_START_HISTOGRAM =
             "Startup.Android.Cold.NewTabPage.TimeToFirstDraw";
+    private static final String TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM =
+            "Startup.Android.Cold.TimeToStartupFcpOrPaintPreview";
     private boolean mFirstNavigationCommitted;
 
     private class TabObserver extends TabModelSelectorTabObserver {
@@ -130,6 +132,7 @@ public class StartupMetricsTracker {
     // reported in uptimeMillis relative to this value.
     private final long mActivityStartTimeMs;
     private boolean mFirstVisibleContentRecorded;
+    private boolean mTimeToStartupFcpOrPaintPreviewRecorded;
 
     private @Nullable TabModelSelectorTabObserver mTabObserver;
     private @Nullable PageObserver mPageObserver;
@@ -185,6 +188,7 @@ public class StartupMetricsTracker {
                     @Override
                     public void onFirstPaint(long durationMs) {
                         recordTimeToFirstVisibleContent(durationMs);
+                        recordTimeToStartupFcpOrPaintPreview(durationMs);
                     }
 
                     @Override
@@ -295,6 +299,7 @@ public class StartupMetricsTracker {
             recordExperimentalHistogram("FirstContentfulPaint", firstFcpMs);
             RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
+            recordTimeToStartupFcpOrPaintPreview(firstFcpMs);
         }
     }
 
@@ -331,5 +336,22 @@ public class StartupMetricsTracker {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
                 || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) return;
         RecordHistogram.recordMediumTimesHistogram(histogramName, timeToFirstDrawMs);
+    }
+
+    /**
+     * Records a histogram capturing TimeToStartupFcpOrPaintPreview.
+     *
+     * <p>This metric reports the minimum value of
+     * Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed and
+     * Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap.
+     *
+     * @param durationMs duration in millis.
+     */
+    private void recordTimeToStartupFcpOrPaintPreview(long durationMs) {
+        if (mTimeToStartupFcpOrPaintPreviewRecorded) return;
+
+        mTimeToStartupFcpOrPaintPreviewRecorded = true;
+        RecordHistogram.recordMediumTimesHistogram(
+                TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM, durationMs);
     }
 }
