@@ -78,8 +78,7 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
             "GL_OES_texture_npot GL_EXT_texture_rg "
             "GL_OES_texture_half_float GL_OES_texture_half_float_linear "
             "GL_EXT_texture_norm16"),
-        transfer_cache_helper_(transfer_cache_helper),
-        advertise_accelerated_decoding_(advertise_accelerated_decoding) {}
+        transfer_cache_helper_(transfer_cache_helper) {}
 
   ~FakeGPUImageDecodeTestGLES2Interface() override {
     // All textures / framebuffers / renderbuffers should be cleaned up.
@@ -117,17 +116,6 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
   }
   void DeleteTransferCacheEntry(uint32_t type, uint32_t id) override {
     transfer_cache_helper_->DeleteEntryDirect(MakeEntryKey(type, id));
-  }
-
-  bool CanDecodeWithHardwareAcceleration(
-      const ImageHeaderMetadata* image_metadata) const override {
-    // Only advertise hardware accelerated decoding for the current use cases
-    // (JPEG and WebP).
-    if (image_metadata && (image_metadata->image_type == ImageType::kJPEG ||
-                           image_metadata->image_type == ImageType::kWEBP)) {
-      return advertise_accelerated_decoding_;
-    }
-    return false;
   }
 
   std::pair<TransferCacheEntryType, uint32_t> MakeEntryKey(uint32_t type,
@@ -175,7 +163,6 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
  private:
   const std::string extension_string_;
   raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
-  bool advertise_accelerated_decoding_ = false;
   size_t mapped_entry_size_ = 0;
   std::unique_ptr<uint8_t, base::AlignedFreeDeleter> mapped_entry_;
 };
@@ -4118,151 +4105,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(false) /* advertise_accelerated_decoding */,
         testing::Values(false) /* enable_clipped_image_scaling */,
         testing::Values(false) /* no_discardable_memory */));
-
-class GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest
-    : public GpuImageDecodeCacheTest {
- public:
-  PaintImage CreatePaintImageForDecodeAcceleration(
-      ImageType image_type = ImageType::kJPEG,
-      YUVSubsampling yuv_subsampling = YUVSubsampling::k420) {
-    // Create a valid image metadata for hardware acceleration.
-    ImageHeaderMetadata image_data{};
-    image_data.image_size = gfx::Size(123, 45);
-    image_data.image_type = image_type;
-    image_data.yuv_subsampling = yuv_subsampling;
-    image_data.all_data_received_prior_to_decode = true;
-    image_data.has_embedded_color_profile = false;
-    image_data.jpeg_is_progressive = false;
-    image_data.webp_is_non_extended_lossy = true;
-
-    SkImageInfo info = SkImageInfo::Make(
-        image_data.image_size.width(), image_data.image_size.height(),
-        color_type_, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
-    sk_sp<FakePaintImageGenerator> generator;
-    if (do_yuv_decode_) {
-      SkYUVAPixmapInfo yuva_pixmap_info =
-          GetYUVAPixmapInfo(image_data.image_size, yuv_format_, yuv_data_type_);
-      generator = sk_make_sp<FakePaintImageGenerator>(info, yuva_pixmap_info);
-    } else {
-      generator = sk_make_sp<FakePaintImageGenerator>(info);
-    }
-    generator->SetImageHeaderMetadata(image_data);
-    PaintImage image = PaintImageBuilder::WithDefault()
-                           .set_id(PaintImage::GetNextId())
-                           .set_paint_image_generator(generator)
-                           .TakePaintImage();
-    return image;
-  }
-};
-
-TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
-       RequestAcceleratedDecodeSuccessfully) {
-  auto cache = CreateCache();
-  const uint32_t client_id = cache->GenerateClientId();
-  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
-  const TargetColorParams target_color_params;
-  ASSERT_TRUE(target_color_params.color_space.IsValid());
-
-  // Try a JPEG image.
-  const PaintImage jpeg_image =
-      CreatePaintImageForDecodeAcceleration(ImageType::kJPEG);
-  DrawImage jpeg_draw_image(
-      jpeg_image, false,
-      SkIRect::MakeWH(jpeg_image.width(), jpeg_image.height()), quality,
-      CreateMatrix(SkSize::Make(0.75f, 0.75f)), PaintImage::kDefaultFrameIndex,
-      target_color_params);
-  ImageDecodeCache::TaskResult jpeg_task = cache->GetTaskForImageAndRef(
-      client_id, jpeg_draw_image, ImageDecodeCache::TracingInfo());
-  EXPECT_TRUE(jpeg_task.need_unref);
-  ASSERT_TRUE(jpeg_task.task);
-  EXPECT_EQ(advertise_accelerated_decoding_,
-            jpeg_task.can_do_hardware_accelerated_decode);
-  ASSERT_EQ(jpeg_task.task->dependencies().size(), 1u);
-  ASSERT_TRUE(jpeg_task.task->dependencies()[0]);
-  TestTileTaskRunner::ProcessTask(jpeg_task.task->dependencies()[0].get());
-  TestTileTaskRunner::ScheduleTask(jpeg_task.task.get());
-
-  // After scheduling the task, trying to get another task for the image should
-  // result in the original task.
-  ImageDecodeCache::TaskResult jpeg_task_again = cache->GetTaskForImageAndRef(
-      client_id, jpeg_draw_image, ImageDecodeCache::TracingInfo());
-  EXPECT_TRUE(jpeg_task_again.need_unref);
-  EXPECT_EQ(jpeg_task_again.task.get(), jpeg_task.task.get());
-  EXPECT_EQ(advertise_accelerated_decoding_,
-            jpeg_task_again.can_do_hardware_accelerated_decode);
-
-  TestTileTaskRunner::RunTask(jpeg_task.task.get());
-  TestTileTaskRunner::CompleteTask(jpeg_task.task.get());
-
-  // After running the tasks, trying to get another task for the image should
-  // result in no task.
-  jpeg_task = cache->GetTaskForImageAndRef(client_id, jpeg_draw_image,
-                                           ImageDecodeCache::TracingInfo());
-  EXPECT_TRUE(jpeg_task.need_unref);
-  EXPECT_FALSE(jpeg_task.task);
-  EXPECT_EQ(advertise_accelerated_decoding_,
-            jpeg_task.can_do_hardware_accelerated_decode);
-  cache->UnrefImage(jpeg_draw_image);
-  cache->UnrefImage(jpeg_draw_image);
-  cache->UnrefImage(jpeg_draw_image);
-
-  // Try a WebP image.
-  const PaintImage webp_image =
-      CreatePaintImageForDecodeAcceleration(ImageType::kWEBP);
-  DrawImage webp_draw_image(
-      webp_image, false,
-      SkIRect::MakeWH(webp_image.width(), webp_image.height()), quality,
-      CreateMatrix(SkSize::Make(0.75f, 0.75f)), PaintImage::kDefaultFrameIndex,
-      target_color_params);
-  ImageDecodeCache::TaskResult webp_task = cache->GetTaskForImageAndRef(
-      client_id, webp_draw_image, ImageDecodeCache::TracingInfo());
-  EXPECT_TRUE(webp_task.need_unref);
-  ASSERT_TRUE(webp_task.task);
-  EXPECT_EQ(advertise_accelerated_decoding_,
-            webp_task.can_do_hardware_accelerated_decode);
-  ASSERT_EQ(webp_task.task->dependencies().size(), 1u);
-  ASSERT_TRUE(webp_task.task->dependencies()[0]);
-  TestTileTaskRunner::ProcessTask(webp_task.task->dependencies()[0].get());
-  TestTileTaskRunner::ProcessTask(webp_task.task.get());
-
-  // The image should have been cached.
-  webp_task = cache->GetTaskForImageAndRef(client_id, webp_draw_image,
-                                           ImageDecodeCache::TracingInfo());
-  EXPECT_TRUE(webp_task.need_unref);
-  EXPECT_FALSE(webp_task.task);
-  EXPECT_EQ(advertise_accelerated_decoding_,
-            webp_task.can_do_hardware_accelerated_decode);
-  cache->UnrefImage(webp_draw_image);
-  cache->UnrefImage(webp_draw_image);
-
-  // Try a PNG image (which should not be hardware accelerated).
-  const PaintImage png_image =
-      CreatePaintImageForDecodeAcceleration(ImageType::kPNG);
-  DrawImage png_draw_image(
-      png_image, false,
-      SkIRect::MakeWH(jpeg_image.width(), jpeg_image.height()), quality,
-      CreateMatrix(SkSize::Make(0.75f, 0.75f)), PaintImage::kDefaultFrameIndex,
-      target_color_params);
-  ImageDecodeCache::TaskResult png_task = cache->GetTaskForImageAndRef(
-      client_id, png_draw_image, ImageDecodeCache::TracingInfo());
-  EXPECT_TRUE(png_task.need_unref);
-  ASSERT_TRUE(png_task.task);
-  EXPECT_FALSE(png_task.can_do_hardware_accelerated_decode);
-  ASSERT_EQ(png_task.task->dependencies().size(), 1u);
-  ASSERT_TRUE(png_task.task->dependencies()[0]);
-  TestTileTaskRunner::ProcessTask(png_task.task->dependencies()[0].get());
-  TestTileTaskRunner::ProcessTask(png_task.task.get());
-  cache->UnrefImage(png_draw_image);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    GpuImageDecodeCacheTestsOOPR,
-    GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
-    testing::Combine(testing::Values(kN32_SkColorType),
-                     testing::Bool() /* do_yuv_decode */,
-                     testing::Bool() /* advertise_accelerated_decoding */,
-                     testing::Values(false) /* enable_clipped_image_scaling */,
-                     testing::Bool() /* no_discardable_memory */));
 
 class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
  public:

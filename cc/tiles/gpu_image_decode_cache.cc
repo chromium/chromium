@@ -2349,33 +2349,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
                                 upload_scale_mip_level == 0 &&
                                 !cache_color_conversion_on_cpu;
 
-  // Figure out if we will do hardware accelerated decoding. The criteria is as
-  // follows:
-  //
-  // - The caller allows hardware decodes.
-  // - We are using the transfer cache (OOP-R).
-  // - The image does not require downscaling for uploading (see TODO below).
-  // - The image does not have a gainmap.
-  // - The image is supported according to the profiles advertised by the GPU
-  //   service.
-  //
-  // TODO(crbug.com/40623374): currently, we don't support scaling with hardware
-  // decode acceleration. Note that it's still okay for the image to be
-  // downscaled by Skia using the GPU.
-  const ImageHeaderMetadata* image_metadata =
-      draw_image.paint_image().GetImageHeaderMetadata();
   bool can_do_hardware_accelerated_decode = false;
-  if (allow_hardware_decode && upload_scale_mip_level == 0 && !has_gainmap &&
-      context_->ContextSupport()->CanDecodeWithHardwareAcceleration(
-          image_metadata)) {
-    DCHECK(image_metadata);
-    DCHECK_EQ(image_metadata->image_size.width(),
-              draw_image.paint_image().width());
-    DCHECK_EQ(image_metadata->image_size.height(),
-              draw_image.paint_image().height());
-
-    can_do_hardware_accelerated_decode = true;
-  }
 
   // Determine if we will do YUVA decoding for the image and the gainmap, and
   // update `image_info` to reflect that.

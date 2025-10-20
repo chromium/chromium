@@ -718,11 +718,6 @@ unsigned int RasterImplementation::GetTransferBufferFreeSize() const {
   return transfer_buffer_->GetFreeSize();
 }
 
-bool RasterImplementation::CanDecodeWithHardwareAcceleration(
-    const cc::ImageHeaderMetadata* image_metadata) const {
-  return false;
-}
-
 const std::string& RasterImplementation::GetLogPrefix() const {
   const std::string& prefix(debug_marker_manager_.GetMarker());
   return prefix.empty() ? this_in_hex_ : prefix;

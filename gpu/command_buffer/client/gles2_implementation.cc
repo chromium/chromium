@@ -6883,11 +6883,6 @@ unsigned int GLES2Implementation::GetTransferBufferFreeSize() const {
   NOTREACHED();
 }
 
-bool GLES2Implementation::CanDecodeWithHardwareAcceleration(
-    const cc::ImageHeaderMetadata* image_metadata) const {
-  NOTREACHED();
-}
-
 bool GLES2Implementation::ValidateSize(const char* func, GLsizeiptr size) {
   if (size < 0) {
     SetGLError(GL_INVALID_VALUE, func, "size < 0");

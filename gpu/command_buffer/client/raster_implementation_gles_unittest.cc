@@ -167,10 +167,6 @@ class ContextSupportStub : public ContextSupport {
       const std::vector<std::pair<uint32_t, uint32_t>>& entries) override {}
   void DeleteTransferCacheEntry(uint32_t type, uint32_t id) override {}
   unsigned int GetTransferBufferFreeSize() const override { return 0; }
-  bool CanDecodeWithHardwareAcceleration(
-      const cc::ImageHeaderMetadata* image_metadata) const override {
-    return false;
-  }
 
  private:
   base::HeapArray<uint8_t> mapped_transfer_cache_entry_;

@@ -18,10 +18,6 @@ namespace gfx {
 class GpuFence;
 }
 
-namespace cc {
-struct ImageHeaderMetadata;
-}
-
 namespace gpu {
 
 struct SyncToken;
@@ -85,11 +81,6 @@ class ContextSupport {
   virtual void DeleteTransferCacheEntry(uint32_t type, uint32_t id) = 0;
 
   virtual unsigned int GetTransferBufferFreeSize() const = 0;
-
-  // Determines if |image_metadata| corresponds to an image that can be decoded
-  // using hardware decode acceleration.
-  virtual bool CanDecodeWithHardwareAcceleration(
-      const cc::ImageHeaderMetadata* image_metadata) const = 0;
 
  protected:
   ContextSupport() = default;

@@ -181,10 +181,6 @@ void WebGPUImplementation::DeleteTransferCacheEntry(uint32_t type,
 unsigned int WebGPUImplementation::GetTransferBufferFreeSize() const {
   NOTREACHED();
 }
-bool WebGPUImplementation::CanDecodeWithHardwareAcceleration(
-    const cc::ImageHeaderMetadata* image_metadata) const {
-  NOTREACHED();
-}
 
 // InterfaceBase implementation.
 void WebGPUImplementation::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
