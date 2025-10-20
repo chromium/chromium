@@ -60,6 +60,7 @@ bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   // We'll be embedding an outside surface layer.
   layer_ = cc::SurfaceLayer::Create();
   layer_->SetIsDrawable(true);
+  layer_->SetSurfaceHitTestable(true);
 
   // Provide the layer to the container
   container_->SetCcLayer(layer_.get());
