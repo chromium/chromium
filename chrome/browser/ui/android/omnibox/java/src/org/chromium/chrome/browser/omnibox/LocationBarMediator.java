@@ -293,19 +293,27 @@ class LocationBarMediator
         mBookmarkButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
                         mContext,
+                        mIsTablet,
                         this::shouldShowBookmarkButton,
                         this::updateBookmarkButtonVisibility);
         mInstallButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
                         mContext,
+                        mIsTablet,
                         this::shouldShowInstallButton,
                         this::updateInstallButtonVisibility);
         mMicButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
-                        mContext, this::shouldShowMicButton, this::updateMicButtonVisibility);
+                        mContext,
+                        mIsTablet,
+                        this::shouldShowMicButton,
+                        this::updateMicButtonVisibility);
         mLensButtonToolbarWidthConsumer =
                 new ButtonToolbarWidthConsumer(
-                        mContext, this::shouldShowLensButton, this::updateLensButtonVisibility);
+                        mContext,
+                        mIsTablet,
+                        this::shouldShowLensButton,
+                        this::updateLensButtonVisibility);
     }
 
     /**
@@ -2048,13 +2056,16 @@ class LocationBarMediator
         private final int mButtonWidth;
         private final Supplier<Boolean> mShouldShowButton;
         private final Runnable mUpdateButtonVisibility;
+        private final boolean mIsTablet;
         private boolean mHasSpaceToShow;
 
         ButtonToolbarWidthConsumer(
                 Context context,
+                boolean isTablet,
                 Supplier<Boolean> shouldShowButton,
                 Runnable updateButtonVisibility) {
             mShouldShowButton = shouldShowButton;
+            mIsTablet = isTablet;
             mUpdateButtonVisibility = updateButtonVisibility;
             mButtonWidth =
                     context.getResources()
@@ -2062,7 +2073,7 @@ class LocationBarMediator
         }
 
         boolean hasSpaceToShow() {
-            if (!ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()) {
+            if (!mIsTablet || !ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()) {
                 return true;
             }
             return mHasSpaceToShow;
@@ -2077,7 +2088,7 @@ class LocationBarMediator
         public int updateVisibility(int availableWidth) {
             assert ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled();
 
-            if (mShouldShowButton.get() && availableWidth >= mButtonWidth) {
+            if (availableWidth >= mButtonWidth) {
                 mHasSpaceToShow = true;
                 mUpdateButtonVisibility.run();
                 return mButtonWidth;

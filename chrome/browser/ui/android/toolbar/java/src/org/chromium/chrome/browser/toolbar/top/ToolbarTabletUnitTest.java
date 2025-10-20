@@ -113,6 +113,7 @@ import java.util.Set;
 /** Unit tests for @{@link ToolbarTablet} */
 @LooperMode(LooperMode.Mode.PAUSED)
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public final class ToolbarTabletUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private LocationBarCoordinator mLocationBar;
@@ -154,7 +155,7 @@ public final class ToolbarTabletUnitTest {
     private final Answer<Object> mAddIncognitoObserverInIncognitoMode =
             (invocation) -> {
                 IncognitoStateProvider.IncognitoStateObserver observer = invocation.getArgument(0);
-                observer.onIncognitoStateChanged(/* isIncognito */ true);
+                observer.onIncognitoStateChanged(/* isIncognito= */ true);
                 return null;
             };
 
@@ -377,7 +378,8 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    public void onMeasureShortWidth_hidesToolbarButtons() {
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void onMeasureSmallWidth_hidesToolbarButtons_Legacy() {
         mToolbarTablet.measure(300, 300);
 
         assertEquals(
@@ -390,7 +392,8 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    public void onMeasureLargeWidth_showsToolbarButtons() {
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void onMeasureLargeWidth_showsToolbarButtons_Legacy() {
         mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.measure(700, 300);
 
@@ -448,7 +451,8 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    public void onMeasureSmallWidthWithAnimation_hidesToolbarButtons() {
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void onMeasureSmallWidthWithAnimation_hidesToolbarButtons_Legacy() {
         doReturn(true).when(mToolbarTablet).isShown();
 
         when(mLocationBar.createHideButtonAnimatorForTablet(mForwardButton))
@@ -471,7 +475,8 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    public void onMeasureLargeWidthWithAnimation_showsToolbarButtons() {
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void onMeasureLargeWidthWithAnimation_showsToolbarButtons_Legacy() {
         doReturn(true).when(mToolbarTablet).isShown();
         mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
@@ -653,7 +658,8 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    public void testIsReadyForTextureCapture_ButtonShowAnimationInProgress() {
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testIsReadyForTextureCapture_ButtonShowAnimationInProgress_Legacy() {
         mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
 
@@ -677,7 +683,8 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    public void testIsReadyForTextureCapture_ButtonHideAnimationInProgress() {
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testIsReadyForTextureCapture_ButtonHideAnimationInProgress_Legacy() {
         mToolbarTablet.setToolbarButtonsVisibleForTesting(true);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
 

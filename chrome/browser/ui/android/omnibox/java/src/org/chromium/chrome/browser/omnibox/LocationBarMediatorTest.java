@@ -135,6 +135,7 @@ import java.util.Map;
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
 })
+@EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class LocationBarMediatorTest {
 
     @Implements(UrlUtilities.class)
@@ -319,6 +320,14 @@ public class LocationBarMediatorTest {
                         mPageZoomIndicatorCoordinator);
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        mTabletMediator.getMicButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        mTabletMediator.getLensButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        mTabletMediator.getInstallButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        mTabletMediator.getBookmarkButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+
         ShadowUrlUtilities.sIsNtp = false;
         sGeoHeaderPrimeCount = 0;
         sGeoHeaderStopCount = 0;
