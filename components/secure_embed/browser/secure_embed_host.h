@@ -14,6 +14,7 @@
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace secure_embed {
@@ -37,6 +38,8 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
   void SetSecureEmbed(
       mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) override;
   void Attach(int64_t content_id) override;
+  void SetLocalSurfaceId(
+      const ::viz::LocalSurfaceId& local_surface_id) override;
 
   // content::CrossProcessFrameConnectorBase:
   void SetView(content::RenderWidgetHostViewChildFrame* view,
@@ -109,6 +112,11 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
 
   // Count of all alive instances for testing.
   static size_t instance_count_for_testing_;
+
+  raw_ptr<content::RenderWidgetHostViewChildFrame> view_ = nullptr;
+  raw_ptr<content::WebContents> attached_web_contents_ = nullptr;
+  mutable display::ScreenInfos screen_infos_;
+  viz::LocalSurfaceId local_surface_id_;
 
   mojo::AssociatedRemote<mojom::SecureEmbed> secure_embed_;
 };

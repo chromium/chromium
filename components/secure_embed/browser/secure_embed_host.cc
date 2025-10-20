@@ -8,8 +8,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "components/guest_contents/browser/guest_contents_handle.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/public/browser/cross_process_frame_connector_base.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/secure_embed_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
@@ -58,6 +61,7 @@ void SecureEmbedHost::Attach(int64_t content_id) {
   // correctly and that the browser can call back into the renderer.
   secure_embed_->OnAttached();
 
+  // TODO(secure-embed): These LOG's should probably be ReportBadMessage.
   if (!guest_handle) {
     LOG(ERROR) << "GuestContentsHandle not found for content_id: "
                << content_id;
@@ -70,9 +74,36 @@ void SecureEmbedHost::Attach(int64_t content_id) {
     return;
   }
 
+  if (!web_contents_to_attach->GetSecureEmbedDelegate()) {
+    LOG(ERROR) << "WebContents doesn't have a SecureEmbedDelegate";
+    return;
+  }
+
   // TODO(secure-embed): Use web_contents_to_attach to complete the attachment.
   LOG(INFO) << "Successfully retrieved WebContents for content_id: "
             << content_id;
+
+  attached_web_contents_ = web_contents_to_attach;
+
+  CHECK(static_cast<content::RenderWidgetHostViewBase*>(
+            web_contents_to_attach->GetRenderWidgetHostView())
+            ->IsRenderWidgetHostViewChildFrame());
+  SetView(static_cast<content::RenderWidgetHostViewChildFrame*>(
+              web_contents_to_attach->GetRenderWidgetHostView()),
+          /*allow_paint_holding=*/false);
+}
+
+void SecureEmbedHost::SetLocalSurfaceId(
+    const ::viz::LocalSurfaceId& local_surface_id) {
+  local_surface_id_ = local_surface_id;
+  LOG(INFO) << "SecureEmbedHost::SetLocalSurfaceId:"
+            << local_surface_id_.ToString();
+  content::RenderWidgetHostImpl* render_widget_host = view_->host();
+  render_widget_host->SendScreenRects();
+  render_widget_host->SetVisualPropertiesFromParentFrame(
+      1.0, 1.0, false, gfx::Size(1000, 1000), gfx::Rect(10, 10, 1000, 1000),
+      {});
+  render_widget_host->UpdateVisualProperties(true);
 }
 
 // static
@@ -89,19 +120,25 @@ void SecureEmbedHost::OnSecureEmbedDisconnected() {
 
 void SecureEmbedHost::SetView(content::RenderWidgetHostViewChildFrame* view,
                               bool allow_paint_holding) {
-  NOTIMPLEMENTED();
+  // TODO(secure-embed): This doesn't handle clearing the view.
+  view_ = view;
+  view_->SetFrameConnector(this);
+  secure_embed_->SetFrameSinkId(view_->GetFrameSinkId());
 }
 
 content::RenderWidgetHostViewBase*
 SecureEmbedHost::GetParentRenderWidgetHostView() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return static_cast<content::RenderWidgetHostViewBase*>(
+      attached_web_contents_->GetSecureEmbedDelegate()
+          ->GetEmbedderWebContents()
+          ->GetRenderWidgetHostView());
 }
 
 content::RenderWidgetHostViewBase*
 SecureEmbedHost::GetRootRenderWidgetHostView() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // TODO(secure-embed): Do we support multiple levels of embedding?
+  // Mixed kinds?
+  return GetParentRenderWidgetHostView();
 }
 
 void SecureEmbedHost::RenderProcessGone() {
@@ -156,19 +193,20 @@ void SecureEmbedHost::UnlockPointer() {
 
 bool SecureEmbedHost::HasSize() const {
   NOTIMPLEMENTED();
-  return false;
+  return true;
 }
 
 const display::ScreenInfos& SecureEmbedHost::GetScreenInfos() const {
-  NOTIMPLEMENTED();
-  static const base::NoDestructor<display::ScreenInfos> screen_infos;
-  return *screen_infos;
+  // TODO(secure-embed): Shouldn't need to recompute it, but I am not
+  // sure when is the right time to ocmpute it.
+  screen_infos_ = const_cast<SecureEmbedHost*>(this)
+                      ->GetRootRenderWidgetHostView()
+                      ->GetScreenInfos();
+  return screen_infos_;
 }
 
 const viz::LocalSurfaceId& SecureEmbedHost::GetLocalSurfaceId() const {
-  NOTIMPLEMENTED();
-  static const viz::LocalSurfaceId local_surface_id;
-  return local_surface_id;
+  return local_surface_id_;
 }
 
 const blink::mojom::ViewportIntersectionState&
@@ -186,19 +224,19 @@ uint32_t SecureEmbedHost::GetCaptureSequenceNumber() const {
 
 const gfx::Rect& SecureEmbedHost::GetRectInParentViewInDip() const {
   NOTIMPLEMENTED();
-  static const gfx::Rect rect;
+  static const gfx::Rect rect(50, 50, 1000, 1000);
   return rect;
 }
 
 const gfx::Size& SecureEmbedHost::GetLocalFrameSizeInDip() const {
   NOTIMPLEMENTED();
-  static const gfx::Size size;
+  static const gfx::Size size(1000, 1000);
   return size;
 }
 
 const gfx::Size& SecureEmbedHost::GetLocalFrameSizeInPixels() const {
   NOTIMPLEMENTED();
-  static const gfx::Size size;
+  static const gfx::Size size(1250, 1250);
   return size;
 }
 

@@ -7,7 +7,10 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "cc/layers/solid_color_layer.h"
+#include "cc/layers/surface_layer.h"
+#include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_flags.h"
+#include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -44,17 +47,21 @@ SecureEmbedWebPlugin* SecureEmbedWebPlugin::Create(
 SecureEmbedWebPlugin::SecureEmbedWebPlugin(
     mojo::AssociatedRemote<mojom::SecureEmbedHost> host,
     int contents_id)
-    : contents_id_(contents_id), host_(std::move(host)) {}
+    : contents_id_(contents_id),
+      host_(std::move(host)),
+      parent_local_surface_id_allocator_(
+          std::make_unique<viz::ParentLocalSurfaceIdAllocator>()) {}
 
 SecureEmbedWebPlugin::~SecureEmbedWebPlugin() = default;
 
 bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   container_ = container;
 
-  // Create a solid color layer for compositing
-  layer_ = cc::SolidColorLayer::Create();
-  layer_->SetBackgroundColor(SkColors::kRed);
+  // We'll be embedding an outside surface layer.
+  layer_ = cc::SurfaceLayer::Create();
   layer_->SetIsDrawable(true);
+
+  // Provide the layer to the container
   container_->SetCcLayer(layer_.get());
 
   if (host_) {
@@ -158,6 +165,18 @@ void SecureEmbedWebPlugin::OnAttached() {
   // TODO(secure-embed): Here for testing only. Remove when there's a real
   // SecureEmbed method to implement.
   LOG(INFO) << "SecureEmbedWebPlugin::OnAttached() called";
+}
+
+void SecureEmbedWebPlugin::SetFrameSinkId(
+    const ::viz::FrameSinkId& frame_sink_id) {
+  frame_sink_id_ = frame_sink_id;
+  parent_local_surface_id_allocator_->GenerateId();
+
+  auto local_surface_id =
+      parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
+  layer_->SetSurfaceId(viz::SurfaceId(frame_sink_id_, local_surface_id),
+                       cc::DeadlinePolicy::UseDefaultDeadline());
+  host_->SetLocalSurfaceId(local_surface_id);
 }
 
 }  // namespace secure_embed

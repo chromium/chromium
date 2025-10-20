@@ -4,12 +4,18 @@
 
 module secure_embed.mojom;
 
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+
 // Implemented in Renderer by SecureEmbedWebPlugin.
 interface SecureEmbed {
   // TODO(secure-embed): Temporary - remove when there's a real SecureEmbed
   // method to call. This is here to verify that the mojo connection is set up
   // correctly and that the browser can call back into the renderer.
   OnAttached();
+
+  // ### allow_paint_holding!
+  SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
 };
 
 // Implemented by Browser. Available on RenderFrameHost.
@@ -19,4 +25,8 @@ interface SecureEmbedHost {
   SetSecureEmbed(pending_associated_remote<SecureEmbed> secure_embed);
 
   Attach(int64 content_id);
+
+  // TODO(secure-embed): This should send a lot more than just
+  // surface_id; at least geometry but likely FrameVisualProperties.
+  SetLocalSurfaceId(viz.mojom.LocalSurfaceId local_surface_id);
 };
