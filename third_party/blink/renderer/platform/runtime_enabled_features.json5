@@ -4050,7 +4050,7 @@
     // This feature is limited to Linux only.
     {
       name: "ReduceUserAgentDataLinuxPlatformVersion",
-      status: {"Linux": "experimental"},
+      status: {"Linux": "stable"},
     },
     // If enabled, the minor version of the User-Agent string will be reduced.
     // This User-Agent Reduction feature has been enabled starting from M101,
