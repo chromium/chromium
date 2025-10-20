@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.6.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.5.1...chromium-bidi-v10.6.0) (2025-10-20)
+
+
+### Features
+
+* provide proper network `destination` on navigation ([#3859](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3859)) ([4fadce5](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4fadce503eb208267f5c47af298af84b6aa5e25e))
+
 ## [10.5.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.5.0...chromium-bidi-v10.5.1) (2025-10-17)
 
 
