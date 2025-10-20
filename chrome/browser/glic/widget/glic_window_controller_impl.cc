@@ -1074,6 +1074,10 @@ mojom::PanelState GlicWindowControllerImpl::GetGlobalPanelState() {
 }
 
 void GlicWindowControllerImpl::OnDragComplete() {
+  if (AlwaysDetached()) {
+    // Do not handle attachment.
+    return;
+  }
   BrowserWindowInterface* browser = FindBrowserForAttachment();
   // No browser within attachment range.
   if (!browser) {
