@@ -4787,7 +4787,12 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   // TODO(b/313492499): Update test driver to work with new intent picker UI.
   enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-  scoped_feature_list_.InitWithFeatures(enabled_features, {});
+
+  // TODO(b/452009643): Update integration test driver to work with new
+  // predictable app updating.
+  std::vector<base::test::FeatureRef> disabled_features;
+  disabled_features.push_back(features::kWebAppPredictableAppUpdating);
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 WebAppIntegrationTest::~WebAppIntegrationTest() = default;
