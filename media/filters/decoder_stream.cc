@@ -764,9 +764,9 @@ void DecoderStream<StreamType>::ReadFromDemuxerStream() {
       perfetto::Track::FromPointer(this));
   pending_demuxer_read_ = true;
   uint32_t buffer_read_count = 1;
-  // Do not batch with software video decoder. Experiments showed this uses an
-  // excessive amount of memory.
-  if (IsPlatformDecoder()) {
+  // Do not batch with software video decoder.
+  if (IsPlatformDecoder() &&
+      base::FeatureList::IsEnabled(kVideoDecodeBatching)) {
     buffer_read_count = GetMaxDecodeRequests() - pending_decode_requests_;
   }
   {

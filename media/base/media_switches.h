@@ -487,6 +487,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseTaskRunnerForMojoAudioDecoderService);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kFuchsiaMediacodecVideoEncoder);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoDecodeBatching);
+
 MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kClearPipCachedBoundsWhenPermissionPromptVisible);
 

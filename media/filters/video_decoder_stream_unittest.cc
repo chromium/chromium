@@ -622,7 +622,8 @@ TEST_P(VideoDecoderStreamTest, Read_AfterReset) {
 
 // Tests config changes with increasing sizes work correctly.
 TEST_P(VideoDecoderStreamTest, ConfigChangeIncreasingSize) {
-  if (GetParam().parallel_decoding != 1) {
+  if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
+      GetParam().parallel_decoding != 1) {
     // Fake demuxer allows reading over different configs when batch decoding is
     // enabled, so we need to skip this test.
     return;
@@ -664,7 +665,8 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeIncreasingSize) {
 
 // Tests config changes with decreasing sizes work correctly.
 TEST_P(VideoDecoderStreamTest, ConfigChangeDecreasingSize) {
-  if (GetParam().parallel_decoding != 1) {
+  if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
+      GetParam().parallel_decoding != 1) {
     // Fake demuxer allows reading over different configs when batch decoding is
     // enabled, so we need to skip this test.
     return;
@@ -687,7 +689,8 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeDecreasingSize) {
 // Tests that the decoder stream will remain on the same decoder when elided
 // EOS processing is enabled.
 TEST_P(VideoDecoderStreamTest, ConfigChangeElidedEOS) {
-  if (GetParam().parallel_decoding != 1) {
+  if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
+      GetParam().parallel_decoding != 1) {
     // Fake demuxer allows reading over different configs when batch decoding is
     // enabled, so we need to skip this test.
     return;
@@ -834,6 +837,8 @@ TEST_P(VideoDecoderStreamTest, Read_BlockedDemuxerAndDecoder) {
 }
 
 TEST_P(VideoDecoderStreamTest, BatchDecodingWithPlatformDecoder) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kVideoDecodeBatching);
   int parallel_decodings = GetParam().parallel_decoding;
 
   Initialize();
@@ -854,6 +859,9 @@ TEST_P(VideoDecoderStreamTest, BatchDecodingWithPlatformDecoder) {
 }
 
 TEST_P(VideoDecoderStreamTest, NoBatchDecodingWithNonPlatformDecoder) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kVideoDecodeBatching);
+
   Initialize();
   // Set the decoder as not platform decoder, so that it prevents single
   // demuxer read to return multiple DecoderBuffers.
