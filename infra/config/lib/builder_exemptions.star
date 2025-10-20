@@ -265,7 +265,6 @@ exempted_from_description_builders = {
         "mac-angle-chromium-intel",
         "mac-archive-rel",
         "mac-arm64-archive-rel",
-        "mac-arm64-dbg",
         "mac-arm64-on-arm64-rel",
         "mac-arm64-rel",
         "mac-code-coverage",
@@ -1034,7 +1033,6 @@ mega_cq_excluded_builders = [
     "android-arm64-archive-rel",
     "linux-chromeos-archive-rel",
     "linux-rel-test-selection",
-    "mac-arm64-dbg",
 ]
 
 mega_cq_excluded_gardener_rotations = [

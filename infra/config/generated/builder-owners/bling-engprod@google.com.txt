@@ -20,6 +20,7 @@ ci/mac15-tests-dbg
 ci/mac15-x64-rel-tests
 try/ios-vm
 try/mac-vm
+try/mac-x64-compile-dbg
 try/mac14-arm64-rel
 try/mac14-tests
 try/mac15-arm64-rel

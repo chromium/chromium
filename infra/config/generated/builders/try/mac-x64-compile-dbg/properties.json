@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/Mac Builder (dbg)/gn-args.json"
+        "infra/config/generated/builders/try/mac-x64-compile-dbg/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -39,14 +39,8 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "mac-x64-compile-dbg",
-          "group": "tryserver.chromium.mac"
-        }
-      ],
-      "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac Builder (dbg)/targets"
+      "is_compile_only": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-x64-compile-dbg/targets"
     }
   },
   "$build/siso": {
@@ -58,8 +52,8 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 150
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -68,12 +62,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.mac",
-  "gardener_rotations": [
-    "chromium"
-  ],
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.mac",
+  "recipe": "chromium_trybot"
 }

@@ -219,6 +219,8 @@ ci.builder(
 
 ci.builder(
     name = "mac-arm64-dbg",
+    branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "compiles chrome with debug builds on ARM MacOS",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -821,7 +823,7 @@ ci.thin_tester(
     name = "mac15-tests-dbg",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs Mac 15 tests with debug config.",
-    parent = "ci/Mac Builder (dbg)",
+    parent = "ci/mac-arm64-dbg",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -833,7 +835,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.DEBUG,
-            target_arch = builder_config.target_arch.INTEL,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -844,7 +846,7 @@ ci.thin_tester(
             "chromium_dbg_isolated_scripts",
         ],
         mixins = [
-            "mac_15_x64",
+            "mac_15_arm64",
         ],
         per_test_modifications = {
             "blink_web_tests": targets.mixin(

@@ -453,6 +453,32 @@ try_.builder(
     name = "mac_chromium_compile_dbg_ng",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
+        "ci/mac-arm64-dbg",
+    ],
+    builder_config_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-arm64-dbg",
+        ],
+    ),
+    cores = None,
+    cpu = cpu.ARM64,
+    experiments = {
+        # crbug.com/940930
+        "chromium.enable_cleandead": 100,
+    },
+    main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(),
+)
+
+try_.builder(
+    name = "mac-x64-compile-dbg",
+    branch_selector = branches.selector.MAC_BRANCHES,
+    mirrors = [
         "ci/Mac Builder (dbg)",
     ],
     builder_config_settings = builder_config.try_settings(
@@ -466,13 +492,13 @@ try_.builder(
     ),
     cores = None,
     cpu = cpu.ARM64,
+    contact_team_email = "bling-engprod@google.com",
     experiments = {
-        # crbug/940930
+        # crbug.com/940930
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -500,10 +526,10 @@ try_.builder(
 try_.builder(
     name = "mac_chromium_dbg_ng",
     mirrors = [
-        "ci/Mac Builder (dbg)",
+        "ci/mac-arm64-dbg",
         "ci/mac15-tests-dbg",
     ],
-    gn_args = "ci/Mac Builder (dbg)",
+    gn_args = "ci/mac-arm64-dbg",
     cpu = cpu.ARM64,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
