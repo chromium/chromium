@@ -2882,6 +2882,8 @@ ci.builder(
                 args = [
                     # https://crbug.com/1289764
                     "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*",
+                    # https://crbug.com/453515775
+                    "--timeout-scale=2.0",
                 ],
             ),
             "android_sync_integration_tests": targets.mixin(
