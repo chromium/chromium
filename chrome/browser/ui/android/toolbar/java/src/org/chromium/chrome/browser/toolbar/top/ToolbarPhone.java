@@ -52,6 +52,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
+import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable.HairlineBehavior;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
@@ -217,6 +218,8 @@ public class ToolbarPhone extends ToolbarLayout
     private final int mToolbarSidePadding;
     private final int mToolbarSidePaddingForNtp;
     private final int mBackgroundHeightIncreaseWhenFocus;
+    private final int mVerticalPaddingWhenFocused;
+    private int mTopPaddingForEdgeToEdgeNtp;
 
     private @Nullable ValueAnimator mBrandColorTransitionAnimation;
     private boolean mBrandColorTransitionActive;
@@ -306,7 +309,11 @@ public class ToolbarPhone extends ToolbarLayout
         mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
         mToolbarSidePaddingForNtp = OmniboxResourceProvider.getToolbarSidePaddingForNtp(context);
         mBackgroundHeightIncreaseWhenFocus =
-                OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(context);
+                OmniboxResourceProvider.getLocationBarBackgroundOnFocusHeightIncrease(context);
+        mVerticalPaddingWhenFocused =
+                getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.toolbar_vertical_padding_when_bottom_focused);
         mToolbarBackgroundColorForNtp =
                 ContextCompat.getColor(getContext(), R.color.home_surface_background_color);
         float LocationBarBackgroundColorAlphaForNtp =
@@ -400,16 +407,24 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBar = locationBarCoordinator;
         mLocationBar
                 .getNavigationFulfillmentTypeSupplier()
-                .addObserver(
-                        (type) -> {
-                            mLocationBarBackground.setDrawHairline(
-                                    type == NavigationFulfillmentType.AI_MODE);
-                        });
+                .addObserver((type) -> updateBackgroundHairline(urlHasFocus(), type));
         Resources res = getResources();
         mLocationBarBackgroundVerticalInset =
                 res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
         mLocationBarBackground = createModernLocationBarBackground(getContext());
         mActiveLocationBarBackground = mLocationBarBackground;
+    }
+
+    private void updateBackgroundHairline(boolean urlHasFocus, @NavigationFulfillmentType int type) {
+        if (!urlHasFocus) {
+            mLocationBarBackground.setHairlineBehavior(HairlineBehavior.NONE);
+            return;
+        }
+
+        mLocationBarBackground.setHairlineBehavior(
+                type == NavigationFulfillmentType.AI_MODE
+                        ? HairlineBehavior.RAINBOW
+                        : HairlineBehavior.MONOTONE);
     }
 
     @Override
@@ -430,13 +445,14 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The drawable for the modern location bar background.
      */
     public static LocationBarBackgroundDrawable createModernLocationBarBackground(Context context) {
+        Resources resources = context.getResources();
         var drawable =
                 new LocationBarBackgroundDrawable(
                         context,
-                        /* cornerRadiusPx= */ context.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.modern_toolbar_background_corner_radius),
-                        /* strokePx= */ 5);
+                        /* cornerRadiusPx= */ resources.getDimensionPixelSize(
+                                R.dimen.modern_toolbar_background_corner_radius),
+                        /* strokePx= */ resources.getDimensionPixelSize(R.dimen.chip_border_width),
+                        ContextCompat.getColor(context, R.color.color_on_surface_with_alpha_20));
         drawable.setBackgroundColor(
                 ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color));
         return drawable;
@@ -1996,7 +2012,8 @@ public class ToolbarPhone extends ToolbarLayout
         // - investigate what else needs to be done to make the WRAP_CONTENT work well as the
         //   default / static setting (likely leading to elimination of `toolbar_height_no_shadow`
         //   dimension).
-        if (OmniboxFeatures.allowMultilineEditField()) {
+        if (OmniboxFeatures.allowMultilineEditField()
+                || ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
             var params = getLayoutParams();
             params.height =
                     hasFocus
@@ -2004,6 +2021,16 @@ public class ToolbarPhone extends ToolbarLayout
                             : getResources()
                                     .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
             setLayoutParams(params);
+        }
+
+        if (ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
+            int verticalPadding = hasFocus ? mVerticalPaddingWhenFocused : 0;
+            setPaddingRelative(
+                    getPaddingStart(),
+                    verticalPadding + mTopPaddingForEdgeToEdgeNtp,
+                    getPaddingEnd(),
+                    verticalPadding);
+            updateBackgroundHairline(hasFocus, NavigationFulfillmentType.DEFAULT);
         }
 
         updateBackground(hasFocus);
@@ -2308,6 +2335,7 @@ public class ToolbarPhone extends ToolbarLayout
         // bar height as the top padding to the toolbar. This ensures the toolbar stays in its
         // original screen position, and the entire top area (status bar and toolbar) is rendered
         // with the toolbar's color.
+        mTopPaddingForEdgeToEdgeNtp = newTopPadding;
         ViewGroup.MarginLayoutParams marginLayoutParams =
                 (ViewGroup.MarginLayoutParams) getLayoutParams();
         int height =
@@ -2315,7 +2343,11 @@ public class ToolbarPhone extends ToolbarLayout
                         + newTopPadding;
         marginLayoutParams.height = height;
 
-        setPaddingRelative(getPaddingStart(), newTopPadding, getPaddingEnd(), getPaddingBottom());
+        setPaddingRelative(
+                getPaddingStart(),
+                mTopPaddingForEdgeToEdgeNtp,
+                getPaddingEnd(),
+                getPaddingBottom());
     }
 
     private boolean hideShadowForIncognitoNtp() {

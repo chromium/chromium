@@ -19,11 +19,14 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A drawable that combines a {@link GradientDrawable} background with an optional rainbow hairline
@@ -31,6 +34,18 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class LocationBarBackgroundDrawable extends Drawable {
+    @IntDef({
+        LocationBarBackgroundDrawable.HairlineBehavior.NONE,
+        LocationBarBackgroundDrawable.HairlineBehavior.MONOTONE,
+        LocationBarBackgroundDrawable.HairlineBehavior.RAINBOW,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface HairlineBehavior {
+        int NONE = 0;
+        int MONOTONE = 1;
+        int RAINBOW = 2;
+    }
+
     private final GradientDrawable mBackgroundGradient;
     private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path mPath = new Path();
@@ -38,11 +53,12 @@ public class LocationBarBackgroundDrawable extends Drawable {
     private final Rect mEffectiveBounds = new Rect();
     private final int[] mColors;
     private final float @Nullable [] mPositions;
+    private final @ColorInt int mMonotoneHairlineColor;
 
     private final float mStrokePx;
     private float mCornerRadiusPx;
-    private @Nullable Shader mShader;
-    private boolean mDrawHairline;
+    private @Nullable Shader mRainbowShader;
+    private @HairlineBehavior int mHairlineBehavior = HairlineBehavior.NONE;
 
     /**
      * Creates a new instance of {@link LocationBarBackgroundDrawable}.
@@ -50,8 +66,13 @@ public class LocationBarBackgroundDrawable extends Drawable {
      * @param context The context to use.
      * @param cornerRadiusPx The corner radius in pixels.
      * @param strokePx The stroke width in pixels.
+     * @param monotoneHairlineColor The color of the border when using HairlineBehavior.MONOTONE
      */
-    public LocationBarBackgroundDrawable(Context context, float cornerRadiusPx, float strokePx) {
+    public LocationBarBackgroundDrawable(
+            Context context,
+            float cornerRadiusPx,
+            float strokePx,
+            @ColorInt int monotoneHairlineColor) {
         this(
                 (GradientDrawable)
                         assumeNonNull(
@@ -66,7 +87,8 @@ public class LocationBarBackgroundDrawable extends Drawable {
                     0xFFFFD314, // yellow
                     0xFFFF4641, // red
                 },
-                new float[] {0.0f, 0.2f, 0.5f, 0.7f, 0.9f, 1.0f});
+                new float[] {0.0f, 0.2f, 0.5f, 0.7f, 0.9f, 1.0f},
+                monotoneHairlineColor);
     }
 
     /**
@@ -77,13 +99,15 @@ public class LocationBarBackgroundDrawable extends Drawable {
      * @param strokePx The stroke width in pixels.
      * @param colors The colors to use for the rainbow hairline.
      * @param positions Offsets for each of the colors of the rainbow hairline.
+     * @param monotoneHairlineColor The color of the border when using HairlineBehavior.MONOTONE
      */
     public LocationBarBackgroundDrawable(
             GradientDrawable backgroundGradient,
             float cornerRadiusPx,
             float strokePx,
             int[] colors,
-            float @Nullable [] positions) {
+            float @Nullable [] positions,
+            @ColorInt int monotoneHairlineColor) {
         mBackgroundGradient = backgroundGradient;
         mCornerRadiusPx = cornerRadiusPx;
         mStrokePx = strokePx;
@@ -91,6 +115,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
         mPositions = positions;
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(mStrokePx);
+        mMonotoneHairlineColor = monotoneHairlineColor;
 
         mBackgroundGradient.mutate();
     }
@@ -129,20 +154,26 @@ public class LocationBarBackgroundDrawable extends Drawable {
                 Path.Direction.CW);
 
         // Rebuild shader centered on this view.
-        mShader =
+        mRainbowShader =
                 new SweepGradient(
                         mEffectiveBounds.centerX(),
                         mEffectiveBounds.centerY(),
                         mColors,
                         mPositions);
-        mPaint.setShader(mShader);
+        mPaint.setShader(mRainbowShader);
     }
 
     @Override
     public void draw(Canvas canvas) {
         mBackgroundGradient.draw(canvas);
-        if (mDrawHairline) {
-            canvas.drawPath(mPath, mPaint);
+        switch (mHairlineBehavior) {
+            case HairlineBehavior.RAINBOW:
+                canvas.drawPath(mPath, mPaint);
+                break;
+            case HairlineBehavior.MONOTONE:
+            case HairlineBehavior.NONE:
+            default:
+                break;
         }
     }
 
@@ -194,11 +225,18 @@ public class LocationBarBackgroundDrawable extends Drawable {
     /**
      * Sets whether the rainbow hairline should be drawn.
      *
-     * @param shouldDrawHairline True to draw the hairline, false otherwise.
+     * @param hairlineBehavior What type of hairline to draw.
      */
-    public void setDrawHairline(boolean shouldDrawHairline) {
-        if (mDrawHairline == shouldDrawHairline) return;
-        mDrawHairline = shouldDrawHairline;
+    public void setHairlineBehavior(@HairlineBehavior int hairlineBehavior) {
+        if (mHairlineBehavior == hairlineBehavior) return;
+        mHairlineBehavior = hairlineBehavior;
+        // TODO(bug:452789890) Clean up the divergent border drawing logic.
+        if (hairlineBehavior == HairlineBehavior.MONOTONE) {
+            mBackgroundGradient.setStroke((int) mStrokePx, mMonotoneHairlineColor);
+        } else {
+            mBackgroundGradient.setStroke(0, 0);
+        }
+
         invalidateSelf();
     }
 
@@ -214,27 +252,23 @@ public class LocationBarBackgroundDrawable extends Drawable {
         invalidateSelf();
     }
 
-    @VisibleForTesting
     Rect getEffectiveBoundsForTesting() {
         return mEffectiveBounds;
     }
 
-    @VisibleForTesting
     float getCornerRadiusForTesting() {
         return mCornerRadiusPx;
     }
 
-    @VisibleForTesting
-    boolean getDrawHairlineForTesting() {
-        return mDrawHairline;
+    @HairlineBehavior
+    int getHairlineBehaviorForTesting() {
+        return mHairlineBehavior;
     }
 
-    @VisibleForTesting
     Path getPathForTesting() {
         return mPath;
     }
 
-    @VisibleForTesting
     Paint getPaintForTesting() {
         return mPaint;
     }

@@ -73,7 +73,9 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         // Replicate LocationBarBackground bounds from ToolbarPhone.
         int verticalInsets =
                 getResources().getDimensionPixelSize(R.dimen.location_bar_vertical_margin)
-                        - OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(getContext()) / 2;
+                        - OmniboxResourceProvider.getLocationBarBackgroundOnFocusHeightIncrease(
+                                        getContext())
+                                / 2;
         backgroundDrawable.setInsets(0, verticalInsets, 0, verticalInsets);
 
         setBackground(backgroundDrawable);
