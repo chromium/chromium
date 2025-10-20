@@ -752,6 +752,23 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   EXPECT_TRUE(WaitForCredentialCount(3u));
 }
 
+TEST_F(CredentialProviderServiceTest,
+       HiddenPasskeyAddedToCredentialStoreWithSignalAPI) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kCredentialProviderSignalAPI);
+
+  CreateCredentialProviderService(/*with_account_store=*/true);
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
+  sync_pb::WebauthnCredentialSpecifics hidden_passkey = CreatePasskey(
+      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+  hidden_passkey.set_hidden(true);
+  test_passkey_model_->AddNewPasskeyForTesting(hidden_passkey);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(WaitForCredentialCount(1u));
+}
+
 TEST_F(CredentialProviderServiceTest, DeletePasskey) {
   CreateCredentialProviderService(/*with_account_store=*/true);
 

@@ -106,6 +106,11 @@ void SyncASIdentityStore(NSArray<id<Credential>>* credentials) {
         [NSMutableArray arrayWithCapacity:credentials.count];
     for (id<Credential> credential in credentials) {
       if (credential.isPasskey) {
+        // Hidden passkeys shouldn't be surfaced in the sign-in suggestions.
+        if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
+            credential.hidden) {
+          continue;
+        }
         [storeIdentities addObject:[[ASPasskeyCredentialIdentity alloc]
                                        cr_initWithCredential:credential]];
       } else {
@@ -472,8 +477,12 @@ void CredentialProviderService::AddCredentials(
   const bool fallback_to_google_server = CanSendHistoryData(sync_service_);
   NSString* gaia = PrimaryAccountId();
 
-  for (const auto& passkey : passkeys) {
-    if (passkey.hidden()) {
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
+    // With the feature enabled, hidden passkeys are only filtered out before
+    // being added to ASCredentialIdentityStore, they should still be added to
+    // `store`.
+    if (!base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
+        passkey.hidden()) {
       continue;
     }
 

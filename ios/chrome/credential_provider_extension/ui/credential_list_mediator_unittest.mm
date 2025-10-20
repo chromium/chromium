@@ -26,7 +26,7 @@ NSData* StringToData(std::string str) {
   return [NSData dataWithBytes:str.data() length:str.length()];
 }
 
-ArchivableCredential* TestPasskeyCredential() {
+ArchivableCredential* TestPasskeyCredential(BOOL hidden = NO) {
   return [[ArchivableCredential alloc]
        initWithFavicon:@"favicon1"
                   gaia:nil
@@ -41,7 +41,7 @@ ArchivableCredential* TestPasskeyCredential() {
              encrypted:StringToData("encrypted1")
           creationTime:kJan1st2024
           lastUsedTime:kJan1st2024
-                hidden:NO
+                hidden:hidden
             hiddenTime:kJan1st2024
           editedByUser:NO];
 }
@@ -285,6 +285,38 @@ TEST_F(CredentialListMediatorTest, FetchAllCredentialsPasskeysOnly) {
   NSMutableArray<id<Credential>>* credentials = [NSMutableArray array];
   [credentials addObject:password_credential];
   [credentials addObject:passkey_credential];
+  id<CredentialStore> credential_store =
+      [[MockCredentialStore alloc] initWithCredentials:credentials];
+
+  id<CredentialListUIHandler> ui_handler =
+      UIHandlerWithCredential(passkey_credential);
+
+  CredentialListMediator* credential_list_mediator =
+      [[CredentialListMediator alloc] initWithConsumer:nil
+                                             UIHandler:ui_handler
+                                       credentialStore:credential_store
+                                    serviceIdentifiers:nil
+                             credentialResponseHandler:nil];
+
+  NSArray<id<Credential>>* all_credentials =
+      [credential_list_mediator fetchAllCredentials];
+  ASSERT_EQ(all_credentials.count, 1u);
+  EXPECT_NSEQ(all_credentials[0], passkey_credential);
+}
+
+// Tests that fetching all credentials filters out hidden passkeys.
+TEST_F(CredentialListMediatorTest, FetchAllCredentialsWithHiddenPasskeys) {
+  NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
+  [defaults setBool:YES
+             forKey:AppGroupUserDefaulsCredentialProviderSignalAPIEnabled()];
+  [defaults synchronize];
+
+  ArchivableCredential* passkey_credential = TestPasskeyCredential();
+  ArchivableCredential* hidden_passkey = TestPasskeyCredential(/*hidden=*/YES);
+
+  NSMutableArray<id<Credential>>* credentials = [NSMutableArray array];
+  [credentials addObject:passkey_credential];
+  [credentials addObject:hidden_passkey];
   id<CredentialStore> credential_store =
       [[MockCredentialStore alloc] initWithCredentials:credentials];
 
