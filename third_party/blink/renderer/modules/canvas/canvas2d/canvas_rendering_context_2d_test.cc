@@ -596,7 +596,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
     ON_CALL(*this, Snapshot)
         .WillByDefault(
             [this](FlushReason reason, ImageOrientation orientation) {
-              return SnapshotInternal(orientation, reason);
+              return UnacceleratedSnapshot(orientation, reason);
             });
   }
   ~FakeCanvasResourceProvider() override = default;

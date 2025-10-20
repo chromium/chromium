@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -330,8 +331,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return context_provider_wrapper_;
   }
 
-  scoped_refptr<StaticBitmapImage> SnapshotInternal(ImageOrientation,
-                                                    FlushReason);
+  scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
+      ImageOrientation,
+      FlushReason);
 
   CanvasResourceProvider(const ResourceProviderType&,
                          gfx::Size size,

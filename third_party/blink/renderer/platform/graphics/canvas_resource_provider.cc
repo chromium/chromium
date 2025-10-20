@@ -153,7 +153,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderBitmap::Snapshot(
     FlushReason reason,
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "CanvasResourceProviderBitmap::Snapshot");
-  return SnapshotInternal(orientation, reason);
+  return UnacceleratedSnapshot(orientation, reason);
 }
 
 sk_sp<SkSurface> CanvasResourceProviderBitmap::CreateSkSurface() const {
@@ -830,7 +830,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
   // rendering results visible on the GpuMemoryBuffer while we return cpu
   // memory, rendererd to by skia, here.
   if (!is_accelerated_) {
-    return SnapshotInternal(orientation, reason);
+    return UnacceleratedSnapshot(orientation, reason);
   }
 
   if (!cached_snapshot_) {
@@ -1701,9 +1701,9 @@ void CanvasResourceProvider::ReleaseLockedImages() {
     canvas_image_provider_->ReleaseLockedImages();
 }
 
-scoped_refptr<StaticBitmapImage> CanvasResourceProvider::SnapshotInternal(
-    ImageOrientation orientation,
-    FlushReason reason) {
+scoped_refptr<UnacceleratedStaticBitmapImage>
+CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation,
+                                              FlushReason reason) {
   if (!IsValid())
     return nullptr;
 
@@ -1714,7 +1714,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProvider::SnapshotInternal(
       GetRecorderHighEntropyCanvasOpTypes();
   auto paint_image = MakeImageSnapshot(reason);
   DCHECK(!paint_image.IsTextureBacked());
-  scoped_refptr<StaticBitmapImage> snapshot =
+  scoped_refptr<UnacceleratedStaticBitmapImage> snapshot =
       UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
                                              orientation);
   if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
