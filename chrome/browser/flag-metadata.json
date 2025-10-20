@@ -953,6 +953,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "autofill-enable-keyboard-accessory-chip-width-adjustment",
+    "owners": [ "tchudakov@google.com", "jkeitel@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "autofill-enable-loyalty-cards-filling",
     "owners": [ "vizcay@google.com", "tchudakov@google.com"],
     "expiry_milestone": 145
