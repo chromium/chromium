@@ -124,9 +124,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
     feature_overrides.DisableFeature(features::kEyeDropper);
   }
 #elif BUILDFLAG(IS_ANDROID)  // BUILDFLAG(IS_LINUX)
-  // Update child process binding state before unbinding.
-  // TODO(crbug.com/427087091): Remove when webview rollout is complete.
-  feature_overrides.EnableFeature(base::features::kUpdateStateBeforeUnbinding);
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
   // Nota bene: Anything here is expected to be short-lived, unless deemed too
   // risky to launch to non-desktop platforms. New features being added here

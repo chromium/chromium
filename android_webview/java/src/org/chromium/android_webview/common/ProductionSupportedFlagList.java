@@ -1075,9 +1075,6 @@ public final class ProductionSupportedFlagList {
                 "Enable stricter management of the Android process LRU state to ensure that"
                         + " high-rank processes are always more recent than low-rank processes."),
         Flag.baseFeature(
-                BaseFeatures.UPDATE_STATE_BEFORE_UNBINDING,
-                "Update child process binding state before unbinding."),
-        Flag.baseFeature(
                 BaseFeatures.USE_SHARED_REBIND_SERVICE_CONNECTION,
                 "Use a shared service connection to apply service group importance changes."),
         Flag.baseFeature(

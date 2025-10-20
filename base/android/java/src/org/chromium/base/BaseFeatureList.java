@@ -29,9 +29,7 @@ public class BaseFeatureList {
 
     public static final MutableFlagWithSafeDefault sUpdateStateBeforeUnbinding =
             new MutableFlagWithSafeDefault(
-                    BaseFeatureMap.getInstance(),
-                    BaseFeatures.UPDATE_STATE_BEFORE_UNBINDING,
-                    false);
+                    BaseFeatureMap.getInstance(), BaseFeatures.UPDATE_STATE_BEFORE_UNBINDING, true);
 
     public static final MutableFlagWithSafeDefault sUseIsUnboundCheck =
             new MutableFlagWithSafeDefault(
