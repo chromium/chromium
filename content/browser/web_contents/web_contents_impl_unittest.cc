@@ -2394,13 +2394,6 @@ class WebContentsImplTestWithSiteIsolation : public WebContentsImplTest {
 // The subframe navigations cause the loading_frames_in_progress_ to drop down
 // to 0, while the loading_progresses_ map is not reset.
 TEST_F(WebContentsImplTestWithSiteIsolation, StartStopEventsBalance) {
-  // For now, disable AvoidUnnecessaryBeforeUnloadCheckSync until its
-  // expectations are updated.
-  // TODO(crbug.com/396998476): Update expectations and remove this.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine(
-      {}, {"AvoidUnnecessaryBeforeUnloadCheckSync"});
-
   // The bug manifests itself in regular mode as well, but browser-initiated
   // navigation of subframes is only possible in --site-per-process mode within
   // unit tests.
