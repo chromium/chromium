@@ -1057,8 +1057,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
                client_id);
 
   if (SkipImage(draw_image)) {
-    return TaskResult(false /* need_unref */, false /* is_at_raster_decode */,
-                      false /* can_do_hardware_accelerated_decode */);
+    return TaskResult(false /* need_unref */, false /* is_at_raster_decode */);
   }
 
   base::AutoLock locker(lock_);
@@ -1078,8 +1077,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
     image_data = new_data.get();
   } else if (image_data->decode.decode_failure) {
     // We have already tried and failed to decode this image, so just return.
-    return TaskResult(false /* need_unref */, false /* is_at_raster_decode */,
-                      false /* can_do_hardware_accelerated_decode */);
+    return TaskResult(false /* need_unref */, false /* is_at_raster_decode */);
   } else if (task_type == TaskType::kInRaster &&
              !image_data->upload.task_map.empty() &&
              !image_data->HasUploadedData()) {
@@ -1109,7 +1107,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
       image_data->upload.task_map[client_id] = task;
     }
     DCHECK(task);
-    return TaskResult(task, false /* can_do_hardware_accelerated_decode */);
+    return TaskResult(task);
   } else if (task_type == TaskType::kOutOfRaster &&
              !image_data->decode.stand_alone_task_map.empty() &&
              !image_data->HasUploadedData()) {
@@ -1141,17 +1139,15 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
 
     // This will be null if the image was already decoded.
     if (task)
-      return TaskResult(task, /*can_do_hardware_accelerated_decode=*/false);
-    return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
-                      /*can_do_hardware_accelerated_decode=*/false);
+      return TaskResult(task);
+    return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false);
   }
 
   // Ensure that the image we're about to decode/upload will fit in memory, if
   // not already budgeted.
   if (!image_data->is_budgeted && !EnsureCapacity(image_data->GetTotalSize())) {
     // Image will not fit, do an at-raster decode.
-    return TaskResult(false /* need_unref */, true /* is_at_raster_decode */,
-                      false /* can_do_hardware_accelerated_decode */);
+    return TaskResult(false /* need_unref */, true /* is_at_raster_decode */);
   }
 
   // If we had to create new image data, add it to our map now that we know it
@@ -1168,8 +1164,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
   DCHECK(image_data->is_budgeted);
   if (image_data->HasUploadedData() &&
       TryLockImage(HaveContextLock::kNo, draw_image, image_data)) {
-    return TaskResult(true /* need_unref */, false /* is_at_raster_decode */,
-                      false /* can_do_hardware_accelerated_decode */);
+    return TaskResult(true /* need_unref */, false /* is_at_raster_decode */);
   }
 
   scoped_refptr<TileTask> task;
@@ -1189,11 +1184,10 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
   }
 
   if (task) {
-    return TaskResult(task, false /* can_do_hardware_accelerated_decode */);
+    return TaskResult(task);
   }
 
-  return TaskResult(true /* needs_unref */, false /* is_at_raster_decode */,
-                    false /* can_do_hardware_accelerated_decode */);
+  return TaskResult(true /* needs_unref */, false /* is_at_raster_decode */);
 }
 
 void GpuImageDecodeCache::UnrefImage(const DrawImage& draw_image) {

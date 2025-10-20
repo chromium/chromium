@@ -14,21 +14,12 @@ namespace cc {
 
 const ImageDecodeCache::ClientId ImageDecodeCache::kDefaultClientId = 1;
 
-ImageDecodeCache::TaskResult::TaskResult(
-    bool need_unref,
-    bool is_at_raster_decode,
-    bool can_do_hardware_accelerated_decode)
-    : need_unref(need_unref),
-      is_at_raster_decode(is_at_raster_decode),
-      can_do_hardware_accelerated_decode(can_do_hardware_accelerated_decode) {}
+ImageDecodeCache::TaskResult::TaskResult(bool need_unref,
+                                         bool is_at_raster_decode)
+    : need_unref(need_unref), is_at_raster_decode(is_at_raster_decode) {}
 
-ImageDecodeCache::TaskResult::TaskResult(
-    scoped_refptr<TileTask> task,
-    bool can_do_hardware_accelerated_decode)
-    : task(std::move(task)),
-      need_unref(true),
-      is_at_raster_decode(false),
-      can_do_hardware_accelerated_decode(can_do_hardware_accelerated_decode) {
+ImageDecodeCache::TaskResult::TaskResult(scoped_refptr<TileTask> task)
+    : task(std::move(task)), need_unref(true), is_at_raster_decode(false) {
   DCHECK(this->task);
 }
 

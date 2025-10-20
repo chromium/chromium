@@ -346,8 +346,7 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
   // Get the tasks for this decode.
   ImageDecodeCache::TaskResult result(
       /*need_unref=*/false,
-      /*is_at_raster_decode=*/false,
-      /*can_do_hardware_accelerated_decode=*/false);
+      /*is_at_raster_decode=*/false);
   if (is_image_lazy) {
     if (!cache_) {
       orphaned_decode_requests_.emplace_back(

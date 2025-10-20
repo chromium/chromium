@@ -44,16 +44,13 @@ class TestableCache : public StubDecodeCache {
     if (image.paint_image() &&
         image.paint_image().width() * image.paint_image().height() >=
             1000 * 1000) {
-      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true,
-                        /*can_do_hardware_accelerated_decode=*/false);
+      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true);
     }
 
     ++number_of_refs_;
     if (task_to_use_)
-      return TaskResult(task_to_use_,
-                        /*can_do_hardware_accelerated_decode=*/false);
-    return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
-                      /*can_do_hardware_accelerated_decode=*/false);
+      return TaskResult(task_to_use_);
+    return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false);
   }
   TaskResult GetOutOfRasterDecodeTaskForImageAndRef(uint32_t client_id,
                                                     const DrawImage& image,
