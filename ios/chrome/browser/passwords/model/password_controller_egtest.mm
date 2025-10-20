@@ -701,6 +701,11 @@ void LoginOnUff() {
 
 // Tests that the typed credentials are correctly saved in the sign-in UFF flow.
 - (void)testSaveTypedCredentialInUff {
+  // TODO(crbug.com/453627553): Re-enable the test.
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  }
+
   NSString* usernameValue = @"test-username";
   NSString* passwordValue = @"test-password";
 
@@ -782,6 +787,11 @@ void LoginOnUff() {
 // Tests that the typed credentials are correctly updated in the sign-in UFF
 // flow when there is already a credential stored for the corresponding email.
 - (void)testUpdateTypedCredentialInUff {
+  // TODO(crbug.com/453627553): Re-enable the test.
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  }
+
   NSString* usernameValue = @"test-username";
   NSString* passwordValue = @"test-password";
   NSString* passwordValueToBeReplaced = @"old-password";
