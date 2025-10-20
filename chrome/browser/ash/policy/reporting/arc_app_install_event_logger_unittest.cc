@@ -143,28 +143,6 @@ class MockAppInstallEventLoggerDelegate
   MOCK_CONST_METHOD1(GetAndroidId_, void(AndroidIdCallback*));
 };
 
-class MockArcAppInstallPolicyDataHelper : public ArcAppInstallPolicyDataHelper {
- public:
-  MockArcAppInstallPolicyDataHelper() = default;
-
-  MockArcAppInstallPolicyDataHelper(const MockArcAppInstallPolicyDataHelper&) =
-      delete;
-  MockArcAppInstallPolicyDataHelper& operator=(
-      const MockArcAppInstallPolicyDataHelper&) = delete;
-
-  MOCK_METHOD2(AddPolicyData,
-               void(const std::set<std::string>& current_pending,
-                    std::int64_t num_apps_previously_installed));
-
-  MOCK_METHOD(void, CheckForPolicyDataTimeout, ());
-
-  MOCK_METHOD2(UpdatePolicySuccessRate,
-               void(const std::string& package, bool success));
-
-  MOCK_METHOD2(UpdatePolicySuccessRateForPackages,
-               void(const std::set<std::string>& packages, bool success));
-};
-
 void SetPolicy(PolicyMap* map, const char* name, base::Value value) {
   map->Set(name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
            std::move(value), nullptr);
@@ -280,8 +258,6 @@ class AppInstallEventLoggerTest : public testing::Test {
   TestingProfile profile_;
 
   MockAppInstallEventLoggerDelegate delegate_;
-
-  MockArcAppInstallPolicyDataHelper policy_data_helper_;
 
   em::AppInstallReportLogEvent event_;
 
@@ -524,15 +500,12 @@ TEST_F(AppInstallEventLoggerTest, PolicySuccessRate_AddPolicyData) {
 
   logger_->OnPolicyUpdated(PolicyNamespace(), /* previous */ PolicyMap(),
                            policy);
-  ON_CALL(policy_data_helper_, UpdatePolicySuccessRateForPackages);
-  ON_CALL(policy_data_helper_, AddPolicyData);
 }
 
 TEST_F(AppInstallEventLoggerTest, PolicySuccessRate_UpdatePolicySuccessRate) {
   CreateLogger();
   logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
   logger_->UpdatePolicySuccessRate(kPackageName, true);
-  ON_CALL(policy_data_helper_, UpdatePolicySuccessRate);
 }
 
 }  // namespace policy
