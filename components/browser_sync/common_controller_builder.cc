@@ -109,7 +109,7 @@ AutocompleteDelegateFromDataService(autofill::AutofillWebDataService* service) {
 
 #if !BUILDFLAG(IS_IOS)
 base::WeakPtr<syncer::DataTypeControllerDelegate>
-AutofillLoyaltyCardDelegateFromDataService(
+AutofillValuableDelegateFromDataService(
     autofill::AutofillWebDataService* service) {
   return autofill::ValuableSyncBridge::FromWebDataService(service)
       ->change_processor()
@@ -808,12 +808,12 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
               std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
                   autofill_web_data_service->GetDBTaskRunner(),
                   base::BindRepeating(
-                      &AutofillLoyaltyCardDelegateFromDataService,
+                      &AutofillValuableDelegateFromDataService,
                       base::RetainedRef(autofill_web_data_service))),
               std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
                   autofill_web_data_service->GetDBTaskRunner(),
                   base::BindRepeating(
-                      &AutofillLoyaltyCardDelegateFromDataService,
+                      &AutofillValuableDelegateFromDataService,
                       base::RetainedRef(autofill_web_data_service)))));
     }
   }
