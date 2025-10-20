@@ -39,7 +39,6 @@ component("ipc") {
       "ipc_message_pipe_reader.h",
       "ipc_mojo_bootstrap.cc",
       "ipc_mojo_bootstrap.h",
-      "ipc_sender.h",
       "ipc_sync_channel.cc",
       "ipc_sync_channel.h",
       "urgent_message_observer.h",

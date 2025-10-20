@@ -28,7 +28,6 @@
 #include "build/build_config.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +37,7 @@ namespace IPC {
 namespace {
 
 // Base class for a "process" with listener and IPC threads.
-class Worker : public Listener, public Sender {
+class Worker : public Listener {
  public:
   // Will create a channel without a name.
   Worker(Channel::Mode mode,
@@ -207,8 +206,6 @@ class Worker : public Listener, public Sender {
 
   bool is_shutdown_;
 };
-
-
 
 class IPCSyncChannelTest : public testing::Test {
  private:

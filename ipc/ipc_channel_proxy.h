@@ -23,7 +23,6 @@
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -69,7 +68,7 @@ class UrgentMessageObserver;
 // |channel_lifetime_lock_| is used to protect it. The locking overhead is only
 // paid if the underlying channel supports thread-safe |Send|.
 //
-class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
+class COMPONENT_EXPORT(IPC) ChannelProxy {
  public:
   // Initializes a channel proxy.  The channel_handle and mode parameters are
   // passed directly to the underlying IPC::Channel.  The listener is called on
@@ -98,7 +97,7 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
       const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner);
 
-  ~ChannelProxy() override;
+  virtual ~ChannelProxy();
 
   // Initializes the channel proxy. Only call this once to initialize a channel
   // proxy that was not initialized in its constructor. If |create_pipe_now| is

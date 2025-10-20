@@ -24,7 +24,6 @@
 #include "ipc/ipc.mojom-forward.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_message_pipe_reader.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -48,9 +47,8 @@ class UrgentMessageObserver;
 
 // Channels are implemented using mojo message pipes.
 
-class COMPONENT_EXPORT(IPC) Channel
-    : public Sender,
-      public internal::MessagePipeReader::Delegate {
+class COMPONENT_EXPORT(IPC) Channel final
+    : public internal::MessagePipeReader::Delegate {
   // Security tests need access to the pipe handle.
   friend class ChannelTest;
 
@@ -126,7 +124,7 @@ class COMPONENT_EXPORT(IPC) Channel
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
       const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
 
-  ~Channel() override;
+  ~Channel();
 
   // Connect the pipe.  On the server side, this will initiate
   // waiting for connections.  On the client, it attempts to
