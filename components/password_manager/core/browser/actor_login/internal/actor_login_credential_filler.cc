@@ -224,7 +224,7 @@ void ActorLoginCredentialFiller::OnDeviceReauthCompleted(
     std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
         GetLogger(client_);
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_REAUTH_FAILED);
-    std::move(callback_).Run(LoginStatusResult::kErrorFillingNotAllowed);
+    std::move(callback_).Run(LoginStatusResult::kErrorDeviceReauthFailed);
     return;
   }
 

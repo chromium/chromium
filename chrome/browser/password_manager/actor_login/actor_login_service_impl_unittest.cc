@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_delegate.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -238,7 +239,14 @@ INSTANTIATE_TEST_SUITE_P(
                              "ErrorNoFillableFields"},
         AttemptLoginTestCase{LoginStatusResult::kErrorFillingNotAllowed,
                              AttemptLoginResult::kErrorFillingNotAllowed,
-                             "ErrorFillingNotAllowed"}),
+                             "ErrorFillingNotAllowed"},
+        AttemptLoginTestCase{LoginStatusResult::kErrorDeviceReauthRequired,
+                             AttemptLoginResult::kErrorDeviceReauthRequired,
+                             "ErrorDeviceReauthRequired"},
+        AttemptLoginTestCase{LoginStatusResult::kErrorDeviceReauthFailed,
+                             AttemptLoginResult::kErrorDeviceReauthFailed,
+                             "ErrorDeviceReauthFailed"}),
+
     [](const testing::TestParamInfo<AttemptLoginTestCase>& info) {
       return info.param.test_case_name;
     });

@@ -113,6 +113,8 @@ enum class LoginStatusResult {
   // Returned if the task is in a background tab and filling requires device
   // reauth. The user needs to focus that tab first.
   kErrorDeviceReauthRequired,
+  // Returned if the device re-authentication fails.
+  kErrorDeviceReauthFailed,
 };
 
 using LoginStatusResultOrError =

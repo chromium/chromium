@@ -16,6 +16,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/image/image.h"
@@ -63,6 +64,8 @@ mojom::ActionResultCode LoginResultToActorResult(
       // TODO(crbug.com/449923972): Handle this error: draw attention of the
       // user to the tab and retry once the tab is in the foreground.
       return mojom::ActionResultCode::kLoginDeviceReauthRequired;
+    case actor_login::LoginStatusResult::kErrorDeviceReauthFailed:
+      return mojom::ActionResultCode::kLoginDeviceReauthFailed;
   }
 }
 

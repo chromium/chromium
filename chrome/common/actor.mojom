@@ -393,6 +393,10 @@ enum ActionResultCode {
   // user needs to focus that tab first.
   kLoginDeviceReauthRequired = 906,
 
+  // The screen-lock-based authentication attempt failed (likely the user
+  // cancelled it).
+  kLoginDeviceReauthFailed = 907,
+
   // Please see the comment above about adding new values.
 };
 

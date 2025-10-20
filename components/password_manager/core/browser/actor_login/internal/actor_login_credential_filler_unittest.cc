@@ -1184,7 +1184,7 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .Times(0);
   EXPECT_CALL(mock_callback,
-              Run(Eq(LoginStatusResult::kErrorFillingNotAllowed)));
+              Run(Eq(LoginStatusResult::kErrorDeviceReauthFailed)));
   filler.AttemptLogin(&mock_password_manager_, tab_);
 }
 
