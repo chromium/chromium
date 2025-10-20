@@ -129,6 +129,7 @@ void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
 }
 
 void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
+  CHECK(GetTestRunner());
   if (!GetTestRunner()->TestIsRunning()) {
     return;
   }
@@ -147,13 +148,13 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   if (!animation_scheduled_) {
     animation_scheduled_ = true;
 
-    WebLocalFrame* frame = LocalRoot();
-
-    frame->GetTaskRunner(TaskType::kInternalTest)
-        ->PostDelayedTask(FROM_HERE,
-                          BindOnce(&WebTestWebFrameWidgetImpl::AnimateNow,
-                                   WrapWeakPersistent(this)),
-                          base::Milliseconds(1));
+    if (WebLocalFrame* frame = LocalRoot()) {
+      frame->GetTaskRunner(TaskType::kInternalTest)
+          ->PostDelayedTask(FROM_HERE,
+                            BindOnce(&WebTestWebFrameWidgetImpl::AnimateNow,
+                                     WrapWeakPersistent(this)),
+                            base::Milliseconds(1));
+    }
   }
 }
 
