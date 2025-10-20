@@ -499,3 +499,8 @@
 # TODO(crbug.com/40890727): The test has been flaky since
 # https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fcontent%2Ftest%3Acontent_browsertests%2FFormControlsBrowserTest.MultiSelect?q=VHASH%3A52355b1ee364ed80
 -FormControlsBrowserTest.MultiSelect
+
+# TODO(crbug.com/452680511): The test has been failing since
+# https://crrev.com/c/6966639.
+-FileSystemChooserBrowserTest.DontShowWhileHidden
+-FileSystemChooserBrowserTest.ShowThenHide
