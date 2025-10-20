@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/chunk_to_layer_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
@@ -131,7 +132,7 @@ class PLATFORM_EXPORT RasterInvalidator
                              DisplayItemClientId client_id,
                              PaintInvalidationReason reason,
                              ClientIsOldOrNew old_or_new) {
-    callback_.InvalidateRect(rect);
+    callback_->InvalidateRect(rect);
     if (tracking_)
       TrackRasterInvalidation(rect, client_id, reason, old_or_new);
   }
@@ -160,7 +161,7 @@ class PLATFORM_EXPORT RasterInvalidator
                                const PropertyTreeState& layer_state,
                                Vector<PaintChunkInfo>&);
 
-  Callback& callback_;
+  raw_ref<Callback> callback_;
   gfx::Vector2dF layer_offset_;
   gfx::Size layer_bounds_;
   TraceablePropertyTreeState layer_state_{PropertyTreeState::Root()};
