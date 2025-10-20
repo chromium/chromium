@@ -33,7 +33,7 @@ public class BnplIssuerContext {
      * @param isLinked Whether the issuer is linked or not.
      * @param isEligible Whether the issuer is eligible to be selected.
      */
-    @CalledByNative("BnplIssuerContext")
+    @CalledByNative
     public BnplIssuerContext(
             @DrawableRes int iconId,
             @JniType("std::string") String issuerId,

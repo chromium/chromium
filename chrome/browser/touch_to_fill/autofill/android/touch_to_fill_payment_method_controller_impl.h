@@ -72,7 +72,6 @@ class TouchToFillPaymentMethodControllerImpl
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   bool ShowErrorScreen(std::unique_ptr<TouchToFillPaymentMethodView> view,
-                       base::WeakPtr<TouchToFillDelegate> delegate,
                        const std::u16string& title,
                        const std::u16string& description) override;
   bool ShowBnplIssuerTos(

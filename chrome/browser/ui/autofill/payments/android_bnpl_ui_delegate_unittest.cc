@@ -11,6 +11,8 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,6 +29,10 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(bool,
               ShowTouchToFillProgress,
               (base::OnceClosure cancel_callback),
+              (override));
+  MOCK_METHOD(bool,
+              ShowTouchToFillError,
+              (const AutofillErrorDialogContext& context),
               (override));
 };
 
@@ -68,6 +74,18 @@ TEST_F(AndroidBnplUiDelegateTest, ShowProgressUi) {
   delegate_->ShowProgressUi(
       AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
       /*cancel_callback=*/base::DoNothing());
+}
+
+// Tests that ShowAutofillErrorUi calls the client's ShowTouchToFillError.
+TEST_F(AndroidBnplUiDelegateTest, ShowAutofillErrorUi) {
+  AutofillErrorDialogContext autofill_error_dialog_context =
+      AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+          /*is_permanent_error=*/true);
+  EXPECT_CALL(payments_autofill_client(),
+              ShowTouchToFillError(autofill_error_dialog_context))
+      .WillOnce(testing::Return(true));
+
+  delegate_->ShowAutofillErrorUi(autofill_error_dialog_context);
 }
 
 }  // namespace autofill::payments

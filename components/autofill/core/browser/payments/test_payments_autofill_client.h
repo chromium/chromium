@@ -196,8 +196,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       const std::string& app_locale,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
-  bool ShowTouchToFillError(base::WeakPtr<TouchToFillDelegate> delegate,
-                            const AutofillErrorDialogContext& context) override;
+  bool ShowTouchToFillError(const AutofillErrorDialogContext& context) override;
   void HideTouchToFillPaymentMethod() override;
   PaymentsDataManager& GetPaymentsDataManager() final;
 #if !BUILDFLAG(IS_IOS)

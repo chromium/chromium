@@ -62,8 +62,7 @@ void AndroidBnplUiDelegate::CloseProgressUi(
 
 void AndroidBnplUiDelegate::ShowAutofillErrorUi(
     AutofillErrorDialogContext context) {
-  // TODO(crbug.com/438783909): Add JNI call to show the TouchToFill bottom
-  // sheet with the error screen.
+  client_->ShowTouchToFillError(context);
 }
 
 }  // namespace autofill::payments

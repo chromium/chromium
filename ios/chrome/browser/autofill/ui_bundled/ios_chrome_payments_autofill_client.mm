@@ -551,7 +551,6 @@ bool IOSChromePaymentsAutofillClient::ShowTouchToFillBnplIssuers(
 }
 
 bool IOSChromePaymentsAutofillClient::ShowTouchToFillError(
-    base::WeakPtr<TouchToFillDelegate> delegate,
     const AutofillErrorDialogContext& context) {
   return false;
 }

@@ -195,7 +195,6 @@ bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuers(
 
 bool TouchToFillPaymentMethodControllerImpl::ShowErrorScreen(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
-    base::WeakPtr<TouchToFillDelegate> delegate,
     const std::u16string& title,
     const std::u16string& description) {
   if (view) {
@@ -212,7 +211,6 @@ bool TouchToFillPaymentMethodControllerImpl::ShowErrorScreen(
     return false;
   }
 
-  delegate_ = delegate;
   return true;
 }
 

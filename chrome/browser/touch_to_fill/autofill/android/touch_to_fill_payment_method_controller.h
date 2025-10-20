@@ -102,12 +102,10 @@ class TouchToFillPaymentMethodController
   // Shows the Touch To Fill error screen. If the TTF surface is already being
   // shown when this is called, `view` is optional and will override the
   // existing view when present. Otherwise, if the TTF surface is not already
-  // being shown, `view` is required. If provided, `delegate` will be notified
-  // of the user's actions. `title` and `description` are displayed on the
-  // screen. Returns whether the surface was successfully shown.
+  // being shown, `view` is required. `title` and `description` are displayed on
+  // the screen. Returns whether the surface was successfully shown.
   virtual bool ShowErrorScreen(
       std::unique_ptr<TouchToFillPaymentMethodView> view,
-      base::WeakPtr<TouchToFillDelegate> delegate,
       const std::u16string& title,
       const std::u16string& description) = 0;
 

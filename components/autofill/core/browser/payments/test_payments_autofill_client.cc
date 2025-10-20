@@ -387,7 +387,6 @@ bool TestPaymentsAutofillClient::ShowTouchToFillBnplIssuers(
 }
 
 bool TestPaymentsAutofillClient::ShowTouchToFillError(
-    base::WeakPtr<TouchToFillDelegate> delegate,
     const AutofillErrorDialogContext& context) {
   return false;
 }

@@ -1004,7 +1004,6 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillBnplIssuers(
 }
 
 bool ChromePaymentsAutofillClient::ShowTouchToFillError(
-    base::WeakPtr<TouchToFillDelegate> delegate,
     const AutofillErrorDialogContext& context) {
 #if BUILDFLAG(IS_ANDROID)
   // Use temporary `AutofillErrorDialogControllerImpl` to get error title and
@@ -1014,7 +1013,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillError(
 
   // TTF should already be shown, so pass nullptr for `view`.
   return GetTouchToFillPaymentMethodController()->ShowErrorScreen(
-      /*view=*/nullptr, delegate, autofill_error_dialog_controller.GetTitle(),
+      /*view=*/nullptr, autofill_error_dialog_controller.GetTitle(),
       autofill_error_dialog_controller.GetDescription());
 #else
   // Touch To Fill is not supported on Desktop.

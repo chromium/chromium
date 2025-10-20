@@ -335,7 +335,6 @@ bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillBnplIssuers(
 }
 
 bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillError(
-    base::WeakPtr<TouchToFillDelegate> delegate,
     const AutofillErrorDialogContext& context) {
   return false;
 }

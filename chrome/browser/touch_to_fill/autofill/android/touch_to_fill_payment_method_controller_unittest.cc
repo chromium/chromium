@@ -549,9 +549,8 @@ TEST_F(TouchToFillPaymentMethodControllerTest, ShowErrorScreenOnNewView) {
       .WillOnce(Return(true));
 
   OnBeforeAskForValuesToFill();
-  EXPECT_TRUE(payment_method_controller().ShowErrorScreen(
-      std::move(mock_view_), ttf_delegate().GetWeakPointer(), title,
-      description));
+  EXPECT_TRUE(payment_method_controller().ShowErrorScreen(std::move(mock_view_),
+                                                          title, description));
   OnAfterAskForValuesToFill();
 }
 
@@ -573,7 +572,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_TRUE(payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_));
   EXPECT_TRUE(payment_method_controller().ShowErrorScreen(
-      /*view=*/nullptr, ttf_delegate().GetWeakPointer(), title, description));
+      /*view=*/nullptr, title, description));
   OnAfterAskForValuesToFill();
 }
 
@@ -583,8 +582,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
   OnBeforeAskForValuesToFill();
   EXPECT_FALSE(payment_method_controller().ShowErrorScreen(
-      /*view=*/nullptr, ttf_delegate().GetWeakPointer(), u"Error Title",
-      u"Error Description"));
+      /*view=*/nullptr, u"Error Title", u"Error Description"));
   OnAfterAskForValuesToFill();
   OnAfterAskForValuesToFill();
 }
@@ -610,8 +608,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   EXPECT_TRUE(payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_));
   EXPECT_TRUE(payment_method_controller().ShowErrorScreen(
-      std::move(new_mock_view), ttf_delegate().GetWeakPointer(), title,
-      description));
+      std::move(new_mock_view), title, description));
   OnAfterAskForValuesToFill();
 }
 

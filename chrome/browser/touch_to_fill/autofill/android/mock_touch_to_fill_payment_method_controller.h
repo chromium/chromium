@@ -79,7 +79,6 @@ class MockTouchToFillPaymentMethodController
   MOCK_METHOD(bool,
               ShowErrorScreen,
               (std::unique_ptr<TouchToFillPaymentMethodView> view,
-               base::WeakPtr<TouchToFillDelegate> delegate,
                const std::u16string& title,
                const std::u16string& description),
               (override));
