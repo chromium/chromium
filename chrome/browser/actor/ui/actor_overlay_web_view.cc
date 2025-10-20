@@ -23,6 +23,7 @@ ActorOverlayWebView::ActorOverlayWebView(BrowserWindowInterface* browser)
 
 ActorOverlayWebView::~ActorOverlayWebView() {
   CloseUI();
+  SetWebContents(nullptr);
 }
 
 void ActorOverlayWebView::ShowUI(tabs::TabInterface* tab) {
@@ -30,11 +31,10 @@ void ActorOverlayWebView::ShowUI(tabs::TabInterface* tab) {
   if (!web_contents()) {
     // Creates a new web contents if one doesn't exist.
     LoadInitialURL(GURL(chrome::kChromeUIActorOverlayURL));
-
-    // Disable mouse and keyboard inputs to underlying tab contents.
-    scoped_ignore_input_events_ =
-        tab->GetContents()->IgnoreInputEvents(std::nullopt);
   }
+  // Disable mouse and keyboard inputs to underlying tab contents.
+  scoped_ignore_input_events_ =
+      tab->GetContents()->IgnoreInputEvents(std::nullopt);
   // Set the tab interface
   webui::SetTabInterface(web_contents(), tab);
 
@@ -56,7 +56,6 @@ void ActorOverlayWebView::CloseUI() {
     // resetting the ScopedIgnoreInputEvents object.
     scoped_ignore_input_events_.reset();
     web_contents()->WasHidden();
-    SetWebContents(nullptr);
   }
 }
 
