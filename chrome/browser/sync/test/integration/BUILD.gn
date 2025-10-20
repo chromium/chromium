@@ -225,6 +225,7 @@ source_set("sync_integration_tests_impl") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/autofill",
       "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/consent_auditor",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/search_engines",
       "//chrome/browser/send_tab_to_self",

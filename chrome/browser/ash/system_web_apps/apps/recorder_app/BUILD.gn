@@ -25,6 +25,7 @@ static_library("recorder_app") {
     "//ash/constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/consent_auditor",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",

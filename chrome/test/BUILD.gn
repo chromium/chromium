@@ -4560,7 +4560,11 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_type_choice_ui_browsertest.cc",
         "../browser/ui/views/profiles/sync_confirmation_ui_browsertest.cc",
       ]
-      deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]
+      deps += [
+        "//chrome/browser/consent_auditor",
+        "//chrome/browser/consent_auditor:test_support",
+        "//chrome/browser/profiles/batch_upload:test_support",
+      ]
     }
 
     if (is_win || is_linux) {

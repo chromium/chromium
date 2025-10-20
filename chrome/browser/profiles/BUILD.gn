@@ -245,6 +245,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/btm",
     "//chrome/browser/client_hints",
     "//chrome/browser/commerce",
+    "//chrome/browser/consent_auditor",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/dom_distiller",

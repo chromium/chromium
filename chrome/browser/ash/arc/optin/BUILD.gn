@@ -52,6 +52,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/consent_auditor",
+    "//chrome/browser/consent_auditor:test_support",
     "//chrome/browser/signin",
     "//chrome/test:test_support",
     "//chromeos/ash/components/policy/device_policy:test_support",
