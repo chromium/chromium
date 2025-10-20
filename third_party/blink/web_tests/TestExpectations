@@ -525,6 +525,7 @@ crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snap-scro
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-thumb.html [ Failure Pass ]
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling.html [ Failure Pass ]
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
+crbug.com/451847488 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/range-bounding-client-rect-with-display-contents.html [ Failure Pass Timeout ]
 
 crbug.com/915926 fast/events/touch/multi-touch-user-gesture.html [ Failure Pass ]
 
@@ -662,6 +663,8 @@ crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002e.html [ Fa
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002i.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002o.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002p.html [ Failure ]
+crbug.com/452250069 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-contain-png-002e.html [ Failure Pass Timeout ]
+crbug.com/452127019 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-svg-004e.html [ Failure Pass Timeout ]
 crbug.com/378046059 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-png-001c.html [ Failure ]
 crbug.com/378046059 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-png-002c.html [ Failure ]
 
