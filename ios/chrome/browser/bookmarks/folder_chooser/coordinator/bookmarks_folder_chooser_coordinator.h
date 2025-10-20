@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_H_
 
 #import <UIKit/UIKit.h>
 
 #import <set>
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
+#import "ios/chrome/browser/bookmarks/folder_chooser/coordinator/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace bookmarks {
@@ -66,4 +66,4 @@ class BookmarkNode;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_BOOKMARKS_FOLDER_CHOOSER_COORDINATOR_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_sub_data_source_impl.h"
+#import "ios/chrome/browser/bookmarks/folder_chooser/ui/bookmarks_folder_chooser_sub_data_source_impl.h"
 
 #import <Foundation/Foundation.h>
 #import <OCMock/OCMock.h>
@@ -14,9 +14,9 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "ios/chrome/browser/bookmarks/folder_chooser/ui/bookmarks_folder_chooser_consumer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

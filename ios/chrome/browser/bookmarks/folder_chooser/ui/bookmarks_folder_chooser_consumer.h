@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_CONSUMER_H_
-#define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_BOOKMARKS_FOLDER_CHOOSER_CONSUMER_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_BOOKMARKS_FOLDER_CHOOSER_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -12,7 +12,7 @@
 namespace bookmarks {
 class BookmarkNode;
 struct QueryFields;
-}
+}  // namespace bookmarks
 
 // Consumer protocol to receive updates from the model layer.
 @protocol BookmarksFolderChooserConsumer <NSObject>
@@ -59,4 +59,4 @@ struct QueryFields;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_BOOKMARKS_FOLDER_CHOOSER_CONSUMER_H_

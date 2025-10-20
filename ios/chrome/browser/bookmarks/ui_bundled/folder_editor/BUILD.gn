@@ -15,7 +15,7 @@ source_set("coordinator_headers") {
   visibility = [
     ":coordinator_impl",
     ":folder_editor",
-    "//ios/chrome/browser/bookmarks/ui_bundled/folder_chooser:coordinator_impl",
+    "//ios/chrome/browser/bookmarks/folder_chooser/coordinator",
   ]
   sources = [
     "bookmarks_folder_editor_coordinator.h",
@@ -35,9 +35,9 @@ source_set("coordinator_impl") {
     ":ui",
     "//base",
     "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks/folder_chooser/coordinator",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/ui_bundled:core",
-    "//ios/chrome/browser/bookmarks/ui_bundled/folder_chooser:coordinator_headers",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",

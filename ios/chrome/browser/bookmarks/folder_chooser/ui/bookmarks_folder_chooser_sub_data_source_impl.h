@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_SUB_DATA_SOURCE_IMPL_H_
-#define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_SUB_DATA_SOURCE_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_BOOKMARKS_FOLDER_CHOOSER_SUB_DATA_SOURCE_IMPL_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_BOOKMARKS_FOLDER_CHOOSER_SUB_DATA_SOURCE_IMPL_H_
 
 #import <Foundation/Foundation.h>
 
 #import <set>
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_consumer.h"
+#import "ios/chrome/browser/bookmarks/folder_chooser/ui/bookmarks_folder_chooser_consumer.h"
 
 enum class BookmarkStorageType;
 
@@ -55,4 +55,4 @@ class BookmarkNode;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_SUB_DATA_SOURCE_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_BOOKMARKS_FOLDER_CHOOSER_SUB_DATA_SOURCE_IMPL_H_

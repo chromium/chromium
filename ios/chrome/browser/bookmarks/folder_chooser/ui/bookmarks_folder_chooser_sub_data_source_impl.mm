@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_sub_data_source_impl.h"
+#import "ios/chrome/browser/bookmarks/folder_chooser/ui/bookmarks_folder_chooser_sub_data_source_impl.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
