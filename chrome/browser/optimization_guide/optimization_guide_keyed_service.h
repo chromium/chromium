@@ -21,9 +21,9 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/optimization_guide_on_device_capability_provider.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -98,8 +98,8 @@ class OptimizationGuideKeyedService
     : public KeyedService,
       public optimization_guide::OptimizationGuideDecider,
       public optimization_guide::OptimizationGuideModelProvider,
-      public optimization_guide::OptimizationGuideModelExecutor,
-      public optimization_guide::OptimizationGuideOnDeviceCapabilityProvider,
+      public optimization_guide::OnDeviceCapability,
+      public optimization_guide::RemoteModelExecutor,
       public ProfileObserver {
  public:
   explicit OptimizationGuideKeyedService(
@@ -144,16 +144,19 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::OptimizationTarget optimization_target,
       optimization_guide::OptimizationTargetModelObserver* observer) override;
 
-  // optimization_guide::OptimizationGuideModelExecutor implementation:
-  std::unique_ptr<Session> StartSession(
-      optimization_guide::ModelBasedCapabilityKey feature,
-      const optimization_guide::SessionConfigParams& config_params) override;
+  // optimization_guide::RemoteModelExecutor implementation:
   void ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,
       const std::optional<base::TimeDelta>& execution_timeout,
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override;
+
+  // optimization_guide::OnDeviceCapability
+  // implementation:
+  std::unique_ptr<optimization_guide::OnDeviceSession> StartSession(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const optimization_guide::SessionConfigParams& config_params) override;
   void AddOnDeviceModelAvailabilityChangeObserver(
       optimization_guide::ModelBasedCapabilityKey feature,
       optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
@@ -161,9 +164,6 @@ class OptimizationGuideKeyedService
       optimization_guide::ModelBasedCapabilityKey feature,
       optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
   on_device_model::Capabilities GetOnDeviceCapabilities() override;
-
-  // optimization_guide::OptimizationGuideOnDeviceCapabilityProvider
-  // implementation:
   optimization_guide::OnDeviceModelEligibilityReason
   GetOnDeviceModelEligibility(
       optimization_guide::ModelBasedCapabilityKey feature) override;

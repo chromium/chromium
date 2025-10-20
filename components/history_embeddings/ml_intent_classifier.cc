@@ -13,7 +13,7 @@
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/intent_classifier.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_query_intent.pb.h"
 #include "components/optimization_guide/proto/history_query_intent_model_metadata.pb.h"
@@ -25,7 +25,7 @@ namespace {
 
 using ::optimization_guide::ModelBasedCapabilityKey;
 using ::optimization_guide::SessionConfigParams;
-using Session = ::optimization_guide::OptimizationGuideModelExecutor::Session;
+using Session = ::optimization_guide::OnDeviceSession;
 
 using ::optimization_guide::ParsedAnyMetadata;
 using ::optimization_guide::proto::HistoryQueryIntentModelMetadata;
@@ -39,7 +39,7 @@ class MlIntentClassifier::Execution final {
  public:
   Execution() = default;
 
-  void Execute(OptimizationGuideModelExecutor* model_executor,
+  void Execute(OnDeviceCapability* model_executor,
                std::string query,
                ComputeQueryIntentCallback callback) {
     session_ = model_executor->StartSession(
@@ -127,8 +127,7 @@ class MlIntentClassifier::Execution final {
   base::WeakPtrFactory<Execution> weak_ptr_factory_{this};
 };
 
-MlIntentClassifier::MlIntentClassifier(
-    OptimizationGuideModelExecutor* model_executor)
+MlIntentClassifier::MlIntentClassifier(OnDeviceCapability* model_executor)
     : model_executor_(model_executor) {}
 
 MlIntentClassifier::~MlIntentClassifier() = default;

@@ -9,7 +9,7 @@
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
-class OptimizationGuideModelExecutor;
+class RemoteModelExecutor;
 namespace proto {
 class WalletablePass;
 }  // namespace proto
@@ -44,8 +44,7 @@ class WalletablePassClient {
   virtual optimization_guide::OptimizationGuideDecider*
   GetOptimizationGuideDecider() = 0;
 
-  virtual optimization_guide::OptimizationGuideModelExecutor*
-  GetOptimizationGuideModelExecutor() = 0;
+  virtual optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() = 0;
 
   virtual void ShowWalletablePassConsentBubble(
       WalletablePassBubbleResultCallback callback) = 0;

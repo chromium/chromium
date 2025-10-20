@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
@@ -31,8 +31,7 @@ using ::testing::StrictMock;
 
 }  // namespace
 
-class MockModelExecutor
-    : public optimization_guide::MockOptimizationGuideModelExecutor {
+class MockModelExecutor : public optimization_guide::MockOnDeviceCapability {
  public:
   size_t GetCounter() { return counter_; }
 

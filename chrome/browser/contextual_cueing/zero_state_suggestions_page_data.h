@@ -15,7 +15,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "content/public/browser/page_user_data.h"
 
 // Convenience macro for emitting OPTIMIZATION_GUIDE_LOGs where

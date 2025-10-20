@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/version_info/channel.h"
 
@@ -143,8 +143,8 @@ AutofillAiModelExecutor* AutofillClient::GetAutofillAiModelExecutor() {
   return nullptr;
 }
 
-optimization_guide::OptimizationGuideModelExecutor*
-AutofillClient::GetOptimizationGuideModelExecutor() {
+optimization_guide::RemoteModelExecutor*
+AutofillClient::GetRemoteModelExecutor() {
   return nullptr;
 }
 

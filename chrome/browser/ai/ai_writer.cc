@@ -63,12 +63,10 @@ optimization_guide::proto::WritingAssistanceApiOutputLength ToProtoLength(
 
 }  // namespace
 
-AIWriter::AIWriter(
-    AIContextBoundObjectSet& context_bound_object_set,
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        session,
-    blink::mojom::AIWriterCreateOptionsPtr options,
-    mojo::PendingReceiver<blink::mojom::AIWriter> receiver)
+AIWriter::AIWriter(AIContextBoundObjectSet& context_bound_object_set,
+                   std::unique_ptr<optimization_guide::OnDeviceSession> session,
+                   blink::mojom::AIWriterCreateOptionsPtr options,
+                   mojo::PendingReceiver<blink::mojom::AIWriter> receiver)
     : AIContextBoundObject(context_bound_object_set),
       session_wrapper_(std::move(session)),
       options_(std::move(options)),

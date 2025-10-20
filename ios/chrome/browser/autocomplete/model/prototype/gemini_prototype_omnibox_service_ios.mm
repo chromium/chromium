@@ -10,7 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/common/omnibox_features.h"
-#import "components/optimization_guide/core/optimization_guide_model_executor.h"
+#import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"

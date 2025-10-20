@@ -42,11 +42,11 @@ class SharedURLLoaderFactory;
 namespace one_time_tokens {
 class OneTimeTokenService;
 class SmsOtpBackend;
-}
+}  // namespace one_time_tokens
 
 namespace optimization_guide {
 class ModelQualityLogsUploaderService;
-class OptimizationGuideModelExecutor;
+class RemoteModelExecutor;
 }  // namespace optimization_guide
 
 namespace optimization_guide::proto {
@@ -380,9 +380,8 @@ class AutofillClient {
   // `kAutofillAiServerModel` is not enabled or the profile is OTR.
   virtual AutofillAiModelExecutor* GetAutofillAiModelExecutor();
 
-  // Returns the per-profile `OptimizationGuideModelExecutor`.
-  virtual optimization_guide::OptimizationGuideModelExecutor*
-  GetOptimizationGuideModelExecutor();
+  // Returns the per-profile `RemoteModelExecutor`.
+  virtual optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor();
 
   // Returns nullptr if no identity credential conditional request was made
   // before.

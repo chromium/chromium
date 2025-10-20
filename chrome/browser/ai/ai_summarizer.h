@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_on_device_session.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,12 +22,11 @@
 class AISummarizer : public AIContextBoundObject,
                      public blink::mojom::AISummarizer {
  public:
-  AISummarizer(AIContextBoundObjectSet& context_bound_object_set,
-               std::unique_ptr<
-                   optimization_guide::OptimizationGuideModelExecutor::Session>
-                   summarize_session,
-               blink::mojom::AISummarizerCreateOptionsPtr options,
-               mojo::PendingReceiver<blink::mojom::AISummarizer> receiver);
+  AISummarizer(
+      AIContextBoundObjectSet& context_bound_object_set,
+      std::unique_ptr<optimization_guide::OnDeviceSession> summarize_session,
+      blink::mojom::AISummarizerCreateOptionsPtr options,
+      mojo::PendingReceiver<blink::mojom::AISummarizer> receiver);
 
   // `blink::mojom::AISummarizer` implementation.
   void Summarize(const std::string& input,

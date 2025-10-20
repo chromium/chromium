@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -6,7 +6,7 @@
 
 #include "base/check_deref.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "url/gurl.h"
@@ -75,7 +75,7 @@ void WalletablePassIngestionController::ExtractWalletablePass(
   *request.mutable_page_context()->mutable_annotated_page_content() =
       std::move(annotated_page_content);
 
-  client_->GetOptimizationGuideModelExecutor()->ExecuteModel(
+  client_->GetRemoteModelExecutor()->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kWalletablePassExtraction,
       std::move(request),
       /*execution_timeout=*/std::nullopt,

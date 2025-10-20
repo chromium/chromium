@@ -278,17 +278,7 @@ void OptimizationGuideService::RemoveObserverForOptimizationTargetModel(
   }
 }
 
-#pragma mark - optimization_guide::OptimizationGuideModelExecutor implementation
-
-std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-OptimizationGuideService::StartSession(
-    optimization_guide::ModelBasedCapabilityKey feature,
-    const optimization_guide::SessionConfigParams& config_params) {
-  if (!model_execution_manager_) {
-    return nullptr;
-  }
-  return model_execution_manager_->StartSession(feature, config_params);
-}
+#pragma mark - optimization_guide::RemoteModelExecutor implementation
 
 void OptimizationGuideService::ExecuteModel(
     optimization_guide::ModelBasedCapabilityKey feature,

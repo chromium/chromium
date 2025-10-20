@@ -21,6 +21,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
@@ -32,7 +33,6 @@
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -286,7 +286,7 @@ on_device_model::Capabilities SessionImpl::GetCapabilities() const {
   return capabilities_;
 }
 
-std::unique_ptr<OptimizationGuideModelExecutor::Session> SessionImpl::Clone() {
+std::unique_ptr<OnDeviceSession> SessionImpl::Clone() {
   auto session = std::make_unique<SessionImpl>(feature_, execute_remote_fn_,
                                                sampling_params_);
   session->context_ = context_.Clone();

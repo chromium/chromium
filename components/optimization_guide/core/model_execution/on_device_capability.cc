@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 
 namespace optimization_guide {
 
@@ -82,21 +82,6 @@ std::optional<mojom::ModelUnavailableReason> AvailabilityFromEligibilityReason(
   }
 }
 
-OptimizationGuideModelExecutionResult::OptimizationGuideModelExecutionResult() =
-    default;
-
-OptimizationGuideModelExecutionResult::OptimizationGuideModelExecutionResult(
-    OptimizationGuideModelExecutionResult&& other) = default;
-
-OptimizationGuideModelExecutionResult::
-    ~OptimizationGuideModelExecutionResult() = default;
-
-OptimizationGuideModelExecutionResult::OptimizationGuideModelExecutionResult(
-    base::expected<const proto::Any /*response_metadata*/,
-                   OptimizationGuideModelExecutionError> response,
-    std::unique_ptr<proto::ModelExecutionInfo> execution_info)
-    : response(response), execution_info(std::move(execution_info)) {}
-
 OptimizationGuideModelStreamingExecutionResult::
     OptimizationGuideModelStreamingExecutionResult() = default;
 
@@ -117,9 +102,47 @@ OptimizationGuideModelStreamingExecutionResult::
     OptimizationGuideModelStreamingExecutionResult(
         OptimizationGuideModelStreamingExecutionResult&& src) = default;
 
-on_device_model::Capabilities
-OptimizationGuideModelExecutor::GetOnDeviceCapabilities() {
+OnDeviceCapability::OnDeviceCapability() = default;
+OnDeviceCapability::~OnDeviceCapability() = default;
+
+std::unique_ptr<OnDeviceSession> OnDeviceCapability::StartSession(
+    ModelBasedCapabilityKey feature,
+    const SessionConfigParams& config_params) {
+  return nullptr;
+}
+
+void OnDeviceCapability::AddOnDeviceModelAvailabilityChangeObserver(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    OnDeviceModelAvailabilityObserver* observer) {}
+
+void OnDeviceCapability::RemoveOnDeviceModelAvailabilityChangeObserver(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    OnDeviceModelAvailabilityObserver* observer) {}
+
+on_device_model::Capabilities OnDeviceCapability::GetOnDeviceCapabilities() {
   return {};
 }
 
+OnDeviceModelEligibilityReason OnDeviceCapability::GetOnDeviceModelEligibility(
+    ModelBasedCapabilityKey feature) {
+  return OnDeviceModelEligibilityReason::kFeatureNotEnabled;
+}
+
+void OnDeviceCapability::GetOnDeviceModelEligibilityAsync(
+    ModelBasedCapabilityKey feature,
+    const on_device_model::Capabilities& capabilities,
+    base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback) {
+  std::move(callback).Run(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
+}
+
+std::optional<SamplingParamsConfig> OnDeviceCapability::GetSamplingParamsConfig(
+    ModelBasedCapabilityKey feature) {
+  return std::nullopt;
+}
+
+std::optional<const optimization_guide::proto::Any>
+OnDeviceCapability::GetFeatureMetadata(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  return std::nullopt;
+}
 }  // namespace optimization_guide
