@@ -29,4 +29,8 @@ interface PageHandler {
 
 // Called from C++ side of chrome://reload-button.top-chrome
 // (Browser -> Renderer)
-interface Page {};
+interface Page {
+  // Sets the loading state in the renderer, the renderer is expected to make
+  // UI changes accordingly.
+  SetLoadingState(bool is_loading);
+};

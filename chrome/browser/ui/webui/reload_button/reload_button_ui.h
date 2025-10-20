@@ -32,6 +32,8 @@ class ReloadButtonUI : public TopChromeWebUIController,
   void BindInterface(
       mojo::PendingReceiver<reload_button::mojom::PageHandlerFactory> receiver);
 
+  void SetLoadingState(bool is_loading, bool force);
+
  private:
   // reload_button::mojom::PageHandlerFactory:
   void CreatePageHandler(

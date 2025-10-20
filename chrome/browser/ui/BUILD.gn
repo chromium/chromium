@@ -1738,6 +1738,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/new_tab_footer:impl",
       "//chrome/browser/ui/signin:impl",
       "//chrome/browser/ui/webui/commerce:impl",
+      "//chrome/browser/ui/webui/reload_button:impl",
       "//chrome/browser/ui/webui/signin:signin_impl",
       "//chrome/browser/ui/webui/signin:login_impl",
       "//chrome/browser/ui/webui/signin:signin_utils_impl",

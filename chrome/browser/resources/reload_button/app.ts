@@ -13,6 +13,14 @@ import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 
 export class ReloadButtonAppElement extends CrLitElement {
+  constructor() {
+    super();
+    BrowserProxyImpl.getInstance().callbackRouter.setLoadingState.addListener(
+        (isLoading: boolean) => {
+          this.isLoading_ = isLoading;
+        });
+  }
+
   static get is() {
     return 'reload-button-app';
   }
@@ -27,25 +35,21 @@ export class ReloadButtonAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      reloadOrStopIcon_: {state: true, type: String},
+      isLoading_: {state: true, type: Boolean},
     };
   }
 
-  protected accessor reloadOrStopIcon_: string = 'icon-refresh';
-
-  protected setReloadStopState(isLoading: boolean) {
-    this.reloadOrStopIcon_ = isLoading ? 'icon-clear' : 'icon-refresh';
-  }
+  protected accessor isLoading_: boolean = false;
 
   // TODO(crbug.com/444358999): implement the reload logic
   protected onReloadOrStopClick_(_: Event) {
-    if (this.reloadOrStopIcon_ === 'icon-refresh') {
-      this.reloadOrStopIcon_ = 'icon-clear';
-      BrowserProxyImpl.getInstance().handler.reload();
-    } else {
-      this.reloadOrStopIcon_ = 'icon-refresh';
+    if (this.isLoading_) {
       BrowserProxyImpl.getInstance().handler.stopReload();
+    } else {
+      BrowserProxyImpl.getInstance().handler.reload();
     }
+    // Update the renderer in advance to avoid the delay.
+    this.isLoading_ = !this.isLoading_;
   }
 }
 

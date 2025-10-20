@@ -249,6 +249,7 @@ class ToolbarView : public views::AccessiblePaneView,
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
+  ReloadButtonWebView* GetReloadButtonWebView() override;
   IntentChipButton* GetIntentChipButton() override;
   ToolbarButton* GetDownloadButton() override;
 

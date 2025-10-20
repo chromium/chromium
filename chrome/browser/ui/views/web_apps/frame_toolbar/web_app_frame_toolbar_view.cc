@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
@@ -299,6 +300,10 @@ ToolbarButton* WebAppFrameToolbarView::GetBackButton() {
 
 ReloadButton* WebAppFrameToolbarView::GetReloadButton() {
   return left_container_ ? left_container_->reload_button() : nullptr;
+}
+
+ReloadButtonWebView* WebAppFrameToolbarView::GetReloadButtonWebView() {
+  return nullptr;
 }
 
 IntentChipButton* WebAppFrameToolbarView::GetIntentChipButton() {

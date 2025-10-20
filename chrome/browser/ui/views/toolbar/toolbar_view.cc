@@ -376,8 +376,7 @@ void ToolbarView::Init() {
   back_ = container_view_->AddChildView(std::move(back));
   forward_ = container_view_->AddChildView(std::move(forward));
   if (features::IsWebUIReloadButtonEnabled()) {
-    auto reload_webview =
-        std::make_unique<ReloadButtonWebView>(browser_->profile());
+    auto reload_webview = std::make_unique<ReloadButtonWebView>(browser_);
     reload_webview_ = container_view_->AddChildView(std::move(reload_webview));
   } else {
     std::unique_ptr<ReloadButton> reload = std::make_unique<ReloadButton>(
@@ -1188,6 +1187,10 @@ ToolbarButton* ToolbarView::GetBackButton() {
 
 ReloadButton* ToolbarView::GetReloadButton() {
   return reload_;
+}
+
+ReloadButtonWebView* ToolbarView::GetReloadButtonWebView() {
+  return reload_webview_;
 }
 
 IntentChipButton* ToolbarView::GetIntentChipButton() {

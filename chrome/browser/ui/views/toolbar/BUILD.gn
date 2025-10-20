@@ -167,6 +167,8 @@ source_set("impl") {
     "//chrome/browser/ui/views/side_panel:side_panel_enums",
     "//chrome/browser/ui/waap",
     "//chrome/browser/ui/web_applications",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/reload_button",
     "//chrome/browser/upgrade_detector",
     "//chrome/browser/user_education",
     "//chrome/browser/web_applications:features",
