@@ -318,7 +318,8 @@ class ProfileImportProcess {
       int num_edited_fields = 0) const;
 
   // Records new profile import metrics after the import was applied.
-  void LogNewProfileMetrics() const;
+  void LogNewProfileMetrics(
+      const std::vector<const AutofillProfile*>& existing_profiles) const;
 
   // Records confirmable profile update metrics after the import was applied.
   void LogConfirmableProfileUpdateMetrics(

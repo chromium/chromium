@@ -620,7 +620,7 @@ void ProfileImportProcess::CollectMetrics(
   // For an import process that involves prompting the user, record the
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
-    LogNewProfileMetrics();
+    LogNewProfileMetrics(existing_profiles);
     LogUkmMetrics(ukm_recorder, existing_profiles, num_edited_fields);
   } else if (import_type_ ==
              AutofillProfileImportType::kHomeWorkNameEmailMerge) {
@@ -668,9 +668,10 @@ void ProfileImportProcess::LogUkmMetrics(
       existing_profiles, app_locale_);
 }
 
-void ProfileImportProcess::LogNewProfileMetrics() const {
+void ProfileImportProcess::LogNewProfileMetrics(
+    const std::vector<const AutofillProfile*>& existing_profiles) const {
   autofill_metrics::LogNewProfileImportDecision(
-      user_decision_, import_metadata_, {},
+      user_decision_, import_metadata_, existing_profiles,
       UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
       app_locale_);
   if (UserAccepted()) {
