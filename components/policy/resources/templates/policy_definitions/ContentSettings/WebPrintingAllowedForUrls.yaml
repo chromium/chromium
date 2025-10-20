@@ -1,6 +1,7 @@
 caption: Allow WebPrinting API on these sites
 desc: |-
   Setting the policy lets you list the URL patterns that specify which sites are automatically granted access to local printers via the WebPrinting API.
+  Valid patterns are limited to Isolated Web Apps.
 
   Leaving the policy unset means <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME">DefaultWebPrintingSetting</ph> applies for all sites, if it's set. If not, users' personal settings apply.
 
@@ -8,8 +9,7 @@ desc: |-
 
   For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
 example_value:
-- https://www.example.com
-- '[*.]example.edu'
+- isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic
 features:
   dynamic_refresh: true
   per_profile: true
