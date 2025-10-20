@@ -131,7 +131,9 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
   TestingProfile* profile() { return &profile_; }
   apps::AppServiceTest* app_service_test() { return &app_service_test_; }
   apps::WebApkManager* webapk_manager() {
-    return apps::ArcApps::Get(profile())->GetWebApkManagerForTesting();
+    // TODO(crbug.com/451841683): WebApkManager should not be owned by ArcApps.
+    return apps::ArcApps::GetForTesting(profile())
+        ->GetWebApkManagerForTesting();
   }
   ArcAppTest* arc_test() { return &arc_test_; }
   apps::AppServiceProxyBase* app_service_proxy() {

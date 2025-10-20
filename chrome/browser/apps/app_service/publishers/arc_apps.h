@@ -68,15 +68,17 @@ class ArcApps : public KeyedService,
                 public apps::InstanceRegistry::Observer,
                 public arc::ArcPrivacyItemsBridge::Observer {
  public:
-  static ArcApps* Get(Profile* profile);
-
   explicit ArcApps(AppServiceProxy* proxy);
   ArcApps(const ArcApps&) = delete;
   ArcApps& operator=(const ArcApps&) = delete;
-
   ~ArcApps() override;
 
   WebApkManager* GetWebApkManagerForTesting() { return web_apk_manager_.get(); }
+
+  // TODO(crbug.com/450429333, crbug.com/451841683): Remove this once we've
+  // completed the refactoring of ArcNotificationManager, and moved out
+  // `web_apk_manager_`.
+  static ArcApps* GetForTesting(Profile* profile);
 
   static void SetArcVersionForTesting(int version);
 
