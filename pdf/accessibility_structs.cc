@@ -93,12 +93,14 @@ AccessibilityTextStyleInfo::~AccessibilityTextStyleInfo() = default;
 AccessibilityTextRunInfo::AccessibilityTextRunInfo() = default;
 
 AccessibilityTextRunInfo::AccessibilityTextRunInfo(
+    uint32_t start_index,
     uint32_t len,
     const std::string& tag_type,
     const gfx::RectF& bounds,
     AccessibilityTextDirection direction,
     const AccessibilityTextStyleInfo& style)
-    : AccessibilityTextRunInfo(len,
+    : AccessibilityTextRunInfo(start_index,
+                               len,
                                tag_type,
                                bounds,
                                direction,
@@ -106,13 +108,15 @@ AccessibilityTextRunInfo::AccessibilityTextRunInfo(
                                /*is_searchified=*/false) {}
 
 AccessibilityTextRunInfo::AccessibilityTextRunInfo(
+    uint32_t start_index,
     uint32_t len,
     const std::string& tag_type,
     const gfx::RectF& bounds,
     AccessibilityTextDirection direction,
     const AccessibilityTextStyleInfo& style,
     bool is_searchified)
-    : len(len),
+    : start_index(start_index),
+      len(len),
       tag_type(tag_type),
       bounds(bounds),
       direction(direction),

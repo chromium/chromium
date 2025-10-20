@@ -61,11 +61,17 @@ namespace pdf {
 namespace {
 
 const chrome_pdf::AccessibilityTextRunInfo kFirstTextRun = {
-    15, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/0,
+    /*len=*/15,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kSecondTextRun = {
-    15, "P", gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
+    /*start_index=*/15,
+    /*len=*/15,
+    "P",
+    gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {
@@ -76,19 +82,31 @@ const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {
     {'w', 16}, {'o', 12}, {'r', 8},  {'l', 4},  {'d', 12}, {'!', 2},
 };
 const chrome_pdf::AccessibilityTextRunInfo kFirstRunMultiLine = {
-    7, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/0,
+    /*len=*/7,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kSecondRunMultiLine = {
-    8, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/7,
+    /*len=*/8,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kThirdRunMultiLine = {
-    9, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/15,
+    /*len=*/9,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kFourthRunMultiLine = {
-    6, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/24,
+    /*len=*/6,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 

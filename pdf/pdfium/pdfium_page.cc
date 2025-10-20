@@ -670,6 +670,7 @@ std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfoAt(
     return std::nullopt;
 
   AccessibilityTextRunInfo info;
+  info.start_index = start_char_index;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // This assumes all text on the page are either from the PDF itself, or from
   // Searchify.

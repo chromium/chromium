@@ -75,12 +75,14 @@ enum class AccessibilityTextDirection {
 
 struct AccessibilityTextRunInfo {
   AccessibilityTextRunInfo();
-  AccessibilityTextRunInfo(uint32_t len,
+  AccessibilityTextRunInfo(uint32_t start_index,
+                           uint32_t len,
                            const std::string& tag_type,
                            const gfx::RectF& bounds,
                            AccessibilityTextDirection direction,
                            const AccessibilityTextStyleInfo& style);
-  AccessibilityTextRunInfo(uint32_t len,
+  AccessibilityTextRunInfo(uint32_t start_index,
+                           uint32_t len,
                            const std::string& tag_type,
                            const gfx::RectF& bounds,
                            AccessibilityTextDirection direction,
@@ -89,6 +91,7 @@ struct AccessibilityTextRunInfo {
   AccessibilityTextRunInfo(const AccessibilityTextRunInfo& other);
   ~AccessibilityTextRunInfo();
 
+  uint32_t start_index = 0;
   uint32_t len = 0;
   // One of various types defined in a PDF tag, such as "Span", "P", "H1", "LI",
   // etc.
