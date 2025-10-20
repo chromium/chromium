@@ -163,4 +163,37 @@ public class BaseSuggestionViewUnitTest {
         assertEquals(1, mView.getActionButtons().size());
         assertEquals(btn0, mView.getActionButtons().get(0));
     }
+
+    @Test
+    public void showOnlyOnFocusActionButton_toggleVisibility() {
+        mView.setActionButtonsCount(2);
+
+        ActionButtonView actionButtonWithShowOnFocus = mView.getActionButtons().get(0);
+        actionButtonWithShowOnFocus.enableShowOnlyOnFocus(true);
+        ActionButtonView actionButtonWithoutShowOnFocus = mView.getActionButtons().get(1);
+
+        // Initial visibility is invisible for the showOnlyOnFocus button.
+        assertEquals(View.GONE, actionButtonWithShowOnFocus.getVisibility());
+        assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
+
+        // Select the view. The showOnlyOnFocus button should become visible.
+        mView.setSelected(true);
+        assertEquals(View.VISIBLE, actionButtonWithShowOnFocus.getVisibility());
+        assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
+
+        // Deselect the view. The showOnlyOnFocus button should become invisible.
+        mView.setSelected(false);
+        assertEquals(View.GONE, actionButtonWithShowOnFocus.getVisibility());
+        assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
+
+        // Hover over the view. The showOnlyOnFocus button should become invisible.
+        mView.onHoverChanged(true);
+        assertEquals(View.VISIBLE, actionButtonWithShowOnFocus.getVisibility());
+        assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
+
+        // Hover away from the view. The showOnlyOnFocus button should become invisible.
+        mView.onHoverChanged(false);
+        assertEquals(View.GONE, actionButtonWithShowOnFocus.getVisibility());
+        assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
+    }
 }

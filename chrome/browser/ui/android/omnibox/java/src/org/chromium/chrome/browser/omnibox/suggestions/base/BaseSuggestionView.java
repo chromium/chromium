@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
@@ -41,7 +40,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     public final T contentView;
     public final ActionChipsView actionChipsView;
     public final RoundedCornerOutlineProvider decorationIconOutline;
-    private final List<ImageView> mActionButtons;
+    private final List<ActionButtonView> mActionButtons;
     private final SimpleSelectionController mActionButtonsHighlighter;
     private @Nullable Runnable mOnFocusViaSelectionListener;
 
@@ -113,7 +112,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     /**
      * @return List of Action views.
      */
-    public List<ImageView> getActionButtons() {
+    public List<ActionButtonView> getActionButtons() {
         return mActionButtons;
     }
 
@@ -140,7 +139,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      */
     private void increaseActionButtonsCount(int desiredViewCount) {
         for (int index = mActionButtons.size(); index < desiredViewCount; index++) {
-            ImageView actionView = new AppCompatImageView(getContext());
+            ActionButtonView actionView = new ActionButtonView(getContext());
             actionView.setClickable(true);
             actionView.setFocusable(true);
             actionView.setScaleType(ImageView.ScaleType.CENTER);
@@ -200,9 +199,21 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     }
 
     @Override
+    public void onHoverChanged(boolean hovered) {
+        super.onHoverChanged(hovered);
+        for (ActionButtonView v : mActionButtons) {
+            v.onParentViewHoverChanged(hovered);
+        }
+    }
+
+    @Override
     public void setSelected(boolean selected) {
         super.setSelected(selected);
         if (mActionButtonsHighlighter != null) mActionButtonsHighlighter.reset();
+        for (ActionButtonView v : mActionButtons) {
+            v.onParentViewSelected(selected);
+        }
+
         if (selected && mOnFocusViaSelectionListener != null) {
             mOnFocusViaSelectionListener.run();
         }

@@ -32,6 +32,30 @@ public @interface BaseSuggestionViewProperties {
         public final Runnable callback;
         public final String accessibilityDescription;
         public final @Nullable String onClickAnnouncement;
+        public final boolean showOnlyOnFocus;
+
+        /**
+         * Create a new action for suggestion.
+         *
+         * @param icon OmniboxDrawableState describing the icon to show.
+         * @param description Content description for the action view.
+         * @param onClickAnnouncement action announcement for the action view when the action view
+         *     is clicked.
+         * @param showOnlyOnFocus whether to show the action only when the suggestion is focused.
+         * @param callback Callback to invoke when user interacts with the icon.
+         */
+        public Action(
+                OmniboxDrawableState icon,
+                String description,
+                @Nullable String onClickAnnouncement,
+                boolean showOnlyOnFocus,
+                Runnable callback) {
+            this.icon = icon;
+            this.accessibilityDescription = description;
+            this.onClickAnnouncement = onClickAnnouncement;
+            this.callback = callback;
+            this.showOnlyOnFocus = showOnlyOnFocus;
+        }
 
         /**
          * Create a new action for suggestion.
@@ -47,10 +71,7 @@ public @interface BaseSuggestionViewProperties {
                 String description,
                 @Nullable String onClickAnnouncement,
                 Runnable callback) {
-            this.icon = icon;
-            this.accessibilityDescription = description;
-            this.onClickAnnouncement = onClickAnnouncement;
-            this.callback = callback;
+            this(icon, description, onClickAnnouncement, false, callback);
         }
 
         /**

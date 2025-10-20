@@ -163,12 +163,13 @@ public final class BaseSuggestionViewBinder<T extends View>
         view.setActionButtonsCount(actionCount);
 
         // Drawable retrieved once here (expensive) and will be copied multiple times (cheap).
-        final List<ImageView> actionViews = view.getActionButtons();
+        final List<ActionButtonView> actionViews = view.getActionButtons();
         for (int index = 0; index < actionCount; index++) {
-            final ImageView actionView = actionViews.get(index);
+            final ActionButtonView actionView = actionViews.get(index);
             final Action action = actions.get(index);
             actionView.setOnClickListener(v -> action.callback.run());
             actionView.setContentDescription(action.accessibilityDescription);
+            actionView.enableShowOnlyOnFocus(action.showOnlyOnFocus);
             applySelectableBackground(model, actionView);
             updateIcon(
                     model,
@@ -213,7 +214,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         // scheme will be applied then.
         if (actions == null) return;
 
-        final List<ImageView> actionViews = view.getActionButtons();
+        final List<ActionButtonView> actionViews = view.getActionButtons();
         for (int index = 0; index < actionViews.size(); index++) {
             ImageView actionView = actionViews.get(index);
 
