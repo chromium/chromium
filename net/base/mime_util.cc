@@ -183,7 +183,7 @@ static const MimeInfo kPrimaryMappings[] = {
     {"audio/x-m4a", "m4a"},
     {"image/avif", "avif"},
     {"image/gif", "gif"},
-    {"image/jpeg", "jpeg,jpg"},
+    {"image/jpeg", "jpeg,jpg,jpe"},
     {"image/png", "png"},
     {"image/apng", "png,apng"},
     {"image/svg+xml", "svg,svgz"},
@@ -254,7 +254,7 @@ static const MimeInfo kSecondaryMappings[] = {
     {"text/vtt", "vtt"},
     {"text/x-sh", "sh"},
     {"text/xml", "xsl,xbl,xslt"},
-    {"video/mpeg", "mpeg,mpg"},
+    {"video/mpeg", "mpeg,mpg,mpe"},
 };
 
 // Finds mime type of |ext| from |mappings|.
