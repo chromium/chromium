@@ -7,14 +7,16 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/callback.h"
 #import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 
 @implementation PasteboardObserver {
-  base::RepeatingClosure _callback;
+  base::RepeatingCallback<void(UIPasteboard*)> _callback;
   NSInteger _cachedChangeCount;
 }
 
-- (instancetype)initWithCallback:(base::RepeatingClosure)callback {
+- (instancetype)initWithCallback:
+    (base::RepeatingCallback<void(UIPasteboard*)>)callback {
   self = [super init];
   if (self) {
     _callback = std::move(callback);
@@ -84,7 +86,7 @@
   }
 
   _cachedChangeCount = changeCount;
-  _callback.Run();
+  _callback.Run(pasteboard);
 }
 
 @end

@@ -136,7 +136,8 @@ void DataControlsTabHelper::SetSnackbarHandler(
   snackbar_handler_ = snackbar_handler;
 }
 void DataControlsTabHelper::DidFinishClipboardRead() {
-  // TODO(crbug.com/448120059): Handle clipboard finish reads.
+  DataControlsPasteboardManager::GetInstance()
+      ->RestorePlaceholderToGeneralPasteboardIfNeeded();
 }
 
 bool DataControlsTabHelper::IsClipboardDataControlsEnabled() const {
@@ -166,7 +167,8 @@ void DataControlsTabHelper::FinishCopy(const GURL& source_url,
     ProfileIOS* profile =
         ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
     auto* pasteboard_manager = DataControlsPasteboardManager::GetInstance();
-    pasteboard_manager->SetNextPasteboardItemsSource(source_url, profile);
+    pasteboard_manager->SetNextPasteboardItemsSource(
+        source_url, profile, verdicts.copy_to_os_clipbord);
   }
 
   std::move(callback).Run(allowed);
@@ -188,7 +190,14 @@ void DataControlsTabHelper::FinishPaste(const GURL& destination_url,
   if (verdict.level() == Rule::Level::kWarn) {
     allowed = bypassed;
   }
-  std::move(callback).Run(allowed);
+
+  if (allowed) {
+    DataControlsPasteboardManager::GetInstance()
+        ->RestoreItemsToGeneralPasteboardIfNeeded(
+            base::BindOnce(std::move(callback), allowed));
+  } else {
+    std::move(callback).Run(false);
+  }
 }
 
 void DataControlsTabHelper::ShowWarningDialog(

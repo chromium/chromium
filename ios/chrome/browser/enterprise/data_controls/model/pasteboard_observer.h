@@ -7,7 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/functional/callback.h"
+#import "base/functional/callback_forward.h"
+
+@class UIPasteboard;
 
 // An object that observes pasteboard changes by subscribing to
 // `UIPasteboardChangedNotification` and by checking the pasteboard's change
@@ -17,7 +19,8 @@
 // The designated initializer. `callback` will be invoked when a pasteboard
 // change is detected, either via `UIPasteboardChangedNotification` or when the
 // app becomes active with a different pasteboard change count.
-- (instancetype)initWithCallback:(base::RepeatingClosure)callback
+- (instancetype)initWithCallback:
+    (base::RepeatingCallback<void(UIPasteboard*)>)callback
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

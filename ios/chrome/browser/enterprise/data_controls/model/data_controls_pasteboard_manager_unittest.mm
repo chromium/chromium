@@ -7,16 +7,20 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/raw_ptr.h"
-#import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
@@ -45,21 +49,23 @@ class DataControlsPasteboardManagerTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Waits until DataControlsPasteboardManagerTest returns a non-empty
-  // pasteboard source.
-  void WaitForPasteboardSource() {
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(
-        kWaitForUIElementTimeout, /* run_message_loop= */ true, ^bool {
-          return manager_->GetCurrentPasteboardItemsSource().source_profile;
-        }));
+  void RestoreItemsToGeneralPasteboard() {
+    // Wait for the internal state to be updated. This is necessary as we access
+    // the pasteboard async due to bugs in UIPasteboard that block the thread
+    // accessing it.
+    ASSERT_TRUE(WaitForKnownPasteboardSource());
+    base::test::TestFuture<void> future;
+    manager_->RestoreItemsToGeneralPasteboardIfNeeded(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
-  void WaitForEmptyPasteboardSource() {
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(
-        kWaitForUIElementTimeout, /* run_message_loop= */ true, ^bool {
-          return manager_->GetCurrentPasteboardItemsSource()
-              .source_url.is_empty();
-        }));
+  void RestorePlaceholderToGeneralPasteboard() {
+    // Wait for the internal state to be updated. This is necessary as we access
+    // the pasteboard async due to bugs in UIPasteboard that block the thread
+    // accessing it.
+    ASSERT_TRUE(WaitForKnownPasteboardSource());
+
+    manager_->RestorePlaceholderToGeneralPasteboardIfNeeded();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -84,7 +90,8 @@ TEST_F(DataControlsPasteboardManagerTest, InitialState) {
 // after setting the source and the pasteboard items change.
 TEST_F(DataControlsPasteboardManagerTest, SetAndGetSource) {
   GURL source_url(kSourceURL);
-  manager_->SetNextPasteboardItemsSource(source_url, profile_);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ true);
 
   PasteboardSource pasteboard_source =
       manager_->GetCurrentPasteboardItemsSource();
@@ -96,7 +103,7 @@ TEST_F(DataControlsPasteboardManagerTest, SetAndGetSource) {
   // Simulate a pasteboard change.
   UIPasteboard.generalPasteboard.string = @(kPasteboardString);
 
-  WaitForPasteboardSource();
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
 
   // Now the source should be available.
   pasteboard_source = manager_->GetCurrentPasteboardItemsSource();
@@ -110,10 +117,11 @@ TEST_F(DataControlsPasteboardManagerTest,
        SourceIsInvalidatedAfterPasteboardChange) {
   // Set up pasteboard source and items.
   GURL source_url(kSourceURL);
-  manager_->SetNextPasteboardItemsSource(source_url, profile_);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ true);
   UIPasteboard.generalPasteboard.string = @(kPasteboardString);
 
-  WaitForPasteboardSource();
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
   // There should be a known pasteboard source.
   PasteboardSource pasteboard_source =
       manager_->GetCurrentPasteboardItemsSource();
@@ -123,7 +131,7 @@ TEST_F(DataControlsPasteboardManagerTest,
   // Updating the pasteboard should invalidate the known pasteboard source.
   UIPasteboard.generalPasteboard.string = @(kNewPasteboardString);
 
-  WaitForEmptyPasteboardSource();
+  EXPECT_TRUE(WaitForUnknownPasteboardSource());
 
   // Pasteboard source should be empty now.
   pasteboard_source = manager_->GetCurrentPasteboardItemsSource();
@@ -137,10 +145,11 @@ TEST_F(DataControlsPasteboardManagerTest,
        SourceIsInvalidatedAfterExternalPasteboardChange) {
   // Set up pasteboard source and items.
   GURL source_url(kSourceURL);
-  manager_->SetNextPasteboardItemsSource(source_url, profile_);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ true);
   UIPasteboard.generalPasteboard.string = @(kPasteboardString);
 
-  WaitForPasteboardSource();
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
   // There should be a known pasteboard source.
   PasteboardSource pasteboard_source =
       manager_->GetCurrentPasteboardItemsSource();
@@ -183,10 +192,94 @@ TEST_F(DataControlsPasteboardManagerTest,
 
   // The pasteboard source should be invalidated because the pasteboard was
   // updated outside the app.
-  WaitForEmptyPasteboardSource();
+  EXPECT_TRUE(WaitForUnknownPasteboardSource());
   pasteboard_source = manager_->GetCurrentPasteboardItemsSource();
   EXPECT_TRUE(pasteboard_source.source_url.is_empty());
   EXPECT_FALSE(pasteboard_source.source_profile);
+}
+
+// Tests that protected items are replaced with a placeholder after being set.
+TEST_F(DataControlsPasteboardManagerTest, ReplaceItems) {
+  GURL source_url(kSourceURL);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ false);
+  // Setting something in the pasteboard should trigger a replacement.
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+
+  EXPECT_TRUE(WaitForStringInPasteboard(l10n_util::GetNSString(
+      IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE)));
+}
+
+// Tests that protected items are restored to the pasteboard.
+TEST_F(DataControlsPasteboardManagerTest,
+       RestoreItemsToGeneralPasteboardIfNeededRestoresProtectedItems) {
+  GURL source_url(kSourceURL);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ false);
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+
+  EXPECT_TRUE(WaitForStringInPasteboard(l10n_util::GetNSString(
+      IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE)));
+
+  // Restore the original items.
+  RestoreItemsToGeneralPasteboard();
+
+  EXPECT_TRUE(WaitForStringInPasteboard(@(kPasteboardString)));
+}
+
+// Tests that nothing is restored to the pasteboard if the items are not
+// protected.
+TEST_F(DataControlsPasteboardManagerTest,
+       RestoreItemsToGeneralPasteboardIfNeededDoesNothingForUnprotectedItems) {
+  // Set up pasteboard source and items with os_clipboard_allowed=true.
+  GURL source_url(kSourceURL);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ true);
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+
+  RestoreItemsToGeneralPasteboard();
+
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
+
+  // The pasteboard should still contain the original string.
+  EXPECT_NSEQ(@(kPasteboardString), UIPasteboard.generalPasteboard.string);
+}
+
+// Tests that the placeholder is restored to the pasteboard.
+TEST_F(DataControlsPasteboardManagerTest,
+       RestorePlaceholderToGeneralPasteboardIfNeededRestoresPlaceholder) {
+  GURL source_url(kSourceURL);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ false);
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
+
+  EXPECT_NSNE(@(kPasteboardString), UIPasteboard.generalPasteboard.string);
+
+  // Restore the original items and then the placeholder.
+  RestoreItemsToGeneralPasteboard();
+  RestorePlaceholderToGeneralPasteboard();
+
+  EXPECT_TRUE(WaitForStringInPasteboard(l10n_util::GetNSString(
+      IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE)));
+}
+
+// Tests that nothing is restored to the pasteboard if the items are not
+// protected.
+TEST_F(
+    DataControlsPasteboardManagerTest,
+    RestorePlaceholderToGeneralPasteboardIfNeededDoesNothingForUnprotectedItems) {
+  GURL source_url(kSourceURL);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ true);
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+
+  // Try to restore the placeholder.
+  RestorePlaceholderToGeneralPasteboard();
+
+  // The original string should be in the pasteboard.
+  EXPECT_TRUE(WaitForStringInPasteboard(@(kPasteboardString)));
 }
 
 }  // namespace data_controls

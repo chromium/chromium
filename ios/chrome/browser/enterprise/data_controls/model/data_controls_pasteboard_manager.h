@@ -7,12 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/no_destructor.h"
 #import "base/sequence_checker.h"
 #import "url/gurl.h"
 
 @class PasteboardObserver;
+@class UIPasteboard;
 
 class ProfileIOS;
 
@@ -80,11 +82,20 @@ class DataControlsPasteboardManager {
   // pasteboard. This should be called before the data is written to the
   // pasteboard.
   void SetNextPasteboardItemsSource(GURL source_url,
-                                    ProfileIOS* source_profile);
+                                    ProfileIOS* source_profile,
+                                    bool os_clipboard_allowed);
 
   // Returns the source for the current content on the pasteboard. Returns a
   // default constructed `PasteboardSource` when the source is not known.
   PasteboardSource GetCurrentPasteboardItemsSource();
+
+  // Restores the items copied by the user if they were replaced with a
+  // placeholder. No-op for items that were not replaced with a placeholder.
+  void RestoreItemsToGeneralPasteboardIfNeeded(base::OnceClosure callback);
+
+  // Replaces the items in the general Pasteboard if `pasteboard_state_`
+  // indicates that the items can't remain in the general Pasteboard.
+  void RestorePlaceholderToGeneralPasteboardIfNeeded();
 
  private:
   friend class DataControlsPasteboardManagerTest;
@@ -101,6 +112,12 @@ class DataControlsPasteboardManager {
     std::string source_profile_name;
     // Whether the source ProfileIOS was incognito.
     bool source_profile_incognito;
+    // True if the items can remain in the Pasteboard. False for items that
+    // should be replaced with a placeholder so they can't be freely copied
+    // without Data Control rules evaluation.
+    bool os_clipboard_allowed = true;
+    // Copy of the items in the Pasteboard.
+    NSArray<NSDictionary<NSString*, id>*>* items;
   };
 
   // Describes the possible states of DataControlsPasteboardManager
@@ -110,15 +127,21 @@ class DataControlsPasteboardManager {
     // The manager knows the source for the the items that are about to be
     // written pasteboard.
     kPendingSource,
+    // The manager is replacing the items in the pasteboard. This happens when
+    // the items stored by the user are replaced with a placeholder or when said
+    // items are being temporarily restored so they can be pasted to a
+    // destination approved by Data Control rules.
+    kReplacingItems,
     // The manager knows the source for the current pasteboard items.
     kKnownSource,
+
   };
 
   DataControlsPasteboardManager();
   ~DataControlsPasteboardManager();
 
   // Called when the pasteboard content changes.
-  void OnPasteboardChanged();
+  void OnPasteboardChanged(UIPasteboard* pasteboard);
 
   // Resets the manager to its initial state. For testing purposes only.
   void ResetForTesting();

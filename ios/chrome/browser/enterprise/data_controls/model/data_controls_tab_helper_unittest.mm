@@ -8,7 +8,6 @@
 #import "base/run_loop.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
-#import "base/test/ios/wait_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
@@ -17,6 +16,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
@@ -33,9 +33,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util.h"
-
-using base::test::ios::kWaitForUIElementTimeout;
-using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace data_controls {
 
@@ -180,6 +177,30 @@ class DataControlsTabHelperTest : public PlatformTest {
                     /*machine_scope=*/false);
   }
 
+  void SetPasteAllowForSourceRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                          "and": [
+                                {
+                                  "destinations": {
+                                    "urls": [
+                                      "allow.com"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "sources": {
+                                    "urls": [
+                                      "other.com"
+                                    ]
+                                  }
+                                }
+                              ],
+                          "restrictions": [
+                            {"class": "CLIPBOARD", "level": "ALLOW"}
+                          ]
+                        })"});
+  }
+
   void SetPasteWarnRule() {
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                         "destinations": {
@@ -259,6 +280,28 @@ class DataControlsTabHelperTest : public PlatformTest {
                         ]
                       })"},
                     /*machine_scope=*/false);
+  }
+
+  void SetPasteBlockToOSClipboardRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                          "and": [
+                            {
+                              "sources": {
+                                "urls": [
+                                  "block.com"
+                                ]
+                              }
+                            },
+                            {
+                              "destinations": {
+                                "os_clipboard": true
+                              }
+                            }
+                          ],
+                          "restrictions": [
+                            {"class": "CLIPBOARD", "level": "BLOCK"}
+                          ]
+                        })"});
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -668,12 +711,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedForSource) {
 
   UIPasteboard.generalPasteboard.string = @"copied content";
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(
-      kWaitForUIElementTimeout, /* run_message_loop= */ true, ^bool {
-        return DataControlsPasteboardManager::GetInstance()
-            ->GetCurrentPasteboardItemsSource()
-            .source_profile;
-      }));
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
 
   // Simulate pasting to allow.com
   web_state_->SetCurrentURL(GURL(kAllowedUrl));
@@ -698,12 +736,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromIncognito) {
 
   UIPasteboard.generalPasteboard.string = @"copied content";
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(
-      kWaitForUIElementTimeout, /* run_message_loop= */ true, ^bool {
-        return DataControlsPasteboardManager::GetInstance()
-            ->GetCurrentPasteboardItemsSource()
-            .source_profile;
-      }));
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
 
   // Simulate pasting to kBlockedUrl in the non-incognito profile.
   web_state_->SetCurrentURL(GURL(kBlockedUrl));
@@ -729,12 +762,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOtherProfile) {
 
   UIPasteboard.generalPasteboard.string = @"copied content";
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(
-      kWaitForUIElementTimeout, /* run_message_loop= */ true, ^bool {
-        return DataControlsPasteboardManager::GetInstance()
-            ->GetCurrentPasteboardItemsSource()
-            .source_profile;
-      }));
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
 
   // Simulate pasting to kBlockedUrl in the primary profile.
   web_state_->SetCurrentURL(GURL(kBlockedUrl));
@@ -749,6 +777,44 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOSClipboard) {
   // Simulate pasting to kBlockedUrl.
   web_state_->SetCurrentURL(GURL(kBlockedUrl));
   EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
+}
+
+// Tests that, for content that is not allowed on the OS clipboard, the content
+// is replaced with a placeholder, then temporarily restored for a paste to an
+// allowed destination, and then replaced with the placeholder again once the
+// paste is complete.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedToOSClipboard) {
+  SetPasteBlockToOSClipboardRule();
+
+  // Simulate copying from block.com.
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  ASSERT_TRUE(ShouldAllowCopy(tab_helper()));
+
+  NSString* copied_content = @"copied content";
+  UIPasteboard.generalPasteboard.string = copied_content;
+
+  // Wait for the source to be available, as it is only available once the
+  // content is replaced with the placeholder.
+  ASSERT_TRUE(WaitForKnownPasteboardSource());
+
+  NSString* expected_placeholder = l10n_util::GetNSString(
+      IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
+
+  ASSERT_NSEQ(expected_placeholder, UIPasteboard.generalPasteboard.string);
+
+  // Simulate pasting to allow.com
+  web_state_->SetCurrentURL(GURL(kAllowedUrl));
+  ASSERT_TRUE(ShouldAllowPaste(tab_helper()));
+
+  ASSERT_TRUE(WaitForKnownPasteboardSource());
+
+  // Original content should be restored to the pasteboard.
+  ASSERT_NSEQ(UIPasteboard.generalPasteboard.string, copied_content);
+
+  // Once pasting is done the placeholder should be restored.
+  tab_helper()->DidFinishClipboardRead();
+
+  ASSERT_TRUE(WaitForStringInPasteboard(expected_placeholder));
 }
 
 // Tests that paste is allowed when a "BLOCK" rule is set but the feature is
