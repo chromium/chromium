@@ -16,27 +16,7 @@ enum class ManualFillDataType;
 // Protocol to handle user interactions in a FormInputAccessoryViewController.
 @protocol FormInputAccessoryViewControllerDelegate
 
-// Invoked after the user taps the `accounts` button.
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                   didPressAccountButton:(UIButton*)accountButton;
-
-// Invoked after the user taps the `credit cards` button.
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                didPressCreditCardButton:(UIButton*)creditCardButton;
-
-// Invoked after the user taps the `keyboard` button.
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                  didPressKeyboardButton:(UIButton*)keyboardButton;
-
-// Invoked after the user taps the `passwords` button.
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                  didPressPasswordButton:(UIButton*)passwordButton;
-
-// Invoked after the user taps the `manual fill` button.
+// Invoked after the user taps a button that opens the manual fallback menu.
 - (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
                 didPressManualFillButton:(UIButton*)manualFillButton

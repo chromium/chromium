@@ -309,75 +309,6 @@ bool CanReloadInputViews() {
   [self.childCoordinators removeAllObjects];
 }
 
-// Starts the password coordinator and displays its view controller.
-- (void)startPasswordsFromButton:(UIButton*)button
-        invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
-  web::WebState* activeWebState = [self activeWebState];
-  if (!activeWebState) {
-    return;
-  }
-
-  const GURL& URL = activeWebState->GetLastCommittedURL();
-
-  ManualFillPasswordCoordinator* passwordCoordinator =
-      [[ManualFillPasswordCoordinator alloc]
-             initWithBaseViewController:self.baseViewController
-                                browser:self.browser
-          manualFillPlusAddressMediator:nil
-                                    URL:URL
-                       injectionHandler:self.injectionHandler
-               invokedOnObfuscatedField:invokedOnObfuscatedField
-                 showAutofillFormButton:NO];
-
-  passwordCoordinator.delegate = self;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [passwordCoordinator presentFromButton:button];
-  } else {
-    self.formInputViewController = passwordCoordinator.viewController;
-    [self maybeReloadInputViews];
-  }
-
-  [self.childCoordinators addObject:passwordCoordinator];
-}
-
-// Starts the card coordinator and displays its view controller.
-- (void)startCardsFromButton:(UIButton*)button {
-  CardCoordinator* cardCoordinator = [[CardCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                injectionHandler:self.injectionHandler
-          reauthenticationModule:self.reauthenticationModule
-          showAutofillFormButton:NO];
-  cardCoordinator.delegate = self;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [cardCoordinator presentFromButton:button];
-  } else {
-    self.formInputViewController = cardCoordinator.viewController;
-    [self maybeReloadInputViews];
-  }
-
-  [self.childCoordinators addObject:cardCoordinator];
-}
-
-// Starts the address coordinator and displays its view controller.
-- (void)startAddressFromButton:(UIButton*)button {
-  AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
-         initWithBaseViewController:self.baseViewController
-                            browser:self.browser
-      manualFillPlusAddressMediator:nil
-                   injectionHandler:self.injectionHandler
-             showAutofillFormButton:NO];
-  addressCoordinator.delegate = self;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [addressCoordinator presentFromButton:button];
-  } else {
-    self.formInputViewController = addressCoordinator.viewController;
-    [self maybeReloadInputViews];
-  }
-
-  [self.childCoordinators addObject:addressCoordinator];
-}
-
 // Starts the expanded manual fill coordinator and displays its view controller.
 - (void)startManualFillFromButton:(UIButton*)button
                       forDataType:(manual_fill::ManualFillDataType)dataType
@@ -469,39 +400,6 @@ bool CanReloadInputViews() {
 }
 
 #pragma mark - FormInputAccessoryViewControllerDelegate
-
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                  didPressKeyboardButton:(UIButton*)keyboardButton {
-  [self reset];
-}
-
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                   didPressAccountButton:(UIButton*)accountButton {
-  [self stopChildren];
-  [self startAddressFromButton:accountButton];
-  [self updateKeyboardAccessoryForManualFilling];
-}
-
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                didPressCreditCardButton:(UIButton*)creditCardButton {
-  [self stopChildren];
-  [self startCardsFromButton:creditCardButton];
-  [self updateKeyboardAccessoryForManualFilling];
-}
-
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                  didPressPasswordButton:(UIButton*)passwordButton {
-  [self stopChildren];
-  BOOL invokedOnObfuscatedField =
-      [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
-  [self startPasswordsFromButton:passwordButton
-        invokedOnObfuscatedField:invokedOnObfuscatedField];
-  [self updateKeyboardAccessoryForManualFilling];
-}
 
 - (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
