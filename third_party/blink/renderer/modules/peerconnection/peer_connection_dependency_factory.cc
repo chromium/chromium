@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/vsync_provider.h"
 #include "third_party/blink/renderer/platform/peerconnection/vsync_tick_provider.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/bind_post_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
@@ -242,9 +243,12 @@ class LocalNetworkAccessPermission final
  public:
   explicit LocalNetworkAccessPermission(
       network::mojom::IPAddressSpace originator_address_space,
-      mojo::Remote<mojom::blink::PermissionService> permission_service)
+      mojo::Remote<mojom::blink::PermissionService> permission_service,
+      blink::CrossThreadRepeatingFunction<void(LocalNetworkAccessRequestType)>
+          count_callback)
       : originator_address_space_(originator_address_space),
-        permission_service_(std::move(permission_service)) {}
+        permission_service_(std::move(permission_service)),
+        count_callback_(std::move(count_callback)) {}
 
   ~LocalNetworkAccessPermission() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -255,10 +259,11 @@ class LocalNetworkAccessPermission final
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     const auto target_address_space = FromSocketAddress(candidate_address);
+    auto request_type = GetLocalNetworkAccessRequestType(
+        originator_address_space_, target_address_space);
     base::UmaHistogramEnumeration(
-        "WebRTC.PeerConnection.LocalNetworkAccess.RequestType",
-        GetLocalNetworkAccessRequestType(originator_address_space_,
-                                         target_address_space));
+        "WebRTC.PeerConnection.LocalNetworkAccess.RequestType", request_type);
+    count_callback_.Run(request_type);
 
     if (!RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled()) {
       return false;
@@ -312,6 +317,8 @@ class LocalNetworkAccessPermission final
       callback_;
   const network::mojom::IPAddressSpace originator_address_space_;
   mojo::Remote<mojom::blink::PermissionService> permission_service_;
+  blink::CrossThreadRepeatingFunction<void(LocalNetworkAccessRequestType)>
+      count_callback_;
 
   THREAD_CHECKER(thread_checker_);
 
@@ -342,7 +349,12 @@ class LocalNetworkAccessPermissionFactory final
             permission_service.BindNewPipeAndPassReceiver()));
 
     return std::make_unique<LocalNetworkAccessPermission>(
-        originator_address_space_, std::move(permission_service));
+        originator_address_space_, std::move(permission_service),
+        blink::BindPostTask(
+            main_thread_task_runner_,
+            CrossThreadBindRepeating(
+                &PeerConnectionDependencyFactory::CountLocalNetworkAccess,
+                MakeUnwrappingCrossThreadWeakHandle(factory_))));
   }
 
  private:
@@ -1321,6 +1333,40 @@ std::unique_ptr<webrtc::LocalNetworkAccessPermissionFactoryInterface>
 PeerConnectionDependencyFactory::
     CreateLocalNetworkAccessPermissionFactoryForTesting() {
   return std::make_unique<LocalNetworkAccessPermissionFactory>(this);
+}
+
+void PeerConnectionDependencyFactory::CountLocalNetworkAccess(
+    LocalNetworkAccessRequestType request_type) {
+  UseCounter::Count(DomWindow(),
+                    mojom::blink::WebFeature::kWebRTCLocalNetworkAccessCheck);
+
+  switch (request_type) {
+    // To same or more public cases:
+    case LocalNetworkAccessRequestType::kUnknown:
+    case LocalNetworkAccessRequestType::kPublicToPublic:
+    case LocalNetworkAccessRequestType::kLocalToPublic:
+    case LocalNetworkAccessRequestType::kLocalToLocal:
+    case LocalNetworkAccessRequestType::kLoopbackToPublic:
+    case LocalNetworkAccessRequestType::kLoopbackToLocal:
+    case LocalNetworkAccessRequestType::kLoopbackToLoopback:
+      return;
+    // To less public cases:
+    case LocalNetworkAccessRequestType::kPublicToLocal:
+      UseCounter::Count(
+          DomWindow(),
+          mojom::blink::WebFeature::kWebRTCLocalNetworkAccessPublicToLocal);
+      return;
+    case LocalNetworkAccessRequestType::kPublicToLoopback:
+      UseCounter::Count(
+          DomWindow(),
+          mojom::blink::WebFeature::kWebRTCLocalNetworkAccessPublicToLoopback);
+      return;
+    case LocalNetworkAccessRequestType::kLocalToLoopback:
+      UseCounter::Count(
+          DomWindow(),
+          mojom::blink::WebFeature::kWebRTCLocalNetworkAccessLocalToLoopback);
+      return;
+  }
 }
 
 }  // namespace blink

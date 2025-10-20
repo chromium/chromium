@@ -6333,6 +6333,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5701" label="TestReportBodyToJSON"/>
   <int value="5702" label="SpeculationRulesPrerenderUntilScript"/>
   <int value="5703" label="ClipboardChangeEventChangeIdAttribute"/>
+  <int value="5704" label="WebRTCLocalNetworkAccessCheck"/>
+  <int value="5705" label="WebRTCLocalNetworkAccessPublicToLocal"/>
+  <int value="5706" label="WebRTCLocalNetworkAccessPublicToLoopback"/>
+  <int value="5707" label="WebRTCLocalNetworkAccessLocalToLoopback"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

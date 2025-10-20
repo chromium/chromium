@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
+#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -18,7 +19,9 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_client.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
@@ -114,6 +117,27 @@ class LocalNetworkAccessPeerConnectionDependencyFactoryTest
   }
 
  protected:
+  void TestUseCounters(Document& document,
+                       LocalNetworkAccessRequestType request_type) {
+    base::test::RunUntil([&]() {
+      return document.IsUseCounted(
+          mojom::blink::WebFeature::kWebRTCLocalNetworkAccessCheck);
+    });
+
+    EXPECT_EQ(
+        request_type == LocalNetworkAccessRequestType::kPublicToLocal,
+        document.IsUseCounted(
+            mojom::blink::WebFeature::kWebRTCLocalNetworkAccessPublicToLocal));
+    EXPECT_EQ(
+        request_type == LocalNetworkAccessRequestType::kPublicToLoopback,
+        document.IsUseCounted(mojom::blink::WebFeature::
+                                  kWebRTCLocalNetworkAccessPublicToLoopback));
+    EXPECT_EQ(
+        request_type == LocalNetworkAccessRequestType::kLocalToLoopback,
+        document.IsUseCounted(mojom::blink::WebFeature::
+                                  kWebRTCLocalNetworkAccessLocalToLoopback));
+  }
+
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
@@ -225,6 +249,7 @@ TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
 
   histogram_tester_.ExpectUniqueSample(
       "WebRTC.PeerConnection.LocalNetworkAccess.RequestType", request_type, 1);
+  TestUseCounters(scope.GetDocument(), request_type);
 }
 
 TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
@@ -255,6 +280,7 @@ TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
 
   histogram_tester_.ExpectUniqueSample(
       "WebRTC.PeerConnection.LocalNetworkAccess.RequestType", request_type, 1);
+  TestUseCounters(scope.GetDocument(), request_type);
 }
 
 }  // namespace blink

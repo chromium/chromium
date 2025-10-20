@@ -173,6 +173,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   void BindPermissionService(
       mojo::PendingReceiver<mojom::blink::PermissionService>
           permission_service);
+  void CountLocalNetworkAccess(LocalNetworkAccessRequestType);
 
   std::unique_ptr<webrtc::LocalNetworkAccessPermissionFactoryInterface>
   CreateLocalNetworkAccessPermissionFactoryForTesting();

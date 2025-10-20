@@ -5016,6 +5016,10 @@ enum WebFeature {
   kTestReportBodyToJSON = 5701,
   kSpeculationRulesPrerenderUntilScript = 5702,
   kClipboardChangeEventChangeIdAttribute = 5703,
+  kWebRTCLocalNetworkAccessCheck = 5704,
+  kWebRTCLocalNetworkAccessPublicToLocal = 5705,
+  kWebRTCLocalNetworkAccessPublicToLoopback = 5706,
+  kWebRTCLocalNetworkAccessLocalToLoopback = 5707,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
