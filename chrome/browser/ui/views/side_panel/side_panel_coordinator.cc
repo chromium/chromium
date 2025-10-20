@@ -72,8 +72,8 @@ void SidePanelCoordinator::Toggle(
   // it should also be closed. This handles quick double clicks
   // to close the sidepanel.
   if (IsSidePanelShowing()) {
-    if (waiter_->loading_entry() == GetEntryForKey(key)) {
-      waiter_->ResetLoadingEntryIfNecessary();
+    if (waiter()->loading_entry() == GetEntryForKey(key)) {
+      waiter()->ResetLoadingEntryIfNecessary();
       Close();
       return;
     }
@@ -112,7 +112,7 @@ void SidePanelCoordinator::DisableAnimationsForTesting() {
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
-  return waiter_->loading_entry();
+  return waiter()->loading_entry();
 }
 
 void SidePanelCoordinator::Show(
@@ -127,7 +127,7 @@ void SidePanelCoordinator::Show(
   SidePanelEntry* entry = GetEntryForUniqueKey(input);
 
   if (!IsSidePanelShowing()) {
-    opened_timestamp_ = base::TimeTicks::Now();
+    SetOpenedTimestamp(base::TimeTicks::Now());
     SidePanelUtil::RecordSidePanelOpen(open_trigger);
     // Record usage for side panel promo.
     feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -150,7 +150,7 @@ void SidePanelCoordinator::Show(
 
   // If the side panel is already showing, cancel all loads and do nothing.
   if (current_key() && *current_key() == input) {
-    waiter_->ResetLoadingEntryIfNecessary();
+    waiter()->ResetLoadingEntryIfNecessary();
 
     // If the side panel is in the process of closing, show it instead.
     if (browser_view_->contents_height_side_panel()->state() ==
@@ -165,15 +165,10 @@ void SidePanelCoordinator::Show(
   SidePanelUtil::RecordEntryShowTriggeredMetrics(
       browser_view_->browser(), entry->key().id(), open_trigger);
 
-  waiter_->WaitForEntry(
+  waiter()->WaitForEntry(
       entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
                             base::Unretained(this), suppress_animations, input,
                             open_trigger));
-}
-
-base::CallbackListSubscription SidePanelCoordinator::RegisterSidePanelShown(
-    ShownCallback callback) {
-  return shown_callback_list_.Add(std::move(callback));
 }
 
 // There are 3 different contexts in which the side panel can be closed. All go
@@ -277,7 +272,7 @@ void SidePanelCoordinator::PopulateSidePanel(
     contextual_registry->ResetActiveEntryFor(
         SidePanelEntry::PanelType::kContent);
   }
-  set_current_key(unique_key);
+  SetCurrentKey(unique_key);
   if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
     side_panel_toolbar_pinning_controller_->UpdateActiveState(
         entry->key(), entry->should_show_ephemerally_in_toolbar());
@@ -299,7 +294,7 @@ void SidePanelCoordinator::PopulateSidePanel(
 
   side_panel->UpdateWidthOnEntryChanged();
 
-  shown_callback_list_.Notify();
+  NotifyShownCallbacksFor(entry->type());
 }
 
 void SidePanelCoordinator::ClearCachedEntryViews(
@@ -363,7 +358,7 @@ SidePanelEntry* SidePanelCoordinator::GetCurrentSidePanelEntryForTesting() {
 }
 
 void SidePanelCoordinator::SetNoDelaysForTesting(bool no_delays_for_testing) {
-  waiter_->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
+  waiter()->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
 }
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
@@ -396,7 +391,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // callback inside current_entry->OnEntryHidden() is calling Close() to
   // trigger race condition.
   SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key());
-  set_current_key(std::nullopt);
+  SetCurrentKey(std::nullopt);
   if (previous_entry) {
     previous_entry->OnEntryHidden();
   }
@@ -418,7 +413,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
     content_wrapper->RemoveChildViewT(content_wrapper->children().front());
   }
   side_panel->RemoveHeaderView();
-  SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
+  SidePanelUtil::RecordSidePanelClosed(opened_timestamp());
 }
 
 void SidePanelCoordinator::ClosePromoAndMaybeNotifyUsed(

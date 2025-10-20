@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_
 
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
@@ -57,6 +58,14 @@ class SidePanelUI {
   // shown.
   virtual bool IsSidePanelEntryShowing(
       const SidePanelEntryKey& entry_key) const = 0;
+
+  // Register for this callback to detect when the side panel opens or changes.
+  // If the open is animated, this will be called at the beginning of the
+  // animation.
+  using ShownCallback = base::RepeatingCallback<void()>;
+  virtual base::CallbackListSubscription RegisterSidePanelShown(
+      SidePanelEntry::PanelType type,
+      ShownCallback callback) = 0;
 
   // Returns the content view for the given entry. Returns nullptr if the entry
   // does not exist.

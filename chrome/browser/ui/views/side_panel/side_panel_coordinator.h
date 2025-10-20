@@ -57,12 +57,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;
 
-  // Register for this callback to detect when the side panel opens or changes.
-  // If the open is animated, this will be called at the beginning of the
-  // animation.
-  using ShownCallback = base::RepeatingCallback<void()>;
-  base::CallbackListSubscription RegisterSidePanelShown(ShownCallback callback);
-
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
@@ -73,9 +67,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   SidePanelEntry* GetLoadingEntryForTesting() const;
 
  private:
-  void OpenInNewTab();
-  void UpdatePinState();
-
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is
   // not registered in the currently observed registries. This looks through the
   // active contextual registry first, then the global registry.
@@ -107,17 +98,10 @@ class SidePanelCoordinator final : public SidePanelUIBase,
                                     SidePanelEntryId promo_id,
                                     SidePanelEntryId actual_id);
 
-  // Timestamp of when the side panel was opened. Updated when the side panel is
-  // triggered to be opened, not when visibility changes. These can differ due
-  // to delays for loading content. This is used for metrics.
-  base::TimeTicks opened_timestamp_;
-
   const raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
 
   std::unique_ptr<SidePanelToolbarPinningController>
       side_panel_toolbar_pinning_controller_;
-
-  base::RepeatingCallbackList<void()> shown_callback_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_

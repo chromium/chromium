@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -60,6 +61,9 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   bool IsSidePanelShowing() const override;
   bool IsSidePanelEntryShowing(
       const SidePanelEntry::Key& entry_key) const override;
+  base::CallbackListSubscription RegisterSidePanelShown(
+      SidePanelEntry::PanelType type,
+      SidePanelUI::ShownCallback callback) override;
 
   // Similar to IsSidePanelEntryShowing, but restricts to either the tab-scoped
   // or window-scoped registry.
@@ -71,6 +75,33 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
 
  protected:
   friend class SidePanelEntryWaiter;
+
+  struct PanelData {
+    PanelData();
+    ~PanelData();
+
+    // current_key_ uniquely identifies the SidePanelEntry that has its view
+    // hosted by the side panel. At the time that it is set and for most code
+    // paths, the SidePanelEntry is guaranteed to exist. It does not exist in
+    // the following cases:
+    //   * The active tab is switched, and UniqueKey is tab-scoped.
+    //   * The entry is removed from tab or window-scoped registry.
+    // The side-panel is showing if and only if current_key_ is set. That means
+    // it must only be set in one place: PopulateSidePanel() and unset in one
+    // place: OnViewVisibilityChanged()
+    std::optional<SidePanelUIBase::UniqueKey> current_key = std::nullopt;
+
+    // Inner class that waits for side panel entries to load.
+    std::unique_ptr<SidePanelEntryWaiter> waiter;
+
+    // Timestamp of when the side panel was opened. Updated when the side panel
+    // is triggered to be opened, not when visibility changes. These can differ
+    // due to delays for loading content. This is used for metrics.
+    base::TimeTicks opened_timestamp;
+
+    // Callback list notified when the side panel opens or changes.
+    base::RepeatingCallbackList<void()> shown_callback_list;
+  };
 
   virtual void Close(bool suppress_animations) = 0;
 
@@ -99,10 +130,18 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
       SidePanelRegistry* old_contextual_registry,
       SidePanelRegistry* new_contextual_registry) = 0;
 
-  std::optional<UniqueKey> current_key() const { return current_key_; }
-  void set_current_key(std::optional<UniqueKey> new_key) {
-    current_key_ = new_key;
+  void SetOpenedTimestamp(base::TimeTicks timestamp);
+  base::TimeTicks opened_timestamp() {
+    return panel_data_.at(SidePanelEntry::PanelType::kContent)
+        ->opened_timestamp;
   }
+
+  void NotifyShownCallbacksFor(SidePanelEntry::PanelType type);
+
+  std::optional<UniqueKey> current_key() const {
+    return panel_data_.at(SidePanelEntry::PanelType::kContent)->current_key;
+  }
+  void SetCurrentKey(std::optional<UniqueKey> new_key);
 
   std::optional<UniqueKey> GetUniqueKeyForKey(
       const SidePanelEntry::Key& entry_key) const;
@@ -121,13 +160,12 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   // side panel.
   std::optional<UniqueKey> GetNewActiveKeyOnTabChanged();
 
+  SidePanelEntryWaiter* waiter() const;
+
   const raw_ptr<Browser> browser_;
 
   // This registry is scoped to the browser window and is owned by this class.
   std::unique_ptr<SidePanelRegistry> window_registry_;
-
-  // Inner class that waits for side panel entries to load.
-  std::unique_ptr<SidePanelEntryWaiter> waiter_;
 
  private:
   // TabStripModelObserver:
@@ -136,16 +174,7 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // current_key_ uniquely identifies the SidePanelEntry that has its view
-  // hosted by the side panel. At the time that it is set and for most code
-  // paths, the SidePanelEntry is guaranteed to exist. It does not exist in the
-  // following cases:
-  //   * The active tab is switched, and UniqueKey is tab-scoped.
-  //   * The entry is removed from tab or window-scoped registry.
-  // The side-panel is showing if and only if current_key_ is set. That means it
-  // must only be set in one place: PopulateSidePanel() and unset in one place:
-  // OnViewVisibilityChanged()
-  std::optional<UniqueKey> current_key_;
+  std::map<SidePanelEntry::PanelType, std::unique_ptr<PanelData>> panel_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_

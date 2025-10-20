@@ -946,6 +946,7 @@ void LensOverlayController::ShowUI(
   // Setup observer to be notified of side panel opens and closes.
   side_panel_shown_subscription_ =
       side_panel_coordinator_->RegisterSidePanelShown(
+          SidePanelEntry::PanelType::kContent,
           base::BindRepeating(&LensOverlayController::OnSidePanelDidOpen,
                               weak_factory_.GetWeakPtr()));
 
