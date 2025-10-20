@@ -351,8 +351,14 @@ CHAR_LIMIT guidelines:
       <message name ="IDS_SETTINGS_INCOGNITO_TAB_LOCK_TITLE" desc = "Title for a toggle in Settings that allows users to lock their existing Incognito tabs with a device reauthentication mechanism.">
         Lock Incognito tabs when you leave Chrome
       </message>
+      <message name ="IDS_SETTINGS_INCOGNITO_WINDOW_LOCK_TITLE" desc = "Title for a toggle in Settings that allows users to lock their existing Incognito windows with a device reauthentication mechanism.">
+        Lock Incognito windows when you leave Chrome
+      </message>
       <message name ="IDS_SETTINGS_INCOGNITO_TAB_LOCK_SUMMARY_ANDROID_SETTING_ON" desc = "Summary for a toggle in Settings that allows users to lock their existing Incognito tabs with a device reauthentication mechanism. This summary is shown to the user when the screen lock setting is on in the device.">
         Use screen lock to see open Incognito tabs
+      </message>
+      <message name ="IDS_SETTINGS_INCOGNITO_WINDOW_LOCK_SUMMARY_ANDROID_SETTING_ON" desc = "Summary for a toggle in Settings that allows users to lock their existing Incognito windows with a device reauthentication mechanism. This summary is shown to the user when the screen lock setting is on in the device.">
+        Use screen lock to see open Incognito windows
       </message>
       <message name ="IDS_SETTINGS_INCOGNITO_TAB_LOCK_SUMMARY_ANDROID_SETTING_OFF" desc = "Summary for the Incognito tab lock toggle in Settings which asks the user to turn on screen lock in Android settings if it's off. Clicking on the text takes the user to Android settings.">
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Turn on screen lock in Android settings<ph name="END_LINK">&lt;/link&gt;</ph>
