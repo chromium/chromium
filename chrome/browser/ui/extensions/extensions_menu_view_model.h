@@ -7,9 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/common/extension_id.h"
 
-class ExtensionsMenuViewPlatformDelegate;
+namespace content {
+class WebContents;
+}  // namespace content
+
 class BrowserWindowInterface;
+class ExtensionsMenuViewPlatformDelegate;
 
 // The platform agnostic controller for the extensions menu.
 // TODO(crbug.com/449814184): Move the observers from
@@ -17,7 +22,7 @@ class BrowserWindowInterface;
 class ExtensionsMenuViewModel
     : public extensions::PermissionsManager::Observer {
  public:
-  explicit ExtensionsMenuViewModel(
+  ExtensionsMenuViewModel(
       BrowserWindowInterface* browser,
       std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate);
   ExtensionsMenuViewModel(const ExtensionsMenuViewModel&) = delete;
@@ -28,6 +33,11 @@ class ExtensionsMenuViewModel
   // PermissionsManager::Observer:
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int tab_id) override;
+
+  // Updates the extension's site access for the current site.
+  void UpdateSiteAccess(
+      const extensions::ExtensionId& extension_id,
+      extensions::PermissionsManager::UserSiteAccess site_access);
 
  private:
   content::WebContents* GetActiveWebContents();
