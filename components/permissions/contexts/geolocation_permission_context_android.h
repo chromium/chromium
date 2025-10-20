@@ -79,6 +79,10 @@ class GeolocationPermissionContextAndroid
   void SetLocationSettingsForTesting(
       std::unique_ptr<LocationSettings> settings);
 
+  void SetShouldRepromptUserForTesting(bool should_reprompt_user_for_testing) {
+    should_reprompt_user_for_testing_ = should_reprompt_user_for_testing;
+  }
+
  private:
   // GeolocationPermissionContext:
   void RequestPermission(std::unique_ptr<PermissionRequestData> request_data,
@@ -147,6 +151,8 @@ class GeolocationPermissionContextAndroid
                                  PermissionDecision decision,
                                  std::optional<PromptOptions> prompt_options);
 
+  bool ShouldRepromptUser(content::WebContents* web_contents);
+
   std::unique_ptr<LocationSettings> location_settings_;
 
   PermissionRequestID location_settings_dialog_request_id_;
@@ -155,6 +161,8 @@ class GeolocationPermissionContextAndroid
   std::vector<std::pair<std::unique_ptr<PermissionRequestData>,
                         BrowserPermissionCallback>>
       pending_reprompt_requests_;
+
+  std::optional<bool> should_reprompt_user_for_testing_;
 
   // Must be the last member, to ensure that it will be destroyed first, which
   // will invalidate weak pointers.

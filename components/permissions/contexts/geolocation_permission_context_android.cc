@@ -143,9 +143,7 @@ void GeolocationPermissionContextAndroid::RequestPermission(
                                 .status;
   if (!request_data->IsEmbeddedPermissionElementInitiated() &&
       (status == PermissionStatus::GRANTED) &&
-      ShouldRepromptUserForPermissions(web_contents,
-                                       {content_settings_type()}) ==
-          PermissionRepromptState::kShow) {
+      ShouldRepromptUser(web_contents)) {
     if (auto* manager =
             PermissionRequestManager::FromWebContents(web_contents)) {
       if (manager->IsCurrentRequestEmbeddedPermissionElementInitiated() &&
@@ -490,6 +488,14 @@ void GeolocationPermissionContextAndroid::FinishNotifyPermissionSet(
 void GeolocationPermissionContextAndroid::SetLocationSettingsForTesting(
     std::unique_ptr<LocationSettings> settings) {
   location_settings_ = std::move(settings);
+}
+
+bool GeolocationPermissionContextAndroid::ShouldRepromptUser(
+    content::WebContents* web_contents) {
+  return should_reprompt_user_for_testing_.value_or(
+      ShouldRepromptUserForPermissions(web_contents,
+                                       {content_settings_type()}) ==
+      PermissionRepromptState::kShow);
 }
 
 }  // namespace permissions
