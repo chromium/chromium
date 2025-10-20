@@ -602,6 +602,7 @@ std::unique_ptr<AggregatedRenderPass> CreateRenderPass() {
 
   auto pass = std::make_unique<AggregatedRenderPass>();
   pass->SetNew(render_pass_id, output_rect, output_rect, gfx::Transform());
+  pass->has_transparent_background = false;
 
   SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->opacity = 1.f;
