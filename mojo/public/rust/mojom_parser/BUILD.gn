@@ -3,6 +3,7 @@ import("//build/rust/rust_static_library.gni")
 rust_static_library("mojom_parser") {
   sources = [
     "ast.rs",
+    "deparse_values.rs",
     "lib.rs",
     "pack.rs",
     "parse_messages.rs",
