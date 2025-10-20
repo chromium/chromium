@@ -18,15 +18,8 @@ BASE_DECLARE_FEATURE(kEnterpriseActiveUserDetection);
 // will be attached to DLP scan requests.
 BASE_DECLARE_FEATURE(kEnterpriseIframeDlpRulesSupport);
 
-// Controls uploading scanned data even after a metadata verdict
-// is received for content scans.
-BASE_DECLARE_FEATURE(kEnableAsyncUploadAfterVerdict);
-
 // Controls whether resumable upload is enabled on consumer scans.
 BASE_DECLARE_FEATURE(kEnableResumableUploadOnConsumerScan);
-
-// Controls the number of content analysis requests concurrently uploaded.
-BASE_DECLARE_FEATURE_PARAM(size_t, kParallelContentAnalysisRequestCount);
 
 // Controls the new upload, download, and print size limit for content analysis.
 BASE_DECLARE_FEATURE(kEnableNewUploadSizeLimit);

@@ -318,9 +318,7 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnableAsyncUploadAfterVerdict) &&
-      !force_sync_upload_) {
+  if (!force_sync_upload_) {
     if (headers->HasHeader(kUploadIntermediateHeader)) {
       response_body = headers->GetNormalizedHeader(kUploadIntermediateHeader);
 

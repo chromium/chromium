@@ -42,6 +42,12 @@
 namespace safe_browsing {
 namespace {
 
+// The default maximum number of concurrent active requests. This is used to
+// limit the number of requests that are actively being uploaded. This is set to
+// default of 15 because it was determined to be a good value through
+// experiments. See http://crbug.com/329293309.
+constexpr int kDefaultMaxParallelActiveRequests = 15;
+
 constexpr base::TimeDelta kAuthTimeout = base::Seconds(10);
 constexpr base::TimeDelta kScanningTimeout = base::Minutes(5);
 
@@ -191,12 +197,20 @@ bool IgnoreErrorResultForResumableUpload(BinaryUploadService::Request* request,
 
 // static
 size_t CloudBinaryUploadService::GetParallelActiveRequestsMax() {
-  size_t max_value =
-      enterprise_connectors::kParallelContentAnalysisRequestCount.Get();
-  return max_value > 0
-             ? max_value
-             : enterprise_connectors::kParallelContentAnalysisRequestCount
-                   .default_value;
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kWpMaxParallelActiveRequests)) {
+    int parsed_max;
+    if (base::StringToInt(command_line->GetSwitchValueASCII(
+                              switches::kWpMaxParallelActiveRequests),
+                          &parsed_max) &&
+        parsed_max > 0) {
+      return parsed_max;
+    } else {
+      DVLOG(1) << "wp-max-parallel-active-requests had invalid value";
+    }
+  }
+
+  return kDefaultMaxParallelActiveRequests;
 }
 
 CloudBinaryUploadService::CloudBinaryUploadService(Profile* profile)
