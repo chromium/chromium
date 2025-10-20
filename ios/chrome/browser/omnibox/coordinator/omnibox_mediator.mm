@@ -375,6 +375,11 @@ using base::UserMetricsAction;
       }));
 }
 
+- (BOOL)shouldUseLensForCopiedImage {
+  return ios::provider::IsLensSupported() &&
+         base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage);
+}
+
 - (void)lensCopiedImage {
   __weak __typeof(self) weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(

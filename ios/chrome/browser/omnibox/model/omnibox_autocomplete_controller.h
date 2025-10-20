@@ -23,6 +23,7 @@ class AutocompleteResult;
 class GURL;
 @protocol OmniboxAutocompleteControllerDelegate;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
+@protocol OmniboxLensDelegate;
 class OmniboxClient;
 @class OmniboxMetricsRecorder;
 @class OmniboxTextController;
@@ -39,6 +40,9 @@ struct OmniboxTextModel;
 /// Debugger delegate of the omnibox autocomplete controller.
 @property(nonatomic, weak) id<OmniboxAutocompleteControllerDebuggerDelegate>
     debuggerDelegate;
+
+/// Handler for Lens interactions.
+@property(nonatomic, weak) id<OmniboxLensDelegate> lensHander;
 
 /// Autcomplete result wrapper.
 @property(nonatomic, strong)

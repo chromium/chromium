@@ -598,10 +598,19 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     std::set<ClipboardContentType> clipboardContentTypeValues =
         clipboardContentType.value();
 
-    if (search_engines::SupportsSearchByImage(self.templateURLService) &&
-        base::Contains(clipboardContentTypeValues,
+    if (base::Contains(clipboardContentTypeValues,
                        ClipboardContentType::Image)) {
-      return [self.actionFactory actionToSearchCopiedImage];
+      if (base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage)) {
+        if (search_engines::SupportsSearchImageWithLens(
+                self.templateURLService) &&
+            ios::provider::IsLensSupported()) {
+          return [self.actionFactory actionToLensCopiedImage];
+        }
+      } else {
+        if (search_engines::SupportsSearchByImage(self.templateURLService)) {
+          return [self.actionFactory actionToSearchCopiedImage];
+        }
+      }
     } else if (base::Contains(clipboardContentTypeValues,
                               ClipboardContentType::URL)) {
       return [self.actionFactory actionToSearchCopiedURL];

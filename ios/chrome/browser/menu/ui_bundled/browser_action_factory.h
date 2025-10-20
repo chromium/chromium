@@ -103,6 +103,10 @@ class WebState;
 // Creates a UIAction instance for opening a new incognito search.
 - (UIAction*)actionToStartNewIncognitoSearch;
 
+// Creates a UIAction instance for searching with Lens the image in the
+// pasteboard.
+- (UIAction*)actionToLensCopiedImage;
+
 // Creates a UIAction instance for searching for the image in the pasteboard.
 - (UIAction*)actionToSearchCopiedImage;
 
