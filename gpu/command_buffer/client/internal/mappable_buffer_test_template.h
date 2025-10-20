@@ -187,7 +187,7 @@ TYPED_TEST_SUITE_P(MappableBufferTest);
 TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
   const gfx::Size kBufferSize(8, 8);
 
-  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
+  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
         gfx::BufferUsage::SCANOUT,
@@ -201,12 +201,11 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
         gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
-    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     for (auto usage : usages) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !TestFixture::gpu_memory_buffer_support()
                ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                   buffer_format, usage)) {
+                   format, usage)) {
         continue;
       }
 
@@ -228,7 +227,7 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
 TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
   const gfx::Size kBufferSize(8, 8);
 
-  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
+  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
         gfx::BufferUsage::SCANOUT,
@@ -242,12 +241,11 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
         gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
-    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     for (auto usage : usages) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !TestFixture::gpu_memory_buffer_support()
                ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                   buffer_format, usage)) {
+                   format, usage)) {
         continue;
       }
 
@@ -279,12 +277,11 @@ TYPED_TEST_P(MappableBufferTest, Map) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
-    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
+  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !TestFixture::gpu_memory_buffer_support()
              ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                 buffer_format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+                 format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 
@@ -341,12 +338,11 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
-    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
+  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !TestFixture::gpu_memory_buffer_support()
              ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                 buffer_format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+                 format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 
@@ -421,7 +417,7 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
   const gfx::Size kBufferSize(8, 8);
   const gfx::GpuMemoryBufferType kBufferType = TypeParam::kBufferType;
 
-  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
+  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
         gfx::BufferUsage::SCANOUT,
@@ -435,12 +431,11 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
         gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
-    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     for (auto usage : usages) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !TestFixture::gpu_memory_buffer_support()
                ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                   buffer_format, usage)) {
+                   format, usage)) {
         continue;
       }
 

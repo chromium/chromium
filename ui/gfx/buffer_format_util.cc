@@ -7,29 +7,8 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "ui/gfx/switches.h"
 
 namespace gfx {
-namespace {
-
-constexpr auto kBufferFormats = std::to_array<BufferFormat>(
-    {BufferFormat::R_8, BufferFormat::R_16, BufferFormat::RG_88,
-     BufferFormat::RG_1616, BufferFormat::BGR_565, BufferFormat::RGBA_4444,
-     BufferFormat::RGBX_8888, BufferFormat::RGBA_8888, BufferFormat::BGRX_8888,
-     BufferFormat::BGRA_1010102, BufferFormat::RGBA_1010102,
-     BufferFormat::BGRA_8888, BufferFormat::RGBA_F16,
-     BufferFormat::YUV_420_BIPLANAR, BufferFormat::YVU_420,
-     BufferFormat::YUVA_420_TRIPLANAR, BufferFormat::P010});
-
-static_assert(std::size(kBufferFormats) ==
-                  (static_cast<int>(BufferFormat::LAST) + 1),
-              "BufferFormat::LAST must be last value of kBufferFormats");
-
-}  // namespace
-
-base::span<const BufferFormat> GetBufferFormatsForTesting() {
-  return kBufferFormats;
-}
 
 const char* BufferFormatToString(BufferFormat format) {
   switch (format) {

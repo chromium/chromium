@@ -9,6 +9,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 
 namespace gpu {
+class GpuMemoryBufferSupport;
 class MappableBufferNativePixmap;
 class SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
 class SharedImageFormatRestrictedUtilsAccessor;
@@ -113,6 +114,10 @@ std::optional<size_t> SharedMemorySizeForSharedImageFormat(
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 bool IsOddSizeMultiPlanarBuffersAllowed();
 
+// Returns a span containing all mappable SharedImageFormats.
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+base::span<const SharedImageFormat> GetMappableSharedImageFormatForTesting();
+
 // Utilities that conceptually belong only on the service side, but are
 // currently used by some clients. Usage is restricted to friended clients.
 class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
@@ -135,6 +140,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
     SharedImageFormatToBufferFormatRestrictedUtils {
  private:
+  friend class gpu::GpuMemoryBufferSupport;
   friend class gpu::SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
   friend class gpu::MappableBufferNativePixmap;
   friend class ui::WaylandOverlayManager;

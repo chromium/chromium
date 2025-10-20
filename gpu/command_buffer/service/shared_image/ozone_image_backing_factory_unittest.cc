@@ -605,7 +605,7 @@ TEST_F(OzoneImageBackingFactoryTest, CorrectlyDestroysAndMarksContextLost) {
 }
 
 TEST_F(OzoneImageBackingFactoryTest, CreateGpuMemoryBufferHandle) {
-  for (auto format : gfx::GetBufferFormatsForTesting()) {
+  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
         gfx::BufferUsage::SCANOUT,
@@ -629,8 +629,8 @@ TEST_F(OzoneImageBackingFactoryTest, CreateGpuMemoryBufferHandle) {
 
       gfx::GpuMemoryBufferHandle handle =
           OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
-              /*vulkan_context_provider=*/nullptr, gfx::Size(2, 2),
-              viz::GetSharedImageFormat(format), usage);
+              /*vulkan_context_provider=*/nullptr, gfx::Size(2, 2), format,
+              usage);
       EXPECT_EQ(handle.type, gfx::NATIVE_PIXMAP);
     }
   }

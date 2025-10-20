@@ -7,6 +7,8 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
+#include <array>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -14,6 +16,20 @@
 #include "ui/gfx/buffer_types.h"
 
 namespace viz {
+namespace {
+
+constexpr auto kMappableSharedImageFormats = std::to_array<SharedImageFormat>(
+    {SinglePlaneFormat::kR_8, SinglePlaneFormat::kR_16,
+     SinglePlaneFormat::kRG_88, SinglePlaneFormat::kRG_1616,
+     SinglePlaneFormat::kBGR_565, SinglePlaneFormat::kRGBA_4444,
+     SinglePlaneFormat::kRGBX_8888, SinglePlaneFormat::kRGBA_8888,
+     SinglePlaneFormat::kBGRX_8888, SinglePlaneFormat::kBGRA_1010102,
+     SinglePlaneFormat::kRGBA_1010102, SinglePlaneFormat::kBGRA_8888,
+     SinglePlaneFormat::kRGBA_F16, MultiPlaneFormat::kNV12,
+     MultiPlaneFormat::kYV12, MultiPlaneFormat::kNV12A,
+     MultiPlaneFormat::kP010});
+
+}  // namespace
 
 SkColorType ToClosestSkColorType(SharedImageFormat format) {
   CHECK(format.is_single_plane());
@@ -348,6 +364,10 @@ bool IsOddSizeMultiPlanarBuffersAllowed() {
 #else
   return false;
 #endif
+}
+
+base::span<const SharedImageFormat> GetMappableSharedImageFormatForTesting() {
+  return kMappableSharedImageFormats;
 }
 
 // static

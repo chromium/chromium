@@ -8,14 +8,9 @@
 #include <stddef.h>
 
 #include "base/component_export.h"
-#include "base/containers/span.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace gfx {
-
-// Returns a span containing all buffer formats.
-COMPONENT_EXPORT(GFX)
-base::span<const BufferFormat> GetBufferFormatsForTesting();
 
 // Returns the name of |format| as a string.
 COMPONENT_EXPORT(GFX) const char* BufferFormatToString(BufferFormat format);

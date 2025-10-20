@@ -185,7 +185,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
 }
 
 TEST_F(IOSurfaceImageBackingFactoryTest, CreateGpuMemoryBuffer) {
-  for (auto format : gfx::GetBufferFormatsForTesting()) {
+  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
     if (!gpu::GpuMemoryBufferSupport::
             IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
                 format, gfx::BufferUsage::GPU_READ)) {
@@ -194,7 +194,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, CreateGpuMemoryBuffer) {
 
     gfx::GpuMemoryBufferHandle handle =
         IOSurfaceImageBackingFactory::CreateGpuMemoryBufferHandle(
-            gfx::Size(2, 2), viz::GetSharedImageFormat(format));
+            gfx::Size(2, 2), format);
     EXPECT_EQ(handle.type, gfx::IO_SURFACE_BUFFER);
   }
 }

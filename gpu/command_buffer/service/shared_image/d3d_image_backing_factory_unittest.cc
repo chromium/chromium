@@ -2556,7 +2556,7 @@ TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
 
 // Disabled by default as it requires DX11.
 TEST_F(D3DImageBackingFactoryTest, DISABLED_CreateGpuMemoryBuffer) {
-  for (auto format : gfx::GetBufferFormatsForTesting()) {
+  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
         gfx::BufferUsage::SCANOUT,
@@ -2580,8 +2580,7 @@ TEST_F(D3DImageBackingFactoryTest, DISABLED_CreateGpuMemoryBuffer) {
 
       gfx::GpuMemoryBufferHandle handle =
           D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
-              /*io_runner=*/nullptr, gfx::Size(2, 2),
-              viz::GetSharedImageFormat(format), usage);
+              /*io_runner=*/nullptr, gfx::Size(2, 2), format, usage);
       EXPECT_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
     }
   }

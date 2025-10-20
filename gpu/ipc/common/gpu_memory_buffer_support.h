@@ -16,6 +16,7 @@
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -55,9 +56,12 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
 
   // Returns whether the provided buffer format is supported.
   static bool IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) {
-    return IsNativeGpuMemoryBufferConfigurationSupported(format, usage);
+    return IsNativeGpuMemoryBufferConfigurationSupported(
+        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+            format),
+        usage);
   }
 
  private:
